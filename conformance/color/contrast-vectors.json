@@ -1,0 +1,56 @@
+[
+  {
+    "name": "black on white reaches maximum",
+    "foreground": {"colorSpace": "srgb", "components": [0, 0, 0]},
+    "background": {"colorSpace": "srgb", "components": [1, 1, 1]},
+    "expected": 21.0
+  },
+  {
+    "name": "white on black is symmetric",
+    "foreground": {"colorSpace": "srgb", "components": [1, 1, 1]},
+    "background": {"colorSpace": "srgb", "components": [0, 0, 0]},
+    "expected": 21.0
+  },
+  {
+    "name": "identical midgray has no contrast",
+    "foreground": {"colorSpace": "srgb", "components": [0.5, 0.5, 0.5]},
+    "background": {"colorSpace": "srgb", "components": [0.5, 0.5, 0.5]},
+    "expected": 1.0
+  },
+  {
+    "name": "linear branch at transfer boundary",
+    "foreground": {"colorSpace": "srgb", "components": [0.04045, 0.04045, 0.04045]},
+    "background": {"colorSpace": "srgb", "components": [0, 0, 0]},
+    "expected": 1.0626160990712074
+  },
+  {
+    "name": "nonlinear branch above transfer boundary",
+    "foreground": {"colorSpace": "srgb", "components": [0.04046, 0.04046, 0.04046]},
+    "background": {"colorSpace": "srgb", "components": [0, 0, 0]},
+    "expected": 1.0626318910537798
+  },
+  {
+    "name": "red and blue use unequal luminance weights",
+    "foreground": {"colorSpace": "srgb", "components": [1, 0, 0]},
+    "background": {"colorSpace": "srgb", "components": [0, 0, 1]},
+    "expected": 2.148936170212766
+  },
+  {
+    "name": "translucent foreground needs a known backdrop",
+    "foreground": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 0.5},
+    "background": {"colorSpace": "srgb", "components": [0, 0, 0]},
+    "error": "TranslucentForeground"
+  },
+  {
+    "name": "translucent background needs a known backdrop",
+    "foreground": {"colorSpace": "srgb", "components": [1, 1, 1]},
+    "background": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 0.5},
+    "error": "TranslucentBackground"
+  },
+  {
+    "name": "foreground error takes precedence",
+    "foreground": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 0},
+    "background": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 0},
+    "error": "TranslucentForeground"
+  }
+]
