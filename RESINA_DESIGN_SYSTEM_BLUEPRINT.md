@@ -572,7 +572,7 @@ Do not reinvent DTCG token syntax.
 
 # 12. Resolver strategy
 
-The current experimental DTCG Resolver draft is not normative for Resina.
+The DTCG Resolver Module 2025.10 is a stable Community Group report for composing token sets and modifiers. Its status supersedes the earlier experimental draft assumed when this blueprint was written. Resina does not adopt that module as the definition of its design-intent resolver: token-set composition does not specify material, component-state, accessibility, renderer-capability, quality, or fallback resolution into Resina IR.
 
 Resina therefore owns its own resolution model for:
 
@@ -585,7 +585,7 @@ quality
 component state
 ```
 
-The architecture SHOULD remain capable of adopting or mapping to future stable DTCG resolver standards.
+The architecture SHOULD remain capable of mapping DTCG resolver output into Resina token inputs without assigning Resina semantics to the DTCG module.
 
 ---
 
