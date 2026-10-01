@@ -1,0 +1,26 @@
+[
+  {
+    "name": "left-to-right asymmetric safe area",
+    "geometry": {"width": 480, "height": 320, "safeArea": {"start": 20, "end": 36, "top": 12, "bottom": 28}},
+    "layoutDirection": "ltr",
+    "expected": {"left": 20, "top": 12, "width": 424, "height": 280}
+  },
+  {
+    "name": "right-to-left maps logical end to physical left",
+    "geometry": {"width": 480, "height": 320, "safeArea": {"start": 20, "end": 36, "top": 12, "bottom": 28}},
+    "layoutDirection": "rtl",
+    "expected": {"left": 36, "top": 12, "width": 424, "height": 280}
+  },
+  {
+    "name": "zero safe area preserves viewport",
+    "geometry": {"width": 1920, "height": 1080, "safeArea": {"start": 0, "end": 0, "top": 0, "bottom": 0}},
+    "layoutDirection": "rtl",
+    "expected": {"left": 0, "top": 0, "width": 1920, "height": 1080}
+  },
+  {
+    "name": "fractional insets remain logical values",
+    "geometry": {"width": 100.5, "height": 80.5, "safeArea": {"start": 2.5, "end": 1.5, "top": 0.5, "bottom": 3.5}},
+    "layoutDirection": "ltr",
+    "expected": {"left": 2.5, "top": 0.5, "width": 96.5, "height": 76.5}
+  }
+]

@@ -28,4 +28,6 @@ The allowed `inputCapabilities` values are `finePointer`, `coarsePointer`, `hove
 
 Geometry, scale, and quality do not define a rendering algorithm. A renderer may map logical units to its coordinate system and choose a cheaper realization under a lower quality policy, while preserving the resolved semantic intent.
 
+The usable content bounds are derived from validated geometry and safe-area insets. In a viewport whose origin is the top-left corner, `left` equals `safeArea.start` for `ltr` and `safeArea.end` for `rtl`; `top` equals `safeArea.top`. `width` is `geometry.width - (safeArea.start + safeArea.end)` and `height` is `geometry.height - (safeArea.top + safeArea.bottom)`. All four values remain in the snapshot's logical units; `scale` and `textScale` do not alter them. The [content-bounds vectors](../conformance/environment/content-bounds-vectors.json) cover asymmetric RTL insets, zero insets, and fractional values. This rectangle describes usable geometry, not component layout.
+
 The [conformance cases](../conformance/environment/) are normative examples of valid and rejected snapshots and derived geometry. The Rust reference crate implements this contract without a GUI dependency.

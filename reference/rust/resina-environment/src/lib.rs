@@ -41,6 +41,15 @@ pub struct SafeArea {
     pub bottom: f64,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ContentBounds {
+    pub left: f64,
+    pub top: f64,
+    pub width: f64,
+    pub height: f64,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum InputCapability {
@@ -183,6 +192,20 @@ impl TryFrom<EnvironmentSnapshotInput> for EnvironmentSnapshot {
 impl EnvironmentSnapshot {
     pub fn geometry(&self) -> &Geometry {
         &self.geometry
+    }
+
+    pub fn content_bounds(&self) -> ContentBounds {
+        let area = &self.geometry.safe_area;
+        let left = match self.layout_direction {
+            LayoutDirection::Ltr => area.start,
+            LayoutDirection::Rtl => area.end,
+        };
+        ContentBounds {
+            left,
+            top: area.top,
+            width: self.geometry.width - (area.start + area.end),
+            height: self.geometry.height - (area.top + area.bottom),
+        }
     }
 
     pub fn scale(&self) -> f64 {
@@ -447,6 +470,34 @@ mod tests {
                 Orientation::Square => "square",
             };
             assert_eq!(orientation, vector["orientation"].as_str().unwrap());
+        }
+    }
+
+    #[test]
+    fn content_bounds_follow_safe_area_and_direction() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/environment/content-bounds-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let mut source = valid();
+            source["geometry"] = vector["geometry"].clone();
+            source["layoutDirection"] = vector["layoutDirection"].clone();
+            let snapshot: EnvironmentSnapshot = serde_json::from_value(source).unwrap();
+            let actual = snapshot.content_bounds();
+            for (name, value) in [
+                ("left", actual.left),
+                ("top", actual.top),
+                ("width", actual.width),
+                ("height", actual.height),
+            ] {
+                assert_eq!(
+                    value,
+                    vector["expected"][name].as_f64().unwrap(),
+                    "{}: {name}",
+                    vector["name"]
+                );
+            }
         }
     }
 
