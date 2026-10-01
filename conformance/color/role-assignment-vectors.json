@@ -1,0 +1,190 @@
+[
+  {
+    "name": "complete role assignment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.sample1",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.sample2",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": "palette.sample2",
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.sample1",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "focus": "palette.sample2",
+        "selection": "palette.sample0"
+      }
+    },
+    "expected": {
+      "accent.primary": "palette.sample0",
+      "accent.secondary": "palette.sample1",
+      "accent.tertiary": "palette.sample2",
+      "surface.base": "palette.sample0",
+      "surface.low": "palette.sample1",
+      "surface.high": "palette.sample2",
+      "surface.chrome": "palette.sample0",
+      "content.primary": "palette.sample1",
+      "content.secondary": "palette.sample2",
+      "content.muted": "palette.sample0",
+      "content.inverse": "palette.sample1",
+      "outline": "palette.sample2",
+      "outline.strong": "palette.sample0",
+      "status.error": "palette.sample1",
+      "status.warning": "palette.sample2",
+      "status.success": "palette.sample0",
+      "status.info": "palette.sample1",
+      "focus": "palette.sample2",
+      "selection": "palette.sample0"
+    }
+  },
+  {
+    "name": "missing role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.sample1",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.sample2",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": "palette.sample2",
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.sample1",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "selection": "palette.sample0"
+      }
+    },
+    "error": "missing field"
+  },
+  {
+    "name": "unknown role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.sample1",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.sample2",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": "palette.sample2",
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.sample1",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "focus": "palette.sample2",
+        "selection": "palette.sample0",
+        "content.tertiary": "palette.sample0"
+      }
+    },
+    "error": "unknown field"
+  },
+  {
+    "name": "empty token path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.sample1",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.sample2",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": "palette.sample2",
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.sample1",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "focus": "palette.sample2",
+        "selection": ""
+      }
+    },
+    "error": "must not be empty"
+  },
+  {
+    "name": "unsupported schema version",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.sample1",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.sample2",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": "palette.sample2",
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.sample1",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "focus": "palette.sample2",
+        "selection": "palette.sample0"
+      }
+    },
+    "error": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "non-string token path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.sample1",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.sample2",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": 3,
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.sample1",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "focus": "palette.sample2",
+        "selection": "palette.sample0"
+      }
+    },
+    "error": "invalid type"
+  }
+]

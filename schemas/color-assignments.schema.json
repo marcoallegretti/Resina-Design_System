@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:color-assignments:0.1.0",
+  "title": "Resina Semantic Color Assignments",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "roles"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accent.primary",
+        "accent.secondary",
+        "accent.tertiary",
+        "surface.base",
+        "surface.low",
+        "surface.high",
+        "surface.chrome",
+        "content.primary",
+        "content.secondary",
+        "content.muted",
+        "content.inverse",
+        "outline",
+        "outline.strong",
+        "status.error",
+        "status.warning",
+        "status.success",
+        "status.info",
+        "focus",
+        "selection"
+      ],
+      "properties": {
+        "accent.primary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "accent.secondary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "accent.tertiary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface.base": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface.low": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface.high": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface.chrome": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content.primary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content.secondary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content.muted": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content.inverse": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outline.strong": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status.error": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status.warning": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status.success": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status.info": {
+          "type": "string",
+          "minLength": 1
+        },
+        "focus": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selection": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

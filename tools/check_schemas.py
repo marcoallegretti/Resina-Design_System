@@ -59,6 +59,7 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/material-assignments.schema.json",
         "schemas/state-set.schema.json",
@@ -74,6 +75,7 @@ def main():
 
     checked = 0
     for schema, vectors in (
+        ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/material-assignments.schema.json", "conformance/materials/role-assignment-vectors.json"),
         ("schemas/state-set.schema.json", "conformance/states/state-set-vectors.json"),
         ("schemas/surface-form.schema.json", "conformance/geometry/surface-form-vectors.json"),
