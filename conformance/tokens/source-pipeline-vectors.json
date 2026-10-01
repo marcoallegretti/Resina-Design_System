@@ -1,0 +1,42 @@
+[
+  {
+    "name": "source resolves aliases and inherited types",
+    "source": "{\"$type\":\"number\",\"base\":{\"$value\":2},\"alias\":{\"$value\":\"{base}\"}}",
+    "expected": {
+      "base": {
+        "token_type": "number",
+        "value": 2
+      },
+      "alias": {
+        "token_type": "number",
+        "value": 2
+      }
+    }
+  },
+  {
+    "name": "duplicate token property fails before resolution",
+    "source": "{\"token\":{\"$type\":\"number\",\"$value\":1,\"$value\":2}}",
+    "stage": "parse",
+    "error": "duplicate JSON member at #/token/$value"
+  },
+  {
+    "name": "malformed source fails before resolution",
+    "source": "{\"token\":",
+    "stage": "parse",
+    "error": "EOF while parsing a value"
+  },
+  {
+    "name": "missing declared type fails resolution",
+    "source": "{\"plain\":{\"$value\":2}}",
+    "stage": "resolve",
+    "error": "MissingType",
+    "location": "#/plain"
+  },
+  {
+    "name": "invalid resolved value fails resolution",
+    "source": "{\"gap\":{\"$type\":\"dimension\",\"$value\":{\"value\":2,\"unit\":\"em\"}}}",
+    "stage": "resolve",
+    "error": "InvalidValue",
+    "location": "#/gap/$value/unit"
+  }
+]
