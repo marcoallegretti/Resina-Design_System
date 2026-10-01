@@ -34,14 +34,18 @@ pub fn resolve_token_type(document: &Value, path: &str) -> Result<String, TypeEr
         kind: TypeErrorKind::InvalidDocument,
         location: error.location,
     })?;
+    resolve_type_in_expanded_document(&expanded, path)
+}
+
+pub(crate) fn resolve_type_in_expanded_document(
+    expanded: &Value,
+    path: &str,
+) -> Result<String, TypeError> {
     let pointer = curly_path_to_pointer(path).map_err(|_| TypeError {
         kind: TypeErrorKind::InvalidTokenPath,
         location: path.to_owned(),
     })?;
-    TypeResolver {
-        document: &expanded,
-    }
-    .resolve(&pointer, &mut Vec::new())
+    TypeResolver { document: expanded }.resolve(&pointer, &mut Vec::new())
 }
 
 struct TypeResolver<'a> {

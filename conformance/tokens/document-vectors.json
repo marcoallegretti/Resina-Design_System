@@ -1,0 +1,106 @@
+[
+  {
+    "name": "whole-token aliases resolve with declared types",
+    "document": {"$type": "number", "base": {"$value": 2}, "alias": {"$value": "{base}"}, "pointer": {"$ref": "#/base/$value"}},
+    "expected": {
+      "base": {"token_type": "number", "value": 2},
+      "alias": {"token_type": "number", "value": 2},
+      "pointer": {"token_type": "number", "value": 2}
+    }
+  },
+  {
+    "name": "group extension and property reference",
+    "document": {"base": {"$type": "dimension", "gap": {"$value": {"value": 8, "unit": "px"}}}, "derived": {"$extends": "{base}", "wide": {"$value": {"value": {"$ref": "#/base/gap/$value/value"}, "unit": "rem"}}}},
+    "expected": {
+      "base.gap": {"token_type": "dimension", "value": {"value": 8, "unit": "px"}},
+      "derived.gap": {"token_type": "dimension", "value": {"value": 8, "unit": "px"}},
+      "derived.wide": {"token_type": "dimension", "value": {"value": 8, "unit": "rem"}}
+    }
+  },
+  {
+    "name": "reference to numeric font weight is not a number alias",
+    "document": {"base": {"$type": "fontWeight", "$value": 400}, "alias": {"$type": "number", "$value": "{base}"}},
+    "error": "ReferenceTypeMismatch",
+    "location": "#/alias/$value"
+  },
+  {
+    "name": "pointer alias with incompatible declared type",
+    "document": {"base": {"$type": "fontWeight", "$value": 400}, "alias": {"$type": "number", "$ref": "#/base"}},
+    "error": "ReferenceTypeMismatch",
+    "location": "#/alias/$ref"
+  },
+  {
+    "name": "nested border reference type mismatch",
+    "document": {"width": {"$type": "number", "$value": 2}, "border": {"$type": "border", "$value": {"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "width": "{width}", "style": "solid"}}},
+    "error": "ReferenceTypeMismatch",
+    "location": "#/border/$value/width"
+  },
+  {
+    "name": "numeric property reference checks target token type",
+    "document": {"weight": {"$type": "fontWeight", "$value": 400}, "size": {"$type": "dimension", "$value": {"value": "{weight}", "unit": "px"}}},
+    "error": "ReferenceTypeMismatch",
+    "location": "#/size/$value/value"
+  },
+  {
+    "name": "explicit nested shadow array is invalid",
+    "document": {"shadow": {"$type": "shadow", "$value": [[{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}]]}},
+    "error": "ExplicitNestedArray",
+    "location": "#/shadow/$value/0"
+  },
+  {
+    "name": "referenced shadow array remains nested",
+    "document": {"base": {"$type": "shadow", "$value": [{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}]}, "stack": {"$type": "shadow", "$value": ["{base}"]}},
+    "expected": {
+      "base": {"token_type": "shadow", "value": [{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}]},
+      "stack": {"token_type": "shadow", "value": [[{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}]]}
+    }
+  },
+  {
+    "name": "explicit nested gradient array is invalid",
+    "document": {"gradient": {"$type": "gradient", "$value": [[{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "position": 0}]]}},
+    "error": "ExplicitNestedArray",
+    "location": "#/gradient/$value/0"
+  },
+  {
+    "name": "gradient array alias type is checked",
+    "document": {"number": {"$type": "number", "$value": 1}, "gradient": {"$type": "gradient", "$value": ["{number}"]}},
+    "error": "ReferenceTypeMismatch",
+    "location": "#/gradient/$value/0"
+  },
+  {
+    "name": "referenced gradient array remains nested",
+    "document": {"base": {"$type": "gradient", "$value": [{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "position": 0}]}, "joined": {"$type": "gradient", "$value": ["{base}"]}},
+    "expected": {
+      "base": {"token_type": "gradient", "value": [{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "position": 0}]},
+      "joined": {"token_type": "gradient", "value": [[{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "position": 0}]]}
+    }
+  },
+  {
+    "name": "invalid resolved dimension",
+    "document": {"gap": {"$type": "dimension", "$value": {"value": 2, "unit": "em"}}},
+    "error": "InvalidValue",
+    "location": "#/gap/$value/unit"
+  },
+  {
+    "name": "invalid token cannot be hidden by a valid token",
+    "document": {"valid": {"$type": "number", "$value": 2}, "invalid": {"$type": "duration", "$value": {"value": 3, "unit": "px"}}},
+    "error": "InvalidValue",
+    "location": "#/invalid/$value/unit"
+  },
+  {
+    "name": "missing declared type",
+    "document": {"plain": {"$value": 2}},
+    "error": "MissingType",
+    "location": "#/plain"
+  },
+  {
+    "name": "unresolvable reference",
+    "document": {"alias": {"$type": "number", "$value": "{absent}"}},
+    "error": "InvalidReference"
+  },
+  {
+    "name": "invalid extension",
+    "document": {"base": {"$type": "number", "$value": 2}, "bad": {"$extends": "{base}"}},
+    "error": "InvalidDocument"
+  }
+]
