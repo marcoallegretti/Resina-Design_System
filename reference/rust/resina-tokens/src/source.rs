@@ -14,7 +14,7 @@ impl fmt::Display for TokenSourceError {
             Self::Resolve(errors) => {
                 write!(formatter, "token document resolution failed")?;
                 for error in errors {
-                    write!(formatter, ": {error}")?;
+                    write!(formatter, "\n  {error}")?;
                 }
                 Ok(())
             }
