@@ -1,4 +1,4 @@
-use crate::SrgbFallback;
+use crate::{SrgbFallback, oklab::linearize_srgb_component};
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -37,16 +37,8 @@ pub fn opaque_contrast_ratio(
 }
 
 fn relative_luminance(components: [f64; 3]) -> f64 {
-    let [red, green, blue] = components.map(linearize);
+    let [red, green, blue] = components.map(linearize_srgb_component);
     0.2126 * red + 0.7152 * green + 0.0722 * blue
-}
-
-fn linearize(component: f64) -> f64 {
-    if component <= 0.04045 {
-        component / 12.92
-    } else {
-        ((component + 0.055) / 1.055).powf(2.4)
-    }
 }
 
 #[cfg(test)]

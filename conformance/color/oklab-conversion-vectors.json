@@ -1,0 +1,13 @@
+[
+  {"name":"black","srgb":[0,0,0],"oklab":[0,0,0]},
+  {"name":"white","srgb":[1,1,1],"oklab":[1,0,0]},
+  {"name":"red","srgb":[1,0,0],"oklab":[0.627955363921431,0.224863068426274,0.125846277330585]},
+  {"name":"green","srgb":[0,1,0],"oklab":[0.866439617523437,-0.233887580936558,0.179498445160938]},
+  {"name":"blue","srgb":[0,0,1],"oklab":[0.452013718174424,-0.032456975170798,-0.311528165677578]},
+  {"name":"midgray","srgb":[0.5,0.5,0.5],"oklab":[0.598180730526848,0,0]},
+  {"name":"mixed sample","srgb":[0.15,0.2,0.3],"oklab":[0.322028191450189,-0.005512722707489,-0.048603276701]},
+  {"name":"neutral reverse","oklab":[0.5,0,0],"extendedSrgb":[0.388572859046335,0.388572859046334,0.388572859046334]},
+  {"name":"out of gamut reverse stays extended","oklab":[0.65,0,-0.25],"extendedSrgb":[0.347513966244901,0.470708649055513,1.145573161012572]},
+  {"name":"sRGB below range fails","srgb":[-0.001,0,0],"error":"OutOfRangeSrgbComponent","index":0},
+  {"name":"sRGB above range fails","srgb":[0,1.001,0],"error":"OutOfRangeSrgbComponent","index":1}
+]
