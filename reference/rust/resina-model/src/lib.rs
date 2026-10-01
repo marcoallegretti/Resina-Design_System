@@ -78,6 +78,46 @@ pub enum MaterialFamily {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum ShapeIntent {
+    Structural,
+    Soft,
+    Rounded,
+    Capsule,
+    Organic,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ElevationRole {
+    Embedded,
+    Base,
+    Raised,
+    Floating,
+    Overlay,
+    Modal,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SurfaceForm {
+    #[serde(deserialize_with = "deserialize_version")]
+    schema_version: String,
+    shape: ShapeIntent,
+    elevation: ElevationRole,
+}
+
+impl SurfaceForm {
+    pub fn shape(&self) -> ShapeIntent {
+        self.shape
+    }
+
+    pub fn elevation(&self) -> ElevationRole {
+        self.elevation
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum OpticalTreatment {
     None,
     Lens,
@@ -260,6 +300,47 @@ fn deserialize_structural_material<'de, D: Deserializer<'de>>(
 mod tests {
     use super::*;
     use serde_json::{Value, json};
+
+    #[test]
+    fn surface_form_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/geometry/surface-form-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let result = serde_json::from_value::<SurfaceForm>(vector["document"].clone());
+            if let Some(expected) = vector.get("expected") {
+                let form = result.unwrap();
+                assert_eq!(
+                    serde_json::to_value(form.shape()).unwrap(),
+                    expected["shape"],
+                    "{}",
+                    vector["name"]
+                );
+                assert_eq!(
+                    serde_json::to_value(form.elevation()).unwrap(),
+                    expected["elevation"],
+                    "{}",
+                    vector["name"]
+                );
+                assert_eq!(
+                    serde_json::to_value(&form).unwrap(),
+                    vector["document"],
+                    "{}",
+                    vector["name"]
+                );
+            } else {
+                let error = result.unwrap_err();
+                assert!(
+                    error
+                        .to_string()
+                        .contains(vector["error"].as_str().unwrap()),
+                    "{}: {error}",
+                    vector["name"]
+                );
+            }
+        }
+    }
 
     #[test]
     fn treatment_stack_conformance_vectors() {

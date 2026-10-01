@@ -1,0 +1,57 @@
+[
+  {
+    "name": "structural embedded surface",
+    "document": {"schemaVersion": "0.1.0", "shape": "structural", "elevation": "embedded"},
+    "expected": {"shape": "structural", "elevation": "embedded"}
+  },
+  {
+    "name": "soft base surface",
+    "document": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "base"},
+    "expected": {"shape": "soft", "elevation": "base"}
+  },
+  {
+    "name": "rounded raised surface",
+    "document": {"schemaVersion": "0.1.0", "shape": "rounded", "elevation": "raised"},
+    "expected": {"shape": "rounded", "elevation": "raised"}
+  },
+  {
+    "name": "capsule floating surface",
+    "document": {"schemaVersion": "0.1.0", "shape": "capsule", "elevation": "floating"},
+    "expected": {"shape": "capsule", "elevation": "floating"}
+  },
+  {
+    "name": "organic overlay surface",
+    "document": {"schemaVersion": "0.1.0", "shape": "organic", "elevation": "overlay"},
+    "expected": {"shape": "organic", "elevation": "overlay"}
+  },
+  {
+    "name": "modal elevation remains independent of shape",
+    "document": {"schemaVersion": "0.1.0", "shape": "structural", "elevation": "modal"},
+    "expected": {"shape": "structural", "elevation": "modal"}
+  },
+  {
+    "name": "missing shape is invalid",
+    "document": {"schemaVersion": "0.1.0", "elevation": "raised"},
+    "error": "shape"
+  },
+  {
+    "name": "unknown shape is invalid",
+    "document": {"schemaVersion": "0.1.0", "shape": "pill", "elevation": "raised"},
+    "error": "unknown variant"
+  },
+  {
+    "name": "unknown elevation is invalid",
+    "document": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "shadow"},
+    "error": "unknown variant"
+  },
+  {
+    "name": "unknown member is invalid",
+    "document": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "raised", "radius": 8},
+    "error": "unknown field"
+  },
+  {
+    "name": "unsupported version is invalid",
+    "document": {"schemaVersion": "0.2.0", "shape": "soft", "elevation": "raised"},
+    "error": "schemaVersion must be 0.1.0"
+  }
+]

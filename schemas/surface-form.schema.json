@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-form:0.1.0",
+  "title": "Resina Surface Form",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "shape", "elevation"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "shape": {"enum": ["structural", "soft", "rounded", "capsule", "organic"]},
+    "elevation": {"enum": ["embedded", "base", "raised", "floating", "overlay", "modal"]}
+  }
+}

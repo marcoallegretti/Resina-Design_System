@@ -1,0 +1,7 @@
+# Surface shape and form (candidate, schema 0.1.0)
+
+The canonical shape intents are `structural`, `soft`, `rounded`, `capsule`, and `organic`. They describe geometry independent of a fixed radius, path primitive, rendering toolkit, or output scale. The five names are distinct semantic choices; consumers MUST NOT infer a shape from material family, component name, or screen category. Major surfaces SHOULD favor continuous curvature, with approximations preserving the intended softness when exact geometry is unavailable.
+
+A surface form supplies one shape and one [semantic elevation](08-elevation.md) under `schemaVersion` `0.1.0`. The [machine-readable schema](../schemas/surface-form.schema.json) requires all three fields and rejects unknown fields or values. Shape and elevation are independent at this generic layer, so all pairs are representable. Component contracts may impose narrower choices when justified by their anatomy or interaction. The [form vectors](../conformance/geometry/surface-form-vectors.json) cover every shape and elevation name and invalid input.
+
+The blueprint's shape hierarchy favors calmer large structural surfaces and softer small interactive controls without requiring universal pill shapes. Exact curvature, spatial dimensions, and visual realization need calibrated tokens and conformance cases before becoming normative. The surface form is an input to resolution, not a complete Resina IR or layout instruction.
