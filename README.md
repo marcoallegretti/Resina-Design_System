@@ -4,6 +4,6 @@ Resina is a material-responsive design system specification. Its normative defin
 
 The [blueprint](RESINA_DESIGN_SYSTEM_BLUEPRINT.md) describes the intended architecture and development order. The versioned documents in `spec/`, machine-readable contracts in `schemas/`, and cases in `conformance/` define implemented behavior. A blueprint proposal is not considered implemented until these agree and the reference implementation passes its tests.
 
-Current implemented scope: validation of platform-neutral environment snapshots, DTCG token document structure, group extension, token reference resolution, declared type resolution, resolved primitive values, and fixed-shape composites. Shadow and gradient validation, reference type compatibility, bundle compilation, and rendering backends are not implemented yet.
+Current implemented scope: validation of platform-neutral environment snapshots, DTCG token document structure, group extension, token reference resolution, declared type resolution, and all resolved DTCG value shapes. Authoring-reference compatibility, bundle compilation, and rendering backends are not implemented yet.
 
 Run `cargo test --workspace --locked` to check the reference model and conformance cases.

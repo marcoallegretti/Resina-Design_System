@@ -1,0 +1,13 @@
+[
+  {"name": "single shadow", "type": "shadow", "value": {"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 1, "unit": "px"}, "offsetY": {"value": 2, "unit": "px"}, "blur": {"value": 4, "unit": "px"}, "spread": {"value": 0, "unit": "px"}, "inset": true}},
+  {"name": "shadow array", "type": "shadow", "value": [{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 1, "unit": "px"}, "offsetY": {"value": 2, "unit": "px"}, "blur": {"value": 4, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}]},
+  {"name": "shadow reference preserves nested array", "type": "shadow", "value": [[{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 1, "unit": "px"}, "offsetY": {"value": 2, "unit": "px"}, "blur": {"value": 4, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}]]},
+  {"name": "shadow empty array", "type": "shadow", "value": [], "error": "InvalidValue"},
+  {"name": "shadow wrong inset", "type": "shadow", "value": {"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "offsetX": {"value": 1, "unit": "px"}, "offsetY": {"value": 2, "unit": "px"}, "blur": {"value": 4, "unit": "px"}, "spread": {"value": 0, "unit": "px"}, "inset": "yes"}, "error": "InvalidValue"},
+  {"name": "gradient stops", "type": "gradient", "value": [{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "position": 0}, {"color": {"colorSpace": "srgb", "components": [1, 1, 1]}, "position": 1}]},
+  {"name": "gradient position beyond end is clamped by consumers", "type": "gradient", "value": [{"color": {"colorSpace": "srgb", "components": [1, 1, 1]}, "position": 42}]},
+  {"name": "gradient reference preserves nested array", "type": "gradient", "value": [[{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "position": 0}]]},
+  {"name": "gradient empty array", "type": "gradient", "value": [], "error": "InvalidValue"},
+  {"name": "gradient invalid position", "type": "gradient", "value": [{"color": {"colorSpace": "srgb", "components": [0, 0, 0]}, "position": "0"}], "error": "InvalidValue"},
+  {"name": "gradient missing color", "type": "gradient", "value": [{"position": 0}], "error": "MissingProperty"}
+]

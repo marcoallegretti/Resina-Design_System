@@ -8,6 +8,7 @@ pub enum ValueErrorKind {
     MissingProperty,
     UnknownProperty,
     OutOfRange,
+    DepthExceeded,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,12 +25,8 @@ impl fmt::Display for ValueError {
 
 impl std::error::Error for ValueError {}
 
-pub fn validate_resolved_primitive_value(kind: &str, value: &Value) -> Result<(), ValueError> {
+pub fn validate_resolved_value(kind: &str, value: &Value) -> Result<(), ValueError> {
     validate(kind, value, "#/$value")
-}
-
-pub fn validate_resolved_composite_value(kind: &str, value: &Value) -> Result<(), ValueError> {
-    validate_composite(kind, value, "#/$value")
 }
 
 fn validate_composite(kind: &str, value: &Value, path: &str) -> Result<(), ValueError> {
@@ -64,8 +61,70 @@ fn validate_composite(kind: &str, value: &Value, path: &str) -> Result<(), Value
                 ("lineHeight", "number"),
             ],
         ),
+        "shadow" => validate_shadow(value, path, 0),
+        "gradient" => validate_gradient(value, path, 0),
         _ => Err(error(ValueErrorKind::UnsupportedType, path)),
     }
+}
+
+const MAX_COMPOSITE_DEPTH: usize = 64;
+
+fn validate_shadow(value: &Value, path: &str, depth: usize) -> Result<(), ValueError> {
+    if depth >= MAX_COMPOSITE_DEPTH {
+        return Err(error(ValueErrorKind::DepthExceeded, path));
+    }
+    if let Some(items) = value.as_array() {
+        require(!items.is_empty(), path)?;
+        for (index, item) in items.iter().enumerate() {
+            validate_shadow(item, &format!("{path}/{index}"), depth + 1)?;
+        }
+        return Ok(());
+    }
+    let required = ["color", "offsetX", "offsetY", "blur", "spread"];
+    let properties = object(
+        value,
+        path,
+        &required,
+        &["color", "offsetX", "offsetY", "blur", "spread", "inset"],
+    )?;
+    validate("color", &properties["color"], &format!("{path}/color"))?;
+    for field in ["offsetX", "offsetY", "blur", "spread"] {
+        validate("dimension", &properties[field], &format!("{path}/{field}"))?;
+    }
+    if let Some(inset) = properties.get("inset") {
+        require(inset.is_boolean(), &format!("{path}/inset"))?;
+    }
+    Ok(())
+}
+
+fn validate_gradient(value: &Value, path: &str, depth: usize) -> Result<(), ValueError> {
+    if depth >= MAX_COMPOSITE_DEPTH {
+        return Err(error(ValueErrorKind::DepthExceeded, path));
+    }
+    let stops = value
+        .as_array()
+        .filter(|items| !items.is_empty())
+        .ok_or_else(|| error(ValueErrorKind::InvalidValue, path))?;
+    for (index, stop) in stops.iter().enumerate() {
+        let location = format!("{path}/{index}");
+        if stop.is_array() {
+            validate_gradient(stop, &location, depth + 1)?;
+            continue;
+        }
+        let properties = object(
+            stop,
+            &location,
+            &["color", "position"],
+            &["color", "position"],
+        )?;
+        validate("color", &properties["color"], &format!("{location}/color"))?;
+        validate(
+            "number",
+            &properties["position"],
+            &format!("{location}/position"),
+        )?;
+    }
+    Ok(())
 }
 
 fn validate_fields(value: &Value, path: &str, fields: &[(&str, &str)]) -> Result<(), ValueError> {
@@ -73,11 +132,7 @@ fn validate_fields(value: &Value, path: &str, fields: &[(&str, &str)]) -> Result
     let properties = object(value, path, &names, &names)?;
     for (name, kind) in fields {
         let location = format!("{path}/{name}");
-        if *kind == "strokeStyle" {
-            validate_stroke_style(&properties[*name], &location)?;
-        } else {
-            validate(kind, &properties[*name], &location)?;
-        }
+        validate(kind, &properties[*name], &location)?;
     }
     Ok(())
 }
@@ -175,7 +230,7 @@ fn validate(kind: &str, value: &Value, path: &str) -> Result<(), ValueError> {
             Ok(())
         }
         "color" => validate_color(value, path),
-        _ => Err(error(ValueErrorKind::UnsupportedType, path)),
+        _ => validate_composite(kind, value, path),
     }
 }
 
@@ -329,10 +384,8 @@ mod tests {
         ))
         .unwrap();
         for vector in vectors {
-            let result = validate_resolved_primitive_value(
-                vector["type"].as_str().unwrap(),
-                &vector["value"],
-            );
+            let result =
+                validate_resolved_value(vector["type"].as_str().unwrap(), &vector["value"]);
             if let Some(expected) = vector.get("error") {
                 let error = result.unwrap_err();
                 assert_eq!(
@@ -354,10 +407,31 @@ mod tests {
         ))
         .unwrap();
         for vector in vectors {
-            let result = validate_resolved_composite_value(
-                vector["type"].as_str().unwrap(),
-                &vector["value"],
-            );
+            let result =
+                validate_resolved_value(vector["type"].as_str().unwrap(), &vector["value"]);
+            if let Some(expected) = vector.get("error") {
+                let error = result.unwrap_err();
+                assert_eq!(
+                    format!("{:?}", error.kind),
+                    expected.as_str().unwrap(),
+                    "{}: {error}",
+                    vector["name"]
+                );
+            } else {
+                assert!(result.is_ok(), "{}: {result:?}", vector["name"]);
+            }
+        }
+    }
+
+    #[test]
+    fn array_composite_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/tokens/array-composite-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let result =
+                validate_resolved_value(vector["type"].as_str().unwrap(), &vector["value"]);
             if let Some(expected) = vector.get("error") {
                 let error = result.unwrap_err();
                 assert_eq!(

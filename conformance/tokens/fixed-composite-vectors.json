@@ -11,5 +11,5 @@
   {"name": "transition invalid easing", "type": "transition", "value": {"duration": {"value": 200, "unit": "ms"}, "delay": {"value": 0, "unit": "ms"}, "timingFunction": [2, 0, 1, 1]}, "error": "OutOfRange"},
   {"name": "typography", "type": "typography", "value": {"fontFamily": ["Inter", "sans-serif"], "fontSize": {"value": 16, "unit": "px"}, "fontWeight": 450, "letterSpacing": {"value": 0, "unit": "px"}, "lineHeight": 1.25}},
   {"name": "typography invalid line height", "type": "typography", "value": {"fontFamily": "Inter", "fontSize": {"value": 16, "unit": "px"}, "fontWeight": 450, "letterSpacing": {"value": 0, "unit": "px"}, "lineHeight": {"value": 1, "unit": "px"}}, "error": "InvalidValue"},
-  {"name": "array composite is separate", "type": "shadow", "value": [], "error": "UnsupportedType"}
+  {"name": "invalid shadow shape", "type": "shadow", "value": {}, "error": "MissingProperty"}
 ]

@@ -26,5 +26,5 @@
   {"name": "color unknown space", "type": "color", "value": {"colorSpace": "unknown", "components": [0, 0, 0]}, "error": "InvalidValue"},
   {"name": "color alpha range", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": -0.1}, "error": "OutOfRange"},
   {"name": "color hex requires six digits", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#000"}, "error": "InvalidValue"},
-  {"name": "composite remains outside primitive gate", "type": "shadow", "value": {}, "error": "UnsupportedType"}
+  {"name": "unknown type is rejected", "type": "unknown", "value": {}, "error": "UnsupportedType"}
 ]
