@@ -4,6 +4,9 @@ use resina_tokens::{ResolvedToken, validate_resolved_value};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
+mod spatial;
+pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ColorResolutionErrorKind {
     MissingToken,

@@ -1,0 +1,106 @@
+[
+  {
+    "name": "complete spatial assignment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "expected": {
+      "space.control.inline": "foundation.space.0",
+      "space.control.block": "foundation.space.1",
+      "space.container.inner": "foundation.space.2",
+      "space.container.outer": "foundation.space.3",
+      "space.group": "foundation.space.4",
+      "space.section": "foundation.space.5",
+      "space.page": "foundation.space.6"
+    }
+  },
+  {
+    "name": "missing role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5"
+      }
+    },
+    "error": "missing spatial role"
+  },
+  {
+    "name": "unknown role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6",
+        "space.touch.minimum": "foundation.space.8"
+      }
+    },
+    "error": "unknown variant"
+  },
+  {
+    "name": "empty path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "must not be empty"
+  },
+  {
+    "name": "non-string path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": 3,
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "unsupported version",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "schemaVersion must be 0.1.0"
+  }
+]

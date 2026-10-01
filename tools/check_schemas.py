@@ -62,6 +62,7 @@ def main():
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/material-assignments.schema.json",
+        "schemas/spatial-assignments.schema.json",
         "schemas/state-set.schema.json",
         "schemas/surface-form.schema.json",
         "schemas/treatment-stack.schema.json",
@@ -78,6 +79,7 @@ def main():
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/material-assignments.schema.json", "conformance/materials/role-assignment-vectors.json"),
+        ("schemas/spatial-assignments.schema.json", "conformance/spatial/assignment-vectors.json"),
         ("schemas/state-set.schema.json", "conformance/states/state-set-vectors.json"),
         ("schemas/surface-form.schema.json", "conformance/geometry/surface-form-vectors.json"),
         ("schemas/treatment-stack.schema.json", "conformance/materials/treatment-stack-vectors.json"),

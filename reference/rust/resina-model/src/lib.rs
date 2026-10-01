@@ -2,6 +2,8 @@ use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 
 mod color;
 pub use color::{ColorAssignments, ColorRole};
+mod spatial;
+pub use spatial::{SpatialAssignments, SpatialRole};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]

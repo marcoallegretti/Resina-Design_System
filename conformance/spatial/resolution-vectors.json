@@ -1,0 +1,248 @@
+[
+  {
+    "name": "resolved dimension roles",
+    "assignments": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "tokens": {
+      "foundation.space.0": {
+        "token_type": "dimension",
+        "value": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "foundation.space.1": {
+        "token_type": "dimension",
+        "value": {
+          "value": 4,
+          "unit": "px"
+        }
+      },
+      "foundation.space.2": {
+        "token_type": "dimension",
+        "value": {
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "foundation.space.3": {
+        "token_type": "dimension",
+        "value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "foundation.space.4": {
+        "token_type": "dimension",
+        "value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "foundation.space.5": {
+        "token_type": "dimension",
+        "value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "foundation.space.6": {
+        "token_type": "dimension",
+        "value": {
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    },
+    "expected": {
+      "space.control.inline": {
+        "value": 0,
+        "unit": "px"
+      },
+      "space.control.block": {
+        "value": 4,
+        "unit": "px"
+      },
+      "space.container.inner": {
+        "value": 8,
+        "unit": "px"
+      },
+      "space.container.outer": {
+        "value": 12,
+        "unit": "px"
+      },
+      "space.group": {
+        "value": 16,
+        "unit": "px"
+      },
+      "space.section": {
+        "value": 20,
+        "unit": "px"
+      },
+      "space.page": {
+        "value": 24,
+        "unit": "px"
+      }
+    }
+  },
+  {
+    "name": "missing and invalid roles",
+    "assignments": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "tokens": {
+      "foundation.space.1": {
+        "token_type": "color",
+        "value": "#fff"
+      },
+      "foundation.space.2": {
+        "token_type": "dimension",
+        "value": {
+          "value": -4,
+          "unit": "px"
+        }
+      },
+      "foundation.space.3": {
+        "token_type": "dimension",
+        "value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "foundation.space.4": {
+        "token_type": "dimension",
+        "value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "foundation.space.5": {
+        "token_type": "dimension",
+        "value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "foundation.space.6": {
+        "token_type": "dimension",
+        "value": {
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    },
+    "errors": [
+      {
+        "kind": "MissingToken",
+        "role": "space.control.inline",
+        "tokenPath": "foundation.space.0",
+        "detail": null
+      },
+      {
+        "kind": "WrongTokenType",
+        "role": "space.control.block",
+        "tokenPath": "foundation.space.1",
+        "detail": "color"
+      },
+      {
+        "kind": "NegativeDistance",
+        "role": "space.container.inner",
+        "tokenPath": "foundation.space.2",
+        "detail": null
+      }
+    ]
+  },
+  {
+    "name": "invalid dimension",
+    "assignments": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "tokens": {
+      "foundation.space.0": {
+        "token_type": "dimension",
+        "value": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "foundation.space.1": {
+        "token_type": "dimension",
+        "value": {
+          "value": 4,
+          "unit": "px"
+        }
+      },
+      "foundation.space.2": {
+        "token_type": "dimension",
+        "value": {
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "foundation.space.3": {
+        "token_type": "dimension",
+        "value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "foundation.space.4": {
+        "token_type": "dimension",
+        "value": {
+          "value": 4,
+          "unit": "em"
+        }
+      },
+      "foundation.space.5": {
+        "token_type": "dimension",
+        "value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "foundation.space.6": {
+        "token_type": "dimension",
+        "value": {
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    },
+    "errors": [
+      {
+        "kind": "InvalidDimensionValue",
+        "role": "space.group",
+        "tokenPath": "foundation.space.4",
+        "detail": "InvalidValue at #/$value/unit"
+      }
+    ]
+  }
+]
