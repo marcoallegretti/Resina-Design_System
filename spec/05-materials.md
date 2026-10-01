@@ -14,4 +14,4 @@ Each role maps to exactly one material family. Consumers MUST reject missing rol
 
 Role resolution is a lookup. Capability and accessibility fallback happens after the family is chosen and MUST NOT silently change the role assignment. The [conformance vectors](../conformance/materials/role-assignment-vectors.json) include one illustrative assignment and invalid cases; the illustrative assignment is not a required theme palette or product default. The Rust reference model implements this contract without a rendering dependency.
 
-Optical treatments are a separate axis. Their names and the initial nesting rule are defined in [Optical treatments and nesting](06-treatments.md).
+Optical treatments are a separate axis. Their names and the initial nesting rule are defined in [Optical treatments and nesting](06-optics.md).
