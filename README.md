@@ -7,3 +7,4 @@ The [blueprint](RESINA_DESIGN_SYSTEM_BLUEPRINT.md) describes the intended archit
 Current implemented scope: validation of platform-neutral environment snapshots and interaction state sets, strict semantic material role assignments and optical treatment nesting, Frost capability fallback, and headless resolution of DTCG token documents, including source parsing, structure, group extension, references, declared types, value shapes, and whole-token reference compatibility. Resina bundle compilation and rendering backends are not implemented yet.
 
 Run `cargo test --workspace --locked` to check the reference model and conformance cases.
+Run `python -m pip install -r tools/requirements-schema.txt` and `python tools/check_schemas.py` to check Draft 2020-12 schemas against applicable public vectors. Cross-field environment constraints remain covered by Rust validation.
