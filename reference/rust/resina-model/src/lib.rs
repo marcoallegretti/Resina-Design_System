@@ -1,5 +1,72 @@
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum InteractionState {
+    Rest,
+    Hover,
+    Focused,
+    Pressed,
+    Active,
+    Selected,
+    Checked,
+    Disabled,
+    Busy,
+    Dragging,
+    Error,
+    Warning,
+    Success,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(
+    rename_all = "camelCase",
+    deny_unknown_fields,
+    try_from = "StateSetInput"
+)]
+pub struct StateSet {
+    schema_version: String,
+    states: Vec<InteractionState>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct StateSetInput {
+    pub schema_version: String,
+    pub states: Vec<InteractionState>,
+}
+
+impl TryFrom<StateSetInput> for StateSet {
+    type Error = &'static str;
+
+    fn try_from(mut input: StateSetInput) -> Result<Self, Self::Error> {
+        if input.schema_version != "0.1.0" {
+            return Err("schemaVersion must be 0.1.0");
+        }
+        if input.states.is_empty() {
+            return Err("states must not be empty");
+        }
+        input.states.sort_unstable();
+        if input.states.windows(2).any(|pair| pair[0] == pair[1]) {
+            return Err("states must not contain duplicates");
+        }
+        Ok(Self {
+            schema_version: input.schema_version,
+            states: input.states,
+        })
+    }
+}
+
+impl StateSet {
+    pub fn states(&self) -> &[InteractionState] {
+        &self.states
+    }
+
+    pub fn contains(&self, state: InteractionState) -> bool {
+        self.states.binary_search(&state).is_ok()
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum MaterialFamily {
@@ -128,6 +195,39 @@ fn deserialize_structural_material<'de, D: Deserializer<'de>>(
 mod tests {
     use super::*;
     use serde_json::{Value, json};
+
+    #[test]
+    fn state_set_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/states/state-set-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let result = serde_json::from_value::<StateSet>(vector["document"].clone());
+            if let Some(expected) = vector.get("expected") {
+                let states = result.unwrap();
+                assert_eq!(
+                    serde_json::to_value(states.states()).unwrap(),
+                    *expected,
+                    "{}",
+                    vector["name"]
+                );
+                assert!(states.contains(states.states()[0]));
+                let encoded = serde_json::to_value(&states).unwrap();
+                assert_eq!(encoded["states"], *expected);
+                assert_eq!(serde_json::from_value::<StateSet>(encoded).unwrap(), states);
+            } else {
+                let error = result.unwrap_err();
+                assert!(
+                    error
+                        .to_string()
+                        .contains(vector["error"].as_str().unwrap()),
+                    "{}: {error}",
+                    vector["name"]
+                );
+            }
+        }
+    }
 
     #[test]
     fn material_assignment_conformance_vectors() {

@@ -1,0 +1,47 @@
+[
+  {
+    "name": "explicit rest",
+    "document": {"schemaVersion": "0.1.0", "states": ["rest"]},
+    "expected": ["rest"]
+  },
+  {
+    "name": "focus selection and hover coexist",
+    "document": {"schemaVersion": "0.1.0", "states": ["selected", "focused", "hover"]},
+    "expected": ["hover", "focused", "selected"]
+  },
+  {
+    "name": "busy and disabled coexist at the generic layer",
+    "document": {"schemaVersion": "0.1.0", "states": ["busy", "disabled", "error"]},
+    "expected": ["disabled", "busy", "error"]
+  },
+  {
+    "name": "base rest and hover can coexist in the generic model",
+    "document": {"schemaVersion": "0.1.0", "states": ["rest", "hover"]},
+    "expected": ["rest", "hover"]
+  },
+  {
+    "name": "empty state set is invalid",
+    "document": {"schemaVersion": "0.1.0", "states": []},
+    "error": "states must not be empty"
+  },
+  {
+    "name": "duplicate state is invalid",
+    "document": {"schemaVersion": "0.1.0", "states": ["focused", "focused"]},
+    "error": "duplicates"
+  },
+  {
+    "name": "unknown state is invalid",
+    "document": {"schemaVersion": "0.1.0", "states": ["hovered"]},
+    "error": "unknown variant"
+  },
+  {
+    "name": "unknown member is invalid",
+    "document": {"schemaVersion": "0.1.0", "states": ["rest"], "component": "button"},
+    "error": "unknown field"
+  },
+  {
+    "name": "unsupported version is invalid",
+    "document": {"schemaVersion": "0.2.0", "states": ["rest"]},
+    "error": "schemaVersion must be 0.1.0"
+  }
+]
