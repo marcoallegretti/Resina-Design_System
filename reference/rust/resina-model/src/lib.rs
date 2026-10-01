@@ -78,6 +78,71 @@ pub enum MaterialFamily {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum OpticalTreatment {
+    None,
+    Lens,
+    FocusLens,
+    HighlightLens,
+}
+
+impl OpticalTreatment {
+    fn is_lens(self) -> bool {
+        matches!(self, Self::Lens | Self::FocusLens | Self::HighlightLens)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(
+    rename_all = "camelCase",
+    deny_unknown_fields,
+    try_from = "TreatmentStackInput"
+)]
+pub struct TreatmentStack {
+    schema_version: String,
+    treatments: Vec<OpticalTreatment>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TreatmentStackInput {
+    pub schema_version: String,
+    pub treatments: Vec<OpticalTreatment>,
+}
+
+impl TryFrom<TreatmentStackInput> for TreatmentStack {
+    type Error = &'static str;
+
+    fn try_from(input: TreatmentStackInput) -> Result<Self, Self::Error> {
+        if input.schema_version != "0.1.0" {
+            return Err("schemaVersion must be 0.1.0");
+        }
+        if input.treatments.is_empty() {
+            return Err("treatments must not be empty");
+        }
+        if input
+            .treatments
+            .iter()
+            .filter(|item| item.is_lens())
+            .count()
+            > 1
+        {
+            return Err("lens treatments cannot be nested");
+        }
+        Ok(Self {
+            schema_version: input.schema_version,
+            treatments: input.treatments,
+        })
+    }
+}
+
+impl TreatmentStack {
+    pub fn treatments(&self) -> &[OpticalTreatment] {
+        &self.treatments
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum FrostRepresentation {
     ShapedBackdrop,
     RegularBackdrop,
@@ -195,6 +260,40 @@ fn deserialize_structural_material<'de, D: Deserializer<'de>>(
 mod tests {
     use super::*;
     use serde_json::{Value, json};
+
+    #[test]
+    fn treatment_stack_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/materials/treatment-stack-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let result = serde_json::from_value::<TreatmentStack>(vector["document"].clone());
+            if let Some(expected) = vector.get("expected") {
+                let stack = result.unwrap();
+                assert_eq!(
+                    serde_json::to_value(stack.treatments()).unwrap(),
+                    *expected,
+                    "{}",
+                    vector["name"]
+                );
+                assert_eq!(
+                    serde_json::from_value::<TreatmentStack>(serde_json::to_value(&stack).unwrap())
+                        .unwrap(),
+                    stack
+                );
+            } else {
+                let error = result.unwrap_err();
+                assert!(
+                    error
+                        .to_string()
+                        .contains(vector["error"].as_str().unwrap()),
+                    "{}: {error}",
+                    vector["name"]
+                );
+            }
+        }
+    }
 
     #[test]
     fn state_set_conformance_vectors() {

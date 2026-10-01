@@ -1,0 +1,7 @@
+# Optical treatments and nesting (candidate, schema 0.1.0)
+
+An optical treatment modifies a surface independently of its material family. The initial treatments are `none`, `lens`, `focusLens`, and `highlightLens`. A treatment names design intent, not a shader, compositor effect, or toolkit object. The machine-readable nested-stack contract is [treatment-stack.schema.json](../schemas/treatment-stack.schema.json).
+
+The `treatments` array describes one ancestor chain of surfaces from outermost to innermost. It MUST be nonempty and each item MUST be one of the four names above. `none` is an explicit untreated surface. A chain MAY contain zero or one Lens-family treatment; `lens`, `focusLens`, and `highlightLens` all count as Lens-family treatments. Two such treatments on one chain are invalid even when an untreated surface lies between them. Sibling surfaces are separate chains and are validated separately. A producer MUST use `schemaVersion` `0.1.0`; missing or unknown members, unknown treatments, and unsupported versions are invalid.
+
+This contract implements the blueprint's `Lens over Lens` prohibition. It does not prescribe how a Lens-family treatment is drawn or how it falls back when capabilities are absent. Those decisions require capability-specific rules and conformance vectors. The [stack vectors](../conformance/materials/treatment-stack-vectors.json) cover valid chains and diagnostic failures.

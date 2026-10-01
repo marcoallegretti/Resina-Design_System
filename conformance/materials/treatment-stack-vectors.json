@@ -1,0 +1,47 @@
+[
+  {
+    "name": "none and one lens may appear on a chain",
+    "document": {"schemaVersion": "0.1.0", "treatments": ["none", "lens", "none"]},
+    "expected": ["none", "lens", "none"]
+  },
+  {
+    "name": "focus lens is a lens-family treatment",
+    "document": {"schemaVersion": "0.1.0", "treatments": ["focusLens"]},
+    "expected": ["focusLens"]
+  },
+  {
+    "name": "no lens is valid",
+    "document": {"schemaVersion": "0.1.0", "treatments": ["none", "none"]},
+    "expected": ["none", "none"]
+  },
+  {
+    "name": "nested lens treatments are invalid even with an untreated layer",
+    "document": {"schemaVersion": "0.1.0", "treatments": ["lens", "none", "highlightLens"]},
+    "error": "lens treatments cannot be nested"
+  },
+  {
+    "name": "duplicate lens treatment is invalid",
+    "document": {"schemaVersion": "0.1.0", "treatments": ["focusLens", "focusLens"]},
+    "error": "lens treatments cannot be nested"
+  },
+  {
+    "name": "empty stack is invalid",
+    "document": {"schemaVersion": "0.1.0", "treatments": []},
+    "error": "treatments must not be empty"
+  },
+  {
+    "name": "unknown treatment is invalid",
+    "document": {"schemaVersion": "0.1.0", "treatments": ["blur"]},
+    "error": "unknown variant"
+  },
+  {
+    "name": "unknown member is invalid",
+    "document": {"schemaVersion": "0.1.0", "treatments": ["none"], "extra": true},
+    "error": "unknown field"
+  },
+  {
+    "name": "unsupported version is invalid",
+    "document": {"schemaVersion": "0.2.0", "treatments": ["none"]},
+    "error": "schemaVersion must be 0.1.0"
+  }
+]
