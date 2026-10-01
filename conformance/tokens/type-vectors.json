@@ -1,0 +1,74 @@
+[
+  {
+    "name": "explicit type overrides group",
+    "document": {"$type": "color", "size": {"$type": "dimension", "$value": {"value": 2, "unit": "rem"}}},
+    "path": "size",
+    "expected": "dimension"
+  },
+  {
+    "name": "closest group type wins",
+    "document": {"$type": "number", "motion": {"$type": "duration", "fast": {"$value": {"value": 100, "unit": "ms"}}}},
+    "path": "motion.fast",
+    "expected": "duration"
+  },
+  {
+    "name": "parent group type is inherited",
+    "document": {"$type": "number", "nested": {"deeper": {"value": {"$value": 2}}}},
+    "path": "nested.deeper.value",
+    "expected": "number"
+  },
+  {
+    "name": "alias type precedes group type",
+    "document": {"$type": "number", "base": {"$type": "color", "$value": {"colorSpace": "srgb", "components": [1, 0, 0]}}, "alias": {"$value": "{base}"}},
+    "path": "alias",
+    "expected": "color"
+  },
+  {
+    "name": "chained alias type",
+    "document": {"base": {"$type": "number", "$value": 2}, "middle": {"$value": "{base}"}, "top": {"$value": "{middle}"}},
+    "path": "top",
+    "expected": "number"
+  },
+  {
+    "name": "token pointer alias type",
+    "document": {"base": {"$type": "number", "$value": 2}, "alias": {"$ref": "#/base/$value"}},
+    "path": "alias",
+    "expected": "number"
+  },
+  {
+    "name": "property pointer uses declared group type",
+    "document": {"$type": "number", "base": {"$type": "color", "$value": {"colorSpace": "srgb", "components": [1, 0, 0]}}, "alias": {"$ref": "#/base/$value/components/0"}},
+    "path": "alias",
+    "expected": "number"
+  },
+  {
+    "name": "root token inherits root group type",
+    "document": {"$type": "number", "$root": {"$value": 1}},
+    "path": "$root",
+    "expected": "number"
+  },
+  {
+    "name": "extended group type is inherited",
+    "document": {"base": {"$type": "dimension", "space": {"$value": {"value": 2, "unit": "rem"}}}, "derived": {"$extends": "{base}", "gap": {"$value": {"value": 3, "unit": "px"}}}},
+    "path": "derived.gap",
+    "expected": "dimension"
+  },
+  {
+    "name": "missing type",
+    "document": {"plain": {"$value": 2}},
+    "path": "plain",
+    "error": "MissingType"
+  },
+  {
+    "name": "circular type alias",
+    "document": {"a": {"$value": "{b}"}, "b": {"$value": "{a}"}},
+    "path": "a",
+    "error": "CircularReference"
+  },
+  {
+    "name": "group is not token",
+    "document": {"group": {"token": {"$type": "number", "$value": 1}}},
+    "path": "group",
+    "error": "NonTokenTarget"
+  }
+]

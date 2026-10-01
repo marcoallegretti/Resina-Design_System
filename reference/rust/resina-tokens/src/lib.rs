@@ -3,9 +3,11 @@ use std::fmt;
 
 mod extensions;
 mod structure;
+mod types;
 
 pub use extensions::{ExtensionError, ExtensionErrorKind, materialize_group_extensions};
 pub use structure::{StructureError, StructureErrorKind, validate_document_structure};
+pub use types::{TypeError, TypeErrorKind, resolve_token_type};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResolveErrorKind {
