@@ -130,6 +130,36 @@ fn accessibility_and_input_capabilities_change_only_their_outputs() {
 }
 
 #[test]
+fn output_preserves_source_color_and_publishes_its_portable_fallback() {
+    let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+    let source_color = json!({
+        "colorSpace": "display-p3",
+        "components": [0.2, 0.4, 0.6],
+        "hex": "#336699",
+        "alpha": 0.35
+    });
+    request["tokens"]["palette"]["wide"] = json!({"$value": source_color});
+    request["colorAssignments"]["roles"]["focus"] = json!("palette.wide");
+
+    let output = run_stdin(&request.to_string());
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(result["colors"]["focus"], source_color);
+    assert_eq!(
+        result["colorFallbacks"]["focus"],
+        json!({"colorSpace":"srgb","components":[0.2,0.4,0.6],"alpha":0.35})
+    );
+    assert_eq!(
+        result["colorFallbacks"].as_object().unwrap().len(),
+        result["colors"].as_object().unwrap().len()
+    );
+}
+
+#[test]
 fn usage_error_has_distinct_exit_status() {
     let output = Command::new(env!("CARGO_BIN_EXE_resina-headless"))
         .output()

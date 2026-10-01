@@ -1,6 +1,6 @@
 use crate::{
     ColorResolutionError, ColorRoleFallbackError, MinimumHitTarget, ResolvedTypography,
-    SpatialResolutionError, TypographyResolutionError, resolve_frost_representation,
+    SpatialResolutionError, SrgbFallback, TypographyResolutionError, resolve_frost_representation,
     resolve_minimum_hit_target, resolve_semantic_color_fallbacks, resolve_semantic_colors,
     resolve_semantic_space, resolve_semantic_typography,
 };
@@ -32,6 +32,7 @@ pub struct HeadlessResolution {
     schema_version: &'static str,
     materials: BTreeMap<MaterialRole, MaterialFamily>,
     colors: BTreeMap<ColorRole, Value>,
+    color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
     space: BTreeMap<SpatialRole, Value>,
     typography: BTreeMap<TypographyRole, ResolvedTypography>,
     frost_representation: FrostRepresentation,
@@ -45,6 +46,10 @@ impl HeadlessResolution {
 
     pub fn colors(&self) -> &BTreeMap<ColorRole, Value> {
         &self.colors
+    }
+
+    pub fn color_fallbacks(&self) -> &BTreeMap<ColorRole, SrgbFallback> {
+        &self.color_fallbacks
     }
 
     pub fn space(&self) -> &BTreeMap<SpatialRole, Value> {
@@ -156,16 +161,17 @@ pub fn resolve_headless_source(
     if let Err(found) = &typography {
         errors.extend(found.iter().cloned().map(HeadlessBindingError::Typography));
     }
-    match (colors, space, typography) {
-        (Ok(colors), Ok(space), Ok(typography)) if errors.is_empty() => {
+    match (colors, color_fallbacks, space, typography) {
+        (Ok(colors), Some(Ok(color_fallbacks)), Ok(space), Ok(typography)) if errors.is_empty() => {
             let materials = MaterialRole::ALL
                 .into_iter()
                 .map(|role| (role, request.material_assignments.material_for(role)))
                 .collect();
             Ok(HeadlessResolution {
-                schema_version: "0.1.0",
+                schema_version: "0.2.0",
                 materials,
                 colors,
+                color_fallbacks,
                 space,
                 typography,
                 frost_representation: resolve_frost_representation(

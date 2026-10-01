@@ -102,6 +102,7 @@ def main():
         "schemas/typography-assignments.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
         "schemas/versions/environment-0.1.0.schema.json",
+        "schemas/versions/headless-result-0.1.0.schema.json",
     }
     actual_paths = {path.relative_to(ROOT).as_posix() for path in schema_paths}
     if actual_paths != expected_paths:
@@ -140,7 +141,7 @@ def main():
     check_case(result_schema, "headless result", expected_result, True)
     checked += 1
     for name, path, value in (
-        ("version", ("schemaVersion",), "0.2.0"),
+        ("version", ("schemaVersion",), "0.1.0"),
         ("structural gel", ("materials", "surface.base"), "gel"),
         ("color range", ("colors", "focus", "components", 0), 1.5),
         ("negative space", ("space", "space.page", "value"), -1),
@@ -148,6 +149,13 @@ def main():
         ("weight range", ("typography", "body", "fontWeight"), 1001),
         ("hit target pair", ("minimumHitTarget", "minimumHeight"), 24),
         ("unknown member", ("rendererName",), "example"),
+        ("fallback channel", ("colorFallbacks", "focus", "components", 0), 1.5),
+        ("fallback space", ("colorFallbacks", "focus", "colorSpace"), "display-p3"),
+        (
+            "unknown fallback role",
+            ("colorFallbacks", "unknown"),
+            expected_result["colorFallbacks"]["focus"],
+        ),
     ):
         document = copy.deepcopy(expected_result)
         target = document
@@ -161,8 +169,21 @@ def main():
     check_case(result_schema, "headless result missing color", missing_color, False)
     checked += 1
 
+    missing_fallback = copy.deepcopy(expected_result)
+    missing_fallback["colorFallbacks"].pop("focus")
+    check_case(result_schema, "headless result missing fallback role", missing_fallback, False)
+    checked += 1
+
+    previous_result = validator_for("schemas/versions/headless-result-0.1.0.schema.json")
+    archived_result = copy.deepcopy(expected_result)
+    archived_result["schemaVersion"] = "0.1.0"
+    archived_result.pop("colorFallbacks")
+    check_case(previous_result, "headless result 0.1.0 archive", archived_result, True)
+    check_case(result_schema, "current result rejects 0.1.0 archive", archived_result, False)
+    checked += 2
+
     color_value = Draft202012Validator(
-        {"$ref": "urn:resina:schema:headless-result:0.1.0#/$defs/color"},
+        {"$ref": "urn:resina:schema:headless-result:0.2.0#/$defs/color"},
         registry=schema_registry(),
     )
     for vector in load_json(ROOT / "conformance/tokens/primitive-value-vectors.json"):

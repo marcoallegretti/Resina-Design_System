@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "materials": {
     "surface.base": "cast",
     "surface.content": "cast",
@@ -165,6 +165,179 @@
         0.2,
         0.3
       ]
+    }
+  },
+  "colorFallbacks": {
+    "accent.primary": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "accent.secondary": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "accent.tertiary": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "surface.base": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "surface.low": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "surface.high": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "surface.chrome": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "content.primary": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "content.secondary": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "content.muted": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "content.inverse": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "outline": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "outline.strong": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "status.error": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "status.warning": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "status.success": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "status.info": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "focus": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
+    },
+    "selection": {
+      "colorSpace": "srgb",
+      "components": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "alpha": 1.0
     }
   },
   "space": {
