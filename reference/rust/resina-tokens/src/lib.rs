@@ -4,10 +4,12 @@ use std::fmt;
 mod extensions;
 mod structure;
 mod types;
+mod values;
 
 pub use extensions::{ExtensionError, ExtensionErrorKind, materialize_group_extensions};
 pub use structure::{StructureError, StructureErrorKind, validate_document_structure};
 pub use types::{TypeError, TypeErrorKind, resolve_token_type};
+pub use values::{ValueError, ValueErrorKind, validate_resolved_primitive_value};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResolveErrorKind {
