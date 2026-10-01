@@ -131,41 +131,50 @@ pub struct EnvironmentSnapshot {
     quality_policy: QualityPolicy,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct RawEnvironmentSnapshot {
-    schema_version: String,
-    geometry: Geometry,
-    scale: f64,
-    text_scale: f64,
-    input_capabilities: Vec<InputCapability>,
-    viewing_profile: ViewingProfile,
-    density_preference: DensityPreference,
-    accessibility_preferences: AccessibilityPreferences,
-    locale: String,
-    layout_direction: LayoutDirection,
-    renderer_capabilities: RendererCapabilities,
-    quality_policy: QualityPolicy,
+pub struct EnvironmentSnapshotInput {
+    pub schema_version: String,
+    pub geometry: Geometry,
+    pub scale: f64,
+    pub text_scale: f64,
+    pub input_capabilities: Vec<InputCapability>,
+    pub viewing_profile: ViewingProfile,
+    pub density_preference: DensityPreference,
+    pub accessibility_preferences: AccessibilityPreferences,
+    pub locale: String,
+    pub layout_direction: LayoutDirection,
+    pub renderer_capabilities: RendererCapabilities,
+    pub quality_policy: QualityPolicy,
 }
 
 impl<'de> Deserialize<'de> for EnvironmentSnapshot {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let raw = RawEnvironmentSnapshot::deserialize(deserializer)?;
+        EnvironmentSnapshotInput::deserialize(deserializer)?
+            .try_into()
+            .map_err(serde::de::Error::custom)
+    }
+}
+
+impl TryFrom<EnvironmentSnapshotInput> for EnvironmentSnapshot {
+    type Error = &'static str;
+
+    fn try_from(input: EnvironmentSnapshotInput) -> Result<Self, Self::Error> {
         let snapshot = Self {
-            schema_version: raw.schema_version,
-            geometry: raw.geometry,
-            scale: raw.scale,
-            text_scale: raw.text_scale,
-            input_capabilities: raw.input_capabilities,
-            viewing_profile: raw.viewing_profile,
-            density_preference: raw.density_preference,
-            accessibility_preferences: raw.accessibility_preferences,
-            locale: raw.locale,
-            layout_direction: raw.layout_direction,
-            renderer_capabilities: raw.renderer_capabilities,
-            quality_policy: raw.quality_policy,
+            schema_version: input.schema_version,
+            geometry: input.geometry,
+            scale: input.scale,
+            text_scale: input.text_scale,
+            input_capabilities: input.input_capabilities,
+            viewing_profile: input.viewing_profile,
+            density_preference: input.density_preference,
+            accessibility_preferences: input.accessibility_preferences,
+            locale: input.locale,
+            layout_direction: input.layout_direction,
+            renderer_capabilities: input.renderer_capabilities,
+            quality_policy: input.quality_policy,
         };
-        snapshot.validate().map_err(serde::de::Error::custom)?;
+        snapshot.validate()?;
         Ok(snapshot)
     }
 }
@@ -417,7 +426,10 @@ mod tests {
             source["geometry"]["height"] = vector["height"].clone();
             let snapshot: EnvironmentSnapshot = serde_json::from_value(source).unwrap();
             let geometry = snapshot.geometry();
-            assert_eq!(geometry.aspect_ratio(), vector["aspectRatio"].as_f64().unwrap());
+            assert_eq!(
+                geometry.aspect_ratio(),
+                vector["aspectRatio"].as_f64().unwrap()
+            );
             let orientation = match geometry.orientation() {
                 Orientation::Portrait => "portrait",
                 Orientation::Landscape => "landscape",
@@ -457,5 +469,25 @@ mod tests {
             },
             "expected `ltr` or `rtl`",
         );
+    }
+
+    #[test]
+    fn typed_input_obeys_the_same_validation() {
+        let mut input: EnvironmentSnapshotInput = serde_json::from_value(valid()).unwrap();
+        input.scale = f64::NAN;
+        assert_eq!(
+            EnvironmentSnapshot::try_from(input.clone()).unwrap_err(),
+            "scale must be finite and greater than zero"
+        );
+
+        input.scale = 1.0;
+        input.geometry.width = f64::INFINITY;
+        assert_eq!(
+            EnvironmentSnapshot::try_from(input.clone()).unwrap_err(),
+            "geometry.width must be finite and greater than zero"
+        );
+
+        input.geometry.width = 1280.0;
+        assert!(EnvironmentSnapshot::try_from(input).is_ok());
     }
 }
