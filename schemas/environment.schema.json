@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:environment:0.1.0",
+  "title": "Resina Environment Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "geometry", "scale", "textScale", "inputCapabilities", "viewingProfile", "densityPreference", "accessibilityPreferences", "locale", "layoutDirection", "rendererCapabilities", "qualityPolicy"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "safeArea"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "safeArea": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end", "top", "bottom"],
+          "properties": {
+            "start": { "type": "number", "minimum": 0 },
+            "end": { "type": "number", "minimum": 0 },
+            "top": { "type": "number", "minimum": 0 },
+            "bottom": { "type": "number", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "scale": { "type": "number", "exclusiveMinimum": 0 },
+    "textScale": { "type": "number", "exclusiveMinimum": 0 },
+    "inputCapabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["finePointer", "coarsePointer", "hover", "directTouch", "stylus", "keyboard", "directionalNavigation", "gamepad", "voiceAction"] }
+    },
+    "viewingProfile": { "enum": ["near", "desk", "couch", "unknown"] },
+    "densityPreference": { "enum": ["compact", "standard", "comfortable", "immersive"] },
+    "accessibilityPreferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reducedMotion", "reducedTransparency", "highContrast"],
+      "properties": {
+        "reducedMotion": { "type": "boolean" },
+        "reducedTransparency": { "type": "boolean" },
+        "highContrast": { "type": "boolean" }
+      }
+    },
+    "locale": { "type": "string", "minLength": 1 },
+    "layoutDirection": { "enum": ["ltr", "rtl"] },
+    "rendererCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gradients", "innerShadow", "advancedShadow", "sdfShapes", "backdropEffect", "backdropBlur", "shapedBackdrop", "dynamicLighting", "deformation", "masks", "customShader", "wideGamut", "hdr"],
+      "properties": {
+        "gradients": { "type": "boolean" },
+        "innerShadow": { "type": "boolean" },
+        "advancedShadow": { "type": "boolean" },
+        "sdfShapes": { "type": "boolean" },
+        "backdropEffect": { "type": "boolean" },
+        "backdropBlur": { "type": "boolean" },
+        "shapedBackdrop": { "type": "boolean" },
+        "dynamicLighting": { "type": "boolean" },
+        "deformation": { "type": "boolean" },
+        "masks": { "type": "boolean" },
+        "customShader": { "type": "boolean" },
+        "wideGamut": { "type": "boolean" },
+        "hdr": { "type": "boolean" }
+      }
+    },
+    "qualityPolicy": { "enum": ["economy", "balanced", "full"] }
+  },
+  "$comment": "Safe-area sums are specified in spec/18-environment.md and validated by the reference model; JSON Schema cannot express cross-field addition."
+}

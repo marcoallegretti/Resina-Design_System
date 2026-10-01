@@ -1,0 +1,7 @@
+/target/
+/.ocr/
+/.claude/
+/.codex/
+/int_docs/
+/AGENTS.md
+/CLAUDE.md

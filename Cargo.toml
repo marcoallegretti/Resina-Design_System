@@ -1,0 +1,3 @@
+[workspace]
+members = ["reference/rust/resina-environment"]
+resolver = "2"
