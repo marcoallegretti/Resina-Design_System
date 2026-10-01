@@ -157,6 +157,19 @@ def main():
         check_case(environment, f"density: {vector['name']}", document, True)
         checked += 1
 
+    for vector in load_json(ROOT / "conformance/interaction/target-minimum-vectors.json"):
+        document = copy.deepcopy(density_base)
+        for field in (
+            "inputCapabilities",
+            "densityPreference",
+            "viewingProfile",
+            "textScale",
+            "qualityPolicy",
+        ):
+            document[field] = vector[field]
+        check_case(environment, f"target minimum: {vector['name']}", document, True)
+        checked += 1
+
     previous = validator_for("schemas/versions/environment-0.1.0.schema.json")
     current = load_json(ROOT / "conformance/environment/valid-mixed-input.json")
     missing_capability = copy.deepcopy(current)

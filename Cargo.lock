@@ -55,6 +55,7 @@ dependencies = [
  "resina-environment",
  "resina-model",
  "resina-tokens",
+ "serde",
  "serde_json",
 ]
 

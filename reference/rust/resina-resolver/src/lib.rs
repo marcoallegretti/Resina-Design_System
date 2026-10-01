@@ -6,6 +6,8 @@ use std::{collections::BTreeMap, fmt};
 
 mod spatial;
 pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
+mod target;
+pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ColorResolutionErrorKind {

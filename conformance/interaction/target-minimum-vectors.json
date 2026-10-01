@@ -1,0 +1,74 @@
+[
+  {
+    "name": "fine pointer baseline",
+    "inputCapabilities": ["finePointer", "hover", "keyboard"],
+    "densityPreference": "standard",
+    "viewingProfile": "desk",
+    "textScale": 1,
+    "qualityPolicy": "full",
+    "expected": { "minimumWidth": 24, "minimumHeight": 24 }
+  },
+  {
+    "name": "stylus does not imply coarse pointer",
+    "inputCapabilities": ["stylus"],
+    "densityPreference": "compact",
+    "viewingProfile": "near",
+    "textScale": 2,
+    "qualityPolicy": "economy",
+    "expected": { "minimumWidth": 24, "minimumHeight": 24 }
+  },
+  {
+    "name": "unreported input retains baseline",
+    "inputCapabilities": [],
+    "densityPreference": "comfortable",
+    "viewingProfile": "unknown",
+    "textScale": 1,
+    "qualityPolicy": "balanced",
+    "expected": { "minimumWidth": 24, "minimumHeight": 24 }
+  },
+  {
+    "name": "coarse pointer overrides compact density",
+    "inputCapabilities": ["coarsePointer"],
+    "densityPreference": "compact",
+    "viewingProfile": "desk",
+    "textScale": 1,
+    "qualityPolicy": "economy",
+    "expected": { "minimumWidth": 48, "minimumHeight": 48 }
+  },
+  {
+    "name": "direct touch without coarse pointer",
+    "inputCapabilities": ["directTouch"],
+    "densityPreference": "standard",
+    "viewingProfile": "near",
+    "textScale": 1.25,
+    "qualityPolicy": "full",
+    "expected": { "minimumWidth": 48, "minimumHeight": 48 }
+  },
+  {
+    "name": "mixed fine pointer and touch retain touch minimum",
+    "inputCapabilities": ["finePointer", "hover", "directTouch", "keyboard"],
+    "densityPreference": "compact",
+    "viewingProfile": "desk",
+    "textScale": 2,
+    "qualityPolicy": "balanced",
+    "expected": { "minimumWidth": 48, "minimumHeight": 48 }
+  },
+  {
+    "name": "gamepad and couch do not imply touch",
+    "inputCapabilities": ["gamepad", "directionalNavigation"],
+    "densityPreference": "immersive",
+    "viewingProfile": "couch",
+    "textScale": 1.5,
+    "qualityPolicy": "full",
+    "expected": { "minimumWidth": 24, "minimumHeight": 24 }
+  },
+  {
+    "name": "mixed coarse and gamepad retain coarse minimum",
+    "inputCapabilities": ["coarsePointer", "gamepad", "directionalNavigation"],
+    "densityPreference": "immersive",
+    "viewingProfile": "couch",
+    "textScale": 1,
+    "qualityPolicy": "economy",
+    "expected": { "minimumWidth": 48, "minimumHeight": 48 }
+  }
+]
