@@ -160,6 +160,33 @@ fn output_preserves_source_color_and_publishes_its_portable_fallback() {
 }
 
 #[test]
+fn numeric_oklab_color_resolves_without_authored_hex() {
+    let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+    let source_color = json!({"colorSpace":"oklab","components":[0.5,0,0],"alpha":0.4});
+    request["tokens"]["palette"]["neutral"] = json!({"$value": source_color});
+    request["colorAssignments"]["roles"]["focus"] = json!("palette.neutral");
+
+    let output = run_stdin(&request.to_string());
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(result["colors"]["focus"], source_color);
+    let fallback = &result["colorFallbacks"]["focus"];
+    assert_eq!(fallback["colorSpace"], "srgb");
+    assert_eq!(fallback["alpha"].as_f64(), Some(0.4));
+    for channel in fallback["components"].as_array().unwrap() {
+        assert!((channel.as_f64().unwrap() - 0.388572859046334).abs() < 1e-12);
+    }
+    assert_eq!(
+        result["colorFallbacks"].as_object().unwrap().len(),
+        result["colors"].as_object().unwrap().len()
+    );
+}
+
+#[test]
 fn usage_error_has_distinct_exit_status() {
     let output = Command::new(env!("CARGO_BIN_EXE_resina-headless"))
         .output()

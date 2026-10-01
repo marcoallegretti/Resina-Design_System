@@ -1,3 +1,4 @@
+use crate::{ColorConversionError, oklab_to_extended_srgb};
 use resina_tokens::{ValueError, validate_resolved_value};
 use serde::Serialize;
 use serde_json::Value;
@@ -27,6 +28,8 @@ pub enum ColorFallbackError {
     MissingHexFallback,
     InconsistentSrgbHex,
     MalformedHexFallback,
+    OklabConversion(ColorConversionError),
+    OutOfGamutOklab,
 }
 
 impl fmt::Display for ColorFallbackError {
@@ -40,6 +43,10 @@ impl fmt::Display for ColorFallbackError {
                 formatter.write_str("sRGB hex fallback differs from source components")
             }
             Self::MalformedHexFallback => formatter.write_str("malformed sRGB hex fallback"),
+            Self::OklabConversion(error) => write!(formatter, "Oklab conversion failed: {error}"),
+            Self::OutOfGamutOklab => {
+                formatter.write_str("Oklab color converts outside the sRGB gamut")
+            }
         }
     }
 }
@@ -70,9 +77,26 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
         return Err(ColorFallbackError::InconsistentSrgbHex);
     }
     let components = match (numeric_srgb, authored_hex) {
-        (Some(source), Some(_)) => source,
-        (Some(source), None) => source,
+        (Some(source), _) => source,
         (None, Some(fallback)) => fallback,
+        (None, None) if value["colorSpace"] == "oklab" => {
+            let source = value["components"].as_array().and_then(|items| {
+                Some([items[0].as_f64()?, items[1].as_f64()?, items[2].as_f64()?])
+            });
+            let Some(source) = source else {
+                return Err(ColorFallbackError::MissingHexFallback);
+            };
+            let converted =
+                oklab_to_extended_srgb(source).map_err(ColorFallbackError::OklabConversion)?;
+            const ROUNDING_TOLERANCE: f64 = 1e-12;
+            if converted
+                .iter()
+                .any(|channel| !(-ROUNDING_TOLERANCE..=1.0 + ROUNDING_TOLERANCE).contains(channel))
+            {
+                return Err(ColorFallbackError::OutOfGamutOklab);
+            }
+            converted.map(|channel| channel.clamp(0.0, 1.0))
+        }
         (None, None) => return Err(ColorFallbackError::MissingHexFallback),
     };
     Ok(SrgbFallback {
@@ -106,12 +130,26 @@ mod tests {
         for vector in vectors {
             let result = resolve_srgb_fallback(&vector["value"]);
             if let Some(expected) = vector.get("expected") {
-                assert_eq!(
-                    serde_json::to_value(result.unwrap()).unwrap(),
-                    *expected,
-                    "{}",
-                    vector["name"]
-                );
+                let actual = serde_json::to_value(result.unwrap()).unwrap();
+                if let Some(tolerance) = vector.get("tolerance") {
+                    let tolerance = tolerance.as_f64().unwrap();
+                    assert_eq!(actual["colorSpace"], expected["colorSpace"]);
+                    assert_eq!(
+                        actual["alpha"].as_f64().unwrap(),
+                        expected["alpha"].as_f64().unwrap()
+                    );
+                    for index in 0..3 {
+                        let actual_channel = actual["components"][index].as_f64().unwrap();
+                        let expected_channel = expected["components"][index].as_f64().unwrap();
+                        assert!(
+                            (actual_channel - expected_channel).abs() <= tolerance,
+                            "{}: channel {index}",
+                            vector["name"]
+                        );
+                    }
+                } else {
+                    assert_eq!(actual, *expected, "{}", vector["name"]);
+                }
             } else {
                 let error = result.unwrap_err();
                 let kind = match error {
@@ -119,6 +157,8 @@ mod tests {
                     ColorFallbackError::MissingHexFallback => "MissingHexFallback",
                     ColorFallbackError::InconsistentSrgbHex => "InconsistentSrgbHex",
                     ColorFallbackError::MalformedHexFallback => "MalformedHexFallback",
+                    ColorFallbackError::OklabConversion(_) => "OklabConversion",
+                    ColorFallbackError::OutOfGamutOklab => "OutOfGamutOklab",
                 };
                 assert_eq!(
                     kind,
