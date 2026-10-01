@@ -8,6 +8,8 @@ Resina organizes authoring tokens into foundation, semantic, and occasional comp
 
 Group extensions and token-set composition are processed before a token's aliases are resolved. Reference resolution does not itself validate the resolved value's declared type; type validation MUST follow before a token enters a Resina bundle. The [reference vectors](../conformance/tokens/reference-vectors.json) cover whole-token aliases, property references, escaped JSON Pointers, cycles, and invalid targets.
 
+For `$extends`, a local token definition replaces the complete inherited token at the same path. Local and inherited groups merge recursively; local group metadata replaces inherited metadata at the same property. Extension targets MUST be groups, and inheritance cycles are invalid. The [extension vectors](../conformance/tokens/extension-vectors.json) define these outcomes and errors.
+
 The [structure vectors](../conformance/tokens/structure-vectors.json) cover group and token shape, metadata, reserved names, and root tokens. Structural validation alone does not establish DTCG conformance: extension targets, inherited types, and each declared value type also require validation.
 
 The [DTCG Resolver Module 2025.10](https://www.designtokens.org/TR/2025.10/resolver/) is also a stable Community Group report. Its token-set and modifier composition may be useful for authoring themes. It does not define Resina's resolution of material roles, environment, component state, accessibility, renderer capabilities, quality policy, or fallbacks into Resina IR. The Resina resolver MUST define those decisions independently. A future token-set integration MAY consume DTCG resolver output as input, without changing this boundary.

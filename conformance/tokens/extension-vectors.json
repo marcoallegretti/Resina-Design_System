@@ -1,0 +1,81 @@
+[
+  {
+    "name": "deep merge replaces token definitions and group metadata",
+    "document": {
+      "base": {
+        "$type": "dimension",
+        "$extensions": { "org.example.source": "base" },
+        "control": {
+          "width": { "$value": { "value": 12, "unit": "px" }, "$description": "Base width" },
+          "height": { "$value": { "value": 20, "unit": "px" } }
+        }
+      },
+      "derived": {
+        "$extends": "{base}",
+        "$extensions": { "org.example.source": "derived" },
+        "control": {
+          "width": { "$value": { "value": 16, "unit": "px" } },
+          "gap": { "$value": { "value": 4, "unit": "px" } }
+        }
+      }
+    },
+    "expected": {
+      "base": {
+        "$type": "dimension",
+        "$extensions": { "org.example.source": "base" },
+        "control": {
+          "width": { "$value": { "value": 12, "unit": "px" }, "$description": "Base width" },
+          "height": { "$value": { "value": 20, "unit": "px" } }
+        }
+      },
+      "derived": {
+        "$type": "dimension",
+        "$extensions": { "org.example.source": "derived" },
+        "control": {
+          "width": { "$value": { "value": 16, "unit": "px" } },
+          "height": { "$value": { "value": 20, "unit": "px" } },
+          "gap": { "$value": { "value": 4, "unit": "px" } }
+        }
+      }
+    }
+  },
+  {
+    "name": "pointer extension and root token",
+    "document": {
+      "base": { "$root": { "$type": "number", "$value": 1 }, "other": { "$type": "number", "$value": 2 } },
+      "copy": { "$extends": "#/base", "other": { "$type": "number", "$value": 3 } }
+    },
+    "expected": {
+      "base": { "$root": { "$type": "number", "$value": 1 }, "other": { "$type": "number", "$value": 2 } },
+      "copy": { "$root": { "$type": "number", "$value": 1 }, "other": { "$type": "number", "$value": 3 } }
+    }
+  },
+  {
+    "name": "circular extension",
+    "document": { "a": { "$extends": "{b}" }, "b": { "$extends": "{a}" } },
+    "error": "CircularExtension"
+  },
+  {
+    "name": "descendant extending ancestor",
+    "document": { "outer": { "inner": { "$extends": "{outer}" } } },
+    "error": "CircularExtension"
+  },
+  {
+    "name": "extension cannot target token",
+    "document": { "base": { "$type": "number", "$value": 1 }, "copy": { "$extends": "{base}" } },
+    "error": "TokenTarget"
+  },
+  {
+    "name": "extension cannot target metadata",
+    "document": {
+      "base": { "$extensions": { "org.example.meta": { "item": 1 } } },
+      "copy": { "$extends": "#/base/$extensions/org.example.meta" }
+    },
+    "error": "TokenTarget"
+  },
+  {
+    "name": "missing extension target",
+    "document": { "copy": { "$extends": "{missing}" } },
+    "error": "MissingTarget"
+  }
+]
