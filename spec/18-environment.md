@@ -6,7 +6,7 @@ The JSON object has `schemaVersion` equal to `0.1.0` and these members:
 
 | Member | Meaning |
 | --- | --- |
-| `geometry` | Available rectangular extent and safe-area insets in logical units. |
+| `geometry` | Available rectangular extent and safe-area insets in logical units; aspect ratio and orientation are derived from its dimensions. |
 | `scale` | Positive ratio of physical pixels to one logical unit. This is information for backends, not a reason to infer a device category. |
 | `textScale` | Positive user-preferred multiplier for text size. |
 | `inputCapabilities` | Set of currently available abstract input capabilities. Multiple capabilities may coexist. An empty set means none was reported. |
@@ -18,7 +18,7 @@ The JSON object has `schemaVersion` equal to `0.1.0` and these members:
 | `rendererCapabilities` | Explicit support flags described below. Flags describe available primitives, never a backend name. |
 | `qualityPolicy` | Requested `economy`, `balanced`, or `full` quality. Capability support and quality request are separate. |
 
-`geometry.width` and `geometry.height` MUST be finite and greater than zero. Each safe-area inset (`start`, `end`, `top`, `bottom`) MUST be finite and nonnegative. The sum of `start` and `end` MUST be smaller than `width`; the sum of `top` and `bottom` MUST be smaller than `height`. `start` and `end` are logical directions and therefore remain meaningful in both layout directions. `scale` and `textScale` MUST be finite and greater than zero. JSON itself cannot encode non-finite numbers; implementations constructing snapshots in memory MUST apply the same checks.
+`geometry.width` and `geometry.height` MUST be finite and greater than zero. Their quotient `width / height` is the aspect ratio and MUST be representable as a finite, positive number. Orientation is `landscape` when width exceeds height, `portrait` when height exceeds width, and `square` when they are equal. These derived properties MUST NOT be repeated in the serialized snapshot. Each safe-area inset (`start`, `end`, `top`, `bottom`) MUST be finite and nonnegative. The sum of `start` and `end` MUST be smaller than `width`; the sum of `top` and `bottom` MUST be smaller than `height`. `start` and `end` are logical directions and therefore remain meaningful in both layout directions. `scale` and `textScale` MUST be finite and greater than zero. JSON itself cannot encode non-finite numbers; implementations constructing snapshots in memory MUST apply the same checks.
 
 The allowed `inputCapabilities` values are `finePointer`, `coarsePointer`, `hover`, `directTouch`, `stylus`, `keyboard`, `directionalNavigation`, `gamepad`, and `voiceAction`. Duplicate entries are invalid. No capability implies another: a gamepad does not imply couch viewing, and a fine pointer does not imply hover.
 
@@ -26,4 +26,4 @@ The allowed `inputCapabilities` values are `finePointer`, `coarsePointer`, `hove
 
 Geometry, scale, and quality do not define a rendering algorithm. A renderer may map logical units to its coordinate system and choose a cheaper realization under a lower quality policy, while preserving the resolved semantic intent.
 
-The [conformance cases](../conformance/environment/) are normative examples of valid and rejected snapshots. The Rust reference crate implements this contract without a GUI dependency.
+The [conformance cases](../conformance/environment/) are normative examples of valid and rejected snapshots and derived geometry. The Rust reference crate implements this contract without a GUI dependency.

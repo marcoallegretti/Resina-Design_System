@@ -1,0 +1,5 @@
+[
+  { "width": 1280, "height": 800, "aspectRatio": 1.6, "orientation": "landscape" },
+  { "width": 600, "height": 800, "aspectRatio": 0.75, "orientation": "portrait" },
+  { "width": 800, "height": 800, "aspectRatio": 1, "orientation": "square" }
+]

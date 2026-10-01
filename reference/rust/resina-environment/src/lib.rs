@@ -9,6 +9,29 @@ pub struct Geometry {
     pub safe_area: SafeArea,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Orientation {
+    Portrait,
+    Landscape,
+    Square,
+}
+
+impl Geometry {
+    pub fn aspect_ratio(&self) -> f64 {
+        self.width / self.height
+    }
+
+    pub fn orientation(&self) -> Orientation {
+        if self.width > self.height {
+            Orientation::Landscape
+        } else if self.width < self.height {
+            Orientation::Portrait
+        } else {
+            Orientation::Square
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SafeArea {
@@ -202,6 +225,9 @@ impl EnvironmentSnapshot {
         if !positive(self.geometry.height) {
             return Err("geometry.height must be finite and greater than zero");
         }
+        if !positive(self.geometry.aspect_ratio()) {
+            return Err("geometry aspect ratio must be finite and greater than zero");
+        }
         let area = &self.geometry.safe_area;
         for (value, message) in [
             (
@@ -344,6 +370,14 @@ mod tests {
         rejection(
             valid(),
             |v| {
+                v["geometry"]["width"] = json!(1e300);
+                v["geometry"]["height"] = json!(1e-300);
+            },
+            "aspect ratio",
+        );
+        rejection(
+            valid(),
+            |v| {
                 v["geometry"]["safeArea"]["start"] = json!(1280);
             },
             "start + end",
@@ -369,6 +403,28 @@ mod tests {
             },
             "textScale",
         );
+    }
+
+    #[test]
+    fn orientation_and_aspect_ratio_follow_geometry() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/environment/geometry-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let mut source = valid();
+            source["geometry"]["width"] = vector["width"].clone();
+            source["geometry"]["height"] = vector["height"].clone();
+            let snapshot: EnvironmentSnapshot = serde_json::from_value(source).unwrap();
+            let geometry = snapshot.geometry();
+            assert_eq!(geometry.aspect_ratio(), vector["aspectRatio"].as_f64().unwrap());
+            let orientation = match geometry.orientation() {
+                Orientation::Portrait => "portrait",
+                Orientation::Landscape => "landscape",
+                Orientation::Square => "square",
+            };
+            assert_eq!(orientation, vector["orientation"].as_str().unwrap());
+        }
     }
 
     #[test]

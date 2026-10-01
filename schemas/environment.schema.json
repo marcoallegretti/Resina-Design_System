@@ -70,5 +70,5 @@
     },
     "qualityPolicy": { "enum": ["economy", "balanced", "full"] }
   },
-  "$comment": "Safe-area sums are specified in spec/18-environment.md and validated by the reference model; JSON Schema cannot express cross-field addition."
+  "$comment": "Aspect-ratio representability and safe-area sums are specified in spec/18-environment.md and validated by the reference model; JSON Schema cannot express these cross-field constraints."
 }
