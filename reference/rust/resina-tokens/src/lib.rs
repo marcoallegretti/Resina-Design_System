@@ -1,6 +1,10 @@
 use serde_json::{Map, Value};
 use std::fmt;
 
+mod structure;
+
+pub use structure::{StructureError, StructureErrorKind, validate_document_structure};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResolveErrorKind {
     InvalidTokenPath,
