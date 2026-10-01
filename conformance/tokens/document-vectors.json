@@ -18,6 +18,14 @@
     }
   },
   {
+    "name": "dimension components use JSON Pointer",
+    "document": {"base": {"$type": "dimension", "$value": {"value": 8, "unit": "px"}}, "derived": {"$type": "dimension", "$value": {"value": {"$ref": "#/base/$value/value"}, "unit": {"$ref": "#/base/$value/unit"}}}},
+    "expected": {
+      "base": {"token_type": "dimension", "value": {"value": 8, "unit": "px"}},
+      "derived": {"token_type": "dimension", "value": {"value": 8, "unit": "px"}}
+    }
+  },
+  {
     "name": "reference to numeric font weight is not a number alias",
     "document": {"base": {"$type": "fontWeight", "$value": 400}, "alias": {"$type": "number", "$value": "{base}"}},
     "error": "ReferenceTypeMismatch",
@@ -37,9 +45,39 @@
   },
   {
     "name": "numeric property reference checks target token type",
-    "document": {"weight": {"$type": "fontWeight", "$value": 400}, "size": {"$type": "dimension", "$value": {"value": "{weight}", "unit": "px"}}},
+    "document": {"weight": {"$type": "fontWeight", "$value": 400}, "size": {"$type": "dimension", "$value": {"value": {"$ref": "#/weight"}, "unit": "px"}}},
     "error": "ReferenceTypeMismatch",
     "location": "#/size/$value/value"
+  },
+  {
+    "name": "dimension numeric component requires pointer syntax",
+    "document": {"count": {"$type": "number", "$value": 2}, "size": {"$type": "dimension", "$value": {"value": "{count}", "unit": "px"}}},
+    "error": "InvalidReference",
+    "location": "#/size/$value/value"
+  },
+  {
+    "name": "dimension unit cannot use curly syntax",
+    "document": {"base": {"$type": "dimension", "$value": {"value": 2, "unit": "px"}}, "size": {"$type": "dimension", "$value": {"value": 3, "unit": "{base}"}}},
+    "error": "InvalidReference",
+    "location": "#/size/$value/unit"
+  },
+  {
+    "name": "color component requires pointer syntax",
+    "document": {"channel": {"$type": "number", "$value": 0.5}, "color": {"$type": "color", "$value": {"colorSpace": "srgb", "components": ["{channel}", 0, 0]}}},
+    "error": "InvalidReference",
+    "location": "#/color/$value/components/0"
+  },
+  {
+    "name": "font family array item requires pointer syntax",
+    "document": {"font": {"$type": "fontFamily", "$value": "Inter"}, "stack": {"$type": "fontFamily", "$value": ["{font}", "sans-serif"]}},
+    "error": "InvalidReference",
+    "location": "#/stack/$value/0"
+  },
+  {
+    "name": "stroke cap requires pointer syntax",
+    "document": {"style": {"$type": "strokeStyle", "$value": {"dashArray": [{"value": 1, "unit": "px"}], "lineCap": "{cap}"}}},
+    "error": "InvalidReference",
+    "location": "#/style/$value/lineCap"
   },
   {
     "name": "explicit nested shadow array is invalid",

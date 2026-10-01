@@ -155,6 +155,7 @@ fn validate_stroke_style(value: &Value, path: &str) -> Result<(), ValueError> {
     )?;
     let dashes = style["dashArray"]
         .as_array()
+        .filter(|items| !items.is_empty())
         .ok_or_else(|| error(ValueErrorKind::InvalidValue, &format!("{path}/dashArray")))?;
     for (index, dash) in dashes.iter().enumerate() {
         validate("dimension", dash, &format!("{path}/dashArray/{index}"))?;

@@ -155,14 +155,32 @@ fn check_authoring_references(
         return Ok(());
     }
     match expected {
-        "dimension" | "duration" => check_field(document, raw, "value", "number", path, depth),
-        "color" => {
-            check_array_field(document, raw, "components", "number", path, depth)?;
-            check_field(document, raw, "alpha", "number", path, depth)
+        "dimension" | "duration" => {
+            check_pointer_only_field(document, raw, "value", Some("number"), path, depth)?;
+            check_pointer_only_field(document, raw, "unit", None, path, depth)
         }
-        "cubicBezier" => check_items(document, raw, "number", path, depth),
-        "fontFamily" => check_items(document, raw, "fontFamily", path, depth),
-        "strokeStyle" => check_array_field(document, raw, "dashArray", "dimension", path, depth),
+        "color" => {
+            check_pointer_only_field(document, raw, "colorSpace", None, path, depth)?;
+            check_pointer_only_field(document, raw, "components", None, path, depth)?;
+            if let Some(components) = raw.get("components") {
+                check_pointer_only_items(
+                    document,
+                    components,
+                    "number",
+                    &format!("{path}/components"),
+                    depth + 1,
+                )?;
+            }
+            check_pointer_only_field(document, raw, "alpha", Some("number"), path, depth)?;
+            check_pointer_only_field(document, raw, "hex", None, path, depth)
+        }
+        "cubicBezier" => check_pointer_only_items(document, raw, "number", path, depth),
+        "fontFamily" => check_pointer_only_items(document, raw, "fontFamily", path, depth),
+        "strokeStyle" => {
+            check_pointer_only_field(document, raw, "dashArray", None, path, depth)?;
+            check_array_field(document, raw, "dashArray", "dimension", path, depth)?;
+            check_pointer_only_field(document, raw, "lineCap", None, path, depth)
+        }
         "border" => check_fields(
             document,
             raw,
@@ -229,7 +247,8 @@ fn check_authoring_references(
                     ],
                     path,
                     depth,
-                )
+                )?;
+                check_pointer_only_field(document, raw, "inset", None, path, depth)
             }
         }
         "gradient" => {
@@ -264,6 +283,52 @@ fn check_authoring_references(
             Ok(())
         }
         _ => Ok(()),
+    }
+}
+
+fn check_pointer_only_field(
+    document: &Value,
+    raw: &Value,
+    name: &str,
+    kind: Option<&str>,
+    path: &str,
+    depth: usize,
+) -> Result<(), DocumentError> {
+    if let Some(value) = raw.get(name) {
+        let location = format!("{path}/{}", escape_pointer_segment(name));
+        reject_curly(value, &location)?;
+        if let Some(kind) = kind {
+            check_authoring_references(document, value, kind, &location, depth + 1)?;
+        }
+    }
+    Ok(())
+}
+
+fn check_pointer_only_items(
+    document: &Value,
+    raw: &Value,
+    kind: &str,
+    path: &str,
+    depth: usize,
+) -> Result<(), DocumentError> {
+    if let Some(items) = raw.as_array() {
+        for (index, item) in items.iter().enumerate() {
+            let location = format!("{path}/{index}");
+            reject_curly(item, &location)?;
+            check_authoring_references(document, item, kind, &location, depth + 1)?;
+        }
+    }
+    Ok(())
+}
+
+fn reject_curly(raw: &Value, path: &str) -> Result<(), DocumentError> {
+    if raw.as_str().is_some_and(|text| text.starts_with('{')) {
+        Err(DocumentError {
+            kind: DocumentErrorKind::InvalidReference,
+            location: path.to_owned(),
+        })
+    } else {
+        Ok(())
     }
 }
 
