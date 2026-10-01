@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "0.1.0",
+  "roles": {
+    "display": {
+      "familyRole": "display",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "titleLarge": {
+      "familyRole": "display",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "title": {
+      "familyRole": "display",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "heading": {
+      "familyRole": "sans",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "bodyLarge": {
+      "familyRole": "sans",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "bo\u0064y": {"familyRole": "sans", "fontSize": "type.size.base", "fontWeight": "type.weight.base", "lineHeight": "type.line.base", "letterSpacing": "type.tracking.base", "minimumTextScale": 1},
+    "body": {
+      "familyRole": "sans",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "label": {
+      "familyRole": "sans",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "caption": {
+      "familyRole": "sans",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1.25
+    },
+    "numeric": {
+      "familyRole": "numeric",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    },
+    "code": {
+      "familyRole": "monospace",
+      "fontSize": "type.size.base",
+      "fontWeight": "type.weight.base",
+      "lineHeight": "type.line.base",
+      "letterSpacing": "type.tracking.base",
+      "minimumTextScale": 1
+    }
+  }
+}

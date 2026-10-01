@@ -85,6 +85,7 @@ def main():
         "schemas/state-set.schema.json",
         "schemas/surface-form.schema.json",
         "schemas/treatment-stack.schema.json",
+        "schemas/typography-assignments.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
         "schemas/versions/environment-0.1.0.schema.json",
     }
@@ -102,6 +103,7 @@ def main():
         ("schemas/state-set.schema.json", "conformance/states/state-set-vectors.json"),
         ("schemas/surface-form.schema.json", "conformance/geometry/surface-form-vectors.json"),
         ("schemas/treatment-stack.schema.json", "conformance/materials/treatment-stack-vectors.json"),
+        ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
 
@@ -113,6 +115,16 @@ def main():
             raise
     else:
         raise AssertionError(f"{duplicate_spatial}: duplicate role was accepted")
+    checked += 1
+
+    duplicate_typography = ROOT / "conformance/typography/invalid-duplicate-role.json"
+    try:
+        load_json(duplicate_typography)
+    except ValueError as error:
+        if "duplicate JSON member" not in str(error):
+            raise
+    else:
+        raise AssertionError(f"{duplicate_typography}: duplicate role was accepted")
     checked += 1
 
     previous_materials = validator_for("schemas/versions/material-assignments-0.1.0.schema.json")
@@ -168,6 +180,12 @@ def main():
         ):
             document[field] = vector[field]
         check_case(environment, f"target minimum: {vector['name']}", document, True)
+        checked += 1
+
+    for vector in load_json(ROOT / "conformance/typography/resolution-vectors.json"):
+        document = copy.deepcopy(density_base)
+        document["textScale"] = vector["textScale"]
+        check_case(environment, f"typography: {vector['name']}", document, True)
         checked += 1
 
     previous = validator_for("schemas/versions/environment-0.1.0.schema.json")

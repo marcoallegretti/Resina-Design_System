@@ -1,0 +1,796 @@
+[
+  {
+    "name": "complete typography assignment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "code": {
+          "familyRole": "monospace",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "expected": {
+      "display": {
+        "familyRole": "display",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "titleLarge": {
+        "familyRole": "display",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "title": {
+        "familyRole": "display",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "heading": {
+        "familyRole": "sans",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "bodyLarge": {
+        "familyRole": "sans",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "body": {
+        "familyRole": "sans",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "label": {
+        "familyRole": "sans",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "caption": {
+        "familyRole": "sans",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.25
+      },
+      "numeric": {
+        "familyRole": "numeric",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      },
+      "code": {
+        "familyRole": "monospace",
+        "fontSize": "type.size.base",
+        "fontWeight": "type.weight.base",
+        "lineHeight": "type.line.base",
+        "letterSpacing": "type.tracking.base",
+        "minimumTextScale": 1.0
+      }
+    }
+  },
+  {
+    "name": "missing role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "error": "missing typography role"
+  },
+  {
+    "name": "unknown role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "code": {
+          "familyRole": "monospace",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "subtitle": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "error": "unknown variant"
+  },
+  {
+    "name": "empty token path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "sans",
+          "fontSize": "",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "code": {
+          "familyRole": "monospace",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "error": "must not be empty"
+  },
+  {
+    "name": "unknown family",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "serif",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "code": {
+          "familyRole": "monospace",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "error": "unknown variant"
+  },
+  {
+    "name": "minimum scale below one",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 0.9
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "code": {
+          "familyRole": "monospace",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "error": "at least 1"
+  },
+  {
+    "name": "unknown role property",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0,
+          "fontFile": "example.ttf"
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "code": {
+          "familyRole": "monospace",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "error": "unknown field"
+  },
+  {
+    "name": "unsupported version",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "display": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "titleLarge": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "title": {
+          "familyRole": "display",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "heading": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "bodyLarge": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "body": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "label": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "caption": {
+          "familyRole": "sans",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.25
+        },
+        "numeric": {
+          "familyRole": "numeric",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        },
+        "code": {
+          "familyRole": "monospace",
+          "fontSize": "type.size.base",
+          "fontWeight": "type.weight.base",
+          "lineHeight": "type.line.base",
+          "letterSpacing": "type.tracking.base",
+          "minimumTextScale": 1.0
+        }
+      }
+    },
+    "error": "schemaVersion must be 0.1.0"
+  }
+]

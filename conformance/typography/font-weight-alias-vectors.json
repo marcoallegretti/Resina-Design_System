@@ -1,0 +1,20 @@
+[
+  { "alias": "thin", "weight": 100 },
+  { "alias": "hairline", "weight": 100 },
+  { "alias": "extra-light", "weight": 200 },
+  { "alias": "ultra-light", "weight": 200 },
+  { "alias": "light", "weight": 300 },
+  { "alias": "normal", "weight": 400 },
+  { "alias": "regular", "weight": 400 },
+  { "alias": "book", "weight": 400 },
+  { "alias": "medium", "weight": 500 },
+  { "alias": "semi-bold", "weight": 600 },
+  { "alias": "demi-bold", "weight": 600 },
+  { "alias": "bold", "weight": 700 },
+  { "alias": "extra-bold", "weight": 800 },
+  { "alias": "ultra-bold", "weight": 800 },
+  { "alias": "black", "weight": 900 },
+  { "alias": "heavy", "weight": 900 },
+  { "alias": "extra-black", "weight": 950 },
+  { "alias": "ultra-black", "weight": 950 }
+]

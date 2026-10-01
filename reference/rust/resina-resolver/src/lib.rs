@@ -8,6 +8,11 @@ mod spatial;
 pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
 mod target;
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
+mod typography;
+pub use typography::{
+    PxDimension, ResolvedTypography, TypographyResolutionError, TypographyResolutionErrorKind,
+    resolve_semantic_typography,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ColorResolutionErrorKind {

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:typography-assignments:0.1.0",
+  "title": "Resina Typography Assignments",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "roles"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["display", "titleLarge", "title", "heading", "bodyLarge", "body", "label", "caption", "numeric", "code"],
+      "properties": {
+        "display": { "$ref": "#/$defs/role" },
+        "titleLarge": { "$ref": "#/$defs/role" },
+        "title": { "$ref": "#/$defs/role" },
+        "heading": { "$ref": "#/$defs/role" },
+        "bodyLarge": { "$ref": "#/$defs/role" },
+        "body": { "$ref": "#/$defs/role" },
+        "label": { "$ref": "#/$defs/role" },
+        "caption": { "$ref": "#/$defs/role" },
+        "numeric": { "$ref": "#/$defs/role" },
+        "code": { "$ref": "#/$defs/role" }
+      }
+    }
+  },
+  "$defs": {
+    "tokenPath": { "type": "string", "minLength": 1 },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["familyRole", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "minimumTextScale"],
+      "properties": {
+        "familyRole": { "enum": ["sans", "display", "monospace", "numeric"] },
+        "fontSize": { "$ref": "#/$defs/tokenPath" },
+        "fontWeight": { "$ref": "#/$defs/tokenPath" },
+        "lineHeight": { "$ref": "#/$defs/tokenPath" },
+        "letterSpacing": { "$ref": "#/$defs/tokenPath" },
+        "minimumTextScale": { "type": "number", "minimum": 1 }
+      }
+    }
+  }
+}
