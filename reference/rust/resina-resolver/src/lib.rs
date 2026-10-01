@@ -105,6 +105,38 @@ pub fn resolve_frost_representation(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use resina_tokens::resolve_token_document;
+
+    #[test]
+    fn semantic_colors_bind_resolved_document_aliases() {
+        let assignments: ColorAssignments = serde_json::from_value(
+            serde_json::from_str::<Value>(include_str!(
+                "../../../../conformance/color/role-assignment-vectors.json"
+            ))
+            .unwrap()[0]["document"]
+                .clone(),
+        )
+        .unwrap();
+        let source = serde_json::json!({
+            "palette": {
+                "$type": "color",
+                "sample0": {"$value": {"colorSpace": "srgb", "components": [0, 0, 0]}},
+                "sample1": {"$value": {"colorSpace": "srgb", "components": [1, 1, 1]}},
+                "sample2": {"$value": "{palette.sample0}"}
+            }
+        });
+        let tokens = resolve_token_document(&source).unwrap();
+        let colors = resolve_semantic_colors(&assignments, &tokens).unwrap();
+        assert_eq!(colors.len(), ColorRole::ALL.len());
+        assert_eq!(
+            colors[&ColorRole::AccentTertiary],
+            colors[&ColorRole::AccentPrimary]
+        );
+        assert_eq!(
+            colors[&ColorRole::AccentSecondary],
+            tokens["palette.sample1"].value
+        );
+    }
 
     #[test]
     fn semantic_color_resolution_conformance_vectors() {
