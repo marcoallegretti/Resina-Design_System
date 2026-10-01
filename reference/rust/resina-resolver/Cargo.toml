@@ -5,6 +5,7 @@ edition = "2024"
 description = "Headless Resina capability and fallback resolution"
 
 [dependencies]
+resina-color = { path = "../resina-color" }
 resina-environment = { path = "../resina-environment" }
 resina-model = { path = "../resina-model" }
 resina-tokens = { path = "../resina-tokens" }

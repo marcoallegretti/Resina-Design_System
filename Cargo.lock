@@ -33,6 +33,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "resina-color"
+version = "0.1.0"
+dependencies = [
+ "resina-tokens",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "resina-environment"
 version = "0.2.0"
 dependencies = [
@@ -52,6 +61,7 @@ dependencies = [
 name = "resina-resolver"
 version = "0.1.0"
 dependencies = [
+ "resina-color",
  "resina-environment",
  "resina-model",
  "resina-tokens",

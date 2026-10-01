@@ -17,7 +17,7 @@ The [blueprint](../RESINA_DESIGN_SYSTEM_BLUEPRINT.md) sets the intended system a
 
 Normative Resina models MUST remain independent of GUIdo, Qt, Slint, Wayland, wgpu, Web APIs, and product-specific objects. Shaders, compositor effects, toolkit controls, and window handles belong to implementation layers. Material definitions describe intent; shaders are one possible realization.
 
-The reference implementation in `reference/rust/` is the canonical implementation of specified parsing, validation and resolution behavior. A difference between its behavior and a public contract is a defect to investigate, not an automatic change to the contract.
+The reference implementation in `reference/rust/` is the canonical implementation of specified parsing, validation and resolution behavior. The `resina-color` crate owns color fallback and contrast calculations; `resina-resolver` applies those calculations to semantic roles and environment decisions. A difference between reference behavior and a public contract is a defect to investigate, not an automatic change to the contract.
 
 ## Resolution boundary
 

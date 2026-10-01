@@ -1,3 +1,3 @@
 [workspace]
-members = ["reference/rust/resina-environment", "reference/rust/resina-model", "reference/rust/resina-resolver", "reference/rust/resina-tokens"]
+members = ["reference/rust/resina-color", "reference/rust/resina-environment", "reference/rust/resina-model", "reference/rust/resina-resolver", "reference/rust/resina-tokens"]
 resolver = "2"

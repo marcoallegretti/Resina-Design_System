@@ -5,14 +5,14 @@ use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
 mod spatial;
+pub use resina_color::{
+    ColorFallbackError, ContrastError, SrgbFallback, opaque_contrast_ratio, resolve_srgb_fallback,
+};
 pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
 mod color_fallback;
 pub use color_fallback::{
-    ColorFallbackError, ColorRoleFallbackError, ColorRoleFallbackErrorKind, SrgbFallback,
-    resolve_semantic_color_fallbacks, resolve_srgb_fallback,
+    ColorRoleFallbackError, ColorRoleFallbackErrorKind, resolve_semantic_color_fallbacks,
 };
-mod contrast;
-pub use contrast::{ContrastError, opaque_contrast_ratio};
 mod headless;
 pub use headless::{
     HeadlessBindingError, HeadlessResolution, HeadlessResolutionError, resolve_headless_source,
