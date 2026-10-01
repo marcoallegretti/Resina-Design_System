@@ -9,6 +9,20 @@
     }
   },
   {
+    "name": "root token keeps explicit path and inherited type",
+    "document": {"spacing": {"$type": "dimension", "$root": {"$value": {"value": 16, "unit": "px"}}, "small": {"$value": {"value": 8, "unit": "px"}}}, "alias": {"$value": "{spacing.$root}"}},
+    "expected": {
+      "spacing.$root": {"token_type": "dimension", "value": {"value": 16, "unit": "px"}},
+      "spacing.small": {"token_type": "dimension", "value": {"value": 8, "unit": "px"}},
+      "alias": {"token_type": "dimension", "value": {"value": 16, "unit": "px"}}
+    }
+  },
+  {
+    "name": "group path cannot alias its root token",
+    "document": {"spacing": {"$type": "dimension", "$root": {"$value": {"value": 16, "unit": "px"}}}, "alias": {"$type": "dimension", "$value": "{spacing}"}},
+    "error": "InvalidReference"
+  },
+  {
     "name": "group extension and property reference",
     "document": {"base": {"$type": "dimension", "gap": {"$value": {"value": 8, "unit": "px"}}}, "derived": {"$extends": "{base}", "wide": {"$value": {"value": {"$ref": "#/base/gap/$value/value"}, "unit": "rem"}}}},
     "expected": {

@@ -20,6 +20,8 @@ The [fixed composite vectors](../conformance/tokens/fixed-composite-vectors.json
 
 The [document vectors](../conformance/tokens/document-vectors.json) define headless resolution of a complete authoring document. Group extensions are materialized once, every token receives a declared type, whole-token references MUST match the expected type at their use site, and every resolved value is validated. Output is a deterministic path-to-token mapping. This mapping is a token resolution result, not a Resina bundle: theme, material, adaptation, accessibility, and fallback semantics require separate Resina contracts.
 
+A group's `$root` token has an explicit path ending in `.$root`; the group path alone does not refer to that token. Root tokens inherit the group's declared type when they have no explicit `$type`. The document vectors cover both the valid root-token alias and invalid group alias.
+
 The DTCG value schemas restrict several scalar sub-values, including dimension units and color components, to JSON Pointer property references. Curly aliases in those positions are invalid even if they would resolve to a compatible JSON value. A custom stroke style MUST have at least one dash-array entry.
 
 The [DTCG Resolver Module 2025.10](https://www.designtokens.org/TR/2025.10/resolver/) is also a stable Community Group report. Its token-set and modifier composition may be useful for authoring themes. It does not define Resina's resolution of material roles, environment, component state, accessibility, renderer capabilities, quality policy, or fallbacks into Resina IR. The Resina resolver MUST define those decisions independently. A future token-set integration MAY consume DTCG resolver output as input, without changing this boundary.
