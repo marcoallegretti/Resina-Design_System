@@ -28,6 +28,90 @@ pub fn validate_resolved_primitive_value(kind: &str, value: &Value) -> Result<()
     validate(kind, value, "#/$value")
 }
 
+pub fn validate_resolved_composite_value(kind: &str, value: &Value) -> Result<(), ValueError> {
+    validate_composite(kind, value, "#/$value")
+}
+
+fn validate_composite(kind: &str, value: &Value, path: &str) -> Result<(), ValueError> {
+    match kind {
+        "strokeStyle" => validate_stroke_style(value, path),
+        "border" => validate_fields(
+            value,
+            path,
+            &[
+                ("color", "color"),
+                ("width", "dimension"),
+                ("style", "strokeStyle"),
+            ],
+        ),
+        "transition" => validate_fields(
+            value,
+            path,
+            &[
+                ("duration", "duration"),
+                ("delay", "duration"),
+                ("timingFunction", "cubicBezier"),
+            ],
+        ),
+        "typography" => validate_fields(
+            value,
+            path,
+            &[
+                ("fontFamily", "fontFamily"),
+                ("fontSize", "dimension"),
+                ("fontWeight", "fontWeight"),
+                ("letterSpacing", "dimension"),
+                ("lineHeight", "number"),
+            ],
+        ),
+        _ => Err(error(ValueErrorKind::UnsupportedType, path)),
+    }
+}
+
+fn validate_fields(value: &Value, path: &str, fields: &[(&str, &str)]) -> Result<(), ValueError> {
+    let names: Vec<&str> = fields.iter().map(|(name, _)| *name).collect();
+    let properties = object(value, path, &names, &names)?;
+    for (name, kind) in fields {
+        let location = format!("{path}/{name}");
+        if *kind == "strokeStyle" {
+            validate_stroke_style(&properties[*name], &location)?;
+        } else {
+            validate(kind, &properties[*name], &location)?;
+        }
+    }
+    Ok(())
+}
+
+fn validate_stroke_style(value: &Value, path: &str) -> Result<(), ValueError> {
+    if let Some(name) = value.as_str() {
+        return require(
+            [
+                "solid", "dashed", "dotted", "double", "groove", "ridge", "outset", "inset",
+            ]
+            .contains(&name),
+            path,
+        );
+    }
+    let style = object(
+        value,
+        path,
+        &["dashArray", "lineCap"],
+        &["dashArray", "lineCap"],
+    )?;
+    let dashes = style["dashArray"]
+        .as_array()
+        .ok_or_else(|| error(ValueErrorKind::InvalidValue, &format!("{path}/dashArray")))?;
+    for (index, dash) in dashes.iter().enumerate() {
+        validate("dimension", dash, &format!("{path}/dashArray/{index}"))?;
+    }
+    require(
+        style["lineCap"]
+            .as_str()
+            .is_some_and(|cap| ["round", "butt", "square"].contains(&cap)),
+        &format!("{path}/lineCap"),
+    )
+}
+
 fn validate(kind: &str, value: &Value, path: &str) -> Result<(), ValueError> {
     match kind {
         "number" => require(value.is_number(), path),
@@ -246,6 +330,31 @@ mod tests {
         .unwrap();
         for vector in vectors {
             let result = validate_resolved_primitive_value(
+                vector["type"].as_str().unwrap(),
+                &vector["value"],
+            );
+            if let Some(expected) = vector.get("error") {
+                let error = result.unwrap_err();
+                assert_eq!(
+                    format!("{:?}", error.kind),
+                    expected.as_str().unwrap(),
+                    "{}: {error}",
+                    vector["name"]
+                );
+            } else {
+                assert!(result.is_ok(), "{}: {result:?}", vector["name"]);
+            }
+        }
+    }
+
+    #[test]
+    fn fixed_composite_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/tokens/fixed-composite-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let result = validate_resolved_composite_value(
                 vector["type"].as_str().unwrap(),
                 &vector["value"],
             );
