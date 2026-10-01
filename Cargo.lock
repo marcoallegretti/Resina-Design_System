@@ -41,6 +41,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "resina-model"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "resina-tokens"
 version = "0.1.0"
 dependencies = [

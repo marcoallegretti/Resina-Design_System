@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:material-assignments:0.1.0",
+  "title": "Resina Material Role Assignments",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "surface", "control", "feedback"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base", "content", "chrome", "raised", "transient"],
+      "properties": {
+        "base": { "$ref": "#/$defs/structuralMaterialFamily" },
+        "content": { "$ref": "#/$defs/structuralMaterialFamily" },
+        "chrome": { "$ref": "#/$defs/structuralMaterialFamily" },
+        "raised": { "$ref": "#/$defs/structuralMaterialFamily" },
+        "transient": { "$ref": "#/$defs/materialFamily" }
+      }
+    },
+    "control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passive", "interactive", "primary"],
+      "properties": {
+        "passive": { "$ref": "#/$defs/materialFamily" },
+        "interactive": { "$ref": "#/$defs/materialFamily" },
+        "primary": { "$ref": "#/$defs/materialFamily" }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["focus", "selection", "drag"],
+      "properties": {
+        "focus": { "$ref": "#/$defs/materialFamily" },
+        "selection": { "$ref": "#/$defs/materialFamily" },
+        "drag": { "$ref": "#/$defs/materialFamily" }
+      }
+    }
+  },
+  "$defs": {
+    "materialFamily": { "enum": ["cast", "frost", "elastomer", "gel"] },
+    "structuralMaterialFamily": { "enum": ["cast", "frost", "elastomer"] }
+  }
+}

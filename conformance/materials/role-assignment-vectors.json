@@ -1,0 +1,74 @@
+[
+  {
+    "name": "all material roles are explicit",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
+      "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "expected": {
+      "surface.base": "cast",
+      "surface.content": "cast",
+      "surface.chrome": "frost",
+      "surface.raised": "cast",
+      "surface.transient": "frost",
+      "control.passive": "cast",
+      "control.interactive": "elastomer",
+      "control.primary": "elastomer",
+      "feedback.focus": "elastomer",
+      "feedback.selection": "gel",
+      "feedback.drag": "gel"
+    }
+  },
+  {
+    "name": "missing role is rejected",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
+      "control": {"passive": "cast", "interactive": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "primary"
+  },
+  {
+    "name": "unknown role is rejected",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost", "brand": "gel"},
+      "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "brand"
+  },
+  {
+    "name": "unknown material family is rejected",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "glass", "raised": "cast", "transient": "frost"},
+      "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "glass"
+  },
+  {
+    "name": "gel cannot be the default structural surface",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "surface": {"base": "gel", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
+      "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "structural material"
+  },
+  {
+    "name": "unsupported schema version is rejected",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
+      "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "schemaVersion"
+  }
+]
