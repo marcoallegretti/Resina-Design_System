@@ -28,6 +28,7 @@ struct HeadlessRequest {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HeadlessResolution {
+    schema_version: &'static str,
     materials: BTreeMap<MaterialRole, MaterialFamily>,
     colors: BTreeMap<ColorRole, Value>,
     space: BTreeMap<SpatialRole, Value>,
@@ -150,6 +151,7 @@ pub fn resolve_headless_source(
                 .map(|role| (role, request.material_assignments.material_for(role)))
                 .collect();
             Ok(HeadlessResolution {
+                schema_version: "0.1.0",
                 materials,
                 colors,
                 space,

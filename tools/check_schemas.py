@@ -92,6 +92,7 @@ def main():
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/headless-resolution.schema.json",
+        "schemas/headless-result.schema.json",
         "schemas/material-assignments.schema.json",
         "schemas/spatial-assignments.schema.json",
         "schemas/state-set.schema.json",
@@ -131,6 +132,44 @@ def main():
         document = copy.deepcopy(valid_headless)
         change(document)
         check_case(headless, f"headless {name}", document, False)
+        checked += 1
+
+    result_schema = validator_for("schemas/headless-result.schema.json")
+    expected_result = load_json(ROOT / "conformance/headless/expected-resolution.json")
+    check_case(result_schema, "headless result", expected_result, True)
+    checked += 1
+    for name, path, value in (
+        ("version", ("schemaVersion",), "0.2.0"),
+        ("structural gel", ("materials", "surface.base"), "gel"),
+        ("color range", ("colors", "focus", "components", 0), 1.5),
+        ("negative space", ("space", "space.page", "value"), -1),
+        ("font unit", ("typography", "body", "fontSize", "unit"), "rem"),
+        ("weight range", ("typography", "body", "fontWeight"), 1001),
+        ("hit target pair", ("minimumHitTarget", "minimumHeight"), 24),
+        ("unknown member", ("rendererName",), "example"),
+    ):
+        document = copy.deepcopy(expected_result)
+        target = document
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = value
+        check_case(result_schema, f"headless result {name}", document, False)
+        checked += 1
+    missing_color = copy.deepcopy(expected_result)
+    missing_color["colors"].pop("focus")
+    check_case(result_schema, "headless result missing color", missing_color, False)
+    checked += 1
+
+    color_value = Draft202012Validator(
+        {"$ref": "urn:resina:schema:headless-result:0.1.0#/$defs/color"},
+        registry=schema_registry(),
+    )
+    for vector in load_json(ROOT / "conformance/tokens/primitive-value-vectors.json"):
+        if vector["type"] == "color":
+            check_case(color_value, vector["name"], vector["value"], "error" not in vector)
+            checked += 1
+    for vector in load_json(ROOT / "conformance/tokens/color-space-vectors.json"):
+        check_case(color_value, vector["name"], vector["value"], "error" not in vector)
         checked += 1
 
     duplicate_spatial = ROOT / "conformance/spatial/invalid-duplicate-role.json"

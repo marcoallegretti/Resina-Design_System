@@ -402,6 +402,27 @@ mod tests {
     }
 
     #[test]
+    fn color_space_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/tokens/color-space-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let result = validate_resolved_value("color", &vector["value"]);
+            if let Some(expected) = vector.get("error") {
+                assert_eq!(
+                    format!("{:?}", result.unwrap_err().kind),
+                    expected.as_str().unwrap(),
+                    "{}",
+                    vector["name"]
+                );
+            } else {
+                assert!(result.is_ok(), "{}: {result:?}", vector["name"]);
+            }
+        }
+    }
+
+    #[test]
     fn fixed_composite_conformance_vectors() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
             "../../../../conformance/tokens/fixed-composite-vectors.json"
