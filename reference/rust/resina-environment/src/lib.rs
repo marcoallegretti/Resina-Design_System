@@ -92,6 +92,7 @@ pub enum LayoutDirection {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RendererCapabilities {
     pub gradients: bool,
+    pub translucent_surfaces: bool,
     pub inner_shadow: bool,
     pub advanced_shadow: bool,
     pub sdf_shapes: bool,
@@ -225,8 +226,8 @@ impl EnvironmentSnapshot {
     }
 
     fn validate(&self) -> Result<(), &'static str> {
-        if self.schema_version != "0.1.0" {
-            return Err("schemaVersion must be 0.1.0");
+        if self.schema_version != "0.2.0" {
+            return Err("schemaVersion must be 0.2.0");
         }
         if !positive(self.geometry.width) {
             return Err("geometry.width must be finite and greater than zero");
@@ -365,6 +366,16 @@ mod tests {
             },
             "gradients",
         );
+        rejection(
+            valid(),
+            |v| {
+                v["rendererCapabilities"]
+                    .as_object_mut()
+                    .unwrap()
+                    .remove("translucentSurfaces");
+            },
+            "translucentSurfaces",
+        );
     }
 
     #[test]
@@ -451,7 +462,14 @@ mod tests {
         rejection(
             valid(),
             |v| {
-                v["schemaVersion"] = json!("0.2.0");
+                v["schemaVersion"] = json!("0.3.0");
+            },
+            "schemaVersion",
+        );
+        rejection(
+            valid(),
+            |v| {
+                v["schemaVersion"] = json!("0.1.0");
             },
             "schemaVersion",
         );

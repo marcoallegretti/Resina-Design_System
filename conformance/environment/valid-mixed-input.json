@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "geometry": { "width": 1280, "height": 800, "safeArea": { "start": 0, "end": 0, "top": 0, "bottom": 0 } },
   "scale": 1.5,
   "textScale": 1.25,
@@ -9,6 +9,6 @@
   "accessibilityPreferences": { "reducedMotion": true, "reducedTransparency": false, "highContrast": false },
   "locale": "en-US",
   "layoutDirection": "ltr",
-  "rendererCapabilities": { "gradients": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": false, "backdropBlur": false, "shapedBackdrop": false, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false },
+  "rendererCapabilities": { "gradients": true, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": false, "backdropBlur": false, "shapedBackdrop": false, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false },
   "qualityPolicy": "economy"
 }

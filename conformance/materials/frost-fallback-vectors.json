@@ -1,0 +1,79 @@
+[
+  {
+    "name": "full shaped backdrop",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "quality": "full",
+    "expected": "shapedBackdrop"
+  },
+  {
+    "name": "balanced quality uses regular backdrop",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "quality": "balanced",
+    "expected": "regularBackdrop"
+  },
+  {
+    "name": "reduced motion does not change a static Frost representation",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": true, "reducedTransparency": false, "highContrast": false},
+    "quality": "full",
+    "expected": "shapedBackdrop"
+  },
+  {
+    "name": "economy avoids backdrop processing",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "quality": "economy",
+    "expected": "translucentPigmented"
+  },
+  {
+    "name": "full quality without shaped backdrop uses regular",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": false, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "quality": "full",
+    "expected": "regularBackdrop"
+  },
+  {
+    "name": "no backdrop effect uses pigment",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": false, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "quality": "full",
+    "expected": "translucentPigmented"
+  },
+  {
+    "name": "no backdrop blur uses pigment",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": false, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "quality": "full",
+    "expected": "translucentPigmented"
+  },
+  {
+    "name": "reduced transparency uses opaque dimensional Frost",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": true, "highContrast": false},
+    "quality": "full",
+    "expected": "opaqueDimensional"
+  },
+  {
+    "name": "high contrast uses opaque dimensional Frost",
+    "capabilities": {"gradients": false, "translucentSurfaces": true, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": true},
+    "quality": "balanced",
+    "expected": "opaqueDimensional"
+  },
+  {
+    "name": "zero optional capabilities uses opaque dimensional Frost",
+    "capabilities": {"gradients": false, "translucentSurfaces": false, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": false, "backdropBlur": false, "shapedBackdrop": false, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": true, "reducedTransparency": false, "highContrast": false},
+    "quality": "full",
+    "expected": "opaqueDimensional"
+  },
+  {
+    "name": "backdrop flags cannot substitute for translucent surfaces",
+    "capabilities": {"gradients": false, "translucentSurfaces": false, "innerShadow": false, "advancedShadow": false, "sdfShapes": false, "backdropEffect": true, "backdropBlur": true, "shapedBackdrop": true, "dynamicLighting": false, "deformation": false, "masks": false, "customShader": false, "wideGamut": false, "hdr": false},
+    "preferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "quality": "full",
+    "expected": "opaqueDimensional"
+  }
+]

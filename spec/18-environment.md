@@ -1,8 +1,10 @@
-# Environment snapshot (candidate, schema 0.1.0)
+# Environment snapshot (candidate, schema 0.2.0)
 
 This document defines the input contract for a single resolution operation. `EnvironmentSnapshot` describes conditions available to Resina; it does not identify a device, operating system, toolkit, or renderer. The machine-readable form is [environment.schema.json](../schemas/environment.schema.json). A producer MUST provide every field. A consumer MUST reject unknown fields, missing fields, and invalid values; it MUST NOT silently substitute defaults. Identical snapshots convey identical environment information to the resolver.
 
-The JSON object has `schemaVersion` equal to `0.1.0` and these members:
+Schema 0.2.0 adds the required `translucentSurfaces` capability. A 0.1.0 producer must determine and provide that capability explicitly before labeling its snapshot 0.2.0; consumers MUST NOT infer it from backdrop flags or upgrade the schema version automatically. The [0.1.0 schema](../schemas/versions/environment-0.1.0.schema.json) remains available for migration tooling, while current resolution rejects that version.
+
+The JSON object has `schemaVersion` equal to `0.2.0` and these members:
 
 | Member | Meaning |
 | --- | --- |
@@ -22,7 +24,7 @@ The JSON object has `schemaVersion` equal to `0.1.0` and these members:
 
 The allowed `inputCapabilities` values are `finePointer`, `coarsePointer`, `hover`, `directTouch`, `stylus`, `keyboard`, `directionalNavigation`, `gamepad`, and `voiceAction`. Duplicate entries are invalid. No capability implies another: a gamepad does not imply couch viewing, and a fine pointer does not imply hover.
 
-`rendererCapabilities` has mandatory boolean fields `gradients`, `innerShadow`, `advancedShadow`, `sdfShapes`, `backdropEffect`, `backdropBlur`, `shapedBackdrop`, `dynamicLighting`, `deformation`, `masks`, `customShader`, `wideGamut`, and `hdr`. Every combination is valid at this layer. A later resolver may require a combination to realize an effect and MUST select a documented lower-capability representation when it is unavailable. The tier names in the blueprint are descriptive and MUST NOT replace capability tests.
+`rendererCapabilities` has mandatory boolean fields `gradients`, `translucentSurfaces`, `innerShadow`, `advancedShadow`, `sdfShapes`, `backdropEffect`, `backdropBlur`, `shapedBackdrop`, `dynamicLighting`, `deformation`, `masks`, `customShader`, `wideGamut`, and `hdr`. `translucentSurfaces` means the renderer can composite a pigmented surface over underlying content without sampling or blurring that content; it is separate from backdrop effects. Every combination is valid at this layer. A later resolver may require a combination to realize an effect and MUST select a documented lower-capability representation when it is unavailable. The tier names in the blueprint are descriptive and MUST NOT replace capability tests.
 
 Geometry, scale, and quality do not define a rendering algorithm. A renderer may map logical units to its coordinate system and choose a cheaper realization under a lower quality policy, while preserving the resolved semantic intent.
 

@@ -10,6 +10,15 @@ pub enum MaterialFamily {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FrostRepresentation {
+    ShapedBackdrop,
+    RegularBackdrop,
+    TranslucentPigmented,
+    OpaqueDimensional,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MaterialRole {
     #[serde(rename = "surface.base")]
     SurfaceBase,
