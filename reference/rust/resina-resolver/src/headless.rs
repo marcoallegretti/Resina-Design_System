@@ -1,7 +1,8 @@
 use crate::{
-    ColorResolutionError, MinimumHitTarget, ResolvedTypography, SpatialResolutionError,
-    TypographyResolutionError, resolve_frost_representation, resolve_minimum_hit_target,
-    resolve_semantic_colors, resolve_semantic_space, resolve_semantic_typography,
+    ColorResolutionError, ColorRoleFallbackError, MinimumHitTarget, ResolvedTypography,
+    SpatialResolutionError, TypographyResolutionError, resolve_frost_representation,
+    resolve_minimum_hit_target, resolve_semantic_color_fallbacks, resolve_semantic_colors,
+    resolve_semantic_space, resolve_semantic_typography,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
@@ -66,6 +67,7 @@ impl HeadlessResolution {
 #[derive(Debug)]
 pub enum HeadlessBindingError {
     Color(ColorResolutionError),
+    ColorFallback(ColorRoleFallbackError),
     Space(SpatialResolutionError),
     Typography(TypographyResolutionError),
 }
@@ -74,6 +76,7 @@ impl fmt::Display for HeadlessBindingError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Color(error) => write!(formatter, "color: {error}"),
+            Self::ColorFallback(error) => write!(formatter, "color fallback: {error}"),
             Self::Space(error) => write!(formatter, "space: {error}"),
             Self::Typography(error) => write!(formatter, "typography: {error}"),
         }
@@ -128,6 +131,7 @@ pub fn resolve_headless_source(
         resolve_token_document(&request.tokens).map_err(HeadlessResolutionError::Tokens)?;
 
     let colors = resolve_semantic_colors(&request.color_assignments, &tokens);
+    let color_fallbacks = colors.as_ref().ok().map(resolve_semantic_color_fallbacks);
     let space = resolve_semantic_space(&request.spatial_assignments, &tokens);
     let typography = resolve_semantic_typography(
         &request.typography_assignments,
@@ -138,6 +142,14 @@ pub fn resolve_headless_source(
     if let Err(found) = &colors {
         errors.extend(found.iter().cloned().map(HeadlessBindingError::Color));
     }
+    if let Some(Err(found)) = &color_fallbacks {
+        errors.extend(
+            found
+                .iter()
+                .cloned()
+                .map(HeadlessBindingError::ColorFallback),
+        );
+    }
     if let Err(found) = &space {
         errors.extend(found.iter().cloned().map(HeadlessBindingError::Space));
     }
@@ -145,7 +157,7 @@ pub fn resolve_headless_source(
         errors.extend(found.iter().cloned().map(HeadlessBindingError::Typography));
     }
     match (colors, space, typography) {
-        (Ok(colors), Ok(space), Ok(typography)) => {
+        (Ok(colors), Ok(space), Ok(typography)) if errors.is_empty() => {
             let materials = MaterialRole::ALL
                 .into_iter()
                 .map(|role| (role, request.material_assignments.material_for(role)))

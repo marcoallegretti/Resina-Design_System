@@ -6,6 +6,11 @@ use std::{collections::BTreeMap, fmt};
 
 mod spatial;
 pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
+mod color_fallback;
+pub use color_fallback::{
+    ColorFallbackError, ColorRoleFallbackError, ColorRoleFallbackErrorKind, SrgbFallback,
+    resolve_semantic_color_fallbacks, resolve_srgb_fallback,
+};
 mod headless;
 pub use headless::{
     HeadlessBindingError, HeadlessResolution, HeadlessResolutionError, resolve_headless_source,

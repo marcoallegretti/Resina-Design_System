@@ -68,6 +68,10 @@ fn invalid_inputs_produce_diagnostics_without_partial_output() {
     invalid_tokens["tokens"]["type"]["size"]["$value"]["unit"] = json!("em");
     let mut invalid_request: Value = serde_json::from_str(SOURCE).unwrap();
     invalid_request["schemaVersion"] = json!("0.2.0");
+    let mut missing_fallback: Value = serde_json::from_str(SOURCE).unwrap();
+    missing_fallback["tokens"]["palette"]["base"]["$value"]["colorSpace"] = json!("display-p3");
+    missing_fallback["spatialAssignments"]["roles"]["space.page"] = json!("missing.space");
+    missing_fallback["typographyAssignments"]["roles"]["body"]["fontSize"] = json!("missing.type");
     for (source, diagnostics) in [
         (duplicate, vec!["duplicate JSON member"]),
         (
@@ -79,6 +83,14 @@ fn invalid_inputs_produce_diagnostics_without_partial_output() {
             ],
         ),
         (invalid_tokens.to_string(), vec!["token resolution failed"]),
+        (
+            missing_fallback.to_string(),
+            vec![
+                "color fallback: AccentPrimary",
+                "space: MissingToken",
+                "typography: MissingToken",
+            ],
+        ),
         (
             invalid_request.to_string(),
             vec!["schemaVersion must be 0.1.0"],

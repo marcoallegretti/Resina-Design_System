@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:srgb-fallback:0.1.0",
+  "title": "Resina sRGB Color Fallback",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["colorSpace", "components", "alpha"],
+  "properties": {
+    "colorSpace": {"const": "srgb"},
+    "components": {
+      "type": "array",
+      "prefixItems": [
+        {"type": "number", "minimum": 0, "maximum": 1},
+        {"type": "number", "minimum": 0, "maximum": 1},
+        {"type": "number", "minimum": 0, "maximum": 1}
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "alpha": {"type": "number", "minimum": 0, "maximum": 1}
+  }
+}

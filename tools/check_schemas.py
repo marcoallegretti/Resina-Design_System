@@ -95,6 +95,7 @@ def main():
         "schemas/headless-result.schema.json",
         "schemas/material-assignments.schema.json",
         "schemas/spatial-assignments.schema.json",
+        "schemas/srgb-fallback.schema.json",
         "schemas/state-set.schema.json",
         "schemas/surface-form.schema.json",
         "schemas/treatment-stack.schema.json",
@@ -170,6 +171,29 @@ def main():
             checked += 1
     for vector in load_json(ROOT / "conformance/tokens/color-space-vectors.json"):
         check_case(color_value, vector["name"], vector["value"], "error" not in vector)
+        checked += 1
+
+    fallback_schema = validator_for("schemas/srgb-fallback.schema.json")
+    for vector in load_json(ROOT / "conformance/color/srgb-fallback-vectors.json"):
+        check_case(
+            color_value,
+            f"fallback input: {vector['name']}",
+            vector["value"],
+            vector.get("error") != "InvalidValue",
+        )
+        checked += 1
+        if "expected" in vector:
+            check_case(fallback_schema, f"fallback output: {vector['name']}", vector["expected"], True)
+            checked += 1
+    valid_fallback = load_json(ROOT / "conformance/color/srgb-fallback-vectors.json")[0]["expected"]
+    for name, field, value in (
+        ("component", "components", ["none", 0.5, 0.875]),
+        ("alpha", "alpha", 1.1),
+        ("space", "colorSpace", "display-p3"),
+    ):
+        invalid = copy.deepcopy(valid_fallback)
+        invalid[field] = value
+        check_case(fallback_schema, f"fallback invalid {name}", invalid, False)
         checked += 1
 
     duplicate_spatial = ROOT / "conformance/spatial/invalid-duplicate-role.json"
