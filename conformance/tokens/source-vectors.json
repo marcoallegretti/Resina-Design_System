@@ -1,0 +1,32 @@
+[
+  {
+    "name": "unique source parses without changing its values",
+    "source": "{\"group\":{\"token\":{\"$type\":\"number\",\"$value\":2}},\"other\":[true,null,\"text\"]}",
+    "expected": {"group": {"token": {"$type": "number", "$value": 2}}, "other": [true, null, "text"]}
+  },
+  {
+    "name": "duplicate token names are rejected",
+    "source": "{\"group\":{\"token\":{\"$value\":1},\"token\":{\"$value\":2}}}",
+    "error": "duplicate JSON member at #/group/token"
+  },
+  {
+    "name": "duplicate token properties are rejected",
+    "source": "{\"token\":{\"$value\":1,\"$value\":2}}",
+    "error": "duplicate JSON member at #/token/$value"
+  },
+  {
+    "name": "escaped and literal names are the same member",
+    "source": "{\"name\":1,\"n\\u0061me\":2}",
+    "error": "duplicate JSON member at #/name"
+  },
+  {
+    "name": "nested array objects report escaped paths",
+    "source": "{\"a/b\":[{\"~\":1,\"~\":2}]}",
+    "error": "duplicate JSON member at #/a~1b/0/~0"
+  },
+  {
+    "name": "trailing data is rejected",
+    "source": "{} {}",
+    "error": "trailing characters"
+  }
+]

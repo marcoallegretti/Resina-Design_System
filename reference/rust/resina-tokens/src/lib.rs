@@ -3,12 +3,14 @@ use std::fmt;
 
 mod document;
 mod extensions;
+mod parse;
 mod structure;
 mod types;
 mod values;
 
 pub use document::{DocumentError, DocumentErrorKind, ResolvedToken, resolve_token_document};
 pub use extensions::{ExtensionError, ExtensionErrorKind, materialize_group_extensions};
+pub use parse::parse_token_document;
 pub use structure::{StructureError, StructureErrorKind, validate_document_structure};
 pub use types::{TypeError, TypeErrorKind, resolve_token_type};
 pub use values::{ValueError, ValueErrorKind, validate_resolved_value};
