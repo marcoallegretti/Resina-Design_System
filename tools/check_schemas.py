@@ -1,5 +1,6 @@
 import copy
 import json
+import math
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -20,11 +21,29 @@ def load_json(path):
     def invalid_constant(value):
         raise ValueError(f"invalid JSON number {value} in {path}")
 
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError(f"JSON number exceeds finite range in {path}")
+        return number
+
+    def finite_int(value):
+        number = int(value)
+        try:
+            finite = math.isfinite(float(number))
+        except OverflowError:
+            finite = False
+        if not finite:
+            raise ValueError(f"JSON number exceeds finite range in {path}")
+        return number
+
     with path.open(encoding="utf-8") as source:
         return json.load(
             source,
             object_pairs_hook=unique_members,
             parse_constant=invalid_constant,
+            parse_float=finite_float,
+            parse_int=finite_int,
         )
 
 
@@ -109,6 +128,16 @@ def main():
         path = ROOT / "conformance" / "environment" / filename
         check_case(environment, str(path.relative_to(ROOT)), load_json(path), valid)
         checked += 1
+
+    oversized = ROOT / "conformance/environment/invalid-nonfinite-number.json"
+    try:
+        load_json(oversized)
+    except ValueError as error:
+        if "exceeds finite range" not in str(error):
+            raise
+    else:
+        raise AssertionError(f"{oversized}: non-finite number was accepted")
+    checked += 1
 
     density_base = load_json(ROOT / "conformance/environment/valid-mixed-input.json")
     for vector in load_json(ROOT / "conformance/environment/density-vectors.json"):

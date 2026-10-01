@@ -361,6 +361,14 @@ mod tests {
             let error = serde_json::from_str::<EnvironmentSnapshot>(source).unwrap_err();
             assert!(error.to_string().contains(expected), "{error}");
         }
+        let overflow = serde_json::from_str::<EnvironmentSnapshot>(include_str!(
+            "../../../../conformance/environment/invalid-nonfinite-number.json"
+        ))
+        .unwrap_err();
+        assert!(
+            overflow.to_string().contains("number out of range"),
+            "{overflow}"
+        );
     }
 
     #[test]
