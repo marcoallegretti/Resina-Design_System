@@ -54,6 +54,7 @@ version = "0.1.0"
 dependencies = [
  "resina-environment",
  "resina-model",
+ "resina-tokens",
  "serde_json",
 ]
 

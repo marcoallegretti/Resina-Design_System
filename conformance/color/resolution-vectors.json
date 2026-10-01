@@ -1,0 +1,315 @@
+[
+  {
+    "name": "complete color binding",
+    "assignments": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.sample1",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.sample2",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": "palette.sample2",
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.sample1",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "focus": "palette.sample2",
+        "selection": "palette.sample0"
+      }
+    },
+    "tokens": {
+      "palette.sample0": {
+        "token_type": "color",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "palette.sample1": {
+        "token_type": "color",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      "palette.sample2": {
+        "token_type": "color",
+        "value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.7,
+            0.1,
+            30
+          ]
+        }
+      }
+    },
+    "expected": {
+      "accent.primary": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      },
+      "accent.secondary": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ]
+      },
+      "accent.tertiary": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7,
+          0.1,
+          30
+        ]
+      },
+      "surface.base": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      },
+      "surface.low": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ]
+      },
+      "surface.high": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7,
+          0.1,
+          30
+        ]
+      },
+      "surface.chrome": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      },
+      "content.primary": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ]
+      },
+      "content.secondary": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7,
+          0.1,
+          30
+        ]
+      },
+      "content.muted": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      },
+      "content.inverse": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ]
+      },
+      "outline": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7,
+          0.1,
+          30
+        ]
+      },
+      "outline.strong": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      },
+      "status.error": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ]
+      },
+      "status.warning": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7,
+          0.1,
+          30
+        ]
+      },
+      "status.success": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      },
+      "status.info": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ]
+      },
+      "focus": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7,
+          0.1,
+          30
+        ]
+      },
+      "selection": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  {
+    "name": "collect missing, wrong-type, and malformed color errors",
+    "assignments": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "accent.primary": "palette.sample0",
+        "accent.secondary": "palette.absent",
+        "accent.tertiary": "palette.sample2",
+        "surface.base": "palette.sample0",
+        "surface.low": "palette.sample1",
+        "surface.high": "palette.number",
+        "surface.chrome": "palette.sample0",
+        "content.primary": "palette.sample1",
+        "content.secondary": "palette.sample2",
+        "content.muted": "palette.sample0",
+        "content.inverse": "palette.sample1",
+        "outline": "palette.sample2",
+        "outline.strong": "palette.sample0",
+        "status.error": "palette.invalid",
+        "status.warning": "palette.sample2",
+        "status.success": "palette.sample0",
+        "status.info": "palette.sample1",
+        "focus": "palette.sample2",
+        "selection": "palette.sample0"
+      }
+    },
+    "tokens": {
+      "palette.sample0": {
+        "token_type": "color",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "palette.sample1": {
+        "token_type": "color",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      "palette.sample2": {
+        "token_type": "color",
+        "value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.7,
+            0.1,
+            30
+          ]
+        }
+      },
+      "palette.number": {
+        "token_type": "number",
+        "value": 4
+      },
+      "palette.invalid": {
+        "token_type": "color",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.2,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "errors": [
+      {
+        "kind": "MissingToken",
+        "role": "accent.secondary",
+        "tokenPath": "palette.absent",
+        "detail": null
+      },
+      {
+        "kind": "WrongTokenType",
+        "role": "surface.high",
+        "tokenPath": "palette.number",
+        "detail": "number"
+      },
+      {
+        "kind": "InvalidColorValue",
+        "role": "status.error",
+        "tokenPath": "palette.invalid",
+        "detail": "OutOfRange at #/$value/components/0"
+      }
+    ]
+  }
+]

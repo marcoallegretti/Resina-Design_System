@@ -1,5 +1,81 @@
 use resina_environment::{AccessibilityPreferences, QualityPolicy, RendererCapabilities};
-use resina_model::FrostRepresentation;
+use resina_model::{ColorAssignments, ColorRole, FrostRepresentation};
+use resina_tokens::{ResolvedToken, validate_resolved_value};
+use serde_json::Value;
+use std::{collections::BTreeMap, fmt};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ColorResolutionErrorKind {
+    MissingToken,
+    WrongTokenType,
+    InvalidColorValue,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ColorResolutionError {
+    pub kind: ColorResolutionErrorKind,
+    pub role: ColorRole,
+    pub token_path: String,
+    pub detail: Option<String>,
+}
+
+impl fmt::Display for ColorResolutionError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            formatter,
+            "{:?} for {:?} at {}",
+            self.kind, self.role, self.token_path
+        )?;
+        if let Some(detail) = &self.detail {
+            write!(formatter, ": {detail}")?;
+        }
+        Ok(())
+    }
+}
+
+impl std::error::Error for ColorResolutionError {}
+
+pub fn resolve_semantic_colors(
+    assignments: &ColorAssignments,
+    tokens: &BTreeMap<String, ResolvedToken>,
+) -> Result<BTreeMap<ColorRole, Value>, Vec<ColorResolutionError>> {
+    let mut colors = BTreeMap::new();
+    let mut errors = Vec::new();
+    for role in ColorRole::ALL {
+        let path = assignments.token_path_for(role);
+        let result = match tokens.get(path) {
+            None => Err((ColorResolutionErrorKind::MissingToken, None)),
+            Some(token) if token.token_type != "color" => Err((
+                ColorResolutionErrorKind::WrongTokenType,
+                Some(token.token_type.clone()),
+            )),
+            Some(token) => validate_resolved_value("color", &token.value)
+                .map(|()| token.value.clone())
+                .map_err(|error| {
+                    (
+                        ColorResolutionErrorKind::InvalidColorValue,
+                        Some(error.to_string()),
+                    )
+                }),
+        };
+        match result {
+            Ok(value) => {
+                colors.insert(role, value);
+            }
+            Err((kind, detail)) => errors.push(ColorResolutionError {
+                kind,
+                role,
+                token_path: path.to_owned(),
+                detail,
+            }),
+        }
+    }
+    if errors.is_empty() {
+        Ok(colors)
+    } else {
+        Err(errors)
+    }
+}
 
 pub fn resolve_frost_representation(
     capabilities: &RendererCapabilities,
@@ -29,7 +105,65 @@ pub fn resolve_frost_representation(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json::Value;
+
+    #[test]
+    fn semantic_color_resolution_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/resolution-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let assignments: ColorAssignments =
+                serde_json::from_value(vector["assignments"].clone()).unwrap();
+            let tokens = vector["tokens"]
+                .as_object()
+                .unwrap()
+                .iter()
+                .map(|(path, token)| {
+                    (
+                        path.clone(),
+                        ResolvedToken {
+                            token_type: token["token_type"].as_str().unwrap().to_owned(),
+                            value: token["value"].clone(),
+                        },
+                    )
+                })
+                .collect();
+            let result = resolve_semantic_colors(&assignments, &tokens);
+            if let Some(expected) = vector.get("expected") {
+                let actual = result.unwrap();
+                assert_eq!(actual.len(), ColorRole::ALL.len(), "{}", vector["name"]);
+                for role in ColorRole::ALL {
+                    let name = serde_json::to_value(role).unwrap();
+                    assert_eq!(
+                        actual[&role],
+                        expected[name.as_str().unwrap()],
+                        "{}: {name}",
+                        vector["name"]
+                    );
+                }
+            } else {
+                let errors = result.unwrap_err();
+                let actual: Vec<_> = errors
+                    .iter()
+                    .map(|error| {
+                        serde_json::json!({
+                            "kind": format!("{:?}", error.kind),
+                            "role": error.role,
+                            "tokenPath": error.token_path,
+                            "detail": error.detail
+                        })
+                    })
+                    .collect();
+                assert_eq!(
+                    serde_json::to_value(actual).unwrap(),
+                    vector["errors"],
+                    "{}",
+                    vector["name"]
+                );
+            }
+        }
+    }
 
     #[test]
     fn frost_fallback_conformance_vectors() {
