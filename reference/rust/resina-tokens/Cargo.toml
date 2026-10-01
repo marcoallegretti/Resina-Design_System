@@ -1,0 +1,8 @@
+[package]
+name = "resina-tokens"
+version = "0.1.0"
+edition = "2024"
+description = "DTCG token reference resolution for Resina"
+
+[dependencies]
+serde_json = "1"

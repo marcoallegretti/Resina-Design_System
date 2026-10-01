@@ -1,0 +1,139 @@
+[
+  {
+    "name": "chained curly and pointer aliases",
+    "document": {
+      "base": { "accent": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0.2, 0.4, 0.8] } } },
+      "semantic": { "accent": { "$type": "color", "$value": "{base.accent}" } },
+      "control": { "accent": { "$type": "color", "$ref": "#/semantic/accent" } }
+    },
+    "path": "control.accent",
+    "expected": { "colorSpace": "srgb", "components": [0.2, 0.4, 0.8] }
+  },
+  {
+    "name": "property reference inside a value",
+    "document": {
+      "base": { "space": { "$type": "dimension", "$value": { "value": 8, "unit": "px" } } },
+      "semantic": { "space": { "$type": "dimension", "$value": { "value": { "$ref": "#/base/space/$value/value" }, "unit": "px" } } }
+    },
+    "path": "semantic.space",
+    "expected": { "value": 8, "unit": "px" }
+  },
+  {
+    "name": "escaped pointer and root token",
+    "document": {
+      "tone": { "$root": { "$type": "number", "$value": 0.5 } },
+      "a/b~c": { "$type": "number", "$ref": "#/tone/$root/$value" },
+      "copy": { "$type": "number", "$ref": "#/a~1b~0c" }
+    },
+    "path": "copy",
+    "expected": 0.5
+  },
+  {
+    "name": "direct root token path",
+    "document": { "tone": { "$root": { "$type": "number", "$value": 0.5 } } },
+    "path": "tone.$root",
+    "expected": 0.5
+  },
+  {
+    "name": "percent-encoded pointer segment",
+    "document": {
+      "space name": { "$type": "number", "$value": 0.5 },
+      "alias": { "$type": "number", "$ref": "#/space%20name/$value" }
+    },
+    "path": "alias",
+    "expected": 0.5
+  },
+  {
+    "name": "literal percent in token name",
+    "document": {
+      "half%off": { "$type": "number", "$value": 0.5 },
+      "alias": { "$type": "number", "$ref": "#/half%25off" }
+    },
+    "path": "alias",
+    "expected": 0.5
+  },
+  {
+    "name": "direct path with percent in token name",
+    "document": { "half%off": { "$type": "number", "$value": 0.5 } },
+    "path": "half%off",
+    "expected": 0.5
+  },
+  {
+    "name": "array element pointer",
+    "document": {
+      "base": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0.2, 0.4, 0.8] } },
+      "channel": { "$type": "number", "$ref": "#/base/$value/components/1" }
+    },
+    "path": "channel",
+    "expected": 0.4
+  },
+  {
+    "name": "literal string ending in brace",
+    "document": { "family": { "$type": "fontFamily", "$value": "Display}" } },
+    "path": "family",
+    "expected": "Display}"
+  },
+  {
+    "name": "circular alias",
+    "document": {
+      "a": { "$type": "number", "$value": "{b}" },
+      "b": { "$type": "number", "$ref": "#/a" }
+    },
+    "path": "a",
+    "error": "CircularReference"
+  },
+  {
+    "name": "equivalent escaped pointer cycle",
+    "document": { "a": { "$type": "number", "$ref": "#/%61" } },
+    "path": "a",
+    "error": "CircularReference"
+  },
+  {
+    "name": "curly alias cannot target a group",
+    "document": {
+      "group": { "number": { "$type": "number", "$value": 1 } },
+      "alias": { "$type": "number", "$value": "{group}" }
+    },
+    "path": "alias",
+    "error": "NonTokenTarget"
+  },
+  {
+    "name": "invalid pointer escape",
+    "document": { "alias": { "$type": "number", "$ref": "#/group/~2" } },
+    "path": "alias",
+    "error": "InvalidReference"
+  },
+  {
+    "name": "missing pointer target",
+    "document": { "alias": { "$type": "number", "$ref": "#/absent" } },
+    "path": "alias",
+    "error": "MissingTarget"
+  },
+  {
+    "name": "array index with leading zero",
+    "document": {
+      "base": { "$type": "fontFamily", "$value": ["A", "B"] },
+      "alias": { "$type": "fontFamily", "$ref": "#/base/$value/01" }
+    },
+    "path": "alias",
+    "error": "MissingTarget"
+  },
+  {
+    "name": "conflicting value and reference",
+    "document": { "alias": { "$type": "number", "$value": 1, "$ref": "#/absent" } },
+    "path": "alias",
+    "error": "ConflictingValueAndReference"
+  },
+  {
+    "name": "malformed curly alias",
+    "document": { "alias": { "$type": "number", "$value": "{missing" } },
+    "path": "alias",
+    "error": "InvalidReference"
+  },
+  {
+    "name": "invalid requested token path",
+    "document": { "valid": { "$type": "number", "$value": 1 } },
+    "path": "bad..path",
+    "error": "InvalidTokenPath"
+  }
+]
