@@ -2,8 +2,8 @@
   {
     "name": "all material roles are explicit",
     "document": {
-      "schemaVersion": "0.1.0",
-      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
+      "schemaVersion": "0.2.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"},
       "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
       "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
     },
@@ -12,7 +12,7 @@
       "surface.content": "cast",
       "surface.chrome": "frost",
       "surface.raised": "cast",
-      "surface.transient": "frost",
+      "surface.transient": "gel",
       "control.passive": "cast",
       "control.interactive": "elastomer",
       "control.primary": "elastomer",
@@ -24,7 +24,7 @@
   {
     "name": "missing role is rejected",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
       "control": {"passive": "cast", "interactive": "elastomer"},
       "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
@@ -34,7 +34,7 @@
   {
     "name": "unknown role is rejected",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost", "brand": "gel"},
       "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
       "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
@@ -44,7 +44,7 @@
   {
     "name": "unknown material family is rejected",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "surface": {"base": "cast", "content": "cast", "chrome": "glass", "raised": "cast", "transient": "frost"},
       "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
       "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
@@ -54,7 +54,7 @@
   {
     "name": "gel cannot be the default structural surface",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "surface": {"base": "gel", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
       "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
       "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
@@ -62,9 +62,39 @@
     "error": "structural material"
   },
   {
-    "name": "unsupported schema version is rejected",
+    "name": "gel cannot be the default passive control",
     "document": {
       "schemaVersion": "0.2.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"},
+      "control": {"passive": "gel", "interactive": "elastomer", "primary": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "structural material"
+  },
+  {
+    "name": "gel cannot be the default interactive control",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"},
+      "control": {"passive": "cast", "interactive": "gel", "primary": "elastomer"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "structural material"
+  },
+  {
+    "name": "gel cannot be the default primary control",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"},
+      "control": {"passive": "cast", "interactive": "elastomer", "primary": "gel"},
+      "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
+    },
+    "error": "structural material"
+  },
+  {
+    "name": "unsupported schema version is rejected",
+    "document": {
+      "schemaVersion": "0.1.0",
       "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "frost"},
       "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"},
       "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}

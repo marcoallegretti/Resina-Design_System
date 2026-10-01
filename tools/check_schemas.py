@@ -65,6 +65,7 @@ def main():
         "schemas/state-set.schema.json",
         "schemas/surface-form.schema.json",
         "schemas/treatment-stack.schema.json",
+        "schemas/versions/material-assignments-0.1.0.schema.json",
         "schemas/versions/environment-0.1.0.schema.json",
     }
     actual_paths = {path.relative_to(ROOT).as_posix() for path in schema_paths}
@@ -82,6 +83,20 @@ def main():
         ("schemas/treatment-stack.schema.json", "conformance/materials/treatment-stack-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    previous_materials = validator_for("schemas/versions/material-assignments-0.1.0.schema.json")
+    current_materials = validator_for("schemas/material-assignments.schema.json")
+    legacy_materials = copy.deepcopy(
+        load_json(ROOT / "conformance/materials/role-assignment-vectors.json")[0]["document"]
+    )
+    legacy_materials["schemaVersion"] = "0.1.0"
+    legacy_materials["control"]["primary"] = "gel"
+    check_case(previous_materials, "material assignments 0.1.0 archive", legacy_materials, True)
+    check_case(current_materials, "current material assignments reject 0.1.0", legacy_materials, False)
+    checked += 2
+    legacy_materials["schemaVersion"] = "0.2.0"
+    check_case(current_materials, "current material assignments reject structural gel", legacy_materials, False)
+    checked += 1
 
     environment = validator_for("schemas/environment.schema.json")
     for filename, valid in (

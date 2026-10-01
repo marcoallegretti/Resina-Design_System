@@ -222,7 +222,7 @@ pub enum MaterialRole {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct MaterialAssignments {
-    #[serde(deserialize_with = "deserialize_version")]
+    #[serde(deserialize_with = "deserialize_material_version")]
     schema_version: String,
     surface: SurfaceAssignments,
     control: ControlAssignments,
@@ -246,8 +246,11 @@ struct SurfaceAssignments {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct ControlAssignments {
+    #[serde(deserialize_with = "deserialize_structural_material")]
     passive: MaterialFamily,
+    #[serde(deserialize_with = "deserialize_structural_material")]
     interactive: MaterialFamily,
+    #[serde(deserialize_with = "deserialize_structural_material")]
     primary: MaterialFamily,
 }
 
@@ -283,6 +286,17 @@ fn deserialize_version<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Str
         Ok(version)
     } else {
         Err(D::Error::custom("schemaVersion must be 0.1.0"))
+    }
+}
+
+fn deserialize_material_version<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<String, D::Error> {
+    let version = String::deserialize(deserializer)?;
+    if version == "0.2.0" {
+        Ok(version)
+    } else {
+        Err(D::Error::custom("schemaVersion must be 0.2.0"))
     }
 }
 
