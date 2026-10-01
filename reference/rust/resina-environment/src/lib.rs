@@ -502,6 +502,33 @@ mod tests {
     }
 
     #[test]
+    fn density_is_explicit_across_viewing_and_input_profiles() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/environment/density-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let mut source = valid();
+            for field in [
+                "densityPreference",
+                "viewingProfile",
+                "inputCapabilities",
+                "textScale",
+            ] {
+                source[field] = vector[field].clone();
+            }
+            let snapshot: EnvironmentSnapshot = serde_json::from_value(source).unwrap();
+            assert_eq!(
+                serde_json::to_value(snapshot.density_preference()).unwrap(),
+                vector["densityPreference"],
+                "{}",
+                vector["name"]
+            );
+            assert_eq!(snapshot.text_scale(), vector["textScale"].as_f64().unwrap());
+        }
+    }
+
+    #[test]
     fn rejects_ambiguous_inputs_and_unsupported_version() {
         rejection(
             valid(),

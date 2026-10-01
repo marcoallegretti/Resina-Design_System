@@ -13,7 +13,7 @@ The JSON object has `schemaVersion` equal to `0.2.0` and these members:
 | `textScale` | Positive user-preferred multiplier for text size. |
 | `inputCapabilities` | Set of currently available abstract input capabilities. Multiple capabilities may coexist. An empty set means none was reported. |
 | `viewingProfile` | Explicit `near`, `desk`, `couch`, or `unknown`; it MUST NOT be inferred solely from input capabilities. |
-| `densityPreference` | Explicit `compact`, `standard`, `comfortable`, or `immersive`. |
+| `densityPreference` | Explicit `compact`, `standard`, `comfortable`, or `immersive`; see [density intent](17-density.md). |
 | `accessibilityPreferences` | Explicit `reducedMotion`, `reducedTransparency`, and `highContrast` booleans. `false` means the preference is not requested, not that a backend may disregard accessibility. |
 | `locale` | Nonempty locale identifier supplied by the host. This field is opaque to the environment model; localization behavior and identifier validation belong to the localization contract. |
 | `layoutDirection` | Explicit `ltr` or `rtl`; the resolver MUST NOT infer it from `locale`. |

@@ -1,0 +1,41 @@
+[
+  {
+    "name": "compact with couch and gamepad remains compact",
+    "densityPreference": "compact",
+    "viewingProfile": "couch",
+    "inputCapabilities": [
+      "gamepad",
+      "directionalNavigation"
+    ],
+    "textScale": 1.5
+  },
+  {
+    "name": "standard with touch remains standard",
+    "densityPreference": "standard",
+    "viewingProfile": "near",
+    "inputCapabilities": [
+      "directTouch",
+      "coarsePointer"
+    ],
+    "textScale": 2
+  },
+  {
+    "name": "comfortable with fine pointer remains comfortable",
+    "densityPreference": "comfortable",
+    "viewingProfile": "desk",
+    "inputCapabilities": [
+      "finePointer",
+      "hover"
+    ],
+    "textScale": 1
+  },
+  {
+    "name": "immersive with keyboard remains immersive",
+    "densityPreference": "immersive",
+    "viewingProfile": "desk",
+    "inputCapabilities": [
+      "keyboard"
+    ],
+    "textScale": 1.25
+  }
+]

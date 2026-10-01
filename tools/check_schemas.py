@@ -93,6 +93,14 @@ def main():
         check_case(environment, str(path.relative_to(ROOT)), load_json(path), valid)
         checked += 1
 
+    density_base = load_json(ROOT / "conformance/environment/valid-mixed-input.json")
+    for vector in load_json(ROOT / "conformance/environment/density-vectors.json"):
+        document = copy.deepcopy(density_base)
+        for field in ("densityPreference", "viewingProfile", "inputCapabilities", "textScale"):
+            document[field] = vector[field]
+        check_case(environment, f"density: {vector['name']}", document, True)
+        checked += 1
+
     previous = validator_for("schemas/versions/environment-0.1.0.schema.json")
     current = load_json(ROOT / "conformance/environment/valid-mixed-input.json")
     missing_capability = copy.deepcopy(current)
