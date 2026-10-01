@@ -1,5 +1,8 @@
-use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{Error as _, MapAccess, Visitor},
+};
+use std::{collections::BTreeMap, fmt};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum SpatialRole {
@@ -42,7 +45,34 @@ pub struct SpatialAssignments {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct SpatialAssignmentsInput {
     schema_version: String,
+    #[serde(deserialize_with = "deserialize_unique_roles")]
     roles: BTreeMap<SpatialRole, TokenPath>,
+}
+
+fn deserialize_unique_roles<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<BTreeMap<SpatialRole, TokenPath>, D::Error> {
+    struct UniqueRoles;
+
+    impl<'de> Visitor<'de> for UniqueRoles {
+        type Value = BTreeMap<SpatialRole, TokenPath>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("a spatial role mapping without duplicate members")
+        }
+
+        fn visit_map<A: MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
+            let mut roles = BTreeMap::new();
+            while let Some((role, path)) = access.next_entry()? {
+                if roles.insert(role, path).is_some() {
+                    return Err(A::Error::custom("duplicate spatial role"));
+                }
+            }
+            Ok(roles)
+        }
+    }
+
+    deserializer.deserialize_map(UniqueRoles)
 }
 
 impl TryFrom<SpatialAssignmentsInput> for SpatialAssignments {
@@ -126,5 +156,15 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn duplicate_role_member_is_rejected_before_value_conversion() {
+        let source = include_str!("../../../../conformance/spatial/invalid-duplicate-role.json");
+        let error = serde_json::from_str::<SpatialAssignments>(source).unwrap_err();
+        assert!(
+            error.to_string().contains("duplicate spatial role"),
+            "{error}"
+        );
     }
 }

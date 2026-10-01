@@ -105,6 +105,16 @@ def main():
     ):
         checked += check_vectors(schema, vectors)
 
+    duplicate_spatial = ROOT / "conformance/spatial/invalid-duplicate-role.json"
+    try:
+        load_json(duplicate_spatial)
+    except ValueError as error:
+        if "duplicate JSON member" not in str(error):
+            raise
+    else:
+        raise AssertionError(f"{duplicate_spatial}: duplicate role was accepted")
+    checked += 1
+
     previous_materials = validator_for("schemas/versions/material-assignments-0.1.0.schema.json")
     current_materials = validator_for("schemas/material-assignments.schema.json")
     legacy_materials = copy.deepcopy(

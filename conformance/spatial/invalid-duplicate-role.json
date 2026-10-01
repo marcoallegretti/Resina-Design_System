@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "0.1.0",
+  "roles": {
+    "space.control.inline": "foundation.space.0",
+    "space.control.\u0069nline": "foundation.space.8",
+    "space.control.block": "foundation.space.1",
+    "space.container.inner": "foundation.space.2",
+    "space.container.outer": "foundation.space.3",
+    "space.group": "foundation.space.4",
+    "space.section": "foundation.space.5",
+    "space.page": "foundation.space.6"
+  }
+}

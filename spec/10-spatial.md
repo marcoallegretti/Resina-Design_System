@@ -12,7 +12,7 @@ Spatial roles name layout intent without fixing a physical scale, renderer, tool
 | `space.section` | Separation between distinct sections. |
 | `space.page` | Inset from the usable page or surface boundary. |
 
-Each role MUST map to a nonempty path of a resolved DTCG `dimension` token. Missing or unknown roles, unsupported versions, missing tokens, wrong types, invalid dimensions, and negative distances are errors. Multiple roles MAY share one token. The role does not imply a physical direction in right-to-left layouts: inline and block follow the resolved layout flow. Safe-area insets are separate environment geometry and are not included in a spatial token.
+Each role MUST map to a nonempty path of a resolved DTCG `dimension` token. Missing, unknown, or duplicate role members, unsupported versions, missing tokens, wrong types, invalid dimensions, and negative distances are errors. Duplicate members MUST be rejected before converting the source JSON to an object tree, including names that decode to the same string through escapes. Multiple roles MAY share one token. The role does not imply a physical direction in right-to-left layouts: inline and block follow the resolved layout flow. Safe-area insets are separate environment geometry and are not included in a spatial token.
 
 Headless spatial binding preserves each validated DTCG dimension object, including its unit, without converting it to pixels. It reports every failed role in the order above. The [assignment vectors](../conformance/spatial/assignment-vectors.json) and [resolution vectors](../conformance/spatial/resolution-vectors.json) define this contract. This binding is semantic data, not a complete layout or render-ready Resina IR.
 
