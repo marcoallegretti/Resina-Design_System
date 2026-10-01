@@ -197,7 +197,7 @@ pub enum FrostRepresentation {
     OpaqueDimensional,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum MaterialRole {
     #[serde(rename = "surface.base")]
     SurfaceBase,
@@ -221,6 +221,22 @@ pub enum MaterialRole {
     FeedbackSelection,
     #[serde(rename = "feedback.drag")]
     FeedbackDrag,
+}
+
+impl MaterialRole {
+    pub const ALL: [Self; 11] = [
+        Self::SurfaceBase,
+        Self::SurfaceContent,
+        Self::SurfaceChrome,
+        Self::SurfaceRaised,
+        Self::SurfaceTransient,
+        Self::ControlPassive,
+        Self::ControlInteractive,
+        Self::ControlPrimary,
+        Self::FeedbackFocus,
+        Self::FeedbackSelection,
+        Self::FeedbackDrag,
+    ];
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -1,9 +1,11 @@
 import copy
 import json
 import math
+from functools import lru_cache
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,10 +49,19 @@ def load_json(path):
         )
 
 
+@lru_cache(maxsize=1)
+def schema_registry():
+    registry = Registry()
+    for path in (ROOT / "schemas").rglob("*.schema.json"):
+        schema = load_json(path)
+        registry = registry.with_resource(schema["$id"], Resource.from_contents(schema))
+    return registry
+
+
 def validator_for(path):
     schema = load_json(ROOT / path)
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema)
+    return Draft202012Validator(schema, registry=schema_registry())
 
 
 def check_case(validator, name, document, expected_valid):
@@ -80,6 +91,7 @@ def main():
     expected_paths = {
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
+        "schemas/headless-resolution.schema.json",
         "schemas/material-assignments.schema.json",
         "schemas/spatial-assignments.schema.json",
         "schemas/state-set.schema.json",
@@ -106,6 +118,20 @@ def main():
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    headless = validator_for("schemas/headless-resolution.schema.json")
+    valid_headless = load_json(ROOT / "conformance/headless/valid-request.json")
+    check_case(headless, "headless valid request", valid_headless, True)
+    checked += 1
+    for name, change in (
+        ("unknown member", lambda document: document.update({"rendererName": "example"})),
+        ("missing input", lambda document: document.pop("environment")),
+        ("nested role", lambda document: document["colorAssignments"]["roles"].pop("focus")),
+    ):
+        document = copy.deepcopy(valid_headless)
+        change(document)
+        check_case(headless, f"headless {name}", document, False)
+        checked += 1
 
     duplicate_spatial = ROOT / "conformance/spatial/invalid-duplicate-role.json"
     try:

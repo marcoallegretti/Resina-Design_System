@@ -6,6 +6,10 @@ use std::{collections::BTreeMap, fmt};
 
 mod spatial;
 pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
+mod headless;
+pub use headless::{
+    HeadlessBindingError, HeadlessResolution, HeadlessResolutionError, resolve_headless_source,
+};
 mod target;
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 mod typography;
