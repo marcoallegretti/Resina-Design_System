@@ -1,7 +1,7 @@
 use crate::{HeadlessResolution, SrgbFallback};
 use resina_model::{
     ColorRole, FrostRepresentation, MaterialFamily, MaterialRole, StateSet, SurfaceForm,
-    SurfaceIntent,
+    SurfaceIntent, TreatmentStack,
 };
 use serde::Serialize;
 use serde_json::Value;
@@ -18,6 +18,7 @@ pub struct BoundSurface {
     color_fallback: SrgbFallback,
     form: SurfaceForm,
     states: StateSet,
+    treatment_stack: TreatmentStack,
     #[serde(skip_serializing_if = "Option::is_none")]
     frost_representation: Option<FrostRepresentation>,
 }
@@ -49,6 +50,10 @@ impl BoundSurface {
 
     pub fn states(&self) -> &StateSet {
         &self.states
+    }
+
+    pub fn treatment_stack(&self) -> &TreatmentStack {
+        &self.treatment_stack
     }
 
     pub fn frost_representation(&self) -> Option<FrostRepresentation> {
@@ -100,7 +105,7 @@ pub fn bind_surface(
     let frost_representation =
         (material_family == MaterialFamily::Frost).then(|| context.frost_representation());
     Ok(BoundSurface {
-        schema_version: "0.1.0",
+        schema_version: "0.2.0",
         material_role,
         color_role,
         material_family,
@@ -108,6 +113,7 @@ pub fn bind_surface(
         color_fallback,
         form: intent.form().clone(),
         states: intent.states().clone(),
+        treatment_stack: intent.treatment_stack().clone(),
         frost_representation,
     })
 }

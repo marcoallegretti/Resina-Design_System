@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:resina:schema:surface-binding:0.2.0",
+  "$id": "urn:resina:schema:surface-binding:0.1.0",
   "title": "Resina Surface Binding Intent",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "materialRole", "colorRole", "form", "states", "treatmentStack"],
+  "required": ["schemaVersion", "materialRole", "colorRole", "form", "states"],
   "properties": {
-    "schemaVersion": {"const": "0.2.0"},
+    "schemaVersion": {"const": "0.1.0"},
     "materialRole": {
       "enum": ["surface.base", "surface.content", "surface.chrome", "surface.raised", "surface.transient", "control.passive", "control.interactive", "control.primary", "feedback.focus", "feedback.selection", "feedback.drag"]
     },
@@ -14,7 +14,6 @@
       "enum": ["accent.primary", "accent.secondary", "accent.tertiary", "surface.base", "surface.low", "surface.high", "surface.chrome", "content.primary", "content.secondary", "content.muted", "content.inverse", "outline", "outline.strong", "status.error", "status.warning", "status.success", "status.info", "focus", "selection"]
     },
     "form": {"$ref": "urn:resina:schema:surface-form:0.1.0"},
-    "states": {"$ref": "urn:resina:schema:state-set:0.1.0"},
-    "treatmentStack": {"$ref": "urn:resina:schema:treatment-stack:0.1.0"}
+    "states": {"$ref": "urn:resina:schema:state-set:0.1.0"}
   }
 }

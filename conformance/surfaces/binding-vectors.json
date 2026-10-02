@@ -2,53 +2,416 @@
   {
     "name": "frost chrome retains its selected fallback",
     "document": {
-      "schemaVersion": "0.1.0", "materialRole": "surface.chrome", "colorRole": "surface.chrome",
-      "form": {"schemaVersion": "0.1.0", "shape": "rounded", "elevation": "floating"},
-      "states": {"schemaVersion": "0.1.0", "states": ["focused", "rest"]}
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
     },
     "expected": {
-      "schemaVersion": "0.1.0", "materialRole": "surface.chrome", "colorRole": "surface.chrome", "materialFamily": "frost",
-      "sourceColor": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3]},
-      "colorFallback": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3], "alpha": 1.0},
-      "form": {"schemaVersion": "0.1.0", "shape": "rounded", "elevation": "floating"},
-      "states": {"schemaVersion": "0.1.0", "states": ["rest", "focused"]},
-      "frostRepresentation": "translucentPigmented"
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "materialFamily": "frost",
+      "sourceColor": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ]
+      },
+      "colorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ],
+        "alpha": 1.0
+      },
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest",
+          "focused"
+        ]
+      },
+      "frostRepresentation": "translucentPigmented",
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
     }
   },
   {
     "name": "elastomer control preserves concurrent states",
     "document": {
-      "schemaVersion": "0.1.0", "materialRole": "control.primary", "colorRole": "accent.primary",
-      "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "raised"},
-      "states": {"schemaVersion": "0.1.0", "states": ["selected", "focused", "hover"]}
+      "schemaVersion": "0.2.0",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "raised"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "selected",
+          "focused",
+          "hover"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "focusLens"
+        ]
+      }
     },
     "expected": {
-      "schemaVersion": "0.1.0", "materialRole": "control.primary", "colorRole": "accent.primary", "materialFamily": "elastomer",
-      "sourceColor": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3]},
-      "colorFallback": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3], "alpha": 1.0},
-      "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "raised"},
-      "states": {"schemaVersion": "0.1.0", "states": ["hover", "focused", "selected"]}
+      "schemaVersion": "0.2.0",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "materialFamily": "elastomer",
+      "sourceColor": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ]
+      },
+      "colorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ],
+        "alpha": 1.0
+      },
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "raised"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "selected"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "focusLens"
+        ]
+      }
     }
   },
   {
     "name": "transient gel feedback binds without Frost representation",
     "document": {
-      "schemaVersion": "0.1.0", "materialRole": "feedback.drag", "colorRole": "selection",
-      "form": {"schemaVersion": "0.1.0", "shape": "organic", "elevation": "overlay"},
-      "states": {"schemaVersion": "0.1.0", "states": ["dragging"]}
+      "schemaVersion": "0.2.0",
+      "materialRole": "feedback.drag",
+      "colorRole": "selection",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "organic",
+        "elevation": "overlay"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "dragging"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
     },
     "expected": {
-      "schemaVersion": "0.1.0", "materialRole": "feedback.drag", "colorRole": "selection", "materialFamily": "gel",
-      "sourceColor": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3]},
-      "colorFallback": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3], "alpha": 1.0},
-      "form": {"schemaVersion": "0.1.0", "shape": "organic", "elevation": "overlay"},
-      "states": {"schemaVersion": "0.1.0", "states": ["dragging"]}
+      "schemaVersion": "0.2.0",
+      "materialRole": "feedback.drag",
+      "colorRole": "selection",
+      "materialFamily": "gel",
+      "sourceColor": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ]
+      },
+      "colorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ],
+        "alpha": 1.0
+      },
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "organic",
+        "elevation": "overlay"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "dragging"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
     }
   },
-  {"name": "unknown material role fails", "document": {"schemaVersion": "0.1.0", "materialRole": "surface.unknown", "colorRole": "surface.base", "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "base"}, "states": {"schemaVersion": "0.1.0", "states": ["rest"]}}, "error": "unknown variant"},
-  {"name": "missing color role fails", "document": {"schemaVersion": "0.1.0", "materialRole": "surface.base", "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "base"}, "states": {"schemaVersion": "0.1.0", "states": ["rest"]}}, "error": "missing field"},
-  {"name": "unsupported binding version fails", "document": {"schemaVersion": "0.2.0", "materialRole": "surface.base", "colorRole": "surface.base", "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "base"}, "states": {"schemaVersion": "0.1.0", "states": ["rest"]}}, "error": "schemaVersion must be 0.1.0"},
-  {"name": "invalid nested form fails", "document": {"schemaVersion": "0.1.0", "materialRole": "surface.base", "colorRole": "surface.base", "form": {"schemaVersion": "0.1.0", "shape": "default", "elevation": "base"}, "states": {"schemaVersion": "0.1.0", "states": ["rest"]}}, "error": "unknown variant"},
-  {"name": "duplicate nested state fails", "document": {"schemaVersion": "0.1.0", "materialRole": "surface.base", "colorRole": "surface.base", "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "base"}, "states": {"schemaVersion": "0.1.0", "states": ["focused", "focused"]}}, "error": "duplicates"},
-  {"name": "unknown member fails", "document": {"schemaVersion": "0.1.0", "materialRole": "surface.base", "colorRole": "surface.base", "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "base"}, "states": {"schemaVersion": "0.1.0", "states": ["rest"]}, "backend": "example"}, "error": "unknown field"}
+  {
+    "name": "unknown material role fails",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.unknown",
+      "colorRole": "surface.base",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "base"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
+    },
+    "error": "unknown variant"
+  },
+  {
+    "name": "missing color role fails",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.base",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "base"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
+    },
+    "error": "missing field"
+  },
+  {
+    "name": "unsupported binding version fails",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "materialRole": "surface.base",
+      "colorRole": "surface.base",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "base"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
+    },
+    "error": "schemaVersion must be 0.2.0"
+  },
+  {
+    "name": "invalid nested form fails",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.base",
+      "colorRole": "surface.base",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "default",
+        "elevation": "base"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
+    },
+    "error": "unknown variant"
+  },
+  {
+    "name": "duplicate nested state fails",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.base",
+      "colorRole": "surface.base",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "base"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "focused"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
+    },
+    "error": "duplicates"
+  },
+  {
+    "name": "unknown member fails",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.base",
+      "colorRole": "surface.base",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "base"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      },
+      "backend": "example",
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      }
+    },
+    "error": "unknown field"
+  },
+  {
+    "name": "nested Lens treatments fail",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "raised"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "selected",
+          "focused",
+          "hover"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "lens",
+          "none",
+          "highlightLens"
+        ]
+      }
+    },
+    "error": "lens treatments cannot be nested"
+  },
+  {
+    "name": "missing treatment stack fails",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "soft",
+        "elevation": "raised"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "selected",
+          "focused",
+          "hover"
+        ]
+      }
+    },
+    "error": "missing field"
+  }
 ]

@@ -27,7 +27,7 @@ fn run_stdin(source: &str) -> Output {
 fn scenario() -> Value {
     let vectors: Vec<Value> = serde_json::from_str(VECTORS).unwrap();
     json!({
-        "schemaVersion": "0.1.0",
+        "schemaVersion": "0.2.0",
         "resolution": serde_json::from_str::<Value>(RESOLUTION).unwrap(),
         "surface": vectors[0]["document"]
     })
@@ -55,17 +55,20 @@ fn command_rejects_invalid_scenarios_without_partial_output() {
     missing_role["resolution"]["colorAssignments"]["roles"]["focus"] = json!("missing.color");
     let mut invalid_surface = scenario();
     invalid_surface["surface"]["materialRole"] = json!("surface.unknown");
+    let mut nested_lens = scenario();
+    nested_lens["surface"]["treatmentStack"]["treatments"] = json!(["lens", "none", "focusLens"]);
     let mut invalid_version = scenario();
-    invalid_version["schemaVersion"] = json!("0.2.0");
+    invalid_version["schemaVersion"] = json!("0.1.0");
     let duplicate = scenario().to_string().replacen(
-        "\"schemaVersion\":\"0.1.0\"",
-        "\"schemaVersion\":\"0.1.0\",\"schemaVersion\":\"0.1.0\"",
+        "\"schemaVersion\":\"0.2.0\"",
+        "\"schemaVersion\":\"0.2.0\",\"schemaVersion\":\"0.2.0\"",
         1,
     );
     for (source, diagnostic) in [
         (missing_role.to_string(), "color: MissingToken"),
         (invalid_surface.to_string(), "unknown variant"),
-        (invalid_version.to_string(), "schemaVersion must be 0.1.0"),
+        (nested_lens.to_string(), "lens treatments cannot be nested"),
+        (invalid_version.to_string(), "schemaVersion must be 0.2.0"),
         (duplicate, "duplicate JSON member"),
     ] {
         let output = run_stdin(&source);

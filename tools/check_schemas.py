@@ -104,6 +104,9 @@ def main():
         "schemas/treatment-stack.schema.json",
         "schemas/typography-assignments.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
+        "schemas/versions/surface-binding-0.1.0.schema.json",
+        "schemas/versions/surface-binding-result-0.1.0.schema.json",
+        "schemas/versions/surface-scenario-0.1.0.schema.json",
         "schemas/versions/environment-0.1.0.schema.json",
         "schemas/versions/headless-result-0.1.0.schema.json",
     }
@@ -176,6 +179,28 @@ def main():
         check_case(surface_results, f"surface result: {name}", result, False)
         checked += 1
 
+    archived_binding = copy.deepcopy(surface_vectors[0]["document"])
+    archived_binding["schemaVersion"] = "0.1.0"
+    archived_binding.pop("treatmentStack")
+    check_case(
+        validator_for("schemas/versions/surface-binding-0.1.0.schema.json"),
+        "archived surface binding",
+        archived_binding,
+        True,
+    )
+    check_case(validator_for("schemas/surface-binding.schema.json"), "current binding rejects archive", archived_binding, False)
+    archived_surface = copy.deepcopy(surface_vectors[0]["expected"])
+    archived_surface["schemaVersion"] = "0.1.0"
+    archived_surface.pop("treatmentStack")
+    check_case(
+        validator_for("schemas/versions/surface-binding-result-0.1.0.schema.json"),
+        "archived surface result",
+        archived_surface,
+        True,
+    )
+    check_case(surface_results, "current surface result rejects archive", archived_surface, False)
+    checked += 4
+
     headless = validator_for("schemas/headless-resolution.schema.json")
     valid_headless = load_json(ROOT / "conformance/headless/valid-request.json")
     check_case(headless, "headless valid request", valid_headless, True)
@@ -193,7 +218,7 @@ def main():
     scenario_schema = validator_for("schemas/surface-scenario.schema.json")
     for vector in surface_vectors:
         scenario = {
-            "schemaVersion": "0.1.0",
+            "schemaVersion": "0.2.0",
             "resolution": valid_headless,
             "surface": vector["document"],
         }
@@ -205,12 +230,25 @@ def main():
         )
         checked += 1
     valid_scenario = {
-        "schemaVersion": "0.1.0",
+        "schemaVersion": "0.2.0",
         "resolution": valid_headless,
         "surface": surface_vectors[0]["document"],
     }
+    previous_scenario = {
+        "schemaVersion": "0.1.0",
+        "resolution": valid_headless,
+        "surface": archived_binding,
+    }
+    check_case(
+        validator_for("schemas/versions/surface-scenario-0.1.0.schema.json"),
+        "archived surface scenario",
+        previous_scenario,
+        True,
+    )
+    check_case(scenario_schema, "current scenario rejects archive", previous_scenario, False)
+    checked += 2
     for name, change in (
-        ("unsupported version", lambda document: document.update({"schemaVersion": "0.2.0"})),
+        ("unsupported version", lambda document: document.update({"schemaVersion": "0.1.0"})),
         ("missing surface", lambda document: document.pop("surface")),
         ("unknown member", lambda document: document.update({"backend": "example"})),
         (
