@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:theme-resolution-request:0.1.0",
+  "title": "Resina Theme Resolution Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "themeSource", "externalSources", "environment"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "themeSource": {"type": "string", "minLength": 1},
+    "externalSources": {"type": "object", "additionalProperties": {"type": "string"}},
+    "environment": {"$ref": "urn:resina:schema:environment:0.2.0"}
+  }
+}

@@ -147,6 +147,8 @@ def main():
         "schemas/typography-assignments.schema.json",
         "schemas/theme-source.schema.json",
         "schemas/theme-source-case.schema.json",
+        "schemas/theme-resolution-case.schema.json",
+        "schemas/theme-resolution-request.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
         "schemas/versions/surface-binding-0.1.0.schema.json",
         "schemas/versions/surface-binding-result-0.1.0.schema.json",
@@ -218,6 +220,36 @@ def main():
     theme_source_path = ROOT / "conformance/themes/valid-source.json"
     theme_source_text = theme_source_path.read_text(encoding="utf-8")
     theme_source = parse_json(theme_source_text, theme_source_path)
+    theme_resolution_case_schema = validator_for("schemas/theme-resolution-case.schema.json")
+    theme_resolution_cases = load_json(ROOT / "conformance/themes/resolution-cases.json")
+    theme_resolution_names = set()
+    for case in theme_resolution_cases:
+        check_case(
+            theme_resolution_case_schema,
+            f"theme resolution case: {case.get('name')}",
+            case,
+            True,
+        )
+        if case["name"] in theme_resolution_names:
+            raise ValueError(f"duplicate theme resolution case name: {case['name']}")
+        theme_resolution_names.add(case["name"])
+    theme_request_schema = validator_for("schemas/theme-resolution-request.schema.json")
+    theme_request = {
+        "schemaVersion": "0.1.0",
+        "themeSource": theme_source_text,
+        "externalSources": {},
+        "environment": load_json(ROOT / "conformance/headless/valid-request.json")["environment"],
+    }
+    check_case(theme_request_schema, "theme resolution request", theme_request, True)
+    for field, value in [
+        ("schemaVersion", "0.2.0"),
+        ("themeSource", {}),
+        ("externalSources", {"file.json": 1}),
+        ("unknown", True),
+    ]:
+        invalid_request = copy.deepcopy(theme_request)
+        invalid_request[field] = value
+        check_case(theme_request_schema, f"theme request invalid {field}", invalid_request, False)
     theme_schema = validator_for("schemas/theme-source.schema.json")
     theme_case_schema = validator_for("schemas/theme-source-case.schema.json")
     theme_cases = load_json(ROOT / "conformance/themes/source-cases.json")
@@ -319,7 +351,13 @@ def main():
     ):
         raise ValueError("surface binding material families differ from assignments")
 
-    checked = len(backend_cases) + len(surface_backend_cases) + len(theme_cases) + len(resolver_cases)
+    checked = (
+        len(backend_cases)
+        + len(surface_backend_cases)
+        + len(theme_cases)
+        + len(theme_resolution_cases)
+        + len(resolver_cases)
+    )
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/opaque-color-assignments.schema.json", "conformance/color/opaque-assignment-vectors.json"),

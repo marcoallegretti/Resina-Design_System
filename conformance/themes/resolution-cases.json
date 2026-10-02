@@ -1,0 +1,76 @@
+[
+  {"name":"embedded theme matches headless semantics","outcome":"valid","requestSchemaValid":true},
+  {"name":"inline resolver matches embedded theme","outcome":"valid","requestSchemaValid":true,"sourceVariant":"resolverBackedInline"},
+  {
+    "name":"external foundation supplies authored type and space scales",
+    "outcome":"valid",
+    "requestSchemaValid":true,
+    "sourceVariant":"foundationResolver",
+    "expectedChanges":[
+      {"path":"/typography/display/fontSize/value","value":44},
+      {"path":"/typography/titleLarge/fontSize/value","value":44},
+      {"path":"/typography/title/fontSize/value","value":44},
+      {"path":"/typography/heading/fontSize/value","value":44},
+      {"path":"/typography/bodyLarge/fontSize/value","value":44},
+      {"path":"/typography/body/fontSize/value","value":44},
+      {"path":"/typography/label/fontSize/value","value":44},
+      {"path":"/typography/caption/fontSize/value","value":44},
+      {"path":"/typography/numeric/fontSize/value","value":44},
+      {"path":"/typography/code/fontSize/value","value":44}
+    ]
+  },
+  {
+    "name":"high contrast and keyboard apply to compiled theme",
+    "outcome":"valid",
+    "requestSchemaValid":true,
+    "requestChanges":[
+      {"path":"/environment/accessibilityPreferences/highContrast","value":true},
+      {"path":"/environment/inputCapabilities","value":["keyboard"]}
+    ],
+    "expectedChanges":[
+      {"path":"/frostRepresentation","value":"opaqueDimensional"},
+      {"path":"/minimumHitTarget","value":{"minimumWidth":24,"minimumHeight":24}}
+    ]
+  },
+  {
+    "name":"duplicate member in authored theme is rejected",
+    "outcome":"invalid",
+    "requestSchemaValid":true,
+    "sourceReplace":{
+      "find":"{\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\"",
+      "with":"{\n  \"schemaVersion\": \"0.1.0\",\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\""
+    }
+  },
+  {
+    "name":"invalid resolver context is rejected",
+    "outcome":"invalid",
+    "requestSchemaValid":true,
+    "sourceVariant":"resolverBackedInline",
+    "sourceChanges":[{"path":"/tokenInput","value":{"unknown":"dark"}}]
+  },
+  {
+    "name":"missing external foundation is rejected",
+    "outcome":"invalid",
+    "requestSchemaValid":true,
+    "sourceVariant":"foundationResolver",
+    "omitFoundationSource":true
+  },
+  {
+    "name":"unsupported theme request version is rejected",
+    "outcome":"invalid",
+    "requestSchemaValid":false,
+    "requestChanges":[{"path":"/schemaVersion","value":"0.2.0"}]
+  },
+  {
+    "name":"invalid environment is rejected",
+    "outcome":"invalid",
+    "requestSchemaValid":false,
+    "requestChanges":[{"path":"/environment/inputCapabilities","value":["keyboard","keyboard"]}]
+  },
+  {
+    "name":"text scaling overflow is diagnosed after compilation",
+    "outcome":"invalid",
+    "requestSchemaValid":true,
+    "requestChanges":[{"path":"/environment/textScale","value":1e308}]
+  }
+]

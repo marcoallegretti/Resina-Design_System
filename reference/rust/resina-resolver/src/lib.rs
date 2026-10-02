@@ -32,6 +32,8 @@ mod theme;
 pub use theme::{
     CompiledTheme, ThemeCompilationError, compile_theme_source, compile_theme_source_with_sources,
 };
+mod theme_request;
+pub use theme_request::{ThemeResolutionError, resolve_theme_request_source};
 mod typography;
 pub use typography::{
     PxDimension, ResolvedTypography, TypographyResolutionError, TypographyResolutionErrorKind,
