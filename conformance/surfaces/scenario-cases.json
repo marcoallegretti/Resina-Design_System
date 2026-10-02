@@ -1,0 +1,105 @@
+[
+  {
+    "name": "full capability Frost binds the shaped representation",
+    "outcome": "valid",
+    "requestChanges": [
+      {"path": "/resolution/environment/qualityPolicy", "value": "full"},
+      {"path": "/resolution/environment/rendererCapabilities/backdropEffect", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/backdropBlur", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/shapedBackdrop", "value": true}
+    ],
+    "expectedChanges": [
+      {"path": "/frostRepresentation", "value": "shapedBackdrop"}
+    ]
+  },
+  {
+    "name": "balanced quality binds the regular backdrop",
+    "outcome": "valid",
+    "requestChanges": [
+      {"path": "/resolution/environment/qualityPolicy", "value": "balanced"},
+      {"path": "/resolution/environment/rendererCapabilities/backdropEffect", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/backdropBlur", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/shapedBackdrop", "value": true}
+    ],
+    "expectedChanges": [
+      {"path": "/frostRepresentation", "value": "regularBackdrop"}
+    ]
+  },
+  {
+    "name": "high contrast binds opaque Frost despite full capabilities",
+    "outcome": "valid",
+    "requestChanges": [
+      {"path": "/resolution/environment/qualityPolicy", "value": "full"},
+      {"path": "/resolution/environment/accessibilityPreferences/highContrast", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/backdropEffect", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/backdropBlur", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/shapedBackdrop", "value": true}
+    ],
+    "expectedChanges": [
+      {"path": "/frostRepresentation", "value": "opaqueDimensional"}
+    ]
+  },
+  {
+    "name": "missing translucency binds opaque Frost despite backdrop flags",
+    "outcome": "valid",
+    "requestChanges": [
+      {"path": "/resolution/environment/qualityPolicy", "value": "full"},
+      {"path": "/resolution/environment/rendererCapabilities/translucentSurfaces", "value": false},
+      {"path": "/resolution/environment/rendererCapabilities/backdropEffect", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/backdropBlur", "value": true},
+      {"path": "/resolution/environment/rendererCapabilities/shapedBackdrop", "value": true}
+    ],
+    "expectedChanges": [
+      {"path": "/frostRepresentation", "value": "opaqueDimensional"}
+    ]
+  },
+  {
+    "name": "binding preserves authored source and portable fallback",
+    "outcome": "valid",
+    "requestChanges": [
+      {
+        "path": "/resolution/tokens/palette/base/$value",
+        "value": {
+          "colorSpace": "display-p3",
+          "components": [0.25, 0.5, 0.75],
+          "hex": "#336699",
+          "alpha": 0.35
+        }
+      }
+    ],
+    "expectedChanges": [
+      {
+        "path": "/sourceColor",
+        "value": {
+          "colorSpace": "display-p3",
+          "components": [0.25, 0.5, 0.75],
+          "hex": "#336699",
+          "alpha": 0.35
+        }
+      },
+      {
+        "path": "/colorFallback",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [0.2, 0.4, 0.6],
+          "alpha": 0.35
+        }
+      }
+    ]
+  },
+  {
+    "name": "semantic resolution failure publishes no bound surface",
+    "outcome": "invalid",
+    "requestChanges": [
+      {"path": "/resolution/colorAssignments/roles/focus", "value": "missing.color"}
+    ]
+  },
+  {
+    "name": "duplicate scenario member is rejected before binding",
+    "outcome": "invalid",
+    "sourceReplace": {
+      "find": "{\"schemaVersion\": \"0.2.0\", \"resolution\"",
+      "with": "{\"schemaVersion\": \"0.2.0\", \"schemaVersion\": \"0.2.0\", \"resolution\""
+    }
+  }
+]

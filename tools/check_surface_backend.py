@@ -22,8 +22,11 @@ def main():
 
     resolution = load_json(ROOT / "conformance/headless/valid-request.json")
     vectors = load_json(ROOT / "conformance/surfaces/binding-vectors.json")
+    if not vectors or "expected" not in vectors[0]:
+        raise ValueError("surface vectors must begin with a valid baseline")
     scenario_validator = validator_for("schemas/surface-scenario.schema.json")
     result_validator = validator_for("schemas/surface-binding-result.schema.json")
+    case_validator = validator_for("schemas/headless-conformance-case.schema.json")
     names = set()
     for vector in vectors:
         name = vector["name"]
@@ -60,7 +63,36 @@ def main():
         except (AssertionError, OSError, ValueError) as error:
             print(f"FAIL {name}: {error}", file=sys.stderr)
             return 1
-    print(f"Surface backend passed {len(vectors)} conformance cases")
+
+    base = {
+        "schemaVersion": "0.2.0",
+        "resolution": resolution,
+        "surface": vectors[0]["document"],
+    }
+    source = json.dumps(base, ensure_ascii=False)
+    cases = load_json(ROOT / "conformance/surfaces/scenario-cases.json")
+    for case in cases:
+        errors = list(case_validator.iter_errors(case))
+        if errors:
+            raise ValueError(f"invalid surface scenario case: {errors[0].message}")
+        name = case["name"]
+        if name in names:
+            raise ValueError(f"duplicate surface case name: {name}")
+        names.add(name)
+        try:
+            check_case(
+                command,
+                case,
+                base,
+                vectors[0]["expected"],
+                source,
+                result_validator,
+                arguments.timeout,
+            )
+        except (AssertionError, OSError, ValueError) as error:
+            print(f"FAIL {name}: {error}", file=sys.stderr)
+            return 1
+    print(f"Surface backend passed {len(vectors) + len(cases)} conformance cases")
     return 0
 
 

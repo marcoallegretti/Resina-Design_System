@@ -125,10 +125,20 @@ def main():
     backend_cases = load_json(ROOT / "conformance/headless/backend-cases.json")
     names = set()
     for case in backend_cases:
-        check_case(backend_case_schema, f"headless backend: {case['name']}", case, True)
-        if case["name"] in names:
-            raise ValueError(f"duplicate headless backend case name: {case['name']}")
-        names.add(case["name"])
+        check_case(backend_case_schema, "headless backend case", case, True)
+        name = case["name"]
+        if name in names:
+            raise ValueError(f"duplicate headless backend case name: {name}")
+        names.add(name)
+
+    surface_backend_cases = load_json(ROOT / "conformance/surfaces/scenario-cases.json")
+    names = set()
+    for case in surface_backend_cases:
+        check_case(backend_case_schema, "surface backend case", case, True)
+        name = case["name"]
+        if name in names:
+            raise ValueError(f"duplicate surface backend case name: {name}")
+        names.add(name)
 
     material_schema = load_json(ROOT / "schemas/material-assignments.schema.json")
     color_schema = load_json(ROOT / "schemas/color-assignments.schema.json")
@@ -160,7 +170,7 @@ def main():
     ):
         raise ValueError("surface binding material families differ from assignments")
 
-    checked = len(backend_cases)
+    checked = len(backend_cases) + len(surface_backend_cases)
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/material-assignments.schema.json", "conformance/materials/role-assignment-vectors.json"),

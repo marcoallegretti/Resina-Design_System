@@ -153,13 +153,14 @@ def main():
         errors = list(case_validator.iter_errors(case))
         if errors:
             raise ValueError(f"invalid backend case: {errors[0].message}")
-        if case["name"] in names:
-            raise ValueError(f"duplicate backend case name: {case['name']}")
-        names.add(case["name"])
+        name = case["name"]
+        if name in names:
+            raise ValueError(f"duplicate backend case name: {name}")
+        names.add(name)
         try:
             check_case(command, case, request, expected, base_source, result_validator, arguments.timeout)
         except (AssertionError, OSError, ValueError) as error:
-            print(f"FAIL {case['name']}: {error}", file=sys.stderr)
+            print(f"FAIL {name}: {error}", file=sys.stderr)
             return 1
     print(f"Headless backend passed {len(cases)} conformance cases")
     return 0
