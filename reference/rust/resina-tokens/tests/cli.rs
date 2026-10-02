@@ -81,6 +81,26 @@ fn invalid_source_has_no_partial_output() {
 }
 
 #[test]
+fn expansion_limit_has_no_partial_output() {
+    let mut document = json!({"g0": {"leaf": {"$type": "number", "$value": 1}}});
+    for level in 1..=16 {
+        let previous = format!("{{g{}}}", level - 1);
+        document[format!("g{level}")] = json!({
+            "left": {"$extends": previous},
+            "right": {"$extends": previous},
+        });
+    }
+    let result = run_stdin(&document.to_string());
+    assert_eq!(result.status.code(), Some(1));
+    assert!(result.stdout.is_empty());
+    assert!(
+        String::from_utf8_lossy(&result.stderr).contains("ExpansionLimitExceeded"),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+}
+
+#[test]
 fn usage_error_has_distinct_exit_status() {
     let result = Command::new(env!("CARGO_BIN_EXE_resina-token-resolve"))
         .output()

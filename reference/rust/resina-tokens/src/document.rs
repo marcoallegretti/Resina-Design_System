@@ -1,7 +1,7 @@
 use crate::{
-    Resolver, TypeErrorKind, canonical_pointer, curly_path_to_pointer, escape_pointer_segment,
-    is_token, materialize_group_extensions, parse_pointer, token_at_pointer,
-    types::resolve_type_in_expanded_document, validate_resolved_value,
+    ExtensionErrorKind, Resolver, TypeErrorKind, canonical_pointer, curly_path_to_pointer,
+    escape_pointer_segment, is_token, materialize_group_extensions, parse_pointer,
+    token_at_pointer, types::resolve_type_in_expanded_document, validate_resolved_value,
 };
 use serde_json::{Map, Value};
 use std::{collections::BTreeMap, fmt};
@@ -15,6 +15,7 @@ pub struct ResolvedToken {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DocumentErrorKind {
     InvalidDocument,
+    ExpansionLimitExceeded,
     MissingType,
     InvalidReference,
     ReferenceTypeMismatch,
@@ -41,7 +42,11 @@ pub fn resolve_token_document(
 ) -> Result<BTreeMap<String, ResolvedToken>, Vec<DocumentError>> {
     let expanded = materialize_group_extensions(document).map_err(|error| {
         vec![DocumentError {
-            kind: DocumentErrorKind::InvalidDocument,
+            kind: if error.kind == ExtensionErrorKind::ExpansionLimitExceeded {
+                DocumentErrorKind::ExpansionLimitExceeded
+            } else {
+                DocumentErrorKind::InvalidDocument
+            },
             location: error.location,
         }]
     })?;

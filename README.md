@@ -11,6 +11,8 @@ Run `python -m pip install -r tools/requirements-schema.txt` and `python tools/c
 
 Run `cargo run -p resina-tokens --bin resina-token-resolve -- <path>` to validate a UTF-8 DTCG authoring source and print its deterministic resolved path-to-token JSON. Use `-` instead of a path to read stdin. Invalid sources produce diagnostics on stderr, a nonzero status, and no resolved JSON. This command resolves tokens; it does not compile a Resina bundle.
 
+The Rust reference caps group-extension expansion at 100,000 constructed JSON value nodes and 8 MiB of cloned string and member-name bytes. An over-limit source fails explicitly without token output. These resource guards do not define Resina or DTCG format limits.
+
 Run `cargo run -p resina-resolver --bin resina-headless -- <path>` to resolve a [headless request](schemas/headless-resolution.schema.json) from a file, or use `-` for stdin. The command prints a complete semantic snapshot, including portable and opaque color fallbacks, and emits no partial JSON on failure.
 
 Run `python tools/check_headless_backend.py -- <backend-command> -` to check any backend that implements the [headless command protocol](spec/32-headless-conformance.md) against the public result schema and conformance cases. Build the Rust `resina-headless` binary first to check the reference implementation through the same external boundary.
