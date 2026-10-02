@@ -127,6 +127,12 @@ pub fn resolve_headless_source(
     source: &str,
 ) -> Result<HeadlessResolution, HeadlessResolutionError> {
     let document = parse_token_document(source).map_err(HeadlessResolutionError::Parse)?;
+    resolve_headless_document(document)
+}
+
+pub(crate) fn resolve_headless_document(
+    document: Value,
+) -> Result<HeadlessResolution, HeadlessResolutionError> {
     let request: HeadlessRequest =
         serde_json::from_value(document).map_err(HeadlessResolutionError::Request)?;
     if request.schema_version != "0.1.0" {

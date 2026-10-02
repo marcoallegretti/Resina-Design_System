@@ -100,6 +100,7 @@ def main():
         "schemas/surface-form.schema.json",
         "schemas/surface-binding.schema.json",
         "schemas/surface-binding-result.schema.json",
+        "schemas/surface-scenario.schema.json",
         "schemas/treatment-stack.schema.json",
         "schemas/typography-assignments.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
@@ -187,6 +188,39 @@ def main():
         document = copy.deepcopy(valid_headless)
         change(document)
         check_case(headless, f"headless {name}", document, False)
+        checked += 1
+
+    scenario_schema = validator_for("schemas/surface-scenario.schema.json")
+    for vector in surface_vectors:
+        scenario = {
+            "schemaVersion": "0.1.0",
+            "resolution": valid_headless,
+            "surface": vector["document"],
+        }
+        check_case(
+            scenario_schema,
+            f"surface scenario: {vector['name']}",
+            scenario,
+            "expected" in vector,
+        )
+        checked += 1
+    valid_scenario = {
+        "schemaVersion": "0.1.0",
+        "resolution": valid_headless,
+        "surface": surface_vectors[0]["document"],
+    }
+    for name, change in (
+        ("unsupported version", lambda document: document.update({"schemaVersion": "0.2.0"})),
+        ("missing surface", lambda document: document.pop("surface")),
+        ("unknown member", lambda document: document.update({"backend": "example"})),
+        (
+            "invalid resolution",
+            lambda document: document["resolution"]["colorAssignments"]["roles"].pop("focus"),
+        ),
+    ):
+        document = copy.deepcopy(valid_scenario)
+        change(document)
+        check_case(scenario_schema, f"surface scenario: {name}", document, False)
         checked += 1
 
     result_schema = validator_for("schemas/headless-result.schema.json")

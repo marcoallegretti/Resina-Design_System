@@ -19,6 +19,8 @@ mod headless;
 pub use headless::{
     HeadlessBindingError, HeadlessResolution, HeadlessResolutionError, resolve_headless_source,
 };
+mod scenario;
+pub use scenario::{SurfaceScenarioError, resolve_surface_scenario_source};
 mod target;
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 mod typography;
