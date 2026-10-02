@@ -112,7 +112,7 @@ def check_case(command, case, request, expected, base_source, result_validator, 
         raise AssertionError(f"backend did not emit one strict JSON document: {error}") from error
     errors = list(result_validator.iter_errors(actual))
     if errors:
-        raise AssertionError(f"output violates the headless result schema: {errors[0].message}")
+        raise AssertionError(f"output violates the result schema: {errors[0].message}")
     wanted = apply_changes(expected, case.get("expectedChanges", []))
     differing = mismatch(actual, wanted)
     if differing:
