@@ -172,5 +172,19 @@
       "find": "{\"schemaVersion\": \"0.4.0\", \"resolution\"",
       "with": "{\"schemaVersion\": \"0.4.0\", \"schemaVersion\": \"0.4.0\", \"resolution\""
     }
+  },
+  {
+    "name": "unsupported surface scenario version is rejected",
+    "outcome": "invalid",
+    "requestChanges": [
+      {"path": "/schemaVersion", "value": "0.3.0"}
+    ]
+  },
+  {
+    "name": "unsupported nested resolution version is rejected",
+    "outcome": "invalid",
+    "requestChanges": [
+      {"path": "/resolution/schemaVersion", "value": "0.2.0"}
+    ]
   }
 ]

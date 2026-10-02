@@ -132,5 +132,10 @@
       "find":"{\n  \"schemaVersion\": \"0.3.0\",\n  \"tokens\"",
       "with":"{\n  \"schemaVersion\": \"0.3.0\",\n  \"schemaVersion\": \"0.3.0\",\n  \"tokens\""
     }
+  },
+  {
+    "name":"unsupported headless request version is rejected",
+    "outcome":"invalid",
+    "requestChanges":[{"path":"/schemaVersion","value":"0.2.0"}]
   }
 ]
