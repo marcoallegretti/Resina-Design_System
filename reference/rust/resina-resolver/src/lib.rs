@@ -5,12 +5,17 @@ use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
 mod edge_contrast;
+mod focus_indicator;
 mod frost_legibility;
 mod frost_surface_readability;
 mod spatial;
 mod srgb_input;
 pub use edge_contrast::{
     EdgeContrastError, EdgeContrastResult, resolve_edge_contrast, resolve_edge_contrast_source,
+};
+pub use focus_indicator::{
+    FocusIndicatorError, FocusIndicatorResult, resolve_focus_indicator,
+    resolve_focus_indicator_source,
 };
 pub use frost_legibility::{
     FrostLegibilityError, FrostLegibilityResult, resolve_frost_legibility,

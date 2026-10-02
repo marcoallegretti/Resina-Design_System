@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:focus-indicator-request:0.1.0",
+  "title": "Resina Focus Indicator Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scenario", "surroundingColor"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "scenario": {
+      "allOf": [
+        {"$ref": "urn:resina:schema:surface-scenario:0.4.0"},
+        {"properties": {"surface": {"properties": {"states": {"properties": {"states": {"contains": {"const": "focused"}}}}}}}}
+      ]
+    },
+    "surroundingColor": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"}
+  }
+}

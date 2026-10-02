@@ -1,10 +1,12 @@
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorRole, FrostRepresentation, MaterialFamily, MaterialRole, SurfaceIntent, TypographyRole,
+    ColorRole, FrostRepresentation, InteractionState, MaterialFamily, MaterialRole, SurfaceIntent,
+    TypographyRole,
 };
 use resina_resolver::{
     HeadlessResolution, bind_surface, compile_theme_source_with_sources, opaque_contrast_ratio,
-    resolve_edge_contrast, resolve_frost_legibility, resolve_frost_surface_readability,
+    resolve_edge_contrast, resolve_focus_indicator, resolve_frost_legibility,
+    resolve_frost_surface_readability,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -38,6 +40,18 @@ fn frost_chrome_intent() -> SurfaceIntent {
         "colorRole": "surface.chrome",
         "form": {"schemaVersion": "0.1.0", "shape": "structural", "elevation": "base"},
         "states": {"schemaVersion": "0.1.0", "states": ["rest"]},
+        "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}
+    }))
+    .unwrap()
+}
+
+fn focused_control_intent() -> SurfaceIntent {
+    serde_json::from_value(json!({
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "raised"},
+        "states": {"schemaVersion": "0.1.0", "states": ["selected", "focused"]},
         "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}
     }))
     .unwrap()
@@ -249,5 +263,42 @@ fn authored_outline_separates_from_known_base_surface() {
         assert_eq!(edge.color_role(), ColorRole::Outline);
         assert!(edge.contrast_ratio() >= 3.0);
         assert!(!edge.fallback_applied());
+    }
+}
+
+#[test]
+fn authored_focus_indicator_survives_tier_zero_and_concurrent_selection() {
+    let standard = environment_for_scale(1.0);
+    let tier_zero: EnvironmentSnapshot = serde_json::from_str(TIER_ZERO).unwrap();
+    let intent = focused_control_intent();
+    for source in [LIGHT, DARK] {
+        for environment in [&standard, &tier_zero] {
+            let resolution = resolve(source, environment);
+            for background in [
+                ColorRole::SurfaceBase,
+                ColorRole::SurfaceLow,
+                ColorRole::SurfaceHigh,
+            ] {
+                let surrounding = &resolution.opaque_color_fallbacks()[&background];
+                let indicator = resolve_focus_indicator(&intent, &resolution, surrounding).unwrap();
+                assert_eq!(indicator.color_role(), ColorRole::Focus);
+                assert!(!indicator.fallback_applied());
+                assert!(indicator.contrast_ratio() >= 3.0);
+                assert_eq!(indicator.stroke_width(), 2.0);
+                assert_eq!(indicator.gap(), 2.0);
+                assert!(
+                    indicator
+                        .binding()
+                        .states()
+                        .contains(InteractionState::Focused)
+                );
+                assert!(
+                    indicator
+                        .binding()
+                        .states()
+                        .contains(InteractionState::Selected)
+                );
+            }
+        }
     }
 }

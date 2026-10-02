@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:focus-indicator-case:0.1.0",
+  "title": "Resina Focus Indicator Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "changes", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "value"],
+        "properties": {"path": {"type": "string", "pattern": "^/"}, "value": {}}
+      }
+    },
+    "requestSchemaValid": {"type": "boolean"},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorRole", "fallbackApplied"],
+      "properties": {
+        "colorRole": {"enum": ["focus", "outline.strong"]},
+        "fallbackApplied": {"type": "boolean"},
+        "states": {
+          "allOf": [
+            {"$ref": "urn:resina:schema:state-set:0.1.0#/properties/states"},
+            {"contains": {"const": "focused"}}
+          ]
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"fallbackApplied": {"const": true}}}, "then": {"properties": {"colorRole": {"const": "outline.strong"}}}, "else": {"properties": {"colorRole": {"const": "focus"}}}}
+      ]
+    },
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {"required": ["expected"], "not": {"required": ["errorContains"]}},
+    {"required": ["errorContains"], "not": {"required": ["expected"]}}
+  ]
+}

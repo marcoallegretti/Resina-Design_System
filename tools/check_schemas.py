@@ -137,6 +137,9 @@ def main():
         "schemas/frost-surface-readability-request.schema.json",
         "schemas/frost-surface-readability-result.schema.json",
         "schemas/frost-surface-readability-case.schema.json",
+        "schemas/focus-indicator-request.schema.json",
+        "schemas/focus-indicator-result.schema.json",
+        "schemas/focus-indicator-case.schema.json",
         "schemas/headless-resolution.schema.json",
         "schemas/headless-conformance-case.schema.json",
         "schemas/headless-result.schema.json",
@@ -373,6 +376,67 @@ def main():
             request,
             case["requestSchemaValid"],
         )
+    focus_binding = load_json(ROOT / "conformance/surfaces/binding-vectors.json")[0]
+    focus_request = {
+        "schemaVersion": "0.1.0",
+        "scenario": {
+            "schemaVersion": "0.4.0",
+            "resolution": load_json(ROOT / "conformance/headless/valid-request.json"),
+            "surface": focus_binding["document"],
+        },
+        "surroundingColor": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1},
+    }
+    focus_cases = load_json(ROOT / "conformance/states/focus-indicator-cases.json")
+    focus_case_validator = validator_for("schemas/focus-indicator-case.schema.json")
+    focus_request_validator = validator_for("schemas/focus-indicator-request.schema.json")
+    focus_names = set()
+    for case in focus_cases:
+        check_case(focus_case_validator, f"focus indicator case: {case.get('name')}", case, True)
+        if case["name"] in focus_names:
+            raise ValueError(f"duplicate focus indicator case: {case['name']}")
+        focus_names.add(case["name"])
+        request = apply_changes(focus_request, case["changes"])
+        check_case(
+            focus_request_validator,
+            f"focus indicator request: {case['name']}",
+            request,
+            case["requestSchemaValid"],
+        )
+    for name, expected in (
+        (
+            "invalid expected states",
+            {"colorRole": "focus", "fallbackApplied": False, "states": ["focused", "unknown"]},
+        ),
+        ("inconsistent fallback role", {"colorRole": "focus", "fallbackApplied": True}),
+    ):
+        invalid = copy.deepcopy(focus_cases[0])
+        invalid["expected"] = expected
+        check_case(focus_case_validator, f"focus indicator case {name}", invalid, False)
+    focus_result_validator = validator_for("schemas/focus-indicator-result.schema.json")
+    focus_result = {
+        "schemaVersion": "0.1.0",
+        "binding": focus_binding["expected"],
+        "colorRole": "focus",
+        "color": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3], "alpha": 1},
+        "contrastRatio": 16,
+        "fallbackApplied": False,
+        "strokeWidth": 2,
+        "gap": 2,
+    }
+    check_case(focus_result_validator, "focus indicator result", focus_result, True)
+    for name, field, value in (
+        ("nonfocus state", ("binding", "states", "states"), ["rest"]),
+        ("translucent color", ("color", "alpha"), 0.5),
+        ("weak contrast", ("contrastRatio",), 2.99),
+        ("narrow stroke", ("strokeWidth",), 1),
+        ("incorrect fallback role", ("fallbackApplied",), True),
+    ):
+        invalid = copy.deepcopy(focus_result)
+        target = invalid
+        for key in field[:-1]:
+            target = target[key]
+        target[field[-1]] = value
+        check_case(focus_result_validator, f"focus indicator result {name}", invalid, False)
     missing_input = copy.deepcopy(resolver_theme)
     del missing_input["tokenInput"]
     check_case(theme_schema, "resolver-backed theme missing input", missing_input, False)
@@ -449,6 +513,8 @@ def main():
         + len(frost_cases)
         + len(edge_cases)
         + len(readability_cases)
+        + len(focus_cases)
+        + 8
         + 2
     )
     for schema, vectors in (

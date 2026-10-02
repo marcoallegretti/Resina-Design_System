@@ -1,0 +1,91 @@
+[
+  {
+    "name": "focused Frost retains its semantic focus color and concurrent rest state",
+    "changes": [],
+    "requestSchemaValid": true,
+    "expected": {"colorRole": "focus", "fallbackApplied": false}
+  },
+  {
+    "name": "selected and focused remain concurrent",
+    "changes": [
+      {"path": "/scenario/surface/states/states", "value": ["selected", "focused"]}
+    ],
+    "requestSchemaValid": true,
+    "expected": {"colorRole": "focus", "fallbackApplied": false, "states": ["focused", "selected"]}
+  },
+  {
+    "name": "light focus color falls back to strong outline",
+    "changes": [
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/focus", "value": "palette.opaqueAlt"}
+    ],
+    "requestSchemaValid": true,
+    "expected": {"colorRole": "outline.strong", "fallbackApplied": true}
+  },
+  {
+    "name": "both low contrast colors fail explicitly",
+    "changes": [
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/focus", "value": "palette.opaqueAlt"},
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/outline.strong", "value": "palette.opaqueAlt"}
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "contrast is insufficient"
+  },
+  {
+    "name": "light focus color is retained on a dark surround",
+    "changes": [
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/focus", "value": "palette.opaqueAlt"},
+      {"path": "/surroundingColor/components", "value": [0, 0, 0]}
+    ],
+    "requestSchemaValid": true,
+    "expected": {"colorRole": "focus", "fallbackApplied": false}
+  },
+  {
+    "name": "light strong outline saves focus on a dark surround",
+    "changes": [
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/outline.strong", "value": "palette.opaqueAlt"},
+      {"path": "/surroundingColor/components", "value": [0, 0, 0]}
+    ],
+    "requestSchemaValid": true,
+    "expected": {"colorRole": "outline.strong", "fallbackApplied": true}
+  },
+  {
+    "name": "both dark colors fail on a dark surround",
+    "changes": [
+      {"path": "/surroundingColor/components", "value": [0, 0, 0]}
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "contrast is insufficient"
+  },
+  {
+    "name": "unfocused surface rejects an indicator",
+    "changes": [
+      {"path": "/scenario/surface/states/states", "value": ["rest"]}
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must include focused"
+  },
+  {
+    "name": "translucent surround is not a known final color",
+    "changes": [
+      {"path": "/surroundingColor/alpha", "value": 0.5}
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surroundingColor must be opaque"
+  },
+  {
+    "name": "unsupported request version is diagnostic",
+    "changes": [
+      {"path": "/schemaVersion", "value": "0.2.0"}
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "unsupported color space is diagnostic",
+    "changes": [
+      {"path": "/surroundingColor/colorSpace", "value": "display-p3"}
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surroundingColor must use sRGB"
+  }
+]
