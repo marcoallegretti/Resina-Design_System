@@ -27,7 +27,7 @@ fn run_stdin(source: &str) -> Output {
 fn scenario() -> Value {
     let vectors: Vec<Value> = serde_json::from_str(VECTORS).unwrap();
     json!({
-        "schemaVersion": "0.3.0",
+        "schemaVersion": "0.4.0",
         "resolution": serde_json::from_str::<Value>(RESOLUTION).unwrap(),
         "surface": vectors[0]["document"]
     })
@@ -60,15 +60,15 @@ fn command_rejects_invalid_scenarios_without_partial_output() {
     let mut invalid_version = scenario();
     invalid_version["schemaVersion"] = json!("0.1.0");
     let duplicate = scenario().to_string().replacen(
-        "\"schemaVersion\":\"0.3.0\"",
-        "\"schemaVersion\":\"0.3.0\",\"schemaVersion\":\"0.3.0\"",
+        "\"schemaVersion\":\"0.4.0\"",
+        "\"schemaVersion\":\"0.4.0\",\"schemaVersion\":\"0.4.0\"",
         1,
     );
     for (source, diagnostic) in [
         (missing_role.to_string(), "color: MissingToken"),
         (invalid_surface.to_string(), "unknown variant"),
         (nested_lens.to_string(), "lens treatments cannot be nested"),
-        (invalid_version.to_string(), "schemaVersion must be 0.3.0"),
+        (invalid_version.to_string(), "schemaVersion must be 0.4.0"),
         (duplicate, "duplicate JSON member"),
     ] {
         let output = run_stdin(&source);

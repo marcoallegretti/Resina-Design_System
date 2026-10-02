@@ -7,9 +7,9 @@ use crate::{
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorAssignments, ColorRole, FrostRepresentation, MaterialAssignments, MaterialFamily,
-    MaterialRole, OpaqueColorAssignments, SpatialAssignments, SpatialRole, TypographyAssignments,
-    TypographyRole,
+    ColorAssignments, ColorRole, FrostPigment, FrostRepresentation, MaterialAssignments,
+    MaterialFamily, MaterialRole, OpaqueColorAssignments, SpatialAssignments, SpatialRole,
+    TypographyAssignments, TypographyRole,
 };
 use resina_tokens::{DocumentError, parse_token_document, resolve_token_document};
 use serde::{Deserialize, Serialize};
@@ -22,6 +22,7 @@ struct HeadlessRequest {
     schema_version: String,
     tokens: Value,
     material_assignments: MaterialAssignments,
+    frost_pigment: FrostPigment,
     color_assignments: ColorAssignments,
     opaque_color_assignments: OpaqueColorAssignments,
     spatial_assignments: SpatialAssignments,
@@ -37,6 +38,7 @@ pub struct HeadlessResolution {
     colors: BTreeMap<ColorRole, Value>,
     color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
     opaque_color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
+    frost_tint_strength: f64,
     space: BTreeMap<SpatialRole, Value>,
     typography: BTreeMap<TypographyRole, ResolvedTypography>,
     frost_representation: FrostRepresentation,
@@ -58,6 +60,10 @@ impl HeadlessResolution {
 
     pub fn opaque_color_fallbacks(&self) -> &BTreeMap<ColorRole, SrgbFallback> {
         &self.opaque_color_fallbacks
+    }
+
+    pub fn frost_tint_strength(&self) -> f64 {
+        self.frost_tint_strength
     }
 
     pub fn space(&self) -> &BTreeMap<SpatialRole, Value> {
@@ -112,7 +118,7 @@ impl fmt::Display for HeadlessResolutionError {
         match self {
             Self::Parse(error) => write!(formatter, "headless source parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid headless request: {error}"),
-            Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.2.0"),
+            Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.3.0"),
             Self::Tokens(errors) => {
                 formatter.write_str("token resolution failed")?;
                 for error in errors {
@@ -145,7 +151,7 @@ pub(crate) fn resolve_headless_document(
 ) -> Result<HeadlessResolution, HeadlessResolutionError> {
     let request: HeadlessRequest =
         serde_json::from_value(document).map_err(HeadlessResolutionError::Request)?;
-    if request.schema_version != "0.2.0" {
+    if request.schema_version != "0.3.0" {
         return Err(HeadlessResolutionError::UnsupportedVersion);
     }
     let tokens =
@@ -207,11 +213,12 @@ pub(crate) fn resolve_headless_document(
                 .map(|role| (role, request.material_assignments.material_for(role)))
                 .collect();
             Ok(HeadlessResolution {
-                schema_version: "0.3.0",
+                schema_version: "0.4.0",
                 materials,
                 colors,
                 color_fallbacks,
                 opaque_color_fallbacks,
+                frost_tint_strength: request.frost_pigment.tint_strength(),
                 space,
                 typography,
                 frost_representation: resolve_frost_representation(

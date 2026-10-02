@@ -30,7 +30,7 @@ impl fmt::Display for SurfaceScenarioError {
         match self {
             Self::Parse(error) => write!(formatter, "surface scenario parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid surface scenario: {error}"),
-            Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.3.0"),
+            Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.4.0"),
             Self::Resolution(error) => write!(formatter, "surface scenario resolution: {error}"),
             Self::Binding(error) => write!(formatter, "surface scenario binding: {error}"),
         }
@@ -43,7 +43,7 @@ pub fn resolve_surface_scenario_source(source: &str) -> Result<BoundSurface, Sur
     let document = parse_token_document(source).map_err(SurfaceScenarioError::Parse)?;
     let scenario: SurfaceScenario =
         serde_json::from_value(document).map_err(SurfaceScenarioError::Request)?;
-    if scenario.schema_version != "0.3.0" {
+    if scenario.schema_version != "0.4.0" {
         return Err(SurfaceScenarioError::UnsupportedVersion);
     }
     let resolution =
@@ -65,7 +65,7 @@ mod tests {
         let vectors: Vec<Value> = serde_json::from_str(VECTORS).unwrap();
         for vector in vectors {
             let scenario = json!({
-                "schemaVersion": "0.3.0",
+                "schemaVersion": "0.4.0",
                 "resolution": resolution,
                 "surface": vector["document"]
             });
@@ -95,13 +95,13 @@ mod tests {
         let resolution: Value = serde_json::from_str(RESOLUTION).unwrap();
         let surface: Value = serde_json::from_str(VECTORS).unwrap();
         let valid = json!({
-            "schemaVersion": "0.3.0",
+            "schemaVersion": "0.4.0",
             "resolution": resolution,
             "surface": surface[0]["document"]
         });
         let duplicate = valid.to_string().replacen(
-            "\"schemaVersion\":\"0.3.0\"",
-            "\"schemaVersion\":\"0.3.0\",\"schemaVersion\":\"0.3.0\"",
+            "\"schemaVersion\":\"0.4.0\"",
+            "\"schemaVersion\":\"0.4.0\",\"schemaVersion\":\"0.4.0\"",
             1,
         );
         assert!(

@@ -17,6 +17,8 @@ pub struct BoundSurface {
     source_color: Value,
     color_fallback: SrgbFallback,
     opaque_color_fallback: SrgbFallback,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    frost_portable_body: Option<SrgbFallback>,
     form: SurfaceForm,
     states: StateSet,
     treatment_stack: TreatmentStack,
@@ -49,6 +51,10 @@ impl BoundSurface {
         &self.opaque_color_fallback
     }
 
+    pub fn frost_portable_body(&self) -> Option<&SrgbFallback> {
+        self.frost_portable_body.as_ref()
+    }
+
     pub fn form(&self) -> &SurfaceForm {
         &self.form
     }
@@ -72,6 +78,8 @@ pub enum SurfaceBindingError {
     MissingColor(ColorRole),
     MissingColorFallback(ColorRole),
     MissingOpaqueColorFallback(ColorRole),
+    InvisibleFrostBody(ColorRole),
+    InvalidFrostBodyAlpha(ColorRole),
 }
 
 impl fmt::Display for SurfaceBindingError {
@@ -86,6 +94,18 @@ impl fmt::Display for SurfaceBindingError {
                 write!(
                     formatter,
                     "missing opaque sRGB fallback for color role {role:?}"
+                )
+            }
+            Self::InvisibleFrostBody(role) => {
+                write!(
+                    formatter,
+                    "Frost body for color role {role:?} has zero alpha"
+                )
+            }
+            Self::InvalidFrostBodyAlpha(role) => {
+                write!(
+                    formatter,
+                    "invalid Frost body alpha for color role {role:?}"
                 )
             }
         }
@@ -119,16 +139,32 @@ pub fn bind_surface(
         .get(&color_role)
         .ok_or(SurfaceBindingError::MissingOpaqueColorFallback(color_role))?
         .clone();
-    let frost_representation =
-        (material_family == MaterialFamily::Frost).then(|| context.frost_representation());
+    let (frost_representation, frost_portable_body) = if material_family == MaterialFamily::Frost {
+        let representation = context.frost_representation();
+        let body = if representation == FrostRepresentation::OpaqueDimensional {
+            opaque_color_fallback.clone()
+        } else {
+            let alpha = color_fallback.alpha() * context.frost_tint_strength();
+            if alpha == 0.0 {
+                return Err(SurfaceBindingError::InvisibleFrostBody(color_role));
+            }
+            color_fallback
+                .with_alpha(alpha)
+                .map_err(|_| SurfaceBindingError::InvalidFrostBodyAlpha(color_role))?
+        };
+        (Some(representation), Some(body))
+    } else {
+        (None, None)
+    };
     Ok(BoundSurface {
-        schema_version: "0.3.0",
+        schema_version: "0.4.0",
         material_role,
         color_role,
         material_family,
         source_color,
         color_fallback,
         opaque_color_fallback,
+        frost_portable_body,
         form: intent.form().clone(),
         states: intent.states().clone(),
         treatment_stack: intent.treatment_stack().clone(),
@@ -189,10 +225,24 @@ mod tests {
             Some(FrostRepresentation::OpaqueDimensional)
         );
         assert_eq!(
+            bind_surface(&frost, &context)
+                .unwrap()
+                .frost_portable_body()
+                .unwrap()
+                .alpha(),
+            1.0
+        );
+        assert_eq!(
             bind_surface(&elastomer, &context)
                 .unwrap()
                 .frost_representation(),
             None
+        );
+        assert!(
+            bind_surface(&elastomer, &context)
+                .unwrap()
+                .frost_portable_body()
+                .is_none()
         );
     }
 
@@ -219,5 +269,20 @@ mod tests {
         assert_eq!(bound.color_fallback().alpha(), 0.35);
         assert_eq!(bound.opaque_color_fallback().components(), [0.15, 0.2, 0.3]);
         assert_eq!(bound.opaque_color_fallback().alpha(), 1.0);
+    }
+
+    #[test]
+    fn transparent_source_cannot_bind_a_translucent_frost_body() {
+        let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+        source["tokens"]["palette"]["base"]["$value"]["alpha"] = json!(0);
+        let context = resolve_headless_source(&source.to_string()).unwrap();
+        let vectors: Vec<Value> = serde_json::from_str(VECTORS).unwrap();
+        let frost: SurfaceIntent = serde_json::from_value(vectors[0]["document"].clone()).unwrap();
+        assert!(matches!(
+            bind_surface(&frost, &context),
+            Err(SurfaceBindingError::InvisibleFrostBody(
+                ColorRole::SurfaceChrome
+            ))
+        ));
     }
 }

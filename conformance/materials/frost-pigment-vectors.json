@@ -1,0 +1,10 @@
+[
+  {"name":"pigmented translucent Frost","document":{"schemaVersion":"0.1.0","tintStrength":0.55},"expected":0.55},
+  {"name":"very light Frost tint","document":{"schemaVersion":"0.1.0","tintStrength":0.1},"expected":0.1},
+  {"name":"zero tint fails","document":{"schemaVersion":"0.1.0","tintStrength":0},"error":"tintStrength must be finite and between 0 and 1"},
+  {"name":"opaque tint fails","document":{"schemaVersion":"0.1.0","tintStrength":1},"error":"tintStrength must be finite and between 0 and 1"},
+  {"name":"out of range tint fails","document":{"schemaVersion":"0.1.0","tintStrength":1.1},"error":"tintStrength must be finite and between 0 and 1"},
+  {"name":"missing tint fails","document":{"schemaVersion":"0.1.0"},"error":"missing field"},
+  {"name":"unknown field fails","document":{"schemaVersion":"0.1.0","tintStrength":0.55,"renderer":"example"},"error":"unknown field"},
+  {"name":"unsupported version fails","document":{"schemaVersion":"0.2.0","tintStrength":0.55},"error":"schemaVersion must be 0.1.0"}
+]

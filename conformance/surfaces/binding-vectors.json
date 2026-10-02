@@ -26,7 +26,7 @@
       }
     },
     "expected": {
-      "schemaVersion": "0.3.0",
+      "schemaVersion": "0.4.0",
       "materialRole": "surface.chrome",
       "colorRole": "surface.chrome",
       "materialFamily": "frost",
@@ -60,6 +60,11 @@
         ]
       },
       "frostRepresentation": "translucentPigmented",
+      "frostPortableBody": {
+        "colorSpace": "srgb",
+        "components": [0.15, 0.2, 0.3],
+        "alpha": 0.55
+      },
       "treatmentStack": {
         "schemaVersion": "0.1.0",
         "treatments": [
@@ -106,7 +111,7 @@
       }
     },
     "expected": {
-      "schemaVersion": "0.3.0",
+      "schemaVersion": "0.4.0",
       "materialRole": "control.primary",
       "colorRole": "accent.primary",
       "materialFamily": "elastomer",
@@ -183,7 +188,7 @@
       }
     },
     "expected": {
-      "schemaVersion": "0.3.0",
+      "schemaVersion": "0.4.0",
       "materialRole": "feedback.drag",
       "colorRole": "selection",
       "materialFamily": "gel",

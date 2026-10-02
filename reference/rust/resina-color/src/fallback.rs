@@ -25,11 +25,23 @@ impl SrgbFallback {
     pub fn alpha(&self) -> f64 {
         self.alpha
     }
+
+    pub fn with_alpha(&self, alpha: f64) -> Result<Self, ColorFallbackError> {
+        if !alpha.is_finite() || !(0.0..=1.0).contains(&alpha) {
+            return Err(ColorFallbackError::InvalidAlpha);
+        }
+        Ok(Self {
+            color_space: self.color_space,
+            components: self.components,
+            alpha,
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ColorFallbackError {
     InvalidValue(ValueError),
+    InvalidAlpha,
     MissingHexFallback,
     InconsistentSrgbHex,
     MalformedHexFallback,
@@ -53,6 +65,7 @@ impl fmt::Display for ColorFallbackError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InvalidValue(error) => write!(formatter, "invalid color value: {error}"),
+            Self::InvalidAlpha => formatter.write_str("alpha must be finite and in [0, 1]"),
             Self::MissingHexFallback => {
                 formatter.write_str("sRGB hex fallback required for this color")
             }
@@ -235,6 +248,23 @@ mod tests {
     use super::*;
 
     #[test]
+    fn changing_fallback_alpha_preserves_channels_and_rejects_invalid_values() {
+        let color = resolve_srgb_fallback(&serde_json::json!({
+            "colorSpace":"srgb","components":[0.15,0.2,0.3]
+        }))
+        .unwrap();
+        let tinted = color.with_alpha(0.35).unwrap();
+        assert_eq!(tinted.components(), color.components());
+        assert_eq!(tinted.alpha(), 0.35);
+        for invalid in [f64::NAN, f64::INFINITY, -0.1, 1.1] {
+            assert_eq!(
+                color.with_alpha(invalid),
+                Err(ColorFallbackError::InvalidAlpha)
+            );
+        }
+    }
+
+    #[test]
     fn srgb_fallback_conformance_vectors() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
             "../../../../conformance/color/srgb-fallback-vectors.json"
@@ -267,6 +297,7 @@ mod tests {
                 let error = result.unwrap_err();
                 let kind = match error {
                     ColorFallbackError::InvalidValue(_) => "InvalidValue",
+                    ColorFallbackError::InvalidAlpha => "InvalidAlpha",
                     ColorFallbackError::MissingHexFallback => "MissingHexFallback",
                     ColorFallbackError::InconsistentSrgbHex => "InconsistentSrgbHex",
                     ColorFallbackError::MalformedHexFallback => "MalformedHexFallback",

@@ -56,8 +56,8 @@ fn file_and_stdin_resolve_to_the_same_complete_output() {
 #[test]
 fn invalid_inputs_produce_diagnostics_without_partial_output() {
     let duplicate = SOURCE.replacen(
-        "\"schemaVersion\": \"0.2.0\"",
-        "\"schemaVersion\": \"0.2.0\", \"schemaVersion\": \"0.2.0\"",
+        "\"schemaVersion\": \"0.3.0\"",
+        "\"schemaVersion\": \"0.3.0\", \"schemaVersion\": \"0.3.0\"",
         1,
     );
     let mut invalid_bindings: Value = serde_json::from_str(SOURCE).unwrap();
@@ -94,7 +94,7 @@ fn invalid_inputs_produce_diagnostics_without_partial_output() {
         ),
         (
             invalid_request.to_string(),
-            vec!["schemaVersion must be 0.2.0"],
+            vec!["schemaVersion must be 0.3.0"],
         ),
     ] {
         let output = run_stdin(&source);

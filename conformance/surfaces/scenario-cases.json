@@ -26,6 +26,16 @@
     ]
   },
   {
+    "name": "Frost tint strength changes the portable body alpha",
+    "outcome": "valid",
+    "requestChanges": [
+      {"path":"/resolution/frostPigment/tintStrength","value":0.8}
+    ],
+    "expectedChanges": [
+      {"path":"/frostPortableBody","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":0.8}}
+    ]
+  },
+  {
     "name": "high contrast binds opaque Frost despite full capabilities",
     "outcome": "valid",
     "requestChanges": [
@@ -36,7 +46,8 @@
       {"path": "/resolution/environment/rendererCapabilities/shapedBackdrop", "value": true}
     ],
     "expectedChanges": [
-      {"path": "/frostRepresentation", "value": "opaqueDimensional"}
+      {"path": "/frostRepresentation", "value": "opaqueDimensional"},
+      {"path": "/frostPortableBody", "value": {"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":1.0}}
     ]
   },
   {
@@ -50,7 +61,8 @@
       {"path": "/resolution/environment/rendererCapabilities/shapedBackdrop", "value": true}
     ],
     "expectedChanges": [
-      {"path": "/frostRepresentation", "value": "opaqueDimensional"}
+      {"path": "/frostRepresentation", "value": "opaqueDimensional"},
+      {"path": "/frostPortableBody", "value": {"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":1.0}}
     ]
   },
   {
@@ -84,7 +96,8 @@
           "components": [0.2, 0.4, 0.6],
           "alpha": 0.35
         }
-      }
+      },
+      {"path": "/frostPortableBody", "value": {"colorSpace":"srgb","components":[0.2,0.4,0.6],"alpha":0.1925}}
     ]
   },
   {
@@ -104,6 +117,7 @@
     ],
     "expectedChanges": [
       {"path": "/frostRepresentation", "value": "opaqueDimensional"},
+      {"path": "/frostPortableBody", "value": {"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":1.0}},
       {
         "path": "/sourceColor",
         "value": {
@@ -131,11 +145,32 @@
     ]
   },
   {
+    "name": "transparent Frost source cannot produce a translucent body",
+    "outcome": "invalid",
+    "requestChanges": [
+      {"path":"/resolution/tokens/palette/base/$value","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":0}}
+    ]
+  },
+  {
+    "name": "opaque Frost uses authored body when source is transparent",
+    "outcome": "valid",
+    "requestChanges": [
+      {"path":"/resolution/environment/accessibilityPreferences/reducedTransparency","value":true},
+      {"path":"/resolution/tokens/palette/base/$value","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":0}}
+    ],
+    "expectedChanges": [
+      {"path":"/frostRepresentation","value":"opaqueDimensional"},
+      {"path":"/frostPortableBody","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":1.0}},
+      {"path":"/sourceColor","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":0}},
+      {"path":"/colorFallback","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":0}}
+    ]
+  },
+  {
     "name": "duplicate scenario member is rejected before binding",
     "outcome": "invalid",
     "sourceReplace": {
-      "find": "{\"schemaVersion\": \"0.3.0\", \"resolution\"",
-      "with": "{\"schemaVersion\": \"0.3.0\", \"schemaVersion\": \"0.3.0\", \"resolution\""
+      "find": "{\"schemaVersion\": \"0.4.0\", \"resolution\"",
+      "with": "{\"schemaVersion\": \"0.4.0\", \"schemaVersion\": \"0.4.0\", \"resolution\""
     }
   }
 ]

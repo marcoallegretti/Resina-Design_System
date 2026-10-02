@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.2.0",
+  "schemaVersion": "0.3.0",
   "tokens": {
     "palette": {
       "$type": "color",
@@ -88,6 +88,7 @@
       "drag": "gel"
     }
   },
+  "frostPigment": {"schemaVersion": "0.1.0", "tintStrength": 0.55},
   "colorAssignments": {
     "schemaVersion": "0.1.0",
     "roles": {

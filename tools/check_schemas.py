@@ -95,6 +95,7 @@ def main():
     expected_paths = {
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
+        "schemas/frost-pigment.schema.json",
         "schemas/headless-resolution.schema.json",
         "schemas/headless-conformance-case.schema.json",
         "schemas/headless-result.schema.json",
@@ -120,6 +121,10 @@ def main():
         "schemas/versions/headless-result-0.2.0.schema.json",
         "schemas/versions/surface-scenario-0.2.0.schema.json",
         "schemas/versions/surface-binding-result-0.2.0.schema.json",
+        "schemas/versions/headless-resolution-0.2.0.schema.json",
+        "schemas/versions/headless-result-0.3.0.schema.json",
+        "schemas/versions/surface-binding-result-0.3.0.schema.json",
+        "schemas/versions/surface-scenario-0.3.0.schema.json",
     }
     actual_paths = {path.relative_to(ROOT).as_posix() for path in schema_paths}
     if actual_paths != expected_paths:
@@ -189,6 +194,7 @@ def main():
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/opaque-color-assignments.schema.json", "conformance/color/opaque-assignment-vectors.json"),
         ("schemas/material-assignments.schema.json", "conformance/materials/role-assignment-vectors.json"),
+        ("schemas/frost-pigment.schema.json", "conformance/materials/frost-pigment-vectors.json"),
         ("schemas/spatial-assignments.schema.json", "conformance/spatial/assignment-vectors.json"),
         ("schemas/state-set.schema.json", "conformance/states/state-set-vectors.json"),
         ("schemas/surface-form.schema.json", "conformance/geometry/surface-form-vectors.json"),
@@ -206,6 +212,9 @@ def main():
             checked += 1
     for name, source_index, change in (
         ("Frost representation omitted", 0, lambda result: result.pop("frostRepresentation")),
+        ("Frost portable body omitted", 0, lambda result: result.pop("frostPortableBody")),
+        ("Frost portable body fully opaque", 0, lambda result: result["frostPortableBody"].update({"alpha": 1.0})),
+        ("Frost portable body invisible", 0, lambda result: result["frostPortableBody"].update({"alpha": 0.0})),
         (
             "Frost representation on Elastomer",
             1,
@@ -214,6 +223,7 @@ def main():
         ("Gel as structural control", 1, lambda result: result.update({"materialFamily": "gel"})),
         ("opaque fallback missing", 0, lambda result: result.pop("opaqueColorFallback")),
         ("opaque fallback translucent", 0, lambda result: result["opaqueColorFallback"].update({"alpha": 0.5})),
+        ("Frost portable body on Elastomer", 1, lambda result: result.update({"frostPortableBody": surface_vectors[0]["expected"]["frostPortableBody"]})),
     ):
         result = copy.deepcopy(surface_vectors[source_index]["expected"])
         change(result)
@@ -234,6 +244,7 @@ def main():
     archived_surface["schemaVersion"] = "0.1.0"
     archived_surface.pop("treatmentStack")
     archived_surface.pop("opaqueColorFallback")
+    archived_surface.pop("frostPortableBody")
     check_case(
         validator_for("schemas/versions/surface-binding-result-0.1.0.schema.json"),
         "archived surface result",
@@ -246,6 +257,7 @@ def main():
     previous_surface = copy.deepcopy(surface_vectors[0]["expected"])
     previous_surface["schemaVersion"] = "0.2.0"
     previous_surface.pop("opaqueColorFallback")
+    previous_surface.pop("frostPortableBody")
     check_case(
         validator_for("schemas/versions/surface-binding-result-0.2.0.schema.json"),
         "surface result 0.2.0 archive",
@@ -255,6 +267,18 @@ def main():
     check_case(surface_results, "current surface result rejects 0.2.0 archive", previous_surface, False)
     checked += 2
 
+    previous_surface = copy.deepcopy(surface_vectors[0]["expected"])
+    previous_surface["schemaVersion"] = "0.3.0"
+    previous_surface.pop("frostPortableBody")
+    check_case(
+        validator_for("schemas/versions/surface-binding-result-0.3.0.schema.json"),
+        "surface result 0.3.0 archive",
+        previous_surface,
+        True,
+    )
+    check_case(surface_results, "current surface result rejects 0.3.0 archive", previous_surface, False)
+    checked += 2
+
     headless = validator_for("schemas/headless-resolution.schema.json")
     valid_headless = load_json(ROOT / "conformance/headless/valid-request.json")
     check_case(headless, "headless valid request", valid_headless, True)
@@ -262,6 +286,7 @@ def main():
     previous_headless = copy.deepcopy(valid_headless)
     previous_headless["schemaVersion"] = "0.1.0"
     previous_headless.pop("opaqueColorAssignments")
+    previous_headless.pop("frostPigment")
     check_case(
         validator_for("schemas/versions/headless-resolution-0.1.0.schema.json"),
         "headless request 0.1.0 archive",
@@ -270,11 +295,23 @@ def main():
     )
     check_case(headless, "current headless request rejects archive", previous_headless, False)
     checked += 2
+    previous_headless_0_2 = copy.deepcopy(valid_headless)
+    previous_headless_0_2["schemaVersion"] = "0.2.0"
+    previous_headless_0_2.pop("frostPigment")
+    check_case(
+        validator_for("schemas/versions/headless-resolution-0.2.0.schema.json"),
+        "headless request 0.2.0 archive",
+        previous_headless_0_2,
+        True,
+    )
+    check_case(headless, "current headless request rejects 0.2.0 archive", previous_headless_0_2, False)
+    checked += 2
     for name, change in (
         ("unknown member", lambda document: document.update({"rendererName": "example"})),
         ("missing input", lambda document: document.pop("environment")),
         ("nested role", lambda document: document["colorAssignments"]["roles"].pop("focus")),
         ("missing opaque assignments", lambda document: document.pop("opaqueColorAssignments")),
+        ("missing Frost pigment", lambda document: document.pop("frostPigment")),
     ):
         document = copy.deepcopy(valid_headless)
         change(document)
@@ -284,7 +321,7 @@ def main():
     scenario_schema = validator_for("schemas/surface-scenario.schema.json")
     for vector in surface_vectors:
         scenario = {
-            "schemaVersion": "0.3.0",
+            "schemaVersion": "0.4.0",
             "resolution": valid_headless,
             "surface": vector["document"],
         }
@@ -296,7 +333,7 @@ def main():
         )
         checked += 1
     valid_scenario = {
-        "schemaVersion": "0.3.0",
+        "schemaVersion": "0.4.0",
         "resolution": valid_headless,
         "surface": surface_vectors[0]["document"],
     }
@@ -312,6 +349,19 @@ def main():
         True,
     )
     check_case(scenario_schema, "current scenario rejects archive", previous_scenario, False)
+    checked += 2
+    previous_scenario = {
+        "schemaVersion": "0.3.0",
+        "resolution": previous_headless_0_2,
+        "surface": surface_vectors[0]["document"],
+    }
+    check_case(
+        validator_for("schemas/versions/surface-scenario-0.3.0.schema.json"),
+        "surface scenario 0.3.0 archive",
+        previous_scenario,
+        True,
+    )
+    check_case(scenario_schema, "current scenario rejects 0.3.0 archive", previous_scenario, False)
     checked += 2
     previous_scenario = {
         "schemaVersion": "0.2.0",
@@ -357,6 +407,7 @@ def main():
         ("fallback space", ("colorFallbacks", "focus", "colorSpace"), "display-p3"),
         ("opaque fallback alpha", ("opaqueColorFallbacks", "focus", "alpha"), 0.5),
         ("opaque fallback channel", ("opaqueColorFallbacks", "focus", "components", 0), 1.5),
+        ("Frost tint strength", ("frostTintStrength",), 1.0),
         (
             "unknown fallback role",
             ("colorFallbacks", "unknown"),
@@ -395,6 +446,7 @@ def main():
     archived_result["schemaVersion"] = "0.1.0"
     archived_result.pop("colorFallbacks")
     archived_result.pop("opaqueColorFallbacks")
+    archived_result.pop("frostTintStrength")
     check_case(previous_result, "headless result 0.1.0 archive", archived_result, True)
     check_case(result_schema, "current result rejects 0.1.0 archive", archived_result, False)
     checked += 2
@@ -403,12 +455,21 @@ def main():
     archived_result = copy.deepcopy(expected_result)
     archived_result["schemaVersion"] = "0.2.0"
     archived_result.pop("opaqueColorFallbacks")
+    archived_result.pop("frostTintStrength")
     check_case(previous_result, "headless result 0.2.0 archive", archived_result, True)
     check_case(result_schema, "current result rejects 0.2.0 archive", archived_result, False)
     checked += 2
 
+    previous_result = validator_for("schemas/versions/headless-result-0.3.0.schema.json")
+    archived_result = copy.deepcopy(expected_result)
+    archived_result["schemaVersion"] = "0.3.0"
+    archived_result.pop("frostTintStrength")
+    check_case(previous_result, "headless result 0.3.0 archive", archived_result, True)
+    check_case(result_schema, "current result rejects 0.3.0 archive", archived_result, False)
+    checked += 2
+
     color_value = Draft202012Validator(
-        {"$ref": "urn:resina:schema:headless-result:0.3.0#/$defs/color"},
+        {"$ref": "urn:resina:schema:headless-result:0.4.0#/$defs/color"},
         registry=schema_registry(),
     )
     for vector in load_json(ROOT / "conformance/tokens/primitive-value-vectors.json"):

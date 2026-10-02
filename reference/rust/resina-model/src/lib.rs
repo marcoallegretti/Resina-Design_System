@@ -2,6 +2,8 @@ use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 
 mod color;
 pub use color::{ColorAssignments, ColorRole, OpaqueColorAssignments};
+mod frost;
+pub use frost::FrostPigment;
 mod spatial;
 pub use spatial::{SpatialAssignments, SpatialRole};
 mod surface;

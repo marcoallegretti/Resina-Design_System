@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "materials": {
     "surface.base": "cast",
     "surface.content": "cast",
@@ -502,6 +502,7 @@
       }
     }
   },
+  "frostTintStrength": 0.55,
   "frostRepresentation": "translucentPigmented",
   "minimumHitTarget": {
     "minimumWidth": 48,

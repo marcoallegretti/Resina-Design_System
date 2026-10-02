@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:frost-pigment:0.1.0",
+  "title": "Resina Frost Pigment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "tintStrength"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "tintStrength": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}
+  }
+}
