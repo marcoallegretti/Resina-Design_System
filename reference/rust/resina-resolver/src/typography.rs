@@ -93,11 +93,19 @@ pub fn resolve_semantic_typography(
     tokens: &BTreeMap<String, ResolvedToken>,
     environment: &EnvironmentSnapshot,
 ) -> Result<BTreeMap<TypographyRole, ResolvedTypography>, Vec<TypographyResolutionError>> {
+    resolve_semantic_typography_for_scale(assignments, tokens, environment.text_scale())
+}
+
+pub(crate) fn resolve_semantic_typography_for_scale(
+    assignments: &TypographyAssignments,
+    tokens: &BTreeMap<String, ResolvedToken>,
+    text_scale: f64,
+) -> Result<BTreeMap<TypographyRole, ResolvedTypography>, Vec<TypographyResolutionError>> {
     let mut typography = BTreeMap::new();
     let mut errors = Vec::new();
     for role in TypographyRole::ALL {
         let spec = assignments.role(role);
-        let scale = environment.text_scale().max(spec.minimum_text_scale());
+        let scale = text_scale.max(spec.minimum_text_scale());
         let size = dimension(tokens, role, "fontSize", spec.font_size_path(), scale, true);
         let weight = font_weight(tokens, role, spec.font_weight_path());
         let line = positive_number(tokens, role, "lineHeight", spec.line_height_path());

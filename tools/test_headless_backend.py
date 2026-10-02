@@ -1,7 +1,8 @@
 import json
 import unittest
 
-from check_headless_backend import mismatch, replace_at_pointer
+from check_headless_backend import mismatch
+from check_schemas import replace_at_pointer
 from check_schemas import ROOT, load_json
 
 

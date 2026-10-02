@@ -1,43 +1,10 @@
 import argparse
-import copy
 import json
 import math
-import re
 import subprocess
 import sys
 
-from check_schemas import ROOT, load_json, parse_json, validator_for
-
-
-def pointer_member(container, segment, pointer):
-    if isinstance(container, dict):
-        if segment in container:
-            return segment
-    elif isinstance(container, list) and re.fullmatch(r"0|[1-9][0-9]*", segment):
-        index = int(segment)
-        if index < len(container):
-            return index
-    raise ValueError(f"JSON Pointer does not name an existing member: {pointer!r}")
-
-
-def replace_at_pointer(document, pointer, value):
-    if not pointer.startswith("/"):
-        raise ValueError(f"invalid JSON Pointer: {pointer!r}")
-    segments = pointer[1:].split("/")
-    if any(re.search(r"~(?![01])", segment) for segment in segments):
-        raise ValueError(f"invalid JSON Pointer escape: {pointer!r}")
-    decoded = [segment.replace("~1", "/").replace("~0", "~") for segment in segments]
-    current = document
-    for segment in decoded[:-1]:
-        current = current[pointer_member(current, segment, pointer)]
-    current[pointer_member(current, decoded[-1], pointer)] = value
-
-
-def apply_changes(document, changes):
-    result = copy.deepcopy(document)
-    for change in changes:
-        replace_at_pointer(result, change["path"], change["value"])
-    return result
+from check_schemas import ROOT, apply_changes, load_json, parse_json, validator_for
 
 
 def mismatch(actual, expected, pointer=""):

@@ -1,6 +1,7 @@
 import copy
 import json
 import math
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -75,6 +76,37 @@ def check_case(validator, name, document, expected_valid):
         raise AssertionError(f"{name}: {detail}")
 
 
+def pointer_member(container, segment, pointer):
+    if isinstance(container, dict):
+        if segment in container:
+            return segment
+    elif isinstance(container, list) and re.fullmatch(r"0|[1-9][0-9]*", segment):
+        index = int(segment)
+        if index < len(container):
+            return index
+    raise ValueError(f"JSON Pointer does not name an existing member: {pointer!r}")
+
+
+def replace_at_pointer(document, pointer, value):
+    if not pointer.startswith("/"):
+        raise ValueError(f"invalid JSON Pointer: {pointer!r}")
+    segments = pointer[1:].split("/")
+    if any(re.search(r"~(?![01])", segment) for segment in segments):
+        raise ValueError(f"invalid JSON Pointer escape: {pointer!r}")
+    decoded = [segment.replace("~1", "/").replace("~0", "~") for segment in segments]
+    current = document
+    for segment in decoded[:-1]:
+        current = current[pointer_member(current, segment, pointer)]
+    current[pointer_member(current, decoded[-1], pointer)] = value
+
+
+def apply_changes(document, changes):
+    result = copy.deepcopy(document)
+    for change in changes:
+        replace_at_pointer(result, change["path"], change["value"])
+    return result
+
+
 def check_vectors(schema_path, vector_path):
     validator = validator_for(schema_path)
     vectors = load_json(ROOT / vector_path)
@@ -111,6 +143,8 @@ def main():
         "schemas/surface-scenario.schema.json",
         "schemas/treatment-stack.schema.json",
         "schemas/typography-assignments.schema.json",
+        "schemas/theme-source.schema.json",
+        "schemas/theme-source-case.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
         "schemas/versions/surface-binding-0.1.0.schema.json",
         "schemas/versions/surface-binding-result-0.1.0.schema.json",
@@ -131,6 +165,33 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    theme_source_path = ROOT / "conformance/themes/valid-source.json"
+    theme_source_text = theme_source_path.read_text(encoding="utf-8")
+    theme_source = parse_json(theme_source_text, theme_source_path)
+    theme_schema = validator_for("schemas/theme-source.schema.json")
+    theme_case_schema = validator_for("schemas/theme-source-case.schema.json")
+    theme_cases = load_json(ROOT / "conformance/themes/source-cases.json")
+    theme_case_names = set()
+    for case in theme_cases:
+        check_case(theme_case_schema, "theme source case", case, True)
+        if case["name"] in theme_case_names:
+            raise ValueError(f"duplicate theme source case name: {case['name']}")
+        theme_case_names.add(case["name"])
+        if "sourceReplace" in case:
+            replacement = case["sourceReplace"]
+            if theme_source_text.count(replacement["find"]) != 1:
+                raise ValueError(f"theme source replacement must match exactly once: {case['name']}")
+            source = theme_source_text.replace(replacement["find"], replacement["with"], 1)
+            try:
+                document = parse_json(source, case["name"])
+            except ValueError:
+                if case["schemaValid"]:
+                    raise AssertionError(f"{case['name']}: source unexpectedly failed to parse")
+                continue
+        else:
+            document = apply_changes(theme_source, case.get("requestChanges", []))
+        check_case(theme_schema, f"theme source: {case['name']}", document, case["schemaValid"])
 
     backend_case_schema = validator_for("schemas/headless-conformance-case.schema.json")
     backend_cases = load_json(ROOT / "conformance/headless/backend-cases.json")
@@ -189,7 +250,7 @@ def main():
     ):
         raise ValueError("surface binding material families differ from assignments")
 
-    checked = len(backend_cases) + len(surface_backend_cases)
+    checked = len(backend_cases) + len(surface_backend_cases) + len(theme_cases)
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/opaque-color-assignments.schema.json", "conformance/color/opaque-assignment-vectors.json"),

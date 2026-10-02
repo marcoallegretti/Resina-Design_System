@@ -1,9 +1,7 @@
 use crate::{
     ColorResolutionError, ColorRoleFallbackError, MinimumHitTarget, OpaqueColorResolutionError,
     ResolvedTypography, SpatialResolutionError, SrgbFallback, TypographyResolutionError,
-    resolve_frost_representation, resolve_minimum_hit_target, resolve_semantic_color_fallbacks,
-    resolve_semantic_colors, resolve_semantic_opaque_color_fallbacks, resolve_semantic_space,
-    resolve_semantic_typography,
+    theme::{ThemeCompilationError, ThemeSource, compile_theme},
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
@@ -11,7 +9,7 @@ use resina_model::{
     MaterialFamily, MaterialRole, OpaqueColorAssignments, SpatialAssignments, SpatialRole,
     TypographyAssignments, TypographyRole,
 };
-use resina_tokens::{DocumentError, parse_token_document, resolve_token_document};
+use resina_tokens::{DocumentError, parse_token_document};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
@@ -33,16 +31,16 @@ struct HeadlessRequest {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HeadlessResolution {
-    schema_version: &'static str,
-    materials: BTreeMap<MaterialRole, MaterialFamily>,
-    colors: BTreeMap<ColorRole, Value>,
-    color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
-    opaque_color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
-    frost_tint_strength: f64,
-    space: BTreeMap<SpatialRole, Value>,
-    typography: BTreeMap<TypographyRole, ResolvedTypography>,
-    frost_representation: FrostRepresentation,
-    minimum_hit_target: MinimumHitTarget,
+    pub(crate) schema_version: &'static str,
+    pub(crate) materials: BTreeMap<MaterialRole, MaterialFamily>,
+    pub(crate) colors: BTreeMap<ColorRole, Value>,
+    pub(crate) color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
+    pub(crate) opaque_color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
+    pub(crate) frost_tint_strength: f64,
+    pub(crate) space: BTreeMap<SpatialRole, Value>,
+    pub(crate) typography: BTreeMap<TypographyRole, ResolvedTypography>,
+    pub(crate) frost_representation: FrostRepresentation,
+    pub(crate) minimum_hit_target: MinimumHitTarget,
 }
 
 impl HeadlessResolution {
@@ -159,83 +157,32 @@ pub(crate) fn resolve_headless_document(
     let request: HeadlessRequest =
         serde_json::from_value(document).map_err(HeadlessResolutionError::Request)?;
     debug_assert_eq!(request.schema_version, "0.3.0");
-    let tokens =
-        resolve_token_document(&request.tokens).map_err(HeadlessResolutionError::Tokens)?;
-
-    let colors = resolve_semantic_colors(&request.color_assignments, &tokens);
-    let color_fallbacks = colors.as_ref().ok().map(resolve_semantic_color_fallbacks);
-    let opaque_color_fallbacks = colors.as_ref().ok().map(|colors| {
-        resolve_semantic_opaque_color_fallbacks(colors, &request.opaque_color_assignments, &tokens)
-    });
-    let space = resolve_semantic_space(&request.spatial_assignments, &tokens);
-    let typography = resolve_semantic_typography(
-        &request.typography_assignments,
-        &tokens,
-        &request.environment,
-    );
-    let mut errors = Vec::new();
-    if let Err(found) = &colors {
-        errors.extend(found.iter().cloned().map(HeadlessBindingError::Color));
-    }
-    if let Some(Err(found)) = &color_fallbacks {
-        errors.extend(
-            found
-                .iter()
-                .cloned()
-                .map(HeadlessBindingError::ColorFallback),
-        );
-    }
-    if let Some(Err(found)) = &opaque_color_fallbacks {
-        errors.extend(
-            found
-                .iter()
-                .cloned()
-                .map(HeadlessBindingError::OpaqueColorFallback),
-        );
-    }
-    if let Err(found) = &space {
-        errors.extend(found.iter().cloned().map(HeadlessBindingError::Space));
-    }
-    if let Err(found) = &typography {
-        errors.extend(found.iter().cloned().map(HeadlessBindingError::Typography));
-    }
-    match (
-        colors,
-        color_fallbacks,
-        opaque_color_fallbacks,
-        space,
-        typography,
-    ) {
-        (
-            Ok(colors),
-            Some(Ok(color_fallbacks)),
-            Some(Ok(opaque_color_fallbacks)),
-            Ok(space),
-            Ok(typography),
-        ) if errors.is_empty() => {
-            let materials = MaterialRole::ALL
+    let environment = request.environment;
+    let source = ThemeSource {
+        schema_version: "0.1.0".to_owned(),
+        tokens: request.tokens,
+        material_assignments: request.material_assignments,
+        frost_pigment: request.frost_pigment,
+        color_assignments: request.color_assignments,
+        opaque_color_assignments: request.opaque_color_assignments,
+        spatial_assignments: request.spatial_assignments,
+        typography_assignments: request.typography_assignments,
+    };
+    let theme = compile_theme(source, environment.text_scale()).map_err(|error| match error {
+        ThemeCompilationError::Parse(error) => HeadlessResolutionError::Parse(error),
+        ThemeCompilationError::Source(error) => HeadlessResolutionError::Request(error),
+        ThemeCompilationError::UnsupportedVersion => HeadlessResolutionError::UnsupportedVersion,
+        ThemeCompilationError::Tokens(errors) => HeadlessResolutionError::Tokens(errors),
+        ThemeCompilationError::Bindings(errors) => HeadlessResolutionError::Bindings(errors),
+    })?;
+    theme.resolve(&environment).map_err(|errors| {
+        HeadlessResolutionError::Bindings(
+            errors
                 .into_iter()
-                .map(|role| (role, request.material_assignments.material_for(role)))
-                .collect();
-            Ok(HeadlessResolution {
-                schema_version: "0.4.0",
-                materials,
-                colors,
-                color_fallbacks,
-                opaque_color_fallbacks,
-                frost_tint_strength: request.frost_pigment.tint_strength(),
-                space,
-                typography,
-                frost_representation: resolve_frost_representation(
-                    request.environment.renderer_capabilities(),
-                    request.environment.accessibility_preferences(),
-                    request.environment.quality_policy(),
-                ),
-                minimum_hit_target: resolve_minimum_hit_target(&request.environment),
-            })
-        }
-        _ => Err(HeadlessResolutionError::Bindings(errors)),
-    }
+                .map(HeadlessBindingError::Typography)
+                .collect(),
+        )
+    })
 }
 
 #[cfg(test)]

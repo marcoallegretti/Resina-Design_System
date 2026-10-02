@@ -1,0 +1,40 @@
+[
+  {
+    "name": "complete theme source compiles",
+    "outcome": "valid",
+    "schemaValid": true
+  },
+  {
+    "name": "unsupported theme source version is rejected",
+    "outcome": "invalid",
+    "schemaValid": false,
+    "requestChanges": [
+      {"path": "/schemaVersion", "value": "0.2.0"}
+    ]
+  },
+  {
+    "name": "missing semantic color token prevents compilation",
+    "outcome": "invalid",
+    "schemaValid": true,
+    "requestChanges": [
+      {"path": "/colorAssignments/roles/focus", "value": "missing.color"}
+    ]
+  },
+  {
+    "name": "missing typography token prevents compilation",
+    "outcome": "invalid",
+    "schemaValid": true,
+    "requestChanges": [
+      {"path": "/typographyAssignments/roles/body/fontSize", "value": "missing.size"}
+    ]
+  },
+  {
+    "name": "duplicate theme source member is rejected",
+    "outcome": "invalid",
+    "schemaValid": false,
+    "sourceReplace": {
+      "find": "{\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\"",
+      "with": "{\n  \"schemaVersion\": \"0.1.0\",\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\""
+    }
+  }
+]
