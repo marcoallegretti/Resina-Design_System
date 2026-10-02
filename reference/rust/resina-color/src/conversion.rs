@@ -14,6 +14,19 @@ const XYZ_TO_SRGB: [[f64; 3]; 3] = [
     ],
     [705.0 / 12673.0, -2585.0 / 12673.0, 705.0 / 667.0],
 ];
+const D50_TO_D65: [[f64; 3]; 3] = [
+    [0.955473421488075, -0.02309845494876471, 0.06325924320057072],
+    [
+        -0.0283697093338637,
+        1.0099953980813041,
+        0.021041441191917323,
+    ],
+    [
+        0.012314014864481998,
+        -0.020507649298898964,
+        1.330365926242124,
+    ],
+];
 const XYZ_TO_LMS: [[f64; 3]; 3] = [
     [
         0.819_022_437_996_703,
@@ -123,6 +136,7 @@ impl fmt::Display for ColorConversionError {
 
 impl std::error::Error for ColorConversionError {}
 
+#[derive(Clone, Copy)]
 struct ComponentRange {
     minimum: f64,
     maximum: f64,
@@ -198,6 +212,17 @@ pub fn linear_srgb_to_srgb(linear: [f64; 3]) -> Result<[f64; 3], ColorConversion
         [UNIT_COMPONENT, UNIT_COMPONENT, UNIT_COMPONENT],
     )?;
     finite_result(linear.map(encode_extended_srgb_component))
+}
+
+pub fn xyz_d65_to_extended_srgb(xyz: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(xyz, "xyz-d65", [UNIT_COMPONENT; 3])?;
+    finite_result(transform(&XYZ_TO_SRGB, xyz).map(encode_extended_srgb_component))
+}
+
+pub fn xyz_d50_to_extended_srgb(xyz: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(xyz, "xyz-d50", [UNIT_COMPONENT; 3])?;
+    let adapted = transform(&D50_TO_D65, xyz);
+    finite_result(transform(&XYZ_TO_SRGB, adapted).map(encode_extended_srgb_component))
 }
 
 pub fn hsl_to_srgb(hsl: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
@@ -376,6 +401,45 @@ mod tests {
     }
 
     #[test]
+    fn xyz_conversion_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/xyz-conversion-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let xyz = components(&vector["xyz"]);
+            let convert = match vector["space"].as_str().unwrap() {
+                "xyz-d65" => xyz_d65_to_extended_srgb,
+                "xyz-d50" => xyz_d50_to_extended_srgb,
+                other => panic!("unexpected color space: {other}"),
+            };
+            let result = convert(xyz);
+            if vector.get("error").is_some() {
+                assert_eq!(vector["error"], "OutOfRangeColorComponent");
+                assert_eq!(
+                    result,
+                    Err(ColorConversionError::OutOfRangeColorComponent {
+                        color_space: if vector["space"] == "xyz-d65" {
+                            "xyz-d65"
+                        } else {
+                            "xyz-d50"
+                        },
+                        index: vector["index"].as_u64().unwrap() as usize,
+                    }),
+                    "{}",
+                    vector["name"]
+                );
+            } else {
+                assert_close(
+                    result.unwrap(),
+                    components(&vector["srgb"]),
+                    &vector["name"],
+                );
+            }
+        }
+    }
+
+    #[test]
     fn direct_srgb_conversion_conformance_vectors() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
             "../../../../conformance/color/srgb-direct-conversion-vectors.json"
@@ -436,6 +500,20 @@ mod tests {
             Err(ColorConversionError::NonFiniteColorComponent {
                 color_space: "hsl",
                 index: 1
+            })
+        );
+        assert_eq!(
+            xyz_d65_to_extended_srgb([0.0, f64::NAN, 0.0]),
+            Err(ColorConversionError::NonFiniteColorComponent {
+                color_space: "xyz-d65",
+                index: 1
+            })
+        );
+        assert_eq!(
+            xyz_d50_to_extended_srgb([0.0, 0.0, f64::INFINITY]),
+            Err(ColorConversionError::NonFiniteColorComponent {
+                color_space: "xyz-d50",
+                index: 2
             })
         );
     }

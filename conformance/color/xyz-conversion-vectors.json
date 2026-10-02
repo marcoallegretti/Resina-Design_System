@@ -1,0 +1,46 @@
+[
+  {
+    "name": "D65 black",
+    "space": "xyz-d65",
+    "xyz": [0, 0, 0],
+    "srgb": [0, 0, 0]
+  },
+  {
+    "name": "D65 red from the CSS sRGB matrix",
+    "space": "xyz-d65",
+    "xyz": [0.4123907992659595, 0.21263900587151036, 0.01933081871559185],
+    "srgb": [1, 0, 0]
+  },
+  {
+    "name": "D65 midtone exercises all three channels",
+    "space": "xyz-d65",
+    "xyz": [0.11865530579242775, 0.12505925609252708, 0.31926610717393133],
+    "srgb": [0.2, 0.4, 0.6]
+  },
+  {
+    "name": "D50 midtone requires Bradford adaptation",
+    "space": "xyz-d50",
+    "xyz": [0.11118745908211884, 0.12192740396619164, 0.24083403014953822],
+    "srgb": [0.2, 0.4, 0.6]
+  },
+  {
+    "name": "D65 out of gamut remains extended",
+    "space": "xyz-d65",
+    "xyz": [0, 1, 0],
+    "srgb": [-1.207055183463238, 1.316185900996334, -0.4889737253417437]
+  },
+  {
+    "name": "D65 range is enforced",
+    "space": "xyz-d65",
+    "xyz": [1.1, 0, 0],
+    "error": "OutOfRangeColorComponent",
+    "index": 0
+  },
+  {
+    "name": "D50 range is enforced",
+    "space": "xyz-d50",
+    "xyz": [0, -0.1, 0],
+    "error": "OutOfRangeColorComponent",
+    "index": 1
+  }
+]

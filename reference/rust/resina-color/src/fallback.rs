@@ -1,6 +1,6 @@
 use crate::{
     ColorConversionError, hsl_to_srgb, hwb_to_srgb, linear_srgb_to_srgb, oklab_to_extended_srgb,
-    oklch_to_oklab,
+    oklch_to_oklab, xyz_d50_to_extended_srgb, xyz_d65_to_extended_srgb,
 };
 use resina_tokens::{ValueError, validate_resolved_value};
 use serde::Serialize;
@@ -37,6 +37,8 @@ pub enum ColorFallbackError {
     OutOfGamutOklch,
     DirectConversion(ColorConversionError),
     OutOfGamutDirectColor,
+    XyzConversion(ColorConversionError),
+    OutOfGamutXyz,
 }
 
 impl fmt::Display for ColorFallbackError {
@@ -62,6 +64,8 @@ impl fmt::Display for ColorFallbackError {
             Self::OutOfGamutDirectColor => {
                 formatter.write_str("direct color conversion outside the sRGB gamut")
             }
+            Self::XyzConversion(error) => write!(formatter, "XYZ conversion failed: {error}"),
+            Self::OutOfGamutXyz => formatter.write_str("XYZ color converts outside the sRGB gamut"),
         }
     }
 }
@@ -129,6 +133,18 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
             }
             .map_err(ColorFallbackError::DirectConversion)?;
             portable_components(converted, ColorFallbackError::OutOfGamutDirectColor)?
+        }
+        (None, None) if value["colorSpace"] == "xyz-d65" || value["colorSpace"] == "xyz-d50" => {
+            let Some(source) = numeric_components else {
+                return Err(ColorFallbackError::MissingHexFallback);
+            };
+            let converted = if value["colorSpace"] == "xyz-d65" {
+                xyz_d65_to_extended_srgb(source)
+            } else {
+                xyz_d50_to_extended_srgb(source)
+            }
+            .map_err(ColorFallbackError::XyzConversion)?;
+            portable_components(converted, ColorFallbackError::OutOfGamutXyz)?
         }
         (None, None) => return Err(ColorFallbackError::MissingHexFallback),
     };
@@ -210,6 +226,8 @@ mod tests {
                     ColorFallbackError::OutOfGamutOklch => "OutOfGamutOklch",
                     ColorFallbackError::DirectConversion(_) => "DirectConversion",
                     ColorFallbackError::OutOfGamutDirectColor => "OutOfGamutDirectColor",
+                    ColorFallbackError::XyzConversion(_) => "XyzConversion",
+                    ColorFallbackError::OutOfGamutXyz => "OutOfGamutXyz",
                 };
                 assert_eq!(
                     kind,

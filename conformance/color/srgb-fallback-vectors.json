@@ -624,6 +624,49 @@
     "error": "MissingHexFallback"
   },
   {
+    "name": "numeric XYZ-D65 derives sRGB without hex",
+    "value": {
+      "colorSpace": "xyz-d65",
+      "components": [0.11865530579242775, 0.12505925609252708, 0.31926610717393133],
+      "alpha": 0.35
+    },
+    "expected": {
+      "colorSpace": "srgb",
+      "components": [0.2, 0.4, 0.6],
+      "alpha": 0.35
+    },
+    "tolerance": 1e-12
+  },
+  {
+    "name": "numeric XYZ-D50 derives sRGB with Bradford adaptation",
+    "value": {
+      "colorSpace": "xyz-d50",
+      "components": [0.11118745908211884, 0.12192740396619164, 0.24083403014953822]
+    },
+    "expected": {
+      "colorSpace": "srgb",
+      "components": [0.2, 0.4, 0.6],
+      "alpha": 1.0
+    },
+    "tolerance": 1e-12
+  },
+  {
+    "name": "out-of-gamut XYZ requires authored fallback",
+    "value": {
+      "colorSpace": "xyz-d65",
+      "components": [0, 1, 0]
+    },
+    "error": "OutOfGamutXyz"
+  },
+  {
+    "name": "missing XYZ component requires authored fallback",
+    "value": {
+      "colorSpace": "xyz-d50",
+      "components": [0.1, "none", 0.2]
+    },
+    "error": "MissingHexFallback"
+  },
+  {
     "name": "unhandled color space without hex is nonportable",
     "value": {
       "colorSpace": "lab",
