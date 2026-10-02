@@ -135,6 +135,7 @@ def main():
         "schemas/opaque-color-assignments.schema.json",
         "schemas/opaque-srgb-fallback.schema.json",
         "schemas/resolver-module-case.schema.json",
+        "schemas/resolver-module-request.schema.json",
         "schemas/spatial-assignments.schema.json",
         "schemas/srgb-fallback.schema.json",
         "schemas/state-set.schema.json",
@@ -175,6 +176,26 @@ def main():
         if case["name"] in resolver_case_names:
             raise ValueError(f"duplicate resolver module case name: {case['name']}")
         resolver_case_names.add(case["name"])
+    resolver_request_schema = validator_for("schemas/resolver-module-request.schema.json")
+    resolver_request = {
+        "schemaVersion": "0.1.0",
+        "resolver": resolver_cases[0]["resolver"],
+        "input": resolver_cases[0]["input"],
+        "externalSources": resolver_cases[0]["externalSources"],
+    }
+    check_case(resolver_request_schema, "resolver module request", resolver_request, True)
+    for name, field, value in [
+        ("unsupported version", "schemaVersion", "0.2.0"),
+        ("invalid input source", "input", {}),
+        ("invalid external source", "externalSources", {"file.json": 1}),
+        ("unknown member", "unknown", True),
+    ]:
+        invalid_request = copy.deepcopy(resolver_request)
+        invalid_request[field] = value
+        check_case(resolver_request_schema, f"resolver module request {name}", invalid_request, False)
+    missing_input = copy.deepcopy(resolver_request)
+    del missing_input["input"]
+    check_case(resolver_request_schema, "resolver module request missing input", missing_input, False)
     valid_resolver_case = next((case for case in resolver_cases if "expected" in case), None)
     if valid_resolver_case is None:
         raise ValueError("resolver module cases need a successful example")

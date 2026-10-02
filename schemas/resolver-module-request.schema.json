@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:resolver-module-request:0.1.0",
+  "title": "Resina Resolver Module Command Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "resolver", "input", "externalSources"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "resolver": {"type": "string", "minLength": 1},
+    "input": {"type": "string", "minLength": 1},
+    "externalSources": {"type": "object", "additionalProperties": {"type": "string"}}
+  }
+}

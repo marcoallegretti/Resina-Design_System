@@ -11,6 +11,8 @@ Run `python -m pip install -r tools/requirements-schema.txt` and `python tools/c
 
 Run `cargo run -p resina-tokens --bin resina-token-resolve -- <path>` to validate a UTF-8 DTCG authoring source and print its deterministic resolved path-to-token JSON. Use `-` instead of a path to read stdin. Invalid sources produce diagnostics on stderr, a nonzero status, and no resolved JSON. This command resolves tokens; it does not compile a Resina bundle.
 
+Run `cargo run -p resina-tokens --bin resina-token-compose -- <path>` to compose a [resolver request](schemas/resolver-module-request.schema.json) from a file, or use `-` for stdin. The command emits the same resolved token mapping. `python tools/check_resolver_backend.py -- <backend-command> -` tests this protocol against the public resolver vectors and authored foundation source.
+
 Run `python tools/check_token_backend.py -- <backend-command> -` to check any token resolver that implements the public [token command boundary](spec/03-tokens.md). Build `resina-token-resolve` first to check the Rust reference through the same external boundary.
 
 The Rust reference caps group-extension expansion and token-reference resolution at 100,000 constructed JSON value nodes and 8 MiB of cloned string and member-name bytes each. The reference-resolution budget covers the complete document. An over-limit source fails explicitly without token output. These resource guards do not define Resina or DTCG format limits.
