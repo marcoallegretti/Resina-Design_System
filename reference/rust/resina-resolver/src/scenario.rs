@@ -13,7 +13,7 @@ use std::fmt;
 struct SurfaceScenario {
     schema_version: String,
     resolution: Value,
-    surface: SurfaceIntent,
+    surface: Value,
 }
 
 #[derive(Debug)]
@@ -22,6 +22,7 @@ pub enum SurfaceScenarioError {
     Request(serde_json::Error),
     UnsupportedVersion,
     Resolution(HeadlessResolutionError),
+    Intent(serde_json::Error),
     Binding(SurfaceBindingError),
 }
 
@@ -32,6 +33,7 @@ impl fmt::Display for SurfaceScenarioError {
             Self::Request(error) => write!(formatter, "invalid surface scenario: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.4.0"),
             Self::Resolution(error) => write!(formatter, "surface scenario resolution: {error}"),
+            Self::Intent(error) => write!(formatter, "surface scenario binding intent: {error}"),
             Self::Binding(error) => write!(formatter, "surface scenario binding: {error}"),
         }
     }
@@ -48,7 +50,9 @@ pub fn resolve_surface_scenario_source(source: &str) -> Result<BoundSurface, Sur
     }
     let resolution =
         resolve_headless_document(scenario.resolution).map_err(SurfaceScenarioError::Resolution)?;
-    bind_surface(&scenario.surface, &resolution).map_err(SurfaceScenarioError::Binding)
+    let intent = serde_json::from_value::<SurfaceIntent>(scenario.surface)
+        .map_err(SurfaceScenarioError::Intent)?;
+    bind_surface(&intent, &resolution).map_err(SurfaceScenarioError::Binding)
 }
 
 #[cfg(test)]
@@ -118,5 +122,29 @@ mod tests {
                 .to_string()
                 .contains("color: MissingToken")
         );
+    }
+
+    #[test]
+    fn scenario_reports_resolution_before_invalid_surface_intent() {
+        let resolution: Value = serde_json::from_str(RESOLUTION).unwrap();
+        let surface: Value = serde_json::from_str(VECTORS).unwrap();
+        let mut scenario = json!({
+            "schemaVersion": "0.4.0",
+            "resolution": resolution,
+            "surface": surface[0]["document"]
+        });
+        let original_focus = scenario["resolution"]["colorAssignments"]["roles"]["focus"].clone();
+        scenario["surface"]["colorRole"] = json!("unknown");
+        scenario["resolution"]["colorAssignments"]["roles"]["focus"] = json!("missing.color");
+        assert!(matches!(
+            resolve_surface_scenario_source(&scenario.to_string()),
+            Err(SurfaceScenarioError::Resolution(_))
+        ));
+
+        scenario["resolution"]["colorAssignments"]["roles"]["focus"] = original_focus;
+        assert!(matches!(
+            resolve_surface_scenario_source(&scenario.to_string()),
+            Err(SurfaceScenarioError::Intent(_))
+        ));
     }
 }
