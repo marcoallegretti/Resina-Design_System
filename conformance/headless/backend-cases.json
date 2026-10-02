@@ -1,6 +1,33 @@
 [
   {"name":"baseline semantic resolution","outcome":"valid"},
   {
+    "name":"user text scale respects each role minimum",
+    "outcome":"valid",
+    "requestChanges":[{"path":"/environment/textScale","value":1}],
+    "expectedChanges":[
+      {"path":"/typography/display/fontSize/value","value":20.0},
+      {"path":"/typography/display/letterSpacing/value","value":0.25},
+      {"path":"/typography/titleLarge/fontSize/value","value":20.0},
+      {"path":"/typography/titleLarge/letterSpacing/value","value":0.25},
+      {"path":"/typography/title/fontSize/value","value":20.0},
+      {"path":"/typography/title/letterSpacing/value","value":0.25},
+      {"path":"/typography/heading/fontSize/value","value":20.0},
+      {"path":"/typography/heading/letterSpacing/value","value":0.25},
+      {"path":"/typography/bodyLarge/fontSize/value","value":20.0},
+      {"path":"/typography/bodyLarge/letterSpacing/value","value":0.25},
+      {"path":"/typography/body/fontSize/value","value":20.0},
+      {"path":"/typography/body/letterSpacing/value","value":0.25},
+      {"path":"/typography/label/fontSize/value","value":20.0},
+      {"path":"/typography/label/letterSpacing/value","value":0.25},
+      {"path":"/typography/caption/fontSize/value","value":25.0},
+      {"path":"/typography/caption/letterSpacing/value","value":0.3125},
+      {"path":"/typography/numeric/fontSize/value","value":20.0},
+      {"path":"/typography/numeric/letterSpacing/value","value":0.25},
+      {"path":"/typography/code/fontSize/value","value":20.0},
+      {"path":"/typography/code/letterSpacing/value","value":0.25}
+    ]
+  },
+  {
     "name":"high contrast and keyboard preserve other resolved roles",
     "outcome":"valid",
     "requestChanges":[

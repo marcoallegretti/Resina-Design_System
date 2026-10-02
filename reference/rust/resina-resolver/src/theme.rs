@@ -221,11 +221,13 @@ mod tests {
         for case in cases {
             let changes = case["requestChanges"].as_array();
             if case["outcome"] != "valid"
+                || case.get("sourceText").is_some()
+                || case.get("sourceReplace").is_some()
                 || changes.is_some_and(|changes| {
                     changes.iter().any(|change| {
-                        !change["path"]
-                            .as_str()
-                            .is_some_and(|path| path.starts_with("/environment/"))
+                        !change["path"].as_str().is_some_and(|path| {
+                            path == "/environment" || path.starts_with("/environment/")
+                        })
                     })
                 })
             {
@@ -254,7 +256,7 @@ mod tests {
             assert_eq!(actual, expected, "{}", case["name"]);
             checked += 1;
         }
-        assert_eq!(checked, 6);
+        assert_eq!(checked, 7);
     }
 
     #[test]
