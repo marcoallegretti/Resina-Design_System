@@ -156,6 +156,12 @@ impl Resolver<'_> {
                         location: pointer,
                     });
                 }
+                if target.get("$value").is_none() {
+                    return Err(ResolveError {
+                        kind: ResolveErrorKind::MissingTarget,
+                        location: format!("{pointer}/$value"),
+                    });
+                }
                 self.resolve_at(&pointer, stack)
             }
             Value::Object(object) if object.contains_key("$ref") => {
@@ -215,20 +221,11 @@ impl Resolver<'_> {
         let Ok(segments) = parse_pointer(pointer) else {
             return false;
         };
-        let mut current = self.document;
-        for segment in segments {
-            if is_token(current) && segment == "$value" {
+        for (index, segment) in segments.iter().enumerate() {
+            if segment == "$value" && token_at_segments(self.document, &segments[..index]).is_some()
+            {
                 return true;
             }
-            let next = match current {
-                Value::Object(object) => object.get(&segment),
-                Value::Array(array) => parse_index(&segment).and_then(|index| array.get(index)),
-                _ => None,
-            };
-            let Some(next) = next else {
-                return false;
-            };
-            current = next;
         }
         false
     }
@@ -251,6 +248,27 @@ fn is_token(value: &Value) -> bool {
     value
         .as_object()
         .is_some_and(|object| object.contains_key("$value") || object.contains_key("$ref"))
+}
+
+fn token_at_pointer<'a>(document: &'a Value, pointer: &str) -> Option<&'a Value> {
+    let segments = parse_pointer(pointer).ok()?;
+    token_at_segments(document, &segments)
+}
+
+fn token_at_segments<'a>(document: &'a Value, segments: &[String]) -> Option<&'a Value> {
+    let (name, parents) = segments.split_last()?;
+    let mut group = document;
+    for parent in parents {
+        if parent.starts_with('$') || is_token(group) {
+            return None;
+        }
+        group = group.as_object()?.get(parent)?;
+    }
+    if is_token(group) || (name.starts_with('$') && name != "$root") {
+        return None;
+    }
+    let token = group.as_object()?.get(name)?;
+    is_token(token).then_some(token)
 }
 
 fn curly_path_to_pointer(path: &str) -> Result<String, ResolveErrorKind> {

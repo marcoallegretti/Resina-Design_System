@@ -1,6 +1,6 @@
 use crate::{
     Resolver, TypeErrorKind, canonical_pointer, curly_path_to_pointer, escape_pointer_segment,
-    is_token, materialize_group_extensions, parse_pointer,
+    is_token, materialize_group_extensions, parse_pointer, token_at_pointer,
     types::resolve_type_in_expanded_document, validate_resolved_value,
 };
 use serde_json::{Map, Value};
@@ -439,7 +439,9 @@ fn whole_token_target(document: &Value, pointer: &str, curly: bool) -> Option<St
     } else {
         pointer.strip_suffix("/$value")?
     };
-    if lookup(document, candidate).is_some_and(is_token) {
+    if token_at_pointer(document, candidate).is_some()
+        && (curly || lookup(document, pointer).is_some())
+    {
         let segments = parse_pointer(candidate).ok()?;
         return Some(segments.join("."));
     }

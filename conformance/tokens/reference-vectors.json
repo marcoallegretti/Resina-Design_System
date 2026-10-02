@@ -106,7 +106,7 @@
     "name": "circular alias",
     "document": {
       "a": { "$type": "number", "$value": "{b}" },
-      "b": { "$type": "number", "$ref": "#/a/$value" }
+      "b": { "$type": "number", "$value": "{a}" }
     },
     "path": "a",
     "error": "CircularReference"
@@ -144,6 +144,16 @@
       "base": { "$type": "number", "$ref": "#/source/$value" },
       "source": { "$type": "number", "$value": 2 },
       "alias": { "$type": "number", "$ref": "#/base/$value" }
+    },
+    "path": "alias",
+    "error": "MissingTarget"
+  },
+  {
+    "name": "curly alias cannot select absent value on ref-only token",
+    "document": {
+      "base": { "$type": "number", "$ref": "#/source/$value" },
+      "source": { "$type": "number", "$value": 2 },
+      "alias": { "$type": "number", "$value": "{base}" }
     },
     "path": "alias",
     "error": "MissingTarget"

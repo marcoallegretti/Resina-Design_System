@@ -157,6 +157,17 @@
     "error": "InvalidReference"
   },
   {
+    "name": "pointer to vendor extension value is not a token alias",
+    "document": {"base": {"$type": "number", "$value": 1, "$extensions": {"vendor.example": {"$type": "color", "$value": 2}}}, "probe": {"$type": "number", "$ref": "#/base/$extensions/vendor.example/$value"}},
+    "expected": {"base": {"token_type": "number", "value": 1}, "probe": {"token_type": "number", "value": 2}}
+  },
+  {
+    "name": "curly alias to ref-only token has no value",
+    "document": {"source": {"$type": "number", "$value": 2}, "base": {"$type": "number", "$ref": "#/source/$value"}, "alias": {"$type": "number", "$value": "{base}"}},
+    "error": "InvalidReference",
+    "location": "#/base/$value"
+  },
+  {
     "name": "invalid extension",
     "document": {"base": {"$type": "number", "$value": 2}, "bad": {"$extends": "{base}"}},
     "error": "InvalidDocument"

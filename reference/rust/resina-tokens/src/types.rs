@@ -99,17 +99,23 @@ impl TypeResolver<'_> {
             .and_then(|pointer| canonical_pointer(pointer).ok());
         let result =
             if let Some(target) = curly_reference.as_deref().or(pointer_reference.as_deref()) {
+                let target_value = self.lookup(target)?;
+                if curly_reference.is_some() && target_value.get("$value").is_none() {
+                    return Err(TypeError {
+                        kind: TypeErrorKind::MissingTarget,
+                        location: format!("{target}/$value"),
+                    });
+                }
                 let token_target = if curly_reference.is_some() {
                     Some(target)
                 } else {
                     target.strip_suffix("/$value")
                 };
-                if let Some(token_target) =
-                    token_target.filter(|path| self.lookup(path).is_ok_and(crate::is_token))
+                if let Some(token_target) = token_target
+                    .filter(|path| crate::token_at_pointer(self.document, path).is_some())
                 {
                     self.resolve(token_target, stack)
                 } else {
-                    self.lookup(target)?;
                     self.inherited_type(&canonical)
                 }
             } else {
