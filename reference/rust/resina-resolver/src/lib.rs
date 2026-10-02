@@ -4,7 +4,12 @@ use resina_tokens::{ResolvedToken, validate_resolved_value};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
+mod frost_legibility;
 mod spatial;
+pub use frost_legibility::{
+    FrostLegibilityError, FrostLegibilityResult, resolve_frost_legibility,
+    resolve_frost_legibility_source,
+};
 pub use resina_color::{
     ColorFallbackError, ContrastError, SrgbFallback, opaque_contrast_ratio, resolve_srgb_fallback,
 };

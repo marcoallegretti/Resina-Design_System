@@ -22,4 +22,6 @@ The representation choice does not make a translucent semantic color opaque. One
 
 The portable body is one pigment prerequisite, not final Frost paint. Edge, highlight, depth separation, treatment, and actual adjacent-color legibility still require resolution before a backend can paint a complete Frost surface. A backend MUST NOT treat the representation name or body color as permission to invent a backdrop or discard the specified alpha.
 
+For a known post-treatment backdrop and actual opaque foreground, the [Frost legibility operation](24-frost-legibility.md) MAY further select `opaqueDimensional` when the selected body does not meet an explicitly supplied contrast threshold. It fails when even the authored opaque body cannot meet that threshold.
+
 Reduced motion does not change this static representation choice; motion resolution has a separate contract. A zero-capability renderer selects `opaqueDimensional`. The [Frost conformance vectors](../conformance/materials/frost-fallback-vectors.json) cover quality, capability combinations, accessibility overrides, and Tier 0. Other material families and treatments are not assigned implicit fallback behavior by this document.

@@ -128,6 +128,9 @@ def main():
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/frost-pigment.schema.json",
+        "schemas/frost-legibility-request.schema.json",
+        "schemas/frost-legibility-result.schema.json",
+        "schemas/frost-legibility-case.schema.json",
         "schemas/headless-resolution.schema.json",
         "schemas/headless-conformance-case.schema.json",
         "schemas/headless-result.schema.json",
@@ -288,6 +291,27 @@ def main():
     for name in ("light", "dark"):
         authored = load_json(ROOT / "tokens" / "themes" / f"{name}.json")
         check_case(theme_schema, f"authored {name} theme", authored, True)
+    frost_cases = load_json(ROOT / "conformance/materials/frost-legibility-vectors.json")
+    frost_case_validator = validator_for("schemas/frost-legibility-case.schema.json")
+    frost_request_validator = validator_for("schemas/frost-legibility-request.schema.json")
+    frost_names = set()
+    for case in frost_cases:
+        check_case(frost_case_validator, f"Frost legibility case: {case.get('name')}", case, True)
+        if case["name"] in frost_names:
+            raise ValueError(f"duplicate Frost legibility case: {case['name']}")
+        frost_names.add(case["name"])
+        check_case(
+            frost_request_validator,
+            f"Frost legibility request: {case['name']}",
+            case["request"],
+            case["requestSchemaValid"],
+        )
+        if "expected" in case and not case["requestSchemaValid"]:
+            raise ValueError(f"successful Frost case has invalid request: {case['name']}")
+    frost_result_validator = validator_for("schemas/frost-legibility-result.schema.json")
+    invalid_fallback_result = copy.deepcopy(frost_cases[0]["expected"])
+    invalid_fallback_result["fallbackApplied"] = True
+    check_case(frost_result_validator, "translucent result cannot claim opaque fallback", invalid_fallback_result, False)
     missing_input = copy.deepcopy(resolver_theme)
     del missing_input["tokenInput"]
     check_case(theme_schema, "resolver-backed theme missing input", missing_input, False)
@@ -361,6 +385,7 @@ def main():
         + len(theme_cases)
         + len(theme_resolution_cases)
         + len(resolver_cases)
+        + len(frost_cases)
         + 2
     )
     for schema, vectors in (

@@ -1,9 +1,12 @@
 use resina_environment::EnvironmentSnapshot;
-use resina_model::{ColorRole, FrostRepresentation, MaterialFamily, MaterialRole, TypographyRole};
-use resina_resolver::{
-    HeadlessResolution, compile_theme_source_with_sources, opaque_contrast_ratio,
+use resina_model::{
+    ColorRole, FrostRepresentation, MaterialFamily, MaterialRole, SurfaceIntent, TypographyRole,
 };
-use serde_json::Value;
+use resina_resolver::{
+    HeadlessResolution, bind_surface, compile_theme_source_with_sources, opaque_contrast_ratio,
+    resolve_frost_legibility,
+};
+use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
 const FOUNDATION: &str = include_str!("../../../../tokens/foundation.json");
@@ -153,5 +156,39 @@ fn authored_opaque_role_pairs_clear_contrast_preflight() {
         ] {
             minimum_contrast(&result, ColorRole::ContentInverse, background, 4.5);
         }
+    }
+}
+
+#[test]
+fn authored_frost_chrome_is_legible_on_known_base_surface() {
+    let environment = environment_for_scale(1.0);
+    let intent: SurfaceIntent = serde_json::from_value(json!({
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {"schemaVersion": "0.1.0", "shape": "structural", "elevation": "base"},
+        "states": {"schemaVersion": "0.1.0", "states": ["rest"]},
+        "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}
+    }))
+    .unwrap();
+    for source in [LIGHT, DARK] {
+        let resolution = resolve(source, &environment);
+        let bound = bind_surface(&intent, &resolution).unwrap();
+        let colors = resolution.opaque_color_fallbacks();
+        let guarded = resolve_frost_legibility(
+            bound.frost_representation().unwrap(),
+            bound.frost_portable_body().unwrap(),
+            bound.opaque_color_fallback(),
+            &colors[&ColorRole::ContentPrimary],
+            &colors[&ColorRole::SurfaceBase],
+            4.5,
+        )
+        .unwrap();
+        assert!(guarded.contrast_ratio() >= 4.5);
+        assert_eq!(
+            guarded.representation(),
+            bound.frost_representation().unwrap()
+        );
+        assert!(!guarded.fallback_applied());
     }
 }

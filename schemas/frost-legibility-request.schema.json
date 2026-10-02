@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:frost-legibility-request:0.1.0",
+  "title": "Resina Frost Legibility Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "representation", "portableBody", "opaqueBody", "foreground", "postTreatmentBackdrop", "minimumContrast"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "representation": {"enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented", "opaqueDimensional"]},
+    "portableBody": {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},
+    "opaqueBody": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "foreground": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "postTreatmentBackdrop": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "minimumContrast": {"type": "number", "minimum": 1, "maximum": 21}
+  },
+  "if": {"properties": {"representation": {"const": "opaqueDimensional"}}},
+  "then": {"properties": {"portableBody": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"}}},
+  "else": {"properties": {"portableBody": {"properties": {"alpha": {"exclusiveMinimum": 0, "exclusiveMaximum": 1}}}}},
+  "$comment": "For opaqueDimensional, equality of portableBody and opaqueBody is a cross-field rule checked by the resolver."
+}

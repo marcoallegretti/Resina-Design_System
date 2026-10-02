@@ -1,0 +1,98 @@
+[
+  {
+    "name": "translucent pigment retains readable body",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"foreground":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","representation":"translucentPigmented","body":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"compositedBody":{"colorSpace":"srgb","components":[0.5,0.5,0.5],"alpha":1},"contrastRatio":5.280822809644651,"fallbackApplied":false}
+  },
+  {
+    "name": "regular backdrop falls back to opaque body",
+    "request": {"schemaVersion":"0.1.0","representation":"regularBackdrop","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","body":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"compositedBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"contrastRatio":21,"fallbackApplied":true}
+  },
+  {
+    "name": "shaped backdrop uses supplied post-treatment color",
+    "request": {"schemaVersion":"0.1.0","representation":"shapedBackdrop","portableBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"foreground":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","representation":"shapedBackdrop","body":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"compositedBody":{"colorSpace":"srgb","components":[0.5,0.5,0.5],"alpha":1},"contrastRatio":5.280822809644651,"fallbackApplied":false}
+  },
+  {
+    "name": "opaque dimensional body remains selected",
+    "request": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","body":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"compositedBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"contrastRatio":21,"fallbackApplied":false}
+  },
+  {
+    "name": "higher requested ratio falls back",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"foreground":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"minimumContrast":7},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","body":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"compositedBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"contrastRatio":21,"fallbackApplied":true}
+  },
+  {
+    "name": "exact requested ratio retains selected body",
+    "request": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":21},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","body":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"compositedBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"contrastRatio":21,"fallbackApplied":false}
+  },
+  {
+    "name": "neither body reaches requested contrast",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[0.5,0.5,0.5],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": true,
+    "errorContains": "contrast is insufficient"
+  },
+  {
+    "name": "opaque representation requires its authored opaque body",
+    "request": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","portableBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": true,
+    "errorContains": "does not match"
+  },
+  {
+    "name": "zero-alpha body cannot represent translucent Frost",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":0},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": false,
+    "errorContains": "does not match"
+  },
+  {
+    "name": "translucent authored opaque body is invalid",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": false,
+    "errorContains": "opaqueBody must be opaque"
+  },
+  {
+    "name": "translucent foreground is invalid",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": false,
+    "errorContains": "foreground must be opaque"
+  },
+  {
+    "name": "translucent post-treatment backdrop is invalid",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"minimumContrast":4.5},
+    "requestSchemaValid": false,
+    "errorContains": "postTreatmentBackdrop must be opaque"
+  },
+  {
+    "name": "minimum contrast outside defined range is invalid",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"foreground":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"minimumContrast":22},
+    "requestSchemaValid": false,
+    "errorContains": "minimumContrast"
+  },
+  {
+    "name": "non-sRGB fallback is invalid",
+    "request": {"schemaVersion":"0.1.0","representation":"translucentPigmented","portableBody":{"colorSpace":"display-p3","components":[1,1,1],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"foreground":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": false,
+    "errorContains": "must use sRGB"
+  },
+  {
+    "name": "unknown request field is invalid",
+    "request": {"schemaVersion":"0.1.0","representation":"opaqueDimensional","portableBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"opaqueBody":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"foreground":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":4.5,"renderer":"unknown"},
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unsupported request version is invalid",
+    "request": {"schemaVersion":"0.2.0","representation":"translucentPigmented","portableBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"opaqueBody":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"foreground":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"postTreatmentBackdrop":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"minimumContrast":4.5},
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  }
+]

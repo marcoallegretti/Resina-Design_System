@@ -28,3 +28,5 @@ Run `python tools/check_headless_backend.py -- <backend-command> -` to check any
 Run `cargo run -p resina-resolver --bin resina-surface-bind -- <path>` to resolve a [surface scenario](schemas/surface-scenario.schema.json) from a file, or use `-` for stdin. The command prints one bound surface only when both semantic resolution and binding succeed. This result is not render-ready Resina IR.
 
 Run `python tools/check_surface_backend.py -- <backend-command> -` to check a surface scenario backend against the public binding vectors and capability-sensitive scenario cases.
+
+Run `cargo run -p resina-resolver --bin resina-frost-legibility -- <path>` for a [known-backdrop Frost legibility request](schemas/frost-legibility-request.schema.json), or use `-` for stdin. `python tools/check_frost_legibility_backend.py -- <backend-command> -` checks the external protocol and fallback cases. This local color decision does not measure a dynamic rendered backdrop or produce Resina IR.
