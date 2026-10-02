@@ -125,6 +125,9 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/edge-contrast-request.schema.json",
+        "schemas/edge-contrast-result.schema.json",
+        "schemas/edge-contrast-case.schema.json",
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/frost-pigment.schema.json",
@@ -312,6 +315,30 @@ def main():
     invalid_fallback_result = copy.deepcopy(frost_cases[0]["expected"])
     invalid_fallback_result["fallbackApplied"] = True
     check_case(frost_result_validator, "translucent result cannot claim opaque fallback", invalid_fallback_result, False)
+    edge_cases = load_json(ROOT / "conformance/color/edge-contrast-vectors.json")
+    edge_case_validator = validator_for("schemas/edge-contrast-case.schema.json")
+    edge_request_validator = validator_for("schemas/edge-contrast-request.schema.json")
+    edge_names = set()
+    for case in edge_cases:
+        check_case(edge_case_validator, f"edge contrast case: {case.get('name')}", case, True)
+        if case["name"] in edge_names:
+            raise ValueError(f"duplicate edge contrast case: {case['name']}")
+        edge_names.add(case["name"])
+        check_case(
+            edge_request_validator,
+            f"edge contrast request: {case['name']}",
+            case["request"],
+            case["requestSchemaValid"],
+        )
+        if "expected" in case and not case["requestSchemaValid"]:
+            raise ValueError(f"successful edge case has invalid request: {case['name']}")
+    edge_result_validator = validator_for("schemas/edge-contrast-result.schema.json")
+    invalid_edge_result = copy.deepcopy(edge_cases[0]["expected"])
+    invalid_edge_result["fallbackApplied"] = True
+    check_case(edge_result_validator, "normal edge cannot claim strong fallback", invalid_edge_result, False)
+    invalid_strong_result = copy.deepcopy(edge_cases[1]["expected"])
+    invalid_strong_result["fallbackApplied"] = False
+    check_case(edge_result_validator, "strong edge must report fallback", invalid_strong_result, False)
     missing_input = copy.deepcopy(resolver_theme)
     del missing_input["tokenInput"]
     check_case(theme_schema, "resolver-backed theme missing input", missing_input, False)
@@ -386,6 +413,7 @@ def main():
         + len(theme_resolution_cases)
         + len(resolver_cases)
         + len(frost_cases)
+        + len(edge_cases)
         + 2
     )
     for schema, vectors in (

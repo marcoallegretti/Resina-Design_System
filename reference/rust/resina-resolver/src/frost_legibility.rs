@@ -1,5 +1,8 @@
-use crate::{SrgbFallback, opaque_contrast_ratio};
-use resina_color::{ColorFallbackError, composite_srgb_over_opaque, resolve_srgb_fallback};
+use crate::{
+    SrgbFallback, opaque_contrast_ratio,
+    srgb_input::{SrgbInput, SrgbInputError},
+};
+use resina_color::{ColorFallbackError, composite_srgb_over_opaque};
 use resina_model::FrostRepresentation;
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
@@ -7,21 +10,13 @@ use std::fmt;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct ColorInput {
-    color_space: String,
-    components: [f64; 3],
-    alpha: f64,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct FrostLegibilityRequest {
     schema_version: String,
     representation: FrostRepresentation,
-    portable_body: ColorInput,
-    opaque_body: ColorInput,
-    foreground: ColorInput,
-    post_treatment_backdrop: ColorInput,
+    portable_body: SrgbInput,
+    opaque_body: SrgbInput,
+    foreground: SrgbInput,
+    post_treatment_backdrop: SrgbInput,
     minimum_contrast: f64,
 }
 
@@ -104,17 +99,12 @@ impl std::error::Error for FrostLegibilityError {}
 
 fn parse_color(
     field: &'static str,
-    input: ColorInput,
+    input: SrgbInput,
 ) -> Result<SrgbFallback, FrostLegibilityError> {
-    if input.color_space != "srgb" {
-        return Err(FrostLegibilityError::InvalidColorSpace(field));
-    }
-    let value = serde_json::json!({
-        "colorSpace": input.color_space,
-        "components": input.components,
-        "alpha": input.alpha,
-    });
-    resolve_srgb_fallback(&value).map_err(|error| FrostLegibilityError::Color(field, error))
+    input.into_fallback().map_err(|error| match error {
+        SrgbInputError::InvalidColorSpace => FrostLegibilityError::InvalidColorSpace(field),
+        SrgbInputError::Color(error) => FrostLegibilityError::Color(field, error),
+    })
 }
 
 pub fn resolve_frost_legibility_source(
@@ -211,6 +201,7 @@ pub fn resolve_frost_legibility(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use resina_color::resolve_srgb_fallback;
     use serde_json::{Value, json};
 
     #[test]

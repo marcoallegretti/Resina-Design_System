@@ -1,0 +1,74 @@
+[
+  {
+    "name": "authored outline clears adjacent contrast",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","colorRole":"outline","color":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"contrastRatio":21,"fallbackApplied":false}
+  },
+  {
+    "name": "strong outline repairs insufficient contrast",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","colorRole":"outline.strong","color":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"contrastRatio":21,"fallbackApplied":true}
+  },
+  {
+    "name": "exact threshold retains normal outline",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":21},
+    "requestSchemaValid": true,
+    "expected": {"schemaVersion":"0.1.0","colorRole":"outline","color":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"contrastRatio":21,"fallbackApplied":false}
+  },
+  {
+    "name": "neither authored outline clears threshold",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": true,
+    "errorContains": "contrast is insufficient"
+  },
+  {
+    "name": "translucent normal outline is invalid",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": false,
+    "errorContains": "outline must be opaque"
+  },
+  {
+    "name": "translucent strong outline is invalid even when normal passes",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":0.5},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": false,
+    "errorContains": "outlineStrong must be opaque"
+  },
+  {
+    "name": "translucent adjacent color is invalid",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":0.5},"minimumContrast":3},
+    "requestSchemaValid": false,
+    "errorContains": "adjacentColor must be opaque"
+  },
+  {
+    "name": "non-sRGB outline is invalid",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"display-p3","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": false,
+    "errorContains": "must use sRGB"
+  },
+  {
+    "name": "out-of-gamut strong outline is invalid even when normal passes",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[1.2,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": false,
+    "errorContains": "invalid outlineStrong"
+  },
+  {
+    "name": "minimum contrast outside range is invalid",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":22},
+    "requestSchemaValid": false,
+    "errorContains": "minimumContrast"
+  },
+  {
+    "name": "unknown edge request field is invalid",
+    "request": {"schemaVersion":"0.1.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3,"renderer":"unknown"},
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unsupported edge request version is invalid",
+    "request": {"schemaVersion":"0.2.0","outline":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"outlineStrong":{"colorSpace":"srgb","components":[0,0,0],"alpha":1},"adjacentColor":{"colorSpace":"srgb","components":[1,1,1],"alpha":1},"minimumContrast":3},
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  }
+]

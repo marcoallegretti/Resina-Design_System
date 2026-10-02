@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:edge-contrast-request:0.1.0",
+  "title": "Resina Edge Contrast Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "outline", "outlineStrong", "adjacentColor", "minimumContrast"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "outline": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "outlineStrong": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "adjacentColor": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "minimumContrast": {"type": "number", "minimum": 1, "maximum": 21}
+  }
+}

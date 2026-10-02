@@ -30,3 +30,5 @@ Run `cargo run -p resina-resolver --bin resina-surface-bind -- <path>` to resolv
 Run `python tools/check_surface_backend.py -- <backend-command> -` to check a surface scenario backend against the public binding vectors and capability-sensitive scenario cases.
 
 Run `cargo run -p resina-resolver --bin resina-frost-legibility -- <path>` for a [known-backdrop Frost legibility request](schemas/frost-legibility-request.schema.json), or use `-` for stdin. `python tools/check_frost_legibility_backend.py -- <backend-command> -` checks the external protocol and fallback cases. This local color decision does not measure a dynamic rendered backdrop or produce Resina IR.
+
+Run `cargo run -p resina-resolver --bin resina-edge-contrast -- <path>` for a [known-adjacent edge contrast request](schemas/edge-contrast-request.schema.json), or use `-` for stdin. `python tools/check_edge_contrast_backend.py -- <backend-command> -` checks an independent backend against the public edge vectors. This chooses an authored outline color, not a complete edge style or Resina IR.

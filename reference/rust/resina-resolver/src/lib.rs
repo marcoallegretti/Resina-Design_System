@@ -4,8 +4,13 @@ use resina_tokens::{ResolvedToken, validate_resolved_value};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
+mod edge_contrast;
 mod frost_legibility;
 mod spatial;
+mod srgb_input;
+pub use edge_contrast::{
+    EdgeContrastError, EdgeContrastResult, resolve_edge_contrast, resolve_edge_contrast_source,
+};
 pub use frost_legibility::{
     FrostLegibilityError, FrostLegibilityResult, resolve_frost_legibility,
     resolve_frost_legibility_source,

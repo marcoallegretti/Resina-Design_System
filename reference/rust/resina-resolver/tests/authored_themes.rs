@@ -4,7 +4,7 @@ use resina_model::{
 };
 use resina_resolver::{
     HeadlessResolution, bind_surface, compile_theme_source_with_sources, opaque_contrast_ratio,
-    resolve_frost_legibility,
+    resolve_edge_contrast, resolve_frost_legibility,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -190,5 +190,24 @@ fn authored_frost_chrome_is_legible_on_known_base_surface() {
             bound.frost_representation().unwrap()
         );
         assert!(!guarded.fallback_applied());
+    }
+}
+
+#[test]
+fn authored_outline_separates_from_known_base_surface() {
+    let environment = environment_for_scale(1.0);
+    for source in [LIGHT, DARK] {
+        let resolution = resolve(source, &environment);
+        let colors = resolution.opaque_color_fallbacks();
+        let edge = resolve_edge_contrast(
+            &colors[&ColorRole::Outline],
+            &colors[&ColorRole::OutlineStrong],
+            &colors[&ColorRole::SurfaceBase],
+            3.0,
+        )
+        .unwrap();
+        assert_eq!(edge.color_role(), ColorRole::Outline);
+        assert!(edge.contrast_ratio() >= 3.0);
+        assert!(!edge.fallback_applied());
     }
 }

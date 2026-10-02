@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:edge-contrast-result:0.1.0",
+  "title": "Resina Edge Contrast Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "colorRole", "color", "contrastRatio", "fallbackApplied"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "colorRole": {"enum": ["outline", "outline.strong"]},
+    "color": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "contrastRatio": {"type": "number", "minimum": 1, "maximum": 21},
+    "fallbackApplied": {"type": "boolean"}
+  },
+  "if": {"properties": {"colorRole": {"const": "outline.strong"}}},
+  "then": {"properties": {"fallbackApplied": {"const": true}}},
+  "else": {"properties": {"fallbackApplied": {"const": false}}}
+}
