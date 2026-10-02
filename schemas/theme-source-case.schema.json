@@ -9,7 +9,7 @@
     "name": {"type": "string", "minLength": 1},
     "outcome": {"enum": ["valid", "invalid"]},
     "schemaValid": {"type": "boolean"},
-    "requestChanges": {
+    "sourceChanges": {
       "type": "array",
       "minItems": 1,
       "items": {
@@ -33,7 +33,7 @@
     }
   },
   "allOf": [
-    {"if": {"required": ["sourceReplace"]}, "then": {"not": {"required": ["requestChanges"]}}},
+    {"if": {"required": ["sourceReplace"]}, "then": {"not": {"required": ["sourceChanges"]}}},
     {"if": {"properties": {"outcome": {"const": "valid"}}}, "then": {"properties": {"schemaValid": {"const": true}}}}
   ]
 }

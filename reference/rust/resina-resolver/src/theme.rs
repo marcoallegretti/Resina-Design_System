@@ -212,7 +212,7 @@ mod tests {
         let cases: Vec<Value> = serde_json::from_str(CASES).unwrap();
         for case in cases {
             let mut source = SOURCE.replace("\r\n", "\n");
-            if let Some(changes) = case.get("requestChanges") {
+            if let Some(changes) = case.get("sourceChanges") {
                 let mut document: Value = serde_json::from_str(&source).unwrap();
                 for change in changes.as_array().unwrap() {
                     let path = change["path"].as_str().unwrap();

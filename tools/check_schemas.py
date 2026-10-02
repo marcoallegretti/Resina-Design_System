@@ -190,7 +190,7 @@ def main():
                     raise AssertionError(f"{case['name']}: source unexpectedly failed to parse")
                 continue
         else:
-            document = apply_changes(theme_source, case.get("requestChanges", []))
+            document = apply_changes(theme_source, case.get("sourceChanges", []))
         check_case(theme_schema, f"theme source: {case['name']}", document, case["schemaValid"])
 
     backend_case_schema = validator_for("schemas/headless-conformance-case.schema.json")

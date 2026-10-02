@@ -8,7 +8,7 @@
     "name": "unsupported theme source version is rejected",
     "outcome": "invalid",
     "schemaValid": false,
-    "requestChanges": [
+    "sourceChanges": [
       {"path": "/schemaVersion", "value": "0.2.0"}
     ]
   },
@@ -16,7 +16,7 @@
     "name": "missing semantic color token prevents compilation",
     "outcome": "invalid",
     "schemaValid": true,
-    "requestChanges": [
+    "sourceChanges": [
       {"path": "/colorAssignments/roles/focus", "value": "missing.color"}
     ]
   },
@@ -24,7 +24,7 @@
     "name": "missing typography token prevents compilation",
     "outcome": "invalid",
     "schemaValid": true,
-    "requestChanges": [
+    "sourceChanges": [
       {"path": "/typographyAssignments/roles/body/fontSize", "value": "missing.size"}
     ]
   },
