@@ -168,6 +168,12 @@
     "location": "#/base/$value"
   },
   {
+    "name": "missing curly target value precedes type compatibility",
+    "document": {"source": {"$type": "number", "$value": 2}, "base": {"$type": "number", "$ref": "#/source/$value"}, "alias": {"$type": "color", "$value": "{base}"}},
+    "error": "InvalidReference",
+    "location": "#/base/$value"
+  },
+  {
     "name": "invalid extension",
     "document": {"base": {"$type": "number", "$value": 2}, "bad": {"$extends": "{base}"}},
     "error": "InvalidDocument"

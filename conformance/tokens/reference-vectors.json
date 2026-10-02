@@ -112,6 +112,15 @@
     "error": "CircularReference"
   },
   {
+    "name": "mixed curly and pointer reference cycle",
+    "document": {
+      "a": { "$type": "number", "$value": "{b}" },
+      "b": { "$type": "number", "$value": { "$ref": "#/a/$value" } }
+    },
+    "path": "a",
+    "error": "CircularReference"
+  },
+  {
     "name": "equivalent escaped pointer cycle",
     "document": { "a": { "$type": "number", "$value": { "$ref": "#/%61/$value" } } },
     "path": "a",

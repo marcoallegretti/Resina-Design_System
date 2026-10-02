@@ -439,13 +439,12 @@ fn whole_token_target(document: &Value, pointer: &str, curly: bool) -> Option<St
     } else {
         pointer.strip_suffix("/$value")?
     };
-    if token_at_pointer(document, candidate).is_some()
-        && (curly || lookup(document, pointer).is_some())
-    {
-        let segments = parse_pointer(candidate).ok()?;
-        return Some(segments.join("."));
+    let token = token_at_pointer(document, candidate)?;
+    if (curly && token.get("$value").is_none()) || (!curly && lookup(document, pointer).is_none()) {
+        return None;
     }
-    None
+    let segments = parse_pointer(candidate).ok()?;
+    Some(segments.join("."))
 }
 
 fn lookup<'a>(document: &'a Value, pointer: &str) -> Option<&'a Value> {

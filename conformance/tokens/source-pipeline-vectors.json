@@ -52,5 +52,12 @@
     "stage": "resolve",
     "error": "InvalidReference",
     "location": "#/base/$value"
+  },
+  {
+    "name": "missing curly target value wins over a type mismatch",
+    "source": "{\"source\":{\"$type\":\"number\",\"$value\":2},\"base\":{\"$type\":\"number\",\"$ref\":\"#/source/$value\"},\"alias\":{\"$type\":\"color\",\"$value\":\"{base}\"}}",
+    "stage": "resolve",
+    "error": "InvalidReference",
+    "location": "#/base/$value"
   }
 ]
