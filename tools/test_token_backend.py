@@ -36,6 +36,13 @@ class TokenBackendCheckerTests(unittest.TestCase):
             )
         )
         self.assertEqual(len({name for name, _, _ in loaded}), len(loaded))
+        self.assertTrue(
+            any(
+                name == "foundation: authored spatial and type scales"
+                and len(expected) == 17
+                for name, _, expected in loaded
+            )
+        )
 
     def test_backend_output_must_be_strict_json(self):
         output = CompletedProcess([], 0, '{"token":1,"token":2}', "")
