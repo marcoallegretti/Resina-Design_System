@@ -285,6 +285,9 @@ def main():
         check_case(theme_schema, f"theme source: {case['name']}", document, case["schemaValid"])
 
     check_case(theme_schema, "resolver-backed theme source", resolver_theme, True)
+    for name in ("light", "dark"):
+        authored = load_json(ROOT / "tokens" / "themes" / f"{name}.json")
+        check_case(theme_schema, f"authored {name} theme", authored, True)
     missing_input = copy.deepcopy(resolver_theme)
     del missing_input["tokenInput"]
     check_case(theme_schema, "resolver-backed theme missing input", missing_input, False)
@@ -358,6 +361,7 @@ def main():
         + len(theme_cases)
         + len(theme_resolution_cases)
         + len(resolver_cases)
+        + 2
     )
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
