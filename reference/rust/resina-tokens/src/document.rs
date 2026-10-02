@@ -1,7 +1,8 @@
 use crate::{
-    ExtensionErrorKind, Resolver, TypeErrorKind, canonical_pointer, curly_path_to_pointer,
-    escape_pointer_segment, is_token, materialize_group_extensions, parse_pointer,
-    token_at_pointer, types::resolve_type_in_expanded_document, validate_resolved_value,
+    ExtensionErrorKind, ResolveErrorKind, Resolver, TypeErrorKind, canonical_pointer,
+    curly_path_to_pointer, escape_pointer_segment, is_token, materialize_group_extensions,
+    parse_pointer, token_at_pointer, types::resolve_type_in_expanded_document,
+    validate_resolved_value,
 };
 use serde_json::{Map, Value};
 use std::{collections::BTreeMap, fmt};
@@ -16,6 +17,7 @@ pub struct ResolvedToken {
 pub enum DocumentErrorKind {
     InvalidDocument,
     ExpansionLimitExceeded,
+    ResolutionLimitExceeded,
     MissingType,
     InvalidReference,
     ReferenceTypeMismatch,
@@ -54,6 +56,7 @@ pub fn resolve_token_document(
     collect_tokens(expanded.as_object().unwrap(), &mut Vec::new(), &mut tokens);
     let mut resolved = BTreeMap::new();
     let mut errors = Vec::new();
+    let resolver = Resolver::new(&expanded);
     for (path, pointer) in tokens {
         let kind = match resolve_type_in_expanded_document(&expanded, &path) {
             Ok(kind) => kind,
@@ -75,13 +78,15 @@ pub fn resolve_token_document(
             errors.push(error);
             continue;
         }
-        let value = match (Resolver {
-            document: &expanded,
-        })
-        .resolve_at(&pointer, &mut Vec::new())
-        {
+        let value = match resolver.resolve_at(&pointer, &mut Vec::new()) {
             Ok(value) => value,
             Err(error) => {
+                if error.kind == ResolveErrorKind::ResolutionLimitExceeded {
+                    return Err(vec![DocumentError {
+                        kind: DocumentErrorKind::ResolutionLimitExceeded,
+                        location: error.location,
+                    }]);
+                }
                 errors.push(DocumentError {
                     kind: DocumentErrorKind::InvalidReference,
                     location: error.location,

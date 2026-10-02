@@ -16,7 +16,7 @@ Group extensions and token-set composition are processed before a token's aliase
 
 For `$extends`, a local token definition replaces the complete inherited token at the same path. Local and inherited groups merge recursively; local group metadata replaces inherited metadata at the same property. Extension targets MUST be groups, and inheritance cycles are invalid. The [extension vectors](../conformance/tokens/extension-vectors.json) define these outcomes and errors.
 
-Extension graphs can expand a compact authoring source into a much larger document. An implementation MAY impose a documented resource bound on this work. Exceeding that bound MUST produce an explicit diagnostic without a partial token mapping. The bound is implementation-specific, not a DTCG semantic limit or a cross-backend conformance value.
+Extension graphs and reference graphs can expand a compact authoring source into a much larger document or resolved value. An implementation MAY impose documented resource bounds on this work. Exceeding a bound MUST produce an explicit diagnostic without a partial token mapping. Bounds are implementation-specific, not DTCG semantic limits or cross-backend conformance values.
 
 The [structure vectors](../conformance/tokens/structure-vectors.json) cover group and token shape, metadata, reserved names, and root tokens. Structural validation alone does not establish DTCG conformance: extension targets, inherited types, and each declared value type also require validation.
 

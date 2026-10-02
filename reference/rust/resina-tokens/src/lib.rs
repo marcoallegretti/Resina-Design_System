@@ -1,5 +1,5 @@
 use serde_json::{Map, Value};
-use std::fmt;
+use std::{cell::Cell, fmt};
 
 mod document;
 mod extensions;
@@ -26,6 +26,7 @@ pub enum ResolveErrorKind {
     ConflictingValueAndReference,
     CircularReference,
     ReferenceDepthExceeded,
+    ResolutionLimitExceeded,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -47,7 +48,7 @@ pub fn resolve_token_value(document: &Value, path: &str) -> Result<Value, Resolv
         kind,
         location: path.to_owned(),
     })?;
-    let resolver = Resolver { document };
+    let resolver = Resolver::new(document);
     let target = resolver.lookup(&pointer)?;
     if !is_token(target) {
         return Err(ResolveError {
@@ -60,11 +61,65 @@ pub fn resolve_token_value(document: &Value, path: &str) -> Result<Value, Resolv
 
 struct Resolver<'a> {
     document: &'a Value,
+    remaining_nodes: Cell<usize>,
+    remaining_text_bytes: Cell<usize>,
 }
 
 const MAX_REFERENCE_DEPTH: usize = 256;
+const MAX_RESOLUTION_NODES: usize = 100_000;
+const MAX_RESOLUTION_TEXT_BYTES: usize = 8 * 1024 * 1024;
 
 impl Resolver<'_> {
+    fn new(document: &Value) -> Resolver<'_> {
+        Resolver {
+            document,
+            remaining_nodes: Cell::new(MAX_RESOLUTION_NODES),
+            remaining_text_bytes: Cell::new(MAX_RESOLUTION_TEXT_BYTES),
+        }
+    }
+
+    fn charge(&self, nodes: usize, text_bytes: usize, location: &str) -> Result<(), ResolveError> {
+        let remaining_nodes = self.remaining_nodes.get().checked_sub(nodes);
+        let remaining_text_bytes = self.remaining_text_bytes.get().checked_sub(text_bytes);
+        match (remaining_nodes, remaining_text_bytes) {
+            (Some(nodes), Some(text_bytes)) => {
+                self.remaining_nodes.set(nodes);
+                self.remaining_text_bytes.set(text_bytes);
+                Ok(())
+            }
+            _ => Err(ResolveError {
+                kind: ResolveErrorKind::ResolutionLimitExceeded,
+                location: location.to_owned(),
+            }),
+        }
+    }
+
+    fn clone_bounded(&self, value: &Value, location: &str) -> Result<Value, ResolveError> {
+        self.charge(1, 0, location)?;
+        match value {
+            Value::Object(object) => {
+                let mut result = Map::new();
+                for (name, child) in object {
+                    let path = format!("{location}/{}", escape_pointer_segment(name));
+                    self.charge(0, name.len(), &path)?;
+                    result.insert(name.clone(), self.clone_bounded(child, &path)?);
+                }
+                Ok(Value::Object(result))
+            }
+            Value::Array(items) => items
+                .iter()
+                .enumerate()
+                .map(|(index, item)| self.clone_bounded(item, &format!("{location}/{index}")))
+                .collect::<Result<Vec<_>, _>>()
+                .map(Value::Array),
+            Value::String(text) => {
+                self.charge(0, text.len(), location)?;
+                Ok(Value::String(text.clone()))
+            }
+            _ => Ok(value.clone()),
+        }
+    }
+
     fn resolve_at(&self, pointer: &str, stack: &mut Vec<String>) -> Result<Value, ResolveError> {
         self.resolve_at_with_mode(pointer, stack, true)
     }
@@ -102,7 +157,9 @@ impl Resolver<'_> {
         let target = self.lookup(&canonical)?;
         stack.push(canonical.clone());
         let result = match target {
-            value if !token_value && !self.is_token_value_location(&canonical) => Ok(value.clone()),
+            value if !token_value && !self.is_token_value_location(&canonical) => {
+                self.clone_bounded(value, &canonical)
+            }
             Value::Object(object) if token_value && is_token(target) => {
                 let value = object.get("$value");
                 let reference = object.get("$ref");
@@ -163,6 +220,7 @@ impl Resolver<'_> {
                     });
                 }
                 self.resolve_at(&pointer, stack)
+                    .map_err(|error| limit_at_reference(error, location))
             }
             Value::Object(object) if object.contains_key("$ref") => {
                 match (object.len(), object.get("$ref")) {
@@ -176,9 +234,11 @@ impl Resolver<'_> {
                 }
             }
             Value::Object(object) => {
+                self.charge(1, 0, location)?;
                 let mut resolved = Map::new();
                 for (name, child) in object {
                     let child_location = format!("{location}/{}", escape_pointer_segment(name));
+                    self.charge(0, name.len(), &child_location)?;
                     resolved.insert(
                         name.clone(),
                         self.resolve_inline(child, stack, &child_location)?,
@@ -186,14 +246,18 @@ impl Resolver<'_> {
                 }
                 Ok(Value::Object(resolved))
             }
-            Value::Array(items) => items
-                .iter()
-                .enumerate()
-                .map(|(index, item)| {
-                    self.resolve_inline(item, stack, &format!("{location}/{index}"))
-                })
-                .collect(),
-            _ => Ok(value.clone()),
+            Value::Array(items) => {
+                self.charge(1, 0, location)?;
+                items
+                    .iter()
+                    .enumerate()
+                    .map(|(index, item)| {
+                        self.resolve_inline(item, stack, &format!("{location}/{index}"))
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+                    .map(Value::Array)
+            }
+            _ => self.clone_bounded(value, location),
         }
     }
 
@@ -241,7 +305,15 @@ impl Resolver<'_> {
             location: source_location.to_owned(),
         })?;
         self.resolve_pointer_at(reference, stack)
+            .map_err(|error| limit_at_reference(error, source_location))
     }
+}
+
+fn limit_at_reference(mut error: ResolveError, location: &str) -> ResolveError {
+    if error.kind == ResolveErrorKind::ResolutionLimitExceeded {
+        error.location = location.to_owned();
+    }
+    error
 }
 
 fn is_token(value: &Value) -> bool {
@@ -450,5 +522,67 @@ mod tests {
         );
         let error = resolve_token_value(&Value::Object(document), "n0").unwrap_err();
         assert_eq!(error.kind, ResolveErrorKind::ReferenceDepthExceeded);
+    }
+
+    #[test]
+    fn branching_references_have_bounded_resolution() {
+        let mut document = Map::new();
+        document.insert(
+            "n0".to_owned(),
+            serde_json::json!({"$type": "shadow", "$value": []}),
+        );
+        for index in 1..=16 {
+            document.insert(
+                format!("n{index}"),
+                serde_json::json!({
+                    "$type": "shadow",
+                    "$value": [format!("{{n{}}}", index - 1), format!("{{n{}}}", index - 1)]
+                }),
+            );
+        }
+        let document = Value::Object(document);
+        let source = document.clone();
+        assert_eq!(
+            resolve_token_value(&document, "n3").unwrap(),
+            serde_json::json!([[[[], []], [[], []]], [[[], []], [[], []]]])
+        );
+        let error = resolve_token_value(&document, "n16").unwrap_err();
+        assert_eq!(error.kind, ResolveErrorKind::ResolutionLimitExceeded);
+        assert!(error.location.starts_with("#/n16/$value/"));
+        assert_eq!(document, source);
+    }
+
+    #[test]
+    fn repeated_long_reference_text_has_a_byte_limit() {
+        let text = "x".repeat(5 * 1024 * 1024);
+        let document = serde_json::json!({
+            "base": {"$type": "string", "$value": text},
+            "repeated": {"$type": "string", "$value": ["{base}", "{base}"]}
+        });
+        assert_eq!(
+            resolve_token_value(&document, "base").unwrap().as_str(),
+            Some(text.as_str())
+        );
+        let error = resolve_token_value(&document, "repeated").unwrap_err();
+        assert_eq!(error.kind, ResolveErrorKind::ResolutionLimitExceeded);
+    }
+
+    #[test]
+    fn property_reference_cloning_is_bounded() {
+        let document = serde_json::json!({
+            "base": {"$type": "number", "$value": 1, "$parts": vec![Value::Null; 60_000]},
+            "one": {"$type": "number", "$value": {"$ref": "#/base/$parts"}},
+            "two": {"$type": "number", "$value": [
+                {"$ref": "#/base/$parts"},
+                {"$ref": "#/base/$parts"}
+            ]}
+        });
+        assert_eq!(
+            resolve_token_value(&document, "one").unwrap(),
+            Value::Array(vec![Value::Null; 60_000])
+        );
+        let error = resolve_token_value(&document, "two").unwrap_err();
+        assert_eq!(error.kind, ResolveErrorKind::ResolutionLimitExceeded);
+        assert_eq!(error.location, "#/two/$value/1");
     }
 }

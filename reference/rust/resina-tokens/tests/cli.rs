@@ -101,6 +101,35 @@ fn expansion_limit_has_no_partial_output() {
 }
 
 #[test]
+fn resolution_limit_has_no_partial_output() {
+    let dimension = json!({"value": 0, "unit": "px"});
+    let mut document = json!({
+        "n0": {"$type": "shadow", "$value": {
+            "color": {"colorSpace": "srgb", "components": [0, 0, 0]},
+            "offsetX": dimension,
+            "offsetY": dimension,
+            "blur": dimension,
+            "spread": dimension
+        }}
+    });
+    for level in 1..=16 {
+        let reference = format!("{{n{}}}", level - 1);
+        document[format!("n{level}")] = json!({
+            "$type": "shadow",
+            "$value": [reference, reference]
+        });
+    }
+    let result = run_stdin(&document.to_string());
+    assert_eq!(result.status.code(), Some(1));
+    assert!(result.stdout.is_empty());
+    assert!(
+        String::from_utf8_lossy(&result.stderr).contains("ResolutionLimitExceeded"),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+}
+
+#[test]
 fn usage_error_has_distinct_exit_status() {
     let result = Command::new(env!("CARGO_BIN_EXE_resina-token-resolve"))
         .output()
