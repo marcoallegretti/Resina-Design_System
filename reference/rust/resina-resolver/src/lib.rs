@@ -17,7 +17,7 @@ pub use frost_legibility::{
     resolve_frost_legibility_source,
 };
 pub use frost_surface_readability::{
-    FrostSurfaceReadabilityError, FrostSurfaceReadabilityResult,
+    FrostSurfaceReadabilityError, FrostSurfaceReadabilityResult, resolve_frost_surface_readability,
     resolve_frost_surface_readability_source,
 };
 pub use resina_color::{

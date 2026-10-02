@@ -4,7 +4,7 @@ use resina_model::{
 };
 use resina_resolver::{
     HeadlessResolution, bind_surface, compile_theme_source_with_sources, opaque_contrast_ratio,
-    resolve_edge_contrast, resolve_frost_legibility,
+    resolve_edge_contrast, resolve_frost_legibility, resolve_frost_surface_readability,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -29,6 +29,18 @@ fn environment_for_scale(scale: f64) -> EnvironmentSnapshot {
     let mut environment = request["environment"].clone();
     environment["textScale"] = scale.into();
     serde_json::from_value(environment).unwrap()
+}
+
+fn frost_chrome_intent() -> SurfaceIntent {
+    serde_json::from_value(json!({
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {"schemaVersion": "0.1.0", "shape": "structural", "elevation": "base"},
+        "states": {"schemaVersion": "0.1.0", "states": ["rest"]},
+        "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}
+    }))
+    .unwrap()
 }
 
 fn minimum_contrast(result: &HeadlessResolution, front: ColorRole, back: ColorRole, minimum: f64) {
@@ -162,15 +174,7 @@ fn authored_opaque_role_pairs_clear_contrast_preflight() {
 #[test]
 fn authored_frost_chrome_is_legible_on_known_base_surface() {
     let environment = environment_for_scale(1.0);
-    let intent: SurfaceIntent = serde_json::from_value(json!({
-        "schemaVersion": "0.2.0",
-        "materialRole": "surface.chrome",
-        "colorRole": "surface.chrome",
-        "form": {"schemaVersion": "0.1.0", "shape": "structural", "elevation": "base"},
-        "states": {"schemaVersion": "0.1.0", "states": ["rest"]},
-        "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}
-    }))
-    .unwrap();
+    let intent = frost_chrome_intent();
     for source in [LIGHT, DARK] {
         let resolution = resolve(source, &environment);
         let bound = bind_surface(&intent, &resolution).unwrap();
@@ -190,6 +194,42 @@ fn authored_frost_chrome_is_legible_on_known_base_surface() {
             bound.frost_representation().unwrap()
         );
         assert!(!guarded.fallback_applied());
+    }
+}
+
+#[test]
+fn authored_frost_chrome_keeps_content_and_edge_readable_at_tier_zero() {
+    let standard = environment_for_scale(1.0);
+    let tier_zero: EnvironmentSnapshot = serde_json::from_str(TIER_ZERO).unwrap();
+    let intent = frost_chrome_intent();
+    for source in [LIGHT, DARK] {
+        for (environment, representation) in [
+            (&standard, FrostRepresentation::TranslucentPigmented),
+            (&tier_zero, FrostRepresentation::OpaqueDimensional),
+        ] {
+            let resolution = resolve(source, environment);
+            let base = &resolution.opaque_color_fallbacks()[&ColorRole::SurfaceBase];
+            let guarded = resolve_frost_surface_readability(
+                &intent,
+                &resolution,
+                ColorRole::ContentPrimary,
+                base,
+                base,
+                4.5,
+                3.0,
+            )
+            .unwrap();
+            assert_eq!(guarded.binding().material_family(), MaterialFamily::Frost);
+            assert_eq!(
+                guarded.foreground(),
+                &resolution.color_fallbacks()[&ColorRole::ContentPrimary]
+            );
+            assert!(guarded.legibility().contrast_ratio() >= 4.5);
+            assert!(guarded.edge().contrast_ratio() >= 3.0);
+            assert!(!guarded.legibility().fallback_applied());
+            assert!(!guarded.edge().fallback_applied());
+            assert_eq!(guarded.legibility().representation(), representation);
+        }
     }
 }
 

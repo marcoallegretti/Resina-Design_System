@@ -1,11 +1,12 @@
 use crate::{
     BoundSurface, EdgeContrastError, EdgeContrastResult, FrostLegibilityError,
-    FrostLegibilityResult, SrgbFallback, resolve_edge_contrast, resolve_frost_legibility,
+    FrostLegibilityResult, HeadlessResolution, SrgbFallback, SurfaceBindingError, bind_surface,
+    resolve_edge_contrast, resolve_frost_legibility,
     scenario::{SurfaceScenarioError, resolve_surface_scenario_document},
     srgb_input::{SrgbInput, SrgbInputError},
 };
 use resina_color::ColorFallbackError;
-use resina_model::{ColorRole, InteractionState, MaterialFamily, OpticalTreatment};
+use resina_model::{ColorRole, InteractionState, MaterialFamily, OpticalTreatment, SurfaceIntent};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -62,6 +63,7 @@ pub enum FrostSurfaceReadabilityError {
     Request(serde_json::Error),
     UnsupportedVersion,
     Scenario(SurfaceScenarioError),
+    Binding(SurfaceBindingError),
     NonFrostSurface,
     NonBaseState,
     ActiveTreatment,
@@ -83,6 +85,7 @@ impl fmt::Display for FrostSurfaceReadabilityError {
             Self::Request(error) => write!(formatter, "invalid readability request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Scenario(error) => write!(formatter, "readability scenario: {error}"),
+            Self::Binding(error) => write!(formatter, "readability binding: {error}"),
             Self::NonFrostSurface => formatter.write_str("surface material family must be Frost"),
             Self::NonBaseState => formatter.write_str("surface states must contain only rest"),
             Self::ActiveTreatment => formatter.write_str("bound surface treatment must be none"),
@@ -137,32 +140,64 @@ pub fn resolve_frost_surface_readability_source(
 
     let (context, binding) = resolve_surface_scenario_document(request.scenario)
         .map_err(FrostSurfaceReadabilityError::Scenario)?;
-    if binding.material_family() != MaterialFamily::Frost {
-        return Err(FrostSurfaceReadabilityError::NonFrostSurface);
-    }
-    if binding.states().states() != [InteractionState::Rest] {
-        return Err(FrostSurfaceReadabilityError::NonBaseState);
-    }
-    if binding.treatment_stack().treatments().last() != Some(&OpticalTreatment::None) {
-        return Err(FrostSurfaceReadabilityError::ActiveTreatment);
-    }
+    validate_surface_scope(&binding)?;
+    let backdrop = parse_color("postTreatmentBackdrop", request.post_treatment_backdrop)?;
+    let adjacent = parse_color("adjacentColor", request.adjacent_color)?;
+    resolve_bound_frost_surface_readability(
+        binding,
+        &context,
+        request.foreground_role,
+        &backdrop,
+        &adjacent,
+        request.minimum_content_contrast,
+        request.minimum_edge_contrast,
+    )
+}
+
+pub fn resolve_frost_surface_readability(
+    intent: &SurfaceIntent,
+    context: &HeadlessResolution,
+    foreground_role: ColorRole,
+    post_treatment_backdrop: &SrgbFallback,
+    adjacent_color: &SrgbFallback,
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
+    let binding = bind_surface(intent, context).map_err(FrostSurfaceReadabilityError::Binding)?;
+    resolve_bound_frost_surface_readability(
+        binding,
+        context,
+        foreground_role,
+        post_treatment_backdrop,
+        adjacent_color,
+        minimum_content_contrast,
+        minimum_edge_contrast,
+    )
+}
+
+fn resolve_bound_frost_surface_readability(
+    binding: BoundSurface,
+    context: &HeadlessResolution,
+    foreground_role: ColorRole,
+    backdrop: &SrgbFallback,
+    adjacent: &SrgbFallback,
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
+    validate_surface_scope(&binding)?;
     let foreground = context
         .color_fallbacks()
-        .get(&request.foreground_role)
-        .ok_or(FrostSurfaceReadabilityError::MissingColor(
-            request.foreground_role,
-        ))?
+        .get(&foreground_role)
+        .ok_or(FrostSurfaceReadabilityError::MissingColor(foreground_role))?
         .clone();
     if foreground.alpha() != 1.0 {
         return Err(FrostSurfaceReadabilityError::TranslucentForeground(
-            request.foreground_role,
+            foreground_role,
         ));
     }
-    let backdrop = parse_color("postTreatmentBackdrop", request.post_treatment_backdrop)?;
     if backdrop.alpha() != 1.0 {
         return Err(FrostSurfaceReadabilityError::TranslucentBackdrop);
     }
-    let adjacent = parse_color("adjacentColor", request.adjacent_color)?;
     if adjacent.alpha() != 1.0 {
         return Err(FrostSurfaceReadabilityError::TranslucentAdjacentColor);
     }
@@ -177,8 +212,8 @@ pub fn resolve_frost_surface_readability_source(
         body,
         binding.opaque_color_fallback(),
         &foreground,
-        &backdrop,
-        request.minimum_content_contrast,
+        backdrop,
+        minimum_content_contrast,
     )
     .map_err(FrostSurfaceReadabilityError::Legibility)?;
     let outline = context
@@ -193,21 +228,36 @@ pub fn resolve_frost_surface_readability_source(
         .ok_or(FrostSurfaceReadabilityError::MissingColor(
             ColorRole::OutlineStrong,
         ))?;
-    let edge = resolve_edge_contrast(outline, strong, &adjacent, request.minimum_edge_contrast)
+    let edge = resolve_edge_contrast(outline, strong, adjacent, minimum_edge_contrast)
         .map_err(FrostSurfaceReadabilityError::Edge)?;
     Ok(FrostSurfaceReadabilityResult {
         schema_version: "0.1.0",
         binding,
-        foreground_role: request.foreground_role,
+        foreground_role,
         foreground,
         legibility,
         edge,
     })
 }
 
+fn validate_surface_scope(binding: &BoundSurface) -> Result<(), FrostSurfaceReadabilityError> {
+    if binding.material_family() != MaterialFamily::Frost {
+        return Err(FrostSurfaceReadabilityError::NonFrostSurface);
+    }
+    if binding.states().states() != [InteractionState::Rest] {
+        return Err(FrostSurfaceReadabilityError::NonBaseState);
+    }
+    if binding.treatment_stack().treatments().last() != Some(&OpticalTreatment::None) {
+        return Err(FrostSurfaceReadabilityError::ActiveTreatment);
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::resolve_headless_source;
+    use resina_color::resolve_srgb_fallback;
     use serde_json::{Value, json};
 
     fn baseline() -> Value {
@@ -297,5 +347,39 @@ mod tests {
                 .to_string()
                 .contains("duplicate JSON member")
         );
+    }
+
+    #[test]
+    fn typed_and_source_paths_agree() {
+        let request = baseline();
+        let context =
+            resolve_headless_source(&request["scenario"]["resolution"].to_string()).unwrap();
+        let intent: SurfaceIntent =
+            serde_json::from_value(request["scenario"]["surface"].clone()).unwrap();
+        let backdrop = resolve_srgb_fallback(&request["postTreatmentBackdrop"]).unwrap();
+        let adjacent = resolve_srgb_fallback(&request["adjacentColor"]).unwrap();
+        let typed = resolve_frost_surface_readability(
+            &intent,
+            &context,
+            ColorRole::ContentPrimary,
+            &backdrop,
+            &adjacent,
+            3.0,
+            3.0,
+        )
+        .unwrap();
+        let source = resolve_frost_surface_readability_source(&request.to_string()).unwrap();
+        assert_eq!(typed, source);
+    }
+
+    #[test]
+    fn surface_scope_error_precedes_invalid_local_color() {
+        let mut request = baseline();
+        request["scenario"]["surface"]["materialRole"] = json!("surface.base");
+        request["postTreatmentBackdrop"]["colorSpace"] = json!("display-p3");
+        assert!(matches!(
+            resolve_frost_surface_readability_source(&request.to_string()),
+            Err(FrostSurfaceReadabilityError::NonFrostSurface)
+        ));
     }
 }
