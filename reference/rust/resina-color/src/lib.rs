@@ -4,6 +4,9 @@ pub use contrast::{ContrastError, opaque_contrast_ratio};
 mod fallback;
 pub use fallback::{ColorFallbackError, SrgbFallback, resolve_srgb_fallback};
 
+mod opaque;
+pub use opaque::{OpaqueFallbackError, resolve_opaque_srgb_fallback};
+
 mod conversion;
 pub use conversion::{
     ColorConversionError, a98_rgb_to_extended_srgb, display_p3_to_extended_srgb, hsl_to_srgb,

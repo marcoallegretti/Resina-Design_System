@@ -99,6 +99,7 @@ def main():
         "schemas/headless-conformance-case.schema.json",
         "schemas/headless-result.schema.json",
         "schemas/material-assignments.schema.json",
+        "schemas/opaque-srgb-fallback.schema.json",
         "schemas/spatial-assignments.schema.json",
         "schemas/srgb-fallback.schema.json",
         "schemas/state-set.schema.json",
@@ -374,6 +375,29 @@ def main():
         invalid[field] = value
         check_case(fallback_schema, f"fallback invalid {name}", invalid, False)
         checked += 1
+
+    opaque_fallback_schema = validator_for("schemas/opaque-srgb-fallback.schema.json")
+    opaque_vectors = load_json(ROOT / "conformance/color/opaque-fallback-vectors.json")
+    for vector in opaque_vectors:
+        if ("expected" in vector) == ("error" in vector):
+            raise ValueError(f"opaque fallback vector needs one outcome: {vector['name']}")
+        check_case(color_value, f"opaque fallback source: {vector['name']}", vector["source"], True)
+        checked += 1
+        if "authored" in vector:
+            check_case(color_value, f"authored opaque fallback: {vector['name']}", vector["authored"], True)
+            checked += 1
+        if "expected" in vector:
+            check_case(
+                opaque_fallback_schema,
+                f"opaque fallback output: {vector['name']}",
+                vector["expected"],
+                True,
+            )
+            checked += 1
+    translucent_result = copy.deepcopy(opaque_vectors[0]["expected"])
+    translucent_result["alpha"] = 0.5
+    check_case(opaque_fallback_schema, "opaque fallback rejects alpha below one", translucent_result, False)
+    checked += 1
 
     duplicate_spatial = ROOT / "conformance/spatial/invalid-duplicate-role.json"
     try:

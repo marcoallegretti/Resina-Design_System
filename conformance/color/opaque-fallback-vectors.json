@@ -1,0 +1,58 @@
+[
+  {
+    "name": "opaque source is reusable without authored fallback",
+    "source": {"colorSpace": "srgb", "components": [0.125, 0.5, 0.875]},
+    "expected": {"colorSpace": "srgb", "components": [0.125, 0.5, 0.875], "alpha": 1.0}
+  },
+  {
+    "name": "translucent source needs authored opaque fallback",
+    "source": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.6], "alpha": 0.35},
+    "error": "MissingAuthoredFallback"
+  },
+  {
+    "name": "fully transparent source still needs authored fallback",
+    "source": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.6], "alpha": 0},
+    "error": "MissingAuthoredFallback"
+  },
+  {
+    "name": "authored fallback takes precedence over opaque source",
+    "source": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.6]},
+    "authored": {"colorSpace": "srgb", "components": [0.8, 0.7, 0.6]},
+    "expected": {"colorSpace": "srgb", "components": [0.8, 0.7, 0.6], "alpha": 1.0}
+  },
+  {
+    "name": "wide-gamut translucent source uses distinct opaque fallback",
+    "source": {
+      "colorSpace": "display-p3",
+      "components": [1, 0, 0],
+      "hex": "#cc334d",
+      "alpha": 0.35
+    },
+    "authored": {"colorSpace": "srgb", "components": [0.3, 0.4, 0.5]},
+    "expected": {"colorSpace": "srgb", "components": [0.3, 0.4, 0.5], "alpha": 1.0}
+  },
+  {
+    "name": "translucent authored fallback is rejected",
+    "source": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.6], "alpha": 0.35},
+    "authored": {"colorSpace": "srgb", "components": [0.8, 0.7, 0.6], "alpha": 0.99},
+    "error": "TranslucentAuthoredFallback"
+  },
+  {
+    "name": "invalid authored fallback fails even with opaque source",
+    "source": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.6]},
+    "authored": {"colorSpace": "srgb", "components": [0.8, 0.7, 0.6], "hex": "#000000"},
+    "error": "Authored(InconsistentSrgbHex)"
+  },
+  {
+    "name": "invalid source fails before authored fallback",
+    "source": {"colorSpace": "display-p3", "components": [1, 0, 0]},
+    "authored": {"colorSpace": "srgb", "components": [0.3, 0.4, 0.5]},
+    "error": "Source(OutOfGamutRgb)"
+  },
+  {
+    "name": "authored fallback must itself be portable",
+    "source": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.6], "alpha": 0.35},
+    "authored": {"colorSpace": "display-p3", "components": [1, 0, 0]},
+    "error": "Authored(OutOfGamutRgb)"
+  }
+]
