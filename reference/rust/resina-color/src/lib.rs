@@ -2,7 +2,10 @@ mod contrast;
 pub use contrast::{ContrastError, opaque_contrast_ratio};
 
 mod fallback;
-pub use fallback::{ColorFallbackError, SrgbFallback, resolve_srgb_fallback};
+pub use fallback::{
+    ColorFallbackError, CompositeError, SrgbFallback, composite_srgb_over_opaque,
+    resolve_srgb_fallback,
+};
 
 mod opaque;
 pub use opaque::{OpaqueFallbackError, resolve_opaque_srgb_fallback};

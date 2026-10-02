@@ -38,6 +38,36 @@ impl SrgbFallback {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CompositeError {
+    TranslucentBackdrop,
+}
+
+impl fmt::Display for CompositeError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("backdrop must be opaque")
+    }
+}
+
+impl std::error::Error for CompositeError {}
+
+pub fn composite_srgb_over_opaque(
+    source: &SrgbFallback,
+    backdrop: &SrgbFallback,
+) -> Result<SrgbFallback, CompositeError> {
+    if backdrop.alpha != 1.0 {
+        return Err(CompositeError::TranslucentBackdrop);
+    }
+    let components = std::array::from_fn(|index| {
+        source.components[index] * source.alpha + backdrop.components[index] * (1.0 - source.alpha)
+    });
+    Ok(SrgbFallback {
+        color_space: "srgb",
+        components,
+        alpha: 1.0,
+    })
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ColorFallbackError {
     InvalidValue(ValueError),
@@ -246,6 +276,36 @@ fn decode_hex(hex: &str) -> Result<[f64; 3], ColorFallbackError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn opaque_compositing_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/opaque-compositing-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let source = resolve_srgb_fallback(&vector["source"]).unwrap();
+            let backdrop = resolve_srgb_fallback(&vector["backdrop"]).unwrap();
+            let result = composite_srgb_over_opaque(&source, &backdrop);
+            if let Some(expected) = vector.get("expected") {
+                let actual = serde_json::to_value(result.unwrap()).unwrap();
+                for index in 0..3 {
+                    let value = actual["components"][index].as_f64().unwrap();
+                    let expected = expected["components"][index].as_f64().unwrap();
+                    assert!((value - expected).abs() < 1e-12, "{}", vector["name"]);
+                }
+                assert_eq!(actual["colorSpace"], expected["colorSpace"]);
+                assert_eq!(actual["alpha"].as_f64(), expected["alpha"].as_f64());
+            } else {
+                assert_eq!(
+                    result.unwrap_err(),
+                    CompositeError::TranslucentBackdrop,
+                    "{}",
+                    vector["name"]
+                );
+            }
+        }
+    }
 
     #[test]
     fn changing_fallback_alpha_preserves_channels_and_rejects_invalid_values() {

@@ -2,7 +2,7 @@
 name = "resina-color"
 version = "0.1.0"
 edition = "2024"
-description = "Reference color fallback and contrast calculations for Resina"
+description = "Reference color fallback, compositing, and contrast calculations for Resina"
 
 [dependencies]
 resina-tokens = { path = "../resina-tokens" }
