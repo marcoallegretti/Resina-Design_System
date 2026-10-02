@@ -134,6 +134,7 @@ def main():
         "schemas/material-assignments.schema.json",
         "schemas/opaque-color-assignments.schema.json",
         "schemas/opaque-srgb-fallback.schema.json",
+        "schemas/resolver-module-case.schema.json",
         "schemas/spatial-assignments.schema.json",
         "schemas/srgb-fallback.schema.json",
         "schemas/state-set.schema.json",
@@ -165,6 +166,33 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    resolver_case_schema = validator_for("schemas/resolver-module-case.schema.json")
+    resolver_cases = load_json(ROOT / "conformance/tokens/resolver-module-vectors.json")
+    resolver_case_names = set()
+    for case in resolver_cases:
+        check_case(resolver_case_schema, f"resolver module case: {case.get('name')}", case, True)
+        if case["name"] in resolver_case_names:
+            raise ValueError(f"duplicate resolver module case name: {case['name']}")
+        resolver_case_names.add(case["name"])
+    valid_resolver_case = next((case for case in resolver_cases if "expected" in case), None)
+    if valid_resolver_case is None:
+        raise ValueError("resolver module cases need a successful example")
+    for name, change in [
+        ("missing input", ("input", None)),
+        ("wrong external source type", ("externalSources", {"file.json": 5})),
+        ("empty diagnostic", ("errorContains", "")),
+        ("ambiguous outcome", ("errorContains", "invalid")),
+    ]:
+        field, value = change
+        example = copy.deepcopy(valid_resolver_case)
+        if name == "empty diagnostic":
+            del example["expected"]
+        if value is None:
+            del example[field]
+        else:
+            example[field] = value
+        check_case(resolver_case_schema, f"resolver module {name}", example, False)
 
     theme_source_path = ROOT / "conformance/themes/valid-source.json"
     theme_source_text = theme_source_path.read_text(encoding="utf-8")
@@ -270,7 +298,7 @@ def main():
     ):
         raise ValueError("surface binding material families differ from assignments")
 
-    checked = len(backend_cases) + len(surface_backend_cases) + len(theme_cases)
+    checked = len(backend_cases) + len(surface_backend_cases) + len(theme_cases) + len(resolver_cases)
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/opaque-color-assignments.schema.json", "conformance/color/opaque-assignment-vectors.json"),
