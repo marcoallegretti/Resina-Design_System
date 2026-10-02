@@ -76,6 +76,75 @@ impl StateSet {
     pub fn contains(&self, state: InteractionState) -> bool {
         self.states.binary_search(&state).is_ok()
     }
+
+    pub fn compose(&self) -> StateComposition {
+        let mut result = StateComposition {
+            schema_version: "0.1.0",
+            availability: Vec::new(),
+            validation: Vec::new(),
+            selection: Vec::new(),
+            interaction: Vec::new(),
+            navigation: Vec::new(),
+            activity: Vec::new(),
+            base: Vec::new(),
+        };
+        for state in &self.states {
+            match state {
+                InteractionState::Disabled => result.availability.push(*state),
+                InteractionState::Error | InteractionState::Warning | InteractionState::Success => {
+                    result.validation.push(*state)
+                }
+                InteractionState::Active
+                | InteractionState::Selected
+                | InteractionState::Checked => result.selection.push(*state),
+                InteractionState::Hover
+                | InteractionState::Pressed
+                | InteractionState::Dragging => result.interaction.push(*state),
+                InteractionState::Focused => result.navigation.push(*state),
+                InteractionState::Busy => result.activity.push(*state),
+                InteractionState::Rest => result.base.push(*state),
+            }
+        }
+        result
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StateComposition {
+    schema_version: &'static str,
+    availability: Vec<InteractionState>,
+    validation: Vec<InteractionState>,
+    selection: Vec<InteractionState>,
+    interaction: Vec<InteractionState>,
+    navigation: Vec<InteractionState>,
+    activity: Vec<InteractionState>,
+    base: Vec<InteractionState>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StateLayer {
+    Availability,
+    Validation,
+    Selection,
+    Interaction,
+    Navigation,
+    Activity,
+    Base,
+}
+
+impl StateComposition {
+    pub fn states(&self, layer: StateLayer) -> &[InteractionState] {
+        match layer {
+            StateLayer::Availability => &self.availability,
+            StateLayer::Validation => &self.validation,
+            StateLayer::Selection => &self.selection,
+            StateLayer::Interaction => &self.interaction,
+            StateLayer::Navigation => &self.navigation,
+            StateLayer::Activity => &self.activity,
+            StateLayer::Base => &self.base,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -447,6 +516,23 @@ mod tests {
                     vector["name"]
                 );
             }
+        }
+    }
+
+    #[test]
+    fn state_composition_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/states/composition-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let states: StateSet = serde_json::from_value(vector["states"].clone()).unwrap();
+            assert_eq!(
+                serde_json::to_value(states.compose()).unwrap(),
+                vector["expected"],
+                "{}",
+                vector["name"]
+            );
         }
     }
 

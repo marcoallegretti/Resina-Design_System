@@ -139,6 +139,7 @@ def main():
         "schemas/spatial-assignments.schema.json",
         "schemas/srgb-fallback.schema.json",
         "schemas/state-set.schema.json",
+        "schemas/state-composition.schema.json",
         "schemas/surface-form.schema.json",
         "schemas/surface-binding.schema.json",
         "schemas/surface-binding-result.schema.json",
@@ -371,6 +372,34 @@ def main():
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    composition_validator = validator_for("schemas/state-composition.schema.json")
+    state_set_validator = validator_for("schemas/state-set.schema.json")
+    composition_vectors = load_json(ROOT / "conformance/states/composition-vectors.json")
+    composition_names = set()
+    for vector in composition_vectors:
+        if vector["name"] in composition_names:
+            raise ValueError(f"duplicate state composition vector: {vector['name']}")
+        composition_names.add(vector["name"])
+        check_case(state_set_validator, f"state composition input: {vector['name']}", vector["states"], True)
+        check_case(composition_validator, f"state composition: {vector['name']}", vector["expected"], True)
+        checked += 2
+    for field, value in (
+        ("validation", ["focused"]),
+        ("activity", ["busy", "busy"]),
+        ("schemaVersion", "0.2.0"),
+        ("validation", ["warning", "error"]),
+        ("selection", ["selected", "active"]),
+        ("interaction", ["pressed", "hover"]),
+    ):
+        invalid_composition = copy.deepcopy(composition_vectors[0]["expected"])
+        invalid_composition[field] = value
+        check_case(composition_validator, f"invalid state composition: {field}", invalid_composition, False)
+        checked += 1
+    empty_composition = copy.deepcopy(composition_vectors[0]["expected"])
+    empty_composition["base"] = []
+    check_case(composition_validator, "invalid state composition: empty", empty_composition, False)
+    checked += 1
 
     surface_results = validator_for("schemas/surface-binding-result.schema.json")
     surface_vectors = load_json(ROOT / "conformance/surfaces/binding-vectors.json")

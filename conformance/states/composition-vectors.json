@@ -1,0 +1,22 @@
+[
+  {
+    "name": "rest alone",
+    "states": {"schemaVersion": "0.1.0", "states": ["rest"]},
+    "expected": {"schemaVersion": "0.1.0", "availability": [], "validation": [], "selection": [], "interaction": [], "navigation": [], "activity": [], "base": ["rest"]}
+  },
+  {
+    "name": "simultaneous selection navigation and interaction",
+    "states": {"schemaVersion": "0.1.0", "states": ["focused", "selected", "hover", "pressed"]},
+    "expected": {"schemaVersion": "0.1.0", "availability": [], "validation": [], "selection": ["selected"], "interaction": ["hover", "pressed"], "navigation": ["focused"], "activity": [], "base": []}
+  },
+  {
+    "name": "disabled busy and validation coexist",
+    "states": {"schemaVersion": "0.1.0", "states": ["busy", "disabled", "error"]},
+    "expected": {"schemaVersion": "0.1.0", "availability": ["disabled"], "validation": ["error"], "selection": [], "interaction": [], "navigation": [], "activity": ["busy"], "base": []}
+  },
+  {
+    "name": "all canonical states retain every signal",
+    "states": {"schemaVersion": "0.1.0", "states": ["success", "dragging", "checked", "rest", "focused", "busy", "warning", "active", "pressed", "hover", "disabled", "selected", "error"]},
+    "expected": {"schemaVersion": "0.1.0", "availability": ["disabled"], "validation": ["error", "warning", "success"], "selection": ["active", "selected", "checked"], "interaction": ["hover", "pressed", "dragging"], "navigation": ["focused"], "activity": ["busy"], "base": ["rest"]}
+  }
+]

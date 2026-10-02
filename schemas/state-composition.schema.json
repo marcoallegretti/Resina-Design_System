@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:state-composition:0.1.0",
+  "title": "Resina State Composition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "availability", "validation", "selection", "interaction", "navigation", "activity", "base"],
+  "anyOf": [
+    {"properties": {"availability": {"minItems": 1}}},
+    {"properties": {"validation": {"minItems": 1}}},
+    {"properties": {"selection": {"minItems": 1}}},
+    {"properties": {"interaction": {"minItems": 1}}},
+    {"properties": {"navigation": {"minItems": 1}}},
+    {"properties": {"activity": {"minItems": 1}}},
+    {"properties": {"base": {"minItems": 1}}}
+  ],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "availability": {"$ref": "#/$defs/availability"},
+    "validation": {"$ref": "#/$defs/validation"},
+    "selection": {"$ref": "#/$defs/selection"},
+    "interaction": {"$ref": "#/$defs/interaction"},
+    "navigation": {"$ref": "#/$defs/navigation"},
+    "activity": {"$ref": "#/$defs/activity"},
+    "base": {"$ref": "#/$defs/base"}
+  },
+  "$defs": {
+    "availability": {"type": "array", "uniqueItems": true, "items": {"const": "disabled"}},
+    "validation": {"enum": [[], ["error"], ["warning"], ["success"], ["error", "warning"], ["error", "success"], ["warning", "success"], ["error", "warning", "success"]]},
+    "selection": {"enum": [[], ["active"], ["selected"], ["checked"], ["active", "selected"], ["active", "checked"], ["selected", "checked"], ["active", "selected", "checked"]]},
+    "interaction": {"enum": [[], ["hover"], ["pressed"], ["dragging"], ["hover", "pressed"], ["hover", "dragging"], ["pressed", "dragging"], ["hover", "pressed", "dragging"]]},
+    "navigation": {"type": "array", "uniqueItems": true, "items": {"const": "focused"}},
+    "activity": {"type": "array", "uniqueItems": true, "items": {"const": "busy"}},
+    "base": {"type": "array", "uniqueItems": true, "items": {"const": "rest"}}
+  }
+}
