@@ -2,6 +2,8 @@ use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 
 mod color;
 pub use color::{ColorAssignments, ColorRole, OpaqueColorAssignments};
+mod elevation;
+pub use elevation::ElevationDepthAssignments;
 mod frost;
 pub use frost::FrostPigment;
 mod spatial;
@@ -166,7 +168,7 @@ pub enum ShapeIntent {
     Organic,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum ElevationRole {
     Embedded,
@@ -175,6 +177,17 @@ pub enum ElevationRole {
     Floating,
     Overlay,
     Modal,
+}
+
+impl ElevationRole {
+    pub const ALL: [Self; 6] = [
+        Self::Embedded,
+        Self::Base,
+        Self::Raised,
+        Self::Floating,
+        Self::Overlay,
+        Self::Modal,
+    ];
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

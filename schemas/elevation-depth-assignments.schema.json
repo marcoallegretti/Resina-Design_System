@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:elevation-depth-assignments:0.1.0",
+  "title": "Resina Elevation Edge Depth Assignments",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "roles"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["embedded", "base", "raised", "floating", "overlay", "modal"],
+      "properties": {
+        "embedded": {"$ref": "#/$defs/tokenPath"},
+        "base": {"$ref": "#/$defs/tokenPath"},
+        "raised": {"$ref": "#/$defs/tokenPath"},
+        "floating": {"$ref": "#/$defs/tokenPath"},
+        "overlay": {"$ref": "#/$defs/tokenPath"},
+        "modal": {"$ref": "#/$defs/tokenPath"}
+      }
+    }
+  },
+  "$defs": {
+    "tokenPath": {"type": "string", "minLength": 1}
+  }
+}

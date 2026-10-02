@@ -5,6 +5,7 @@ use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
 mod edge_contrast;
+mod elevation;
 mod focus_indicator;
 mod frost_legibility;
 mod frost_surface_readability;
@@ -12,6 +13,9 @@ mod spatial;
 mod srgb_input;
 pub use edge_contrast::{
     EdgeContrastError, EdgeContrastResult, resolve_edge_contrast, resolve_edge_contrast_source,
+};
+pub use elevation::{
+    ElevationDepthResolutionError, ElevationDepthResolutionErrorKind, resolve_elevation_depth,
 };
 pub use focus_indicator::{
     FocusIndicatorError, FocusIndicatorResult, resolve_focus_indicator,

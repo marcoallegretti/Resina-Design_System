@@ -128,6 +128,7 @@ def main():
         "schemas/edge-contrast-request.schema.json",
         "schemas/edge-contrast-result.schema.json",
         "schemas/edge-contrast-case.schema.json",
+        "schemas/elevation-depth-assignments.schema.json",
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/frost-pigment.schema.json",
@@ -522,6 +523,7 @@ def main():
         ("schemas/opaque-color-assignments.schema.json", "conformance/color/opaque-assignment-vectors.json"),
         ("schemas/material-assignments.schema.json", "conformance/materials/role-assignment-vectors.json"),
         ("schemas/frost-pigment.schema.json", "conformance/materials/frost-pigment-vectors.json"),
+        ("schemas/elevation-depth-assignments.schema.json", "conformance/elevation/depth-assignment-vectors.json"),
         ("schemas/spatial-assignments.schema.json", "conformance/spatial/assignment-vectors.json"),
         ("schemas/state-set.schema.json", "conformance/states/state-set-vectors.json"),
         ("schemas/surface-form.schema.json", "conformance/geometry/surface-form-vectors.json"),
@@ -530,6 +532,16 @@ def main():
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    elevation_assignments = validator_for("schemas/elevation-depth-assignments.schema.json")
+    for vector in load_json(ROOT / "conformance/elevation/depth-resolution-vectors.json"):
+        check_case(
+            elevation_assignments,
+            f"elevation depth resolution: {vector['name']}",
+            vector["assignments"],
+            True,
+        )
+        checked += 1
 
     composition_validator = validator_for("schemas/state-composition.schema.json")
     state_set_validator = validator_for("schemas/state-set.schema.json")

@@ -1,0 +1,84 @@
+[
+  {
+    "name": "complete elevation depth assignment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "embedded": "depth.0",
+        "base": "depth.0",
+        "raised": "depth.1",
+        "floating": "depth.2",
+        "overlay": "depth.3",
+        "modal": "depth.4"
+      }
+    },
+    "expected": {
+      "embedded": "depth.0",
+      "base": "depth.0",
+      "raised": "depth.1",
+      "floating": "depth.2",
+      "overlay": "depth.3",
+      "modal": "depth.4"
+    }
+  },
+  {
+    "name": "missing modal assignment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "embedded": "depth.0",
+        "base": "depth.0",
+        "raised": "depth.1",
+        "floating": "depth.2",
+        "overlay": "depth.3"
+      }
+    },
+    "error": "missing field"
+  },
+  {
+    "name": "unknown elevation assignment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "embedded": "depth.0",
+        "base": "depth.0",
+        "raised": "depth.1",
+        "floating": "depth.2",
+        "overlay": "depth.3",
+        "modal": "depth.4",
+        "hover": "depth.1"
+      }
+    },
+    "error": "unknown field"
+  },
+  {
+    "name": "empty elevation path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "embedded": "depth.0",
+        "base": "depth.0",
+        "raised": "",
+        "floating": "depth.2",
+        "overlay": "depth.3",
+        "modal": "depth.4"
+      }
+    },
+    "error": "must not be empty"
+  },
+  {
+    "name": "unsupported elevation assignment version",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "embedded": "depth.0",
+        "base": "depth.0",
+        "raised": "depth.1",
+        "floating": "depth.2",
+        "overlay": "depth.3",
+        "modal": "depth.4"
+      }
+    },
+    "error": "schemaVersion"
+  }
+]
