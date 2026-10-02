@@ -803,4 +803,26 @@ mod tests {
             Err(ColorConversionError::NonFiniteResult { .. })
         ));
     }
+
+    #[test]
+    fn oklab_round_trips_srgb_grid() {
+        const STEPS: u32 = 16;
+        for red in 0..=STEPS {
+            for green in 0..=STEPS {
+                for blue in 0..=STEPS {
+                    let source =
+                        [red, green, blue].map(|channel| f64::from(channel) / f64::from(STEPS));
+                    let oklab = srgb_to_oklab(source).unwrap();
+                    let restored = oklab_to_extended_srgb(oklab).unwrap();
+                    for channel in 0..3 {
+                        assert!(
+                            (restored[channel] - source[channel]).abs() <= 1e-10,
+                            "{source:?} channel {channel}: {}",
+                            restored[channel]
+                        );
+                    }
+                }
+            }
+        }
+    }
 }
