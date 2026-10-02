@@ -187,6 +187,35 @@ fn numeric_oklab_color_resolves_without_authored_hex() {
 }
 
 #[test]
+fn numeric_oklch_color_resolves_without_authored_hex() {
+    let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+    let source_color = json!({"colorSpace":"oklch","components":[0.6,0.1,90],"alpha":0.7});
+    request["tokens"]["palette"]["hued"] = json!({"$value": source_color});
+    request["colorAssignments"]["roles"]["focus"] = json!("palette.hued");
+
+    let output = run_stdin(&request.to_string());
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(result["colors"]["focus"], source_color);
+    let fallback = &result["colorFallbacks"]["focus"];
+    assert_eq!(fallback["colorSpace"], "srgb");
+    assert_eq!(fallback["alpha"].as_f64(), Some(0.7));
+    let expected = [0.59371851432602, 0.49082753894920433, 0.19011614138497857];
+    for (index, channel) in fallback["components"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+    {
+        assert!((channel.as_f64().unwrap() - expected[index]).abs() < 1e-12);
+    }
+}
+
+#[test]
 fn usage_error_has_distinct_exit_status() {
     let output = Command::new(env!("CARGO_BIN_EXE_resina-headless"))
         .output()

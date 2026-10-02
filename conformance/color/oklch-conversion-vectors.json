@@ -1,0 +1,12 @@
+[
+  {"name":"neutral hue zero","oklch":[0.5,0,0],"oklab":[0.5,0,0]},
+  {"name":"neutral hue remains powerless","oklch":[0.5,0,270],"oklab":[0.5,0,0]},
+  {"name":"positive a axis","oklch":[0.5,0.2,0],"oklab":[0.5,0.2,0]},
+  {"name":"positive b axis","oklch":[0.5,0.2,90],"oklab":[0.5,0,0.2]},
+  {"name":"negative a axis","oklch":[0.5,0.2,180],"oklab":[0.5,-0.2,0]},
+  {"name":"negative b axis","oklch":[0.5,0.2,270],"oklab":[0.5,0,-0.2]},
+  {"name":"diagonal","oklch":[0.5,0.2,45],"oklab":[0.5,0.1414213562373095,0.1414213562373095]},
+  {"name":"lightness below range fails","oklch":[-0.01,0.1,45],"error":"OutOfRangeOklchComponent","index":0},
+  {"name":"negative chroma fails","oklch":[0.5,-0.01,45],"error":"OutOfRangeOklchComponent","index":1},
+  {"name":"hue at 360 fails","oklch":[0.5,0.1,360],"error":"OutOfRangeOklchComponent","index":2}
+]

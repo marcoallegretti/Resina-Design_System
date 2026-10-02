@@ -489,6 +489,70 @@
     "error": "OklabConversion"
   },
   {
+    "name": "numeric Oklch hue converts through Oklab",
+    "value": {
+      "colorSpace": "oklch",
+      "components": [0.6, 0.1, 90],
+      "alpha": 0.7
+    },
+    "expected": {
+      "colorSpace": "srgb",
+      "components": [0.59371851432602, 0.49082753894920433, 0.19011614138497857],
+      "alpha": 0.7
+    },
+    "tolerance": 1e-12
+  },
+  {
+    "name": "zero-chroma Oklch has no hue effect",
+    "value": {
+      "colorSpace": "oklch",
+      "components": [0.5, 0, 270]
+    },
+    "expected": {
+      "colorSpace": "srgb",
+      "components": [0.388572859046335, 0.388572859046334, 0.388572859046334],
+      "alpha": 1
+    },
+    "tolerance": 1e-12
+  },
+  {
+    "name": "authored Oklch hex remains authoritative",
+    "value": {
+      "colorSpace": "oklch",
+      "components": [0.6, 0.1, 90],
+      "hex": "#336699"
+    },
+    "expected": {
+      "colorSpace": "srgb",
+      "components": [0.2, 0.4, 0.6],
+      "alpha": 1.0
+    }
+  },
+  {
+    "name": "out-of-gamut Oklch without hex fails",
+    "value": {
+      "colorSpace": "oklch",
+      "components": [0.65, 0.5, 0]
+    },
+    "error": "OutOfGamutOklch"
+  },
+  {
+    "name": "Oklch missing component without hex fails",
+    "value": {
+      "colorSpace": "oklch",
+      "components": [0.5, "none", 90]
+    },
+    "error": "MissingHexFallback"
+  },
+  {
+    "name": "Oklch arithmetic overflow fails",
+    "value": {
+      "colorSpace": "oklch",
+      "components": [0.5, 1e308, 90]
+    },
+    "error": "OklchConversion"
+  },
+  {
     "name": "wide gamut without hex is nonportable",
     "value": {
       "colorSpace": "display-p3",
@@ -501,13 +565,13 @@
     "error": "MissingHexFallback"
   },
   {
-    "name": "non-RGB without hex is nonportable",
+    "name": "unhandled color space without hex is nonportable",
     "value": {
-      "colorSpace": "oklch",
+      "colorSpace": "lab",
       "components": [
-        0.5,
-        0.2,
-        210
+        50,
+        20,
+        -30
       ]
     },
     "error": "MissingHexFallback"

@@ -1,4 +1,4 @@
-use crate::{ColorConversionError, oklab_to_extended_srgb};
+use crate::{ColorConversionError, oklab_to_extended_srgb, oklch_to_oklab};
 use resina_tokens::{ValueError, validate_resolved_value};
 use serde::Serialize;
 use serde_json::Value;
@@ -30,6 +30,8 @@ pub enum ColorFallbackError {
     MalformedHexFallback,
     OklabConversion(ColorConversionError),
     OutOfGamutOklab,
+    OklchConversion(ColorConversionError),
+    OutOfGamutOklch,
 }
 
 impl fmt::Display for ColorFallbackError {
@@ -46,6 +48,10 @@ impl fmt::Display for ColorFallbackError {
             Self::OklabConversion(error) => write!(formatter, "Oklab conversion failed: {error}"),
             Self::OutOfGamutOklab => {
                 formatter.write_str("Oklab color converts outside the sRGB gamut")
+            }
+            Self::OklchConversion(error) => write!(formatter, "Oklch conversion failed: {error}"),
+            Self::OutOfGamutOklch => {
+                formatter.write_str("Oklch color converts outside the sRGB gamut")
             }
         }
     }
@@ -79,21 +85,29 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
     let components = match (numeric_srgb, authored_hex) {
         (Some(source), _) => source,
         (None, Some(fallback)) => fallback,
-        (None, None) if value["colorSpace"] == "oklab" => {
+        (None, None) if value["colorSpace"] == "oklab" || value["colorSpace"] == "oklch" => {
             let source = value["components"].as_array().and_then(|items| {
                 Some([items[0].as_f64()?, items[1].as_f64()?, items[2].as_f64()?])
             });
             let Some(source) = source else {
                 return Err(ColorFallbackError::MissingHexFallback);
             };
-            let converted =
-                oklab_to_extended_srgb(source).map_err(ColorFallbackError::OklabConversion)?;
+            let converted = if value["colorSpace"] == "oklab" {
+                oklab_to_extended_srgb(source).map_err(ColorFallbackError::OklabConversion)?
+            } else {
+                let oklab = oklch_to_oklab(source).map_err(ColorFallbackError::OklchConversion)?;
+                oklab_to_extended_srgb(oklab).map_err(ColorFallbackError::OklchConversion)?
+            };
             const ROUNDING_TOLERANCE: f64 = 1e-12;
             if converted
                 .iter()
                 .any(|channel| !(-ROUNDING_TOLERANCE..=1.0 + ROUNDING_TOLERANCE).contains(channel))
             {
-                return Err(ColorFallbackError::OutOfGamutOklab);
+                return Err(if value["colorSpace"] == "oklab" {
+                    ColorFallbackError::OutOfGamutOklab
+                } else {
+                    ColorFallbackError::OutOfGamutOklch
+                });
             }
             converted.map(|channel| channel.clamp(0.0, 1.0))
         }
@@ -159,6 +173,8 @@ mod tests {
                     ColorFallbackError::MalformedHexFallback => "MalformedHexFallback",
                     ColorFallbackError::OklabConversion(_) => "OklabConversion",
                     ColorFallbackError::OutOfGamutOklab => "OutOfGamutOklab",
+                    ColorFallbackError::OklchConversion(_) => "OklchConversion",
+                    ColorFallbackError::OutOfGamutOklch => "OutOfGamutOklch",
                 };
                 assert_eq!(
                     kind,

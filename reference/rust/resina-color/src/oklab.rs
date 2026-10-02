@@ -56,6 +56,8 @@ pub enum ColorConversionError {
     NonFiniteSrgbComponent { index: usize },
     OutOfRangeSrgbComponent { index: usize },
     NonFiniteOklabComponent { index: usize },
+    NonFiniteOklchComponent { index: usize },
+    OutOfRangeOklchComponent { index: usize },
     NonFiniteResult { index: usize },
 }
 
@@ -70,6 +72,15 @@ impl fmt::Display for ColorConversionError {
             }
             Self::NonFiniteOklabComponent { index } => {
                 write!(formatter, "nonfinite Oklab component at index {index}")
+            }
+            Self::NonFiniteOklchComponent { index } => {
+                write!(formatter, "nonfinite Oklch component at index {index}")
+            }
+            Self::OutOfRangeOklchComponent { index } => {
+                write!(
+                    formatter,
+                    "Oklch component outside its range at index {index}"
+                )
             }
             Self::NonFiniteResult { index } => {
                 write!(formatter, "nonfinite conversion result at index {index}")
@@ -105,6 +116,25 @@ pub fn oklab_to_extended_srgb(oklab: [f64; 3]) -> Result<[f64; 3], ColorConversi
     let xyz = transform(&LMS_TO_XYZ, lms);
     let linear = transform(&XYZ_TO_SRGB, xyz);
     finite_result(linear.map(encode_extended_srgb_component))
+}
+
+pub fn oklch_to_oklab(oklch: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    for (index, component) in oklch.iter().enumerate() {
+        if !component.is_finite() {
+            return Err(ColorConversionError::NonFiniteOklchComponent { index });
+        }
+    }
+    if !(0.0..=1.0).contains(&oklch[0]) {
+        return Err(ColorConversionError::OutOfRangeOklchComponent { index: 0 });
+    }
+    if oklch[1] < 0.0 {
+        return Err(ColorConversionError::OutOfRangeOklchComponent { index: 1 });
+    }
+    if !(0.0..360.0).contains(&oklch[2]) {
+        return Err(ColorConversionError::OutOfRangeOklchComponent { index: 2 });
+    }
+    let angle = oklch[2].to_radians();
+    finite_result([oklch[0], oklch[1] * angle.cos(), oklch[1] * angle.sin()])
 }
 
 pub(crate) fn linearize_srgb_component(component: f64) -> f64 {
@@ -199,6 +229,34 @@ mod tests {
     }
 
     #[test]
+    fn oklch_conversion_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/oklch-conversion-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let actual = oklch_to_oklab(components(&vector["oklch"]));
+            if vector.get("error").is_some() {
+                assert_eq!(vector["error"], "OutOfRangeOklchComponent");
+                assert_eq!(
+                    actual,
+                    Err(ColorConversionError::OutOfRangeOklchComponent {
+                        index: vector["index"].as_u64().unwrap() as usize
+                    }),
+                    "{}",
+                    vector["name"]
+                );
+            } else {
+                assert_close(
+                    actual.unwrap(),
+                    components(&vector["oklab"]),
+                    &vector["name"],
+                );
+            }
+        }
+    }
+
+    #[test]
     fn nonfinite_inputs_and_results_fail() {
         assert_eq!(
             srgb_to_oklab([f64::NAN, 0.0, 0.0]),
@@ -216,5 +274,9 @@ mod tests {
             oklab_to_extended_srgb([f64::MAX, 0.0, 0.0]),
             Err(ColorConversionError::NonFiniteResult { .. })
         ));
+        assert_eq!(
+            oklch_to_oklab([0.5, f64::NAN, 0.0]),
+            Err(ColorConversionError::NonFiniteOklchComponent { index: 1 })
+        );
     }
 }
