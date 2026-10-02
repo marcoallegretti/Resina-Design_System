@@ -280,6 +280,14 @@ def main():
     for vector in load_json(ROOT / "conformance/tokens/color-space-vectors.json"):
         check_case(color_value, vector["name"], vector["value"], "error" not in vector)
         checked += 1
+    for filename, component in (
+        ("xyz-conversion-vectors.json", "xyz"),
+        ("rgb-conversion-vectors.json", "rgb"),
+    ):
+        for vector in load_json(ROOT / "conformance/color" / filename):
+            source = {"colorSpace": vector["space"], "components": vector[component]}
+            check_case(color_value, f"{filename}: {vector['name']}", source, "error" not in vector)
+            checked += 1
 
     fallback_schema = validator_for("schemas/srgb-fallback.schema.json")
     for vector in load_json(ROOT / "conformance/color/srgb-fallback-vectors.json"):

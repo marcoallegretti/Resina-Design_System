@@ -70,6 +70,7 @@ fn invalid_inputs_produce_diagnostics_without_partial_output() {
     invalid_request["schemaVersion"] = json!("0.2.0");
     let mut missing_fallback: Value = serde_json::from_str(SOURCE).unwrap();
     missing_fallback["tokens"]["palette"]["base"]["$value"]["colorSpace"] = json!("display-p3");
+    missing_fallback["tokens"]["palette"]["base"]["$value"]["components"] = json!([1, 0, 0]);
     missing_fallback["spatialAssignments"]["roles"]["space.page"] = json!("missing.space");
     missing_fallback["typographyAssignments"]["roles"]["body"]["fontSize"] = json!("missing.type");
     for (source, diagnostics) in [
@@ -290,6 +291,59 @@ fn numeric_xyz_spaces_resolve_without_authored_hex() {
             .enumerate()
         {
             assert!((channel.as_f64().unwrap() - expected[index]).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
+fn numeric_predefined_rgb_spaces_resolve_without_authored_hex() {
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/color/srgb-fallback-vectors.json"
+    ))
+    .unwrap();
+    let cases: Vec<&Value> = vectors
+        .iter()
+        .filter(|vector| {
+            matches!(
+                vector["value"]["colorSpace"].as_str(),
+                Some("display-p3" | "a98-rgb" | "prophoto-rgb" | "rec2020")
+            ) && vector.get("expected").is_some()
+                && vector["value"].get("hex").is_none()
+        })
+        .collect();
+    assert_eq!(cases.len(), 4);
+    for vector in cases {
+        let source_color = &vector["value"];
+        let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+        request["tokens"]["palette"]["wide"] = json!({"$value": source_color});
+        request["colorAssignments"]["roles"]["focus"] = json!("palette.wide");
+        let output = run_stdin(&request.to_string());
+        assert!(
+            output.status.success(),
+            "{}: {}",
+            vector["name"],
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+        let parsed_source: Value = serde_json::from_str(&source_color.to_string()).unwrap();
+        assert_eq!(
+            result["colors"]["focus"], parsed_source,
+            "{}",
+            vector["name"]
+        );
+        let actual = &result["colorFallbacks"]["focus"];
+        let expected = &vector["expected"];
+        assert_eq!(actual["colorSpace"], expected["colorSpace"]);
+        assert_eq!(actual["alpha"], expected["alpha"]);
+        for index in 0..3 {
+            assert!(
+                (actual["components"][index].as_f64().unwrap()
+                    - expected["components"][index].as_f64().unwrap())
+                .abs()
+                    < 1e-12,
+                "{}: channel {index}",
+                vector["name"]
+            );
         }
     }
 }

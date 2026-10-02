@@ -79,7 +79,7 @@ mod tests {
         colors.remove(&ColorRole::AccentSecondary);
         colors.insert(
             ColorRole::SurfaceBase,
-            json!({"colorSpace":"display-p3","components":[0.2,0.4,0.6]}),
+            json!({"colorSpace":"display-p3","components":[1,0,0]}),
         );
         colors.insert(
             ColorRole::Focus,
@@ -100,7 +100,7 @@ mod tests {
         ));
         assert!(matches!(
             errors[1].kind,
-            ColorRoleFallbackErrorKind::InvalidFallback(ColorFallbackError::MissingHexFallback)
+            ColorRoleFallbackErrorKind::InvalidFallback(ColorFallbackError::OutOfGamutRgb)
         ));
         assert!(matches!(
             errors[2].kind,

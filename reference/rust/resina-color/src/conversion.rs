@@ -27,6 +27,54 @@ const D50_TO_D65: [[f64; 3]; 3] = [
         1.330365926242124,
     ],
 ];
+const DISPLAY_P3_TO_XYZ: [[f64; 3]; 3] = [
+    [
+        608311.0 / 1250200.0,
+        189793.0 / 714400.0,
+        198249.0 / 1000160.0,
+    ],
+    [
+        35783.0 / 156275.0,
+        247089.0 / 357200.0,
+        198249.0 / 2500400.0,
+    ],
+    [0.0, 32229.0 / 714400.0, 5220557.0 / 5000800.0],
+];
+const A98_RGB_TO_XYZ: [[f64; 3]; 3] = [
+    [
+        573536.0 / 994567.0,
+        263643.0 / 1420810.0,
+        187206.0 / 994567.0,
+    ],
+    [
+        591459.0 / 1989134.0,
+        6239551.0 / 9945670.0,
+        374412.0 / 4972835.0,
+    ],
+    [
+        53769.0 / 1989134.0,
+        351524.0 / 4972835.0,
+        4929758.0 / 4972835.0,
+    ],
+];
+const PROPHOTO_RGB_TO_XYZ_D50: [[f64; 3]; 3] = [
+    [0.7977666449006423, 0.13518129740053308, 0.0313477341283922],
+    [0.2880748288194013, 0.711835234241873, 0.00008993693872564],
+    [0.0, 0.0, 0.8251046025104602],
+];
+const REC2020_TO_XYZ: [[f64; 3]; 3] = [
+    [
+        63426534.0 / 99577255.0,
+        20160776.0 / 139408157.0,
+        47086771.0 / 278816314.0,
+    ],
+    [
+        26158966.0 / 99577255.0,
+        472592308.0 / 697040785.0,
+        8267143.0 / 139408157.0,
+    ],
+    [0.0, 19567812.0 / 697040785.0, 295819943.0 / 278816314.0],
+];
 const XYZ_TO_LMS: [[f64; 3]; 3] = [
     [
         0.819_022_437_996_703,
@@ -159,6 +207,11 @@ const PERCENT_COMPONENT: ComponentRange = ComponentRange {
     upper_exclusive: false,
 };
 
+enum WhitePoint {
+    D50,
+    D65,
+}
+
 pub fn srgb_to_oklab(srgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
     for (index, component) in srgb.iter().enumerate() {
         if !component.is_finite() {
@@ -223,6 +276,68 @@ pub fn xyz_d50_to_extended_srgb(xyz: [f64; 3]) -> Result<[f64; 3], ColorConversi
     validate_components(xyz, "xyz-d50", [UNIT_COMPONENT; 3])?;
     let adapted = transform(&D50_TO_D65, xyz);
     finite_result(transform(&XYZ_TO_SRGB, adapted).map(encode_extended_srgb_component))
+}
+
+pub fn display_p3_to_extended_srgb(rgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    predefined_rgb_to_extended_srgb(
+        rgb,
+        "display-p3",
+        &DISPLAY_P3_TO_XYZ,
+        linearize_srgb_component,
+        WhitePoint::D65,
+    )
+}
+
+pub fn a98_rgb_to_extended_srgb(rgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    predefined_rgb_to_extended_srgb(
+        rgb,
+        "a98-rgb",
+        &A98_RGB_TO_XYZ,
+        |c| c.powf(563.0 / 256.0),
+        WhitePoint::D65,
+    )
+}
+
+pub fn prophoto_rgb_to_extended_srgb(rgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    predefined_rgb_to_extended_srgb(
+        rgb,
+        "prophoto-rgb",
+        &PROPHOTO_RGB_TO_XYZ_D50,
+        |c| {
+            if c <= 16.0 / 512.0 {
+                c / 16.0
+            } else {
+                c.powf(1.8)
+            }
+        },
+        WhitePoint::D50,
+    )
+}
+
+pub fn rec2020_to_extended_srgb(rgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    predefined_rgb_to_extended_srgb(
+        rgb,
+        "rec2020",
+        &REC2020_TO_XYZ,
+        |c| c.powf(2.4),
+        WhitePoint::D65,
+    )
+}
+
+fn predefined_rgb_to_extended_srgb(
+    rgb: [f64; 3],
+    color_space: &'static str,
+    to_xyz: &[[f64; 3]; 3],
+    linearize: fn(f64) -> f64,
+    white_point: WhitePoint,
+) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(rgb, color_space, [UNIT_COMPONENT; 3])?;
+    let xyz = transform(to_xyz, rgb.map(linearize));
+    let xyz = match white_point {
+        WhitePoint::D50 => transform(&D50_TO_D65, xyz),
+        WhitePoint::D65 => xyz,
+    };
+    finite_result(transform(&XYZ_TO_SRGB, xyz).map(encode_extended_srgb_component))
 }
 
 pub fn hsl_to_srgb(hsl: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
@@ -440,6 +555,45 @@ mod tests {
     }
 
     #[test]
+    fn rgb_conversion_conformance_vectors() {
+        type Converter = fn([f64; 3]) -> Result<[f64; 3], ColorConversionError>;
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/rgb-conversion-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let rgb = components(&vector["rgb"]);
+            let (convert, color_space): (Converter, &'static str) =
+                match vector["space"].as_str().unwrap() {
+                    "display-p3" => (display_p3_to_extended_srgb, "display-p3"),
+                    "a98-rgb" => (a98_rgb_to_extended_srgb, "a98-rgb"),
+                    "prophoto-rgb" => (prophoto_rgb_to_extended_srgb, "prophoto-rgb"),
+                    "rec2020" => (rec2020_to_extended_srgb, "rec2020"),
+                    other => panic!("unexpected color space: {other}"),
+                };
+            let result = convert(rgb);
+            if vector.get("error").is_some() {
+                assert_eq!(vector["error"], "OutOfRangeColorComponent");
+                assert_eq!(
+                    result,
+                    Err(ColorConversionError::OutOfRangeColorComponent {
+                        color_space,
+                        index: vector["index"].as_u64().unwrap() as usize,
+                    }),
+                    "{}",
+                    vector["name"]
+                );
+            } else {
+                assert_close(
+                    result.unwrap(),
+                    components(&vector["extendedSrgb"]),
+                    &vector["name"],
+                );
+            }
+        }
+    }
+
+    #[test]
     fn direct_srgb_conversion_conformance_vectors() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
             "../../../../conformance/color/srgb-direct-conversion-vectors.json"
@@ -514,6 +668,13 @@ mod tests {
             Err(ColorConversionError::NonFiniteColorComponent {
                 color_space: "xyz-d50",
                 index: 2
+            })
+        );
+        assert_eq!(
+            prophoto_rgb_to_extended_srgb([f64::NAN, 0.0, 0.0]),
+            Err(ColorConversionError::NonFiniteColorComponent {
+                color_space: "prophoto-rgb",
+                index: 0
             })
         );
     }

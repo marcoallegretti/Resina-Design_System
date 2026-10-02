@@ -1,6 +1,8 @@
 use crate::{
-    ColorConversionError, hsl_to_srgb, hwb_to_srgb, linear_srgb_to_srgb, oklab_to_extended_srgb,
-    oklch_to_oklab, xyz_d50_to_extended_srgb, xyz_d65_to_extended_srgb,
+    ColorConversionError, a98_rgb_to_extended_srgb, display_p3_to_extended_srgb, hsl_to_srgb,
+    hwb_to_srgb, linear_srgb_to_srgb, oklab_to_extended_srgb, oklch_to_oklab,
+    prophoto_rgb_to_extended_srgb, rec2020_to_extended_srgb, xyz_d50_to_extended_srgb,
+    xyz_d65_to_extended_srgb,
 };
 use resina_tokens::{ValueError, validate_resolved_value};
 use serde::Serialize;
@@ -39,6 +41,8 @@ pub enum ColorFallbackError {
     OutOfGamutDirectColor,
     XyzConversion(ColorConversionError),
     OutOfGamutXyz,
+    RgbConversion(ColorConversionError),
+    OutOfGamutRgb,
 }
 
 impl fmt::Display for ColorFallbackError {
@@ -66,6 +70,8 @@ impl fmt::Display for ColorFallbackError {
             }
             Self::XyzConversion(error) => write!(formatter, "XYZ conversion failed: {error}"),
             Self::OutOfGamutXyz => formatter.write_str("XYZ color converts outside the sRGB gamut"),
+            Self::RgbConversion(error) => write!(formatter, "RGB conversion failed: {error}"),
+            Self::OutOfGamutRgb => formatter.write_str("RGB color converts outside the sRGB gamut"),
         }
     }
 }
@@ -145,6 +151,25 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
             }
             .map_err(ColorFallbackError::XyzConversion)?;
             portable_components(converted, ColorFallbackError::OutOfGamutXyz)?
+        }
+        (None, None)
+            if matches!(
+                value["colorSpace"].as_str(),
+                Some("display-p3" | "a98-rgb" | "prophoto-rgb" | "rec2020")
+            ) =>
+        {
+            let Some(source) = numeric_components else {
+                return Err(ColorFallbackError::MissingHexFallback);
+            };
+            let converted = match value["colorSpace"].as_str().unwrap() {
+                "display-p3" => display_p3_to_extended_srgb(source),
+                "a98-rgb" => a98_rgb_to_extended_srgb(source),
+                "prophoto-rgb" => prophoto_rgb_to_extended_srgb(source),
+                "rec2020" => rec2020_to_extended_srgb(source),
+                _ => unreachable!(),
+            }
+            .map_err(ColorFallbackError::RgbConversion)?;
+            portable_components(converted, ColorFallbackError::OutOfGamutRgb)?
         }
         (None, None) => return Err(ColorFallbackError::MissingHexFallback),
     };
@@ -228,6 +253,8 @@ mod tests {
                     ColorFallbackError::OutOfGamutDirectColor => "OutOfGamutDirectColor",
                     ColorFallbackError::XyzConversion(_) => "XyzConversion",
                     ColorFallbackError::OutOfGamutXyz => "OutOfGamutXyz",
+                    ColorFallbackError::RgbConversion(_) => "RgbConversion",
+                    ColorFallbackError::OutOfGamutRgb => "OutOfGamutRgb",
                 };
                 assert_eq!(
                     kind,

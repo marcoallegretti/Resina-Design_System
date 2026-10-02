@@ -1,0 +1,17 @@
+[
+  {"name": "Display-P3 neutral", "space": "display-p3", "rgb": [0.5, 0.5, 0.5], "extendedSrgb": [0.5, 0.5, 0.5]},
+  {"name": "Display-P3 chromatic in gamut", "space": "display-p3", "rgb": [0.2, 0.4, 0.6], "extendedSrgb": [0.10405649654579477, 0.40593247414535527, 0.617001953240082]},
+  {"name": "A98 RGB neutral uses its transfer curve", "space": "a98-rgb", "rgb": [0.5, 0.5, 0.5], "extendedSrgb": [0.5039928957642429, 0.5039928957642428, 0.5039928957642429]},
+  {"name": "A98 RGB chromatic in gamut", "space": "a98-rgb", "rgb": [0.4, 0.5, 0.6], "extendedSrgb": [0.3486206111848542, 0.5039928957642428, 0.6095250552607577]},
+  {"name": "ProPhoto RGB neutral adapts D50 to D65", "space": "prophoto-rgb", "rgb": [0.5, 0.5, 0.5], "extendedSrgb": [0.572306753163935, 0.5723067531639353, 0.5723067531639353]},
+  {"name": "ProPhoto RGB linear transfer boundary", "space": "prophoto-rgb", "rgb": [0.03125, 0.03125, 0.03125], "extendedSrgb": [0.025234374999999986, 0.025234374999999996, 0.025234374999999993]},
+  {"name": "ProPhoto RGB chromatic in gamut", "space": "prophoto-rgb", "rgb": [0.4, 0.5, 0.6], "extendedSrgb": [0.2710227747168508, 0.5913872976724874, 0.6782144113456858]},
+  {"name": "Rec 2020 neutral uses its transfer curve", "space": "rec2020", "rgb": [0.5, 0.5, 0.5], "extendedSrgb": [0.47249999999999986, 0.4725, 0.4725]},
+  {"name": "Rec 2020 chromatic in gamut", "space": "rec2020", "rgb": [0.4, 0.5, 0.6], "extendedSrgb": [0.2513974494638926, 0.4827051573715904, 0.5902140947276874]},
+  {"name": "Display-P3 red remains extended", "space": "display-p3", "rgb": [1, 0, 0], "extendedSrgb": [1.0930663624351615, -0.22674197356975417, -0.15013458093711954]},
+  {"name": "A98 RGB green remains extended", "space": "a98-rgb", "rgb": [0, 1, 0], "extendedSrgb": [-0.6639500934783572, 0.9999999999999999, -0.2291614997207282]},
+  {"name": "Display-P3 range is enforced", "space": "display-p3", "rgb": [-0.1, 0, 0], "error": "OutOfRangeColorComponent", "index": 0},
+  {"name": "A98 RGB range is enforced", "space": "a98-rgb", "rgb": [0, 1.1, 0], "error": "OutOfRangeColorComponent", "index": 1},
+  {"name": "ProPhoto RGB range is enforced", "space": "prophoto-rgb", "rgb": [0, 0, 1.1], "error": "OutOfRangeColorComponent", "index": 2},
+  {"name": "Rec 2020 range is enforced", "space": "rec2020", "rgb": [-0.1, 0, 0], "error": "OutOfRangeColorComponent", "index": 0}
+]
