@@ -362,7 +362,7 @@ fn numeric_lab_spaces_resolve_without_authored_hex() {
                 && vector["value"].get("hex").is_none()
         })
         .collect();
-    assert_eq!(cases.len(), 2);
+    assert_eq!(cases.len(), 3);
     for vector in cases {
         let source_color = &vector["value"];
         let mut request: Value = serde_json::from_str(SOURCE).unwrap();

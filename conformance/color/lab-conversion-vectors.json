@@ -1,14 +1,20 @@
 [
   {"name":"Lab black","space":"lab","components":[0,0,0],"extendedSrgb":[0,0,0]},
+  {"name":"Lab low-light linear branch","space":"lab","components":[4,0,0],"extendedSrgb":[0.05528459696026471,0.055284596960264686,0.05528459696026473]},
+  {"name":"Lab lightness branch boundary","space":"lab","components":[8,0,0],"extendedSrgb":[0.09221227532364076,0.09221227532364076,0.09221227532364079]},
   {"name":"Lab D50 neutral","space":"lab","components":[50,0,0],"extendedSrgb":[0.46632660928353703,0.46632660928353725,0.46632660928353725]},
   {"name":"Lab white","space":"lab","components":[100,0,0],"extendedSrgb":[1,1,1]},
   {"name":"Lab chromatic","space":"lab","components":[50,20,-30],"extendedSrgb":[0.5211546420044167,0.42365695312687185,0.6685103406759236]},
   {"name":"Lab extended sRGB","space":"lab","components":[50,100,100],"extendedSrgb":[1.034328908101596,-0.30642311466637373,-0.15550733538157152]},
+  {"name":"Lab low X and Z with higher lightness","space":"lab","components":[50,-100,100],"extendedSrgb":[-0.4134773087117793,0.5885055819580672,-0.24515776708307574]},
   {"name":"Lab lightness below range","space":"lab","components":[-1,0,0],"error":"OutOfRangeColorComponent","index":0},
   {"name":"Lab lightness above range","space":"lab","components":[101,0,0],"error":"OutOfRangeColorComponent","index":0},
   {"name":"LCH hue","space":"lch","components":[60,20,45],"lab":[60,14.142135623730951,14.14213562373095],"extendedSrgb":[0.6866142629186258,0.5302326947179651,0.47227125451739377]},
   {"name":"LCH zero chroma","space":"lch","components":[50,0,270],"lab":[50,0,0],"extendedSrgb":[0.46632660928353703,0.46632660928353725,0.46632660928353725]},
+  {"name":"LCH third quadrant","space":"lch","components":[50,20,210],"lab":[50,-17.32050807568877,-10.000000000000002],"extendedSrgb":[0.28736903199711145,0.5015802260107264,0.5305271197646985]},
   {"name":"LCH extended sRGB","space":"lch","components":[50,100,0],"lab":[50,100,0],"extendedSrgb":[1.000759074175327,-0.29571018494051404,0.48783773129428404]},
   {"name":"LCH negative chroma","space":"lch","components":[50,-1,0],"error":"OutOfRangeColorComponent","index":1},
+  {"name":"LCH lightness above range","space":"lch","components":[101,20,90],"error":"OutOfRangeColorComponent","index":0},
+  {"name":"LCH negative hue","space":"lch","components":[50,20,-1],"error":"OutOfRangeColorComponent","index":2},
   {"name":"LCH hue at upper boundary","space":"lch","components":[50,20,360],"error":"OutOfRangeColorComponent","index":2}
 ]
