@@ -9,7 +9,10 @@ use resina_model::{
     ColorAssignments, ColorRole, FrostPigment, MaterialAssignments, MaterialFamily, MaterialRole,
     OpaqueColorAssignments, SpatialAssignments, SpatialRole, TypographyAssignments,
 };
-use resina_tokens::{DocumentError, ResolvedToken, parse_token_document, resolve_token_document};
+use resina_tokens::{
+    DocumentError, ResolvedToken, ResolverModuleError, parse_token_document,
+    resolve_resolver_module_source, resolve_token_document,
+};
 use serde::Deserialize;
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
@@ -18,7 +21,9 @@ use std::{collections::BTreeMap, fmt};
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub(crate) struct ThemeSource {
     pub(crate) schema_version: String,
-    pub(crate) tokens: Value,
+    pub(crate) tokens: Option<Value>,
+    pub(crate) token_resolver: Option<Value>,
+    pub(crate) token_input: Option<Value>,
     pub(crate) material_assignments: MaterialAssignments,
     pub(crate) frost_pigment: FrostPigment,
     pub(crate) color_assignments: ColorAssignments,
@@ -43,7 +48,9 @@ pub enum ThemeCompilationError {
     Parse(serde_json::Error),
     Source(serde_json::Error),
     UnsupportedVersion,
+    InvalidTokenSource,
     Tokens(Vec<DocumentError>),
+    Resolver(ResolverModuleError),
     Bindings(Vec<HeadlessBindingError>),
 }
 
@@ -53,6 +60,9 @@ impl fmt::Display for ThemeCompilationError {
             Self::Parse(error) => write!(formatter, "theme source parse failed: {error}"),
             Self::Source(error) => write!(formatter, "invalid theme source: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::InvalidTokenSource => {
+                formatter.write_str("theme needs either tokens or tokenResolver with tokenInput")
+            }
             Self::Tokens(errors) => {
                 formatter.write_str("theme token resolution failed")?;
                 for error in errors {
@@ -67,6 +77,7 @@ impl fmt::Display for ThemeCompilationError {
                 }
                 Ok(())
             }
+            Self::Resolver(error) => write!(formatter, "theme token composition failed: {error}"),
         }
     }
 }
@@ -74,11 +85,21 @@ impl fmt::Display for ThemeCompilationError {
 impl std::error::Error for ThemeCompilationError {}
 
 pub fn compile_theme_source(source: &str) -> Result<CompiledTheme, ThemeCompilationError> {
-    let document = parse_token_document(source).map_err(ThemeCompilationError::Parse)?;
-    compile_theme_document(document)
+    compile_theme_source_with_sources(source, &BTreeMap::new())
 }
 
-fn compile_theme_document(document: Value) -> Result<CompiledTheme, ThemeCompilationError> {
+pub fn compile_theme_source_with_sources(
+    source: &str,
+    external_sources: &BTreeMap<String, String>,
+) -> Result<CompiledTheme, ThemeCompilationError> {
+    let document = parse_token_document(source).map_err(ThemeCompilationError::Parse)?;
+    compile_theme_document(document, external_sources)
+}
+
+fn compile_theme_document(
+    document: Value,
+    external_sources: &BTreeMap<String, String>,
+) -> Result<CompiledTheme, ThemeCompilationError> {
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)
@@ -88,15 +109,34 @@ fn compile_theme_document(document: Value) -> Result<CompiledTheme, ThemeCompila
     }
     let source: ThemeSource =
         serde_json::from_value(document).map_err(ThemeCompilationError::Source)?;
-    compile_theme(source, 1.0)
+    compile_theme_with_sources(source, 1.0, external_sources)
 }
 
 pub(crate) fn compile_theme(
     source: ThemeSource,
     text_scale: f64,
 ) -> Result<CompiledTheme, ThemeCompilationError> {
+    compile_theme_with_sources(source, text_scale, &BTreeMap::new())
+}
+
+fn compile_theme_with_sources(
+    source: ThemeSource,
+    text_scale: f64,
+    external_sources: &BTreeMap<String, String>,
+) -> Result<CompiledTheme, ThemeCompilationError> {
     debug_assert_eq!(source.schema_version, "0.1.0");
-    let tokens = resolve_token_document(&source.tokens).map_err(ThemeCompilationError::Tokens)?;
+    let tokens = match (&source.tokens, &source.token_resolver, &source.token_input) {
+        (Some(tokens), None, None) => {
+            resolve_token_document(tokens).map_err(ThemeCompilationError::Tokens)?
+        }
+        (None, Some(resolver), Some(input)) => resolve_resolver_module_source(
+            &resolver.to_string(),
+            &input.to_string(),
+            external_sources,
+        )
+        .map_err(ThemeCompilationError::Resolver)?,
+        _ => return Err(ThemeCompilationError::InvalidTokenSource),
+    };
     let colors = resolve_semantic_colors(&source.color_assignments, &tokens);
     let color_fallbacks = colors.as_ref().ok().map(resolve_semantic_color_fallbacks);
     let opaque_color_fallbacks = colors.as_ref().ok().map(|colors| {
@@ -194,6 +234,17 @@ mod tests {
     const EXPECTED: &str =
         include_str!("../../../../conformance/headless/expected-resolution.json");
 
+    fn resolver_backed_inline_source() -> Value {
+        let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+        let tokens = source.as_object_mut().unwrap().remove("tokens").unwrap();
+        source["tokenResolver"] = json!({
+            "version": "2025.10",
+            "resolutionOrder": [{"type": "set", "name": "theme", "sources": [tokens]}]
+        });
+        source["tokenInput"] = json!({});
+        source
+    }
+
     #[test]
     fn compiled_theme_matches_headless_resolution_across_environments() {
         let theme = compile_theme_source(SOURCE).unwrap();
@@ -260,10 +311,97 @@ mod tests {
     }
 
     #[test]
+    fn resolver_backed_theme_uses_authored_foundation_tokens() {
+        let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+        let mut theme_tokens = source.as_object_mut().unwrap().remove("tokens").unwrap();
+        theme_tokens.as_object_mut().unwrap().remove("space");
+        theme_tokens["type"].as_object_mut().unwrap().remove("size");
+        source["tokenResolver"] = json!({
+            "version": "2025.10",
+            "sets": {
+                "foundation": {"sources": [{"$ref": "foundation.json"}]},
+                "theme": {"sources": [theme_tokens]}
+            },
+            "resolutionOrder": [
+                {"$ref": "#/sets/foundation"},
+                {"$ref": "#/sets/theme"}
+            ]
+        });
+        source["tokenInput"] = json!({});
+        for path in source["spatialAssignments"]["roles"]
+            .as_object_mut()
+            .unwrap()
+            .values_mut()
+        {
+            *path = json!("space.4");
+        }
+        for role in source["typographyAssignments"]["roles"]
+            .as_object_mut()
+            .unwrap()
+            .values_mut()
+        {
+            role["fontSize"] = json!("type.size.4");
+        }
+        let foundation = include_str!("../../../../tokens/foundation.json");
+        let external = BTreeMap::from([("foundation.json".into(), foundation.into())]);
+        let theme = compile_theme_source_with_sources(&source.to_string(), &external).unwrap();
+        let request: Value = serde_json::from_str(REQUEST).unwrap();
+        let environment: EnvironmentSnapshot =
+            serde_json::from_value(request["environment"].clone()).unwrap();
+        let result = theme.resolve(&environment).unwrap();
+        assert_eq!(
+            result.space()[&SpatialRole::ControlInline],
+            json!({"value": 16, "unit": "px"})
+        );
+        assert_eq!(
+            result.typography()[&resina_model::TypographyRole::Body].font_size(),
+            44.0
+        );
+        assert!(matches!(
+            compile_theme_source_with_sources(&source.to_string(), &BTreeMap::new()),
+            Err(ThemeCompilationError::Resolver(_))
+        ));
+    }
+
+    #[test]
+    fn inline_resolver_backed_theme_matches_embedded_token_theme() {
+        let source = resolver_backed_inline_source();
+        let original = compile_theme_source(SOURCE).unwrap();
+        let composed = compile_theme_source(&source.to_string()).unwrap();
+        let request: Value = serde_json::from_str(REQUEST).unwrap();
+        let environment: EnvironmentSnapshot =
+            serde_json::from_value(request["environment"].clone()).unwrap();
+        assert_eq!(
+            serde_json::to_value(original.resolve(&environment).unwrap()).unwrap(),
+            serde_json::to_value(composed.resolve(&environment).unwrap()).unwrap()
+        );
+    }
+
+    #[test]
+    fn theme_token_source_variants_are_exclusive() {
+        let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+        source["tokenResolver"] = json!({"version": "2025.10", "resolutionOrder": []});
+        source["tokenInput"] = json!({});
+        assert!(matches!(
+            compile_theme_source(&source.to_string()),
+            Err(ThemeCompilationError::InvalidTokenSource)
+        ));
+        source.as_object_mut().unwrap().remove("tokens");
+        source.as_object_mut().unwrap().remove("tokenInput");
+        assert!(matches!(
+            compile_theme_source(&source.to_string()),
+            Err(ThemeCompilationError::InvalidTokenSource)
+        ));
+    }
+
+    #[test]
     fn theme_source_conformance_cases() {
         let cases: Vec<Value> = serde_json::from_str(CASES).unwrap();
         for case in cases {
             let mut source = SOURCE.replace("\r\n", "\n");
+            if case["sourceVariant"] == "resolverBackedInline" {
+                source = resolver_backed_inline_source().to_string();
+            }
             if let Some(changes) = case.get("sourceChanges") {
                 let mut document: Value = serde_json::from_str(&source).unwrap();
                 for change in changes.as_array().unwrap() {

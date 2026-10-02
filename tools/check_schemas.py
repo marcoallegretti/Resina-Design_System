@@ -173,16 +173,25 @@ def main():
     theme_case_schema = validator_for("schemas/theme-source-case.schema.json")
     theme_cases = load_json(ROOT / "conformance/themes/source-cases.json")
     theme_case_names = set()
+    resolver_theme = copy.deepcopy(theme_source)
+    embedded_tokens = resolver_theme.pop("tokens")
+    resolver_theme["tokenResolver"] = {
+        "version": "2025.10",
+        "resolutionOrder": [{"type": "set", "name": "theme", "sources": [embedded_tokens]}],
+    }
+    resolver_theme["tokenInput"] = {}
     for case in theme_cases:
         check_case(theme_case_schema, "theme source case", case, True)
         if case["name"] in theme_case_names:
             raise ValueError(f"duplicate theme source case name: {case['name']}")
         theme_case_names.add(case["name"])
+        base = resolver_theme if case.get("sourceVariant") == "resolverBackedInline" else theme_source
+        base_text = json.dumps(base, ensure_ascii=False) if base is resolver_theme else theme_source_text
         if "sourceReplace" in case:
             replacement = case["sourceReplace"]
-            if theme_source_text.count(replacement["find"]) != 1:
+            if base_text.count(replacement["find"]) != 1:
                 raise ValueError(f"theme source replacement must match exactly once: {case['name']}")
-            source = theme_source_text.replace(replacement["find"], replacement["with"], 1)
+            source = base_text.replace(replacement["find"], replacement["with"], 1)
             try:
                 document = parse_json(source, case["name"])
             except ValueError:
@@ -190,8 +199,19 @@ def main():
                     raise AssertionError(f"{case['name']}: source unexpectedly failed to parse")
                 continue
         else:
-            document = apply_changes(theme_source, case.get("sourceChanges", []))
+            document = apply_changes(base, case.get("sourceChanges", []))
         check_case(theme_schema, f"theme source: {case['name']}", document, case["schemaValid"])
+
+    check_case(theme_schema, "resolver-backed theme source", resolver_theme, True)
+    missing_input = copy.deepcopy(resolver_theme)
+    del missing_input["tokenInput"]
+    check_case(theme_schema, "resolver-backed theme missing input", missing_input, False)
+    ambiguous_source = copy.deepcopy(resolver_theme)
+    ambiguous_source["tokens"] = embedded_tokens
+    check_case(theme_schema, "ambiguous theme token source", ambiguous_source, False)
+    invalid_input = copy.deepcopy(resolver_theme)
+    invalid_input["tokenInput"] = {"theme": True}
+    check_case(theme_schema, "non-string resolver input", invalid_input, False)
 
     backend_case_schema = validator_for("schemas/headless-conformance-case.schema.json")
     backend_cases = load_json(ROOT / "conformance/headless/backend-cases.json")

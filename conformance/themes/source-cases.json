@@ -5,6 +5,30 @@
     "schemaValid": true
   },
   {
+    "name": "inline resolver-backed theme source compiles",
+    "outcome": "valid",
+    "schemaValid": true,
+    "sourceVariant": "resolverBackedInline"
+  },
+  {
+    "name": "unsupported resolver module version prevents theme compilation",
+    "outcome": "invalid",
+    "schemaValid": true,
+    "sourceVariant": "resolverBackedInline",
+    "sourceChanges": [
+      {"path": "/tokenResolver/version", "value": "2024.01"}
+    ]
+  },
+  {
+    "name": "unknown resolver context prevents theme compilation",
+    "outcome": "invalid",
+    "schemaValid": true,
+    "sourceVariant": "resolverBackedInline",
+    "sourceChanges": [
+      {"path": "/tokenInput", "value": {"unknown": "x"}}
+    ]
+  },
+  {
     "name": "unsupported theme source version is rejected",
     "outcome": "invalid",
     "schemaValid": false,

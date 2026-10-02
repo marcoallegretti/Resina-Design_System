@@ -9,7 +9,7 @@ use resina_model::{
     MaterialFamily, MaterialRole, OpaqueColorAssignments, SpatialAssignments, SpatialRole,
     TypographyAssignments, TypographyRole,
 };
-use resina_tokens::{DocumentError, parse_token_document};
+use resina_tokens::{DocumentError, ResolverModuleError, parse_token_document};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
@@ -107,7 +107,9 @@ pub enum HeadlessResolutionError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidThemeSource,
     Tokens(Vec<DocumentError>),
+    TokenResolver(ResolverModuleError),
     Bindings(Vec<HeadlessBindingError>),
 }
 
@@ -117,6 +119,9 @@ impl fmt::Display for HeadlessResolutionError {
             Self::Parse(error) => write!(formatter, "headless source parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid headless request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.3.0"),
+            Self::InvalidThemeSource => {
+                formatter.write_str("headless theme source construction failed")
+            }
             Self::Tokens(errors) => {
                 formatter.write_str("token resolution failed")?;
                 for error in errors {
@@ -124,6 +129,7 @@ impl fmt::Display for HeadlessResolutionError {
                 }
                 Ok(())
             }
+            Self::TokenResolver(error) => write!(formatter, "token composition failed: {error}"),
             Self::Bindings(errors) => {
                 formatter.write_str("semantic binding failed")?;
                 for error in errors {
@@ -160,7 +166,9 @@ pub(crate) fn resolve_headless_document(
     let environment = request.environment;
     let source = ThemeSource {
         schema_version: "0.1.0".to_owned(),
-        tokens: request.tokens,
+        tokens: Some(request.tokens),
+        token_resolver: None,
+        token_input: None,
         material_assignments: request.material_assignments,
         frost_pigment: request.frost_pigment,
         color_assignments: request.color_assignments,
@@ -172,7 +180,9 @@ pub(crate) fn resolve_headless_document(
         ThemeCompilationError::Parse(error) => HeadlessResolutionError::Parse(error),
         ThemeCompilationError::Source(error) => HeadlessResolutionError::Request(error),
         ThemeCompilationError::UnsupportedVersion => HeadlessResolutionError::UnsupportedVersion,
+        ThemeCompilationError::InvalidTokenSource => HeadlessResolutionError::InvalidThemeSource,
         ThemeCompilationError::Tokens(errors) => HeadlessResolutionError::Tokens(errors),
+        ThemeCompilationError::Resolver(error) => HeadlessResolutionError::TokenResolver(error),
         ThemeCompilationError::Bindings(errors) => HeadlessResolutionError::Bindings(errors),
     })?;
     theme.resolve(&environment).map_err(|errors| {

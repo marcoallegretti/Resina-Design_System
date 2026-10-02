@@ -4,10 +4,16 @@
   "title": "Resina Theme Source",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "tokens", "materialAssignments", "frostPigment", "colorAssignments", "opaqueColorAssignments", "spatialAssignments", "typographyAssignments"],
+  "required": ["schemaVersion", "materialAssignments", "frostPigment", "colorAssignments", "opaqueColorAssignments", "spatialAssignments", "typographyAssignments"],
+  "oneOf": [
+    {"required": ["tokens"], "not": {"anyOf": [{"required": ["tokenResolver"]}, {"required": ["tokenInput"]}]}},
+    {"required": ["tokenResolver", "tokenInput"], "not": {"required": ["tokens"]}}
+  ],
   "properties": {
     "schemaVersion": {"const": "0.1.0"},
     "tokens": {"type": "object"},
+    "tokenResolver": {"type": "object"},
+    "tokenInput": {"type": "object", "additionalProperties": {"type": "string"}},
     "materialAssignments": {"$ref": "urn:resina:schema:material-assignments:0.2.0"},
     "frostPigment": {"$ref": "urn:resina:schema:frost-pigment:0.1.0"},
     "colorAssignments": {"$ref": "urn:resina:schema:color-assignments:0.1.0"},

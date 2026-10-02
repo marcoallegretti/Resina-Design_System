@@ -1,0 +1,146 @@
+[
+  {
+    "name": "ordered sets replace whole tokens before aliases resolve",
+    "resolver": "{\"version\":\"2025.10\",\"sets\":{\"base\":{\"sources\":[{\"value\":{\"$type\":\"number\",\"$value\":1},\"alias\":{\"$type\":\"number\",\"$value\":\"{value}\"}},{\"value\":{\"$type\":\"number\",\"$value\":2}}]}},\"resolutionOrder\":[{\"$ref\":\"#/sets/base\"}]}",
+    "input": "{}",
+    "externalSources": {},
+    "expected": {"value": {"token_type": "number", "value": 2}, "alias": {"token_type": "number", "value": 2}}
+  },
+  {
+    "name": "modifier uses shared external foundation and selected context",
+    "resolver": "{\"version\":\"2025.10\",\"sets\":{\"foundation\":{\"sources\":[{\"$ref\":\"foundation.json\"}]}},\"modifiers\":{\"theme\":{\"contexts\":{\"light\":[{\"$ref\":\"light.json\"}],\"dark\":[{\"$ref\":\"dark.json\"}]},\"default\":\"light\"}},\"resolutionOrder\":[{\"$ref\":\"#/sets/foundation\"},{\"$ref\":\"#/modifiers/theme\"}]}",
+    "input": "{\"theme\":\"dark\"}",
+    "externalSources": {
+      "foundation.json": "{\"size\":{\"base\":{\"$type\":\"dimension\",\"$value\":{\"value\":16,\"unit\":\"px\"}}}}",
+      "light.json": "{\"size\":{\"chosen\":{\"$type\":\"dimension\",\"$value\":\"{size.base}\"}}}",
+      "dark.json": "{\"size\":{\"chosen\":{\"$type\":\"dimension\",\"$value\":\"{size.base}\"}}}"
+    },
+    "expected": {"size.base": {"token_type": "dimension", "value": {"value": 16, "unit": "px"}}, "size.chosen": {"token_type": "dimension", "value": {"value": 16, "unit": "px"}}}
+  },
+  {
+    "name": "default context and reusable local set",
+    "resolver": "{\"version\":\"2025.10\",\"sets\":{\"foundation\":{\"sources\":[{\"n\":{\"$type\":\"number\",\"$value\":3}}]}},\"modifiers\":{\"mode\":{\"contexts\":{\"base\":[{\"$ref\":\"#/sets/foundation\"}],\"other\":[]},\"default\":\"base\"}},\"resolutionOrder\":[{\"$ref\":\"#/modifiers/mode\"}]}",
+    "input": "{}",
+    "externalSources": {},
+    "expected": {"n": {"token_type": "number", "value": 3}}
+  },
+  {
+    "name": "unused context source is not parsed",
+    "resolver": "{\"version\":\"2025.10\",\"modifiers\":{\"theme\":{\"contexts\":{\"light\":[{\"$ref\":\"light.json\"}],\"dark\":[{\"n\":{\"$type\":\"number\",\"$value\":4}}]} }},\"resolutionOrder\":[{\"$ref\":\"#/modifiers/theme\"}]}",
+    "input": "{\"theme\":\"dark\"}",
+    "externalSources": {"light.json": "{\"n\":1,\"n\":2}"},
+    "expected": {"n": {"token_type": "number", "value": 4}}
+  },
+  {
+    "name": "source reference override replaces a whole token",
+    "resolver": "{\"version\":\"2025.10\",\"$defs\":{\"base\":{\"n\":{\"$type\":\"number\",\"$value\":1}}},\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"base\",\"sources\":[{\"$ref\":\"#/$defs/base\",\"n\":{\"$type\":\"number\",\"$value\":5}}]}]}",
+    "input": "{}",
+    "externalSources": {},
+    "expected": {"n": {"token_type": "number", "value": 5}}
+  },
+  {
+    "name": "group metadata replacement preserves unrelated children",
+    "resolver": "{\"version\":\"2025.10\",\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"base\",\"sources\":[{\"group\":{\"$type\":\"number\",\"a\":{\"$value\":1}}},{\"group\":{\"$description\":\"later\",\"b\":{\"$value\":2}}}]}]}",
+    "input": "{}",
+    "externalSources": {},
+    "expected": {"group.a": {"token_type": "number", "value": 1}, "group.b": {"token_type": "number", "value": 2}}
+  },
+  {
+    "name": "invalid default is rejected even with explicit input",
+    "resolver": "{\"version\":\"2025.10\",\"modifiers\":{\"theme\":{\"contexts\":{\"light\":[],\"dark\":[]},\"default\":\"missing\"}},\"resolutionOrder\":[{\"$ref\":\"#/modifiers/theme\"}]}",
+    "input": "{\"theme\":\"dark\"}",
+    "externalSources": {},
+    "errorContains": "default missing is unknown"
+  },
+  {
+    "name": "unknown modifier input is rejected",
+    "resolver": "{\"version\":\"2025.10\",\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"empty\",\"sources\":[]}]}",
+    "input": "{\"unknown\":\"x\"}",
+    "externalSources": {},
+    "errorContains": "unknown modifier input"
+  },
+  {
+    "name": "non-string modifier input is rejected",
+    "resolver": "{\"version\":\"2025.10\",\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"empty\",\"sources\":[]}]}",
+    "input": "{\"mode\":true}",
+    "externalSources": {},
+    "errorContains": "must be a string"
+  },
+  {
+    "name": "duplicate resolver member is rejected before composition",
+    "resolver": "{\"version\":\"2025.10\",\"version\":\"2025.10\",\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"empty\",\"sources\":[]}]}",
+    "input": "{}",
+    "externalSources": {},
+    "errorContains": "duplicate"
+  },
+  {
+    "name": "missing external source is diagnosed",
+    "resolver": "{\"version\":\"2025.10\",\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"base\",\"sources\":[{\"$ref\":\"missing.json\"}]}]}",
+    "input": "{}",
+    "externalSources": {},
+    "errorContains": "missing source"
+  },
+  {
+    "name": "circular local set reference is rejected",
+    "resolver": "{\"version\":\"2025.10\",\"sets\":{\"a\":{\"sources\":[{\"$ref\":\"#/sets/b\"}]},\"b\":{\"sources\":[{\"$ref\":\"#/sets/a\"}]}},\"resolutionOrder\":[{\"$ref\":\"#/sets/a\"}]}",
+    "input": "{}",
+    "externalSources": {},
+    "errorContains": "circular"
+  },
+  {
+    "name": "set source reference uses shallow sources override",
+    "resolver": "{\"version\":\"2025.10\",\"sets\":{\"base\":{\"sources\":[{\"n\":{\"$type\":\"number\",\"$value\":1}}]}},\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"override\",\"sources\":[{\"$ref\":\"#/sets/base\",\"sources\":[{\"n\":{\"$type\":\"number\",\"$value\":2}}]}]}]}",
+    "input": "{}",
+    "externalSources": {},
+    "expected": {"n": {"token_type": "number", "value": 2}}
+  },
+  {
+    "name": "escaped set pointer resolves its literal name",
+    "resolver": "{\"version\":\"2025.10\",\"sets\":{\"a/b\":{\"sources\":[{\"n\":{\"$type\":\"number\",\"$value\":6}}]}},\"resolutionOrder\":[{\"$ref\":\"#/sets/a~1b\"}]}",
+    "input": "{}",
+    "externalSources": {},
+    "expected": {"n": {"token_type": "number", "value": 6}}
+  },
+  {
+    "name": "two modifiers respect resolution order",
+    "resolver": "{\"version\":\"2025.10\",\"modifiers\":{\"theme\":{\"contexts\":{\"light\":[{\"n\":{\"$type\":\"number\",\"$value\":1}}],\"dark\":[]}},\"density\":{\"contexts\":{\"compact\":[{\"n\":{\"$type\":\"number\",\"$value\":2}}],\"roomy\":[]}}},\"resolutionOrder\":[{\"$ref\":\"#/modifiers/theme\"},{\"$ref\":\"#/modifiers/density\"}]}",
+    "input": "{\"theme\":\"light\",\"density\":\"compact\"}",
+    "externalSources": {},
+    "expected": {"n": {"token_type": "number", "value": 2}}
+  },
+  {
+    "name": "indirect local reference cycle is rejected",
+    "resolver": "{\"version\":\"2025.10\",\"$defs\":{\"a\":{\"$ref\":\"#/$defs/b\"},\"b\":{\"$ref\":\"#/$defs/a\"}},\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"base\",\"sources\":[{\"$ref\":\"#/$defs/a\"}]}]}",
+    "input": "{}",
+    "externalSources": {},
+    "errorContains": "circular"
+  },
+  {
+    "name": "unused malformed reference object is rejected",
+    "resolver": "{\"version\":\"2025.10\",\"modifiers\":{\"theme\":{\"contexts\":{\"light\":[{\"$ref\":42}],\"dark\":[]}}},\"resolutionOrder\":[{\"$ref\":\"#/modifiers/theme\"}]}",
+    "input": "{\"theme\":\"dark\"}",
+    "externalSources": {},
+    "errorContains": "token source $ref must be a string"
+  },
+  {
+    "name": "modifier reference override selects effective contexts",
+    "resolver": "{\"version\":\"2025.10\",\"modifiers\":{\"theme\":{\"contexts\":{\"light\":[{\"n\":{\"$type\":\"number\",\"$value\":1}}],\"dark\":[]}}},\"resolutionOrder\":[{\"$ref\":\"#/modifiers/theme\",\"contexts\":{\"high\":[{\"n\":{\"$type\":\"number\",\"$value\":9}}],\"low\":[]}}]}",
+    "input": "{\"theme\":\"high\"}",
+    "externalSources": {},
+    "expected": {"n": {"token_type": "number", "value": 9}}
+  },
+  {
+    "name": "invalid selected external token file cannot be masked",
+    "resolver": "{\"version\":\"2025.10\",\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"base\",\"sources\":[{\"$ref\":\"invalid.json\"},{\"n\":{\"$type\":\"number\",\"$value\":2}}]}]}",
+    "input": "{}",
+    "externalSources": {"invalid.json": "{\"n\":\"not a token\"}"},
+    "errorContains": "invalid external token source"
+  },
+  {
+    "name": "composed document still needs valid DTCG tokens",
+    "resolver": "{\"version\":\"2025.10\",\"resolutionOrder\":[{\"type\":\"set\",\"name\":\"base\",\"sources\":[{\"n\":{\"$type\":\"number\",\"$value\":\"invalid\"}}]}]}",
+    "input": "{}",
+    "externalSources": {},
+    "errorContains": "composed token document is invalid"
+  }
+]

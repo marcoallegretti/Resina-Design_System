@@ -29,7 +29,9 @@ pub use scenario::{SurfaceScenarioError, resolve_surface_scenario_source};
 mod target;
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 mod theme;
-pub use theme::{CompiledTheme, ThemeCompilationError, compile_theme_source};
+pub use theme::{
+    CompiledTheme, ThemeCompilationError, compile_theme_source, compile_theme_source_with_sources,
+};
 mod typography;
 pub use typography::{
     PxDimension, ResolvedTypography, TypographyResolutionError, TypographyResolutionErrorKind,
