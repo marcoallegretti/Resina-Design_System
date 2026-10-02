@@ -174,10 +174,13 @@ fn validate(kind: &str, value: &Value, path: &str) -> Result<(), ValueError> {
         "dimension" => validate_measure(value, path, &["px", "rem"]),
         "duration" => validate_measure(value, path, &["ms", "s"]),
         "fontFamily" => match value {
-            Value::String(_) => Ok(()),
+            Value::String(name) => require(!name.trim().is_empty(), path),
             Value::Array(items) if !items.is_empty() => {
                 for (index, item) in items.iter().enumerate() {
-                    require(item.is_string(), &format!("{path}/{index}"))?;
+                    require(
+                        item.as_str().is_some_and(|name| !name.trim().is_empty()),
+                        &format!("{path}/{index}"),
+                    )?;
                 }
                 Ok(())
             }

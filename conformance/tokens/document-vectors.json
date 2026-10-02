@@ -46,6 +46,12 @@
     "location": "#/alias/$value"
   },
   {
+    "name": "empty font family in fallback list invalidates document",
+    "document": {"body": {"$type": "fontFamily", "$value": ["Inter", ""]}, "alias": {"$type": "fontFamily", "$value": "{body}"}},
+    "error": "InvalidValue",
+    "location": "#/body/$value/1"
+  },
+  {
     "name": "pointer alias with incompatible declared type",
     "document": {"base": {"$type": "fontWeight", "$value": 400}, "alias": {"$type": "number", "$ref": "#/base/$value"}},
     "error": "ReferenceTypeMismatch",
