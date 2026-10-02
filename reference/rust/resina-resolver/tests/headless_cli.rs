@@ -349,6 +349,56 @@ fn numeric_predefined_rgb_spaces_resolve_without_authored_hex() {
 }
 
 #[test]
+fn numeric_lab_spaces_resolve_without_authored_hex() {
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/color/srgb-fallback-vectors.json"
+    ))
+    .unwrap();
+    let cases: Vec<&Value> = vectors
+        .iter()
+        .filter(|vector| {
+            matches!(vector["value"]["colorSpace"].as_str(), Some("lab" | "lch"))
+                && vector.get("expected").is_some()
+                && vector["value"].get("hex").is_none()
+        })
+        .collect();
+    assert_eq!(cases.len(), 2);
+    for vector in cases {
+        let source_color = &vector["value"];
+        let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+        request["tokens"]["palette"]["lab"] = json!({"$value": source_color});
+        request["colorAssignments"]["roles"]["focus"] = json!("palette.lab");
+        let output = run_stdin(&request.to_string());
+        assert!(
+            output.status.success(),
+            "{}: {}",
+            vector["name"],
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(
+            result["colors"]["focus"], *source_color,
+            "{}",
+            vector["name"]
+        );
+        let actual = &result["colorFallbacks"]["focus"];
+        let expected = &vector["expected"];
+        assert_eq!(actual["colorSpace"], expected["colorSpace"]);
+        assert_eq!(actual["alpha"], expected["alpha"]);
+        for index in 0..3 {
+            assert!(
+                (actual["components"][index].as_f64().unwrap()
+                    - expected["components"][index].as_f64().unwrap())
+                .abs()
+                    < 1e-12,
+                "{}: channel {index}",
+                vector["name"]
+            );
+        }
+    }
+}
+
+#[test]
 fn usage_error_has_distinct_exit_status() {
     let output = Command::new(env!("CARGO_BIN_EXE_resina-headless"))
         .output()

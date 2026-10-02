@@ -283,6 +283,7 @@ def main():
     for filename, component in (
         ("xyz-conversion-vectors.json", "xyz"),
         ("rgb-conversion-vectors.json", "rgb"),
+        ("lab-conversion-vectors.json", "components"),
     ):
         for vector in load_json(ROOT / "conformance/color" / filename):
             source = {"colorSpace": vector["space"], "components": vector[component]}

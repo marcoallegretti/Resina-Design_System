@@ -1,8 +1,8 @@
 use crate::{
     ColorConversionError, a98_rgb_to_extended_srgb, display_p3_to_extended_srgb, hsl_to_srgb,
-    hwb_to_srgb, linear_srgb_to_srgb, oklab_to_extended_srgb, oklch_to_oklab,
-    prophoto_rgb_to_extended_srgb, rec2020_to_extended_srgb, xyz_d50_to_extended_srgb,
-    xyz_d65_to_extended_srgb,
+    hwb_to_srgb, lab_to_extended_srgb, lch_to_lab, linear_srgb_to_srgb, oklab_to_extended_srgb,
+    oklch_to_oklab, prophoto_rgb_to_extended_srgb, rec2020_to_extended_srgb,
+    xyz_d50_to_extended_srgb, xyz_d65_to_extended_srgb,
 };
 use resina_tokens::{ValueError, validate_resolved_value};
 use serde::Serialize;
@@ -37,6 +37,10 @@ pub enum ColorFallbackError {
     OutOfGamutOklab,
     OklchConversion(ColorConversionError),
     OutOfGamutOklch,
+    LabConversion(ColorConversionError),
+    OutOfGamutLab,
+    LchConversion(ColorConversionError),
+    OutOfGamutLch,
     DirectConversion(ColorConversionError),
     OutOfGamutDirectColor,
     XyzConversion(ColorConversionError),
@@ -64,6 +68,10 @@ impl fmt::Display for ColorFallbackError {
             Self::OutOfGamutOklch => {
                 formatter.write_str("Oklch color converts outside the sRGB gamut")
             }
+            Self::LabConversion(error) => write!(formatter, "Lab conversion failed: {error}"),
+            Self::OutOfGamutLab => formatter.write_str("Lab color converts outside the sRGB gamut"),
+            Self::LchConversion(error) => write!(formatter, "LCH conversion failed: {error}"),
+            Self::OutOfGamutLch => formatter.write_str("LCH color converts outside the sRGB gamut"),
             Self::DirectConversion(error) => write!(formatter, "color conversion failed: {error}"),
             Self::OutOfGamutDirectColor => {
                 formatter.write_str("direct color conversion outside the sRGB gamut")
@@ -119,6 +127,23 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
                 ColorFallbackError::OutOfGamutOklab
             } else {
                 ColorFallbackError::OutOfGamutOklch
+            };
+            portable_components(converted, gamut_error)?
+        }
+        (None, None) if value["colorSpace"] == "lab" || value["colorSpace"] == "lch" => {
+            let Some(source) = numeric_components else {
+                return Err(ColorFallbackError::MissingHexFallback);
+            };
+            let converted = if value["colorSpace"] == "lab" {
+                lab_to_extended_srgb(source).map_err(ColorFallbackError::LabConversion)?
+            } else {
+                let lab = lch_to_lab(source).map_err(ColorFallbackError::LchConversion)?;
+                lab_to_extended_srgb(lab).map_err(ColorFallbackError::LchConversion)?
+            };
+            let gamut_error = if value["colorSpace"] == "lab" {
+                ColorFallbackError::OutOfGamutLab
+            } else {
+                ColorFallbackError::OutOfGamutLch
             };
             portable_components(converted, gamut_error)?
         }
@@ -249,6 +274,10 @@ mod tests {
                     ColorFallbackError::OutOfGamutOklab => "OutOfGamutOklab",
                     ColorFallbackError::OklchConversion(_) => "OklchConversion",
                     ColorFallbackError::OutOfGamutOklch => "OutOfGamutOklch",
+                    ColorFallbackError::LabConversion(_) => "LabConversion",
+                    ColorFallbackError::OutOfGamutLab => "OutOfGamutLab",
+                    ColorFallbackError::LchConversion(_) => "LchConversion",
+                    ColorFallbackError::OutOfGamutLch => "OutOfGamutLch",
                     ColorFallbackError::DirectConversion(_) => "DirectConversion",
                     ColorFallbackError::OutOfGamutDirectColor => "OutOfGamutDirectColor",
                     ColorFallbackError::XyzConversion(_) => "XyzConversion",

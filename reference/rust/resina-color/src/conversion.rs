@@ -206,6 +206,16 @@ const PERCENT_COMPONENT: ComponentRange = ComponentRange {
     maximum: 100.0,
     upper_exclusive: false,
 };
+const UNBOUNDED_COMPONENT: ComponentRange = ComponentRange {
+    minimum: f64::NEG_INFINITY,
+    maximum: f64::INFINITY,
+    upper_exclusive: false,
+};
+const NONNEGATIVE_COMPONENT: ComponentRange = ComponentRange {
+    minimum: 0.0,
+    maximum: f64::INFINITY,
+    upper_exclusive: false,
+};
 
 enum WhitePoint {
     D50,
@@ -274,8 +284,55 @@ pub fn xyz_d65_to_extended_srgb(xyz: [f64; 3]) -> Result<[f64; 3], ColorConversi
 
 pub fn xyz_d50_to_extended_srgb(xyz: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
     validate_components(xyz, "xyz-d50", [UNIT_COMPONENT; 3])?;
+    xyz_d50_unchecked_to_extended_srgb(xyz)
+}
+
+fn xyz_d50_unchecked_to_extended_srgb(xyz: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
     let adapted = transform(&D50_TO_D65, xyz);
     finite_result(transform(&XYZ_TO_SRGB, adapted).map(encode_extended_srgb_component))
+}
+
+pub fn lab_to_extended_srgb(lab: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(
+        lab,
+        "lab",
+        [PERCENT_COMPONENT, UNBOUNDED_COMPONENT, UNBOUNDED_COMPONENT],
+    )?;
+    let [lightness, a, b] = lab;
+    let kappa = 24389.0 / 27.0;
+    let epsilon = 216.0 / 24389.0;
+    let fy = (lightness + 16.0) / 116.0;
+    let fx = a / 500.0 + fy;
+    let fz = fy - b / 200.0;
+    let xyz = [
+        if fx.powi(3) > epsilon {
+            fx.powi(3)
+        } else {
+            (116.0 * fx - 16.0) / kappa
+        },
+        if lightness > kappa * epsilon {
+            fy.powi(3)
+        } else {
+            lightness / kappa
+        },
+        if fz.powi(3) > epsilon {
+            fz.powi(3)
+        } else {
+            (116.0 * fz - 16.0) / kappa
+        },
+    ];
+    let white = [0.3457 / 0.3585, 1.0, (1.0 - 0.3457 - 0.3585) / 0.3585];
+    xyz_d50_unchecked_to_extended_srgb([xyz[0] * white[0], xyz[1] * white[1], xyz[2] * white[2]])
+}
+
+pub fn lch_to_lab(lch: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(
+        lch,
+        "lch",
+        [PERCENT_COMPONENT, NONNEGATIVE_COMPONENT, HUE_COMPONENT],
+    )?;
+    let angle = lch[2].to_radians();
+    finite_result([lch[0], lch[1] * angle.cos(), lch[1] * angle.sin()])
 }
 
 pub fn display_p3_to_extended_srgb(rgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
@@ -594,6 +651,56 @@ mod tests {
     }
 
     #[test]
+    fn lab_conversion_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/lab-conversion-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let space = vector["space"].as_str().unwrap();
+            let source = components(&vector["components"]);
+            let lab = if space == "lch" {
+                let result = lch_to_lab(source);
+                if vector.get("error").is_some() {
+                    assert_eq!(
+                        result,
+                        Err(ColorConversionError::OutOfRangeColorComponent {
+                            color_space: "lch",
+                            index: vector["index"].as_u64().unwrap() as usize,
+                        }),
+                        "{}",
+                        vector["name"]
+                    );
+                    continue;
+                }
+                let lab = result.unwrap();
+                assert_close(lab, components(&vector["lab"]), &vector["name"]);
+                lab
+            } else {
+                source
+            };
+            let result = lab_to_extended_srgb(lab);
+            if vector.get("error").is_some() {
+                assert_eq!(
+                    result,
+                    Err(ColorConversionError::OutOfRangeColorComponent {
+                        color_space: "lab",
+                        index: vector["index"].as_u64().unwrap() as usize,
+                    }),
+                    "{}",
+                    vector["name"]
+                );
+            } else {
+                assert_close(
+                    result.unwrap(),
+                    components(&vector["extendedSrgb"]),
+                    &vector["name"],
+                );
+            }
+        }
+    }
+
+    #[test]
     fn direct_srgb_conversion_conformance_vectors() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
             "../../../../conformance/color/srgb-direct-conversion-vectors.json"
@@ -677,5 +784,23 @@ mod tests {
                 index: 0
             })
         );
+        assert_eq!(
+            lab_to_extended_srgb([50.0, f64::INFINITY, 0.0]),
+            Err(ColorConversionError::NonFiniteColorComponent {
+                color_space: "lab",
+                index: 1,
+            })
+        );
+        assert_eq!(
+            lch_to_lab([50.0, 0.0, f64::NAN]),
+            Err(ColorConversionError::NonFiniteColorComponent {
+                color_space: "lch",
+                index: 2,
+            })
+        );
+        assert!(matches!(
+            lab_to_extended_srgb([50.0, f64::MAX, 0.0]),
+            Err(ColorConversionError::NonFiniteResult { .. })
+        ));
     }
 }
