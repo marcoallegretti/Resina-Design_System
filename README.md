@@ -13,4 +13,6 @@ Run `cargo run -p resina-tokens --bin resina-token-resolve -- <path>` to validat
 
 Run `cargo run -p resina-resolver --bin resina-headless -- <path>` to resolve a [headless request](schemas/headless-resolution.schema.json) from a file, or use `-` for stdin. The command prints a complete semantic snapshot and emits no partial JSON on failure.
 
+Run `python tools/check_headless_backend.py -- <backend-command> -` to check any backend that implements the [headless command protocol](spec/32-headless-conformance.md) against the public result schema and conformance cases. Build the Rust `resina-headless` binary first to check the reference implementation through the same external boundary.
+
 Run `cargo run -p resina-resolver --bin resina-surface-bind -- <path>` to resolve a [surface scenario](schemas/surface-scenario.schema.json) from a file, or use `-` for stdin. The command prints one bound surface only when both semantic resolution and binding succeed. This result is not render-ready Resina IR.

@@ -1,0 +1,92 @@
+[
+  {"name":"baseline semantic resolution","outcome":"valid"},
+  {
+    "name":"high contrast and keyboard preserve other resolved roles",
+    "outcome":"valid",
+    "requestChanges":[
+      {"path":"/environment/accessibilityPreferences/highContrast","value":true},
+      {"path":"/environment/inputCapabilities","value":["keyboard"]}
+    ],
+    "expectedChanges":[
+      {"path":"/frostRepresentation","value":"opaqueDimensional"},
+      {"path":"/minimumHitTarget","value":{"minimumWidth":24,"minimumHeight":24}}
+    ]
+  },
+  {
+    "name":"full quality and shaped backdrop capabilities",
+    "outcome":"valid",
+    "requestChanges":[
+      {"path":"/environment/qualityPolicy","value":"full"},
+      {"path":"/environment/rendererCapabilities/backdropEffect","value":true},
+      {"path":"/environment/rendererCapabilities/backdropBlur","value":true},
+      {"path":"/environment/rendererCapabilities/shapedBackdrop","value":true}
+    ],
+    "expectedChanges":[{"path":"/frostRepresentation","value":"shapedBackdrop"}]
+  },
+  {
+    "name":"balanced quality keeps regular backdrop",
+    "outcome":"valid",
+    "requestChanges":[
+      {"path":"/environment/qualityPolicy","value":"balanced"},
+      {"path":"/environment/rendererCapabilities/backdropEffect","value":true},
+      {"path":"/environment/rendererCapabilities/backdropBlur","value":true},
+      {"path":"/environment/rendererCapabilities/shapedBackdrop","value":true}
+    ],
+    "expectedChanges":[{"path":"/frostRepresentation","value":"regularBackdrop"}]
+  },
+  {
+    "name":"reduced transparency overrides shaped backdrop",
+    "outcome":"valid",
+    "requestChanges":[
+      {"path":"/environment/qualityPolicy","value":"full"},
+      {"path":"/environment/accessibilityPreferences/reducedTransparency","value":true},
+      {"path":"/environment/rendererCapabilities/backdropEffect","value":true},
+      {"path":"/environment/rendererCapabilities/backdropBlur","value":true},
+      {"path":"/environment/rendererCapabilities/shapedBackdrop","value":true}
+    ],
+    "expectedChanges":[{"path":"/frostRepresentation","value":"opaqueDimensional"}]
+  },
+  {
+    "name":"backdrop flags cannot override missing translucency",
+    "outcome":"valid",
+    "requestChanges":[
+      {"path":"/environment/qualityPolicy","value":"full"},
+      {"path":"/environment/rendererCapabilities/translucentSurfaces","value":false},
+      {"path":"/environment/rendererCapabilities/backdropEffect","value":true},
+      {"path":"/environment/rendererCapabilities/backdropBlur","value":true},
+      {"path":"/environment/rendererCapabilities/shapedBackdrop","value":true}
+    ],
+    "expectedChanges":[{"path":"/frostRepresentation","value":"opaqueDimensional"}]
+  },
+  {
+    "name":"unknown semantic color token rejects the request",
+    "outcome":"invalid",
+    "requestChanges":[{"path":"/colorAssignments/roles/focus","value":"missing.color"}]
+  },
+  {
+    "name":"invalid DTCG dimension rejects the request",
+    "outcome":"invalid",
+    "requestChanges":[{"path":"/tokens/type/size/$value/unit","value":"em"}]
+  },
+  {
+    "name":"out-of-gamut source without fallback rejects the request",
+    "outcome":"invalid",
+    "requestChanges":[
+      {"path":"/tokens/palette/base/$value/colorSpace","value":"display-p3"},
+      {"path":"/tokens/palette/base/$value/components","value":[1,0,0]}
+    ]
+  },
+  {
+    "name":"duplicate input capability rejects the request",
+    "outcome":"invalid",
+    "requestChanges":[{"path":"/environment/inputCapabilities/0","value":"keyboard"}]
+  },
+  {
+    "name":"duplicate JSON member rejects the source",
+    "outcome":"invalid",
+    "sourceReplace":{
+      "find":"{\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\"",
+      "with":"{\n  \"schemaVersion\": \"0.1.0\",\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\""
+    }
+  }
+]

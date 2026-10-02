@@ -11,22 +11,22 @@ from referencing import Registry, Resource
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def load_json(path):
+def parse_json(source, label):
     def unique_members(pairs):
         result = {}
         for name, value in pairs:
             if name in result:
-                raise ValueError(f"duplicate JSON member {name!r} in {path}")
+                raise ValueError(f"duplicate JSON member {name!r} in {label}")
             result[name] = value
         return result
 
     def invalid_constant(value):
-        raise ValueError(f"invalid JSON number {value} in {path}")
+        raise ValueError(f"invalid JSON number {value} in {label}")
 
     def finite_float(value):
         number = float(value)
         if not math.isfinite(number):
-            raise ValueError(f"JSON number exceeds finite range in {path}")
+            raise ValueError(f"JSON number exceeds finite range in {label}")
         return number
 
     def finite_int(value):
@@ -36,17 +36,21 @@ def load_json(path):
         except OverflowError:
             finite = False
         if not finite:
-            raise ValueError(f"JSON number exceeds finite range in {path}")
+            raise ValueError(f"JSON number exceeds finite range in {label}")
         return number
 
+    return json.loads(
+        source,
+        object_pairs_hook=unique_members,
+        parse_constant=invalid_constant,
+        parse_float=finite_float,
+        parse_int=finite_int,
+    )
+
+
+def load_json(path):
     with path.open(encoding="utf-8") as source:
-        return json.load(
-            source,
-            object_pairs_hook=unique_members,
-            parse_constant=invalid_constant,
-            parse_float=finite_float,
-            parse_int=finite_int,
-        )
+        return parse_json(source.read(), path)
 
 
 @lru_cache(maxsize=1)
@@ -92,6 +96,7 @@ def main():
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/headless-resolution.schema.json",
+        "schemas/headless-conformance-case.schema.json",
         "schemas/headless-result.schema.json",
         "schemas/material-assignments.schema.json",
         "schemas/spatial-assignments.schema.json",
@@ -115,6 +120,15 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    backend_case_schema = validator_for("schemas/headless-conformance-case.schema.json")
+    backend_cases = load_json(ROOT / "conformance/headless/backend-cases.json")
+    names = set()
+    for case in backend_cases:
+        check_case(backend_case_schema, f"headless backend: {case['name']}", case, True)
+        if case["name"] in names:
+            raise ValueError(f"duplicate headless backend case name: {case['name']}")
+        names.add(case["name"])
 
     material_schema = load_json(ROOT / "schemas/material-assignments.schema.json")
     color_schema = load_json(ROOT / "schemas/color-assignments.schema.json")
@@ -146,7 +160,7 @@ def main():
     ):
         raise ValueError("surface binding material families differ from assignments")
 
-    checked = 0
+    checked = len(backend_cases)
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/material-assignments.schema.json", "conformance/materials/role-assignment-vectors.json"),

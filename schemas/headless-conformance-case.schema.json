@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:headless-conformance-case:0.1.0",
+  "title": "Resina Headless Backend Conformance Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "outcome"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "outcome": {"enum": ["valid", "invalid"]},
+    "sourceText": {"type": "string", "minLength": 1},
+    "sourceReplace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["find", "with"],
+      "properties": {
+        "find": {"type": "string", "minLength": 1},
+        "with": {"type": "string"}
+      }
+    },
+    "requestChanges": {"$ref": "#/$defs/changes"},
+    "expectedChanges": {"$ref": "#/$defs/changes"}
+  },
+  "$defs": {
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "value"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^/"},
+          "value": {}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"outcome": {"const": "invalid"}}}, "then": {"not": {"required": ["expectedChanges"]}}},
+    {"if": {"required": ["sourceText"]}, "then": {"not": {"anyOf": [{"required": ["requestChanges"]}, {"required": ["sourceReplace"]}]}}},
+    {"if": {"required": ["sourceReplace"]}, "then": {"not": {"required": ["requestChanges"]}}}
+  ]
+}
