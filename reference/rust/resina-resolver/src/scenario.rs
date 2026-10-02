@@ -43,11 +43,16 @@ impl std::error::Error for SurfaceScenarioError {}
 
 pub fn resolve_surface_scenario_source(source: &str) -> Result<BoundSurface, SurfaceScenarioError> {
     let document = parse_token_document(source).map_err(SurfaceScenarioError::Parse)?;
-    let scenario: SurfaceScenario =
-        serde_json::from_value(document).map_err(SurfaceScenarioError::Request)?;
-    if scenario.schema_version != "0.4.0" {
+    if document
+        .get("schemaVersion")
+        .and_then(Value::as_str)
+        .is_some_and(|version| version != "0.4.0")
+    {
         return Err(SurfaceScenarioError::UnsupportedVersion);
     }
+    let scenario: SurfaceScenario =
+        serde_json::from_value(document).map_err(SurfaceScenarioError::Request)?;
+    debug_assert_eq!(scenario.schema_version, "0.4.0");
     let resolution =
         resolve_headless_document(scenario.resolution).map_err(SurfaceScenarioError::Resolution)?;
     let intent = serde_json::from_value::<SurfaceIntent>(scenario.surface)
@@ -145,6 +150,19 @@ mod tests {
         assert!(matches!(
             resolve_surface_scenario_source(&scenario.to_string()),
             Err(SurfaceScenarioError::Intent(_))
+        ));
+    }
+
+    #[test]
+    fn unsupported_scenario_version_precedes_current_nested_contracts() {
+        let archived = json!({
+            "schemaVersion": "0.1.0",
+            "resolution": {"schemaVersion": "0.1.0"},
+            "surface": {"schemaVersion": "0.1.0"}
+        });
+        assert!(matches!(
+            resolve_surface_scenario_source(&archived.to_string()),
+            Err(SurfaceScenarioError::UnsupportedVersion)
         ));
     }
 }

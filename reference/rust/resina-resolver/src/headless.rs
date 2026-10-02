@@ -149,11 +149,16 @@ pub fn resolve_headless_source(
 pub(crate) fn resolve_headless_document(
     document: Value,
 ) -> Result<HeadlessResolution, HeadlessResolutionError> {
-    let request: HeadlessRequest =
-        serde_json::from_value(document).map_err(HeadlessResolutionError::Request)?;
-    if request.schema_version != "0.3.0" {
+    if document
+        .get("schemaVersion")
+        .and_then(Value::as_str)
+        .is_some_and(|version| version != "0.3.0")
+    {
         return Err(HeadlessResolutionError::UnsupportedVersion);
     }
+    let request: HeadlessRequest =
+        serde_json::from_value(document).map_err(HeadlessResolutionError::Request)?;
+    debug_assert_eq!(request.schema_version, "0.3.0");
     let tokens =
         resolve_token_document(&request.tokens).map_err(HeadlessResolutionError::Tokens)?;
 
@@ -230,5 +235,24 @@ pub(crate) fn resolve_headless_document(
             })
         }
         _ => Err(HeadlessResolutionError::Bindings(errors)),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn unsupported_version_precedes_current_request_fields() {
+        let archived = json!({"schemaVersion": "0.1.0", "tokens": {}});
+        assert!(matches!(
+            resolve_headless_document(archived),
+            Err(HeadlessResolutionError::UnsupportedVersion)
+        ));
+        assert!(matches!(
+            resolve_headless_document(json!({"schemaVersion": 1, "tokens": {}})),
+            Err(HeadlessResolutionError::Request(_))
+        ));
     }
 }
