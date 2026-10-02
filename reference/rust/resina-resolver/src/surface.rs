@@ -16,6 +16,7 @@ pub struct BoundSurface {
     material_family: MaterialFamily,
     source_color: Value,
     color_fallback: SrgbFallback,
+    opaque_color_fallback: SrgbFallback,
     form: SurfaceForm,
     states: StateSet,
     treatment_stack: TreatmentStack,
@@ -44,6 +45,10 @@ impl BoundSurface {
         &self.color_fallback
     }
 
+    pub fn opaque_color_fallback(&self) -> &SrgbFallback {
+        &self.opaque_color_fallback
+    }
+
     pub fn form(&self) -> &SurfaceForm {
         &self.form
     }
@@ -66,6 +71,7 @@ pub enum SurfaceBindingError {
     MissingMaterial(MaterialRole),
     MissingColor(ColorRole),
     MissingColorFallback(ColorRole),
+    MissingOpaqueColorFallback(ColorRole),
 }
 
 impl fmt::Display for SurfaceBindingError {
@@ -75,6 +81,12 @@ impl fmt::Display for SurfaceBindingError {
             Self::MissingColor(role) => write!(formatter, "missing color role {role:?}"),
             Self::MissingColorFallback(role) => {
                 write!(formatter, "missing sRGB fallback for color role {role:?}")
+            }
+            Self::MissingOpaqueColorFallback(role) => {
+                write!(
+                    formatter,
+                    "missing opaque sRGB fallback for color role {role:?}"
+                )
             }
         }
     }
@@ -102,15 +114,21 @@ pub fn bind_surface(
         .get(&color_role)
         .ok_or(SurfaceBindingError::MissingColorFallback(color_role))?
         .clone();
+    let opaque_color_fallback = context
+        .opaque_color_fallbacks()
+        .get(&color_role)
+        .ok_or(SurfaceBindingError::MissingOpaqueColorFallback(color_role))?
+        .clone();
     let frost_representation =
         (material_family == MaterialFamily::Frost).then(|| context.frost_representation());
     Ok(BoundSurface {
-        schema_version: "0.2.0",
+        schema_version: "0.3.0",
         material_role,
         color_role,
         material_family,
         source_color,
         color_fallback,
+        opaque_color_fallback,
         form: intent.form().clone(),
         states: intent.states().clone(),
         treatment_stack: intent.treatment_stack().clone(),
@@ -199,5 +217,7 @@ mod tests {
         assert_eq!(bound.source_color(), &authored);
         assert_eq!(bound.color_fallback().components(), [0.2, 0.4, 0.6]);
         assert_eq!(bound.color_fallback().alpha(), 0.35);
+        assert_eq!(bound.opaque_color_fallback().components(), [0.15, 0.2, 0.3]);
+        assert_eq!(bound.opaque_color_fallback().alpha(), 1.0);
     }
 }

@@ -1,13 +1,15 @@
 use crate::{
-    ColorResolutionError, ColorRoleFallbackError, MinimumHitTarget, ResolvedTypography,
-    SpatialResolutionError, SrgbFallback, TypographyResolutionError, resolve_frost_representation,
-    resolve_minimum_hit_target, resolve_semantic_color_fallbacks, resolve_semantic_colors,
-    resolve_semantic_space, resolve_semantic_typography,
+    ColorResolutionError, ColorRoleFallbackError, MinimumHitTarget, OpaqueColorResolutionError,
+    ResolvedTypography, SpatialResolutionError, SrgbFallback, TypographyResolutionError,
+    resolve_frost_representation, resolve_minimum_hit_target, resolve_semantic_color_fallbacks,
+    resolve_semantic_colors, resolve_semantic_opaque_color_fallbacks, resolve_semantic_space,
+    resolve_semantic_typography,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
     ColorAssignments, ColorRole, FrostRepresentation, MaterialAssignments, MaterialFamily,
-    MaterialRole, SpatialAssignments, SpatialRole, TypographyAssignments, TypographyRole,
+    MaterialRole, OpaqueColorAssignments, SpatialAssignments, SpatialRole, TypographyAssignments,
+    TypographyRole,
 };
 use resina_tokens::{DocumentError, parse_token_document, resolve_token_document};
 use serde::{Deserialize, Serialize};
@@ -21,6 +23,7 @@ struct HeadlessRequest {
     tokens: Value,
     material_assignments: MaterialAssignments,
     color_assignments: ColorAssignments,
+    opaque_color_assignments: OpaqueColorAssignments,
     spatial_assignments: SpatialAssignments,
     typography_assignments: TypographyAssignments,
     environment: EnvironmentSnapshot,
@@ -33,6 +36,7 @@ pub struct HeadlessResolution {
     materials: BTreeMap<MaterialRole, MaterialFamily>,
     colors: BTreeMap<ColorRole, Value>,
     color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
+    opaque_color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
     space: BTreeMap<SpatialRole, Value>,
     typography: BTreeMap<TypographyRole, ResolvedTypography>,
     frost_representation: FrostRepresentation,
@@ -50,6 +54,10 @@ impl HeadlessResolution {
 
     pub fn color_fallbacks(&self) -> &BTreeMap<ColorRole, SrgbFallback> {
         &self.color_fallbacks
+    }
+
+    pub fn opaque_color_fallbacks(&self) -> &BTreeMap<ColorRole, SrgbFallback> {
+        &self.opaque_color_fallbacks
     }
 
     pub fn space(&self) -> &BTreeMap<SpatialRole, Value> {
@@ -73,6 +81,7 @@ impl HeadlessResolution {
 pub enum HeadlessBindingError {
     Color(ColorResolutionError),
     ColorFallback(ColorRoleFallbackError),
+    OpaqueColorFallback(OpaqueColorResolutionError),
     Space(SpatialResolutionError),
     Typography(TypographyResolutionError),
 }
@@ -82,6 +91,7 @@ impl fmt::Display for HeadlessBindingError {
         match self {
             Self::Color(error) => write!(formatter, "color: {error}"),
             Self::ColorFallback(error) => write!(formatter, "color fallback: {error}"),
+            Self::OpaqueColorFallback(error) => write!(formatter, "opaque color fallback: {error}"),
             Self::Space(error) => write!(formatter, "space: {error}"),
             Self::Typography(error) => write!(formatter, "typography: {error}"),
         }
@@ -102,7 +112,7 @@ impl fmt::Display for HeadlessResolutionError {
         match self {
             Self::Parse(error) => write!(formatter, "headless source parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid headless request: {error}"),
-            Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.2.0"),
             Self::Tokens(errors) => {
                 formatter.write_str("token resolution failed")?;
                 for error in errors {
@@ -135,7 +145,7 @@ pub(crate) fn resolve_headless_document(
 ) -> Result<HeadlessResolution, HeadlessResolutionError> {
     let request: HeadlessRequest =
         serde_json::from_value(document).map_err(HeadlessResolutionError::Request)?;
-    if request.schema_version != "0.1.0" {
+    if request.schema_version != "0.2.0" {
         return Err(HeadlessResolutionError::UnsupportedVersion);
     }
     let tokens =
@@ -143,6 +153,9 @@ pub(crate) fn resolve_headless_document(
 
     let colors = resolve_semantic_colors(&request.color_assignments, &tokens);
     let color_fallbacks = colors.as_ref().ok().map(resolve_semantic_color_fallbacks);
+    let opaque_color_fallbacks = colors.as_ref().ok().map(|colors| {
+        resolve_semantic_opaque_color_fallbacks(colors, &request.opaque_color_assignments, &tokens)
+    });
     let space = resolve_semantic_space(&request.spatial_assignments, &tokens);
     let typography = resolve_semantic_typography(
         &request.typography_assignments,
@@ -161,23 +174,44 @@ pub(crate) fn resolve_headless_document(
                 .map(HeadlessBindingError::ColorFallback),
         );
     }
+    if let Some(Err(found)) = &opaque_color_fallbacks {
+        errors.extend(
+            found
+                .iter()
+                .cloned()
+                .map(HeadlessBindingError::OpaqueColorFallback),
+        );
+    }
     if let Err(found) = &space {
         errors.extend(found.iter().cloned().map(HeadlessBindingError::Space));
     }
     if let Err(found) = &typography {
         errors.extend(found.iter().cloned().map(HeadlessBindingError::Typography));
     }
-    match (colors, color_fallbacks, space, typography) {
-        (Ok(colors), Some(Ok(color_fallbacks)), Ok(space), Ok(typography)) if errors.is_empty() => {
+    match (
+        colors,
+        color_fallbacks,
+        opaque_color_fallbacks,
+        space,
+        typography,
+    ) {
+        (
+            Ok(colors),
+            Some(Ok(color_fallbacks)),
+            Some(Ok(opaque_color_fallbacks)),
+            Ok(space),
+            Ok(typography),
+        ) if errors.is_empty() => {
             let materials = MaterialRole::ALL
                 .into_iter()
                 .map(|role| (role, request.material_assignments.material_for(role)))
                 .collect();
             Ok(HeadlessResolution {
-                schema_version: "0.2.0",
+                schema_version: "0.3.0",
                 materials,
                 colors,
                 color_fallbacks,
+                opaque_color_fallbacks,
                 space,
                 typography,
                 frost_representation: resolve_frost_representation(

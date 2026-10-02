@@ -26,7 +26,7 @@
       }
     },
     "expected": {
-      "schemaVersion": "0.2.0",
+      "schemaVersion": "0.3.0",
       "materialRole": "surface.chrome",
       "colorRole": "surface.chrome",
       "materialFamily": "frost",
@@ -66,6 +66,15 @@
           "none",
           "lens"
         ]
+      },
+      "opaqueColorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ],
+        "alpha": 1.0
       }
     }
   },
@@ -97,7 +106,7 @@
       }
     },
     "expected": {
-      "schemaVersion": "0.2.0",
+      "schemaVersion": "0.3.0",
       "materialRole": "control.primary",
       "colorRole": "accent.primary",
       "materialFamily": "elastomer",
@@ -137,6 +146,15 @@
           "none",
           "focusLens"
         ]
+      },
+      "opaqueColorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ],
+        "alpha": 1.0
       }
     }
   },
@@ -165,7 +183,7 @@
       }
     },
     "expected": {
-      "schemaVersion": "0.2.0",
+      "schemaVersion": "0.3.0",
       "materialRole": "feedback.drag",
       "colorRole": "selection",
       "materialFamily": "gel",
@@ -202,6 +220,15 @@
         "treatments": [
           "none"
         ]
+      },
+      "opaqueColorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15,
+          0.2,
+          0.3
+        ],
+        "alpha": 1.0
       }
     }
   },

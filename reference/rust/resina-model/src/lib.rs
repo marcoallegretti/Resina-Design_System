@@ -1,7 +1,7 @@
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 
 mod color;
-pub use color::{ColorAssignments, ColorRole};
+pub use color::{ColorAssignments, ColorRole, OpaqueColorAssignments};
 mod spatial;
 pub use spatial::{SpatialAssignments, SpatialRole};
 mod surface;

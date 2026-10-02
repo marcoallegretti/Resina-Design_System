@@ -82,11 +82,36 @@
     "requestChanges":[{"path":"/environment/inputCapabilities/0","value":"keyboard"}]
   },
   {
+    "name":"translucent semantic color retains a distinct opaque fallback",
+    "outcome":"valid",
+    "requestChanges":[{"path":"/colorAssignments/roles/focus","value":"palette.translucent"}],
+    "expectedChanges":[
+      {"path":"/colors/focus","value":{"colorSpace":"display-p3","components":[0.25,0.5,0.75],"hex":"#336699","alpha":0.35}},
+      {"path":"/colorFallbacks/focus","value":{"colorSpace":"srgb","components":[0.2,0.4,0.6],"alpha":0.35}}
+    ]
+  },
+  {
+    "name":"authored opaque tone takes precedence for one role",
+    "outcome":"valid",
+    "requestChanges":[{"path":"/opaqueColorAssignments/roles/focus","value":"palette.opaqueAlt"}],
+    "expectedChanges":[{"path":"/opaqueColorFallbacks/focus","value":{"colorSpace":"srgb","components":[0.8,0.7,0.6],"alpha":1.0}}]
+  },
+  {
+    "name":"missing authored opaque token rejects the request",
+    "outcome":"invalid",
+    "requestChanges":[{"path":"/opaqueColorAssignments/roles/focus","value":"palette.missing"}]
+  },
+  {
+    "name":"translucent authored opaque token rejects the request",
+    "outcome":"invalid",
+    "requestChanges":[{"path":"/tokens/palette/opaque/$value","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":0.5}}]
+  },
+  {
     "name":"duplicate JSON member rejects the source",
     "outcome":"invalid",
     "sourceReplace":{
-      "find":"{\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\"",
-      "with":"{\n  \"schemaVersion\": \"0.1.0\",\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\""
+      "find":"{\n  \"schemaVersion\": \"0.2.0\",\n  \"tokens\"",
+      "with":"{\n  \"schemaVersion\": \"0.2.0\",\n  \"schemaVersion\": \"0.2.0\",\n  \"tokens\""
     }
   }
 ]

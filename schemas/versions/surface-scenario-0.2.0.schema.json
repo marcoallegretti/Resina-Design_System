@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:resina:schema:surface-scenario:0.3.0",
+  "$id": "urn:resina:schema:surface-scenario:0.2.0",
   "title": "Resina Headless Surface Scenario",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "resolution", "surface"],
   "properties": {
-    "schemaVersion": {"const": "0.3.0"},
-    "resolution": {"$ref": "urn:resina:schema:headless-resolution:0.2.0"},
+    "schemaVersion": {"const": "0.2.0"},
+    "resolution": {"$ref": "urn:resina:schema:headless-resolution:0.1.0"},
     "surface": {"$ref": "urn:resina:schema:surface-binding:0.2.0"}
   }
 }

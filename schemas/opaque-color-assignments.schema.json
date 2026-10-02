@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-color-assignments:0.1.0",
+  "title": "Resina Authored Opaque Color Assignments",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "roles"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "roles": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "accent.primary", "accent.secondary", "accent.tertiary",
+          "surface.base", "surface.low", "surface.high", "surface.chrome",
+          "content.primary", "content.secondary", "content.muted", "content.inverse",
+          "outline", "outline.strong",
+          "status.error", "status.warning", "status.success", "status.info",
+          "focus", "selection"
+        ]
+      },
+      "additionalProperties": {"type": "string", "minLength": 1}
+    }
+  }
+}

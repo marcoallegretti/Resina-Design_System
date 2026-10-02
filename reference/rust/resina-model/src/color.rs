@@ -1,4 +1,5 @@
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum ColorRole {
@@ -97,6 +98,20 @@ impl ColorAssignments {
             ColorRole::Focus => self.roles.focus.as_str(),
             ColorRole::Selection => self.roles.selection.as_str(),
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct OpaqueColorAssignments {
+    #[serde(deserialize_with = "deserialize_version")]
+    schema_version: String,
+    roles: BTreeMap<ColorRole, TokenPath>,
+}
+
+impl OpaqueColorAssignments {
+    pub fn token_path_for(&self, role: ColorRole) -> Option<&str> {
+        self.roles.get(&role).map(TokenPath::as_str)
     }
 }
 
@@ -200,6 +215,43 @@ mod tests {
                 }
                 assert_eq!(
                     serde_json::to_value(&assignments).unwrap(),
+                    vector["document"]
+                );
+            } else {
+                let error = result.unwrap_err();
+                assert!(
+                    error
+                        .to_string()
+                        .contains(vector["error"].as_str().unwrap()),
+                    "{}: {error}",
+                    vector["name"]
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn opaque_assignment_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/opaque-assignment-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let result =
+                serde_json::from_value::<OpaqueColorAssignments>(vector["document"].clone());
+            if let Some(expected) = vector.get("expected") {
+                let assignments = result.unwrap();
+                for role in ColorRole::ALL {
+                    let name = serde_json::to_value(role).unwrap();
+                    assert_eq!(
+                        assignments.token_path_for(role),
+                        expected[name.as_str().unwrap()].as_str(),
+                        "{}: {name}",
+                        vector["name"]
+                    );
+                }
+                assert_eq!(
+                    serde_json::to_value(assignments).unwrap(),
                     vector["document"]
                 );
             } else {

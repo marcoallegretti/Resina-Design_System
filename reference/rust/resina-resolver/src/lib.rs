@@ -15,6 +15,11 @@ mod color_fallback;
 pub use color_fallback::{
     ColorRoleFallbackError, ColorRoleFallbackErrorKind, resolve_semantic_color_fallbacks,
 };
+mod opaque_color;
+pub use opaque_color::{
+    OpaqueColorResolutionError, OpaqueColorResolutionErrorKind,
+    resolve_semantic_opaque_color_fallbacks,
+};
 mod headless;
 pub use headless::{
     HeadlessBindingError, HeadlessResolution, HeadlessResolutionError, resolve_headless_source,

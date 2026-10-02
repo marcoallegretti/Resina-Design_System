@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "tokens": {
     "palette": {
       "$type": "color",
@@ -11,6 +11,26 @@
             0.2,
             0.3
           ]
+        }
+      },
+      "opaque": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.15, 0.2, 0.3]
+        }
+      },
+      "opaqueAlt": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.8, 0.7, 0.6]
+        }
+      },
+      "translucent": {
+        "$value": {
+          "colorSpace": "display-p3",
+          "components": [0.25, 0.5, 0.75],
+          "hex": "#336699",
+          "alpha": 0.35
         }
       }
     },
@@ -90,6 +110,30 @@
       "status.info": "palette.base",
       "focus": "palette.base",
       "selection": "palette.base"
+    }
+  },
+  "opaqueColorAssignments": {
+    "schemaVersion": "0.1.0",
+    "roles": {
+      "accent.primary": "palette.opaque",
+      "accent.secondary": "palette.opaque",
+      "accent.tertiary": "palette.opaque",
+      "surface.base": "palette.opaque",
+      "surface.low": "palette.opaque",
+      "surface.high": "palette.opaque",
+      "surface.chrome": "palette.opaque",
+      "content.primary": "palette.opaque",
+      "content.secondary": "palette.opaque",
+      "content.muted": "palette.opaque",
+      "content.inverse": "palette.opaque",
+      "outline": "palette.opaque",
+      "outline.strong": "palette.opaque",
+      "status.error": "palette.opaque",
+      "status.warning": "palette.opaque",
+      "status.success": "palette.opaque",
+      "status.info": "palette.opaque",
+      "focus": "palette.opaque",
+      "selection": "palette.opaque"
     }
   },
   "spatialAssignments": {

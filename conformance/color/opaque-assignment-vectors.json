@@ -1,0 +1,40 @@
+[
+  {
+    "name": "opaque semantic colors need no authored paths",
+    "document": {"schemaVersion": "0.1.0", "roles": {}},
+    "expected": {}
+  },
+  {
+    "name": "sparse authored paths identify color roles",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": {"surface.chrome": "palette.chromeOpaque", "focus": "palette.focusOpaque"}
+    },
+    "expected": {"surface.chrome": "palette.chromeOpaque", "focus": "palette.focusOpaque"}
+  },
+  {
+    "name": "empty authored path fails",
+    "document": {"schemaVersion": "0.1.0", "roles": {"surface.chrome": ""}},
+    "error": "color role token path must not be empty"
+  },
+  {
+    "name": "unknown role fails",
+    "document": {"schemaVersion": "0.1.0", "roles": {"surface.unknown": "palette.chromeOpaque"}},
+    "error": "unknown variant"
+  },
+  {
+    "name": "unsupported version fails",
+    "document": {"schemaVersion": "0.2.0", "roles": {}},
+    "error": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "missing roles member fails",
+    "document": {"schemaVersion": "0.1.0"},
+    "error": "missing field"
+  },
+  {
+    "name": "unknown member fails",
+    "document": {"schemaVersion": "0.1.0", "roles": {}, "renderer": "example"},
+    "error": "unknown field"
+  }
+]

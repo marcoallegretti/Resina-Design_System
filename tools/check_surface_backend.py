@@ -37,7 +37,7 @@ def main():
         if valid == ("error" in vector):
             raise ValueError(f"surface vector must have exactly one outcome: {name}")
         scenario = {
-            "schemaVersion": "0.2.0",
+            "schemaVersion": "0.3.0",
             "resolution": resolution,
             "surface": vector["document"],
         }
@@ -65,7 +65,7 @@ def main():
             return 1
 
     base = {
-        "schemaVersion": "0.2.0",
+        "schemaVersion": "0.3.0",
         "resolution": resolution,
         "surface": vectors[0]["document"],
     }

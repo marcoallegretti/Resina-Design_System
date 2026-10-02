@@ -88,6 +88,42 @@
     ]
   },
   {
+    "name": "high contrast Frost binds opaque fallback for translucent color",
+    "outcome": "valid",
+    "requestChanges": [
+      {"path": "/resolution/environment/accessibilityPreferences/highContrast", "value": true},
+      {
+        "path": "/resolution/tokens/palette/base/$value",
+        "value": {
+          "colorSpace": "display-p3",
+          "components": [0.25, 0.5, 0.75],
+          "hex": "#336699",
+          "alpha": 0.35
+        }
+      }
+    ],
+    "expectedChanges": [
+      {"path": "/frostRepresentation", "value": "opaqueDimensional"},
+      {
+        "path": "/sourceColor",
+        "value": {
+          "colorSpace": "display-p3",
+          "components": [0.25, 0.5, 0.75],
+          "hex": "#336699",
+          "alpha": 0.35
+        }
+      },
+      {
+        "path": "/colorFallback",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [0.2, 0.4, 0.6],
+          "alpha": 0.35
+        }
+      }
+    ]
+  },
+  {
     "name": "semantic resolution failure publishes no bound surface",
     "outcome": "invalid",
     "requestChanges": [
@@ -98,8 +134,8 @@
     "name": "duplicate scenario member is rejected before binding",
     "outcome": "invalid",
     "sourceReplace": {
-      "find": "{\"schemaVersion\": \"0.2.0\", \"resolution\"",
-      "with": "{\"schemaVersion\": \"0.2.0\", \"schemaVersion\": \"0.2.0\", \"resolution\""
+      "find": "{\"schemaVersion\": \"0.3.0\", \"resolution\"",
+      "with": "{\"schemaVersion\": \"0.3.0\", \"schemaVersion\": \"0.3.0\", \"resolution\""
     }
   }
 ]

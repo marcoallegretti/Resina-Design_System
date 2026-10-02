@@ -56,8 +56,8 @@ fn file_and_stdin_resolve_to_the_same_complete_output() {
 #[test]
 fn invalid_inputs_produce_diagnostics_without_partial_output() {
     let duplicate = SOURCE.replacen(
-        "\"schemaVersion\": \"0.1.0\"",
-        "\"schemaVersion\": \"0.1.0\", \"schemaVersion\": \"0.1.0\"",
+        "\"schemaVersion\": \"0.2.0\"",
+        "\"schemaVersion\": \"0.2.0\", \"schemaVersion\": \"0.2.0\"",
         1,
     );
     let mut invalid_bindings: Value = serde_json::from_str(SOURCE).unwrap();
@@ -67,7 +67,7 @@ fn invalid_inputs_produce_diagnostics_without_partial_output() {
     let mut invalid_tokens: Value = serde_json::from_str(SOURCE).unwrap();
     invalid_tokens["tokens"]["type"]["size"]["$value"]["unit"] = json!("em");
     let mut invalid_request: Value = serde_json::from_str(SOURCE).unwrap();
-    invalid_request["schemaVersion"] = json!("0.2.0");
+    invalid_request["schemaVersion"] = json!("0.1.0");
     let mut missing_fallback: Value = serde_json::from_str(SOURCE).unwrap();
     missing_fallback["tokens"]["palette"]["base"]["$value"]["colorSpace"] = json!("display-p3");
     missing_fallback["tokens"]["palette"]["base"]["$value"]["components"] = json!([1, 0, 0]);
@@ -94,7 +94,7 @@ fn invalid_inputs_produce_diagnostics_without_partial_output() {
         ),
         (
             invalid_request.to_string(),
-            vec!["schemaVersion must be 0.1.0"],
+            vec!["schemaVersion must be 0.2.0"],
         ),
     ] {
         let output = run_stdin(&source);
@@ -110,6 +110,24 @@ fn invalid_inputs_produce_diagnostics_without_partial_output() {
             previous = index + diagnostic.len();
         }
     }
+}
+
+#[test]
+fn translucent_role_without_authored_opaque_fallback_has_no_result() {
+    let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+    request["colorAssignments"]["roles"]["focus"] = json!("palette.translucent");
+    request["opaqueColorAssignments"]["roles"]
+        .as_object_mut()
+        .unwrap()
+        .remove("focus");
+    let output = run_stdin(&request.to_string());
+    assert_eq!(output.status.code(), Some(1));
+    assert!(output.stdout.is_empty());
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("MissingAuthoredFallback"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 #[test]
