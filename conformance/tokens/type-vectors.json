@@ -36,6 +36,12 @@
     "expected": "number"
   },
   {
+    "name": "pointer to token object does not infer its type",
+    "document": {"base": {"$type": "number", "$value": 2}, "alias": {"$ref": "#/base"}},
+    "path": "alias",
+    "error": "MissingType"
+  },
+  {
     "name": "property pointer uses declared group type",
     "document": {"$type": "number", "base": {"$type": "color", "$value": {"colorSpace": "srgb", "components": [1, 0, 0]}}, "alias": {"$ref": "#/base/$value/components/0"}},
     "path": "alias",

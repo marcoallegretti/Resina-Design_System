@@ -47,8 +47,14 @@
   },
   {
     "name": "pointer alias with incompatible declared type",
-    "document": {"base": {"$type": "fontWeight", "$value": 400}, "alias": {"$type": "number", "$ref": "#/base"}},
+    "document": {"base": {"$type": "fontWeight", "$value": 400}, "alias": {"$type": "number", "$ref": "#/base/$value"}},
     "error": "ReferenceTypeMismatch",
+    "location": "#/alias/$ref"
+  },
+  {
+    "name": "pointer to token object is not a value alias",
+    "document": {"base": {"$type": "number", "$value": 2}, "alias": {"$type": "number", "$ref": "#/base"}},
+    "error": "InvalidValue",
     "location": "#/alias/$ref"
   },
   {
@@ -59,7 +65,7 @@
   },
   {
     "name": "numeric property reference checks target token type",
-    "document": {"weight": {"$type": "fontWeight", "$value": 400}, "size": {"$type": "dimension", "$value": {"value": {"$ref": "#/weight"}, "unit": "px"}}},
+    "document": {"weight": {"$type": "fontWeight", "$value": 400}, "size": {"$type": "dimension", "$value": {"value": {"$ref": "#/weight/$value"}, "unit": "px"}}},
     "error": "ReferenceTypeMismatch",
     "location": "#/size/$value/value"
   },

@@ -38,5 +38,12 @@
     "stage": "resolve",
     "error": "InvalidValue",
     "location": "#/gap/$value/unit"
+  },
+  {
+    "name": "pointer to token object fails value validation",
+    "source": "{\"base\":{\"$type\":\"number\",\"$value\":2},\"alias\":{\"$type\":\"number\",\"$ref\":\"#/base\"}}",
+    "stage": "resolve",
+    "error": "InvalidValue",
+    "location": "#/alias/$ref"
   }
 ]

@@ -142,7 +142,7 @@ fn check_authoring_references(
         });
     }
     if let Some(target) = reference_target(raw) {
-        if let Some(target_token) = whole_token_target(document, &target) {
+        if let Some(target_token) = whole_token_target(document, &target, raw.is_string()) {
             let target_type =
                 resolve_type_in_expanded_document(document, &target_token).map_err(type_error)?;
             if target_type != expected {
@@ -433,8 +433,12 @@ fn reference_target(raw: &Value) -> Option<String> {
         .and_then(|pointer| canonical_pointer(pointer).ok())
 }
 
-fn whole_token_target(document: &Value, pointer: &str) -> Option<String> {
-    let candidate = pointer.strip_suffix("/$value").unwrap_or(pointer);
+fn whole_token_target(document: &Value, pointer: &str, curly: bool) -> Option<String> {
+    let candidate = if curly {
+        pointer
+    } else {
+        pointer.strip_suffix("/$value")?
+    };
     if lookup(document, candidate).is_some_and(is_token) {
         let segments = parse_pointer(candidate).ok()?;
         return Some(segments.join("."));

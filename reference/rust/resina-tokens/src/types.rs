@@ -88,32 +88,33 @@ impl TypeResolver<'_> {
         }
 
         stack.push(canonical.clone());
-        let reference = token
+        let curly_reference = token
             .get("$value")
             .and_then(Value::as_str)
             .and_then(|value| value.strip_prefix('{')?.strip_suffix('}'))
-            .and_then(|path| curly_path_to_pointer(path).ok())
-            .or_else(|| {
-                token
-                    .get("$ref")
-                    .and_then(Value::as_str)
-                    .and_then(|pointer| canonical_pointer(pointer).ok())
-            });
-        let result = if let Some(target) = reference {
-            let target = if target.ends_with("/$value") {
-                target.strip_suffix("/$value").unwrap().to_owned()
+            .and_then(|path| curly_path_to_pointer(path).ok());
+        let pointer_reference = token
+            .get("$ref")
+            .and_then(Value::as_str)
+            .and_then(|pointer| canonical_pointer(pointer).ok());
+        let result =
+            if let Some(target) = curly_reference.as_deref().or(pointer_reference.as_deref()) {
+                let token_target = if curly_reference.is_some() {
+                    Some(target)
+                } else {
+                    target.strip_suffix("/$value")
+                };
+                if let Some(token_target) =
+                    token_target.filter(|path| self.lookup(path).is_ok_and(crate::is_token))
+                {
+                    self.resolve(token_target, stack)
+                } else {
+                    self.lookup(target)?;
+                    self.inherited_type(&canonical)
+                }
             } else {
-                target
-            };
-            if self.lookup(&target).is_ok_and(crate::is_token) {
-                self.resolve(&target, stack)
-            } else {
-                self.lookup(&target)?;
                 self.inherited_type(&canonical)
-            }
-        } else {
-            self.inherited_type(&canonical)
-        };
+            };
         stack.pop();
         result
     }

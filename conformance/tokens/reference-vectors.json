@@ -4,7 +4,7 @@
     "document": {
       "base": { "accent": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0.2, 0.4, 0.8] } } },
       "semantic": { "accent": { "$type": "color", "$value": "{base.accent}" } },
-      "control": { "accent": { "$type": "color", "$ref": "#/semantic/accent" } }
+      "control": { "accent": { "$type": "color", "$ref": "#/semantic/accent/$value" } }
     },
     "path": "control.accent",
     "expected": { "colorSpace": "srgb", "components": [0.2, 0.4, 0.8] }
@@ -19,11 +19,40 @@
     "expected": { "value": 8, "unit": "px" }
   },
   {
+    "name": "pointer to token selects its object",
+    "document": {
+      "base": { "$type": "number", "$value": 2 },
+      "alias": { "$type": "number", "$ref": "#/base" }
+    },
+    "path": "alias",
+    "expected": { "$type": "number", "$value": 2 }
+  },
+  {
+    "name": "pointer to ref-only token preserves its object",
+    "document": {
+      "source": { "$type": "number", "$value": 2 },
+      "base": { "$type": "number", "$ref": "#/source/$value" },
+      "alias": { "$type": "number", "$ref": "#/base" }
+    },
+    "path": "alias",
+    "expected": { "$type": "number", "$ref": "#/source/$value" }
+  },
+  {
+    "name": "pointer to group preserves its token objects",
+    "document": {
+      "source": { "$type": "number", "$value": 2 },
+      "group": { "member": { "$type": "number", "$ref": "#/source/$value" } },
+      "alias": { "$type": "number", "$ref": "#/group" }
+    },
+    "path": "alias",
+    "expected": { "member": { "$type": "number", "$ref": "#/source/$value" } }
+  },
+  {
     "name": "escaped pointer and root token",
     "document": {
       "tone": { "$root": { "$type": "number", "$value": 0.5 } },
-      "a/b~c": { "$type": "number", "$ref": "#/tone/$root/$value" },
-      "copy": { "$type": "number", "$ref": "#/a~1b~0c" }
+      "a/b~c": { "$type": "number", "$value": "{tone.$root}" },
+      "copy": { "$type": "number", "$ref": "#/a~1b~0c/$value" }
     },
     "path": "copy",
     "expected": 0.5
@@ -47,7 +76,7 @@
     "name": "literal percent in token name",
     "document": {
       "half%off": { "$type": "number", "$value": 0.5 },
-      "alias": { "$type": "number", "$ref": "#/half%25off" }
+      "alias": { "$type": "number", "$ref": "#/half%25off/$value" }
     },
     "path": "alias",
     "expected": 0.5
@@ -77,14 +106,14 @@
     "name": "circular alias",
     "document": {
       "a": { "$type": "number", "$value": "{b}" },
-      "b": { "$type": "number", "$ref": "#/a" }
+      "b": { "$type": "number", "$ref": "#/a/$value" }
     },
     "path": "a",
     "error": "CircularReference"
   },
   {
     "name": "equivalent escaped pointer cycle",
-    "document": { "a": { "$type": "number", "$ref": "#/%61" } },
+    "document": { "a": { "$type": "number", "$value": { "$ref": "#/%61/$value" } } },
     "path": "a",
     "error": "CircularReference"
   },
@@ -106,6 +135,16 @@
   {
     "name": "missing pointer target",
     "document": { "alias": { "$type": "number", "$ref": "#/absent" } },
+    "path": "alias",
+    "error": "MissingTarget"
+  },
+  {
+    "name": "pointer cannot select absent value on ref-only token",
+    "document": {
+      "base": { "$type": "number", "$ref": "#/source/$value" },
+      "source": { "$type": "number", "$value": 2 },
+      "alias": { "$type": "number", "$ref": "#/base/$value" }
+    },
     "path": "alias",
     "error": "MissingTarget"
   },

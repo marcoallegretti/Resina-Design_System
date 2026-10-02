@@ -66,6 +66,23 @@ const MAX_REFERENCE_DEPTH: usize = 256;
 
 impl Resolver<'_> {
     fn resolve_at(&self, pointer: &str, stack: &mut Vec<String>) -> Result<Value, ResolveError> {
+        self.resolve_at_with_mode(pointer, stack, true)
+    }
+
+    fn resolve_pointer_at(
+        &self,
+        pointer: &str,
+        stack: &mut Vec<String>,
+    ) -> Result<Value, ResolveError> {
+        self.resolve_at_with_mode(pointer, stack, false)
+    }
+
+    fn resolve_at_with_mode(
+        &self,
+        pointer: &str,
+        stack: &mut Vec<String>,
+        token_value: bool,
+    ) -> Result<Value, ResolveError> {
         let canonical = canonical_pointer(pointer).map_err(|kind| ResolveError {
             kind,
             location: pointer.to_owned(),
@@ -85,7 +102,8 @@ impl Resolver<'_> {
         let target = self.lookup(&canonical)?;
         stack.push(canonical.clone());
         let result = match target {
-            Value::Object(object) if is_token(target) => {
+            value if !token_value && !self.is_token_value_location(&canonical) => Ok(value.clone()),
+            Value::Object(object) if token_value && is_token(target) => {
                 let value = object.get("$value");
                 let reference = object.get("$ref");
                 match (value, reference) {
@@ -193,6 +211,28 @@ impl Resolver<'_> {
         Ok(current)
     }
 
+    fn is_token_value_location(&self, pointer: &str) -> bool {
+        let Ok(segments) = parse_pointer(pointer) else {
+            return false;
+        };
+        let mut current = self.document;
+        for segment in segments {
+            if is_token(current) && segment == "$value" {
+                return true;
+            }
+            let next = match current {
+                Value::Object(object) => object.get(&segment),
+                Value::Array(array) => parse_index(&segment).and_then(|index| array.get(index)),
+                _ => None,
+            };
+            let Some(next) = next else {
+                return false;
+            };
+            current = next;
+        }
+        false
+    }
+
     fn follow_pointer(
         &self,
         reference: &str,
@@ -203,7 +243,7 @@ impl Resolver<'_> {
             kind,
             location: source_location.to_owned(),
         })?;
-        self.resolve_at(reference, stack)
+        self.resolve_pointer_at(reference, stack)
     }
 }
 
