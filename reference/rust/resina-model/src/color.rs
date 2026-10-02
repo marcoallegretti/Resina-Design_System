@@ -1,5 +1,9 @@
-use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{Error as _, MapAccess, Visitor},
+};
 use std::collections::BTreeMap;
+use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum ColorRole {
@@ -106,6 +110,7 @@ impl ColorAssignments {
 pub struct OpaqueColorAssignments {
     #[serde(deserialize_with = "deserialize_version")]
     schema_version: String,
+    #[serde(deserialize_with = "deserialize_unique_opaque_roles")]
     roles: BTreeMap<ColorRole, TokenPath>,
 }
 
@@ -113,6 +118,32 @@ impl OpaqueColorAssignments {
     pub fn token_path_for(&self, role: ColorRole) -> Option<&str> {
         self.roles.get(&role).map(TokenPath::as_str)
     }
+}
+
+fn deserialize_unique_opaque_roles<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<BTreeMap<ColorRole, TokenPath>, D::Error> {
+    struct UniqueOpaqueRoles;
+
+    impl<'de> Visitor<'de> for UniqueOpaqueRoles {
+        type Value = BTreeMap<ColorRole, TokenPath>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("an opaque color role mapping without duplicate members")
+        }
+
+        fn visit_map<A: MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
+            let mut roles = BTreeMap::new();
+            while let Some((role, path)) = access.next_entry()? {
+                if roles.insert(role, path).is_some() {
+                    return Err(A::Error::custom("duplicate opaque color role"));
+                }
+            }
+            Ok(roles)
+        }
+    }
+
+    deserializer.deserialize_map(UniqueOpaqueRoles)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -265,5 +296,12 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn opaque_assignment_rejects_duplicate_role_before_map_conversion() {
+        let source = r#"{"schemaVersion":"0.1.0","roles":{"focus":"palette.first","focus":"palette.second"}}"#;
+        let error = serde_json::from_str::<OpaqueColorAssignments>(source).unwrap_err();
+        assert!(error.to_string().contains("duplicate opaque color role"));
     }
 }
