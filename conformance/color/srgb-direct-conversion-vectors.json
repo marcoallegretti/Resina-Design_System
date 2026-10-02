@@ -1,0 +1,17 @@
+[
+  {"name":"linear transfer endpoints","space":"srgb-linear","input":[0,0.18,1],"expected":[0,0.461356129500442,1]},
+  {"name":"linear transfer breakpoint","space":"srgb-linear","input":[0.0031308,0.0031308,0.0031308],"expected":[0.040449936,0.040449936,0.040449936]},
+  {"name":"linear component above range fails","space":"srgb-linear","input":[0,1.01,0],"error":"OutOfRangeColorComponent","index":1},
+  {"name":"HSL red","space":"hsl","input":[0,100,50],"expected":[1,0,0]},
+  {"name":"HSL orange","space":"hsl","input":[30,100,50],"expected":[1,0.5,0]},
+  {"name":"HSL green","space":"hsl","input":[120,100,50],"expected":[0,1,0]},
+  {"name":"HSL achromatic","space":"hsl","input":[240,0,40],"expected":[0.4,0.4,0.4]},
+  {"name":"HSL hue upper boundary fails","space":"hsl","input":[360,50,50],"error":"OutOfRangeColorComponent","index":0},
+  {"name":"HSL saturation below range fails","space":"hsl","input":[120,-1,50],"error":"OutOfRangeColorComponent","index":1},
+  {"name":"HWB red","space":"hwb","input":[0,0,0],"expected":[1,0,0]},
+  {"name":"HWB tinted green","space":"hwb","input":[120,20,30],"expected":[0.2,0.7,0.2]},
+  {"name":"HWB white and black normalize","space":"hwb","input":[240,80,80],"expected":[0.5,0.5,0.5]},
+  {"name":"HWB white endpoint","space":"hwb","input":[0,100,0],"expected":[1,1,1]},
+  {"name":"HWB black endpoint","space":"hwb","input":[0,0,100],"expected":[0,0,0]},
+  {"name":"HWB whiteness above range fails","space":"hwb","input":[0,101,0],"error":"OutOfRangeColorComponent","index":1}
+]

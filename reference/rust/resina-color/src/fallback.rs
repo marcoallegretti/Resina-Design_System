@@ -1,4 +1,7 @@
-use crate::{ColorConversionError, oklab_to_extended_srgb, oklch_to_oklab};
+use crate::{
+    ColorConversionError, hsl_to_srgb, hwb_to_srgb, linear_srgb_to_srgb, oklab_to_extended_srgb,
+    oklch_to_oklab,
+};
 use resina_tokens::{ValueError, validate_resolved_value};
 use serde::Serialize;
 use serde_json::Value;
@@ -32,6 +35,8 @@ pub enum ColorFallbackError {
     OutOfGamutOklab,
     OklchConversion(ColorConversionError),
     OutOfGamutOklch,
+    DirectConversion(ColorConversionError),
+    OutOfGamutDirectColor,
 }
 
 impl fmt::Display for ColorFallbackError {
@@ -53,6 +58,10 @@ impl fmt::Display for ColorFallbackError {
             Self::OutOfGamutOklch => {
                 formatter.write_str("Oklch color converts outside the sRGB gamut")
             }
+            Self::DirectConversion(error) => write!(formatter, "color conversion failed: {error}"),
+            Self::OutOfGamutDirectColor => {
+                formatter.write_str("direct color conversion outside the sRGB gamut")
+            }
         }
     }
 }
@@ -62,10 +71,11 @@ impl std::error::Error for ColorFallbackError {}
 pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbackError> {
     validate_resolved_value("color", value).map_err(ColorFallbackError::InvalidValue)?;
     let alpha = value["alpha"].as_f64().unwrap_or(1.0);
+    let numeric_components = value["components"]
+        .as_array()
+        .and_then(|items| Some([items[0].as_f64()?, items[1].as_f64()?, items[2].as_f64()?]));
     let numeric_srgb = if value["colorSpace"] == "srgb" {
-        value["components"]
-            .as_array()
-            .and_then(|items| Some([items[0].as_f64()?, items[1].as_f64()?, items[2].as_f64()?]))
+        numeric_components
     } else {
         None
     };
@@ -86,10 +96,7 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
         (Some(source), _) => source,
         (None, Some(fallback)) => fallback,
         (None, None) if value["colorSpace"] == "oklab" || value["colorSpace"] == "oklch" => {
-            let source = value["components"].as_array().and_then(|items| {
-                Some([items[0].as_f64()?, items[1].as_f64()?, items[2].as_f64()?])
-            });
-            let Some(source) = source else {
+            let Some(source) = numeric_components else {
                 return Err(ColorFallbackError::MissingHexFallback);
             };
             let converted = if value["colorSpace"] == "oklab" {
@@ -98,18 +105,30 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
                 let oklab = oklch_to_oklab(source).map_err(ColorFallbackError::OklchConversion)?;
                 oklab_to_extended_srgb(oklab).map_err(ColorFallbackError::OklchConversion)?
             };
-            const ROUNDING_TOLERANCE: f64 = 1e-12;
-            if converted
-                .iter()
-                .any(|channel| !(-ROUNDING_TOLERANCE..=1.0 + ROUNDING_TOLERANCE).contains(channel))
-            {
-                return Err(if value["colorSpace"] == "oklab" {
-                    ColorFallbackError::OutOfGamutOklab
-                } else {
-                    ColorFallbackError::OutOfGamutOklch
-                });
+            let gamut_error = if value["colorSpace"] == "oklab" {
+                ColorFallbackError::OutOfGamutOklab
+            } else {
+                ColorFallbackError::OutOfGamutOklch
+            };
+            portable_components(converted, gamut_error)?
+        }
+        (None, None)
+            if matches!(
+                value["colorSpace"].as_str(),
+                Some("srgb-linear" | "hsl" | "hwb")
+            ) =>
+        {
+            let Some(source) = numeric_components else {
+                return Err(ColorFallbackError::MissingHexFallback);
+            };
+            let converted = match value["colorSpace"].as_str().unwrap() {
+                "srgb-linear" => linear_srgb_to_srgb(source),
+                "hsl" => hsl_to_srgb(source),
+                "hwb" => hwb_to_srgb(source),
+                _ => return Err(ColorFallbackError::MissingHexFallback),
             }
-            converted.map(|channel| channel.clamp(0.0, 1.0))
+            .map_err(ColorFallbackError::DirectConversion)?;
+            portable_components(converted, ColorFallbackError::OutOfGamutDirectColor)?
         }
         (None, None) => return Err(ColorFallbackError::MissingHexFallback),
     };
@@ -118,6 +137,20 @@ pub fn resolve_srgb_fallback(value: &Value) -> Result<SrgbFallback, ColorFallbac
         components,
         alpha,
     })
+}
+
+fn portable_components(
+    components: [f64; 3],
+    gamut_error: ColorFallbackError,
+) -> Result<[f64; 3], ColorFallbackError> {
+    const ROUNDING_TOLERANCE: f64 = 1e-12;
+    if components
+        .iter()
+        .any(|channel| !(-ROUNDING_TOLERANCE..=1.0 + ROUNDING_TOLERANCE).contains(channel))
+    {
+        return Err(gamut_error);
+    }
+    Ok(components.map(|channel| channel.clamp(0.0, 1.0)))
 }
 
 fn decode_hex(hex: &str) -> Result<[f64; 3], ColorFallbackError> {
@@ -175,6 +208,8 @@ mod tests {
                     ColorFallbackError::OutOfGamutOklab => "OutOfGamutOklab",
                     ColorFallbackError::OklchConversion(_) => "OklchConversion",
                     ColorFallbackError::OutOfGamutOklch => "OutOfGamutOklch",
+                    ColorFallbackError::DirectConversion(_) => "DirectConversion",
+                    ColorFallbackError::OutOfGamutDirectColor => "OutOfGamutDirectColor",
                 };
                 assert_eq!(
                     kind,

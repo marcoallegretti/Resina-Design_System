@@ -53,12 +53,32 @@ const LMS_TO_XYZ: [[f64; 3]; 3] = [
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ColorConversionError {
-    NonFiniteSrgbComponent { index: usize },
-    OutOfRangeSrgbComponent { index: usize },
-    NonFiniteOklabComponent { index: usize },
-    NonFiniteOklchComponent { index: usize },
-    OutOfRangeOklchComponent { index: usize },
-    NonFiniteResult { index: usize },
+    NonFiniteSrgbComponent {
+        index: usize,
+    },
+    OutOfRangeSrgbComponent {
+        index: usize,
+    },
+    NonFiniteOklabComponent {
+        index: usize,
+    },
+    NonFiniteOklchComponent {
+        index: usize,
+    },
+    OutOfRangeOklchComponent {
+        index: usize,
+    },
+    NonFiniteColorComponent {
+        color_space: &'static str,
+        index: usize,
+    },
+    OutOfRangeColorComponent {
+        color_space: &'static str,
+        index: usize,
+    },
+    NonFiniteResult {
+        index: usize,
+    },
 }
 
 impl fmt::Display for ColorConversionError {
@@ -82,6 +102,18 @@ impl fmt::Display for ColorConversionError {
                     "Oklch component outside its range at index {index}"
                 )
             }
+            Self::NonFiniteColorComponent { color_space, index } => {
+                write!(
+                    formatter,
+                    "nonfinite {color_space} component at index {index}"
+                )
+            }
+            Self::OutOfRangeColorComponent { color_space, index } => {
+                write!(
+                    formatter,
+                    "{color_space} component outside its range at index {index}"
+                )
+            }
             Self::NonFiniteResult { index } => {
                 write!(formatter, "nonfinite conversion result at index {index}")
             }
@@ -90,6 +122,28 @@ impl fmt::Display for ColorConversionError {
 }
 
 impl std::error::Error for ColorConversionError {}
+
+struct ComponentRange {
+    minimum: f64,
+    maximum: f64,
+    upper_exclusive: bool,
+}
+
+const UNIT_COMPONENT: ComponentRange = ComponentRange {
+    minimum: 0.0,
+    maximum: 1.0,
+    upper_exclusive: false,
+};
+const HUE_COMPONENT: ComponentRange = ComponentRange {
+    minimum: 0.0,
+    maximum: 360.0,
+    upper_exclusive: true,
+};
+const PERCENT_COMPONENT: ComponentRange = ComponentRange {
+    minimum: 0.0,
+    maximum: 100.0,
+    upper_exclusive: false,
+};
 
 pub fn srgb_to_oklab(srgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
     for (index, component) in srgb.iter().enumerate() {
@@ -135,6 +189,71 @@ pub fn oklch_to_oklab(oklch: [f64; 3]) -> Result<[f64; 3], ColorConversionError>
     }
     let angle = oklch[2].to_radians();
     finite_result([oklch[0], oklch[1] * angle.cos(), oklch[1] * angle.sin()])
+}
+
+pub fn linear_srgb_to_srgb(linear: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(
+        linear,
+        "srgb-linear",
+        [UNIT_COMPONENT, UNIT_COMPONENT, UNIT_COMPONENT],
+    )?;
+    finite_result(linear.map(encode_extended_srgb_component))
+}
+
+pub fn hsl_to_srgb(hsl: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(
+        hsl,
+        "hsl",
+        [HUE_COMPONENT, PERCENT_COMPONENT, PERCENT_COMPONENT],
+    )?;
+    let hue = hsl[0];
+    let saturation = hsl[1] / 100.0;
+    let lightness = hsl[2] / 100.0;
+    let channel = |offset: f64| {
+        let k = (offset + hue / 30.0) % 12.0;
+        let amplitude = saturation * lightness.min(1.0 - lightness);
+        lightness - amplitude * (k - 3.0).min(9.0 - k).clamp(-1.0, 1.0)
+    };
+    finite_result([channel(0.0), channel(8.0), channel(4.0)])
+}
+
+pub fn hwb_to_srgb(hwb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(
+        hwb,
+        "hwb",
+        [HUE_COMPONENT, PERCENT_COMPONENT, PERCENT_COMPONENT],
+    )?;
+    let white = hwb[1] / 100.0;
+    let black = hwb[2] / 100.0;
+    if white + black >= 1.0 {
+        let gray = white / (white + black);
+        return Ok([gray; 3]);
+    }
+    let pure = hsl_to_srgb([hwb[0], 100.0, 50.0])?;
+    finite_result(pure.map(|channel| channel * (1.0 - white - black) + white))
+}
+
+fn validate_components(
+    components: [f64; 3],
+    color_space: &'static str,
+    ranges: [ComponentRange; 3],
+) -> Result<(), ColorConversionError> {
+    for (index, component) in components.into_iter().enumerate() {
+        if !component.is_finite() {
+            return Err(ColorConversionError::NonFiniteColorComponent { color_space, index });
+        }
+        let range = &ranges[index];
+        if component < range.minimum
+            || if range.upper_exclusive {
+                component >= range.maximum
+            } else {
+                component > range.maximum
+            }
+        {
+            return Err(ColorConversionError::OutOfRangeColorComponent { color_space, index });
+        }
+    }
+    Ok(())
 }
 
 pub(crate) fn linearize_srgb_component(component: f64) -> f64 {
@@ -257,6 +376,40 @@ mod tests {
     }
 
     #[test]
+    fn direct_srgb_conversion_conformance_vectors() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/color/srgb-direct-conversion-vectors.json"
+        ))
+        .unwrap();
+        for vector in vectors {
+            let input = components(&vector["input"]);
+            let space = vector["space"].as_str().unwrap();
+            let actual = match space {
+                "srgb-linear" => linear_srgb_to_srgb(input),
+                "hsl" => hsl_to_srgb(input),
+                "hwb" => hwb_to_srgb(input),
+                _ => panic!("unknown vector space: {space}"),
+            };
+            if vector.get("error").is_some() {
+                assert_eq!(vector["error"], "OutOfRangeColorComponent");
+                let Err(ColorConversionError::OutOfRangeColorComponent { color_space, index }) =
+                    actual
+                else {
+                    panic!("{}: {actual:?}", vector["name"]);
+                };
+                assert_eq!(color_space, space);
+                assert_eq!(index, vector["index"].as_u64().unwrap() as usize);
+            } else {
+                assert_close(
+                    actual.unwrap(),
+                    components(&vector["expected"]),
+                    &vector["name"],
+                );
+            }
+        }
+    }
+
+    #[test]
     fn nonfinite_inputs_and_results_fail() {
         assert_eq!(
             srgb_to_oklab([f64::NAN, 0.0, 0.0]),
@@ -277,6 +430,13 @@ mod tests {
         assert_eq!(
             oklch_to_oklab([0.5, f64::NAN, 0.0]),
             Err(ColorConversionError::NonFiniteOklchComponent { index: 1 })
+        );
+        assert_eq!(
+            hsl_to_srgb([0.0, f64::INFINITY, 50.0]),
+            Err(ColorConversionError::NonFiniteColorComponent {
+                color_space: "hsl",
+                index: 1
+            })
         );
     }
 }

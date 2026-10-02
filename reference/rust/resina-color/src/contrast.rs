@@ -1,4 +1,4 @@
-use crate::{SrgbFallback, oklab::linearize_srgb_component};
+use crate::{SrgbFallback, conversion::linearize_srgb_component};
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

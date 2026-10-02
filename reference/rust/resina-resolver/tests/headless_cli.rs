@@ -216,6 +216,47 @@ fn numeric_oklch_color_resolves_without_authored_hex() {
 }
 
 #[test]
+fn direct_srgb_spaces_resolve_without_authored_hex() {
+    for (source_color, expected) in [
+        (
+            json!({"colorSpace":"srgb-linear","components":[0.0031308,0.18,1],"alpha":0.6}),
+            [0.040449936, 0.461356129500442, 1.0],
+        ),
+        (
+            json!({"colorSpace":"hsl","components":[30,100,50],"alpha":0.6}),
+            [1.0, 0.5, 0.0],
+        ),
+        (
+            json!({"colorSpace":"hwb","components":[120,20,30],"alpha":0.6}),
+            [0.2, 0.7, 0.2],
+        ),
+    ] {
+        let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+        request["tokens"]["palette"]["direct"] = json!({"$value": source_color});
+        request["colorAssignments"]["roles"]["focus"] = json!("palette.direct");
+        let output = run_stdin(&request.to_string());
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(result["colors"]["focus"], source_color);
+        let fallback = &result["colorFallbacks"]["focus"];
+        assert_eq!(fallback["colorSpace"], "srgb");
+        assert_eq!(fallback["alpha"].as_f64(), Some(0.6));
+        for (index, channel) in fallback["components"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .enumerate()
+        {
+            assert!((channel.as_f64().unwrap() - expected[index]).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
 fn usage_error_has_distinct_exit_status() {
     let output = Command::new(env!("CARGO_BIN_EXE_resina-headless"))
         .output()
