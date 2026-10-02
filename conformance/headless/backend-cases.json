@@ -107,6 +107,14 @@
     "requestChanges":[{"path":"/tokens/palette/opaque/$value","value":{"colorSpace":"srgb","components":[0.15,0.2,0.3],"alpha":0.5}}]
   },
   {
+    "name":"duplicate opaque color role rejects the source",
+    "outcome":"invalid",
+    "sourceReplace":{
+      "find":"\"focus\": \"palette.opaque\",\n      \"selection\"",
+      "with":"\"focus\": \"palette.opaque\",\n      \"focus\": \"palette.opaqueAlt\",\n      \"selection\""
+    }
+  },
+  {
     "name":"duplicate JSON member rejects the source",
     "outcome":"invalid",
     "sourceReplace":{
