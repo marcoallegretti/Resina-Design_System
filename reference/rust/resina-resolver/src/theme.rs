@@ -189,6 +189,10 @@ mod tests {
     const SOURCE: &str = include_str!("../../../../conformance/themes/valid-source.json");
     const CASES: &str = include_str!("../../../../conformance/themes/source-cases.json");
     const REQUEST: &str = include_str!("../../../../conformance/headless/valid-request.json");
+    const HEADLESS_CASES: &str =
+        include_str!("../../../../conformance/headless/backend-cases.json");
+    const EXPECTED: &str =
+        include_str!("../../../../conformance/headless/expected-resolution.json");
 
     #[test]
     fn compiled_theme_matches_headless_resolution_across_environments() {
@@ -205,6 +209,52 @@ mod tests {
                 serde_json::to_value(expected).unwrap()
             );
         }
+    }
+
+    #[test]
+    fn compiled_theme_follows_public_environment_cases() {
+        let theme = compile_theme_source(SOURCE).unwrap();
+        let baseline_request: Value = serde_json::from_str(REQUEST).unwrap();
+        let baseline_expected: Value = serde_json::from_str(EXPECTED).unwrap();
+        let cases: Vec<Value> = serde_json::from_str(HEADLESS_CASES).unwrap();
+        let mut checked = 0;
+        for case in cases {
+            let changes = case["requestChanges"].as_array();
+            if case["outcome"] != "valid"
+                || changes.is_some_and(|changes| {
+                    changes.iter().any(|change| {
+                        !change["path"]
+                            .as_str()
+                            .is_some_and(|path| path.starts_with("/environment/"))
+                    })
+                })
+            {
+                continue;
+            }
+            let mut request = baseline_request.clone();
+            if let Some(changes) = changes {
+                for change in changes {
+                    let path = change["path"].as_str().unwrap();
+                    *request.pointer_mut(path).expect("case path must exist") =
+                        change["value"].clone();
+                }
+            }
+            let mut expected = baseline_expected.clone();
+            if let Some(changes) = case["expectedChanges"].as_array() {
+                for change in changes {
+                    let path = change["path"].as_str().unwrap();
+                    *expected
+                        .pointer_mut(path)
+                        .expect("expected path must exist") = change["value"].clone();
+                }
+            }
+            let environment: EnvironmentSnapshot =
+                serde_json::from_value(request["environment"].clone()).unwrap();
+            let actual = serde_json::to_value(theme.resolve(&environment).unwrap()).unwrap();
+            assert_eq!(actual, expected, "{}", case["name"]);
+            checked += 1;
+        }
+        assert_eq!(checked, 6);
     }
 
     #[test]
