@@ -6,6 +6,7 @@ use std::{collections::BTreeMap, fmt};
 
 mod edge_contrast;
 mod frost_legibility;
+mod frost_surface_readability;
 mod spatial;
 mod srgb_input;
 pub use edge_contrast::{
@@ -14,6 +15,10 @@ pub use edge_contrast::{
 pub use frost_legibility::{
     FrostLegibilityError, FrostLegibilityResult, resolve_frost_legibility,
     resolve_frost_legibility_source,
+};
+pub use frost_surface_readability::{
+    FrostSurfaceReadabilityError, FrostSurfaceReadabilityResult,
+    resolve_frost_surface_readability_source,
 };
 pub use resina_color::{
     ColorFallbackError, ContrastError, SrgbFallback, opaque_contrast_ratio, resolve_srgb_fallback,

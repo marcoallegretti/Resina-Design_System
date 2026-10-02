@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:frost-surface-readability-case:0.1.0",
+  "title": "Resina Frost Surface Readability Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "changes", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "value"],
+        "properties": {"path": {"type": "string", "pattern": "^/"}, "value": {}}
+      }
+    },
+    "requestSchemaValid": {"type": "boolean"},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["representation", "contentFallback", "edgeRole", "edgeFallback"],
+      "properties": {
+        "representation": {"enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented", "opaqueDimensional"]},
+        "contentFallback": {"type": "boolean"},
+        "edgeRole": {"enum": ["outline", "outline.strong"]},
+        "edgeFallback": {"type": "boolean"}
+      }
+    },
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {"required": ["expected"], "not": {"required": ["errorContains"]}},
+    {"required": ["errorContains"], "not": {"required": ["expected"]}}
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:frost-surface-readability-result:0.1.0",
+  "title": "Resina Frost Surface Readability Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "binding", "foregroundRole", "foreground", "legibility", "edge"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "binding": {"$ref": "urn:resina:schema:surface-binding-result:0.4.0"},
+    "foregroundRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+    "foreground": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "legibility": {"$ref": "urn:resina:schema:frost-legibility-result:0.1.0"},
+    "edge": {"$ref": "urn:resina:schema:edge-contrast-result:0.1.0"}
+  },
+  "allOf": [{"properties": {"binding": {"properties": {"materialFamily": {"const": "frost"}}}}}],
+  "$comment": "The resolver checks that foreground and outline colors come from the same scenario resolution and that legibility uses its bound Frost body."
+}

@@ -134,6 +134,9 @@ def main():
         "schemas/frost-legibility-request.schema.json",
         "schemas/frost-legibility-result.schema.json",
         "schemas/frost-legibility-case.schema.json",
+        "schemas/frost-surface-readability-request.schema.json",
+        "schemas/frost-surface-readability-result.schema.json",
+        "schemas/frost-surface-readability-case.schema.json",
         "schemas/headless-resolution.schema.json",
         "schemas/headless-conformance-case.schema.json",
         "schemas/headless-result.schema.json",
@@ -339,6 +342,37 @@ def main():
     invalid_strong_result = copy.deepcopy(edge_cases[1]["expected"])
     invalid_strong_result["fallbackApplied"] = False
     check_case(edge_result_validator, "strong edge must report fallback", invalid_strong_result, False)
+    readability_resolution = load_json(ROOT / "conformance/headless/valid-request.json")
+    readability_resolution["colorAssignments"]["roles"]["content.primary"] = "palette.opaqueAlt"
+    readability_resolution["opaqueColorAssignments"]["roles"]["outline.strong"] = "palette.opaqueAlt"
+    readability_surface = copy.deepcopy(load_json(ROOT / "conformance/surfaces/binding-vectors.json")[0]["document"])
+    readability_surface["states"]["states"] = ["rest"]
+    readability_surface["treatmentStack"]["treatments"] = ["none"]
+    readability_request = {
+        "schemaVersion": "0.1.0",
+        "scenario": {"schemaVersion": "0.4.0", "resolution": readability_resolution, "surface": readability_surface},
+        "foregroundRole": "content.primary",
+        "postTreatmentBackdrop": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1},
+        "adjacentColor": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1},
+        "minimumContentContrast": 3,
+        "minimumEdgeContrast": 3,
+    }
+    readability_cases = load_json(ROOT / "conformance/surfaces/frost-readability-cases.json")
+    readability_case_validator = validator_for("schemas/frost-surface-readability-case.schema.json")
+    readability_request_validator = validator_for("schemas/frost-surface-readability-request.schema.json")
+    readability_names = set()
+    for case in readability_cases:
+        check_case(readability_case_validator, f"Frost surface readability case: {case.get('name')}", case, True)
+        if case["name"] in readability_names:
+            raise ValueError(f"duplicate Frost surface readability case: {case['name']}")
+        readability_names.add(case["name"])
+        request = apply_changes(readability_request, case["changes"])
+        check_case(
+            readability_request_validator,
+            f"Frost surface readability request: {case['name']}",
+            request,
+            case["requestSchemaValid"],
+        )
     missing_input = copy.deepcopy(resolver_theme)
     del missing_input["tokenInput"]
     check_case(theme_schema, "resolver-backed theme missing input", missing_input, False)
@@ -414,6 +448,7 @@ def main():
         + len(resolver_cases)
         + len(frost_cases)
         + len(edge_cases)
+        + len(readability_cases)
         + 2
     )
     for schema, vectors in (

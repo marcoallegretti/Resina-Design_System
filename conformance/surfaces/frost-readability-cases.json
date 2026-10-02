@@ -1,0 +1,83 @@
+[
+  {
+    "name": "opaque content fallback and ordinary edge",
+    "requestSchemaValid": true,
+    "changes": [],
+    "expected": {"representation": "opaqueDimensional", "contentFallback": true, "edgeRole": "outline", "edgeFallback": false}
+  },
+  {
+    "name": "translucent content and stronger edge",
+    "requestSchemaValid": true,
+    "changes": [
+      {"path": "/postTreatmentBackdrop/components", "value": [0, 0, 0]},
+      {"path": "/adjacentColor/components", "value": [0, 0, 0]}
+    ],
+    "expected": {"representation": "translucentPigmented", "contentFallback": false, "edgeRole": "outline.strong", "edgeFallback": true}
+  },
+  {
+    "name": "content remains unreadable",
+    "requestSchemaValid": true,
+    "changes": [
+      {"path": "/foregroundRole", "value": "surface.chrome"},
+      {"path": "/minimumContentContrast", "value": 10}
+    ],
+    "errorContains": "Frost contrast is insufficient"
+  },
+  {
+    "name": "edge remains indistinct",
+    "requestSchemaValid": true,
+    "changes": [
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/outline.strong", "value": "palette.opaque"},
+      {"path": "/adjacentColor/components", "value": [0, 0, 0]}
+    ],
+    "errorContains": "edge contrast is insufficient"
+  },
+  {
+    "name": "non Frost surface",
+    "requestSchemaValid": true,
+    "changes": [{"path": "/scenario/surface/materialRole", "value": "surface.base"}],
+    "errorContains": "material family must be Frost"
+  },
+  {
+    "name": "unresolved focused state",
+    "requestSchemaValid": true,
+    "changes": [{"path": "/scenario/surface/states/states", "value": ["rest", "focused"]}],
+    "errorContains": "states must contain only rest"
+  },
+  {
+    "name": "unresolved lens treatment",
+    "requestSchemaValid": true,
+    "changes": [{"path": "/scenario/surface/treatmentStack/treatments", "value": ["lens"]}],
+    "errorContains": "bound surface treatment must be none"
+  },
+  {
+    "name": "translucent semantic foreground",
+    "requestSchemaValid": true,
+    "changes": [{"path": "/scenario/resolution/colorAssignments/roles/content.primary", "value": "palette.translucent"}],
+    "errorContains": "must resolve to an opaque color"
+  },
+  {
+    "name": "translucent backdrop",
+    "requestSchemaValid": false,
+    "changes": [{"path": "/postTreatmentBackdrop/alpha", "value": 0.5}],
+    "errorContains": "postTreatmentBackdrop must be opaque"
+  },
+  {
+    "name": "unsupported version",
+    "requestSchemaValid": false,
+    "changes": [{"path": "/schemaVersion", "value": "0.2.0"}],
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "invalid content threshold",
+    "requestSchemaValid": false,
+    "changes": [{"path": "/minimumContentContrast", "value": 22}],
+    "errorContains": "minimumContrast must be finite"
+  },
+  {
+    "name": "invalid edge threshold",
+    "requestSchemaValid": false,
+    "changes": [{"path": "/minimumEdgeContrast", "value": 22}],
+    "errorContains": "minimumContrast must be finite"
+  }
+]

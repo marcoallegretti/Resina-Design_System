@@ -1,5 +1,5 @@
 use crate::{
-    BoundSurface, HeadlessResolutionError, SurfaceBindingError, bind_surface,
+    BoundSurface, HeadlessResolution, HeadlessResolutionError, SurfaceBindingError, bind_surface,
     headless::resolve_headless_document,
 };
 use resina_model::SurfaceIntent;
@@ -43,6 +43,12 @@ impl std::error::Error for SurfaceScenarioError {}
 
 pub fn resolve_surface_scenario_source(source: &str) -> Result<BoundSurface, SurfaceScenarioError> {
     let document = parse_token_document(source).map_err(SurfaceScenarioError::Parse)?;
+    resolve_surface_scenario_document(document).map(|(_, surface)| surface)
+}
+
+pub(crate) fn resolve_surface_scenario_document(
+    document: Value,
+) -> Result<(HeadlessResolution, BoundSurface), SurfaceScenarioError> {
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)
@@ -57,7 +63,8 @@ pub fn resolve_surface_scenario_source(source: &str) -> Result<BoundSurface, Sur
         resolve_headless_document(scenario.resolution).map_err(SurfaceScenarioError::Resolution)?;
     let intent = serde_json::from_value::<SurfaceIntent>(scenario.surface)
         .map_err(SurfaceScenarioError::Intent)?;
-    bind_surface(&intent, &resolution).map_err(SurfaceScenarioError::Binding)
+    let surface = bind_surface(&intent, &resolution).map_err(SurfaceScenarioError::Binding)?;
+    Ok((resolution, surface))
 }
 
 #[cfg(test)]
