@@ -9,6 +9,8 @@ pub use resina_color::{
     ColorFallbackError, ContrastError, SrgbFallback, opaque_contrast_ratio, resolve_srgb_fallback,
 };
 pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
+mod surface;
+pub use surface::{BoundSurface, SurfaceBindingError, bind_surface};
 mod color_fallback;
 pub use color_fallback::{
     ColorRoleFallbackError, ColorRoleFallbackErrorKind, resolve_semantic_color_fallbacks,

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-binding-result:0.1.0",
+  "title": "Resina Bound Surface",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "materialRole", "colorRole", "materialFamily", "sourceColor", "colorFallback", "form", "states"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "materialRole": {"$ref": "urn:resina:schema:surface-binding:0.1.0#/properties/materialRole"},
+    "colorRole": {"$ref": "urn:resina:schema:surface-binding:0.1.0#/properties/colorRole"},
+    "materialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
+    "sourceColor": {"$ref": "urn:resina:schema:headless-result:0.2.0#/$defs/color"},
+    "colorFallback": {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},
+    "form": {"$ref": "urn:resina:schema:surface-form:0.1.0"},
+    "states": {"$ref": "urn:resina:schema:state-set:0.1.0"},
+    "frostRepresentation": {
+      "enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented", "opaqueDimensional"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"materialRole": {"enum": ["surface.base", "surface.content", "surface.chrome", "surface.raised", "control.passive", "control.interactive", "control.primary"]}}},
+      "then": {"properties": {"materialFamily": {"enum": ["cast", "frost", "elastomer"]}}}
+    },
+    {
+      "if": {"properties": {"materialFamily": {"const": "frost"}}},
+      "then": {"required": ["frostRepresentation"]},
+      "else": {"not": {"required": ["frostRepresentation"]}}
+    }
+  ]
+}

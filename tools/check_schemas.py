@@ -98,6 +98,8 @@ def main():
         "schemas/srgb-fallback.schema.json",
         "schemas/state-set.schema.json",
         "schemas/surface-form.schema.json",
+        "schemas/surface-binding.schema.json",
+        "schemas/surface-binding-result.schema.json",
         "schemas/treatment-stack.schema.json",
         "schemas/typography-assignments.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
@@ -110,6 +112,36 @@ def main():
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
 
+    material_schema = load_json(ROOT / "schemas/material-assignments.schema.json")
+    color_schema = load_json(ROOT / "schemas/color-assignments.schema.json")
+    binding_schema = load_json(ROOT / "schemas/surface-binding.schema.json")
+    binding_result_schema = load_json(ROOT / "schemas/surface-binding-result.schema.json")
+    material_roles = {
+        f"{group}.{role}"
+        for group in ("surface", "control", "feedback")
+        for role in material_schema["properties"][group]["properties"]
+    }
+    structural_roles = {
+        f"{group}.{role}"
+        for group in ("surface", "control", "feedback")
+        for role, rule in material_schema["properties"][group]["properties"].items()
+        if rule["$ref"] == "#/$defs/structuralMaterialFamily"
+    }
+    color_roles = set(color_schema["properties"]["roles"]["properties"])
+    if set(binding_schema["properties"]["materialRole"]["enum"]) != material_roles:
+        raise ValueError("surface binding material roles differ from assignments")
+    if set(binding_schema["properties"]["colorRole"]["enum"]) != color_roles:
+        raise ValueError("surface binding color roles differ from assignments")
+    bound_structural_roles = set(
+        binding_result_schema["allOf"][0]["if"]["properties"]["materialRole"]["enum"]
+    )
+    if bound_structural_roles != structural_roles:
+        raise ValueError("surface binding structural roles differ from assignments")
+    if set(binding_result_schema["properties"]["materialFamily"]["enum"]) != set(
+        material_schema["$defs"]["materialFamily"]["enum"]
+    ):
+        raise ValueError("surface binding material families differ from assignments")
+
     checked = 0
     for schema, vectors in (
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
@@ -117,10 +149,31 @@ def main():
         ("schemas/spatial-assignments.schema.json", "conformance/spatial/assignment-vectors.json"),
         ("schemas/state-set.schema.json", "conformance/states/state-set-vectors.json"),
         ("schemas/surface-form.schema.json", "conformance/geometry/surface-form-vectors.json"),
+        ("schemas/surface-binding.schema.json", "conformance/surfaces/binding-vectors.json"),
         ("schemas/treatment-stack.schema.json", "conformance/materials/treatment-stack-vectors.json"),
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    surface_results = validator_for("schemas/surface-binding-result.schema.json")
+    surface_vectors = load_json(ROOT / "conformance/surfaces/binding-vectors.json")
+    for vector in surface_vectors:
+        if "expected" in vector:
+            check_case(surface_results, f"surface result: {vector['name']}", vector["expected"], True)
+            checked += 1
+    for name, source_index, change in (
+        ("Frost representation omitted", 0, lambda result: result.pop("frostRepresentation")),
+        (
+            "Frost representation on Elastomer",
+            1,
+            lambda result: result.update({"frostRepresentation": "opaqueDimensional"}),
+        ),
+        ("Gel as structural control", 1, lambda result: result.update({"materialFamily": "gel"})),
+    ):
+        result = copy.deepcopy(surface_vectors[source_index]["expected"])
+        change(result)
+        check_case(surface_results, f"surface result: {name}", result, False)
+        checked += 1
 
     headless = validator_for("schemas/headless-resolution.schema.json")
     valid_headless = load_json(ROOT / "conformance/headless/valid-request.json")

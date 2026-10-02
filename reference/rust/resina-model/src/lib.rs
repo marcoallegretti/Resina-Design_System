@@ -4,6 +4,8 @@ mod color;
 pub use color::{ColorAssignments, ColorRole};
 mod spatial;
 pub use spatial::{SpatialAssignments, SpatialRole};
+mod surface;
+pub use surface::SurfaceIntent;
 mod typography;
 pub use typography::{FontFamilyRole, TypographyAssignments, TypographyRole, TypographyRoleSpec};
 
