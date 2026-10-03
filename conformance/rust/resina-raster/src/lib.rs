@@ -1,6 +1,6 @@
-use resina_color::{ColorConversionError, linear_srgb_to_srgb, srgb_to_linear_srgb};
+use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb_to_linear_srgb};
 use resina_model::PhysicalVector;
-use resina_resolver::{OpaqueSurfaceIr, SurfacePaintError};
+use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintError};
 use std::{collections::TryReserveError, fmt, io::Write};
 
 pub const MAX_PIXELS: u64 = 4_194_304;
@@ -84,6 +84,26 @@ pub fn render_surface(
     viewport: Viewport,
     samples_per_axis: u8,
 ) -> Result<RasterImage, RasterError> {
+    render(viewport, samples_per_axis, |point| {
+        surface.sample_paint(point)
+    })
+}
+
+pub fn render_focus(
+    indicator: &FocusIndicatorIr,
+    viewport: Viewport,
+    samples_per_axis: u8,
+) -> Result<RasterImage, RasterError> {
+    render(viewport, samples_per_axis, |point| {
+        indicator.sample_paint(point)
+    })
+}
+
+fn render(
+    viewport: Viewport,
+    samples_per_axis: u8,
+    mut sample: impl FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, SurfacePaintError>,
+) -> Result<RasterImage, RasterError> {
     let byte_count = validate(viewport, samples_per_axis)?;
     let mut rgba = Vec::new();
     rgba.try_reserve_exact(byte_count)
@@ -104,7 +124,7 @@ pub fn render_surface(
                             + (f64::from(y) + (f64::from(sy) + 0.5) / grid)
                                 / viewport.pixels_per_unit,
                     };
-                    if let Some(color) = surface.sample_paint(point).map_err(RasterError::Paint)? {
+                    if let Some(color) = sample(point).map_err(RasterError::Paint)? {
                         covered += 1;
                         let linear =
                             srgb_to_linear_srgb(color.components()).map_err(RasterError::Color)?;

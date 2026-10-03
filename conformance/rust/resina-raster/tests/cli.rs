@@ -4,7 +4,11 @@ use std::{
 };
 
 fn invoke(input: &[u8], options: &[&str]) -> Output {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_resina-surface-raster"))
+    invoke_program(env!("CARGO_BIN_EXE_resina-surface-raster"), input, options)
+}
+
+fn invoke_program(program: &str, input: &[u8], options: &[&str]) -> Output {
+    let mut child = Command::new(program)
         .arg("-")
         .args(options)
         .stdin(Stdio::piped())
@@ -18,6 +22,49 @@ fn invoke(input: &[u8], options: &[&str]) -> Output {
 
 const REQUEST: &[u8] = include_bytes!("../../../ir/opaque-surface-request.json");
 const OPTIONS: &[&str] = &["24", "18", "-2", "-2", "1", "2"];
+
+#[test]
+fn focus_cli_preserves_png_and_rejects_unfocused_intent() {
+    let input = include_bytes!("../../../ir/focus-ir-request.json");
+    let program = env!("CARGO_BIN_EXE_resina-focus-raster");
+    let options = ["32", "26", "-6", "-6", "1", "4"];
+    let result = invoke_program(program, input, &options);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert!(result.stderr.is_empty());
+    let encoded = result.stdout;
+    let mut reader = png::Decoder::new(std::io::Cursor::new(&encoded))
+        .read_info()
+        .unwrap();
+    assert_eq!(
+        reader.info().srgb,
+        Some(png::SrgbRenderingIntent::Perceptual)
+    );
+    let mut rgba = vec![0; reader.output_buffer_size().unwrap()];
+    let frame = reader.next_frame(&mut rgba).unwrap();
+    assert_eq!((frame.width, frame.height), (32, 26));
+    assert_eq!(&rgba[(12 * 32 + 16) * 4..(12 * 32 + 17) * 4], &[0; 4]);
+    assert_eq!(&rgba[(3 * 32 + 16) * 4..(3 * 32 + 17) * 4], &[255; 4]);
+    let file = Command::new(program)
+        .arg(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../ir/focus-ir-request.json"
+        ))
+        .args(options)
+        .output()
+        .unwrap();
+    assert!(file.status.success());
+    assert_eq!(file.stdout, encoded);
+    let mut request: serde_json::Value = serde_json::from_slice(input).unwrap();
+    request["surface"]["states"]["states"] = serde_json::json!(["rest"]);
+    let invalid = invoke_program(program, request.to_string().as_bytes(), &options);
+    assert!(!invalid.status.success());
+    assert!(invalid.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&invalid.stderr).contains("focused"));
+}
 
 #[test]
 fn invalid_numeric_arguments_identify_the_parameter() {
