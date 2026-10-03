@@ -148,6 +148,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "resina-qml"
+version = "0.1.0"
+dependencies = [
+ "resina-model",
+ "resina-resolver",
+ "serde_json",
+]
+
+[[package]]
 name = "resina-raster"
 version = "0.1.0"
 dependencies = [

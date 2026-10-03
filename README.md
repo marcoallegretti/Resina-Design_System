@@ -63,3 +63,5 @@ Run `cargo run -p resina-resolver --bin resina-focus-ir -- <path>` for a [focus 
 `FocusIndicatorIr::sample_paint` evaluates the ring's opaque paint without rasterization. The separate `resina-focus-raster` command and Rust `render_focus` API produce [static PNG evidence](conformance/raster/README.md) with a transparent hole and gap. This does not implement focused component behavior or keyboard navigation.
 
 The Web backend's [SVG focus realization](backends/web/resina-svg/README.md) maps the validated IR to exact vector lines/arcs and a compound ring fill. It preserves the complete physical paint bounds and opaque pigment, with no renderer objects added to normative layers. Its public checker runs on Linux and Windows; complete Web components and Lab remain outstanding.
+
+The independent Shell backend's [native QML focus realization](backends/quickshell/resina-qml/README.md) maps that IR to Qt Quick lines/arcs with a software rendering fallback. Its command and public checker run on Linux and Windows; native Quickshell rendering is exercised separately on Linux. Complete Shell components remain outstanding.

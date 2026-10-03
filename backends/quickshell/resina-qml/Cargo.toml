@@ -1,0 +1,12 @@
+[package]
+name = "resina-qml"
+version = "0.1.0"
+edition = "2024"
+description = "Native Qt Quick realization of validated Resina focus ring IR"
+
+[dependencies]
+resina-model = { path = "../../../reference/rust/resina-model" }
+resina-resolver = { path = "../../../reference/rust/resina-resolver" }
+
+[dev-dependencies]
+serde_json.workspace = true

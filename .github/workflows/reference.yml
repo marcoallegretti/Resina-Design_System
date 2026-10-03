@@ -37,6 +37,8 @@ jobs:
       - run: cargo build -p resina-tokens --bins --locked
       - run: cargo build -p resina-motion --bins --locked
       - run: cargo build -p resina-svg --bins --locked
+      - run: cargo build -p resina-qml --bins --locked
+      - run: python tools/check_focus_qml_backend.py -- target/debug/resina-focus-qml${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_svg_backend.py -- target/debug/resina-focus-svg${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_backend.py -- target/debug/resina-spring${{ matrix.executableSuffix }} -
       - run: python tools/check_token_backend.py -- target/debug/resina-token-resolve${{ matrix.executableSuffix }} -
