@@ -17,7 +17,7 @@ def check_failure(command, source, timeout, name):
         )
 
 
-def check_success(command, source, expected, result_validator, timeout, name):
+def check_success(command, source, expected, result_validator, timeout, name, compare=mismatch):
     for attempt in range(2):
         completed = run_backend(command, source, timeout)
         if completed.returncode != 0 or completed.stderr:
@@ -29,12 +29,15 @@ def check_success(command, source, expected, result_validator, timeout, name):
         errors = list(result_validator.iter_errors(actual))
         if errors:
             raise AssertionError(f"{name}: output violates result schema: {errors[0].message}")
-        differing = mismatch(actual, expected)
+        differing = compare(actual, expected)
         if differing:
             raise AssertionError(f"{name}: output differs at {differing}")
 
 
-def check_backend(label, case_schema, request_schema, result_schema, vectors, extra_failures=()):
+def check_backend(
+    label, case_schema, request_schema, result_schema, vectors,
+    extra_failures=(), compare=mismatch,
+):
     parser = argparse.ArgumentParser(
         description=f"Check a Resina {label} backend through the public command protocol."
     )
@@ -67,7 +70,10 @@ def check_backend(label, case_schema, request_schema, result_schema, vectors, ex
                 raise ValueError(f"{name}: request schema: {detail}")
             source = json.dumps(case["request"], ensure_ascii=False, allow_nan=False)
             if "expected" in case:
-                check_success(command, source, case["expected"], result_validator, arguments.timeout, name)
+                check_success(
+                    command, source, case["expected"], result_validator,
+                    arguments.timeout, name, compare,
+                )
             else:
                 check_failure(command, source, arguments.timeout, name)
         check_failure(

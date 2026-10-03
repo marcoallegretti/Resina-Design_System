@@ -162,6 +162,10 @@ def main():
         "schemas/inset-contour-request.schema.json",
         "schemas/inset-contour-result.schema.json",
         "schemas/inset-contour-case.schema.json",
+        "schemas/key-light.schema.json",
+        "schemas/key-light-request.schema.json",
+        "schemas/key-light-result.schema.json",
+        "schemas/key-light-case.schema.json",
         "schemas/shape-fallback-assignments.schema.json",
         "schemas/shape-fallback-assignment-case.schema.json",
         "schemas/shape-fallback-case.schema.json",
@@ -205,7 +209,22 @@ def main():
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
 
-    pigment_profile_schema = validator_for("schemas/opaque-pigment-profiles.schema.json")
+    check_case(
+        validator_for("schemas/key-light.schema.json"),
+        "reference key light",
+        load_json(ROOT / "definitions/key-light.json"),
+        True,
+    )
+    key_light_cases = load_json(ROOT / "conformance/lighting/key-light-vectors.json")
+    key_light_case_schema = validator_for("schemas/key-light-case.schema.json")
+    key_light_request_schema = validator_for("schemas/key-light-request.schema.json")
+    key_light_names = set()
+    for case in key_light_cases:
+        check_case(key_light_case_schema, case["name"], case, True)
+        if case["name"] in key_light_names:
+            raise ValueError(f"duplicate key light case: {case['name']}")
+        key_light_names.add(case["name"])
+        check_case(key_light_request_schema, case["name"], case["request"], case["requestSchemaValid"])
     contour_cases = load_json(ROOT / "conformance/geometry/inset-contour-vectors.json")
     contour_case_schema = validator_for("schemas/inset-contour-case.schema.json")
     contour_request_schema = validator_for("schemas/inset-contour-request.schema.json")
@@ -216,6 +235,7 @@ def main():
             raise ValueError(f"duplicate inset contour case: {case['name']}")
         contour_names.add(case["name"])
         check_case(contour_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+    pigment_profile_schema = validator_for("schemas/opaque-pigment-profiles.schema.json")
     check_case(
         pigment_profile_schema,
         "reference opaque pigment profiles",
@@ -641,6 +661,8 @@ def main():
         + len(pigment_profile_vectors)
         + len(pigment_cases)
         + len(contour_cases)
+        + len(key_light_cases)
+        + 1
         + 1
         + len(focus_cases)
         + 6

@@ -1,0 +1,404 @@
+[
+  {
+    "name": "top light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": 0, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": 0, "y": -1},
+      "sideOffset": {"x": 0, "y": 5},
+      "edgeHighlightWeights": {"top": 1, "right": 0, "bottom": 0, "left": 0},
+      "normalHighlightWeights": [1, 0, 0, 0]
+    }
+  },
+  {
+    "name": "right light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": 4, "y": 0}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": 1, "y": 0},
+      "sideOffset": {"x": -5, "y": 0},
+      "edgeHighlightWeights": {"top": 0, "right": 1, "bottom": 0, "left": 0},
+      "normalHighlightWeights": [0, 1, 0, 0]
+    }
+  },
+  {
+    "name": "bottom light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": 0, "y": 4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": 0, "y": 1},
+      "sideOffset": {"x": 0, "y": -5},
+      "edgeHighlightWeights": {"top": 0, "right": 0, "bottom": 1, "left": 0},
+      "normalHighlightWeights": [0, 0, 1, 0]
+    }
+  },
+  {
+    "name": "left light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -4, "y": 0}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -1, "y": 0},
+      "sideOffset": {"x": 5, "y": 0},
+      "edgeHighlightWeights": {"top": 0, "right": 0, "bottom": 0, "left": 1},
+      "normalHighlightWeights": [0, 0, 0, 1]
+    }
+  },
+  {
+    "name": "top left light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.6, "y": -0.8},
+      "sideOffset": {"x": 3, "y": 4},
+      "edgeHighlightWeights": {"top": 0.8, "right": 0, "bottom": 0, "left": 0.6},
+      "normalHighlightWeights": [0.8, 0, 0, 0.6]
+    }
+  },
+  {
+    "name": "top right light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": 4, "y": -3}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": 0.8, "y": -0.6},
+      "sideOffset": {"x": -4, "y": 3},
+      "edgeHighlightWeights": {"top": 0.6, "right": 0.8, "bottom": 0, "left": 0},
+      "normalHighlightWeights": [0.6, 0.8, 0, 0]
+    }
+  },
+  {
+    "name": "zero depth retains lighting",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 0,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.6, "y": -0.8},
+      "sideOffset": {"x": 0, "y": 0},
+      "edgeHighlightWeights": {"top": 0.8, "right": 0, "bottom": 0, "left": 0.6},
+      "normalHighlightWeights": [0.8, 0, 0, 0.6]
+    }
+  },
+  {
+    "name": "no sampled normals",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": []
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.6, "y": -0.8},
+      "sideOffset": {"x": 3, "y": 4},
+      "edgeHighlightWeights": {"top": 0.8, "right": 0, "bottom": 0, "left": 0.6},
+      "normalHighlightWeights": []
+    }
+  },
+  {
+    "name": "scaled curved normals",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": -3, "y": -4}, {"x": 3, "y": 4}, {"x": -4, "y": 3}, {"x": -30, "y": -40}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.6, "y": -0.8},
+      "sideOffset": {"x": 3, "y": 4},
+      "edgeHighlightWeights": {"top": 0.8, "right": 0, "bottom": 0, "left": 0.6},
+      "normalHighlightWeights": [1, 0, 0, 1]
+    }
+  },
+  {
+    "name": "maximum finite direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -1.7976931348623157e+308, "y": -1.7976931348623157e+308}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.7071067811865475, "y": -0.7071067811865475},
+      "sideOffset": {"x": 3.5355339059327373, "y": 3.5355339059327373},
+      "edgeHighlightWeights": {"top": 0.7071067811865475, "right": 0, "bottom": 0, "left": 0.7071067811865475},
+      "normalHighlightWeights": [0.7071067811865475, 0, 0, 0.7071067811865475]
+    }
+  },
+  {
+    "name": "minimum subnormal direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -5e-324, "y": -5e-324}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.7071067811865475, "y": -0.7071067811865475},
+      "sideOffset": {"x": 3.5355339059327373, "y": 3.5355339059327373},
+      "edgeHighlightWeights": {"top": 0.7071067811865475, "right": 0, "bottom": 0, "left": 0.7071067811865475},
+      "normalHighlightWeights": [0.7071067811865475, 0, 0, 0.7071067811865475]
+    }
+  },
+  {
+    "name": "large oblique offset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 1e+300,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.6, "y": -0.8},
+      "sideOffset": {"x": 6e+299, "y": 8e+299},
+      "edgeHighlightWeights": {"top": 0.8, "right": 0, "bottom": 0, "left": 0.6},
+      "normalHighlightWeights": [0.8, 0, 0, 0.6]
+    }
+  },
+  {
+    "name": "maximum finite depth",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": 0, "y": -1}},
+      "depth": 1.7976931348623157e+308,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": 0, "y": -1},
+      "sideOffset": {"x": 0, "y": 1.7976931348623157e+308},
+      "edgeHighlightWeights": {"top": 1, "right": 0, "bottom": 0, "left": 0},
+      "normalHighlightWeights": [1, 0, 0, 0]
+    }
+  },
+  {
+    "name": "unequal direction magnitudes",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -1.7976931348623157e+308, "y": -1}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -1, "y": -5.562684646268003e-309},
+      "sideOffset": {"x": 5, "y": 2.781342323134002e-308},
+      "edgeHighlightWeights": {"top": 5.562684646268003e-309, "right": 0, "bottom": 0, "left": 1},
+      "normalHighlightWeights": [5.562684646268003e-309, 0, 0, 1]
+    }
+  },
+  {
+    "name": "zero key direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": 0, "y": 0}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "direction must be nonzero"
+  },
+  {
+    "name": "negative depth",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": -1,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "depth must be finite"
+  },
+  {
+    "name": "zero normal at indexed location",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 0, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "normal 1 must be finite and nonzero"
+  },
+  {
+    "name": "unsupported request version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "unsupported key version",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.2.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "unknown key member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}, "backend": "qt"},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unknown direction member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4, "z": 1}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unknown request member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}],
+      "renderer": "guido"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "nonnumeric direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": "left", "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "nonnumeric depth",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": "1px",
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "missing normals",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing direction component",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3}},
+      "depth": 5,
+      "normals": [{"x": 0, "y": -1}, {"x": 1, "y": 0}, {"x": 0, "y": 1}, {"x": -1, "y": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown normal component",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [{"x": 1, "y": 0, "z": 0}]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "extreme sampled normals",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -3, "y": -4}},
+      "depth": 5,
+      "normals": [
+        {"x": -1.7976931348623157e+308, "y": -1.7976931348623157e+308},
+        {"x": -5e-324, "y": -5e-324},
+        {"x": 1.7976931348623157e+308, "y": 1.7976931348623157e+308}
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "direction": {"x": -0.6, "y": -0.8},
+      "sideOffset": {"x": 3, "y": 4},
+      "edgeHighlightWeights": {"top": 0.8, "right": 0, "bottom": 0, "left": 0.6},
+      "normalHighlightWeights": [0.9899494936611664, 0.9899494936611664, 0]
+    }
+  }
+]

@@ -11,6 +11,7 @@ mod frost_legibility;
 mod frost_surface_readability;
 mod geometry;
 mod inset_contour;
+mod key_light;
 mod spatial;
 mod srgb_input;
 pub use edge_contrast::{
@@ -35,6 +36,10 @@ pub use frost_surface_readability::{
 pub use geometry::{CornerGeometryError, normalize_corner_radii};
 pub use inset_contour::{
     InsetContourError, InsetContourResult, resolve_inset_contour, resolve_inset_contour_source,
+};
+pub use key_light::{
+    EdgeHighlightWeights, KeyLightError, KeyLightResult, resolve_key_light,
+    resolve_key_light_source,
 };
 pub use resina_color::{
     ColorFallbackError, ContrastError, SrgbFallback, opaque_contrast_ratio, resolve_srgb_fallback,

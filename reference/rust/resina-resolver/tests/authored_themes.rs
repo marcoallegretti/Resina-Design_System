@@ -1,13 +1,14 @@
+use resina_color::{composite_srgb_over_opaque, resolve_srgb_fallback};
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorRole, FrostRepresentation, InteractionState, MaterialFamily, MaterialRole, SurfaceIntent,
-    TypographyRole,
+    ColorRole, FrostRepresentation, InteractionState, KeyLight, MaterialFamily, MaterialRole,
+    PhysicalVector, SurfaceIntent, TypographyRole,
 };
 use resina_resolver::{
     HeadlessResolution, OpaquePigmentError, bind_surface, compile_theme_source_with_sources,
     opaque_contrast_ratio, resolve_edge_contrast, resolve_focus_indicator,
-    resolve_frost_legibility, resolve_frost_surface_readability, resolve_opaque_pigment,
-    resolve_surface_readability,
+    resolve_frost_legibility, resolve_frost_surface_readability, resolve_key_light,
+    resolve_opaque_pigment, resolve_surface_readability,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -266,6 +267,20 @@ fn authored_materials_keep_content_and_edge_readable_in_both_themes() {
     let tier_zero: EnvironmentSnapshot = serde_json::from_str(TIER_ZERO).unwrap();
     let pigment_profiles =
         serde_json::from_str(include_str!("../../../../definitions/tier0-pigment.json")).unwrap();
+    let key_light: KeyLight =
+        serde_json::from_str(include_str!("../../../../definitions/key-light.json")).unwrap();
+    let lighting = resolve_key_light(
+        &key_light,
+        1.0,
+        &[
+            PhysicalVector { x: 0.0, y: -1.0 },
+            PhysicalVector { x: 1.0, y: 0.0 },
+            PhysicalVector { x: 0.0, y: 1.0 },
+            PhysicalVector { x: -1.0, y: 0.0 },
+        ],
+    )
+    .unwrap();
+    assert!(lighting.side_offset().x > 0.0 && lighting.side_offset().y > 0.0);
     for source in [LIGHT, DARK] {
         for environment in [&standard, &tier_zero] {
             let resolution = resolve(source, environment);
@@ -316,6 +331,27 @@ fn authored_materials_keep_content_and_edge_readable_in_both_themes() {
                     assert_eq!(pigment.body(), result.body());
                     assert_eq!(pigment.side().alpha(), 1.0);
                     assert_eq!(pigment.highlight().alpha(), 1.0);
+                    for weight in lighting.normal_highlight_weights() {
+                        let overlay = resolve_srgb_fallback(&json!({
+                            "colorSpace": "srgb", "components": [1, 1, 1],
+                            "alpha": pigment.profile().highlight_lift() * weight,
+                        }))
+                        .unwrap();
+                        let lit_edge =
+                            composite_srgb_over_opaque(&overlay, pigment.body()).unwrap();
+                        assert_eq!(lit_edge.alpha(), 1.0);
+                        if *weight == 0.0 {
+                            assert_eq!(&lit_edge, pigment.body());
+                        }
+                        for ((lit, body), full) in lit_edge
+                            .components()
+                            .into_iter()
+                            .zip(pigment.body().components())
+                            .zip(pigment.highlight().components())
+                        {
+                            assert!(lit >= body && lit <= full);
+                        }
+                    }
                     for ((side, body), highlight) in pigment
                         .side()
                         .components()

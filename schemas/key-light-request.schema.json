@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:key-light-request:0.1.0",
+  "title": "Resina Key Light Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "keyLight", "depth", "normals"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "keyLight": {"$ref": "urn:resina:schema:key-light:0.1.0"},
+    "depth": {"type": "number", "minimum": 0},
+    "normals": {"type": "array", "items": {"$ref": "urn:resina:schema:key-light:0.1.0#/$defs/direction"}}
+  }
+}

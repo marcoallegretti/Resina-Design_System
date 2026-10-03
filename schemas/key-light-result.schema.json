@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:key-light-result:0.1.0",
+  "title": "Resina Key Light Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "direction", "sideOffset", "edgeHighlightWeights", "normalHighlightWeights"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "direction": {"$ref": "urn:resina:schema:key-light:0.1.0#/$defs/direction"},
+    "sideOffset": {"$ref": "urn:resina:schema:key-light:0.1.0#/$defs/vector"},
+    "edgeHighlightWeights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["top", "right", "bottom", "left"],
+      "properties": {
+        "top": {"type": "number", "minimum": 0, "maximum": 1},
+        "right": {"type": "number", "minimum": 0, "maximum": 1},
+        "bottom": {"type": "number", "minimum": 0, "maximum": 1},
+        "left": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "normalHighlightWeights": {"type": "array", "items": {"type": "number", "minimum": 0, "maximum": 1}}
+  }
+}

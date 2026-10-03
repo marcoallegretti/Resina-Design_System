@@ -42,4 +42,6 @@ Run `cargo run -p resina-resolver --bin resina-opaque-pigment -- <path>` for an 
 
 Run `cargo run -p resina-resolver --bin resina-inset-contour -- <path>` for an [inset contour request](schemas/inset-contour-request.schema.json). The operation derives bounded inner geometry for portable edge and highlight bands. `python tools/check_inset_contour_backend.py -- <backend-command> -` checks its geometry and diagnostic failures.
 
+Run `cargo run -p resina-resolver --bin resina-key-light -- <path>` for a [key-light request](schemas/key-light-request.schema.json). The operation resolves a physical lighting direction, side offset, and highlight weights for straight edges and supplied normals. `python tools/check_key_light_backend.py -- <backend-command> -` checks its directional output and failures.
+
 Run `cargo run -p resina-resolver --bin resina-focus-indicator -- <path>` for a [focused surface indicator request](schemas/focus-indicator-request.schema.json), or use `-` for stdin. The Rust `resolve_focus_indicator` API accepts a headless resolution and surface intent directly. `python tools/check_focus_indicator_backend.py -- <backend-command> -` checks the bound state, authored indicator color, contrast, and Tier 0 geometry against a known surrounding color.

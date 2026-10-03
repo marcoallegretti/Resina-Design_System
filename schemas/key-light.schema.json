@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:key-light:0.1.0",
+  "title": "Resina Key Light",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "direction"],
+  "properties": {"schemaVersion": {"const": "0.1.0"}, "direction": {"$ref": "#/$defs/direction"}},
+  "$defs": {
+    "vector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {"x": {"type": "number"}, "y": {"type": "number"}}
+    },
+    "direction": {
+      "allOf": [
+        {"$ref": "#/$defs/vector"},
+        {
+          "anyOf": [{"properties": {"x": {"not": {"const": 0}}}}, {"properties": {"y": {"not": {"const": 0}}}}]
+        }
+      ]
+    }
+  }
+}
