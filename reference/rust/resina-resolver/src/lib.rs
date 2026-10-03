@@ -62,8 +62,10 @@ pub use surface_readability::{
     SurfaceReadabilityError, SurfaceReadabilityResult, resolve_surface_readability,
     resolve_surface_readability_source,
 };
+mod opaque_paint;
 mod opaque_pigment;
 mod opaque_surface;
+pub use opaque_paint::SurfacePaintError;
 pub use opaque_pigment::{
     OpaquePigmentError, OpaquePigmentResult, resolve_opaque_pigment, resolve_opaque_pigment_source,
 };
