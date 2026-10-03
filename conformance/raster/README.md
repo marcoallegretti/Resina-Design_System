@@ -12,6 +12,8 @@ For pixel `(x,y)` and grid sample `(i,j)`, evaluate the canonical paint law at `
 
 This deterministic regular-grid integration is bounded reference evidence, not an analytic area integral. Increasing sampling changes edge coverage and cannot establish visual or accessibility conformance alone. Geometry and semantic assertions remain necessary alongside critical image review and eventual perceptual comparison.
 
+The CPU backend can omit repeated point queries when a conservative geometric proof establishes identical paint at every sample in a pixel. Uniform body pixels preserve repeated addition before color conversion and quantization; clear pixels remain zero RGBA. Uncertain regions retain ordinary point sampling. The requested grid and sample budget remain unchanged. Tests compare this realization against the point path across geometry, device scales, all sampling grids and RGBA8 rounding thresholds.
+
 ## Output and limits
 
 The conformance commands output row-major RGBA8 PNG with an sRGB chunk using perceptual intent. [PNG](https://www.w3.org/TR/png-3/) defines straight alpha and intensity-domain compositing; the [Resina conversion contract](../../spec/04-color-conversion.md) defines decoding and encoding. Encoding belongs to the optional `png` feature, not normative IR. Color, model and resolver layers acquire no image-format dependency; raw-pixel builds can disable the default feature to exclude PNG entirely.

@@ -4,6 +4,8 @@
 
 The library accepts an explicit `Viewport` and samples per axis. `render_surface` and `render_focus` return a complete `RasterImage` or a diagnostic error, with pixel/sample/allocation/precision limits checked before sampling. There is no file loading, image decoding, worker queue or platform integration in these operations. Consumers must choose the actual device scale, reserve complete paint bounds, prepare the image before exposing a state, and reevaluate it when IR or scale changes. Performance and the renderer's upload/compositing behavior still need measurement at that boundary.
 
+For grids of at least three samples per axis, the backend conservatively proves uniform sample regions in the body interior, focus hole and exterior. These pixels avoid repeated geometry queries while preserving the original sample positions, repeated linear-light accumulation, quantization and resource limits. Edges, highlights, unsupported contours and uncertain arithmetic use the canonical point evaluator. This optimization introduces no IR fields or public APIs.
+
 Use `width`, `height` and `rgba` to inspect an image. `into_rgba` transfers ownership of its existing pixel allocation to a consumer; it does not copy or premultiply the pixels. A toolkit adapter owns any subsequent buffer conversion, GPU upload or cache. The existing [sampling, color, limit and PNG evidence contract](../../../conformance/raster/README.md) describes the complete current operation.
 
 PNG support is an optional feature, enabled by default to preserve the conformance commands and `write_png` API. A production pixel consumer can disable it:

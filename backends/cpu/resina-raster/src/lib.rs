@@ -2,6 +2,10 @@ use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb
 use resina_model::PhysicalVector;
 use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintError};
 use std::{collections::TryReserveError, fmt};
+mod uniform;
+use uniform::SampleBox;
+#[cfg(test)]
+mod tests;
 
 pub const MAX_PIXELS: u64 = 4_194_304;
 pub const MAX_SAMPLES: u64 = 16_777_216;
@@ -89,9 +93,29 @@ pub fn render_surface(
     viewport: Viewport,
     samples_per_axis: u8,
 ) -> Result<RasterImage, RasterError> {
-    render(viewport, samples_per_axis, |point| {
-        surface.sample_paint(point)
-    })
+    let geometry = surface.geometry();
+    let supported = uniform::supported(geometry.front())
+        && uniform::supported(geometry.silhouette())
+        && uniform::placed_supported(geometry.edge_interior())
+        && uniform::placed_supported(geometry.highlight_outer())
+        && uniform::placed_supported(geometry.content());
+    render(
+        viewport,
+        samples_per_axis,
+        surface.pigment().body(),
+        |region| {
+            if !supported {
+                UniformRegion::Sample
+            } else if uniform::disjoint(region, geometry.silhouette()) {
+                UniformRegion::Clear
+            } else if uniform::placed_inside(region, geometry.content()) {
+                UniformRegion::Solid
+            } else {
+                UniformRegion::Sample
+            }
+        },
+        |point| surface.sample_paint(point),
+    )
 }
 
 pub fn render_focus(
@@ -99,14 +123,39 @@ pub fn render_focus(
     viewport: Viewport,
     samples_per_axis: u8,
 ) -> Result<RasterImage, RasterError> {
-    render(viewport, samples_per_axis, |point| {
-        indicator.sample_paint(point)
-    })
+    let geometry = indicator.geometry();
+    let supported =
+        uniform::placed_supported(geometry.outer()) && uniform::placed_supported(geometry.inner());
+    render(
+        viewport,
+        samples_per_axis,
+        indicator.indicator().color(),
+        |region| {
+            if !supported {
+                UniformRegion::Sample
+            } else if uniform::placed_disjoint(region, geometry.outer())
+                || uniform::placed_inside(region, geometry.inner())
+            {
+                UniformRegion::Clear
+            } else {
+                UniformRegion::Sample
+            }
+        },
+        |point| indicator.sample_paint(point),
+    )
+}
+
+enum UniformRegion {
+    Clear,
+    Solid,
+    Sample,
 }
 
 fn render(
     viewport: Viewport,
     samples_per_axis: u8,
+    solid_color: &SrgbFallback,
+    uniform: impl Fn(SampleBox) -> UniformRegion,
     mut sample: impl FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, SurfacePaintError>,
 ) -> Result<RasterImage, RasterError> {
     let byte_count = validate(viewport, samples_per_axis)?;
@@ -116,8 +165,40 @@ fn render(
     let grid = f64::from(samples_per_axis);
     let sample_count = grid * grid;
     let mut decoded_color = None;
+    let mut solid_pixel = None;
     for y in 0..viewport.height {
         for x in 0..viewport.width {
+            if samples_per_axis >= 3 {
+                let at = |x: u32, y: u32, sample: f64| PhysicalVector {
+                    x: viewport.origin.x
+                        + (f64::from(x) + (sample + 0.5) / grid) / viewport.pixels_per_unit,
+                    y: viewport.origin.y
+                        + (f64::from(y) + (sample + 0.5) / grid) / viewport.pixels_per_unit,
+                };
+                let region = SampleBox {
+                    min: at(x, y, 0.0),
+                    max: at(x, y, grid - 1.0),
+                };
+                match uniform(region) {
+                    UniformRegion::Clear => {
+                        rgba.extend_from_slice(&[0; 4]);
+                        continue;
+                    }
+                    UniformRegion::Solid => {
+                        let pixel = match solid_pixel {
+                            Some(pixel) => pixel,
+                            None => {
+                                let pixel = constant_pixel(solid_color, samples_per_axis)?;
+                                solid_pixel = Some(pixel);
+                                pixel
+                            }
+                        };
+                        rgba.extend_from_slice(&pixel);
+                        continue;
+                    }
+                    UniformRegion::Sample => {}
+                }
+            }
             let mut linear_sum = [0.0; 3];
             let mut covered = 0_u32;
             for sy in 0..samples_per_axis {
@@ -163,6 +244,22 @@ fn render(
         height: viewport.height,
         rgba,
     })
+}
+
+fn constant_pixel(color: &SrgbFallback, samples_per_axis: u8) -> Result<[u8; 4], RasterError> {
+    let linear = srgb_to_linear_srgb(color.components()).map_err(RasterError::Color)?;
+    let count = u32::from(samples_per_axis).pow(2);
+    let mut sum = [0.0; 3];
+    // Repeated addition preserves the sampled path's rounding at RGBA8 thresholds.
+    for _ in 0..count {
+        for (sum, value) in sum.iter_mut().zip(linear) {
+            *sum += value;
+        }
+    }
+    let rgb = linear_srgb_to_srgb(sum.map(|value| value / f64::from(count)))
+        .map_err(RasterError::Color)?;
+    let [r, g, b] = rgb.map(quantize);
+    Ok([r, g, b, 255])
 }
 
 fn quantize(channel: f64) -> u8 {
