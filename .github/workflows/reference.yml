@@ -47,6 +47,8 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --no-upgrade -y libinput10
           mkdir -p target/slint-viewer
           curl --fail --location --retry 3 https://github.com/slint-ui/slint/releases/download/v1.18.1/slint-viewer-x86_64-unknown-linux-gnu.tar.gz -o target/slint-viewer.tar.gz
           echo '86b260e661cdc24dcadaf63266b034f3281cbec542afc26545a72a986fe42a13  target/slint-viewer.tar.gz' | sha256sum --check
