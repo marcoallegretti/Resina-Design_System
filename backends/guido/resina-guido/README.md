@@ -13,11 +13,17 @@ identity, first-frame readiness and replacement at this exact revision.
 
 ## Integration
 
-Call `prepare_surface` or `prepare_focus` with validated resolved IR, the actual
+Call `prepare_surface`, `prepare_focus` or `prepare_surface_paint` with validated resolved IR, the actual
 GUIdo device scale and a sampling grid from 1 to 8 samples per axis. Preparation
 finishes synchronously before returning a `PreparedPaint`. Reuse this value
 between frames, and prepare a replacement when geometry, appearance or device
 scale changes. Publish the replacement only after successful preparation.
+
+`prepare_surface_paint` consumes the complete body/navigation result and prepares
+one image with shared sampling and linear-light integration. Focused paint reserves
+the full outer ring bounds; unfocused paint uses the body bounds. Publish this one
+prepared value to replace both channels together. The ring gap remains transparent,
+and coarse pixels preserve combined body/ring coverage before quantization.
 
 Use `paint.image_source()` with GUIdo's `image` and `ContentFit::Fill`, inside a
 container sized to `paint.logical_size()`. Position that container at
@@ -55,7 +61,9 @@ cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-target
 
 The public scenes cover Light and Dark, all four material families, opaque bodies
 and focus rings. Tests check their first rendered frame at scales 1, 1.25, 2 and
-3 while decoding is held, then replace sources in the same surface. Opaque,
+3 while decoding is held, then replace sources in the same surface.
+Complete focused-only and rest requests derived from each authored body also
+exercise single-image replacement and removal of the navigation channel. Opaque,
 partial-alpha and clear pixels are checked against the prepared straight pixels,
 allowing one byte of GPU rounding after premultiplication. Preparation tests also
 check complete bounds, shared image storage and explicit failures. These checks

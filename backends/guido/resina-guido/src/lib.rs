@@ -4,7 +4,7 @@ compile_error!("the GUIdo backend requires Linux");
 use guido::{layout::Size, prelude::ImageSource};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{RasterError, RasterImage, Viewport};
-use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr};
+use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintIr};
 use std::fmt;
 
 const MAX_COORDINATE_ERROR: f64 = 1.0 / 1024.0;
@@ -96,6 +96,23 @@ fn coordinate(value: f64) -> Result<f32, PrepareError> {
         return Err(PrepareError::CoordinatePrecision(value));
     }
     Ok(rounded)
+}
+
+pub fn prepare_surface_paint(
+    ir: &SurfacePaintIr,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<PreparedPaint, PrepareError> {
+    let Some(focus) = ir.focus() else {
+        return prepare_surface(ir.body(), device_scale, samples_per_axis);
+    };
+    let outer = focus.geometry().outer();
+    let mut bounds = outer.contour().bounds().expect("validated focus bounds");
+    bounds.x += outer.offset().x;
+    bounds.y += outer.offset().y;
+    prepare(bounds, device_scale, |viewport| {
+        resina_raster::render_surface_paint(ir, viewport, samples_per_axis)
+    })
 }
 
 fn prepare(
