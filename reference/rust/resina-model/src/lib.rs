@@ -3,7 +3,9 @@ use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 mod color;
 pub use color::{ColorAssignments, ColorRole, OpaqueColorAssignments};
 mod geometry;
-pub use geometry::{CornerRadius, LogicalCornerRadii, PhysicalVector, SurfaceSize};
+pub use geometry::{
+    ContourSegment, CornerRadius, LogicalCornerRadii, PhysicalBounds, PhysicalVector, SurfaceSize,
+};
 mod key_light;
 pub use key_light::KeyLight;
 mod elevation;

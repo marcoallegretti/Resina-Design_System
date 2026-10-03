@@ -1,0 +1,1879 @@
+[
+  {
+    "name": "zero-offset sharp rectangle",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 6
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 10,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 0
+          },
+          "to": {
+            "x": 10,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "positive diagonal sharp extrusion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 13,
+        "height": 10
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 10,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 0
+          },
+          "to": {
+            "x": 13,
+            "y": 4
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 13,
+            "y": 4
+          },
+          "to": {
+            "x": 13,
+            "y": 10
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 13,
+            "y": 10
+          },
+          "to": {
+            "x": 3,
+            "y": 10
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 3,
+            "y": 10
+          },
+          "to": {
+            "x": 0,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "negative diagonal sharp extrusion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": -3,
+        "y": -4
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": -3,
+        "y": -4,
+        "width": 13,
+        "height": 10
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": -3,
+            "y": -4
+          },
+          "to": {
+            "x": 7,
+            "y": -4
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 7,
+            "y": -4
+          },
+          "to": {
+            "x": 10,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 0
+          },
+          "to": {
+            "x": 10,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 6
+          },
+          "to": {
+            "x": -3,
+            "y": 2
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": -3,
+            "y": 2
+          },
+          "to": {
+            "x": -3,
+            "y": -4
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "axis extrusion retains collinear bridges",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 13,
+        "height": 6
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 10,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 0
+          },
+          "to": {
+            "x": 13,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 13,
+            "y": 0
+          },
+          "to": {
+            "x": 13,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 13,
+            "y": 6
+          },
+          "to": {
+            "x": 10,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "zero-component radii become square corners",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 2
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 2
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 2
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 6
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 10,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 0
+          },
+          "to": {
+            "x": 10,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "elliptical zero-offset contour",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 2,
+          "y": 1
+        },
+        "topEnd": {
+          "x": 2,
+          "y": 1
+        },
+        "bottomEnd": {
+          "x": 2,
+          "y": 1
+        },
+        "bottomStart": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 6
+      },
+      "segments": [
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 1
+          },
+          "radii": {
+            "x": 2,
+            "y": 1
+          },
+          "start": {
+            "x": -1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": -1
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 2,
+            "y": 0
+          },
+          "to": {
+            "x": 8,
+            "y": 0
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 8,
+            "y": 1
+          },
+          "radii": {
+            "x": 2,
+            "y": 1
+          },
+          "start": {
+            "x": 0,
+            "y": -1
+          },
+          "end": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 1
+          },
+          "to": {
+            "x": 10,
+            "y": 5
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 8,
+            "y": 5
+          },
+          "radii": {
+            "x": 2,
+            "y": 1
+          },
+          "start": {
+            "x": 1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 8,
+            "y": 6
+          },
+          "to": {
+            "x": 2,
+            "y": 6
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 5
+          },
+          "radii": {
+            "x": 2,
+            "y": 1
+          },
+          "start": {
+            "x": 0,
+            "y": 1
+          },
+          "end": {
+            "x": -1,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 5
+          },
+          "to": {
+            "x": 0,
+            "y": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "circle swept horizontally",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 4,
+        "height": 4
+      },
+      "radii": {
+        "topStart": {
+          "x": 2,
+          "y": 2
+        },
+        "topEnd": {
+          "x": 2,
+          "y": 2
+        },
+        "bottomEnd": {
+          "x": 2,
+          "y": 2
+        },
+        "bottomStart": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 7,
+        "height": 4
+      },
+      "segments": [
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": -1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": -1
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 2,
+            "y": 0
+          },
+          "to": {
+            "x": 5,
+            "y": 0
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 5,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 0,
+            "y": -1
+          },
+          "end": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 5,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 5,
+            "y": 4
+          },
+          "to": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 0,
+            "y": 1
+          },
+          "end": {
+            "x": -1,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "circle diagonal split uses perpendicular three-four normal",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 4,
+        "height": 4
+      },
+      "radii": {
+        "topStart": {
+          "x": 2,
+          "y": 2
+        },
+        "topEnd": {
+          "x": 2,
+          "y": 2
+        },
+        "bottomEnd": {
+          "x": 2,
+          "y": 2
+        },
+        "bottomStart": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 7,
+        "height": 8
+      },
+      "segments": [
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": -1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": -1
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 0,
+            "y": -1
+          },
+          "end": {
+            "x": 0.8,
+            "y": -0.6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 3.6,
+            "y": 0.8
+          },
+          "to": {
+            "x": 6.6,
+            "y": 4.8
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 5,
+            "y": 6
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 0.8,
+            "y": -0.6
+          },
+          "end": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 5,
+            "y": 6
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 5,
+            "y": 6
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 0,
+            "y": 1
+          },
+          "end": {
+            "x": -0.8,
+            "y": 0.6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 3.4,
+            "y": 7.2
+          },
+          "to": {
+            "x": 0.4,
+            "y": 3.2
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": -0.8,
+            "y": 0.6
+          },
+          "end": {
+            "x": -1,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "oversized circular radii normalize before sweep",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 4,
+        "height": 4
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 20
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 20
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 7,
+        "height": 4
+      },
+      "segments": [
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": -1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": -1
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 2,
+            "y": 0
+          },
+          "to": {
+            "x": 5,
+            "y": 0
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 5,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 0,
+            "y": -1
+          },
+          "end": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 5,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 1,
+            "y": 0
+          },
+          "end": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 5,
+            "y": 4
+          },
+          "to": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radii": {
+            "x": 2,
+            "y": 2
+          },
+          "start": {
+            "x": 0,
+            "y": 1
+          },
+          "end": {
+            "x": -1,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "RTL maps top-start to physical top-right",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 2,
+          "y": 1
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "rtl",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 6
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 8,
+            "y": 0
+          }
+        },
+        {
+          "kind": "arc",
+          "center": {
+            "x": 8,
+            "y": 1
+          },
+          "radii": {
+            "x": 2,
+            "y": 1
+          },
+          "start": {
+            "x": 0,
+            "y": -1
+          },
+          "end": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 1
+          },
+          "to": {
+            "x": 10,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 10,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 6
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 6
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "collapsed width has no filled silhouette",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 0,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": null,
+      "segments": []
+    }
+  },
+  {
+    "name": "collapsed height has no filled silhouette",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 0
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": null,
+      "segments": []
+    }
+  },
+  {
+    "name": "subnormal rectangle remains nonempty",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 5e-324,
+        "height": 5e-324
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 5e-324,
+        "height": 5e-324
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 5e-324,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 5e-324,
+            "y": 0
+          },
+          "to": {
+            "x": 5e-324,
+            "y": 5e-324
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 5e-324,
+            "y": 5e-324
+          },
+          "to": {
+            "x": 0,
+            "y": 5e-324
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 5e-324
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "large finite sharp sweep",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 1e+300,
+        "height": 1e+300
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 1e+300,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 2e+300,
+        "height": 1e+300
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 1e+300,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 1e+300,
+            "y": 0
+          },
+          "to": {
+            "x": 2e+300,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 2e+300,
+            "y": 0
+          },
+          "to": {
+            "x": 2e+300,
+            "y": 1e+300
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 2e+300,
+            "y": 1e+300
+          },
+          "to": {
+            "x": 1e+300,
+            "y": 1e+300
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 1e+300,
+            "y": 1e+300
+          },
+          "to": {
+            "x": 0,
+            "y": 1e+300
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 1e+300
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "unsupported version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "missing offset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown request field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "backend": "qt"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unknown nested offset field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "invalid layout direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "auto",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "negative width",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": -1,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "width must be finite and nonnegative"
+  },
+  {
+    "name": "negative corner radius",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": -1,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "topEnd.x must be finite and nonnegative"
+  },
+  {
+    "name": "invalid radius on collapsed surface",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 0,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": -1,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "topEnd.x must be finite and nonnegative"
+  },
+  {
+    "name": "numeric string offset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": "1",
+        "y": 0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "extruded bounds overflow",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 1.7976931348623157e+308,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 1.7976931348623157e+308,
+        "y": 0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exceed finite"
+  }
+]

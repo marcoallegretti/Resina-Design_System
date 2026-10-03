@@ -49,6 +49,7 @@ jobs:
       - run: python tools/check_opaque_pigment_backend.py -- target/debug/resina-opaque-pigment${{ matrix.executableSuffix }} -
       - run: python tools/check_inset_contour_backend.py -- target/debug/resina-inset-contour${{ matrix.executableSuffix }} -
       - run: python tools/check_key_light_backend.py -- target/debug/resina-key-light${{ matrix.executableSuffix }} -
+      - run: python tools/check_extruded_contour_backend.py -- target/debug/resina-extruded-contour${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_indicator_backend.py -- target/debug/resina-focus-indicator${{ matrix.executableSuffix }} -
   schemas:
     runs-on: ubuntu-latest

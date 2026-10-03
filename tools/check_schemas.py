@@ -125,6 +125,10 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/extruded-contour-request.schema.json",
+        "schemas/extruded-contour-result.schema.json",
+        "schemas/extruded-contour-case.schema.json",
+        "schemas/physical-vector.schema.json",
         "schemas/edge-contrast-request.schema.json",
         "schemas/edge-contrast-result.schema.json",
         "schemas/edge-contrast-case.schema.json",
@@ -215,6 +219,36 @@ def main():
         load_json(ROOT / "definitions/key-light.json"),
         True,
     )
+    extrusion_cases = load_json(ROOT / "conformance/geometry/extruded-contour-vectors.json")
+    extrusion_case_schema = validator_for("schemas/extruded-contour-case.schema.json")
+    extrusion_request_schema = validator_for("schemas/extruded-contour-request.schema.json")
+    extrusion_names = set()
+    for case in extrusion_cases:
+        check_case(extrusion_case_schema, case["name"], case, True)
+        if case["name"] in extrusion_names:
+            raise ValueError(f"duplicate extruded contour case: {case['name']}")
+        extrusion_names.add(case["name"])
+        check_case(extrusion_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+    extrusion_result_schema = validator_for("schemas/extruded-contour-result.schema.json")
+    arc_result = next(
+        case["expected"] for case in extrusion_cases
+        if "expected" in case and case["expected"]["segments"]
+        and case["expected"]["segments"][0]["kind"] == "arc"
+    )
+    invalid_extrusion_results = (
+        ("null bounds with filled contour", "/bounds", None),
+        ("filled bounds with empty contour", "/segments", []),
+        ("zero width bounds", "/bounds/width", 0),
+        ("zero arc radius", "/segments/0/radii/x", 0),
+        ("zero radial direction", "/segments/0/start", {"x": 0, "y": 0}),
+        ("radial outside unit range", "/segments/0/end/x", 2),
+        ("unknown segment kind", "/segments/0/kind", "circle"),
+        ("unknown vector member", "/segments/0/center", {"x": 2, "y": 1, "z": 0}),
+    )
+    for name, pointer, value in invalid_extrusion_results:
+        invalid = copy.deepcopy(arc_result)
+        replace_at_pointer(invalid, pointer, value)
+        check_case(extrusion_result_schema, name, invalid, False)
     key_light_cases = load_json(ROOT / "conformance/lighting/key-light-vectors.json")
     key_light_case_schema = validator_for("schemas/key-light-case.schema.json")
     key_light_request_schema = validator_for("schemas/key-light-request.schema.json")
@@ -662,6 +696,8 @@ def main():
         + len(pigment_cases)
         + len(contour_cases)
         + len(key_light_cases)
+        + len(extrusion_cases)
+        + len(invalid_extrusion_results)
         + 1
         + 1
         + len(focus_cases)

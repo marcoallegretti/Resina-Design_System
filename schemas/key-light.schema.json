@@ -8,10 +8,7 @@
   "properties": {"schemaVersion": {"const": "0.1.0"}, "direction": {"$ref": "#/$defs/direction"}},
   "$defs": {
     "vector": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["x", "y"],
-      "properties": {"x": {"type": "number"}, "y": {"type": "number"}}
+      "$ref": "urn:resina:schema:physical-vector:0.1.0"
     },
     "direction": {
       "allOf": [

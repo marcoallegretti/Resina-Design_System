@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:extruded-contour-request:0.1.0",
+  "title": "Resina Extruded Contour Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "size", "radii", "layoutDirection", "offset"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "size": {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+    "radii": {"$ref": "urn:resina:schema:logical-corner-radii:0.1.0"},
+    "layoutDirection": {"enum": ["ltr", "rtl"]},
+    "offset": {"$ref": "urn:resina:schema:physical-vector:0.1.0"}
+  }
+}

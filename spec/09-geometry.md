@@ -2,6 +2,8 @@
 
 Portable edge and highlight bands use the [inset contour contract](33-inset-contour.md) after surface bounds and outer radii are known. It defines inner geometry independently of a toolkit stroke primitive.
 
+Directional side-plane silhouettes use the [extruded contour contract](35-extruded-contour.md), which maps logical corners before sweeping the front shape along a physical offset.
+
 The canonical shape intents are `structural`, `soft`, `rounded`, `capsule`, and `organic`. They describe geometry independent of a fixed radius, path primitive, rendering toolkit, or output scale. The five names are distinct semantic choices; consumers MUST NOT infer a shape from material family, component name, or screen category. Major surfaces SHOULD favor continuous curvature, with approximations preserving the intended softness when exact geometry is unavailable.
 
 A surface form supplies one shape and one [semantic elevation](08-elevation.md) under `schemaVersion` `0.1.0`. The [machine-readable schema](../schemas/surface-form.schema.json) requires all three fields and rejects unknown fields or values. Shape and elevation are independent at this generic layer, so all pairs are representable. Component contracts may impose narrower choices when justified by their anatomy or interaction. The [form vectors](../conformance/geometry/surface-form-vectors.json) cover every shape and elevation name and invalid input.

@@ -6,6 +6,7 @@ use std::{collections::BTreeMap, fmt};
 
 mod edge_contrast;
 mod elevation;
+mod extruded_contour;
 mod focus_indicator;
 mod frost_legibility;
 mod frost_surface_readability;
@@ -20,6 +21,10 @@ pub use edge_contrast::{
 pub use elevation::{
     ElevationDepthError, ElevationDepthResolutionError, ElevationDepthResolutionErrorKind,
     ElevationDepthResult, resolve_elevation_depth, resolve_elevation_depth_source,
+};
+pub use extruded_contour::{
+    ExtrudedContourError, ExtrudedContourResult, resolve_extruded_contour,
+    resolve_extruded_contour_source,
 };
 pub use focus_indicator::{
     FocusIndicatorError, FocusIndicatorResult, resolve_focus_indicator,
