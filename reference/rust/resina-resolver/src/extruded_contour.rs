@@ -25,6 +25,25 @@ pub struct ExtrudedContourResult {
     segments: Vec<ContourSegment>,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlacedContour {
+    offset: PhysicalVector,
+    contour: ExtrudedContourResult,
+}
+
+impl PlacedContour {
+    pub(crate) fn new(offset: PhysicalVector, contour: ExtrudedContourResult) -> Self {
+        Self { offset, contour }
+    }
+    pub fn offset(&self) -> PhysicalVector {
+        self.offset
+    }
+    pub fn contour(&self) -> &ExtrudedContourResult {
+        &self.contour
+    }
+}
+
 impl ExtrudedContourResult {
     pub fn bounds(&self) -> Option<PhysicalBounds> {
         self.bounds

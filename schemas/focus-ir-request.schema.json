@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:focus-ir-request:0.1.0",
+  "title": "Resina Focus Indicator IR Request",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "theme", "surface", "size", "shapeAssignments", "depthAssignments", "keyLight", "surroundingColor"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "theme": {"$ref": "urn:resina:schema:theme-resolution-request:0.1.0"},
+    "surface": {
+      "allOf": [
+        {"$ref": "urn:resina:schema:surface-binding:0.2.0"},
+        {"properties": {"states": {"properties": {"states": {"contains": {"const": "focused"}}}}}}
+      ]
+    },
+    "size": {
+      "allOf": [
+        {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+        {"properties": {"width": {"exclusiveMinimum": 0}, "height": {"exclusiveMinimum": 0}}}
+      ]
+    },
+    "shapeAssignments": {"$ref": "urn:resina:schema:shape-fallback-assignments:0.1.0"},
+    "depthAssignments": {"$ref": "urn:resina:schema:elevation-depth-assignments:0.1.0"},
+    "keyLight": {"$ref": "urn:resina:schema:key-light:0.1.0"},
+    "surroundingColor": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"}
+  }
+}

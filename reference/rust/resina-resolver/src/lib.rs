@@ -8,6 +8,7 @@ mod edge_contrast;
 mod elevation;
 mod extruded_contour;
 mod focus_indicator;
+mod focus_ir;
 mod frost_legibility;
 mod frost_surface_readability;
 mod geometry;
@@ -23,12 +24,16 @@ pub use elevation::{
     ElevationDepthResult, resolve_elevation_depth, resolve_elevation_depth_source,
 };
 pub use extruded_contour::{
-    ExtrudedContourError, ExtrudedContourResult, resolve_extruded_contour,
+    ExtrudedContourError, ExtrudedContourResult, PlacedContour, resolve_extruded_contour,
     resolve_extruded_contour_source,
 };
 pub use focus_indicator::{
     FocusIndicatorError, FocusIndicatorResult, resolve_focus_indicator,
     resolve_focus_indicator_source,
+};
+pub use focus_ir::{
+    FocusIndicatorIr, FocusIrError, FocusIrInput, FocusRingGeometry, resolve_focus_ir,
+    resolve_focus_ir_source,
 };
 pub use frost_legibility::{
     FrostLegibilityError, FrostLegibilityResult, resolve_frost_legibility,
@@ -63,7 +68,7 @@ pub use opaque_pigment::{
     OpaquePigmentError, OpaquePigmentResult, resolve_opaque_pigment, resolve_opaque_pigment_source,
 };
 pub use opaque_surface::{
-    OpaqueSurfaceError, OpaqueSurfaceGeometry, OpaqueSurfaceInput, OpaqueSurfaceIr, PlacedContour,
+    OpaqueSurfaceError, OpaqueSurfaceGeometry, OpaqueSurfaceInput, OpaqueSurfaceIr,
     resolve_opaque_surface, resolve_opaque_surface_source,
 };
 mod color_fallback;

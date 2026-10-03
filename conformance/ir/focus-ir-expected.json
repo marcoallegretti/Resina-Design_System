@@ -1,0 +1,468 @@
+{
+  "schemaVersion": "0.1.0",
+  "indicator": {
+    "schemaVersion": "0.1.0",
+    "binding": {
+      "materialRole": "surface.base",
+      "colorRole": "surface.base",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "structural",
+        "elevation": "raised"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "selected"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none"
+        ]
+      },
+      "schemaVersion": "0.4.0",
+      "materialFamily": "cast",
+      "sourceColor": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "colorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "opaqueColorFallback": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      }
+    },
+    "colorRole": "focus",
+    "color": {
+      "colorSpace": "srgb",
+      "components": [
+        1,
+        1,
+        1
+      ],
+      "alpha": 1
+    },
+    "contrastRatio": 21,
+    "fallbackApplied": false,
+    "strokeWidth": 2,
+    "gap": 2
+  },
+  "geometry": {
+    "silhouette": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 14
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 20,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 0
+          },
+          "to": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 12
+          },
+          "to": {
+            "x": 20,
+            "y": 14
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 14
+          },
+          "to": {
+            "x": 0,
+            "y": 14
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 14
+          },
+          "to": {
+            "x": 0,
+            "y": 12
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 12
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    "inner": {
+      "offset": {
+        "x": -2,
+        "y": -2
+      },
+      "contour": {
+        "schemaVersion": "0.1.0",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 24,
+          "height": 18
+        },
+        "segments": [
+          {
+            "kind": "arc",
+            "center": {
+              "x": 2,
+              "y": 2
+            },
+            "radii": {
+              "x": 2,
+              "y": 2
+            },
+            "start": {
+              "x": -1,
+              "y": 0
+            },
+            "end": {
+              "x": 0,
+              "y": -1
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 2,
+              "y": 0
+            },
+            "to": {
+              "x": 22,
+              "y": 0
+            }
+          },
+          {
+            "kind": "arc",
+            "center": {
+              "x": 22,
+              "y": 2
+            },
+            "radii": {
+              "x": 2,
+              "y": 2
+            },
+            "start": {
+              "x": 0,
+              "y": -1
+            },
+            "end": {
+              "x": 1,
+              "y": 0
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 24,
+              "y": 2
+            },
+            "to": {
+              "x": 24,
+              "y": 14
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 24,
+              "y": 14
+            },
+            "to": {
+              "x": 24,
+              "y": 16
+            }
+          },
+          {
+            "kind": "arc",
+            "center": {
+              "x": 22,
+              "y": 16
+            },
+            "radii": {
+              "x": 2,
+              "y": 2
+            },
+            "start": {
+              "x": 1,
+              "y": 0
+            },
+            "end": {
+              "x": 0,
+              "y": 1
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 22,
+              "y": 18
+            },
+            "to": {
+              "x": 2,
+              "y": 18
+            }
+          },
+          {
+            "kind": "arc",
+            "center": {
+              "x": 2,
+              "y": 16
+            },
+            "radii": {
+              "x": 2,
+              "y": 2
+            },
+            "start": {
+              "x": 0,
+              "y": 1
+            },
+            "end": {
+              "x": -1,
+              "y": 0
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 16
+            },
+            "to": {
+              "x": 0,
+              "y": 14
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 14
+            },
+            "to": {
+              "x": 0,
+              "y": 2
+            }
+          }
+        ]
+      }
+    },
+    "outer": {
+      "offset": {
+        "x": -4,
+        "y": -4
+      },
+      "contour": {
+        "schemaVersion": "0.1.0",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 28,
+          "height": 22
+        },
+        "segments": [
+          {
+            "kind": "arc",
+            "center": {
+              "x": 4,
+              "y": 4
+            },
+            "radii": {
+              "x": 4,
+              "y": 4
+            },
+            "start": {
+              "x": -1,
+              "y": 0
+            },
+            "end": {
+              "x": 0,
+              "y": -1
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 4,
+              "y": 0
+            },
+            "to": {
+              "x": 24,
+              "y": 0
+            }
+          },
+          {
+            "kind": "arc",
+            "center": {
+              "x": 24,
+              "y": 4
+            },
+            "radii": {
+              "x": 4,
+              "y": 4
+            },
+            "start": {
+              "x": 0,
+              "y": -1
+            },
+            "end": {
+              "x": 1,
+              "y": 0
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 28,
+              "y": 4
+            },
+            "to": {
+              "x": 28,
+              "y": 16
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 28,
+              "y": 16
+            },
+            "to": {
+              "x": 28,
+              "y": 18
+            }
+          },
+          {
+            "kind": "arc",
+            "center": {
+              "x": 24,
+              "y": 18
+            },
+            "radii": {
+              "x": 4,
+              "y": 4
+            },
+            "start": {
+              "x": 1,
+              "y": 0
+            },
+            "end": {
+              "x": 0,
+              "y": 1
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 24,
+              "y": 22
+            },
+            "to": {
+              "x": 4,
+              "y": 22
+            }
+          },
+          {
+            "kind": "arc",
+            "center": {
+              "x": 4,
+              "y": 18
+            },
+            "radii": {
+              "x": 4,
+              "y": 4
+            },
+            "start": {
+              "x": 0,
+              "y": 1
+            },
+            "end": {
+              "x": -1,
+              "y": 0
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 18
+            },
+            "to": {
+              "x": 0,
+              "y": 16
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 16
+            },
+            "to": {
+              "x": 0,
+              "y": 4
+            }
+          }
+        ]
+      }
+    }
+  }
+}

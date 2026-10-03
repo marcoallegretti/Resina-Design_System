@@ -1,9 +1,10 @@
+mod support;
+
 use resina_color::{composite_srgb_over_opaque, resolve_srgb_fallback};
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorRole, ContourSegment, FrostRepresentation, InteractionState, KeyLight, MaterialFamily,
-    MaterialRole, OpaqueSurfaceAppearance, PhysicalVector, SurfaceIntent, SurfaceSize,
-    TypographyRole,
+    ColorRole, FrostRepresentation, InteractionState, KeyLight, MaterialFamily, MaterialRole,
+    OpaqueSurfaceAppearance, PhysicalVector, SurfaceIntent, SurfaceSize, TypographyRole,
 };
 use resina_resolver::{
     HeadlessResolution, OpaquePigmentError, OpaqueSurfaceInput, bind_surface,
@@ -34,67 +35,6 @@ fn environment_for_scale(scale: f64) -> EnvironmentSnapshot {
     let mut environment = request["environment"].clone();
     environment["textScale"] = scale.into();
     serde_json::from_value(environment).unwrap()
-}
-
-fn contour_support(contour: &resina_resolver::ExtrudedContourResult, n: PhysicalVector) -> f64 {
-    let dot = |p: PhysicalVector| p.x * n.x + p.y * n.y;
-    contour
-        .segments()
-        .iter()
-        .map(|segment| match segment {
-            ContourSegment::Line { from, to } => dot(*from).max(dot(*to)),
-            ContourSegment::Arc {
-                center,
-                radii,
-                start,
-                end,
-            } => {
-                let radial = PhysicalVector {
-                    x: radii.x * n.x,
-                    y: radii.y * n.y,
-                };
-                let length = radial.x.hypot(radial.y);
-                let radial = PhysicalVector {
-                    x: radial.x / length,
-                    y: radial.y / length,
-                };
-                let evaluate = |u: PhysicalVector| {
-                    dot(PhysicalVector {
-                        x: center.x + radii.x * u.x,
-                        y: center.y + radii.y * u.y,
-                    })
-                };
-                let endpoints = evaluate(*start).max(evaluate(*end));
-                if start.x * radial.y - start.y * radial.x >= 0.0
-                    && radial.x * end.y - radial.y * end.x >= 0.0
-                {
-                    endpoints.max(evaluate(radial))
-                } else {
-                    endpoints
-                }
-            }
-        })
-        .fold(f64::NEG_INFINITY, f64::max)
-}
-
-fn assert_region_containment(geometry: &resina_resolver::OpaqueSurfaceGeometry) {
-    for degrees in 0..360 {
-        let angle = f64::from(degrees).to_radians();
-        let n = PhysicalVector {
-            x: angle.cos(),
-            y: angle.sin(),
-        };
-        let placed = |p: &resina_resolver::PlacedContour| {
-            contour_support(p.contour(), n) + p.offset().x * n.x + p.offset().y * n.y
-        };
-        let edge = placed(geometry.edge_interior());
-        let highlight = placed(geometry.highlight_outer());
-        let content = placed(geometry.content());
-        assert!(edge <= contour_support(geometry.silhouette(), n) + 1e-10);
-        assert!(highlight <= edge + 1e-10);
-        assert!(content <= highlight + 1e-10);
-        assert!(content <= contour_support(geometry.front(), n) + 1e-10);
-    }
 }
 
 #[test]
@@ -598,5 +538,24 @@ fn authored_focus_indicator_survives_tier_zero_and_concurrent_selection() {
                 );
             }
         }
+    }
+}
+fn assert_region_containment(geometry: &resina_resolver::OpaqueSurfaceGeometry) {
+    for degrees in 0..360 {
+        let angle = f64::from(degrees).to_radians();
+        let n = PhysicalVector {
+            x: angle.cos(),
+            y: angle.sin(),
+        };
+        let placed = |p: &resina_resolver::PlacedContour| {
+            support::contour_support(p.contour(), n) + p.offset().x * n.x + p.offset().y * n.y
+        };
+        let edge = placed(geometry.edge_interior());
+        let highlight = placed(geometry.highlight_outer());
+        let content = placed(geometry.content());
+        assert!(edge <= support::contour_support(geometry.silhouette(), n) + 1e-10);
+        assert!(highlight <= edge + 1e-10);
+        assert!(content <= highlight + 1e-10);
+        assert!(content <= support::contour_support(geometry.front(), n) + 1e-10);
     }
 }

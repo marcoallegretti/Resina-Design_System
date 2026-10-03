@@ -64,17 +64,10 @@
   ],
   "$defs": {
     "filledContour": {
-      "allOf": [
-        {"$ref": "urn:resina:schema:extruded-contour-result:0.1.0"},
-        {"properties": {"bounds": {"type": "object"}, "segments": {"minItems": 1}}}
-      ]
+      "$ref": "urn:resina:schema:filled-contour:0.1.0"
     },
     "placedContour": {
-      "type": "object", "additionalProperties": false, "required": ["offset", "contour"],
-      "properties": {
-        "offset": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
-        "contour": {"$ref": "#/$defs/filledContour"}
-      }
+      "$ref": "urn:resina:schema:placed-contour:0.1.0"
     }
   }
 }

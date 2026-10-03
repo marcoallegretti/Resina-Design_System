@@ -125,6 +125,11 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/filled-contour.schema.json",
+        "schemas/placed-contour.schema.json",
+        "schemas/focus-ir-request.schema.json",
+        "schemas/focus-indicator-ir.schema.json",
+        "schemas/focus-ir-case.schema.json",
         "schemas/opaque-surface-appearance.schema.json",
         "schemas/opaque-surface-request.schema.json",
         "schemas/opaque-surface-ir.schema.json",
@@ -216,6 +221,42 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    focus_ir_request = load_json(ROOT / "conformance/ir/focus-ir-request.json")
+    focus_ir_expected = load_json(ROOT / "conformance/ir/focus-ir-expected.json")
+    focus_ir_cases = load_json(ROOT / "conformance/ir/focus-ir-cases.json")
+    focus_ir_case_schema = validator_for("schemas/focus-ir-case.schema.json")
+    focus_ir_request_schema = validator_for("schemas/focus-ir-request.schema.json")
+    focus_ir_result_schema = validator_for("schemas/focus-indicator-ir.schema.json")
+    names = set()
+    for case in focus_ir_cases:
+        check_case(focus_ir_case_schema, case["name"], case, True)
+        if case["name"] in names:
+            raise ValueError(f"duplicate focus IR case: {case['name']}")
+        names.add(case["name"])
+        check_case(
+            focus_ir_request_schema, case["name"],
+            apply_changes(focus_ir_request, case["requestChanges"]), case["requestSchemaValid"],
+        )
+        if "errorContains" not in case:
+            expected = case.get(
+                "expected", apply_changes(focus_ir_expected, case.get("expectedChanges", []))
+            )
+            check_case(focus_ir_result_schema, case["name"], expected, True)
+    invalid_focus_ir_results = (
+        ("missing focus state", "/indicator/binding/states/states", ["selected"]),
+        ("translucent focus pigment", "/indicator/color/alpha", 0.5),
+        ("empty silhouette", "/geometry/silhouette/bounds", None),
+        ("empty outer contour", "/geometry/outer/contour/segments", []),
+        ("inconsistent fallback", "/indicator/fallbackApplied", True),
+        ("zero stroke width", "/indicator/strokeWidth", 0),
+        ("incorrect inner translation", "/geometry/inner/offset/x", 0),
+        ("incorrect outer translation", "/geometry/outer/offset/y", -2),
+    )
+    for name, pointer, value in invalid_focus_ir_results:
+        invalid = copy.deepcopy(focus_ir_expected)
+        replace_at_pointer(invalid, pointer, value)
+        check_case(focus_ir_result_schema, name, invalid, False)
 
     appearance_schema = validator_for("schemas/opaque-surface-appearance.schema.json")
     check_case(
@@ -737,7 +778,8 @@ def main():
         raise ValueError("surface binding material families differ from assignments")
 
     checked = (
-        len(ir_cases) + len(invalid_ir_results) + 3
+        len(focus_ir_cases) + len(invalid_focus_ir_results)
+        + len(ir_cases) + len(invalid_ir_results) + 3
         + len(backend_cases)
         + len(surface_backend_cases)
         + len(theme_cases)

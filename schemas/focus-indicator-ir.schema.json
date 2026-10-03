@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:focus-indicator-ir:0.1.0",
+  "title": "Resina Focus Indicator IR",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "indicator", "geometry"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "indicator": {"$ref": "urn:resina:schema:focus-indicator-result:0.1.0"},
+    "geometry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["silhouette", "inner", "outer"],
+      "properties": {
+        "silhouette": {"$ref": "urn:resina:schema:filled-contour:0.1.0"},
+        "inner": {
+          "allOf": [
+            {"$ref": "urn:resina:schema:placed-contour:0.1.0"},
+            {"properties": {"offset": {"const": {"x": -2, "y": -2}}}}
+          ]
+        },
+        "outer": {
+          "allOf": [
+            {"$ref": "urn:resina:schema:placed-contour:0.1.0"},
+            {"properties": {"offset": {"const": {"x": -4, "y": -4}}}}
+          ]
+        }
+      }
+    }
+  }
+}

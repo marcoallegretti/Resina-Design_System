@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:filled-contour:0.1.0",
+  "title": "Resina Nonempty Filled Contour",
+  "allOf": [
+    {"$ref": "urn:resina:schema:extruded-contour-result:0.1.0"},
+    {"properties": {"bounds": {"type": "object"}, "segments": {"minItems": 1}}}
+  ]
+}

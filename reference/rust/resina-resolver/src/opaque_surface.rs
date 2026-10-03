@@ -1,7 +1,7 @@
 use crate::{
     EdgeContrastResult, ExtrudedContourError, ExtrudedContourResult, InsetContourError,
-    KeyLightError, KeyLightResult, OpaquePigmentResult, ShapeFallbackError, SrgbFallback,
-    SurfaceReadabilityError, ThemeResolutionError, resolve_elevation_depth,
+    KeyLightError, KeyLightResult, OpaquePigmentResult, PlacedContour, ShapeFallbackError,
+    SrgbFallback, SurfaceReadabilityError, ThemeResolutionError, resolve_elevation_depth,
     resolve_extruded_contour, resolve_inset_contour, resolve_key_light, resolve_opaque_pigment,
     resolve_shape_fallback, resolve_surface_readability,
     srgb_input::{SrgbInput, SrgbInputError},
@@ -48,21 +48,6 @@ fn present_backdrop<'de, D: Deserializer<'de>>(
     deserializer: D,
 ) -> Result<Option<SrgbInput>, D::Error> {
     SrgbInput::deserialize(deserializer).map(Some)
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct PlacedContour {
-    offset: PhysicalVector,
-    contour: ExtrudedContourResult,
-}
-impl PlacedContour {
-    pub fn offset(&self) -> PhysicalVector {
-        self.offset
-    }
-    pub fn contour(&self) -> &ExtrudedContourResult {
-        &self.contour
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -323,13 +308,13 @@ pub fn resolve_opaque_surface(
     };
     let placed =
         |inset: &crate::InsetContourResult, offset| -> Result<PlacedContour, OpaqueSurfaceError> {
-            Ok(PlacedContour {
-                offset: PhysicalVector {
+            Ok(PlacedContour::new(
+                PhysicalVector {
                     x: inset.inset(),
                     y: inset.inset(),
                 },
-                contour: contour(inset.size(), inset.radii(), offset)?,
-            })
+                contour(inset.size(), inset.radii(), offset)?,
+            ))
         };
     let geometry = OpaqueSurfaceGeometry {
         front: contour(input.size, radii, zero)?,

@@ -1,0 +1,1694 @@
+[
+  {
+    "name": "focus ring follows the raised silhouette and preserves selected state",
+    "requestChanges": [],
+    "requestSchemaValid": true,
+    "expectedChanges": []
+  },
+  {
+    "name": "LTR does not mirror physical extrusion",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/layoutDirection",
+        "value": "ltr"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": []
+  },
+  {
+    "name": "elastomer shares the independent navigation cue",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "control.primary"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/indicator/binding/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/indicator/binding/materialFamily",
+        "value": "elastomer"
+      }
+    ]
+  },
+  {
+    "name": "gel shares the independent navigation cue",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "feedback.selection"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/indicator/binding/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/indicator/binding/materialFamily",
+        "value": "gel"
+      }
+    ]
+  },
+  {
+    "name": "opaque Frost keeps its real capability fallback",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "surface.chrome"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "indicator": {
+        "schemaVersion": "0.1.0",
+        "binding": {
+          "materialRole": "surface.chrome",
+          "colorRole": "surface.base",
+          "form": {
+            "schemaVersion": "0.1.0",
+            "shape": "structural",
+            "elevation": "raised"
+          },
+          "states": {
+            "schemaVersion": "0.1.0",
+            "states": [
+              "focused",
+              "selected"
+            ]
+          },
+          "treatmentStack": {
+            "schemaVersion": "0.1.0",
+            "treatments": [
+              "none"
+            ]
+          },
+          "schemaVersion": "0.4.0",
+          "materialFamily": "frost",
+          "sourceColor": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "colorFallback": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "opaqueColorFallback": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "frostRepresentation": "opaqueDimensional",
+          "frostPortableBody": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        },
+        "colorRole": "focus",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contrastRatio": 21,
+        "fallbackApplied": false,
+        "strokeWidth": 2,
+        "gap": 2
+      },
+      "geometry": {
+        "silhouette": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 14
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 20,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        "inner": {
+          "offset": {
+            "x": -2,
+            "y": -2
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 18
+            },
+            "segments": [
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 2,
+                  "y": 2
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": -1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": -1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 2,
+                  "y": 0
+                },
+                "to": {
+                  "x": 22,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 22,
+                  "y": 2
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 0,
+                  "y": -1
+                },
+                "end": {
+                  "x": 1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 2
+                },
+                "to": {
+                  "x": 24,
+                  "y": 14
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 14
+                },
+                "to": {
+                  "x": 24,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 22,
+                  "y": 16
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 22,
+                  "y": 18
+                },
+                "to": {
+                  "x": 2,
+                  "y": 18
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 2,
+                  "y": 16
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 0,
+                  "y": 1
+                },
+                "end": {
+                  "x": -1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 16
+                },
+                "to": {
+                  "x": 0,
+                  "y": 14
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 14
+                },
+                "to": {
+                  "x": 0,
+                  "y": 2
+                }
+              }
+            ]
+          }
+        },
+        "outer": {
+          "offset": {
+            "x": -4,
+            "y": -4
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 28,
+              "height": 22
+            },
+            "segments": [
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 4,
+                  "y": 4
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": -1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": -1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 4,
+                  "y": 0
+                },
+                "to": {
+                  "x": 24,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 24,
+                  "y": 4
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 0,
+                  "y": -1
+                },
+                "end": {
+                  "x": 1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 28,
+                  "y": 4
+                },
+                "to": {
+                  "x": 28,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 28,
+                  "y": 16
+                },
+                "to": {
+                  "x": 28,
+                  "y": 18
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 24,
+                  "y": 18
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 22
+                },
+                "to": {
+                  "x": 4,
+                  "y": 22
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 4,
+                  "y": 18
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 0,
+                  "y": 1
+                },
+                "end": {
+                  "x": -1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 18
+                },
+                "to": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 16
+                },
+                "to": {
+                  "x": 0,
+                  "y": 4
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "capable translucent Frost keeps an opaque independent focus ring",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "surface.chrome"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "indicator": {
+        "schemaVersion": "0.1.0",
+        "binding": {
+          "materialRole": "surface.chrome",
+          "colorRole": "surface.base",
+          "form": {
+            "schemaVersion": "0.1.0",
+            "shape": "structural",
+            "elevation": "raised"
+          },
+          "states": {
+            "schemaVersion": "0.1.0",
+            "states": [
+              "focused",
+              "selected"
+            ]
+          },
+          "treatmentStack": {
+            "schemaVersion": "0.1.0",
+            "treatments": [
+              "none"
+            ]
+          },
+          "schemaVersion": "0.4.0",
+          "materialFamily": "frost",
+          "sourceColor": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "colorFallback": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "opaqueColorFallback": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "frostRepresentation": "translucentPigmented",
+          "frostPortableBody": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.55
+          }
+        },
+        "colorRole": "focus",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contrastRatio": 21,
+        "fallbackApplied": false,
+        "strokeWidth": 2,
+        "gap": 2
+      },
+      "geometry": {
+        "silhouette": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 14
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 20,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        "inner": {
+          "offset": {
+            "x": -2,
+            "y": -2
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 18
+            },
+            "segments": [
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 2,
+                  "y": 2
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": -1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": -1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 2,
+                  "y": 0
+                },
+                "to": {
+                  "x": 22,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 22,
+                  "y": 2
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 0,
+                  "y": -1
+                },
+                "end": {
+                  "x": 1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 2
+                },
+                "to": {
+                  "x": 24,
+                  "y": 14
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 14
+                },
+                "to": {
+                  "x": 24,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 22,
+                  "y": 16
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 22,
+                  "y": 18
+                },
+                "to": {
+                  "x": 2,
+                  "y": 18
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 2,
+                  "y": 16
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 0,
+                  "y": 1
+                },
+                "end": {
+                  "x": -1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 16
+                },
+                "to": {
+                  "x": 0,
+                  "y": 14
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 14
+                },
+                "to": {
+                  "x": 0,
+                  "y": 2
+                }
+              }
+            ]
+          }
+        },
+        "outer": {
+          "offset": {
+            "x": -4,
+            "y": -4
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 28,
+              "height": 22
+            },
+            "segments": [
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 4,
+                  "y": 4
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": -1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": -1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 4,
+                  "y": 0
+                },
+                "to": {
+                  "x": 24,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 24,
+                  "y": 4
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 0,
+                  "y": -1
+                },
+                "end": {
+                  "x": 1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 28,
+                  "y": 4
+                },
+                "to": {
+                  "x": 28,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 28,
+                  "y": 16
+                },
+                "to": {
+                  "x": 28,
+                  "y": 18
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 24,
+                  "y": 18
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 22
+                },
+                "to": {
+                  "x": 4,
+                  "y": 22
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 4,
+                  "y": 18
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 0,
+                  "y": 1
+                },
+                "end": {
+                  "x": -1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 18
+                },
+                "to": {
+                  "x": 0,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 16
+                },
+                "to": {
+                  "x": 0,
+                  "y": 4
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "current none preserves an ancestor treatment without changing local geometry",
+    "requestChanges": [
+      {
+        "path": "/surface/treatmentStack/treatments",
+        "value": [
+          "lens",
+          "none"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/indicator/binding/treatmentStack/treatments",
+        "value": [
+          "lens",
+          "none"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "all seven layers remain concurrent",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "disabled",
+          "error",
+          "selected",
+          "pressed",
+          "focused",
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/indicator/binding/states/states",
+        "value": [
+          "rest",
+          "focused",
+          "pressed",
+          "selected",
+          "disabled",
+          "busy",
+          "error"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "zero depth leaves a round-joined exterior ring",
+    "requestChanges": [
+      {
+        "path": "/surface/form/elevation",
+        "value": "base"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "indicator": {
+        "schemaVersion": "0.1.0",
+        "binding": {
+          "materialRole": "surface.base",
+          "colorRole": "surface.base",
+          "form": {
+            "schemaVersion": "0.1.0",
+            "shape": "structural",
+            "elevation": "base"
+          },
+          "states": {
+            "schemaVersion": "0.1.0",
+            "states": [
+              "focused",
+              "selected"
+            ]
+          },
+          "treatmentStack": {
+            "schemaVersion": "0.1.0",
+            "treatments": [
+              "none"
+            ]
+          },
+          "schemaVersion": "0.4.0",
+          "materialFamily": "cast",
+          "sourceColor": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "colorFallback": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "opaqueColorFallback": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        },
+        "colorRole": "focus",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contrastRatio": 21,
+        "fallbackApplied": false,
+        "strokeWidth": 2,
+        "gap": 2
+      },
+      "geometry": {
+        "silhouette": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 12
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        "inner": {
+          "offset": {
+            "x": -2,
+            "y": -2
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 16
+            },
+            "segments": [
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 2,
+                  "y": 2
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": -1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": -1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 2,
+                  "y": 0
+                },
+                "to": {
+                  "x": 22,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 22,
+                  "y": 2
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 0,
+                  "y": -1
+                },
+                "end": {
+                  "x": 1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 2
+                },
+                "to": {
+                  "x": 24,
+                  "y": 14
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 22,
+                  "y": 14
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 22,
+                  "y": 16
+                },
+                "to": {
+                  "x": 2,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 2,
+                  "y": 14
+                },
+                "radii": {
+                  "x": 2,
+                  "y": 2
+                },
+                "start": {
+                  "x": 0,
+                  "y": 1
+                },
+                "end": {
+                  "x": -1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 14
+                },
+                "to": {
+                  "x": 0,
+                  "y": 2
+                }
+              }
+            ]
+          }
+        },
+        "outer": {
+          "offset": {
+            "x": -4,
+            "y": -4
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 28,
+              "height": 20
+            },
+            "segments": [
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 4,
+                  "y": 4
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": -1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": -1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 4,
+                  "y": 0
+                },
+                "to": {
+                  "x": 24,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 24,
+                  "y": 4
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 0,
+                  "y": -1
+                },
+                "end": {
+                  "x": 1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 28,
+                  "y": 4
+                },
+                "to": {
+                  "x": 28,
+                  "y": 16
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 24,
+                  "y": 16
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 1,
+                  "y": 0
+                },
+                "end": {
+                  "x": 0,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 24,
+                  "y": 20
+                },
+                "to": {
+                  "x": 4,
+                  "y": 20
+                }
+              },
+              {
+                "kind": "arc",
+                "center": {
+                  "x": 4,
+                  "y": 16
+                },
+                "radii": {
+                  "x": 4,
+                  "y": 4
+                },
+                "start": {
+                  "x": 0,
+                  "y": 1
+                },
+                "end": {
+                  "x": -1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 16
+                },
+                "to": {
+                  "x": 0,
+                  "y": 4
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "unfocused surface",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "include focused"
+  },
+  {
+    "name": "zero width",
+    "requestChanges": [
+      {
+        "path": "/size/width",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "positive surface"
+  },
+  {
+    "name": "zero height",
+    "requestChanges": [
+      {
+        "path": "/size/height",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "positive surface"
+  },
+  {
+    "name": "negative width",
+    "requestChanges": [
+      {
+        "path": "/size/width",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid shape bounds"
+  },
+  {
+    "name": "invisible ring at huge bounds",
+    "requestChanges": [
+      {
+        "path": "/size/width",
+        "value": 1e+100
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "cannot be represented"
+  },
+  {
+    "name": "translucent surround",
+    "requestChanges": [
+      {
+        "path": "/surroundingColor/alpha",
+        "value": 0.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must be opaque"
+  },
+  {
+    "name": "unsupported color space",
+    "requestChanges": [
+      {
+        "path": "/surroundingColor/colorSpace",
+        "value": "display-p3"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must use sRGB"
+  },
+  {
+    "name": "invalid request version",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "0.2.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "missing unused depth binding",
+    "requestChanges": [
+      {
+        "path": "/depthAssignments/roles/modal",
+        "value": "missing"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "depth binding failed"
+  },
+  {
+    "name": "missing shape binding",
+    "requestChanges": [
+      {
+        "path": "/shapeAssignments/profiles/structural/radius",
+        "value": "missing"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "missing shape radius token"
+  },
+  {
+    "name": "invalid physical light",
+    "requestChanges": [
+      {
+        "path": "/keyLight/direction",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "nonzero"
+  },
+  {
+    "name": "unresolved current optical treatment",
+    "requestChanges": [
+      {
+        "path": "/surface/treatmentStack/treatments",
+        "value": [
+          "lens"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "effective current treatment none"
+  },
+  {
+    "name": "ring width lost to a huge side offset",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\": \"0.1.0\", \"tokens\": {\"palette\": {\"$type\": \"color\", \"base\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [1, 1, 1], \"alpha\": 1}}, \"opaque\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [1, 1, 1], \"alpha\": 1}}, \"opaqueAlt\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.8, 0.7, 0.6]}}, \"translucent\": {\"$value\": {\"colorSpace\": \"display-p3\", \"components\": [0.25, 0.5, 0.75], \"hex\": \"#336699\", \"alpha\": 0.35}}, \"black\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [0, 0, 0], \"alpha\": 1}}}, \"space\": {\"$type\": \"dimension\", \"base\": {\"$value\": {\"value\": 16, \"unit\": \"px\"}}}, \"type\": {\"size\": {\"$type\": \"dimension\", \"$value\": {\"value\": 20, \"unit\": \"px\"}}, \"weight\": {\"$type\": \"fontWeight\", \"$value\": \"semi-bold\"}, \"line\": {\"$type\": \"number\", \"$value\": 1.4}, \"tracking\": {\"$type\": \"dimension\", \"$value\": {\"value\": 0.25, \"unit\": \"px\"}}}, \"depth\": {\"$type\": \"dimension\", \"0\": {\"$value\": {\"value\": 0, \"unit\": \"px\"}}, \"1\": {\"$value\": {\"value\": 1e+100, \"unit\": \"px\"}}, \"2\": {\"$value\": {\"value\": 4, \"unit\": \"px\"}}, \"3\": {\"$value\": {\"value\": 6, \"unit\": \"px\"}}, \"4\": {\"$value\": {\"value\": 8, \"unit\": \"px\"}}}, \"radius\": {\"$type\": \"dimension\", \"0\": {\"$value\": {\"value\": 0, \"unit\": \"px\"}}, \"1\": {\"$value\": {\"value\": 4, \"unit\": \"px\"}}, \"2\": {\"$value\": {\"value\": 8, \"unit\": \"px\"}}, \"3\": {\"$value\": {\"value\": 12, \"unit\": \"px\"}}, \"4\": {\"$value\": {\"value\": 16, \"unit\": \"px\"}}, \"5\": {\"$value\": {\"value\": 24, \"unit\": \"px\"}}, \"6\": {\"$value\": {\"value\": 32, \"unit\": \"px\"}}}}, \"materialAssignments\": {\"schemaVersion\": \"0.2.0\", \"surface\": {\"base\": \"cast\", \"content\": \"cast\", \"chrome\": \"frost\", \"raised\": \"cast\", \"transient\": \"gel\"}, \"control\": {\"passive\": \"cast\", \"interactive\": \"elastomer\", \"primary\": \"elastomer\"}, \"feedback\": {\"focus\": \"elastomer\", \"selection\": \"gel\", \"drag\": \"gel\"}}, \"frostPigment\": {\"schemaVersion\": \"0.1.0\", \"tintStrength\": 0.55}, \"colorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"accent.primary\": \"palette.base\", \"accent.secondary\": \"palette.base\", \"accent.tertiary\": \"palette.base\", \"surface.base\": \"palette.base\", \"surface.low\": \"palette.base\", \"surface.high\": \"palette.base\", \"surface.chrome\": \"palette.base\", \"content.primary\": \"palette.black\", \"content.secondary\": \"palette.black\", \"content.muted\": \"palette.black\", \"content.inverse\": \"palette.black\", \"outline\": \"palette.black\", \"outline.strong\": \"palette.black\", \"status.error\": \"palette.base\", \"status.warning\": \"palette.base\", \"status.success\": \"palette.base\", \"status.info\": \"palette.base\", \"focus\": \"palette.base\", \"selection\": \"palette.base\"}}, \"opaqueColorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"accent.primary\": \"palette.base\", \"accent.secondary\": \"palette.base\", \"accent.tertiary\": \"palette.base\", \"surface.base\": \"palette.base\", \"surface.low\": \"palette.base\", \"surface.high\": \"palette.base\", \"surface.chrome\": \"palette.base\", \"content.primary\": \"palette.black\", \"content.secondary\": \"palette.black\", \"content.muted\": \"palette.black\", \"content.inverse\": \"palette.black\", \"outline\": \"palette.black\", \"outline.strong\": \"palette.black\", \"status.error\": \"palette.base\", \"status.warning\": \"palette.base\", \"status.success\": \"palette.base\", \"status.info\": \"palette.base\", \"focus\": \"palette.base\", \"selection\": \"palette.base\"}}, \"spatialAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"space.control.inline\": \"space.base\", \"space.control.block\": \"space.base\", \"space.container.inner\": \"space.base\", \"space.container.outer\": \"space.base\", \"space.group\": \"space.base\", \"space.section\": \"space.base\", \"space.page\": \"space.base\"}}, \"typographyAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"display\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"titleLarge\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"title\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"heading\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"bodyLarge\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"body\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"label\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"caption\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.25}, \"numeric\": {\"familyRole\": \"numeric\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"code\": {\"familyRole\": \"monospace\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}}}}"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "cannot be represented"
+  },
+  {
+    "name": "both authored focus colors fail on black",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\": \"0.1.0\", \"tokens\": {\"palette\": {\"$type\": \"color\", \"base\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [1, 1, 1], \"alpha\": 1}}, \"opaque\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [1, 1, 1], \"alpha\": 1}}, \"opaqueAlt\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.8, 0.7, 0.6]}}, \"translucent\": {\"$value\": {\"colorSpace\": \"display-p3\", \"components\": [0.25, 0.5, 0.75], \"hex\": \"#336699\", \"alpha\": 0.35}}, \"black\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [0, 0, 0], \"alpha\": 1}}}, \"space\": {\"$type\": \"dimension\", \"base\": {\"$value\": {\"value\": 16, \"unit\": \"px\"}}}, \"type\": {\"size\": {\"$type\": \"dimension\", \"$value\": {\"value\": 20, \"unit\": \"px\"}}, \"weight\": {\"$type\": \"fontWeight\", \"$value\": \"semi-bold\"}, \"line\": {\"$type\": \"number\", \"$value\": 1.4}, \"tracking\": {\"$type\": \"dimension\", \"$value\": {\"value\": 0.25, \"unit\": \"px\"}}}, \"depth\": {\"$type\": \"dimension\", \"0\": {\"$value\": {\"value\": 0, \"unit\": \"px\"}}, \"1\": {\"$value\": {\"value\": 2, \"unit\": \"px\"}}, \"2\": {\"$value\": {\"value\": 4, \"unit\": \"px\"}}, \"3\": {\"$value\": {\"value\": 6, \"unit\": \"px\"}}, \"4\": {\"$value\": {\"value\": 8, \"unit\": \"px\"}}}, \"radius\": {\"$type\": \"dimension\", \"0\": {\"$value\": {\"value\": 0, \"unit\": \"px\"}}, \"1\": {\"$value\": {\"value\": 4, \"unit\": \"px\"}}, \"2\": {\"$value\": {\"value\": 8, \"unit\": \"px\"}}, \"3\": {\"$value\": {\"value\": 12, \"unit\": \"px\"}}, \"4\": {\"$value\": {\"value\": 16, \"unit\": \"px\"}}, \"5\": {\"$value\": {\"value\": 24, \"unit\": \"px\"}}, \"6\": {\"$value\": {\"value\": 32, \"unit\": \"px\"}}}}, \"materialAssignments\": {\"schemaVersion\": \"0.2.0\", \"surface\": {\"base\": \"cast\", \"content\": \"cast\", \"chrome\": \"frost\", \"raised\": \"cast\", \"transient\": \"gel\"}, \"control\": {\"passive\": \"cast\", \"interactive\": \"elastomer\", \"primary\": \"elastomer\"}, \"feedback\": {\"focus\": \"elastomer\", \"selection\": \"gel\", \"drag\": \"gel\"}}, \"frostPigment\": {\"schemaVersion\": \"0.1.0\", \"tintStrength\": 0.55}, \"colorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"accent.primary\": \"palette.base\", \"accent.secondary\": \"palette.base\", \"accent.tertiary\": \"palette.base\", \"surface.base\": \"palette.base\", \"surface.low\": \"palette.base\", \"surface.high\": \"palette.base\", \"surface.chrome\": \"palette.base\", \"content.primary\": \"palette.black\", \"content.secondary\": \"palette.black\", \"content.muted\": \"palette.black\", \"content.inverse\": \"palette.black\", \"outline\": \"palette.black\", \"outline.strong\": \"palette.black\", \"status.error\": \"palette.base\", \"status.warning\": \"palette.base\", \"status.success\": \"palette.base\", \"status.info\": \"palette.base\", \"focus\": \"palette.black\", \"selection\": \"palette.base\"}}, \"opaqueColorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"accent.primary\": \"palette.base\", \"accent.secondary\": \"palette.base\", \"accent.tertiary\": \"palette.base\", \"surface.base\": \"palette.base\", \"surface.low\": \"palette.base\", \"surface.high\": \"palette.base\", \"surface.chrome\": \"palette.base\", \"content.primary\": \"palette.black\", \"content.secondary\": \"palette.black\", \"content.muted\": \"palette.black\", \"content.inverse\": \"palette.black\", \"outline\": \"palette.black\", \"outline.strong\": \"palette.black\", \"status.error\": \"palette.base\", \"status.warning\": \"palette.base\", \"status.success\": \"palette.base\", \"status.info\": \"palette.base\", \"focus\": \"palette.black\", \"selection\": \"palette.base\"}}, \"spatialAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"space.control.inline\": \"space.base\", \"space.control.block\": \"space.base\", \"space.container.inner\": \"space.base\", \"space.container.outer\": \"space.base\", \"space.group\": \"space.base\", \"space.section\": \"space.base\", \"space.page\": \"space.base\"}}, \"typographyAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"display\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"titleLarge\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"title\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"heading\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"bodyLarge\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"body\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"label\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"caption\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.25}, \"numeric\": {\"familyRole\": \"numeric\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"code\": {\"familyRole\": \"monospace\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}}}}"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "contrast is insufficient"
+  },
+  {
+    "name": "guarded strong outline fallback keeps identical geometry",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\": \"0.1.0\", \"tokens\": {\"palette\": {\"$type\": \"color\", \"base\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [1, 1, 1], \"alpha\": 1}}, \"opaque\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [1, 1, 1], \"alpha\": 1}}, \"opaqueAlt\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.8, 0.7, 0.6]}}, \"translucent\": {\"$value\": {\"colorSpace\": \"display-p3\", \"components\": [0.25, 0.5, 0.75], \"hex\": \"#336699\", \"alpha\": 0.35}}, \"black\": {\"$value\": {\"colorSpace\": \"srgb\", \"components\": [0, 0, 0], \"alpha\": 1}}}, \"space\": {\"$type\": \"dimension\", \"base\": {\"$value\": {\"value\": 16, \"unit\": \"px\"}}}, \"type\": {\"size\": {\"$type\": \"dimension\", \"$value\": {\"value\": 20, \"unit\": \"px\"}}, \"weight\": {\"$type\": \"fontWeight\", \"$value\": \"semi-bold\"}, \"line\": {\"$type\": \"number\", \"$value\": 1.4}, \"tracking\": {\"$type\": \"dimension\", \"$value\": {\"value\": 0.25, \"unit\": \"px\"}}}, \"depth\": {\"$type\": \"dimension\", \"0\": {\"$value\": {\"value\": 0, \"unit\": \"px\"}}, \"1\": {\"$value\": {\"value\": 2, \"unit\": \"px\"}}, \"2\": {\"$value\": {\"value\": 4, \"unit\": \"px\"}}, \"3\": {\"$value\": {\"value\": 6, \"unit\": \"px\"}}, \"4\": {\"$value\": {\"value\": 8, \"unit\": \"px\"}}}, \"radius\": {\"$type\": \"dimension\", \"0\": {\"$value\": {\"value\": 0, \"unit\": \"px\"}}, \"1\": {\"$value\": {\"value\": 4, \"unit\": \"px\"}}, \"2\": {\"$value\": {\"value\": 8, \"unit\": \"px\"}}, \"3\": {\"$value\": {\"value\": 12, \"unit\": \"px\"}}, \"4\": {\"$value\": {\"value\": 16, \"unit\": \"px\"}}, \"5\": {\"$value\": {\"value\": 24, \"unit\": \"px\"}}, \"6\": {\"$value\": {\"value\": 32, \"unit\": \"px\"}}}}, \"materialAssignments\": {\"schemaVersion\": \"0.2.0\", \"surface\": {\"base\": \"cast\", \"content\": \"cast\", \"chrome\": \"frost\", \"raised\": \"cast\", \"transient\": \"gel\"}, \"control\": {\"passive\": \"cast\", \"interactive\": \"elastomer\", \"primary\": \"elastomer\"}, \"feedback\": {\"focus\": \"elastomer\", \"selection\": \"gel\", \"drag\": \"gel\"}}, \"frostPigment\": {\"schemaVersion\": \"0.1.0\", \"tintStrength\": 0.55}, \"colorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"accent.primary\": \"palette.base\", \"accent.secondary\": \"palette.base\", \"accent.tertiary\": \"palette.base\", \"surface.base\": \"palette.base\", \"surface.low\": \"palette.base\", \"surface.high\": \"palette.base\", \"surface.chrome\": \"palette.base\", \"content.primary\": \"palette.black\", \"content.secondary\": \"palette.black\", \"content.muted\": \"palette.black\", \"content.inverse\": \"palette.black\", \"outline\": \"palette.black\", \"outline.strong\": \"palette.base\", \"status.error\": \"palette.base\", \"status.warning\": \"palette.base\", \"status.success\": \"palette.base\", \"status.info\": \"palette.base\", \"focus\": \"palette.black\", \"selection\": \"palette.base\"}}, \"opaqueColorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"accent.primary\": \"palette.base\", \"accent.secondary\": \"palette.base\", \"accent.tertiary\": \"palette.base\", \"surface.base\": \"palette.base\", \"surface.low\": \"palette.base\", \"surface.high\": \"palette.base\", \"surface.chrome\": \"palette.base\", \"content.primary\": \"palette.black\", \"content.secondary\": \"palette.black\", \"content.muted\": \"palette.black\", \"content.inverse\": \"palette.black\", \"outline\": \"palette.black\", \"outline.strong\": \"palette.base\", \"status.error\": \"palette.base\", \"status.warning\": \"palette.base\", \"status.success\": \"palette.base\", \"status.info\": \"palette.base\", \"focus\": \"palette.black\", \"selection\": \"palette.base\"}}, \"spatialAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"space.control.inline\": \"space.base\", \"space.control.block\": \"space.base\", \"space.container.inner\": \"space.base\", \"space.container.outer\": \"space.base\", \"space.group\": \"space.base\", \"space.section\": \"space.base\", \"space.page\": \"space.base\"}}, \"typographyAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"display\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"titleLarge\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"title\": {\"familyRole\": \"display\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"heading\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"bodyLarge\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"body\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"label\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"caption\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.25}, \"numeric\": {\"familyRole\": \"numeric\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}, \"code\": {\"familyRole\": \"monospace\", \"fontSize\": \"type.size\", \"fontWeight\": \"type.weight\", \"lineHeight\": \"type.line\", \"letterSpacing\": \"type.tracking\", \"minimumTextScale\": 1.0}}}}"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/indicator/colorRole",
+        "value": "outline.strong"
+      },
+      {
+        "path": "/indicator/fallbackApplied",
+        "value": true
+      }
+    ]
+  }
+]

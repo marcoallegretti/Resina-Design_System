@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:placed-contour:0.1.0",
+  "title": "Resina Placed Nonempty Filled Contour",
+  "type": "object", "additionalProperties": false,
+  "required": ["offset", "contour"],
+  "properties": {
+    "offset": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
+    "contour": {"$ref": "urn:resina:schema:filled-contour:0.1.0"}
+  }
+}
