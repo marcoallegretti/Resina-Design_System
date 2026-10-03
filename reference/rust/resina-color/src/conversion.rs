@@ -268,6 +268,11 @@ pub fn oklch_to_oklab(oklch: [f64; 3]) -> Result<[f64; 3], ColorConversionError>
     finite_result([oklch[0], oklch[1] * angle.cos(), oklch[1] * angle.sin()])
 }
 
+pub fn srgb_to_linear_srgb(srgb: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
+    validate_components(srgb, "srgb", [UNIT_COMPONENT; 3])?;
+    finite_result(srgb.map(linearize_srgb_component))
+}
+
 pub fn linear_srgb_to_srgb(linear: [f64; 3]) -> Result<[f64; 3], ColorConversionError> {
     validate_components(
         linear,

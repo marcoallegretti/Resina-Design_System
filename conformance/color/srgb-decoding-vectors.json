@@ -1,0 +1,8 @@
+[
+  {"name":"black white and half encoded intensity","srgb":[0,1,0.5],"linearSrgb":[0,1,0.21404114048223255]},
+  {"name":"linear transfer endpoint","srgb":[0.04045,0.01,0.02],"linearSrgb":[0.0031308049535603713,0.0007739938080495357,0.0015479876160990713]},
+  {"name":"nonlinear mixed channels","srgb":[0.25,0.75,0.9],"linearSrgb":[0.05087608817155679,0.5225215539683921,0.7874122893956174]},
+  {"name":"negative red fails","srgb":[-0.01,0,0],"error":"OutOfRangeColorComponent","index":0},
+  {"name":"green above one fails","srgb":[0,1.01,0],"error":"OutOfRangeColorComponent","index":1},
+  {"name":"negative blue fails","srgb":[0,0,-0.01],"error":"OutOfRangeColorComponent","index":2}
+]

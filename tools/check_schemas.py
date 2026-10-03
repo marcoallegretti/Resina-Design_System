@@ -1287,6 +1287,16 @@ def main():
             checked += 1
 
     fallback_schema = validator_for("schemas/srgb-fallback.schema.json")
+    for vector in load_json(ROOT / "conformance/color/srgb-decoding-vectors.json"):
+        if ("linearSrgb" in vector) == ("error" in vector):
+            raise ValueError(f"sRGB decoding vector needs one outcome: {vector['name']}")
+        source = {"colorSpace": "srgb", "components": vector["srgb"]}
+        check_case(color_value, f"sRGB decoding input: {vector['name']}", source, "error" not in vector)
+        checked += 1
+        if "linearSrgb" in vector:
+            result = {"colorSpace": "srgb-linear", "components": vector["linearSrgb"]}
+            check_case(color_value, f"sRGB decoding output: {vector['name']}", result, True)
+            checked += 1
     for vector in load_json(ROOT / "conformance/color/srgb-fallback-vectors.json"):
         check_case(
             color_value,
