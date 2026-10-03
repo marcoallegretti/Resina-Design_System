@@ -10,4 +10,4 @@ resina-environment = { path = "../resina-environment" }
 resina-model = { path = "../resina-model" }
 resina-tokens = { path = "../resina-tokens" }
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde_json.workspace = true

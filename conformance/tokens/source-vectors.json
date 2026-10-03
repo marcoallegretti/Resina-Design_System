@@ -5,6 +5,16 @@
     "expected": {"group": {"token": {"$type": "number", "$value": 2}}, "other": [true, null, "text"]}
   },
   {
+    "name": "decimal boundaries retain finite values",
+    "source": "{\"belowOne\":0.9999999999999999,\"aboveOne\":1.0000000000000002,\"smallestPositive\":4.9406564584124654e-324,\"largestFinite\":1.7976931348623157e308}",
+    "expected": {"belowOne": 0.9999999999999999, "aboveOne": 1.0000000000000002, "smallestPositive": 4.9406564584124654e-324, "largestFinite": 1.7976931348623157e308}
+  },
+  {
+    "name": "overflowing decimal is rejected",
+    "source": "{\"coefficient\":1e400}",
+    "error": "number out of range"
+  },
+  {
     "name": "duplicate token names are rejected",
     "source": "{\"group\":{\"token\":{\"$value\":1},\"token\":{\"$value\":2}}}",
     "error": "duplicate JSON member at #/group/token"

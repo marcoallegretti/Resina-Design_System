@@ -93,6 +93,32 @@ mod tests {
     use super::*;
 
     #[test]
+    fn decimal_source_preserves_binary64_boundaries() {
+        for (source, expected) in [
+            ("0.9999999999999999", f64::from_bits(1.0f64.to_bits() - 1)),
+            ("1.0000000000000002", f64::from_bits(1.0f64.to_bits() + 1)),
+            ("4.9406564584124654e-324", f64::from_bits(1)),
+            ("2.2250738585072014e-308", f64::MIN_POSITIVE),
+            ("1.7976931348623157e308", f64::MAX),
+            ("-0.0", -0.0f64),
+        ] {
+            let value = parse_token_document(source).unwrap();
+            assert_eq!(
+                value.as_f64().unwrap().to_bits(),
+                expected.to_bits(),
+                "{source}"
+            );
+            let serialized = serde_json::to_string(&value).unwrap();
+            let reparsed = parse_token_document(&serialized).unwrap();
+            assert_eq!(
+                reparsed.as_f64().unwrap().to_bits(),
+                expected.to_bits(),
+                "{source}"
+            );
+        }
+    }
+
+    #[test]
     fn source_conformance_vectors() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
             "../../../../conformance/tokens/source-vectors.json"

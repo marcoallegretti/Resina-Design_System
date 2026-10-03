@@ -1,3 +1,6 @@
 [workspace]
 members = ["reference/rust/resina-color", "reference/rust/resina-environment", "reference/rust/resina-model", "reference/rust/resina-resolver", "reference/rust/resina-tokens"]
 resolver = "2"
+
+[workspace.dependencies]
+serde_json = { version = "1", features = ["float_roundtrip"] }

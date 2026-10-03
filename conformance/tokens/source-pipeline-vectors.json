@@ -14,6 +14,23 @@
     }
   },
   {
+    "name": "decimal boundaries survive token resolution",
+    "source": "{\"$type\":\"number\",\"belowOne\":{\"$value\":0.9999999999999999},\"aboveOne\":{\"$value\":1.0000000000000002},\"smallestPositive\":{\"$value\":4.9406564584124654e-324},\"largestFinite\":{\"$value\":1.7976931348623157e308},\"alias\":{\"$value\":\"{belowOne}\"}}",
+    "expected": {
+      "belowOne": {"token_type": "number", "value": 0.9999999999999999},
+      "aboveOne": {"token_type": "number", "value": 1.0000000000000002},
+      "smallestPositive": {"token_type": "number", "value": 4.9406564584124654e-324},
+      "largestFinite": {"token_type": "number", "value": 1.7976931348623157e308},
+      "alias": {"token_type": "number", "value": 0.9999999999999999}
+    }
+  },
+  {
+    "name": "overflowing number fails before token resolution",
+    "source": "{\"token\":{\"$type\":\"number\",\"$value\":1e400}}",
+    "stage": "parse",
+    "error": "number out of range"
+  },
+  {
     "name": "duplicate token property fails before resolution",
     "source": "{\"token\":{\"$type\":\"number\",\"$value\":1,\"$value\":2}}",
     "stage": "parse",
