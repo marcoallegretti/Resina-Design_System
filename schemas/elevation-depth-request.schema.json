@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:elevation-depth-request:0.1.0",
+  "title": "Resina Elevation Depth Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "tokens", "assignments"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "tokens": {"type": "object"},
+    "assignments": {"$ref": "urn:resina:schema:elevation-depth-assignments:0.1.0"}
+  }
+}

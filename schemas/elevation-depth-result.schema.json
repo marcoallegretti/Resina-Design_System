@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:elevation-depth-result:0.1.0",
+  "title": "Resina Elevation Depth Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "roles"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["embedded", "base", "raised", "floating", "overlay", "modal"],
+      "properties": {
+        "embedded": {"$ref": "#/$defs/extent"},
+        "base": {"$ref": "#/$defs/extent"},
+        "raised": {"$ref": "#/$defs/extent"},
+        "floating": {"$ref": "#/$defs/extent"},
+        "overlay": {"$ref": "#/$defs/extent"},
+        "modal": {"$ref": "#/$defs/extent"}
+      }
+    }
+  },
+  "$defs": {
+    "extent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "unit"],
+      "properties": {
+        "value": {"type": "number", "minimum": 0},
+        "unit": {"const": "px"}
+      }
+    }
+  }
+}

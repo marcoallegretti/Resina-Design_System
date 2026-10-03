@@ -129,6 +129,9 @@ def main():
         "schemas/edge-contrast-result.schema.json",
         "schemas/edge-contrast-case.schema.json",
         "schemas/elevation-depth-assignments.schema.json",
+        "schemas/elevation-depth-request.schema.json",
+        "schemas/elevation-depth-result.schema.json",
+        "schemas/elevation-depth-case.schema.json",
         "schemas/color-assignments.schema.json",
         "schemas/environment.schema.json",
         "schemas/frost-pigment.schema.json",
@@ -541,6 +544,27 @@ def main():
             vector["assignments"],
             True,
         )
+        checked += 1
+
+    elevation_cases = load_json(ROOT / "conformance/elevation/backend-cases.json")
+    elevation_case_schema = validator_for("schemas/elevation-depth-case.schema.json")
+    elevation_request_schema = validator_for("schemas/elevation-depth-request.schema.json")
+    elevation_result_schema = validator_for("schemas/elevation-depth-result.schema.json")
+    elevation_names = set()
+    for case in elevation_cases:
+        name = case["name"]
+        if name in elevation_names:
+            raise ValueError(f"duplicate elevation depth backend case: {name}")
+        elevation_names.add(name)
+        check_case(elevation_case_schema, f"elevation depth case: {name}", case, True)
+        check_case(
+            elevation_request_schema,
+            f"elevation depth request: {name}",
+            case["request"],
+            case["requestSchemaValid"],
+        )
+        if "expected" in case:
+            check_case(elevation_result_schema, f"elevation depth result: {name}", case["expected"], True)
         checked += 1
 
     composition_validator = validator_for("schemas/state-composition.schema.json")

@@ -15,7 +15,8 @@ pub use edge_contrast::{
     EdgeContrastError, EdgeContrastResult, resolve_edge_contrast, resolve_edge_contrast_source,
 };
 pub use elevation::{
-    ElevationDepthResolutionError, ElevationDepthResolutionErrorKind, resolve_elevation_depth,
+    ElevationDepthError, ElevationDepthResolutionError, ElevationDepthResolutionErrorKind,
+    ElevationDepthResult, resolve_elevation_depth, resolve_elevation_depth_source,
 };
 pub use focus_indicator::{
     FocusIndicatorError, FocusIndicatorResult, resolve_focus_indicator,

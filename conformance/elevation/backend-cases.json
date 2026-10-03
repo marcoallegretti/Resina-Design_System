@@ -1,0 +1,501 @@
+[
+  {
+    "name": "source alias resolves every role",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "embedded": {
+          "value": 0,
+          "unit": "px"
+        },
+        "base": {
+          "value": 0,
+          "unit": "px"
+        },
+        "raised": {
+          "value": 2,
+          "unit": "px"
+        },
+        "floating": {
+          "value": 2,
+          "unit": "px"
+        },
+        "overlay": {
+          "value": 4,
+          "unit": "px"
+        },
+        "modal": {
+          "value": 5,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  {
+    "name": "missing bound token",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "MissingToken"
+  },
+  {
+    "name": "wrong bound token type",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": 2,
+            "$type": "number"
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "WrongTokenType"
+  },
+  {
+    "name": "negative depth",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": -1,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "NegativeExtent"
+  },
+  {
+    "name": "rem requires font context",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "rem"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "UnsupportedUnit"
+  },
+  {
+    "name": "invalid DTCG unit",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "em"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "token resolution failed"
+  },
+  {
+    "name": "non-object token source",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": [],
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "token resolution failed"
+  },
+  {
+    "name": "unknown request field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      },
+      "extra": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unsupported request version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "incomplete assignments",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay"
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  }
+]

@@ -34,7 +34,7 @@ def check_success(command, source, expected, result_validator, timeout, name):
             raise AssertionError(f"{name}: output differs at {differing}")
 
 
-def check_backend(label, case_schema, request_schema, result_schema, vectors):
+def check_backend(label, case_schema, request_schema, result_schema, vectors, extra_failures=()):
     parser = argparse.ArgumentParser(
         description=f"Check a Resina {label} backend through the public command protocol."
     )
@@ -76,8 +76,10 @@ def check_backend(label, case_schema, request_schema, result_schema, vectors):
             arguments.timeout,
             "duplicate request member",
         )
+        for name, source in extra_failures:
+            check_failure(command, source, arguments.timeout, name)
     except (AssertionError, OSError, ValueError) as error:
         print(f"FAIL {error}", file=sys.stderr)
         return 1
-    print(f"{label.capitalize()} backend passed {len(cases) + 1} conformance cases")
+    print(f"{label.capitalize()} backend passed {len(cases) + 1 + len(extra_failures)} conformance cases")
     return 0
