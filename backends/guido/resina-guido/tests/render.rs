@@ -5,7 +5,7 @@ use resina_guido::{PreparedPaint, prepare_focus, prepare_surface, prepare_surfac
 use resina_resolver::{
     resolve_focus_ir_source, resolve_opaque_surface_source, resolve_surface_paint_source,
 };
-use serde_json::{Value, json};
+use serde_json::Value;
 use std::{cell::Cell, rc::Rc};
 
 #[test]
@@ -13,30 +13,15 @@ fn authored_paint_is_ready_on_first_frame_and_after_source_and_scale_changes() {
     let path = std::env::var("RESINA_SCENES")
         .expect("RESINA_SCENES must name the generated public material scene bundle");
     let bundle: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
-    let mut scenes = bundle["scenarios"].as_array().unwrap().clone();
-    assert_eq!(scenes.len(), 16);
-    for scene in bundle["scenarios"].as_array().unwrap() {
-        if scene["kind"] != "opaqueSurface" {
-            continue;
-        }
-        let focus_name = scene["name"].as_str().unwrap().replace("-rest", "-focus");
-        let surrounding = bundle["scenarios"]
-            .as_array()
-            .unwrap()
+    let scenes = bundle["scenarios"].as_array().unwrap();
+    assert_eq!(scenes.len(), 32);
+    assert_eq!(
+        scenes
             .iter()
-            .find(|candidate| candidate["name"] == focus_name)
-            .unwrap()["request"]["surroundingColor"]
-            .clone();
-        for state in ["focused", "rest"] {
-            let mut body = scene["request"].clone();
-            body["surface"]["states"]["states"] = json!([state]);
-            scenes.push(json!({
-                "name": format!("{}-complete-{state}", scene["name"].as_str().unwrap()),
-                "kind": "surfacePaint",
-                "request": {"schemaVersion": "0.1.0", "body": body, "surroundingColor": surrounding}
-            }));
-        }
-    }
+            .filter(|scene| scene["kind"] == "surfacePaint")
+            .count(),
+        16
+    );
     let mut app = guido::testing::Headless::new().expect("GUIdo GPU rendering is required");
     let hold = app.hold_image_decodes();
     let slot = Rc::new(Cell::new(None));
@@ -66,7 +51,7 @@ fn authored_paint_is_ready_on_first_frame_and_after_source_and_scale_changes() {
     for scale in [1.0, 1.25, 2.0, 3.0] {
         app.configure(surface, 204, 96, scale);
         let mut previous_ring_pixel = None;
-        for scene in &scenes {
+        for scene in scenes {
             let paint = prepare(scene, scale);
             let ImageSource::Rgba {
                 width,

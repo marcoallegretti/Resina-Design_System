@@ -49,6 +49,8 @@ def prepare(manifest, resolve_theme):
             raise ValueError(f"{scene['name']}: opaque scene requires rest")
         if scene["kind"] == "focusRing" and "focused" not in states:
             raise ValueError(f"{scene['name']}: focus scene requires focused")
+        if scene["kind"] == "surfacePaint" and any(state not in ("rest", "focused") for state in states):
+            raise ValueError(f"{scene['name']}: complete paint supports only rest and focused")
     environment = parse_json(asset_source(manifest["environmentSource"]), "scene environment")
     appearance = parse_json(asset_source(manifest["appearanceSource"]), "scene appearance")
     validate("schemas/environment.schema.json", environment, "scene environment")
@@ -75,7 +77,7 @@ def prepare(manifest, resolve_theme):
             "schemaVersion": "0.1.0", "theme": copy.deepcopy(theme),
             "surface": copy.deepcopy(scene["surface"]), "size": copy.deepcopy(manifest["size"]),
         }
-        if scene["kind"] == "opaqueSurface":
+        if scene["kind"] in ("opaqueSurface", "surfacePaint"):
             request.update({
                 "appearance": copy.deepcopy(appearance), "foregroundRole": scene["foregroundRole"],
                 "adjacentColor": copy.deepcopy(surrounding),
@@ -85,6 +87,9 @@ def prepare(manifest, resolve_theme):
             if scene["expectedMaterialFamily"] == "frost":
                 request["postTreatmentBackdrop"] = copy.deepcopy(surrounding)
             schema = "schemas/opaque-surface-request.schema.json"
+            if scene["kind"] == "surfacePaint":
+                request = {"schemaVersion": "0.1.0", "body": request, "surroundingColor": copy.deepcopy(surrounding)}
+                schema = "schemas/surface-paint-request.schema.json"
         else:
             request.update({
                 "shapeAssignments": copy.deepcopy(appearance["shapeAssignments"]),

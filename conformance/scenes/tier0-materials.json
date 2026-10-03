@@ -526,6 +526,518 @@
       },
       "surroundingColorRole": "surface.base",
       "expectedMaterialFamily": "gel"
+    },
+    {
+      "name": "light-cast-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-cast-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-frost-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-frost-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-elastomer-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer",
+      "foregroundRole": "content.inverse",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-elastomer-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer",
+      "foregroundRole": "content.inverse",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-gel-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-gel-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-cast-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-cast-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-frost-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-frost-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-elastomer-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer",
+      "foregroundRole": "content.inverse",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-elastomer-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer",
+      "foregroundRole": "content.inverse",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-gel-paint-focused",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-gel-paint-rest",
+      "kind": "surfacePaint",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
     }
   ]
 }

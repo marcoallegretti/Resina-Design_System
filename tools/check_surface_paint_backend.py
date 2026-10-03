@@ -41,13 +41,19 @@ def surface_paint_mismatch(actual, expected):
         difference = focus_ir_mismatch(actual["focus"], expected["focus"])
         if difference:
             return "/focus" + difference
-        binding = actual["focus"]["indicator"]["binding"]
-        for field in ("states", "materialRole", "colorRole", "materialFamily", "form"):
-            if mismatch(binding[field], actual["body"][field]):
-                return "/focus/indicator/binding/" + field
-        if contour_mismatch(actual["body"]["geometry"]["silhouette"], actual["focus"]["geometry"]["silhouette"]):
-            return "/focus/geometry/silhouette"
-    return mismatch(actual["schemaVersion"], expected["schemaVersion"])
+    return surface_paint_channel_mismatch(actual) or mismatch(actual["schemaVersion"], expected["schemaVersion"])
+
+
+def surface_paint_channel_mismatch(result):
+    if "focus" not in result:
+        return None
+    binding = result["focus"]["indicator"]["binding"]
+    for field in ("states", "materialRole", "colorRole", "materialFamily", "form"):
+        if mismatch(binding[field], result["body"][field]):
+            return "/focus/indicator/binding/" + field
+    if contour_mismatch(result["body"]["geometry"]["silhouette"], result["focus"]["geometry"]["silhouette"]):
+        return "/focus/geometry/silhouette"
+    return None
 
 
 def case_request(base, case):

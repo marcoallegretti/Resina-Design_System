@@ -103,7 +103,7 @@ jobs:
       - run: python tools/check_opaque_surface_backend.py -- target/debug/resina-opaque-surface${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_ir_backend.py -- target/debug/resina-focus-ir${{ matrix.executableSuffix }} -
       - run: python tools/check_surface_paint_backend.py -- target/debug/resina-surface-paint${{ matrix.executableSuffix }} -
-      - run: python tools/check_material_scenarios.py --theme-backend target/debug/resina-theme-resolve${{ matrix.executableSuffix }} --surface-backend target/debug/resina-opaque-surface${{ matrix.executableSuffix }} --focus-backend target/debug/resina-focus-ir${{ matrix.executableSuffix }}
+      - run: python tools/check_material_scenarios.py --theme-backend target/debug/resina-theme-resolve${{ matrix.executableSuffix }} --surface-backend target/debug/resina-opaque-surface${{ matrix.executableSuffix }} --focus-backend target/debug/resina-focus-ir${{ matrix.executableSuffix }} --paint-backend target/debug/resina-surface-paint${{ matrix.executableSuffix }}
       - run: python tools/check_focus_indicator_backend.py -- target/debug/resina-focus-indicator${{ matrix.executableSuffix }} -
   schemas:
     runs-on: ubuntu-latest

@@ -3,11 +3,23 @@ import math
 import sys
 
 from check_schemas import load_json
+from check_surface_paint_backend import surface_paint_channel_mismatch
 from material_scenarios import MANIFEST, backend_document, prepare
 
 
 def check_scene(scene, result, capture):
     request = scene["request"]
+    if scene["kind"] == "surfacePaint":
+        focused = "focused" in request["body"]["surface"]["states"]["states"]
+        if ("focus" in result) != focused:
+            raise ValueError(f"{scene['name']}: navigation channel differs from scene")
+        difference = surface_paint_channel_mismatch(result)
+        if difference:
+            raise ValueError(f"{scene['name']}: body/navigation mismatch at {difference}")
+        check_scene(scene | {"kind": "opaqueSurface", "request": request["body"]}, result["body"], capture)
+        if focused:
+            check_scene(scene | {"kind": "focusRing", "request": {"surface": request["body"]["surface"]}}, result["focus"], capture)
+        return
     binding = result if scene["kind"] == "opaqueSurface" else result["indicator"]["binding"]
     for field in ("materialRole", "colorRole", "form"):
         if binding[field] != request["surface"][field]:
@@ -48,6 +60,7 @@ def main():
     parser.add_argument("--theme-backend", required=True)
     parser.add_argument("--surface-backend", required=True)
     parser.add_argument("--focus-backend", required=True)
+    parser.add_argument("--paint-backend", required=True)
     parser.add_argument("--timeout", type=float, default=30)
     arguments = parser.parse_args()
     if not math.isfinite(arguments.timeout) or arguments.timeout <= 0:
@@ -59,8 +72,10 @@ def main():
         for scene in bundle["scenarios"]:
             if scene["kind"] == "opaqueSurface":
                 command, schema = arguments.surface_backend, "schemas/opaque-surface-ir.schema.json"
-            else:
+            elif scene["kind"] == "focusRing":
                 command, schema = arguments.focus_backend, "schemas/focus-indicator-ir.schema.json"
+            else:
+                command, schema = arguments.paint_backend, "schemas/surface-paint-ir.schema.json"
             result = backend_document([command, "-"], scene["request"], schema, scene["name"], arguments.timeout)
             check_scene(scene, result, bundle["capture"])
     except (AssertionError, OSError, ValueError, KeyError) as error:

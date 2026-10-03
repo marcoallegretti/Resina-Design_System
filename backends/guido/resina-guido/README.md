@@ -62,7 +62,7 @@ cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-target
 The public scenes cover Light and Dark, all four material families, opaque bodies
 and focus rings. Tests check their first rendered frame at scales 1, 1.25, 2 and
 3 while decoding is held, then replace sources in the same surface.
-Complete focused-only and rest requests derived from each authored body also
+Complete focused-only and rest requests authored in the shared catalog also
 exercise single-image replacement and removal of the navigation channel. Opaque,
 partial-alpha and clear pixels are checked against the prepared straight pixels,
 allowing one byte of GPU rounding after premultiplication. Preparation tests also

@@ -44,7 +44,7 @@
         "required": ["name", "kind", "theme", "surface", "surroundingColorRole", "expectedMaterialFamily"],
         "properties": {
           "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "not": {"pattern": "[\\r\\n]"}},
-          "kind": {"enum": ["opaqueSurface", "focusRing"]},
+          "kind": {"enum": ["opaqueSurface", "focusRing", "surfacePaint"]},
           "theme": {"type": "string", "minLength": 1},
           "surface": {"$ref": "urn:resina:schema:surface-binding:0.2.0"},
           "surroundingColorRole": {"$ref": "#/$defs/colorRole"},
@@ -53,7 +53,7 @@
           "minimumContentContrast": {"type": "number", "minimum": 1, "maximum": 21},
           "minimumEdgeContrast": {"type": "number", "minimum": 1, "maximum": 21}
         },
-        "if": {"properties": {"kind": {"const": "opaqueSurface"}}},
+        "if": {"properties": {"kind": {"enum": ["opaqueSurface", "surfacePaint"]}}},
         "then": {"required": ["foregroundRole", "minimumContentContrast", "minimumEdgeContrast"]},
         "else": {"not": {"anyOf": [{"required": ["foregroundRole"]}, {"required": ["minimumContentContrast"]}, {"required": ["minimumEdgeContrast"]}]}}
       }

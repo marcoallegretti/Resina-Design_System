@@ -1,6 +1,8 @@
 use resina_model::PhysicalVector;
-use resina_raster::{RasterImage, Viewport, render_focus, render_surface};
-use resina_resolver::{resolve_focus_ir_source, resolve_opaque_surface_source};
+use resina_raster::{RasterImage, Viewport, render_focus, render_surface, render_surface_paint};
+use resina_resolver::{
+    resolve_focus_ir_source, resolve_opaque_surface_source, resolve_surface_paint_source,
+};
 use serde::Deserialize;
 use std::{error::Error, hint::black_box, process::ExitCode, time::Instant};
 
@@ -37,6 +39,7 @@ struct Scene {
 enum Kind {
     OpaqueSurface,
     FocusRing,
+    SurfacePaint,
 }
 
 fn main() -> ExitCode {
@@ -88,6 +91,12 @@ fn run() -> Result<(), Box<dyn Error>> {
             let ir = resolve_focus_ir_source(&source)?;
             measure(name, &bundle.capture, |viewport| {
                 render_focus(&ir, viewport, bundle.capture.samples_per_axis)
+            })
+        }
+        Kind::SurfacePaint => {
+            let ir = resolve_surface_paint_source(&source)?;
+            measure(name, &bundle.capture, |viewport| {
+                render_surface_paint(&ir, viewport, bundle.capture.samples_per_axis)
             })
         }
     }

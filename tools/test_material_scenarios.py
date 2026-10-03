@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 
 from check_material_scenarios import check_scene
 from check_schemas import ROOT, load_json
+from check_surface_paint_backend import baseline, expected_result
 from material_scenarios import MANIFEST, asset_source, backend_document, main, prepare
 
 
@@ -19,19 +20,23 @@ class MaterialSceneTests(unittest.TestCase):
         before = copy.deepcopy(self.manifest)
         bundle = prepare(self.manifest, self.backend)
         self.assertEqual(self.backend.call_count, 2)
-        self.assertEqual(len(bundle["scenarios"]), 16)
+        self.assertEqual(len(bundle["scenarios"]), 32)
         self.assertEqual(self.manifest, before)
         self.assertEqual(bundle["capture"], before["capture"])
         for authored, prepared in zip(before["scenarios"], bundle["scenarios"], strict=True):
             request = prepared["request"]
+            color = self.resolution["opaqueColorFallbacks"][authored["surroundingColorRole"]]
+            if authored["kind"] == "surfacePaint":
+                self.assertEqual(request["surroundingColor"], color)
+                self.assertEqual(set(request), {"schemaVersion", "body", "surroundingColor"})
+                request = request["body"]
             self.assertEqual(request["surface"], authored["surface"])
             self.assertEqual(request["size"], before["size"])
             theme_path = ROOT / before["themes"][authored["theme"]]["source"]
             self.assertEqual(request["theme"]["themeSource"], theme_path.read_text(encoding="utf-8"))
             self.assertEqual(request["theme"]["externalSources"]["foundation.json"], (ROOT / "tokens/foundation.json").read_text(encoding="utf-8"))
             self.assertEqual(request["theme"]["environment"], load_json(ROOT / before["environmentSource"]))
-            color = self.resolution["opaqueColorFallbacks"][authored["surroundingColorRole"]]
-            if authored["kind"] == "opaqueSurface":
+            if authored["kind"] in ("opaqueSurface", "surfacePaint"):
                 self.assertEqual(request["adjacentColor"], color)
                 self.assertEqual(request["foregroundRole"], authored["foregroundRole"])
                 self.assertEqual(request["minimumContentContrast"], 4.5)
@@ -43,6 +48,8 @@ class MaterialSceneTests(unittest.TestCase):
                 self.assertNotIn("appearance", request)
         bundle["scenarios"][0]["request"]["theme"]["environment"]["locale"] = "changed"
         self.assertNotEqual(bundle["scenarios"][1]["request"]["theme"]["environment"]["locale"], "changed")
+        bundle["scenarios"][16]["request"]["body"]["surface"]["states"]["states"].append("selected")
+        self.assertEqual(bundle["scenarios"][17]["request"]["body"]["surface"]["states"]["states"], ["rest"])
 
     def test_invalid_manifest_fails_before_backend_execution(self):
         for mutate in [
@@ -52,12 +59,53 @@ class MaterialSceneTests(unittest.TestCase):
             lambda m: m["scenarios"][1]["surface"]["states"].update(states=["rest"]),
             lambda m: m.update(environmentSource="../environment.json"),
             lambda m: m["scenarios"][1].update(foregroundRole="content.primary"),
+            lambda m: m["scenarios"][16]["surface"]["states"].update(states=["selected", "focused"]),
+            lambda m: m["scenarios"][16].pop("foregroundRole"),
+            lambda m: m["scenarios"][16].pop("minimumContentContrast"),
         ]:
             manifest = copy.deepcopy(self.manifest)
             mutate(manifest)
             with self.assertRaises(ValueError):
                 prepare(manifest, self.backend)
         self.backend.assert_not_called()
+
+    def test_complete_scenes_cover_each_authored_theme_family_and_preserve_state_sets(self):
+        authored = [scene for scene in self.manifest["scenarios"] if scene["kind"] == "surfacePaint"]
+        self.assertEqual(
+            {(scene["theme"], scene["expectedMaterialFamily"], tuple(scene["surface"]["states"]["states"])) for scene in authored},
+            {(theme, family, (state,)) for theme in ("light", "dark") for family in ("cast", "frost", "elastomer", "gel") for state in ("rest", "focused")},
+        )
+        authored[0]["surface"]["states"]["states"] = ["focused", "rest"]
+        bundle = prepare(self.manifest, self.backend)
+        self.assertEqual(bundle["scenarios"][16]["request"]["body"]["surface"]["states"]["states"], ["focused", "rest"])
+
+    def test_complete_checker_rejects_channel_mismatch_guards_and_clipped_navigation(self):
+        request = baseline()
+        request["body"]["surface"]["states"]["states"] = ["focused"]
+        scene = {"name": "complete", "kind": "surfacePaint", "expectedMaterialFamily": "cast", "request": request}
+        result = expected_result(request)
+        capture = {"origin": {"x": -6, "y": -6}, "width": 32, "height": 26, "pixelsPerUnit": 1}
+        check_scene(scene, result, capture)
+        for mutate in (
+            lambda r: r.pop("focus"),
+            lambda r: r["focus"]["indicator"]["binding"]["states"].update(states=["rest", "focused"]),
+            lambda r: r["focus"]["geometry"]["silhouette"]["bounds"].update(width=21),
+            lambda r: r["body"].update(foregroundRole="content.inverse"),
+            lambda r: r["body"].update(contentContrastRatio=4.49),
+            lambda r: r["body"]["edge"].update(contrastRatio=2.99),
+        ):
+            altered = copy.deepcopy(result)
+            mutate(altered)
+            with self.assertRaises(ValueError):
+                check_scene(scene, altered, capture)
+        with self.assertRaisesRegex(ValueError, "clips"):
+            check_scene(scene, result, capture | {"origin": {"x": -3, "y": -6}})
+        request["body"]["surface"]["states"]["states"] = ["rest"]
+        rest = expected_result(request)
+        check_scene(scene, rest, capture)
+        rest["focus"] = result["focus"]
+        with self.assertRaisesRegex(ValueError, "navigation channel"):
+            check_scene(scene, rest, capture)
 
     def test_family_mismatch_is_not_hidden_by_defaults(self):
         self.manifest["scenarios"][0]["expectedMaterialFamily"] = "gel"
