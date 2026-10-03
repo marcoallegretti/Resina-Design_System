@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "0.1.0",
+  "environment": {
+    "schemaVersion": "0.2.0",
+    "geometry": {
+      "width": 480,
+      "height": 320,
+      "safeArea": {
+        "start": 16,
+        "end": 16,
+        "top": 8,
+        "bottom": 8
+      }
+    },
+    "scale": 1,
+    "textScale": 2,
+    "inputCapabilities": [],
+    "viewingProfile": "unknown",
+    "densityPreference": "standard",
+    "accessibilityPreferences": {
+      "reducedMotion": true,
+      "reducedTransparency": true,
+      "highContrast": true
+    },
+    "locale": "ar",
+    "layoutDirection": "rtl",
+    "rendererCapabilities": {
+      "gradients": false,
+      "translucentSurfaces": false,
+      "innerShadow": false,
+      "advancedShadow": false,
+      "sdfShapes": false,
+      "backdropEffect": false,
+      "backdropBlur": false,
+      "shapedBackdrop": false,
+      "dynamicLighting": false,
+      "deformation": false,
+      "masks": false,
+      "customShader": false,
+      "wideGamut": false,
+      "hdr": false
+    },
+    "qualityPolicy": "full"
+  },
+  "visualBounds": {
+    "x": 0,
+    "y": 0,
+    "width": 20,
+    "height": 20
+  },
+  "availableBounds": {
+    "x": -32,
+    "y": -32,
+    "width": 100,
+    "height": 100
+  },
+  "componentMinimum": {
+    "width": 1,
+    "height": 1
+  },
+  "occupiedRegions": []
+}

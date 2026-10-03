@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:hit-region-ir:0.1.0",
+  "title": "Resina Rectangular Hit Region IR",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "bounds", "minimumSize"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "bounds": {"$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"},
+    "minimumSize": {"$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/size"}
+  }
+}

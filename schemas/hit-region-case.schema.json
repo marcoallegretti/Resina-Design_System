@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:hit-region-case:0.1.0",
+  "title": "Resina Hit Region Conformance Case",
+  "type": "object", "additionalProperties": false,
+  "required": ["name", "requestChanges", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "requestChanges": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "value"], "properties": {"path": {"type": "string", "pattern": "^/"}, "value": {}}}},
+    "requestSchemaValid": {"type": "boolean"},
+    "expected": {"$ref": "urn:resina:schema:hit-region-ir:0.1.0"},
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [{"required": ["expected"]}, {"required": ["errorContains"]}]
+}

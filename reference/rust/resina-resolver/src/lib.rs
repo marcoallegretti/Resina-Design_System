@@ -98,7 +98,11 @@ pub use shape_fallback::{
     ShapeFallbackError, ShapeFallbackResult, ShapeFallbackSourceError, resolve_shape_fallback,
     resolve_shape_fallback_source,
 };
+mod hit_region;
 mod target;
+pub use hit_region::{
+    HitRegionError, HitRegionInput, HitRegionIr, resolve_hit_region, resolve_hit_region_source,
+};
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 mod theme;
 pub use theme::{

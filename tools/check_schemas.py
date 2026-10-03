@@ -143,6 +143,9 @@ def main():
         "schemas/surface-paint-request.schema.json",
         "schemas/surface-paint-ir.schema.json",
         "schemas/surface-paint-case.schema.json",
+        "schemas/hit-region-request.schema.json",
+        "schemas/hit-region-ir.schema.json",
+        "schemas/hit-region-case.schema.json",
         "schemas/extruded-contour-request.schema.json",
         "schemas/extruded-contour-result.schema.json",
         "schemas/extruded-contour-case.schema.json",
@@ -1503,6 +1506,22 @@ def main():
             if ("focus" in result) != case["expectedFocus"]:
                 raise ValueError(f"{case['name']}: expected focus disagrees with request")
             check_case(paint_result_schema, case["name"], result, True)
+            checked += 1
+
+    from check_hit_region_backend import cases
+    hit_names = set()
+    for case in cases():
+        name = case["name"]
+        check_case(validator_for("schemas/hit-region-case.schema.json"), name,
+                   {key: value for key, value in case.items() if key != "request"}, True)
+        if name in hit_names:
+            raise ValueError(f"duplicate hit region case: {name}")
+        hit_names.add(name)
+        check_case(validator_for("schemas/hit-region-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 1
+        if "expected" in case:
+            check_case(validator_for("schemas/hit-region-ir.schema.json"), name, case["expected"], True)
             checked += 1
 
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
