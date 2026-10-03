@@ -32,20 +32,20 @@ impl OpaqueSurfaceIr {
             return Err(SurfacePaintError::InvalidPoint);
         }
         let direction = self.lighting().direction();
-        if !boundary(self.geometry().silhouette(), point, direction)?.inside {
+        if !contains(self.geometry().silhouette(), point)? {
             return Ok(None);
         }
-        if !placed_boundary(self.geometry().edge_interior(), point, direction)?.inside {
+        if !placed_contains(self.geometry().edge_interior(), point)? {
             return Ok(Some(self.edge().color().clone()));
         }
-        if !boundary(self.geometry().front(), point, direction)?.inside {
+        if !contains(self.geometry().front(), point)? {
             return Ok(Some(self.pigment().side().clone()));
         }
-        let highlight = placed_boundary(self.geometry().highlight_outer(), point, direction)?;
         if self.highlight_width() > 0.0
-            && highlight.inside
-            && !placed_boundary(self.geometry().content(), point, direction)?.inside
+            && placed_contains(self.geometry().highlight_outer(), point)?
+            && !placed_contains(self.geometry().content(), point)?
         {
+            let highlight = placed_boundary(self.geometry().highlight_outer(), point, direction)?;
             let lift = self.pigment().profile().highlight_lift() * highlight.weight;
             static WHITE: OnceLock<SrgbFallback> = OnceLock::new();
             let white = WHITE.get_or_init(|| {
@@ -73,9 +73,8 @@ impl FocusIndicatorIr {
         if !point.x.is_finite() || !point.y.is_finite() {
             return Err(SurfacePaintError::InvalidPoint);
         }
-        let direction = PhysicalVector { x: 0.0, y: 0.0 };
-        if placed_boundary(self.geometry().outer(), point, direction)?.inside
-            && !placed_boundary(self.geometry().inner(), point, direction)?.inside
+        if placed_contains(self.geometry().outer(), point)?
+            && !placed_contains(self.geometry().inner(), point)?
         {
             Ok(Some(self.indicator().color().clone()))
         } else {
@@ -95,6 +94,92 @@ struct Nearest {
     distance: f64,
     signed_distance: f64,
     weight: f64,
+}
+
+fn placed_contains(
+    contour: &PlacedContour,
+    point: PhysicalVector,
+) -> Result<bool, SurfacePaintError> {
+    contains(contour.contour(), subtract(point, contour.offset()))
+}
+
+fn contains(
+    contour: &ExtrudedContourResult,
+    point: PhysicalVector,
+) -> Result<bool, SurfacePaintError> {
+    if let Some(inside) = convex_contains(contour, point) {
+        return Ok(inside);
+    }
+    Ok(boundary(contour, point, PhysicalVector { x: 0.0, y: 0.0 })?.inside)
+}
+
+fn convex_contains(contour: &ExtrudedContourResult, point: PhysicalVector) -> Option<bool> {
+    let bounds = contour.bounds()?;
+    if point.x < bounds.x
+        || point.y < bounds.y
+        || point.x - bounds.x > bounds.width
+        || point.y - bounds.y > bounds.height
+    {
+        return Some(false);
+    }
+    let magnitude = bounds
+        .x
+        .abs()
+        .max(bounds.y.abs())
+        .max(bounds.width)
+        .max(bounds.height);
+    // Keep cross products and their error bounds away from overflow and underflow.
+    if !(1e-100..=1e100).contains(&magnitude) || contour.segments().is_empty() {
+        return None;
+    }
+    let tolerance = 64.0 * f64::EPSILON * magnitude;
+    let mut outside = false;
+    // Canonical convex contours are intersections of their supporting half-planes.
+    // Circular arcs add radial constraints in their outward sectors. Ambiguous
+    // arithmetic falls back to the nearest-boundary evaluator's closed-set rule.
+    for segment in contour.segments() {
+        match *segment {
+            ContourSegment::Line { from, to } => {
+                let tangent = subtract(to, from);
+                let signed = cross(tangent, subtract(point, from));
+                let uncertainty = tolerance * (tangent.x.abs() + tangent.y.abs());
+                if signed.abs() <= uncertainty {
+                    return None;
+                }
+                outside |= signed < 0.0;
+            }
+            ContourSegment::Arc {
+                center,
+                radii,
+                start,
+                end,
+            } => {
+                if radii.x != radii.y || radii.x <= 0.0 {
+                    return None;
+                }
+                let offset = subtract(point, center);
+                for radial in [start, end] {
+                    let signed = dot(offset, radial) - radii.x;
+                    if signed.abs() <= tolerance {
+                        return None;
+                    }
+                    outside |= signed > 0.0;
+                }
+                let start_side = cross(start, offset);
+                let end_side = cross(offset, end);
+                if start_side > tolerance && end_side > tolerance {
+                    let signed = offset.x.hypot(offset.y) - radii.x;
+                    if signed.abs() <= tolerance {
+                        return None;
+                    }
+                    outside |= signed > 0.0;
+                } else if start_side >= -tolerance && end_side >= -tolerance {
+                    return None;
+                }
+            }
+        }
+    }
+    Some(!outside)
 }
 
 fn placed_boundary(
@@ -337,8 +422,199 @@ mod tests {
                         distance <= 5.0,
                         "{point:?} offset {offset:?}"
                     );
+                    assert_eq!(contains(&contour, point).unwrap(), distance <= 5.0);
                 }
             }
+        }
+    }
+
+    fn compare_containment(contour: &ExtrudedContourResult, point: PhysicalVector) {
+        let nearest =
+            boundary(contour, point, PhysicalVector { x: 0.0, y: 0.0 }).map(|result| result.inside);
+        assert_eq!(contains(contour, point), nearest, "{point:?} {contour:?}");
+    }
+
+    #[test]
+    fn scaled_convex_containment_matches_analytic_swept_circle() {
+        for magnitude in [1e-90, 1e90] {
+            let radius = CornerRadius {
+                x: 5.0 * magnitude,
+                y: 5.0 * magnitude,
+            };
+            let contour = crate::resolve_extruded_contour(
+                SurfaceSize {
+                    width: 10.0 * magnitude,
+                    height: 10.0 * magnitude,
+                },
+                LogicalCornerRadii {
+                    top_start: radius,
+                    top_end: radius,
+                    bottom_end: radius,
+                    bottom_start: radius,
+                },
+                LayoutDirection::Rtl,
+                PhysicalVector {
+                    x: 4.0 * magnitude,
+                    y: 3.0 * magnitude,
+                },
+            )
+            .unwrap();
+            let mut classified = 0;
+            for y in 0..100 {
+                for x in 0..100 {
+                    let unscaled = PhysicalVector {
+                        x: x as f64 * 0.2 - 2.037,
+                        y: y as f64 * 0.2 - 2.029,
+                    };
+                    let delta = subtract(unscaled, PhysicalVector { x: 5.0, y: 5.0 });
+                    let t = ((delta.x * 4.0 + delta.y * 3.0) / 25.0).clamp(0.0, 1.0);
+                    let nearest = subtract(
+                        delta,
+                        PhysicalVector {
+                            x: 4.0 * t,
+                            y: 3.0 * t,
+                        },
+                    );
+                    let expected = nearest.x.hypot(nearest.y) <= 5.0;
+                    let point = scale(unscaled, magnitude);
+                    assert_eq!(
+                        contains(&contour, point).unwrap(),
+                        expected,
+                        "{magnitude} {point:?}"
+                    );
+                    classified += usize::from(convex_contains(&contour, point) == Some(true));
+                }
+            }
+            assert!(classified > 100);
+        }
+    }
+
+    #[test]
+    fn convex_containment_preserves_asymmetric_sweeps_and_boundary_rounding() {
+        for radii in [
+            [0.0; 4],
+            [4.0; 4],
+            [0.0, 2.0, 5.0, 1.0],
+            [8.0, 1.0, 3.0, 6.0],
+        ] {
+            for layout in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+                for offset in [
+                    PhysicalVector { x: 0.0, y: 0.0 },
+                    PhysicalVector { x: 4.0, y: 3.0 },
+                    PhysicalVector { x: -4.0, y: 3.0 },
+                    PhysicalVector { x: 4.0, y: -3.0 },
+                    PhysicalVector { x: -4.0, y: -3.0 },
+                    PhysicalVector { x: 0.0, y: -4.0 },
+                    PhysicalVector { x: -4.0, y: 0.0 },
+                ] {
+                    let [top_start, top_end, bottom_end, bottom_start] =
+                        radii.map(|radius| CornerRadius {
+                            x: radius,
+                            y: radius,
+                        });
+                    let contour = crate::resolve_extruded_contour(
+                        SurfaceSize {
+                            width: 10.0,
+                            height: 12.0,
+                        },
+                        LogicalCornerRadii {
+                            top_start,
+                            top_end,
+                            bottom_end,
+                            bottom_start,
+                        },
+                        layout,
+                        offset,
+                    )
+                    .unwrap();
+                    let bounds = contour.bounds().unwrap();
+                    for y in 0..23 {
+                        for x in 0..17 {
+                            compare_containment(
+                                &contour,
+                                PhysicalVector {
+                                    x: bounds.x - 1.0
+                                        + (bounds.width + 2.0) * (x as f64 + 0.37) / 17.0,
+                                    y: bounds.y - 1.0
+                                        + (bounds.height + 2.0) * (y as f64 + 0.29) / 23.0,
+                                },
+                            );
+                        }
+                    }
+                    for segment in contour.segments() {
+                        for fraction in [0.0, 0.5, 1.0] {
+                            let point = match *segment {
+                                ContourSegment::Line { from, to } => {
+                                    add(from, scale(subtract(to, from), fraction))
+                                }
+                                ContourSegment::Arc {
+                                    center,
+                                    radii,
+                                    start,
+                                    end,
+                                } => {
+                                    let radial =
+                                        add(scale(start, 1.0 - fraction), scale(end, fraction));
+                                    let length = radial.x.hypot(radial.y);
+                                    add(center, scale(radial, radii.x / length))
+                                }
+                            };
+                            for x in [point.x.next_down(), point.x, point.x.next_up()] {
+                                for y in [point.y.next_down(), point.y, point.y.next_up()] {
+                                    compare_containment(&contour, PhysicalVector { x, y });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn fast_containment_defers_extremes_and_exact_boundaries() {
+        let contour = circle(PhysicalVector { x: 0.0, y: 0.0 });
+        assert_eq!(
+            convex_contains(&contour, PhysicalVector { x: 5.125, y: 5.25 }),
+            Some(true)
+        );
+        assert_eq!(
+            convex_contains(&contour, PhysicalVector { x: 0.125, y: 0.25 }),
+            Some(false)
+        );
+        assert_eq!(
+            convex_contains(&contour, PhysicalVector { x: 5.0, y: 0.0 }),
+            None
+        );
+        for magnitude in [1e-120, 1e120] {
+            let radius = CornerRadius {
+                x: 4.0 * magnitude,
+                y: 4.0 * magnitude,
+            };
+            let contour = crate::resolve_extruded_contour(
+                SurfaceSize {
+                    width: 10.0 * magnitude,
+                    height: 12.0 * magnitude,
+                },
+                LogicalCornerRadii {
+                    top_start: radius,
+                    top_end: radius,
+                    bottom_end: radius,
+                    bottom_start: radius,
+                },
+                LayoutDirection::Ltr,
+                PhysicalVector {
+                    x: magnitude,
+                    y: -2.0 * magnitude,
+                },
+            )
+            .unwrap();
+            let point = PhysicalVector {
+                x: 5.125 * magnitude,
+                y: 5.25 * magnitude,
+            };
+            assert_eq!(convex_contains(&contour, point), None);
+            compare_containment(&contour, point);
         }
     }
 
@@ -400,6 +676,10 @@ mod tests {
             ),
             Err(SurfacePaintError::UnsupportedContour)
         ));
+        assert_eq!(
+            contains(&contour, PhysicalVector { x: 5.0, y: 5.0 }),
+            Err(SurfacePaintError::UnsupportedContour)
+        );
         let contour = circle(PhysicalVector {
             x: f64::MAX,
             y: f64::MAX,
@@ -415,5 +695,15 @@ mod tests {
             ),
             Err(SurfacePaintError::NumericRange)
         ));
+        assert_eq!(
+            contains(
+                &contour,
+                PhysicalVector {
+                    x: f64::MAX / 2.0,
+                    y: f64::MAX / 2.0
+                }
+            ),
+            Err(SurfacePaintError::NumericRange)
+        );
     }
 }
