@@ -1,4 +1,6 @@
-use crate::{ExtrudedContourResult, OpaqueSurfaceIr, PlacedContour, SrgbFallback};
+use crate::{
+    ExtrudedContourResult, FocusIndicatorIr, OpaqueSurfaceIr, PlacedContour, SrgbFallback,
+};
 use resina_model::{ContourSegment, PhysicalVector};
 use std::{fmt, sync::OnceLock};
 
@@ -60,6 +62,25 @@ impl OpaqueSurfaceIr {
             return Ok(Some(color));
         }
         Ok(Some(self.pigment().body().clone()))
+    }
+}
+
+impl FocusIndicatorIr {
+    pub fn sample_paint(
+        &self,
+        point: PhysicalVector,
+    ) -> Result<Option<SrgbFallback>, SurfacePaintError> {
+        if !point.x.is_finite() || !point.y.is_finite() {
+            return Err(SurfacePaintError::InvalidPoint);
+        }
+        let direction = PhysicalVector { x: 0.0, y: 0.0 };
+        if placed_boundary(self.geometry().outer(), point, direction)?.inside
+            && !placed_boundary(self.geometry().inner(), point, direction)?.inside
+        {
+            Ok(Some(self.indicator().color().clone()))
+        } else {
+            Ok(None)
+        }
     }
 }
 

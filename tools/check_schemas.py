@@ -134,6 +134,7 @@ def main():
         "schemas/focus-ir-request.schema.json",
         "schemas/focus-indicator-ir.schema.json",
         "schemas/focus-ir-case.schema.json",
+        "schemas/focus-paint-case.schema.json",
         "schemas/opaque-surface-appearance.schema.json",
         "schemas/opaque-surface-request.schema.json",
         "schemas/opaque-surface-ir.schema.json",
@@ -261,6 +262,20 @@ def main():
     focus_ir_case_schema = validator_for("schemas/focus-ir-case.schema.json")
     focus_ir_request_schema = validator_for("schemas/focus-ir-request.schema.json")
     focus_ir_result_schema = validator_for("schemas/focus-indicator-ir.schema.json")
+    focus_paint_vectors = load_json(ROOT / "conformance/ir/focus-paint-vectors.json")
+    focus_paint_schema = validator_for("schemas/focus-paint-case.schema.json")
+    names = set()
+    for vector in focus_paint_vectors:
+        check_case(focus_paint_schema, vector["name"], vector, True)
+        if vector["name"] in names:
+            raise ValueError(f"duplicate focus paint case: {vector['name']}")
+        names.add(vector["name"])
+    for name, field, value in (
+        ("numeric coverage", "covered", 1),
+        ("extra point field", "point", {"x": 0, "y": 0, "z": 0}),
+        ("unknown case field", "extra", True),
+    ):
+        check_case(focus_paint_schema, name, {**focus_paint_vectors[0], field: value}, False)
     names = set()
     for case in focus_ir_cases:
         check_case(focus_ir_case_schema, case["name"], case, True)
@@ -813,6 +828,7 @@ def main():
     checked = (
         len(spring_cases) + 4
         + len(focus_ir_cases) + len(invalid_focus_ir_results)
+        + len(focus_paint_vectors) + 3
         + len(ir_cases) + len(invalid_ir_results) + 3
         + len(backend_cases)
         + len(surface_backend_cases)

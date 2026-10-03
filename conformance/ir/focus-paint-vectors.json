@@ -1,0 +1,19 @@
+[
+  {"name":"front interior stays empty","point":{"x":10,"y":6},"covered":false},
+  {"name":"gap stays empty","point":{"x":10,"y":-1},"covered":false},
+  {"name":"inner boundary excluded","point":{"x":10,"y":-2},"covered":false},
+  {"name":"upper ring","point":{"x":10,"y":-3},"covered":true},
+  {"name":"outer boundary included","point":{"x":10,"y":-4},"covered":true},
+  {"name":"above outer ring","point":{"x":10,"y":-4.01},"covered":false},
+  {"name":"side footprint stays empty","point":{"x":10,"y":13},"covered":false},
+  {"name":"gap beyond side stays empty","point":{"x":10,"y":15},"covered":false},
+  {"name":"bottom inner boundary excluded","point":{"x":10,"y":16},"covered":false},
+  {"name":"bottom ring surrounds side footprint","point":{"x":10,"y":17},"covered":true},
+  {"name":"bottom outer boundary included","point":{"x":10,"y":18},"covered":true},
+  {"name":"below outer ring","point":{"x":10,"y":18.01},"covered":false},
+  {"name":"round corner ring","point":{"x":-2,"y":-2},"covered":true},
+  {"name":"outer corner void","point":{"x":-4,"y":-4},"covered":false},
+  {"name":"inner corner gap","point":{"x":-1,"y":-1},"covered":false},
+  {"name":"outer arc endpoint included","point":{"x":-4,"y":0},"covered":true},
+  {"name":"inner arc endpoint excluded","point":{"x":-2,"y":0},"covered":false}
+]
