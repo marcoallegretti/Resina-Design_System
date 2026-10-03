@@ -1,6 +1,6 @@
 use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb_to_linear_srgb};
 use resina_model::PhysicalVector;
-use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintError};
+use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintError, SurfacePaintIr};
 use std::{collections::TryReserveError, fmt};
 mod uniform;
 use uniform::SampleBox;
@@ -149,6 +149,49 @@ enum UniformRegion {
     Clear,
     Solid,
     Sample,
+}
+
+pub fn render_surface_paint(
+    paint: &SurfacePaintIr,
+    viewport: Viewport,
+    samples_per_axis: u8,
+) -> Result<RasterImage, RasterError> {
+    let body = paint.body();
+    let Some(focus) = paint.focus() else {
+        return render_surface(body, viewport, samples_per_axis);
+    };
+    let geometry = body.geometry();
+    let ring = focus.geometry();
+    let supported = uniform::supported(geometry.front())
+        && uniform::supported(geometry.silhouette())
+        && uniform::placed_supported(geometry.edge_interior())
+        && uniform::placed_supported(geometry.highlight_outer())
+        && uniform::placed_supported(geometry.content())
+        && uniform::placed_supported(ring.inner())
+        && uniform::placed_supported(ring.outer());
+    render(
+        viewport,
+        samples_per_axis,
+        body.pigment().body(),
+        |region| {
+            if !supported {
+                UniformRegion::Sample
+            } else if uniform::placed_inside(region, geometry.content()) {
+                UniformRegion::Solid
+            } else if uniform::disjoint(region, geometry.silhouette())
+                && (uniform::placed_disjoint(region, ring.outer())
+                    || uniform::placed_inside(region, ring.inner()))
+            {
+                UniformRegion::Clear
+            } else {
+                UniformRegion::Sample
+            }
+        },
+        |point| match body.sample_paint(point)? {
+            Some(color) => Ok(Some(color)),
+            None => focus.sample_paint(point),
+        },
+    )
 }
 
 fn render(

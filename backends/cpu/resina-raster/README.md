@@ -2,7 +2,9 @@
 
 `resina-raster` synchronously realizes validated opaque surface and focus indicator IR as bounded row-major, straight RGBA8 sRGB pixels. It uses the canonical point paint evaluators and deterministic regular-grid integration. This is a rendering backend operation; the viewport, sampling grid and output buffer do not enter normative Resina IR.
 
-The library accepts an explicit `Viewport` and samples per axis. `render_surface` and `render_focus` return a complete `RasterImage` or a diagnostic error, with pixel/sample/allocation/precision limits checked before sampling. There is no file loading, image decoding, worker queue or platform integration in these operations. Consumers must choose the actual device scale, reserve complete paint bounds, prepare the image before exposing a state, and reevaluate it when IR or scale changes. Performance and the renderer's upload/compositing behavior still need measurement at that boundary.
+The library accepts an explicit `Viewport` and samples per axis. `render_surface`, `render_focus` and `render_surface_paint` return a complete `RasterImage` or a diagnostic error, with pixel/sample/allocation/precision limits checked before sampling. There is no file loading, image decoding, worker queue or platform integration in these operations. Consumers must choose the actual device scale, reserve complete paint bounds, prepare the image before exposing a state, and reevaluate it when IR or scale changes. Performance and the renderer's upload/compositing behavior still need measurement at that boundary.
+
+`render_surface_paint` consumes the complete [body/navigation IR](../../../spec/39-surface-paint-ir.md). It evaluates both disjoint paint regions at each shared grid sample and integrates their combined coverage and linear-light color into one image. A coarse pixel may contain samples from both body and ring; averaging or compositing two previously quantized images would not preserve this result. Unfocused paint uses the existing body operation and is byte-identical. Focused paint retains conservative body-interior and combined-exterior shortcuts; uncertain regions evaluate the canonical body and ring laws.
 
 For grids of at least three samples per axis, the backend conservatively proves uniform sample regions in the body interior, focus hole and exterior. These pixels avoid repeated geometry queries while preserving the original sample positions, repeated linear-light accumulation, quantization and resource limits. Edges, highlights, unsupported contours and uncertain arithmetic use the canonical point evaluator. This optimization introduces no IR fields or public APIs.
 
@@ -14,7 +16,7 @@ PNG support is an optional feature, enabled by default to preserve the conforman
 resina-raster = { path = "../cpu/resina-raster", default-features = false }
 ```
 
-The two conformance binaries require the `png` feature. The default build retains their names, arguments and PNG output. No image-format dependency is needed by a build with default features disabled, and the reference color/model/resolver layers remain free of image-format and toolkit dependencies.
+The three conformance binaries require the `png` feature. The default build retains the existing commands and adds `resina-paint-raster` for a complete body/navigation image. No image-format dependency is needed by a build with default features disabled, and the reference color/model/resolver layers remain free of image-format and toolkit dependencies.
 
 ```sh
 cargo test -p resina-raster --no-default-features --locked

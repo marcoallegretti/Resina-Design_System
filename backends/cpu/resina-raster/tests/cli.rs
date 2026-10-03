@@ -26,6 +26,48 @@ const REQUEST: &[u8] = include_bytes!("../../../../conformance/ir/opaque-surface
 const OPTIONS: &[&str] = &["24", "18", "-2", "-2", "1", "2"];
 
 #[test]
+fn complete_paint_cli_contains_body_ring_and_transparent_gap() {
+    let mut body: serde_json::Value = serde_json::from_slice(REQUEST).unwrap();
+    body["surface"]["states"]["states"] = serde_json::json!(["focused"]);
+    let mut request = serde_json::json!({"schemaVersion": "0.1.0", "body": body,
+        "surroundingColor": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1}});
+    let program = env!("CARGO_BIN_EXE_resina-paint-raster");
+    let options = ["40", "32", "-8", "-8", "1", "4"];
+    let output = invoke_program(program, request.to_string().as_bytes(), &options);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(output.stderr.is_empty());
+    let mut reader = png::Decoder::new(std::io::Cursor::new(output.stdout))
+        .read_info()
+        .unwrap();
+    assert_eq!(
+        reader.info().srgb,
+        Some(png::SrgbRenderingIntent::Perceptual)
+    );
+    let mut rgba = vec![0; reader.output_buffer_size().unwrap()];
+    let frame = reader.next_frame(&mut rgba).unwrap();
+    assert_eq!((frame.width, frame.height), (40, 32));
+    for (x, y, expected) in [
+        (18, 14, [255; 4]),
+        (18, 4, [255; 4]),
+        (18, 6, [0; 4]),
+        (0, 0, [0; 4]),
+        (8, 8, [0, 0, 0, 255]),
+    ] {
+        let offset = (y * 40 + x) * 4;
+        assert_eq!(&rgba[offset..offset + 4], &expected);
+    }
+    request.as_object_mut().unwrap().remove("surroundingColor");
+    let output = invoke_program(program, request.to_string().as_bytes(), &options);
+    assert_eq!(output.status.code(), Some(1));
+    assert!(output.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("surroundingColor"));
+}
+
+#[test]
 fn focus_cli_preserves_png_and_rejects_unfocused_intent() {
     let input = include_bytes!("../../../../conformance/ir/focus-ir-request.json");
     let program = env!("CARGO_BIN_EXE_resina-focus-raster");

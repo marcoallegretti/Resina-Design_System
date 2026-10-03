@@ -1,5 +1,7 @@
 use super::*;
-use resina_resolver::{resolve_focus_ir_source, resolve_opaque_surface_source};
+use resina_resolver::{
+    resolve_focus_ir_source, resolve_opaque_surface_source, resolve_surface_paint_source,
+};
 use serde_json::{Value, json};
 
 #[test]
@@ -87,6 +89,15 @@ fn uniform_regions_match_point_sampling_across_geometry_and_sampling_grids() {
         surface_request["appearance"]["keyLight"] = request["keyLight"].clone();
         let surface = resolve_opaque_surface_source(&surface_request.to_string()).unwrap();
         let focus = resolve_focus_ir_source(&request.to_string()).unwrap();
+        surface_request["surface"]["states"]["states"] = json!(["focused"]);
+        let paint = resolve_surface_paint_source(
+            &json!({
+                "schemaVersion": "0.1.0", "body": surface_request,
+                "surroundingColor": request["surroundingColor"]
+            })
+            .to_string(),
+        )
+        .unwrap();
         assert!(uniform::placed_supported(surface.geometry().content()));
         assert!(uniform::placed_supported(focus.geometry().inner()));
         for samples in 1..=8 {
@@ -125,6 +136,24 @@ fn uniform_regions_match_point_sampling_across_geometry_and_sampling_grids() {
                     render_focus(&focus, viewport, samples).unwrap().rgba(),
                     expected.rgba(),
                     "focus {shape} {direction} {light:?} {scale} {samples}"
+                );
+                let expected = render(
+                    viewport,
+                    samples,
+                    paint.body().pigment().body(),
+                    |_| UniformRegion::Sample,
+                    |point| match paint.body().sample_paint(point)? {
+                        Some(color) => Ok(Some(color)),
+                        None => paint.focus().unwrap().sample_paint(point),
+                    },
+                )
+                .unwrap();
+                assert_eq!(
+                    render_surface_paint(&paint, viewport, samples)
+                        .unwrap()
+                        .rgba(),
+                    expected.rgba(),
+                    "complete paint {shape} {direction} {light:?} {scale} {samples}"
                 );
             }
         }
