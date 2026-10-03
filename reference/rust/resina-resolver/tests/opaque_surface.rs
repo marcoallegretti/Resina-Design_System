@@ -8,7 +8,8 @@ const CASES: &str = include_str!("../../../../conformance/ir/opaque-surface-case
 
 #[test]
 fn cached_theme_matches_source_resolution() {
-    let request: Value = serde_json::from_str(REQUEST).unwrap();
+    let mut request: Value = serde_json::from_str(REQUEST).unwrap();
+    request["surface"]["states"]["states"] = serde_json::json!(["focused", "rest"]);
     let sources: BTreeMap<String, String> =
         serde_json::from_value(request["theme"]["externalSources"].clone()).unwrap();
     let theme = resina_resolver::compile_theme_source_with_sources(
@@ -36,7 +37,37 @@ fn cached_theme_matches_source_resolution() {
         },
     )
     .unwrap();
-    assert_eq!(actual, resolve_opaque_surface_source(REQUEST).unwrap());
+    assert_eq!(
+        actual,
+        resolve_opaque_surface_source(&request.to_string()).unwrap()
+    );
+    let surrounding = resina_color::resolve_srgb_fallback(&serde_json::json!({
+        "colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1
+    }))
+    .unwrap();
+    let focus = resina_resolver::resolve_focus_ir(
+        &theme,
+        &environment,
+        resina_resolver::FocusIrInput {
+            surface: &surface,
+            size: serde_json::from_value(request["size"].clone()).unwrap(),
+            shape_assignments: appearance.shape_assignments(),
+            depth_assignments: appearance.depth_assignments(),
+            key_light: appearance.key_light(),
+            surrounding_color: &surrounding,
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        actual.geometry().silhouette(),
+        focus.geometry().silhouette()
+    );
+    let body_value = serde_json::to_value(&actual).unwrap();
+    let focus_value = serde_json::to_value(&focus).unwrap();
+    assert_eq!(
+        body_value["states"],
+        focus_value["indicator"]["binding"]["states"]
+    );
 }
 
 fn changes(document: &Value, changes: &Value) -> Value {

@@ -42,7 +42,12 @@ def check_success(actual, request, expected):
     if binding["materialFamily"] != family:
         raise AssertionError("material family changed")
     for field in ("materialRole", "colorRole", "form", "states", "treatmentStack"):
-        if mismatch(binding[field], request["scenario"]["surface"][field]):
+        expected_field = request["scenario"]["surface"][field]
+        if field == "states":
+            expected_field = {**expected_field, "states": [
+                state for state in ("rest", "focused") if state in expected_field["states"]
+            ]}
+        if mismatch(binding[field], expected_field):
             raise AssertionError(f"bound {field} changed")
     if actual["foregroundRole"] != request["foregroundRole"]:
         raise AssertionError("foreground role changed")

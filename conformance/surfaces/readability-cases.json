@@ -90,10 +90,10 @@
     "errorContains": "Frost contrast is insufficient"
   },
   {
-    "name": "Unresolved focused state",
+    "name": "Focused navigation preserves Frost body readability",
     "changes": [{"path": "/scenario/surface/states/states", "value": ["rest", "focused"]}],
     "requestSchemaValid": true,
-    "errorContains": "states must contain only rest"
+    "expected": {"family": "frost", "frostRepresentation": "opaqueDimensional", "contentFallback": true, "edgeRole": "outline"}
   },
   {
     "name": "Unresolved lens treatment",
@@ -136,5 +136,484 @@
     "changes": [{"path": "/schemaVersion", "value": "0.2.0"}],
     "requestSchemaValid": false,
     "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "frost body preserves navigation focused",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "frost",
+      "frostRepresentation": "opaqueDimensional",
+      "contentFallback": true,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "frost body preserves navigation focused+rest",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "frost",
+      "frostRepresentation": "opaqueDimensional",
+      "contentFallback": true,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "cast body preserves navigation focused",
+    "changes": [
+      {
+        "path": "/scenario/surface/materialRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "cast",
+      "contentFallback": false,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "cast body preserves navigation focused+rest",
+    "changes": [
+      {
+        "path": "/scenario/surface/materialRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "cast",
+      "contentFallback": false,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "elastomer body preserves navigation focused",
+    "changes": [
+      {
+        "path": "/scenario/surface/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/scenario/surface/colorRole",
+        "value": "accent.primary"
+      },
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "elastomer",
+      "contentFallback": false,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "elastomer body preserves navigation focused+rest",
+    "changes": [
+      {
+        "path": "/scenario/surface/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/scenario/surface/colorRole",
+        "value": "accent.primary"
+      },
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "elastomer",
+      "contentFallback": false,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "gel body preserves navigation focused",
+    "changes": [
+      {
+        "path": "/scenario/surface/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/scenario/surface/colorRole",
+        "value": "selection"
+      },
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "gel",
+      "contentFallback": false,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "gel body preserves navigation focused+rest",
+    "changes": [
+      {
+        "path": "/scenario/surface/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/scenario/surface/colorRole",
+        "value": "selection"
+      },
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "family": "gel",
+      "contentFallback": false,
+      "edgeRole": "outline"
+    }
+  },
+  {
+    "name": "Unresolved body state hover",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+hover",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state pressed",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+pressed",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state active",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "active"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+active",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "active"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state selected",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+selected",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state checked",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+checked",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state disabled",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+disabled",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state busy",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+busy",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state dragging",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+dragging",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state error",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "error"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+error",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "error"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state warning",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "warning"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+warning",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "warning"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state success",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "success"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+success",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "success"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
   }
 ]

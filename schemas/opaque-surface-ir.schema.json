@@ -10,7 +10,11 @@
     "colorRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
     "materialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
     "form": {"$ref": "urn:resina:schema:surface-form:0.1.0"},
-    "states": {"const": {"schemaVersion": "0.1.0", "states": ["rest"]}},
+    "states": {"enum": [
+      {"schemaVersion": "0.1.0", "states": ["rest"]},
+      {"schemaVersion": "0.1.0", "states": ["focused"]},
+      {"schemaVersion": "0.1.0", "states": ["rest", "focused"]}
+    ]},
     "frostRepresentation": {"const": "opaqueDimensional"},
     "geometry": {
       "type": "object", "additionalProperties": false,

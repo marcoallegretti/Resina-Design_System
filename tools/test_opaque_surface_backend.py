@@ -10,6 +10,18 @@ class OpaqueSurfaceComparisonTests(unittest.TestCase):
     def setUp(self):
         self.expected = load_json(ROOT / "conformance/ir/opaque-surface-expected.json")
 
+    def test_navigation_state_cannot_be_dropped_inferred_or_replaced(self):
+        for expected_states, actual_states in (
+            (["rest", "focused"], ["rest"]),
+            (["focused"], ["rest", "focused"]),
+            (["focused"], ["checked"]),
+        ):
+            with self.subTest(expected=expected_states, actual=actual_states):
+                self.expected["states"]["states"] = expected_states
+                actual = copy.deepcopy(self.expected)
+                actual["states"]["states"] = actual_states
+                self.assertIsNotNone(opaque_surface_mismatch(actual, self.expected))
+
     def test_geometry_and_offset_keep_their_numeric_policies(self):
         self.expected["geometry"]["content"]["offset"]["x"] = 1e300
         actual = copy.deepcopy(self.expected)

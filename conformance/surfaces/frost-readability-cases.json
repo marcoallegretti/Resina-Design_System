@@ -39,10 +39,10 @@
     "errorContains": "material family must be Frost"
   },
   {
-    "name": "unresolved focused state",
+    "name": "focused navigation preserves Frost body readability",
     "requestSchemaValid": true,
     "changes": [{"path": "/scenario/surface/states/states", "value": ["rest", "focused"]}],
-    "errorContains": "states must contain only rest"
+    "expected": {"representation": "opaqueDimensional", "contentFallback": true, "edgeRole": "outline", "edgeFallback": false}
   },
   {
     "name": "unresolved lens treatment",
@@ -79,5 +79,339 @@
     "requestSchemaValid": false,
     "changes": [{"path": "/minimumEdgeContrast", "value": 22}],
     "errorContains": "minimumContrast must be finite"
+  },
+  {
+    "name": "frost body preserves navigation focused",
+    "requestSchemaValid": true,
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "expected": {
+      "representation": "opaqueDimensional",
+      "contentFallback": true,
+      "edgeRole": "outline",
+      "edgeFallback": false
+    }
+  },
+  {
+    "name": "frost body preserves navigation focused+rest",
+    "requestSchemaValid": true,
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "expected": {
+      "representation": "opaqueDimensional",
+      "contentFallback": true,
+      "edgeRole": "outline",
+      "edgeFallback": false
+    }
+  },
+  {
+    "name": "Unresolved body state hover",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+hover",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state pressed",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+pressed",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state active",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "active"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+active",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "active"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state selected",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+selected",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state checked",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+checked",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state disabled",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+disabled",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state busy",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+busy",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state dragging",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+dragging",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state error",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "error"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+error",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "error"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state warning",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "warning"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+warning",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "warning"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state success",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "success"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved body state focused+success",
+    "changes": [
+      {
+        "path": "/scenario/surface/states/states",
+        "value": [
+          "focused",
+          "success"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
   }
 ]

@@ -87,7 +87,9 @@ impl fmt::Display for FrostSurfaceReadabilityError {
             Self::Scenario(error) => write!(formatter, "readability scenario: {error}"),
             Self::Binding(error) => write!(formatter, "readability binding: {error}"),
             Self::NonFrostSurface => formatter.write_str("surface material family must be Frost"),
-            Self::NonBaseState => formatter.write_str("surface states must contain only rest"),
+            Self::NonBaseState => {
+                formatter.write_str("surface body supports only rest and focused states")
+            }
             Self::ActiveTreatment => formatter.write_str("bound surface treatment must be none"),
             Self::InvalidFrostBinding => {
                 formatter.write_str("Frost binding lacks its representation or body")
@@ -244,7 +246,12 @@ fn validate_surface_scope(binding: &BoundSurface) -> Result<(), FrostSurfaceRead
     if binding.material_family() != MaterialFamily::Frost {
         return Err(FrostSurfaceReadabilityError::NonFrostSurface);
     }
-    if binding.states().states() != [InteractionState::Rest] {
+    if binding
+        .states()
+        .states()
+        .iter()
+        .any(|state| !matches!(state, InteractionState::Rest | InteractionState::Focused))
+    {
         return Err(FrostSurfaceReadabilityError::NonBaseState);
     }
     if binding.treatment_stack().treatments().last() != Some(&OpticalTreatment::None) {

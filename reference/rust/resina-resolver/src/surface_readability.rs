@@ -106,7 +106,9 @@ impl fmt::Display for SurfaceReadabilityError {
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Scenario(error) => write!(formatter, "surface readability scenario: {error}"),
             Self::Binding(error) => write!(formatter, "surface readability binding: {error}"),
-            Self::NonBaseState => formatter.write_str("surface states must contain only rest"),
+            Self::NonBaseState => {
+                formatter.write_str("surface body supports only rest and focused states")
+            }
             Self::ActiveTreatment => formatter.write_str("bound surface treatment must be none"),
             Self::InvalidColorSpace(field) => write!(formatter, "{field} must use sRGB"),
             Self::Color(field, error) => write!(formatter, "invalid {field}: {error}"),
@@ -211,7 +213,12 @@ fn resolve_bound_surface_readability(
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
 ) -> Result<SurfaceReadabilityResult, SurfaceReadabilityError> {
-    if binding.states().states() != [InteractionState::Rest] {
+    if binding
+        .states()
+        .states()
+        .iter()
+        .any(|state| !matches!(state, InteractionState::Rest | InteractionState::Focused))
+    {
         return Err(SurfaceReadabilityError::NonBaseState);
     }
     if binding.treatment_stack().treatments().last() != Some(&OpticalTreatment::None) {

@@ -818,7 +818,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "only rest"
+    "errorContains": "supports only rest and focused"
   },
   {
     "name": "active treatment cannot pretend to be painted",
@@ -1018,5 +1018,1250 @@
     ],
     "requestSchemaValid": true,
     "errorContains": "foundation.json"
+  },
+  {
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "expectedChanges": [
+      {
+        "path": "/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "name": "cast opaque body preserves navigation focused"
+  },
+  {
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "expectedChanges": [
+      {
+        "path": "/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "name": "cast opaque body preserves navigation rest+focused"
+  },
+  {
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "expectedChanges": [
+      {
+        "path": "/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "name": "cast opaque body preserves navigation focused+rest"
+  },
+  {
+    "name": "frost opaque body preserves navigation focused",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "surface.chrome"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "opaque",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.base",
+      "materialFamily": "frost",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "structural",
+        "elevation": "raised"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused"
+        ]
+      },
+      "geometry": {
+        "front": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 12
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        "silhouette": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 14
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 20,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        "edgeInterior": {
+          "offset": {
+            "x": 1,
+            "y": 1
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 18,
+              "height": 12
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 10
+                },
+                "to": {
+                  "x": 18,
+                  "y": 12
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 12
+                },
+                "to": {
+                  "x": 0,
+                  "y": 12
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 12
+                },
+                "to": {
+                  "x": 0,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        },
+        "highlightOuter": {
+          "offset": {
+            "x": 1,
+            "y": 1
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 18,
+              "height": 10
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        },
+        "content": {
+          "offset": {
+            "x": 2,
+            "y": 2
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 16,
+              "height": 8
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 16,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 16,
+                  "y": 0
+                },
+                "to": {
+                  "x": 16,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 16,
+                  "y": 8
+                },
+                "to": {
+                  "x": 0,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 8
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "frost",
+        "profile": {
+          "sideShade": 0.14,
+          "highlightLift": 0.18
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.86,
+            0.86,
+            0.86
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        }
+      },
+      "lighting": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": 0,
+          "y": -1
+        },
+        "sideOffset": {
+          "x": 0,
+          "y": 2
+        },
+        "edgeHighlightWeights": {
+          "top": 1,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "normalHighlightWeights": []
+      },
+      "edgeWidth": 1,
+      "highlightWidth": 1,
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "colorRole": "outline",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "contrastRatio": 21,
+        "fallbackApplied": false
+      },
+      "foregroundRole": "content.primary",
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ],
+        "alpha": 1
+      },
+      "contentContrastRatio": 21,
+      "contentFallbackApplied": false,
+      "frostRepresentation": "opaqueDimensional"
+    }
+  },
+  {
+    "name": "elastomer opaque body preserves navigation focused",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "elastomer"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "elastomer",
+          "profile": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.75,
+              0.75,
+              0.75
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "elastomer opaque body preserves navigation rest+focused",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "elastomer"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "elastomer",
+          "profile": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.75,
+              0.75,
+              0.75
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "elastomer opaque body preserves navigation focused+rest",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "elastomer"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "elastomer",
+          "profile": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.75,
+              0.75,
+              0.75
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "gel opaque body preserves navigation focused",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "gel"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "gel",
+          "profile": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8200000000000001,
+              0.8200000000000001,
+              0.8200000000000001
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "gel opaque body preserves navigation rest+focused",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "gel"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "gel",
+          "profile": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8200000000000001,
+              0.8200000000000001,
+              0.8200000000000001
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "gel opaque body preserves navigation focused+rest",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "gel"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "gel",
+          "profile": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8200000000000001,
+              0.8200000000000001,
+              0.8200000000000001
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Unresolved opaque body state hover",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+hover",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state pressed",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+pressed",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state active",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "active"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+active",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "active"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state selected",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+selected",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state checked",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+checked",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state disabled",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+disabled",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state busy",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+busy",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state dragging",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+dragging",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state error",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "error"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+error",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "error"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state warning",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "warning"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+warning",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "warning"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state success",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "success"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "Unresolved opaque body state focused+success",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused",
+          "success"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
   }
 ]

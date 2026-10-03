@@ -36,6 +36,11 @@ def baseline():
 
 
 def check_success(actual, request, expected, binding):
+    binding = copy.deepcopy(binding)
+    binding["states"]["states"] = [
+        state for state in ("rest", "focused")
+        if state in request["scenario"]["surface"]["states"]["states"]
+    ]
     if mismatch(actual["binding"], binding):
         raise AssertionError("binding differs from the surface conformance result")
     if actual["foregroundRole"] != request["foregroundRole"]:
