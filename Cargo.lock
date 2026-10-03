@@ -164,6 +164,7 @@ dependencies = [
  "resina-color",
  "resina-model",
  "resina-resolver",
+ "serde",
  "serde_json",
 ]
 

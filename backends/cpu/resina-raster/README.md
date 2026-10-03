@@ -20,3 +20,16 @@ cargo test -p resina-raster --locked
 ```
 
 Both configurations are tested in Linux and Windows CI. Coverage includes independent square/circle/focus geometry oracles, linear-light filtering, straight alpha, resource and precision failures, and ownership transfer without a copy; the PNG configuration additionally checks encoding metadata, transport and failures. This backend does not implement components, input, layout, animation or optical treatments, and does not replace GUIdo's role as the high-fidelity reference renderer.
+
+## Preparation benchmark
+
+Generate the [shared scene bundle](../../../conformance/scenes/README.md), then measure a named authored scene:
+
+```sh
+cargo bench -p resina-raster --no-default-features --bench paint -- /absolute/path/material-scenes.json light-cast-focus
+cargo bench -p resina-raster --no-default-features --bench paint -- /absolute/path/material-scenes.json light-cast-rest
+```
+
+Pass an absolute bundle path: Cargo runs the benchmark from the package directory. The benchmark resolves the selected request before timing. It uses the bundle's physical origin, logical capture extent and samples per axis at device scales 1, 1.25, 2 and 3, rounding pixel dimensions upward. Each scale has one warmup and nine measured renders; output reports minimum, median and maximum milliseconds. Timing includes pixel allocation, paint evaluation and color integration, and excludes request resolution, buffer destruction, image encoding, toolkit upload and compositing. `cargo bench` uses the optimized bench profile; the target is excluded from ordinary tests. Run on an otherwise idle machine and record the compiler, hardware and bundle with results. Timing is measurement evidence, not a portable CI threshold or proof of interactive readiness.
+
+Current point sampling can be expensive even for a small surface. Prepare reusable images before exposing a state; measure preparation and upload before using this realization in an input-event path. The benchmark accepts either surface or focus scenes and does not require PNG support.

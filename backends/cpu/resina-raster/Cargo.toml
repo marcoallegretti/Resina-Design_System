@@ -15,7 +15,13 @@ resina-resolver = { path = "../../../reference/rust/resina-resolver" }
 png = { version = "0.18.1", optional = true }
 
 [dev-dependencies]
+serde = { version = "1", features = ["derive"] }
 serde_json.workspace = true
+
+[[bench]]
+name = "paint"
+harness = false
+test = false
 
 [[bin]]
 name = "resina-surface-raster"
