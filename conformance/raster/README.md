@@ -2,6 +2,8 @@
 
 `resina-raster` is conformance tooling for the [opaque surface paint law](../../spec/36-opaque-surface-ir.md) and [focus ring paint law](../../spec/37-focus-indicator-ir.md), separate from headless resolution. It produces separate static surface and focus ring images from validated Rust IR. It does not define Resina intent, certify a renderer, or implement components, layout, content, interaction, motion or optical treatments. GUIdo remains the high-fidelity reference renderer; Quickshell, Slint and Web retain their independent roles.
 
+The [shared material scene catalog](../scenes/README.md) prepares self-contained requests from the authored themes, environment and appearance profile, with a common viewport for all sixteen static body/ring images.
+
 ## Coordinates and sampling
 
 Supply an explicit finite physical origin, positive integer image width and height, positive finite pixels per logical unit, and integer samples per axis in `1..=8`. Image rows run downward from the physical origin; physical x runs rightward. The viewport deliberately clips paint outside its rectangle. It does not fit or translate the surface automatically, mirror RTL geometry or assume a background.

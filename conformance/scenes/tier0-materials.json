@@ -1,0 +1,531 @@
+{
+  "schemaVersion": "0.1.0",
+  "themes": {
+    "light": {
+      "source": "tokens/themes/light.json",
+      "externalSources": {
+        "foundation.json": "tokens/foundation.json"
+      }
+    },
+    "dark": {
+      "source": "tokens/themes/dark.json",
+      "externalSources": {
+        "foundation.json": "tokens/foundation.json"
+      }
+    }
+  },
+  "environmentSource": "conformance/environment/valid-minimal-capabilities.json",
+  "appearanceSource": "definitions/tier0-surface-appearance.json",
+  "size": {
+    "width": 180,
+    "height": 72
+  },
+  "capture": {
+    "origin": {
+      "x": -12,
+      "y": -12
+    },
+    "width": 408,
+    "height": 192,
+    "pixelsPerUnit": 2,
+    "samplesPerAxis": 4
+  },
+  "scenarios": [
+    {
+      "name": "light-cast-rest",
+      "kind": "opaqueSurface",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-cast-focus",
+      "kind": "focusRing",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast"
+    },
+    {
+      "name": "light-frost-rest",
+      "kind": "opaqueSurface",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-frost-focus",
+      "kind": "focusRing",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost"
+    },
+    {
+      "name": "light-elastomer-rest",
+      "kind": "opaqueSurface",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer",
+      "foregroundRole": "content.inverse",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-elastomer-focus",
+      "kind": "focusRing",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer"
+    },
+    {
+      "name": "light-gel-rest",
+      "kind": "opaqueSurface",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "light-gel-focus",
+      "kind": "focusRing",
+      "theme": "light",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel"
+    },
+    {
+      "name": "dark-cast-rest",
+      "kind": "opaqueSurface",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-cast-focus",
+      "kind": "focusRing",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.base",
+        "colorRole": "surface.high",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "cast"
+    },
+    {
+      "name": "dark-frost-rest",
+      "kind": "opaqueSurface",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-frost-focus",
+      "kind": "focusRing",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "surface.chrome",
+        "colorRole": "surface.chrome",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "soft",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "frost"
+    },
+    {
+      "name": "dark-elastomer-rest",
+      "kind": "opaqueSurface",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer",
+      "foregroundRole": "content.inverse",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-elastomer-focus",
+      "kind": "focusRing",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "rounded",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "elastomer"
+    },
+    {
+      "name": "dark-gel-rest",
+      "kind": "opaqueSurface",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "rest"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel",
+      "foregroundRole": "content.primary",
+      "minimumContentContrast": 4.5,
+      "minimumEdgeContrast": 3
+    },
+    {
+      "name": "dark-gel-focus",
+      "kind": "focusRing",
+      "theme": "dark",
+      "surface": {
+        "schemaVersion": "0.2.0",
+        "materialRole": "feedback.selection",
+        "colorRole": "selection",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "capsule",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "focused",
+            "selected"
+          ]
+        },
+        "treatmentStack": {
+          "schemaVersion": "0.1.0",
+          "treatments": [
+            "none"
+          ]
+        }
+      },
+      "surroundingColorRole": "surface.base",
+      "expectedMaterialFamily": "gel"
+    }
+  ]
+}

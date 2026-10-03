@@ -54,6 +54,8 @@ Run `cargo run -p resina-motion --bin resina-spring -- <path|->` for a [normaliz
 
 The [static surface raster tool](conformance/raster/README.md) consumes validated opaque surface IR and writes bounded RGBA8 sRGB PNG evidence. It has explicit viewport and sampling controls, linear-light color integration and straight coverage alpha. This conformance tool is separate from the headless resolver and does not implement components or certify a visual backend.
 
+The [shared static material scenes](conformance/scenes/README.md) reference the authored Light/Dark themes, environment and appearance profile. Their generator prepares sixteen portable body/ring requests, and CI checks resolved bindings and complete capture bounds on Linux and Windows.
+
 Run `cargo run -p resina-resolver --bin resina-focus-indicator -- <path>` for a [focused surface indicator request](schemas/focus-indicator-request.schema.json), or use `-` for stdin. The Rust `resolve_focus_indicator` API accepts a headless resolution and surface intent directly. `python tools/check_focus_indicator_backend.py -- <backend-command> -` checks the bound state, authored indicator color, contrast, and Tier 0 geometry against a known surrounding color.
 
 Run `cargo run -p resina-resolver --bin resina-focus-ir -- <path>` for a [focus indicator IR request](schemas/focus-ir-request.schema.json). It resolves both boundaries of the exterior navigation ring around the bound shape's directional footprint, preserving concurrent states and guarded focus color. `python tools/check_focus_ir_backend.py -- <backend-command> -` checks the public IR protocol. The Rust `resolve_focus_ir` API reuses a compiled theme.

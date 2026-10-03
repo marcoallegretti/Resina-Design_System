@@ -135,6 +135,7 @@ def main():
         "schemas/focus-indicator-ir.schema.json",
         "schemas/focus-ir-case.schema.json",
         "schemas/focus-paint-case.schema.json",
+        "schemas/material-scene-manifest.schema.json",
         "schemas/opaque-surface-appearance.schema.json",
         "schemas/opaque-surface-request.schema.json",
         "schemas/opaque-surface-ir.schema.json",
@@ -226,6 +227,32 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    material_scenes = load_json(ROOT / "conformance/scenes/tier0-materials.json")
+    material_scene_schema = validator_for("schemas/material-scene-manifest.schema.json")
+    check_case(material_scene_schema, "authored material scenes", material_scenes, True)
+    invalid_material_scenes = [
+        ("wrong manifest version", "/schemaVersion", "0.2.0"),
+        ("parent asset path", "/environmentSource", "../environment.json"),
+        ("absolute asset path", "/environmentSource", "/environment.json"),
+        ("drive asset path", "/environmentSource", "C:/environment.json"),
+        ("remote asset path", "/environmentSource", "https://example.com/environment.json"),
+        ("newline asset path", "/environmentSource", "environment.json\n"),
+        ("zero surface width", "/size/width", 0),
+        ("zero capture width", "/capture/width", 0),
+        ("zero capture scale", "/capture/pixelsPerUnit", 0),
+        ("unsupported sample grid", "/capture/samplesPerAxis", 9),
+        ("empty scene catalog", "/scenarios", []),
+        ("unknown scene kind", "/scenarios/0/kind", "component"),
+        ("missing body guards", "/scenarios/1/kind", "opaqueSurface"),
+        ("ignored ring guards", "/scenarios/0/kind", "focusRing"),
+        ("invalid contrast", "/scenarios/0/minimumContentContrast", 22),
+    ]
+    for name, pointer, value in invalid_material_scenes:
+        changed = copy.deepcopy(material_scenes)
+        replace_at_pointer(changed, pointer, value)
+        check_case(material_scene_schema, name, changed, False)
+    check_case(material_scene_schema, "unknown scene manifest field", {**material_scenes, "extra": True}, False)
 
     spring_request = load_json(ROOT / "conformance/motion/spring-request.json")
     spring_expected = load_json(ROOT / "conformance/motion/spring-expected.json")
@@ -827,6 +854,7 @@ def main():
 
     checked = (
         len(spring_cases) + 4
+        + len(invalid_material_scenes) + 2
         + len(focus_ir_cases) + len(invalid_focus_ir_results)
         + len(focus_paint_vectors) + 3
         + len(ir_cases) + len(invalid_ir_results) + 3

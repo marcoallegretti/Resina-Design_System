@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:material-scene-manifest:0.1.0",
+  "title": "Resina Static Material Scene Manifest",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "themes", "environmentSource", "appearanceSource", "size", "capture", "scenarios"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "themes": {
+      "type": "object", "minProperties": 1,
+      "propertyNames": {"pattern": "^[a-z][a-z0-9-]*$", "not": {"pattern": "[\\r\\n]"}},
+      "additionalProperties": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source", "externalSources"],
+        "properties": {
+          "source": {"$ref": "#/$defs/sourcePath"},
+          "externalSources": {"type": "object", "propertyNames": {"minLength": 1}, "additionalProperties": {"$ref": "#/$defs/sourcePath"}}
+        }
+      }
+    },
+    "environmentSource": {"$ref": "#/$defs/sourcePath"},
+    "appearanceSource": {"$ref": "#/$defs/sourcePath"},
+    "size": {
+      "allOf": [
+        {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+        {"properties": {"width": {"exclusiveMinimum": 0}, "height": {"exclusiveMinimum": 0}}}
+      ]
+    },
+    "capture": {
+      "type": "object", "additionalProperties": false,
+      "required": ["origin", "width", "height", "pixelsPerUnit", "samplesPerAxis"],
+      "properties": {
+        "origin": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1},
+        "pixelsPerUnit": {"type": "number", "exclusiveMinimum": 0},
+        "samplesPerAxis": {"type": "integer", "minimum": 1, "maximum": 8}
+      }
+    },
+    "scenarios": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["name", "kind", "theme", "surface", "surroundingColorRole", "expectedMaterialFamily"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "not": {"pattern": "[\\r\\n]"}},
+          "kind": {"enum": ["opaqueSurface", "focusRing"]},
+          "theme": {"type": "string", "minLength": 1},
+          "surface": {"$ref": "urn:resina:schema:surface-binding:0.2.0"},
+          "surroundingColorRole": {"$ref": "#/$defs/colorRole"},
+          "expectedMaterialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
+          "foregroundRole": {"$ref": "#/$defs/colorRole"},
+          "minimumContentContrast": {"type": "number", "minimum": 1, "maximum": 21},
+          "minimumEdgeContrast": {"type": "number", "minimum": 1, "maximum": 21}
+        },
+        "if": {"properties": {"kind": {"const": "opaqueSurface"}}},
+        "then": {"required": ["foregroundRole", "minimumContentContrast", "minimumEdgeContrast"]},
+        "else": {"not": {"anyOf": [{"required": ["foregroundRole"]}, {"required": ["minimumContentContrast"]}, {"required": ["minimumEdgeContrast"]}]}}
+      }
+    }
+  },
+  "$defs": {
+    "sourcePath": {"type": "string", "pattern": "^(?:[A-Za-z0-9][A-Za-z0-9._-]*/)*[A-Za-z0-9][A-Za-z0-9._-]*\\.json$", "not": {"pattern": "[\\r\\n]"}},
+    "colorRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"}
+  }
+}
