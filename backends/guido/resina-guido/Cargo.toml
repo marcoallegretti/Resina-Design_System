@@ -1,0 +1,19 @@
+[package]
+name = "resina-guido"
+version = "0.1.0"
+edition = "2024"
+description = "Prepared Resina surface and focus paint for GUIdo"
+
+[workspace]
+
+[features]
+testing = ["guido/testing"]
+
+[dependencies]
+guido = { git = "https://github.com/MalpenZibo/guido", rev = "e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb", default-features = false }
+resina-model = { path = "../../../reference/rust/resina-model" }
+resina-resolver = { path = "../../../reference/rust/resina-resolver" }
+resina-raster = { path = "../../cpu/resina-raster", default-features = false }
+
+[dev-dependencies]
+serde_json = { version = "1", features = ["float_roundtrip"] }
