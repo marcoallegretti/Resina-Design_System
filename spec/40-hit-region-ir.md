@@ -26,12 +26,26 @@ under RTL, shrink targets with density/text/device scale, move the body, or shif
 the hit region to hide insufficient space.
 
 Coordinates and dimensions MUST be finite; all dimensions MUST be positive.
-Every rectangle's right/bottom endpoint MUST be finite, greater than its origin,
-and retain at least its declared dimension when the origin is subtracted. The
+The `0.1.0` command boundary decodes numeric fields to IEEE 754 binary64 using
+round-to-nearest, ties-to-even. Right/bottom endpoints mean the mathematical
+sums `x + width` and `y + height` of those decoded values, retaining addition
+residuals when necessary for predicates.
+Every endpoint MUST have a finite representation greater than its origin. The
 computed rectangle MUST fully contain the visual bounds and lie within available
 bounds. Fail explicitly when arithmetic cannot represent these extents or when
 the full target would be clipped. No numerical tolerance may admit an undersized
 or clipped target. Layout must then reserve enough space or change placement.
+
+Predicates MUST preserve the sign of endpoint differences when rounded endpoint
+sums coincide. In particular, do not subtract a rounded endpoint from its origin
+to certify the minimum, or compare only rounded sums to certify containment,
+clipping, overlap or membership. The Rust reference uses binary64 TwoSum
+expansions for exact endpoint comparisons, following
+[Shewchuk's compensated arithmetic](https://www.cs.cmu.edu/~quake/robust.html).
+This numerical technique does not add arithmetic implementation details to IR.
+The [membership vectors](../conformance/interaction/hit-membership-vectors.json)
+are independently checked with exact rational arithmetic and exercised against
+the Rust hit-membership API, including both sides of rounded endpoints.
 
 Reject positive-area intersection with any occupied region. Boundaries may
 touch: hit membership includes left/top and excludes right/bottom, so shared

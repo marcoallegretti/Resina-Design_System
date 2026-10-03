@@ -146,6 +146,7 @@ def main():
         "schemas/hit-region-request.schema.json",
         "schemas/hit-region-ir.schema.json",
         "schemas/hit-region-case.schema.json",
+        "schemas/hit-membership-case.schema.json",
         "schemas/extruded-contour-request.schema.json",
         "schemas/extruded-contour-result.schema.json",
         "schemas/extruded-contour-case.schema.json",
@@ -1508,7 +1509,8 @@ def main():
             check_case(paint_result_schema, case["name"], result, True)
             checked += 1
 
-    from check_hit_region_backend import cases
+    from check_hit_region_backend import cases, validate_membership_vectors
+    checked += validate_membership_vectors()
     hit_names = set()
     for case in cases():
         name = case["name"]

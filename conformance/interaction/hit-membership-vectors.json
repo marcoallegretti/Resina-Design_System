@@ -1,0 +1,506 @@
+[
+  {
+    "name": "origin-0-size-24.0-24.0",
+    "bounds": {"x": 0.0, "y": -0.0, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 23.999999999999996, "y": 12.0, "expected": true},
+      {"x": 24.0, "y": 12.0, "expected": false},
+      {"x": 24.000000000000004, "y": 12.0, "expected": false},
+      {"x": 12.0, "y": 23.999999999999996, "expected": true},
+      {"x": 12.0, "y": 24.0, "expected": false},
+      {"x": 12.0, "y": 24.000000000000004, "expected": false},
+      {"x": 0.0, "y": -0.0, "expected": true},
+      {"x": 24.0, "y": 24.0, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-0-size-28.8-48.1",
+    "bounds": {"x": 0.0, "y": -0.0, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 28.799999999999997, "y": 24.05, "expected": true},
+      {"x": 28.8, "y": 24.05, "expected": false},
+      {"x": 28.800000000000004, "y": 24.05, "expected": false},
+      {"x": 14.4, "y": 48.099999999999994, "expected": true},
+      {"x": 14.4, "y": 48.1, "expected": false},
+      {"x": 14.4, "y": 48.10000000000001, "expected": false},
+      {"x": 0.0, "y": -0.0, "expected": true},
+      {"x": 28.8, "y": 48.1, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-0-size-48.1-28.8",
+    "bounds": {"x": 0.0, "y": -0.0, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 48.099999999999994, "y": 14.4, "expected": true},
+      {"x": 48.1, "y": 14.4, "expected": false},
+      {"x": 48.10000000000001, "y": 14.4, "expected": false},
+      {"x": 24.05, "y": 28.799999999999997, "expected": true},
+      {"x": 24.05, "y": 28.8, "expected": false},
+      {"x": 24.05, "y": 28.800000000000004, "expected": false},
+      {"x": 0.0, "y": -0.0, "expected": true},
+      {"x": 48.1, "y": 28.8, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-1-size-24.0-24.0",
+    "bounds": {"x": 0.1, "y": -0.05, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 24.099999999999998, "y": 11.95, "expected": true},
+      {"x": 24.1, "y": 11.95, "expected": false},
+      {"x": 24.100000000000005, "y": 11.95, "expected": false},
+      {"x": 12.1, "y": 23.949999999999996, "expected": true},
+      {"x": 12.1, "y": 23.95, "expected": true},
+      {"x": 12.1, "y": 23.950000000000003, "expected": false},
+      {"x": 0.1, "y": -0.05, "expected": true},
+      {"x": 24.1, "y": 23.95, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-1-size-28.8-48.1",
+    "bounds": {"x": 0.1, "y": -0.05, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 28.9, "y": 24.0, "expected": true},
+      {"x": 28.900000000000002, "y": 24.0, "expected": false},
+      {"x": 28.900000000000006, "y": 24.0, "expected": false},
+      {"x": 14.5, "y": 48.05, "expected": true},
+      {"x": 14.5, "y": 48.050000000000004, "expected": false},
+      {"x": 14.5, "y": 48.05000000000001, "expected": false},
+      {"x": 0.1, "y": -0.05, "expected": true},
+      {"x": 28.900000000000002, "y": 48.050000000000004, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-1-size-48.1-28.8",
+    "bounds": {"x": 0.1, "y": -0.05, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 48.199999999999996, "y": 14.35, "expected": true},
+      {"x": 48.2, "y": 14.35, "expected": false},
+      {"x": 48.20000000000001, "y": 14.35, "expected": false},
+      {"x": 24.150000000000002, "y": 28.749999999999996, "expected": true},
+      {"x": 24.150000000000002, "y": 28.75, "expected": true},
+      {"x": 24.150000000000002, "y": 28.750000000000004, "expected": false},
+      {"x": 0.1, "y": -0.05, "expected": true},
+      {"x": 48.2, "y": 28.75, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-2-size-24.0-24.0",
+    "bounds": {"x": 0.2, "y": -0.1, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 24.199999999999996, "y": 11.9, "expected": true},
+      {"x": 24.2, "y": 11.9, "expected": true},
+      {"x": 24.200000000000003, "y": 11.9, "expected": false},
+      {"x": 12.2, "y": 23.899999999999995, "expected": true},
+      {"x": 12.2, "y": 23.9, "expected": true},
+      {"x": 12.2, "y": 23.900000000000002, "expected": false},
+      {"x": 0.2, "y": -0.1, "expected": true},
+      {"x": 24.2, "y": 23.9, "expected": true}
+    ]
+  },
+  {
+    "name": "origin-2-size-28.8-48.1",
+    "bounds": {"x": 0.2, "y": -0.1, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 28.999999999999996, "y": 23.95, "expected": true},
+      {"x": 29.0, "y": 23.95, "expected": true},
+      {"x": 29.000000000000004, "y": 23.95, "expected": false},
+      {"x": 14.6, "y": 47.99999999999999, "expected": true},
+      {"x": 14.6, "y": 48.0, "expected": true},
+      {"x": 14.6, "y": 48.00000000000001, "expected": false},
+      {"x": 0.2, "y": -0.1, "expected": true},
+      {"x": 29.0, "y": 48.0, "expected": true}
+    ]
+  },
+  {
+    "name": "origin-2-size-48.1-28.8",
+    "bounds": {"x": 0.2, "y": -0.1, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 48.3, "y": 14.3, "expected": true},
+      {"x": 48.300000000000004, "y": 14.3, "expected": false},
+      {"x": 48.30000000000001, "y": 14.3, "expected": false},
+      {"x": 24.25, "y": 28.699999999999996, "expected": true},
+      {"x": 24.25, "y": 28.7, "expected": true},
+      {"x": 24.25, "y": 28.700000000000003, "expected": false},
+      {"x": 0.2, "y": -0.1, "expected": true},
+      {"x": 48.300000000000004, "y": 28.7, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-3-size-24.0-24.0",
+    "bounds": {"x": 0.3, "y": -0.15, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 24.299999999999997, "y": 11.85, "expected": true},
+      {"x": 24.3, "y": 11.85, "expected": false},
+      {"x": 24.300000000000004, "y": 11.85, "expected": false},
+      {"x": 12.3, "y": 23.849999999999998, "expected": true},
+      {"x": 12.3, "y": 23.85, "expected": false},
+      {"x": 12.3, "y": 23.850000000000005, "expected": false},
+      {"x": 0.3, "y": -0.15, "expected": true},
+      {"x": 24.3, "y": 23.85, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-3-size-28.8-48.1",
+    "bounds": {"x": 0.3, "y": -0.15, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 29.099999999999998, "y": 23.900000000000002, "expected": true},
+      {"x": 29.1, "y": 23.900000000000002, "expected": false},
+      {"x": 29.100000000000005, "y": 23.900000000000002, "expected": false},
+      {"x": 14.700000000000001, "y": 47.949999999999996, "expected": true},
+      {"x": 14.700000000000001, "y": 47.95, "expected": false},
+      {"x": 14.700000000000001, "y": 47.95000000000001, "expected": false},
+      {"x": 0.3, "y": -0.15, "expected": true},
+      {"x": 29.1, "y": 47.95, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-3-size-48.1-28.8",
+    "bounds": {"x": 0.3, "y": -0.15, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 48.39999999999999, "y": 14.25, "expected": true},
+      {"x": 48.4, "y": 14.25, "expected": true},
+      {"x": 48.400000000000006, "y": 14.25, "expected": false},
+      {"x": 24.35, "y": 28.65, "expected": true},
+      {"x": 24.35, "y": 28.650000000000002, "expected": false},
+      {"x": 24.35, "y": 28.650000000000006, "expected": false},
+      {"x": 0.3, "y": -0.15, "expected": true},
+      {"x": 48.4, "y": 28.650000000000002, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-4-size-24.0-24.0",
+    "bounds": {"x": -0.1, "y": 0.05, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 23.899999999999995, "y": 12.05, "expected": true},
+      {"x": 23.9, "y": 12.05, "expected": true},
+      {"x": 23.900000000000002, "y": 12.05, "expected": false},
+      {"x": 11.9, "y": 24.049999999999997, "expected": true},
+      {"x": 11.9, "y": 24.05, "expected": false},
+      {"x": 11.9, "y": 24.050000000000004, "expected": false},
+      {"x": -0.1, "y": 0.05, "expected": true},
+      {"x": 23.9, "y": 24.05, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-4-size-28.8-48.1",
+    "bounds": {"x": -0.1, "y": 0.05, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 28.699999999999996, "y": 24.1, "expected": true},
+      {"x": 28.7, "y": 24.1, "expected": true},
+      {"x": 28.700000000000003, "y": 24.1, "expected": false},
+      {"x": 14.3, "y": 48.14999999999999, "expected": true},
+      {"x": 14.3, "y": 48.15, "expected": true},
+      {"x": 14.3, "y": 48.150000000000006, "expected": false},
+      {"x": -0.1, "y": 0.05, "expected": true},
+      {"x": 28.7, "y": 48.15, "expected": true}
+    ]
+  },
+  {
+    "name": "origin-4-size-48.1-28.8",
+    "bounds": {"x": -0.1, "y": 0.05, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 47.99999999999999, "y": 14.450000000000001, "expected": true},
+      {"x": 48.0, "y": 14.450000000000001, "expected": true},
+      {"x": 48.00000000000001, "y": 14.450000000000001, "expected": false},
+      {"x": 23.95, "y": 28.849999999999998, "expected": true},
+      {"x": 23.95, "y": 28.85, "expected": false},
+      {"x": 23.95, "y": 28.850000000000005, "expected": false},
+      {"x": -0.1, "y": 0.05, "expected": true},
+      {"x": 48.0, "y": 28.85, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-5-size-24.0-24.0",
+    "bounds": {"x": -1.7499999999999996, "y": 0.8749999999999998, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 22.249999999999996, "y": 12.875, "expected": true},
+      {"x": 22.25, "y": 12.875, "expected": true},
+      {"x": 22.250000000000004, "y": 12.875, "expected": false},
+      {"x": 10.25, "y": 24.874999999999996, "expected": true},
+      {"x": 10.25, "y": 24.875, "expected": false},
+      {"x": 10.25, "y": 24.875000000000004, "expected": false},
+      {"x": -1.7499999999999996, "y": 0.8749999999999998, "expected": true},
+      {"x": 22.25, "y": 24.875, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-5-size-28.8-48.1",
+    "bounds": {"x": -1.7499999999999996, "y": 0.8749999999999998, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 27.049999999999997, "y": 24.925, "expected": true},
+      {"x": 27.05, "y": 24.925, "expected": true},
+      {"x": 27.050000000000004, "y": 24.925, "expected": false},
+      {"x": 12.65, "y": 48.974999999999994, "expected": true},
+      {"x": 12.65, "y": 48.975, "expected": false},
+      {"x": 12.65, "y": 48.97500000000001, "expected": false},
+      {"x": -1.7499999999999996, "y": 0.8749999999999998, "expected": true},
+      {"x": 27.05, "y": 48.975, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-5-size-48.1-28.8",
+    "bounds": {"x": -1.7499999999999996, "y": 0.8749999999999998, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 46.349999999999994, "y": 15.275, "expected": true},
+      {"x": 46.35, "y": 15.275, "expected": true},
+      {"x": 46.35000000000001, "y": 15.275, "expected": false},
+      {"x": 22.3, "y": 29.674999999999997, "expected": true},
+      {"x": 22.3, "y": 29.675, "expected": false},
+      {"x": 22.3, "y": 29.675000000000004, "expected": false},
+      {"x": -1.7499999999999996, "y": 0.8749999999999998, "expected": true},
+      {"x": 46.35, "y": 29.675, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-6-size-24.0-24.0",
+    "bounds": {"x": 1024.1, "y": -512.05, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 1048.0999999999997, "y": -500.04999999999995, "expected": true},
+      {"x": 1048.1, "y": -500.04999999999995, "expected": false},
+      {"x": 1048.1000000000001, "y": -500.04999999999995, "expected": false},
+      {"x": 1036.1, "y": -488.05, "expected": true},
+      {"x": 1036.1, "y": -488.04999999999995, "expected": false},
+      {"x": 1036.1, "y": -488.0499999999999, "expected": false},
+      {"x": 1024.1, "y": -512.05, "expected": true},
+      {"x": 1048.1, "y": -488.04999999999995, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-6-size-28.8-48.1",
+    "bounds": {"x": 1024.1, "y": -512.05, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 1052.8999999999996, "y": -487.99999999999994, "expected": true},
+      {"x": 1052.8999999999999, "y": -487.99999999999994, "expected": true},
+      {"x": 1052.9, "y": -487.99999999999994, "expected": false},
+      {"x": 1038.5, "y": -463.95, "expected": true},
+      {"x": 1038.5, "y": -463.94999999999993, "expected": false},
+      {"x": 1038.5, "y": -463.9499999999999, "expected": false},
+      {"x": 1024.1, "y": -512.05, "expected": true},
+      {"x": 1052.8999999999999, "y": -463.94999999999993, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-6-size-48.1-28.8",
+    "bounds": {"x": 1024.1, "y": -512.05, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 1072.1999999999996, "y": -497.65, "expected": true},
+      {"x": 1072.1999999999998, "y": -497.65, "expected": true},
+      {"x": 1072.2, "y": -497.65, "expected": false},
+      {"x": 1048.1499999999999, "y": -483.25, "expected": true},
+      {"x": 1048.1499999999999, "y": -483.24999999999994, "expected": false},
+      {"x": 1048.1499999999999, "y": -483.2499999999999, "expected": false},
+      {"x": 1024.1, "y": -512.05, "expected": true},
+      {"x": 1072.1999999999998, "y": -483.24999999999994, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-7-size-24.0-24.0",
+    "bounds": {"x": -1024.1, "y": 512.05, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": -1000.1, "y": 524.05, "expected": true},
+      {"x": -1000.0999999999999, "y": 524.05, "expected": false},
+      {"x": -1000.0999999999998, "y": 524.05, "expected": false},
+      {"x": -1012.0999999999999, "y": 536.0499999999998, "expected": true},
+      {"x": -1012.0999999999999, "y": 536.05, "expected": false},
+      {"x": -1012.0999999999999, "y": 536.0500000000001, "expected": false},
+      {"x": -1024.1, "y": 512.05, "expected": true},
+      {"x": -1000.0999999999999, "y": 536.05, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-7-size-28.8-48.1",
+    "bounds": {"x": -1024.1, "y": 512.05, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": -995.3000000000001, "y": 536.0999999999999, "expected": true},
+      {"x": -995.3, "y": 536.0999999999999, "expected": true},
+      {"x": -995.2999999999998, "y": 536.0999999999999, "expected": false},
+      {"x": -1009.6999999999999, "y": 560.1499999999999, "expected": true},
+      {"x": -1009.6999999999999, "y": 560.15, "expected": false},
+      {"x": -1009.6999999999999, "y": 560.1500000000001, "expected": false},
+      {"x": -1024.1, "y": 512.05, "expected": true},
+      {"x": -995.3, "y": 560.15, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-7-size-48.1-28.8",
+    "bounds": {"x": -1024.1, "y": 512.05, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": -976.0, "y": 526.4499999999999, "expected": true},
+      {"x": -975.9999999999999, "y": 526.4499999999999, "expected": false},
+      {"x": -975.9999999999998, "y": 526.4499999999999, "expected": false},
+      {"x": -1000.05, "y": 540.8499999999998, "expected": true},
+      {"x": -1000.05, "y": 540.8499999999999, "expected": true},
+      {"x": -1000.05, "y": 540.85, "expected": false},
+      {"x": -1024.1, "y": 512.05, "expected": true},
+      {"x": -975.9999999999999, "y": 540.8499999999999, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-8-size-24.0-24.0",
+    "bounds": {"x": 23.999999999999996, "y": -11.999999999999998, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 47.99999999999999, "y": 1.7763568394002505e-15, "expected": true},
+      {"x": 48.0, "y": 1.7763568394002505e-15, "expected": false},
+      {"x": 48.00000000000001, "y": 1.7763568394002505e-15, "expected": false},
+      {"x": 36.0, "y": 12.0, "expected": true},
+      {"x": 36.0, "y": 12.000000000000002, "expected": false},
+      {"x": 36.0, "y": 12.000000000000004, "expected": false},
+      {"x": 23.999999999999996, "y": -11.999999999999998, "expected": true},
+      {"x": 48.0, "y": 12.000000000000002, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-8-size-28.8-48.1",
+    "bounds": {"x": 23.999999999999996, "y": -11.999999999999998, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 52.79999999999999, "y": 12.050000000000002, "expected": true},
+      {"x": 52.8, "y": 12.050000000000002, "expected": false},
+      {"x": 52.800000000000004, "y": 12.050000000000002, "expected": false},
+      {"x": 38.4, "y": 36.099999999999994, "expected": true},
+      {"x": 38.4, "y": 36.1, "expected": true},
+      {"x": 38.4, "y": 36.10000000000001, "expected": false},
+      {"x": 23.999999999999996, "y": -11.999999999999998, "expected": true},
+      {"x": 52.8, "y": 36.1, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-8-size-48.1-28.8",
+    "bounds": {"x": 23.999999999999996, "y": -11.999999999999998, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 72.09999999999998, "y": 2.400000000000002, "expected": true},
+      {"x": 72.1, "y": 2.400000000000002, "expected": true},
+      {"x": 72.10000000000001, "y": 2.400000000000002, "expected": false},
+      {"x": 48.05, "y": 16.8, "expected": true},
+      {"x": 48.05, "y": 16.800000000000004, "expected": false},
+      {"x": 48.05, "y": 16.800000000000008, "expected": false},
+      {"x": 23.999999999999996, "y": -11.999999999999998, "expected": true},
+      {"x": 72.1, "y": 16.800000000000004, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-9-size-24.0-24.0",
+    "bounds": {"x": -48.0, "y": 24.0, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": -24.000000000000004, "y": 36.0, "expected": true},
+      {"x": -24.0, "y": 36.0, "expected": false},
+      {"x": -23.999999999999996, "y": 36.0, "expected": false},
+      {"x": -36.0, "y": 47.99999999999999, "expected": true},
+      {"x": -36.0, "y": 48.0, "expected": false},
+      {"x": -36.0, "y": 48.00000000000001, "expected": false},
+      {"x": -48.0, "y": 24.0, "expected": true},
+      {"x": -24.0, "y": 48.0, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-9-size-28.8-48.1",
+    "bounds": {"x": -48.0, "y": 24.0, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": -19.200000000000003, "y": 48.05, "expected": true},
+      {"x": -19.2, "y": 48.05, "expected": false},
+      {"x": -19.199999999999996, "y": 48.05, "expected": false},
+      {"x": -33.6, "y": 72.09999999999998, "expected": true},
+      {"x": -33.6, "y": 72.1, "expected": true},
+      {"x": -33.6, "y": 72.10000000000001, "expected": false},
+      {"x": -48.0, "y": 24.0, "expected": true},
+      {"x": -19.2, "y": 72.1, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-9-size-48.1-28.8",
+    "bounds": {"x": -48.0, "y": 24.0, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 0.10000000000000141, "y": 38.4, "expected": true},
+      {"x": 0.10000000000000142, "y": 38.4, "expected": false},
+      {"x": 0.10000000000000143, "y": 38.4, "expected": false},
+      {"x": -23.95, "y": 52.79999999999999, "expected": true},
+      {"x": -23.95, "y": 52.8, "expected": true},
+      {"x": -23.95, "y": 52.800000000000004, "expected": false},
+      {"x": -48.0, "y": 24.0, "expected": true},
+      {"x": 0.10000000000000142, "y": 52.8, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-10-size-24.0-24.0",
+    "bounds": {"x": 5e-324, "y": -0.0, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 23.999999999999996, "y": 12.0, "expected": true},
+      {"x": 24.0, "y": 12.0, "expected": true},
+      {"x": 24.000000000000004, "y": 12.0, "expected": false},
+      {"x": 12.0, "y": 23.999999999999996, "expected": true},
+      {"x": 12.0, "y": 24.0, "expected": false},
+      {"x": 12.0, "y": 24.000000000000004, "expected": false},
+      {"x": 5e-324, "y": -0.0, "expected": true},
+      {"x": 24.0, "y": 24.0, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-10-size-28.8-48.1",
+    "bounds": {"x": 5e-324, "y": -0.0, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 28.799999999999997, "y": 24.05, "expected": true},
+      {"x": 28.8, "y": 24.05, "expected": true},
+      {"x": 28.800000000000004, "y": 24.05, "expected": false},
+      {"x": 14.4, "y": 48.099999999999994, "expected": true},
+      {"x": 14.4, "y": 48.1, "expected": false},
+      {"x": 14.4, "y": 48.10000000000001, "expected": false},
+      {"x": 5e-324, "y": -0.0, "expected": true},
+      {"x": 28.8, "y": 48.1, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-10-size-48.1-28.8",
+    "bounds": {"x": 5e-324, "y": -0.0, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 48.099999999999994, "y": 14.4, "expected": true},
+      {"x": 48.1, "y": 14.4, "expected": true},
+      {"x": 48.10000000000001, "y": 14.4, "expected": false},
+      {"x": 24.05, "y": 28.799999999999997, "expected": true},
+      {"x": 24.05, "y": 28.8, "expected": false},
+      {"x": 24.05, "y": 28.800000000000004, "expected": false},
+      {"x": 5e-324, "y": -0.0, "expected": true},
+      {"x": 48.1, "y": 28.8, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-11-size-24.0-24.0",
+    "bounds": {"x": -5e-324, "y": 0.0, "width": 24.0, "height": 24.0},
+    "points": [
+      {"x": 23.999999999999996, "y": 12.0, "expected": true},
+      {"x": 24.0, "y": 12.0, "expected": false},
+      {"x": 24.000000000000004, "y": 12.0, "expected": false},
+      {"x": 12.0, "y": 23.999999999999996, "expected": true},
+      {"x": 12.0, "y": 24.0, "expected": false},
+      {"x": 12.0, "y": 24.000000000000004, "expected": false},
+      {"x": -5e-324, "y": 0.0, "expected": true},
+      {"x": 24.0, "y": 24.0, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-11-size-28.8-48.1",
+    "bounds": {"x": -5e-324, "y": 0.0, "width": 28.8, "height": 48.1},
+    "points": [
+      {"x": 28.799999999999997, "y": 24.05, "expected": true},
+      {"x": 28.8, "y": 24.05, "expected": false},
+      {"x": 28.800000000000004, "y": 24.05, "expected": false},
+      {"x": 14.4, "y": 48.099999999999994, "expected": true},
+      {"x": 14.4, "y": 48.1, "expected": false},
+      {"x": 14.4, "y": 48.10000000000001, "expected": false},
+      {"x": -5e-324, "y": 0.0, "expected": true},
+      {"x": 28.8, "y": 48.1, "expected": false}
+    ]
+  },
+  {
+    "name": "origin-11-size-48.1-28.8",
+    "bounds": {"x": -5e-324, "y": 0.0, "width": 48.1, "height": 28.8},
+    "points": [
+      {"x": 48.099999999999994, "y": 14.4, "expected": true},
+      {"x": 48.1, "y": 14.4, "expected": false},
+      {"x": 48.10000000000001, "y": 14.4, "expected": false},
+      {"x": 24.05, "y": 28.799999999999997, "expected": true},
+      {"x": 24.05, "y": 28.8, "expected": false},
+      {"x": 24.05, "y": 28.800000000000004, "expected": false},
+      {"x": -5e-324, "y": 0.0, "expected": true},
+      {"x": 48.1, "y": 28.8, "expected": false}
+    ]
+  }
+]

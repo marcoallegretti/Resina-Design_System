@@ -95,6 +95,33 @@ fn adjacent_targets_have_one_owner_at_shared_edges() {
 }
 
 #[test]
+fn membership_matches_independent_exact_arithmetic_vectors() {
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/hit-membership-vectors.json"
+    ))
+    .unwrap();
+    for vector in vectors {
+        let mut input = request();
+        input["visualBounds"] = vector["bounds"].clone();
+        input["availableBounds"] =
+            serde_json::json!({"x":-1_000_000,"y":-1_000_000,"width":2_000_000,"height":2_000_000});
+        let hit = resolve_hit_region_source(&input.to_string()).unwrap();
+        for point in vector["points"].as_array().unwrap() {
+            let point_value = PhysicalVector {
+                x: point["x"].as_f64().unwrap(),
+                y: point["y"].as_f64().unwrap(),
+            };
+            assert_eq!(
+                hit.contains(point_value).unwrap(),
+                point["expected"].as_bool().unwrap(),
+                "{} {point}",
+                vector["name"]
+            );
+        }
+    }
+}
+
+#[test]
 fn typed_inputs_cannot_bypass_finite_or_extent_validation() {
     let environment = serde_json::from_value(request()["environment"].clone()).unwrap();
     for width in [0.0, -1.0, f64::NAN, f64::INFINITY] {
@@ -123,6 +150,38 @@ fn typed_inputs_cannot_bypass_finite_or_extent_validation() {
             Err(HitRegionError::InvalidBounds("visualBounds"))
         ));
     }
+}
+
+#[test]
+fn finite_rounded_endpoint_cannot_hide_overflow() {
+    let environment = serde_json::from_value(request()["environment"].clone()).unwrap();
+    let origin = f64::MAX.next_down();
+    let width = (f64::MAX - origin) * 1.25;
+    assert_eq!(origin + width, f64::MAX);
+    let result = resolve_hit_region(HitRegionInput {
+        environment: &environment,
+        visual_bounds: PhysicalBounds {
+            x: origin,
+            y: 0.0,
+            width,
+            height: 24.0,
+        },
+        available_bounds: PhysicalBounds {
+            x: 0.0,
+            y: 0.0,
+            width: f64::MAX,
+            height: 100.0,
+        },
+        component_minimum: SurfaceSize {
+            width: 1.0,
+            height: 1.0,
+        },
+        occupied_regions: &[],
+    });
+    assert!(matches!(
+        result,
+        Err(HitRegionError::NumericRange("visualBounds"))
+    ));
 }
 
 #[test]

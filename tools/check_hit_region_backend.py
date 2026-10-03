@@ -2,6 +2,7 @@ import argparse
 import json
 import math
 import sys
+from fractions import Fraction
 
 from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_failure, check_success
@@ -23,6 +24,31 @@ def cases():
 
 def hit_region_mismatch(actual, expected):
     return None if actual == expected else "/"
+
+
+def validate_membership_vectors(vectors=None):
+    if vectors is None:
+        vectors = load_json(ROOT / "conformance/interaction/hit-membership-vectors.json")
+    if not vectors:
+        raise ValueError("hit membership vectors must not be empty")
+    validator = validator_for("schemas/hit-membership-case.schema.json")
+    names = set()
+    for vector in vectors:
+        name = vector["name"]
+        check_case(validator, name, vector, True)
+        if name in names:
+            raise ValueError(f"duplicate hit membership case: {name}")
+        names.add(name)
+        bounds = vector["bounds"]
+        if min(bounds["width"], bounds["height"]) < 24:
+            raise ValueError(f"{name}: bounds must be a complete fine-input target")
+        left, top, width, height = (Fraction(float(bounds[field])) for field in ("x", "y", "width", "height"))
+        for point in vector["points"]:
+            x, y = Fraction(float(point["x"])), Fraction(float(point["y"]))
+            expected = left <= x < left + width and top <= y < top + height
+            if point["expected"] != expected:
+                raise ValueError(f"{name}: membership disagrees with exact arithmetic")
+    return len(vectors)
 
 
 def main():
@@ -50,6 +76,7 @@ def main():
     public_cases = cases()
     names = set()
     try:
+        validate_membership_vectors()
         for case in public_cases:
             name = case["name"]
             check_case(case_validator, name, {key: value for key, value in case.items() if key != "request"}, True)

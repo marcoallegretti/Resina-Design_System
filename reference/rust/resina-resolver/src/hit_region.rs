@@ -34,10 +34,11 @@ impl HitRegionIr {
         if !point.x.is_finite() || !point.y.is_finite() {
             return Err(HitRegionError::InvalidPoint);
         }
+        let (right, bottom) = endpoints(self.bounds, "hit bounds")?;
         Ok(point.x >= self.bounds.x
             && point.y >= self.bounds.y
-            && point.x < self.bounds.x + self.bounds.width
-            && point.y < self.bounds.y + self.bounds.height)
+            && right.above(point.x)
+            && bottom.above(point.y))
     }
 }
 
@@ -87,7 +88,43 @@ impl std::error::Error for HitRegionError {
     }
 }
 
-fn endpoints(bounds: PhysicalBounds, field: &'static str) -> Result<(f64, f64), HitRegionError> {
+#[derive(Clone, Copy)]
+struct Endpoint {
+    rounded: f64,
+    residual: f64,
+}
+
+impl Endpoint {
+    fn sum(origin: f64, extent: f64, field: &'static str) -> Result<Self, HitRegionError> {
+        let rounded = origin + extent;
+        let virtual_extent = rounded - origin;
+        let virtual_origin = rounded - virtual_extent;
+        // TwoSum retains the exact addition error; see Shewchuk's robust predicates.
+        let residual = (origin - virtual_origin) + (extent - virtual_extent);
+        if !rounded.is_finite()
+            || !residual.is_finite()
+            || rounded <= origin
+            || (rounded == f64::MAX && residual > 0.0)
+        {
+            return Err(HitRegionError::NumericRange(field));
+        }
+        Ok(Self { rounded, residual })
+    }
+
+    fn above(self, point: f64) -> bool {
+        self.rounded > point || (self.rounded == point && self.residual > 0.0)
+    }
+
+    fn exceeds(self, other: Self) -> bool {
+        self.rounded > other.rounded
+            || (self.rounded == other.rounded && self.residual > other.residual)
+    }
+}
+
+fn endpoints(
+    bounds: PhysicalBounds,
+    field: &'static str,
+) -> Result<(Endpoint, Endpoint), HitRegionError> {
     if ![bounds.x, bounds.y, bounds.width, bounds.height]
         .into_iter()
         .all(f64::is_finite)
@@ -96,18 +133,10 @@ fn endpoints(bounds: PhysicalBounds, field: &'static str) -> Result<(f64, f64), 
     {
         return Err(HitRegionError::InvalidBounds(field));
     }
-    let right = bounds.x + bounds.width;
-    let bottom = bounds.y + bounds.height;
-    if !right.is_finite()
-        || !bottom.is_finite()
-        || right <= bounds.x
-        || bottom <= bounds.y
-        || right - bounds.x < bounds.width
-        || bottom - bounds.y < bounds.height
-    {
-        return Err(HitRegionError::NumericRange(field));
-    }
-    Ok((right, bottom))
+    Ok((
+        Endpoint::sum(bounds.x, bounds.width, field)?,
+        Endpoint::sum(bounds.y, bounds.height, field)?,
+    ))
 }
 
 pub fn resolve_hit_region(input: HitRegionInput<'_>) -> Result<HitRegionIr, HitRegionError> {
@@ -140,23 +169,26 @@ pub fn resolve_hit_region(input: HitRegionInput<'_>) -> Result<HitRegionIr, HitR
         height,
     };
     let (right, bottom) = endpoints(bounds, "hit bounds")?;
-    if bounds.x > visual.x || bounds.y > visual.y || right < visual_right || bottom < visual_bottom
+    if bounds.x > visual.x
+        || bounds.y > visual.y
+        || visual_right.exceeds(right)
+        || visual_bottom.exceeds(bottom)
     {
         return Err(HitRegionError::NumericRange("hit bounds"));
     }
     if bounds.x < available.x
         || bounds.y < available.y
-        || right > available_right
-        || bottom > available_bottom
+        || right.exceeds(available_right)
+        || bottom.exceeds(available_bottom)
     {
         return Err(HitRegionError::Clipped);
     }
     for (index, &occupied) in input.occupied_regions.iter().enumerate() {
         let (occupied_right, occupied_bottom) = endpoints(occupied, "occupiedRegions")?;
-        if bounds.x < occupied_right
-            && right > occupied.x
-            && bounds.y < occupied_bottom
-            && bottom > occupied.y
+        if occupied_right.above(bounds.x)
+            && right.above(occupied.x)
+            && occupied_bottom.above(bounds.y)
+            && bottom.above(occupied.y)
         {
             return Err(HitRegionError::Occupied(index));
         }

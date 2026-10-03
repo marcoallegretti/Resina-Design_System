@@ -541,5 +541,253 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "invalid hit region request"
+  },
+  {
+    "name": "decimal component minimum",
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 28.8,
+          "height": 28.8
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": -4.4,
+        "y": -4.4,
+        "width": 28.8,
+        "height": 28.8
+      },
+      "minimumSize": {
+        "width": 28.8,
+        "height": 28.8
+      }
+    }
+  },
+  {
+    "name": "decimal visual dimensions",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": {
+          "x": 0.1,
+          "y": 0.2,
+          "width": 20.3,
+          "height": 20.7
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": -1.7499999999999996,
+        "y": -1.4500000000000004,
+        "width": 24,
+        "height": 24
+      },
+      "minimumSize": {
+        "width": 24,
+        "height": 24
+      }
+    }
+  },
+  {
+    "name": "decimal exact available bounds",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": {
+          "x": 0.1,
+          "y": 0,
+          "width": 24,
+          "height": 24
+        }
+      },
+      {
+        "path": "/availableBounds",
+        "value": {
+          "x": 0.1,
+          "y": 0,
+          "width": 24,
+          "height": 24
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0.1,
+        "y": 0,
+        "width": 24,
+        "height": 24
+      },
+      "minimumSize": {
+        "width": 24,
+        "height": 24
+      }
+    }
+  },
+  {
+    "name": "rounded endpoint hides clipping",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": {
+          "x": 0.1,
+          "y": 0,
+          "width": 24,
+          "height": 24
+        }
+      },
+      {
+        "path": "/availableBounds",
+        "value": {
+          "x": -0.4,
+          "y": -32,
+          "width": 24.5,
+          "height": 100
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "clips"
+  },
+  {
+    "name": "rounded endpoint hides right overlap",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": {
+          "x": -1.7499999999999996,
+          "y": 0,
+          "width": 24,
+          "height": 24
+        }
+      },
+      {
+        "path": "/occupiedRegions",
+        "value": [
+          {
+            "x": 22.25,
+            "y": 0,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "occupiedRegions[0]"
+  },
+  {
+    "name": "rounded endpoint hides left overlap",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": {
+          "x": 22.25,
+          "y": 0,
+          "width": 24,
+          "height": 24
+        }
+      },
+      {
+        "path": "/occupiedRegions",
+        "value": [
+          {
+            "x": -1.7499999999999996,
+            "y": 0,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "occupiedRegions[0]"
+  },
+  {
+    "name": "decimal right neighbor gap",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": {
+          "x": 0.1,
+          "y": 0,
+          "width": 24,
+          "height": 24
+        }
+      },
+      {
+        "path": "/occupiedRegions",
+        "value": [
+          {
+            "x": 24.1,
+            "y": 0,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0.1,
+        "y": 0,
+        "width": 24,
+        "height": 24
+      },
+      "minimumSize": {
+        "width": 24,
+        "height": 24
+      }
+    }
+  },
+  {
+    "name": "decimal left neighbor gap",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": {
+          "x": 24.1,
+          "y": 0,
+          "width": 24,
+          "height": 24
+        }
+      },
+      {
+        "path": "/occupiedRegions",
+        "value": [
+          {
+            "x": 0.1,
+            "y": 0,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 24.1,
+        "y": 0,
+        "width": 24,
+        "height": 24
+      },
+      "minimumSize": {
+        "width": 24,
+        "height": 24
+      }
+    }
   }
 ]
