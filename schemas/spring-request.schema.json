@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:spring-request:0.1.0",
+  "title": "Resina spring-request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "spring",
+    "time",
+    "reducedMotion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "spring": {
+      "$ref": "urn:resina:schema:spring-parameters:0.1.0"
+    },
+    "time": {
+      "type": "number",
+      "minimum": 0
+    },
+    "reducedMotion": {
+      "type": "boolean"
+    }
+  }
+}

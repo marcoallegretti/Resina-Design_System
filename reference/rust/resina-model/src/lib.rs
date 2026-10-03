@@ -1,4 +1,6 @@
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
+mod spring;
+pub use spring::SpringParameters;
 
 mod color;
 pub use color::{ColorAssignments, ColorRole, OpaqueColorAssignments};

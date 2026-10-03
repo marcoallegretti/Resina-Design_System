@@ -31,6 +31,8 @@ The [opaque base-state surface IR](36-opaque-surface-ir.md) defines one static a
 
 The [focus indicator IR](37-focus-indicator-ir.md) independently resolves the navigation cue around the bound form's swept footprint while preserving concurrent state signals. It does not substitute for their component appearance rules.
 
+The [scalar spring reference](38-spring-reference.md) defines deterministic sampling and an explicit reduced-motion endpoint. `resina-model` owns its validated parameters; `resina-motion` owns the calculation. Material motion profiles, component transitions and motion IR remain separate contracts.
+
 ## Backend roles
 
 GUIdo is the high-fidelity reference renderer. Its advanced drawing techniques demonstrate Resina but do not raise the minimum capability floor. Quickshell is an independent Shell conformance backend and must be able to realize the semantics without copying GUIdo's rendering architecture. Slint is the application backend for conventional interfaces. Web provides documentation, conformance views and a playground using broadly available web primitives first. Headless conformance is the shared reference for all backends.

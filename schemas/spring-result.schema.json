@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:spring-result:0.1.0",
+  "title": "Resina spring-result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "representation",
+    "position",
+    "velocity",
+    "settled"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "representation": {
+      "enum": [
+        "spring",
+        "immediate"
+      ]
+    },
+    "position": {
+      "type": "number"
+    },
+    "velocity": {
+      "type": "number"
+    },
+    "settled": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "settled": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "position": {
+            "const": 1
+          },
+          "velocity": {
+            "const": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "representation": {
+            "const": "immediate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "settled": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}

@@ -50,6 +50,8 @@ Run `cargo run -p resina-resolver --bin resina-opaque-surface -- <path>` for an 
 
 The Rust `OpaqueSurfaceIr::sample_paint` API evaluates that surface's opaque paint color at one logical physical point, including directional highlights and tied corner normals. It provides headless reference evidence for the paint law; rasterization and renderer conformance remain separate work.
 
+Run `cargo run -p resina-motion --bin resina-spring -- <path|->` for a [normalized scalar spring request](schemas/spring-request.schema.json). The [spring contract](spec/38-spring-reference.md) defines all damping regimes, conservative endpoint settling and immediate reduced motion. `python tools/check_spring_backend.py -- <backend-command> -` checks the public protocol. This foundation does not define calibrated material motion profiles or component animation.
+
 Run `cargo run -p resina-resolver --bin resina-focus-indicator -- <path>` for a [focused surface indicator request](schemas/focus-indicator-request.schema.json), or use `-` for stdin. The Rust `resolve_focus_indicator` API accepts a headless resolution and surface intent directly. `python tools/check_focus_indicator_backend.py -- <backend-command> -` checks the bound state, authored indicator color, contrast, and Tier 0 geometry against a known surrounding color.
 
 Run `cargo run -p resina-resolver --bin resina-focus-ir -- <path>` for a [focus indicator IR request](schemas/focus-ir-request.schema.json). It resolves both boundaries of the exterior navigation ring around the bound shape's directional footprint, preserving concurrent states and guarded focus color. `python tools/check_focus_ir_backend.py -- <backend-command> -` checks the public IR protocol. The Rust `resolve_focus_ir` API reuses a compiled theme.

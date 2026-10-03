@@ -125,6 +125,10 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/spring-parameters.schema.json",
+        "schemas/spring-request.schema.json",
+        "schemas/spring-result.schema.json",
+        "schemas/spring-case.schema.json",
         "schemas/filled-contour.schema.json",
         "schemas/placed-contour.schema.json",
         "schemas/focus-ir-request.schema.json",
@@ -221,6 +225,35 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    spring_request = load_json(ROOT / "conformance/motion/spring-request.json")
+    spring_expected = load_json(ROOT / "conformance/motion/spring-expected.json")
+    spring_cases = load_json(ROOT / "conformance/motion/spring-cases.json")
+    spring_case_schema = validator_for("schemas/spring-case.schema.json")
+    spring_request_schema = validator_for("schemas/spring-request.schema.json")
+    spring_result_schema = validator_for("schemas/spring-result.schema.json")
+    check_case(spring_request_schema, "spring baseline", spring_request, True)
+    check_case(spring_result_schema, "spring baseline result", spring_expected, True)
+    names = set()
+    for case in spring_cases:
+        check_case(spring_case_schema, case["name"], case, True)
+        if case["name"] in names:
+            raise ValueError(f"duplicate spring case: {case['name']}")
+        names.add(case["name"])
+        check_case(
+            spring_request_schema, case["name"],
+            apply_changes(spring_request, case["requestChanges"]), case["requestSchemaValid"],
+        )
+        if "errorContains" not in case:
+            expected = case.get(
+                "expected", apply_changes(spring_expected, case.get("expectedChanges", [])),
+            )
+            check_case(spring_result_schema, case["name"], expected, True)
+    for name, changes in (
+        ("settled position must be endpoint", {"settled": True}),
+        ("immediate response must settle", {"representation": "immediate"}),
+    ):
+        check_case(spring_result_schema, name, {**spring_expected, **changes}, False)
 
     focus_ir_request = load_json(ROOT / "conformance/ir/focus-ir-request.json")
     focus_ir_expected = load_json(ROOT / "conformance/ir/focus-ir-expected.json")
@@ -778,7 +811,8 @@ def main():
         raise ValueError("surface binding material families differ from assignments")
 
     checked = (
-        len(focus_ir_cases) + len(invalid_focus_ir_results)
+        len(spring_cases) + 4
+        + len(focus_ir_cases) + len(invalid_focus_ir_results)
         + len(ir_cases) + len(invalid_ir_results) + 3
         + len(backend_cases)
         + len(surface_backend_cases)

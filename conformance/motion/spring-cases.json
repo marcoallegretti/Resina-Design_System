@@ -1,0 +1,457 @@
+[
+  {
+    "name": "position energy passes while physical velocity energy fails",
+    "requestChanges": [
+      {"path": "/spring/stiffness", "value": 100},
+      {"path": "/spring/damping", "value": 20},
+      {"path": "/spring/positionThreshold", "value": 1e-6},
+      {"path": "/spring/velocityThreshold", "value": 1e-8},
+      {"path": "/time", "value": 2}
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0", "representation": "spring",
+      "position": 0.9999999567157739, "velocity": 4.122307244877116e-7,
+      "settled": false
+    }
+  },
+  {
+    "name": "physical velocity energy passes while position energy fails",
+    "requestChanges": [
+      {"path": "/spring/stiffness", "value": 0.01},
+      {"path": "/spring/damping", "value": 0.2},
+      {"path": "/spring/positionThreshold", "value": 1e-8},
+      {"path": "/spring/velocityThreshold", "value": 1e-6},
+      {"path": "/time", "value": 200}
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0", "representation": "spring",
+      "position": 0.9999999567157739, "velocity": 4.122307244877116e-9,
+      "settled": false
+    }
+  },
+  {
+    "name": "critical unit spring: position 1 - 2/e, velocity 1/e",
+    "requestChanges": [],
+    "requestSchemaValid": true,
+    "expectedChanges": []
+  },
+  {
+    "name": "initial state is exact",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 0,
+      "velocity": 0,
+      "settled": false
+    }
+  },
+  {
+    "name": "critical matching initial velocity: 1 - exp(-t)",
+    "requestChanges": [
+      {
+        "path": "/spring/initialVelocity",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 0.6321205588285577,
+      "velocity": 0.36787944117144233,
+      "settled": false
+    }
+  },
+  {
+    "name": "negative initial velocity is preserved",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/spring/initialVelocity",
+        "value": -2
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 0,
+      "velocity": -2,
+      "settled": false
+    }
+  },
+  {
+    "name": "negative initial velocity initially moves away",
+    "requestChanges": [
+      {
+        "path": "/spring/initialVelocity",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": -0.103638323514327,
+      "velocity": 0.36787944117144233,
+      "settled": false
+    }
+  },
+  {
+    "name": "undamped quarter period",
+    "requestChanges": [
+      {
+        "path": "/spring/damping",
+        "value": 0
+      },
+      {
+        "path": "/time",
+        "value": 1.5707963267948966
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 1,
+      "velocity": 1,
+      "settled": false
+    }
+  },
+  {
+    "name": "undamped half period retains overshoot",
+    "requestChanges": [
+      {
+        "path": "/spring/damping",
+        "value": 0
+      },
+      {
+        "path": "/time",
+        "value": 3.141592653589793
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 2,
+      "velocity": 0,
+      "settled": false
+    }
+  },
+  {
+    "name": "underdamped half period: 1 + exp(-pi/sqrt(3))",
+    "requestChanges": [
+      {
+        "path": "/spring/stiffness",
+        "value": 4
+      },
+      {
+        "path": "/time",
+        "value": 1.8137993642342178
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 1.1630335348215806,
+      "velocity": 0,
+      "settled": false
+    }
+  },
+  {
+    "name": "overdamped poles -1 and -3, matching velocity",
+    "requestChanges": [
+      {
+        "path": "/spring/stiffness",
+        "value": 3
+      },
+      {
+        "path": "/spring/damping",
+        "value": 4
+      },
+      {
+        "path": "/spring/initialVelocity",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 0.6321205588285577,
+      "velocity": 0.36787944117144233,
+      "settled": false
+    }
+  },
+  {
+    "name": "overdamped poles -1 and -3, zero velocity",
+    "requestChanges": [
+      {
+        "path": "/spring/stiffness",
+        "value": 3
+      },
+      {
+        "path": "/spring/damping",
+        "value": 4
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 0.4730743724267685,
+      "velocity": 0.4771385592053676,
+      "settled": false
+    }
+  },
+  {
+    "name": "critical decay meets both energy thresholds",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 20
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 1,
+      "velocity": 0,
+      "settled": true
+    }
+  },
+  {
+    "name": "strict thresholds retain small remaining response",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 20
+      },
+      {
+        "path": "/spring/positionThreshold",
+        "value": 1e-12
+      },
+      {
+        "path": "/spring/velocityThreshold",
+        "value": 1e-12
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "position": 0.9999999567157739,
+      "velocity": 4.122307244877116e-08,
+      "settled": false
+    }
+  },
+  {
+    "name": "instant reduced-motion endpoint",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "position": 1,
+      "velocity": 0,
+      "settled": true
+    }
+  },
+  {
+    "name": "reduced motion supports a valid extreme profile",
+    "requestChanges": [
+      {
+        "path": "/spring/mass",
+        "value": 5e-324
+      },
+      {
+        "path": "/spring/stiffness",
+        "value": 1.7976931348623157e+308
+      },
+      {
+        "path": "/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "position": 1,
+      "velocity": 0,
+      "settled": true
+    }
+  },
+  {
+    "name": "invalid parameters still fail under reduced motion",
+    "requestChanges": [
+      {
+        "path": "/spring/mass",
+        "value": 0
+      },
+      {
+        "path": "/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "mass must"
+  },
+  {
+    "name": "zero mass rejected",
+    "requestChanges": [
+      {
+        "path": "/spring/mass",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "mass must"
+  },
+  {
+    "name": "zero stiffness rejected",
+    "requestChanges": [
+      {
+        "path": "/spring/stiffness",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "stiffness must"
+  },
+  {
+    "name": "zero positionThreshold rejected",
+    "requestChanges": [
+      {
+        "path": "/spring/positionThreshold",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "positionThreshold must"
+  },
+  {
+    "name": "zero velocityThreshold rejected",
+    "requestChanges": [
+      {
+        "path": "/spring/velocityThreshold",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "velocityThreshold must"
+  },
+  {
+    "name": "negative damping rejected",
+    "requestChanges": [
+      {
+        "path": "/spring/damping",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "damping must"
+  },
+  {
+    "name": "negative time rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "time must"
+  },
+  {
+    "name": "unknown root version rejected",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "2.0.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must"
+  },
+  {
+    "name": "unknown parameter version rejected",
+    "requestChanges": [
+      {
+        "path": "/spring/schemaVersion",
+        "value": "2.0.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must"
+  },
+  {
+    "name": "unrepresentable natural frequency fails",
+    "requestChanges": [
+      {
+        "path": "/spring/mass",
+        "value": 5e-324
+      },
+      {
+        "path": "/spring/stiffness",
+        "value": 1.7976931348623157e+308
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "natural frequency"
+  },
+  {
+    "name": "unrepresentable normalized time fails",
+    "requestChanges": [
+      {
+        "path": "/spring/stiffness",
+        "value": 4
+      },
+      {
+        "path": "/time",
+        "value": 1.7976931348623157e+308
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "normalized time"
+  },
+  {
+    "name": "unrepresentable normalized initial velocity fails",
+    "requestChanges": [
+      {
+        "path": "/spring/stiffness",
+        "value": 1e-300
+      },
+      {
+        "path": "/spring/initialVelocity",
+        "value": 1e+300
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "normalized velocity"
+  }
+]
