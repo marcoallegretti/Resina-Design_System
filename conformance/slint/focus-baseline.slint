@@ -1,0 +1,47 @@
+export component ResinaFocusIndicator inherits Rectangle {
+    out property <length> paint-origin-x: -4px;
+    out property <length> paint-origin-y: -4px;
+    width: 28px;
+    height: 22px;
+    background: transparent;
+    clip: false;
+    accessible-role: none;
+    Path {
+        width: root.width;
+        height: root.height;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 28;
+        viewbox-height: 22;
+        fit: preserve;
+        fill: rgb(255, 255, 255);
+        fill-rule: nonzero;
+        stroke: transparent;
+        stroke-width: 0px;
+        accessible-role: none;
+        MoveTo { x: 0; y: 4; }
+        ArcTo { x: 4; y: 0; radius-x: 4; radius-y: 4; x-rotation: 0; sweep: true; large-arc: false; }
+        LineTo { x: 24; y: 0; }
+        ArcTo { x: 28; y: 4; radius-x: 4; radius-y: 4; x-rotation: 0; sweep: true; large-arc: false; }
+        LineTo { x: 28; y: 16; }
+        LineTo { x: 28; y: 18; }
+        ArcTo { x: 24; y: 22; radius-x: 4; radius-y: 4; x-rotation: 0; sweep: true; large-arc: false; }
+        LineTo { x: 4; y: 22; }
+        ArcTo { x: 0; y: 18; radius-x: 4; radius-y: 4; x-rotation: 0; sweep: true; large-arc: false; }
+        LineTo { x: 0; y: 16; }
+        LineTo { x: 0; y: 4; }
+        Close {}
+        MoveTo { x: 2; y: 4; }
+        LineTo { x: 2; y: 16; }
+        LineTo { x: 2; y: 18; }
+        ArcTo { x: 4; y: 20; radius-x: 2; radius-y: 2; x-rotation: 0; sweep: false; large-arc: false; }
+        LineTo { x: 24; y: 20; }
+        ArcTo { x: 26; y: 18; radius-x: 2; radius-y: 2; x-rotation: 0; sweep: false; large-arc: false; }
+        LineTo { x: 26; y: 16; }
+        LineTo { x: 26; y: 4; }
+        ArcTo { x: 24; y: 2; radius-x: 2; radius-y: 2; x-rotation: 0; sweep: false; large-arc: false; }
+        LineTo { x: 4; y: 2; }
+        ArcTo { x: 2; y: 4; radius-x: 2; radius-y: 2; x-rotation: 0; sweep: false; large-arc: false; }
+        Close {}
+    }
+}

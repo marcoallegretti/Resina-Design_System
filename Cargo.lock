@@ -181,6 +181,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "resina-slint"
+version = "0.1.0"
+dependencies = [
+ "resina-model",
+ "resina-resolver",
+ "serde_json",
+]
+
+[[package]]
 name = "resina-svg"
 version = "0.1.0"
 dependencies = [

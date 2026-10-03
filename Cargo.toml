@@ -1,5 +1,5 @@
 [workspace]
-members = ["backends/cpu/resina-raster", "backends/quickshell/resina-qml", "backends/web/resina-svg", "reference/rust/resina-color", "reference/rust/resina-environment", "reference/rust/resina-model", "reference/rust/resina-motion", "reference/rust/resina-resolver", "reference/rust/resina-tokens"]
+members = ["backends/cpu/resina-raster", "backends/quickshell/resina-qml", "backends/slint/resina-slint", "backends/web/resina-svg", "reference/rust/resina-color", "reference/rust/resina-environment", "reference/rust/resina-model", "reference/rust/resina-motion", "reference/rust/resina-resolver", "reference/rust/resina-tokens"]
 resolver = "2"
 
 [workspace.dependencies]

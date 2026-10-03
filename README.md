@@ -65,3 +65,5 @@ Run `cargo run -p resina-resolver --bin resina-focus-ir -- <path>` for a [focus 
 The Web backend's [SVG focus realization](backends/web/resina-svg/README.md) maps the validated IR to exact vector lines/arcs and a compound ring fill. It preserves the complete physical paint bounds and opaque pigment, with no renderer objects added to normative layers. Its public checker runs on Linux and Windows; complete Web components and Lab remain outstanding.
 
 The independent Shell backend's [native QML focus realization](backends/quickshell/resina-qml/README.md) maps that IR to Qt Quick lines/arcs with a software rendering fallback. Its command and public checker run on Linux and Windows; native Quickshell rendering is exercised separately on Linux. Complete Shell components remain outstanding.
+
+The application backend's [native Slint focus realization](backends/slint/resina-slint/README.md) maps the same IR to native paths with opposite contour winding. Its command and public checker run on Linux and Windows; Linux CI also verifies released Slint software screenshots against independent ring geometry. Complete application components remain outstanding.

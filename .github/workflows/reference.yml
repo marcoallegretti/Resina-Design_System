@@ -34,12 +34,27 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r tools/requirements-schema.txt
+      - run: python -m pip install -r tools/requirements-render.txt
       - run: python -m unittest discover -s tools -p 'test_*.py'
       - run: cargo build -p resina-resolver --bins --locked
       - run: cargo build -p resina-tokens --bins --locked
       - run: cargo build -p resina-motion --bins --locked
       - run: cargo build -p resina-svg --bins --locked
       - run: cargo build -p resina-qml --bins --locked
+      - run: cargo build -p resina-slint --bins --locked
+      - run: python tools/check_focus_slint_backend.py -- target/debug/resina-focus-slint${{ matrix.executableSuffix }} -
+      - name: Check native Slint focus pixels
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          mkdir -p target/slint-viewer
+          curl --fail --location --retry 3 https://github.com/slint-ui/slint/releases/download/v1.18.1/slint-viewer-x86_64-unknown-linux-gnu.tar.gz -o target/slint-viewer.tar.gz
+          echo '86b260e661cdc24dcadaf63266b034f3281cbec542afc26545a72a986fe42a13  target/slint-viewer.tar.gz' | sha256sum --check
+          tar -xzf target/slint-viewer.tar.gz -C target/slint-viewer
+          target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/focus-probe.slint
+          for scale in 1 1.25 2 3; do
+            python tools/check_slint_focus_runtime.py --image "target/slint-viewer/focus-$scale.png" --scale "$scale" -- env SLINT_SCALE_FACTOR="$scale" target/slint-viewer/slint-viewer/slint-viewer --screenshot "target/slint-viewer/focus-$scale.png" conformance/slint/focus-probe.slint
+          done
       - run: python tools/check_focus_qml_backend.py -- target/debug/resina-focus-qml${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_svg_backend.py -- target/debug/resina-focus-svg${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_backend.py -- target/debug/resina-spring${{ matrix.executableSuffix }} -
