@@ -115,6 +115,7 @@ fn render(
         .map_err(RasterError::Allocation)?;
     let grid = f64::from(samples_per_axis);
     let sample_count = grid * grid;
+    let mut decoded_color = None;
     for y in 0..viewport.height {
         for x in 0..viewport.width {
             let mut linear_sum = [0.0; 3];
@@ -131,8 +132,16 @@ fn render(
                     };
                     if let Some(color) = sample(point).map_err(RasterError::Paint)? {
                         covered += 1;
-                        let linear =
-                            srgb_to_linear_srgb(color.components()).map_err(RasterError::Color)?;
+                        let components = color.components();
+                        let linear = match decoded_color {
+                            Some((previous, linear)) if previous == components => linear,
+                            _ => {
+                                let linear =
+                                    srgb_to_linear_srgb(components).map_err(RasterError::Color)?;
+                                decoded_color = Some((components, linear));
+                                linear
+                            }
+                        };
                         for (sum, channel) in linear_sum.iter_mut().zip(linear) {
                             *sum += channel;
                         }

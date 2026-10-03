@@ -72,8 +72,12 @@ fn pixel_ownership_transfer_preserves_straight_rgba_and_allocation() {
 
 #[test]
 fn color_filtering_averages_linear_intensity() {
-    let image = render_surface(&surface(), viewport(0.0, 5.0, 1, 1, 0.5), 2).unwrap();
-    assert_eq!(image.rgba(), &[188, 188, 188, 255]);
+    let image = render_surface(&surface(), viewport(0.0, 5.0, 11, 1, 0.5), 2).unwrap();
+    let mut expected = vec![188, 188, 188, 255];
+    expected.extend([255; 4].repeat(8));
+    expected.extend([188, 188, 188, 255]);
+    expected.extend([0; 4]);
+    assert_eq!(image.rgba(), expected);
 }
 
 #[test]
