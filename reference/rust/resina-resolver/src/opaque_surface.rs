@@ -30,18 +30,18 @@ pub struct OpaqueSurfaceInput<'a> {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct OpaqueSurfaceRequest {
-    schema_version: String,
-    theme: Value,
-    surface: SurfaceIntent,
-    size: SurfaceSize,
-    appearance: OpaqueSurfaceAppearance,
-    foreground_role: ColorRole,
+pub(crate) struct OpaqueSurfaceRequest {
+    pub(crate) schema_version: String,
+    pub(crate) theme: Value,
+    pub(crate) surface: SurfaceIntent,
+    pub(crate) size: SurfaceSize,
+    pub(crate) appearance: OpaqueSurfaceAppearance,
+    pub(crate) foreground_role: ColorRole,
     #[serde(default, deserialize_with = "present_backdrop")]
-    post_treatment_backdrop: Option<SrgbInput>,
-    adjacent_color: SrgbInput,
-    minimum_content_contrast: f64,
-    minimum_edge_contrast: f64,
+    pub(crate) post_treatment_backdrop: Option<SrgbInput>,
+    pub(crate) adjacent_color: SrgbInput,
+    pub(crate) minimum_content_contrast: f64,
+    pub(crate) minimum_edge_contrast: f64,
 }
 
 fn present_backdrop<'de, D: Deserializer<'de>>(
@@ -252,9 +252,18 @@ pub fn resolve_opaque_surface(
     let resolution = theme
         .resolve(environment)
         .map_err(|e| OpaqueSurfaceError::Theme(ThemeResolutionError::Resolve(e)))?;
+    resolve_opaque_surface_with_snapshot(theme, environment, &resolution, input)
+}
+
+pub(crate) fn resolve_opaque_surface_with_snapshot(
+    theme: &crate::CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    resolution: &crate::HeadlessResolution,
+    input: OpaqueSurfaceInput<'_>,
+) -> Result<OpaqueSurfaceIr, OpaqueSurfaceError> {
     let readable = resolve_surface_readability(
         input.surface,
-        &resolution,
+        resolution,
         input.foreground_role,
         input.post_treatment_backdrop,
         input.adjacent_color,

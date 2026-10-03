@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-paint-request:0.1.0",
+  "title": "Resina Surface Paint Request",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "body"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "body": {"$ref": "urn:resina:schema:opaque-surface-request:0.1.0"},
+    "surroundingColor": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"}
+  },
+  "allOf": [{
+    "if": {"properties": {"body": {"properties": {"surface": {"properties": {
+      "states": {"properties": {"states": {"contains": {"const": "focused"}}}}
+    }}}}}},
+    "then": {"required": ["surroundingColor"]}
+  }]
+}

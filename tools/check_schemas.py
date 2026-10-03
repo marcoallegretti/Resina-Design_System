@@ -140,6 +140,9 @@ def main():
         "schemas/opaque-surface-request.schema.json",
         "schemas/opaque-surface-ir.schema.json",
         "schemas/opaque-surface-case.schema.json",
+        "schemas/surface-paint-request.schema.json",
+        "schemas/surface-paint-ir.schema.json",
+        "schemas/surface-paint-case.schema.json",
         "schemas/extruded-contour-request.schema.json",
         "schemas/extruded-contour-result.schema.json",
         "schemas/extruded-contour-case.schema.json",
@@ -1480,6 +1483,27 @@ def main():
     check_case(previous, "environment 0.1.0 archive", migrated, True)
     check_case(environment, "current environment rejects 0.1.0", migrated, False)
     checked += 2
+
+    from check_surface_paint_backend import baseline, case_request, expected_result
+    paint_cases = load_json(ROOT / "conformance/ir/surface-paint-cases.json")
+    paint_request_schema = validator_for("schemas/surface-paint-request.schema.json")
+    paint_result_schema = validator_for("schemas/surface-paint-ir.schema.json")
+    paint_case_schema = validator_for("schemas/surface-paint-case.schema.json")
+    paint_names = set()
+    for case in paint_cases:
+        check_case(paint_case_schema, case["name"], case, True)
+        if case["name"] in paint_names:
+            raise ValueError(f"duplicate surface paint case: {case['name']}")
+        paint_names.add(case["name"])
+        request = case_request(baseline(), case)
+        check_case(paint_request_schema, case["name"], request, case["requestSchemaValid"])
+        checked += 1
+        if "expectedFocus" in case:
+            result = expected_result(request)
+            if ("focus" in result) != case["expectedFocus"]:
+                raise ValueError(f"{case['name']}: expected focus disagrees with request")
+            check_case(paint_result_schema, case["name"], result, True)
+            checked += 1
 
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 

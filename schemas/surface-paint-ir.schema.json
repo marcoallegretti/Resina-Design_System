@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-paint-ir:0.1.0",
+  "title": "Resina Surface Paint IR",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "body"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "body": {"$ref": "urn:resina:schema:opaque-surface-ir:0.1.0"},
+    "focus": {"$ref": "urn:resina:schema:focus-indicator-ir:0.1.0"}
+  },
+  "allOf": [{
+    "if": {"properties": {"body": {"properties": {
+      "states": {"properties": {"states": {"contains": {"const": "focused"}}}}
+    }}}},
+    "then": {"required": ["focus"]},
+    "else": {"not": {"required": ["focus"]}}
+  }]
+}

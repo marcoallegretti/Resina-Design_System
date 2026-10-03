@@ -31,6 +31,8 @@ The [opaque base-state surface IR](36-opaque-surface-ir.md) defines one static a
 
 The [focus indicator IR](37-focus-indicator-ir.md) independently resolves the navigation cue around the bound form's swept footprint while preserving concurrent state signals. It does not substitute for their component appearance rules.
 
+The [surface paint IR](39-surface-paint-ir.md) composes opaque body and navigation channels from one semantic snapshot and matching geometry inputs. It publishes a complete result only when every required channel succeeds.
+
 The [scalar spring reference](38-spring-reference.md) defines deterministic sampling and an explicit reduced-motion endpoint. `resina-model` owns its validated parameters; `resina-motion` owns the calculation. Material motion profiles, component transitions and motion IR remain separate contracts.
 
 ## Backend roles

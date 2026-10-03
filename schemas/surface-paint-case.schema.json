@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-paint-case:0.1.0",
+  "title": "Resina Surface Paint Conformance Case",
+  "type": "object", "additionalProperties": false,
+  "required": ["name", "requestChanges", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "requestChanges": {"$ref": "urn:resina:schema:opaque-surface-case:0.1.0#/$defs/changes"},
+    "requestSchemaValid": {"type": "boolean"},
+    "omitSurroundingColor": {"type": "boolean"},
+    "expectedFocus": {"type": "boolean"},
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {"required": ["expectedFocus"], "not": {"required": ["errorContains"]}, "properties": {"requestSchemaValid": {"const": true}}},
+    {"required": ["errorContains"], "not": {"required": ["expectedFocus"]}}
+  ]
+}

@@ -65,6 +65,7 @@ pub use surface_readability::{
 mod opaque_paint;
 mod opaque_pigment;
 mod opaque_surface;
+mod surface_paint;
 pub use opaque_paint::SurfacePaintError;
 pub use opaque_pigment::{
     OpaquePigmentError, OpaquePigmentResult, resolve_opaque_pigment, resolve_opaque_pigment_source,
@@ -72,6 +73,10 @@ pub use opaque_pigment::{
 pub use opaque_surface::{
     OpaqueSurfaceError, OpaqueSurfaceGeometry, OpaqueSurfaceInput, OpaqueSurfaceIr,
     resolve_opaque_surface, resolve_opaque_surface_source,
+};
+pub use surface_paint::{
+    SurfacePaintInput, SurfacePaintIr, SurfacePaintResolutionError, resolve_surface_paint,
+    resolve_surface_paint_source,
 };
 mod color_fallback;
 pub use color_fallback::{

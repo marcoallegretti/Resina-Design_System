@@ -159,7 +159,16 @@ pub fn resolve_focus_ir(
     let resolution = theme
         .resolve(environment)
         .map_err(|e| FocusIrError::Theme(ThemeResolutionError::Resolve(e)))?;
-    let indicator = resolve_focus_indicator(input.surface, &resolution, input.surrounding_color)
+    resolve_focus_ir_with_snapshot(theme, environment, &resolution, input)
+}
+
+pub(crate) fn resolve_focus_ir_with_snapshot(
+    theme: &CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    resolution: &crate::HeadlessResolution,
+    input: FocusIrInput<'_>,
+) -> Result<FocusIndicatorIr, FocusIrError> {
+    let indicator = resolve_focus_indicator(input.surface, resolution, input.surrounding_color)
         .map_err(FocusIrError::Indicator)?;
     if indicator.binding().treatment_stack().treatments().last() != Some(&OpticalTreatment::None) {
         return Err(FocusIrError::ActiveTreatment);
