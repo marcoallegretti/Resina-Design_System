@@ -2,6 +2,8 @@ use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 
 mod color;
 pub use color::{ColorAssignments, ColorRole, OpaqueColorAssignments};
+mod geometry;
+pub use geometry::{CornerRadius, LogicalCornerRadii, SurfaceSize};
 mod elevation;
 pub use elevation::ElevationDepthAssignments;
 mod frost;
