@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-readability-case:0.1.0",
+  "title": "Resina Base-State Surface Readability Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "changes", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "value"],
+        "properties": {"path": {"type": "string", "pattern": "^/"}, "value": {}}
+      }
+    },
+    "requestSchemaValid": {"type": "boolean"},
+    "omitBackdrop": {"type": "boolean"},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "contentFallback", "edgeRole"],
+      "properties": {
+        "family": {"enum": ["cast", "frost", "elastomer", "gel"]},
+        "contentFallback": {"type": "boolean"},
+        "edgeRole": {"enum": ["outline", "outline.strong"]},
+        "frostRepresentation": {"enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented", "opaqueDimensional"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"family": {"const": "frost"}}},
+          "then": {"required": ["frostRepresentation"]},
+          "else": {"not": {"required": ["frostRepresentation"]}}
+        }
+      ]
+    },
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {"required": ["expected"], "not": {"required": ["errorContains"]}},
+    {"required": ["errorContains"], "not": {"required": ["expected"]}}
+  ]
+}

@@ -175,7 +175,7 @@ pub fn resolve_frost_surface_readability(
     )
 }
 
-fn resolve_bound_frost_surface_readability(
+pub(crate) fn resolve_bound_frost_surface_readability(
     binding: BoundSurface,
     context: &HeadlessResolution,
     foreground_role: ColorRole,

@@ -38,6 +38,11 @@ pub use resina_color::{
 pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
 mod surface;
 pub use surface::{BoundSurface, SurfaceBindingError, bind_surface};
+mod surface_readability;
+pub use surface_readability::{
+    SurfaceReadabilityError, SurfaceReadabilityResult, resolve_surface_readability,
+    resolve_surface_readability_source,
+};
 mod color_fallback;
 pub use color_fallback::{
     ColorRoleFallbackError, ColorRoleFallbackErrorKind, resolve_semantic_color_fallbacks,

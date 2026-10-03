@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-readability-result:0.1.0",
+  "title": "Resina Base-State Surface Readability Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "binding", "foregroundRole", "foreground", "body", "compositedBody", "contentContrastRatio", "contentFallbackApplied", "edge"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "binding": {"$ref": "urn:resina:schema:surface-binding-result:0.4.0"},
+    "foregroundRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+    "foreground": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "body": {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},
+    "compositedBody": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "contentContrastRatio": {"type": "number", "minimum": 1, "maximum": 21},
+    "contentFallbackApplied": {"type": "boolean"},
+    "edge": {"$ref": "urn:resina:schema:edge-contrast-result:0.1.0"},
+    "frostRepresentation": {"enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented", "opaqueDimensional"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"binding": {"properties": {"materialFamily": {"const": "frost"}}}}},
+      "then": {"required": ["frostRepresentation"]},
+      "else": {
+        "not": {"required": ["frostRepresentation"]},
+        "properties": {
+          "body": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+          "contentFallbackApplied": {"const": false}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"frostRepresentation": {"const": "opaqueDimensional"}}, "required": ["frostRepresentation"]},
+      "then": {"properties": {"body": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"}}},
+      "else": {
+        "if": {"required": ["frostRepresentation"]},
+        "then": {"properties": {"body": {"properties": {"alpha": {"exclusiveMinimum": 0, "exclusiveMaximum": 1}}}}}
+      }
+    },
+    {
+      "if": {"properties": {"contentFallbackApplied": {"const": true}}},
+      "then": {"properties": {"frostRepresentation": {"const": "opaqueDimensional"}}, "required": ["frostRepresentation"]}
+    }
+  ],
+  "$comment": "The resolver checks the effective Frost body, contrast, and shared scenario provenance."
+}

@@ -6,7 +6,7 @@ use resina_model::{
 use resina_resolver::{
     HeadlessResolution, bind_surface, compile_theme_source_with_sources, opaque_contrast_ratio,
     resolve_edge_contrast, resolve_focus_indicator, resolve_frost_legibility,
-    resolve_frost_surface_readability,
+    resolve_frost_surface_readability, resolve_surface_readability,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -52,6 +52,18 @@ fn focused_control_intent() -> SurfaceIntent {
         "colorRole": "accent.primary",
         "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "raised"},
         "states": {"schemaVersion": "0.1.0", "states": ["selected", "focused"]},
+        "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}
+    }))
+    .unwrap()
+}
+
+fn base_state_intent(material_role: &str, color_role: &str) -> SurfaceIntent {
+    serde_json::from_value(json!({
+        "schemaVersion": "0.2.0",
+        "materialRole": material_role,
+        "colorRole": color_role,
+        "form": {"schemaVersion": "0.1.0", "shape": "soft", "elevation": "base"},
+        "states": {"schemaVersion": "0.1.0", "states": ["rest"]},
         "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}
     }))
     .unwrap()
@@ -243,6 +255,65 @@ fn authored_frost_chrome_keeps_content_and_edge_readable_at_tier_zero() {
             assert!(!guarded.legibility().fallback_applied());
             assert!(!guarded.edge().fallback_applied());
             assert_eq!(guarded.legibility().representation(), representation);
+        }
+    }
+}
+
+#[test]
+fn authored_materials_keep_content_and_edge_readable_in_both_themes() {
+    let standard = environment_for_scale(1.0);
+    let tier_zero: EnvironmentSnapshot = serde_json::from_str(TIER_ZERO).unwrap();
+    for source in [LIGHT, DARK] {
+        for environment in [&standard, &tier_zero] {
+            let resolution = resolve(source, environment);
+            let base = &resolution.opaque_color_fallbacks()[&ColorRole::SurfaceBase];
+            for (material_role, color_role, foreground_role, family) in [
+                (
+                    "surface.base",
+                    "surface.base",
+                    ColorRole::ContentPrimary,
+                    MaterialFamily::Cast,
+                ),
+                (
+                    "surface.chrome",
+                    "surface.chrome",
+                    ColorRole::ContentPrimary,
+                    MaterialFamily::Frost,
+                ),
+                (
+                    "control.primary",
+                    "accent.primary",
+                    ColorRole::ContentInverse,
+                    MaterialFamily::Elastomer,
+                ),
+                (
+                    "feedback.selection",
+                    "selection",
+                    ColorRole::ContentPrimary,
+                    MaterialFamily::Gel,
+                ),
+            ] {
+                let intent = base_state_intent(material_role, color_role);
+                let result = resolve_surface_readability(
+                    &intent,
+                    &resolution,
+                    foreground_role,
+                    (family == MaterialFamily::Frost).then_some(base),
+                    base,
+                    4.5,
+                    3.0,
+                )
+                .unwrap();
+                assert_eq!(result.binding().material_family(), family);
+                assert!(result.content_contrast_ratio() >= 4.5);
+                assert!(result.edge().contrast_ratio() >= 3.0);
+                if family == MaterialFamily::Frost {
+                    assert!(result.frost_representation().is_some());
+                } else {
+                    assert_eq!(result.body().alpha(), 1.0);
+                    assert_eq!(result.frost_representation(), None);
+                }
+            }
         }
     }
 }

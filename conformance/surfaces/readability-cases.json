@@ -1,0 +1,140 @@
+[
+  {
+    "name": "Frost falls back to opaque for readable content",
+    "changes": [],
+    "requestSchemaValid": true,
+    "expected": {"family": "frost", "frostRepresentation": "opaqueDimensional", "contentFallback": true, "edgeRole": "outline"}
+  },
+  {
+    "name": "Frost retains translucent body on dark backdrop",
+    "changes": [
+      {"path": "/postTreatmentBackdrop/components", "value": [0, 0, 0]},
+      {"path": "/adjacentColor/components", "value": [0, 0, 0]}
+    ],
+    "requestSchemaValid": true,
+    "expected": {"family": "frost", "frostRepresentation": "translucentPigmented", "contentFallback": false, "edgeRole": "outline.strong"}
+  },
+  {
+    "name": "Cast uses authored opaque body and foreground",
+    "changes": [{"path": "/scenario/surface/materialRole", "value": "surface.base"}],
+    "requestSchemaValid": true,
+    "expected": {"family": "cast", "contentFallback": false, "edgeRole": "outline"}
+  },
+  {
+    "name": "Cast does not require a backdrop",
+    "changes": [{"path": "/scenario/surface/materialRole", "value": "surface.base"}],
+    "omitBackdrop": true,
+    "requestSchemaValid": true,
+    "expected": {"family": "cast", "contentFallback": false, "edgeRole": "outline"}
+  },
+  {
+    "name": "Frost requires a known backdrop",
+    "changes": [],
+    "omitBackdrop": true,
+    "requestSchemaValid": true,
+    "errorContains": "Frost requires postTreatmentBackdrop"
+  },
+  {
+    "name": "Elastomer uses authored opaque body and foreground",
+    "changes": [
+      {"path": "/scenario/surface/materialRole", "value": "control.primary"},
+      {"path": "/scenario/surface/colorRole", "value": "accent.primary"}
+    ],
+    "requestSchemaValid": true,
+    "expected": {"family": "elastomer", "contentFallback": false, "edgeRole": "outline"}
+  },
+  {
+    "name": "Gel uses authored opaque body and foreground",
+    "changes": [
+      {"path": "/scenario/surface/materialRole", "value": "feedback.selection"},
+      {"path": "/scenario/surface/colorRole", "value": "selection"}
+    ],
+    "requestSchemaValid": true,
+    "expected": {"family": "gel", "contentFallback": false, "edgeRole": "outline"}
+  },
+  {
+    "name": "Opaque content contrast failure",
+    "changes": [
+      {"path": "/scenario/surface/materialRole", "value": "surface.base"},
+      {"path": "/foregroundRole", "value": "content.secondary"}
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "surface content contrast is insufficient"
+  },
+  {
+    "name": "Opaque fallback is used instead of source color",
+    "changes": [
+      {"path": "/scenario/surface/materialRole", "value": "surface.base"},
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/content.primary", "value": "palette.opaque"}
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "surface content contrast is insufficient"
+  },
+  {
+    "name": "Opaque content passes but edge fails",
+    "changes": [
+      {"path": "/scenario/surface/materialRole", "value": "surface.base"},
+      {"path": "/adjacentColor/components", "value": [0.15, 0.2, 0.3]},
+      {"path": "/scenario/resolution/opaqueColorAssignments/roles/outline.strong", "value": "palette.opaque"}
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "edge contrast is insufficient"
+  },
+  {
+    "name": "Frost content remains unreadable",
+    "changes": [
+      {"path": "/foregroundRole", "value": "content.secondary"},
+      {"path": "/minimumContentContrast", "value": 10}
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "Frost contrast is insufficient"
+  },
+  {
+    "name": "Unresolved focused state",
+    "changes": [{"path": "/scenario/surface/states/states", "value": ["rest", "focused"]}],
+    "requestSchemaValid": true,
+    "errorContains": "states must contain only rest"
+  },
+  {
+    "name": "Unresolved lens treatment",
+    "changes": [{"path": "/scenario/surface/treatmentStack/treatments", "value": ["lens"]}],
+    "requestSchemaValid": true,
+    "errorContains": "bound surface treatment must be none"
+  },
+  {
+    "name": "Unknown foreground role",
+    "changes": [{"path": "/foregroundRole", "value": "ink"}],
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "Translucent backdrop",
+    "changes": [{"path": "/postTreatmentBackdrop/alpha", "value": 0.5}],
+    "requestSchemaValid": false,
+    "errorContains": "postTreatmentBackdrop must be opaque"
+  },
+  {
+    "name": "Null backdrop is invalid",
+    "changes": [{"path": "/postTreatmentBackdrop", "value": null}],
+    "requestSchemaValid": false,
+    "errorContains": "invalid surface readability request"
+  },
+  {
+    "name": "Invalid content threshold",
+    "changes": [{"path": "/minimumContentContrast", "value": 22}],
+    "requestSchemaValid": false,
+    "errorContains": "minimumContentContrast must be finite"
+  },
+  {
+    "name": "Invalid edge threshold",
+    "changes": [{"path": "/minimumEdgeContrast", "value": 22}],
+    "requestSchemaValid": false,
+    "errorContains": "minimumContrast must be finite"
+  },
+  {
+    "name": "Unsupported version",
+    "changes": [{"path": "/schemaVersion", "value": "0.2.0"}],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  }
+]

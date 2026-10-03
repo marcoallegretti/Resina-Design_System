@@ -142,6 +142,9 @@ def main():
         "schemas/frost-surface-readability-request.schema.json",
         "schemas/frost-surface-readability-result.schema.json",
         "schemas/frost-surface-readability-case.schema.json",
+        "schemas/surface-readability-request.schema.json",
+        "schemas/surface-readability-result.schema.json",
+        "schemas/surface-readability-case.schema.json",
         "schemas/focus-indicator-request.schema.json",
         "schemas/focus-indicator-result.schema.json",
         "schemas/focus-indicator-case.schema.json",
@@ -388,6 +391,65 @@ def main():
             request,
             case["requestSchemaValid"],
         )
+    surface_readability_request = copy.deepcopy(readability_request)
+    surface_readability_request["scenario"]["resolution"]["opaqueColorAssignments"]["roles"][
+        "content.primary"
+    ] = "palette.opaqueAlt"
+    surface_readability_cases = load_json(ROOT / "conformance/surfaces/readability-cases.json")
+    surface_readability_case_schema = validator_for("schemas/surface-readability-case.schema.json")
+    surface_readability_request_schema = validator_for("schemas/surface-readability-request.schema.json")
+    surface_readability_names = set()
+    for case in surface_readability_cases:
+        name = case["name"]
+        check_case(surface_readability_case_schema, f"surface readability case: {name}", case, True)
+        if name in surface_readability_names:
+            raise ValueError(f"duplicate surface readability case: {name}")
+        surface_readability_names.add(name)
+        request = apply_changes(surface_readability_request, case["changes"])
+        if case.get("omitBackdrop", False):
+            del request["postTreatmentBackdrop"]
+        check_case(
+            surface_readability_request_schema,
+            f"surface readability request: {name}",
+            request,
+            case["requestSchemaValid"],
+        )
+    surface_readability_result_schema = validator_for("schemas/surface-readability-result.schema.json")
+    sample = {
+        "schemaVersion": "0.1.0",
+        "binding": load_json(ROOT / "conformance/surfaces/binding-vectors.json")[0]["expected"],
+        "foregroundRole": "content.primary",
+        "foreground": {"colorSpace": "srgb", "components": [0.8, 0.7, 0.6], "alpha": 1},
+        "body": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3], "alpha": 1},
+        "compositedBody": {"colorSpace": "srgb", "components": [0.15, 0.2, 0.3], "alpha": 1},
+        "contentContrastRatio": 5,
+        "contentFallbackApplied": True,
+        "edge": load_json(ROOT / "conformance/color/edge-contrast-vectors.json")[0]["expected"],
+        "frostRepresentation": "opaqueDimensional",
+    }
+    check_case(surface_readability_result_schema, "Frost readability result shape", sample, True)
+    translucent_sample = copy.deepcopy(sample)
+    translucent_sample["frostRepresentation"] = "translucentPigmented"
+    translucent_sample["body"]["alpha"] = 0.55
+    translucent_sample["contentFallbackApplied"] = False
+    check_case(surface_readability_result_schema, "translucent Frost result shape", translucent_sample, True)
+    translucent_sample["contentFallbackApplied"] = True
+    check_case(
+        surface_readability_result_schema,
+        "Frost fallback requires opaque representation",
+        translucent_sample,
+        False,
+    )
+    frost_without_representation = copy.deepcopy(sample)
+    del frost_without_representation["frostRepresentation"]
+    check_case(surface_readability_result_schema, "Frost representation required", frost_without_representation, False)
+    opaque_sample = copy.deepcopy(sample)
+    opaque_sample["binding"] = load_json(ROOT / "conformance/surfaces/binding-vectors.json")[1]["expected"]
+    opaque_sample["contentFallbackApplied"] = False
+    del opaque_sample["frostRepresentation"]
+    check_case(surface_readability_result_schema, "opaque readability result shape", opaque_sample, True)
+    opaque_sample["frostRepresentation"] = "opaqueDimensional"
+    check_case(surface_readability_result_schema, "non-Frost representation rejected", opaque_sample, False)
     focus_binding = load_json(ROOT / "conformance/surfaces/binding-vectors.json")[0]
     focus_request = {
         "schemaVersion": "0.1.0",
@@ -525,7 +587,9 @@ def main():
         + len(frost_cases)
         + len(edge_cases)
         + len(readability_cases)
+        + len(surface_readability_cases)
         + len(focus_cases)
+        + 6
         + 8
         + 2
     )
