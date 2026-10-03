@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:corner-radius-case:0.1.0",
+  "title": "Resina Corner Radius Conformance Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "size", "radii"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "size": {"type": "object"},
+    "radii": {"type": "object"},
+    "expected": {"$ref": "urn:resina:schema:logical-corner-radii:0.1.0"},
+    "error": {"type": "string", "minLength": 1},
+    "invalidAt": {"enum": ["size", "radii"]}
+  },
+  "oneOf": [
+    {
+      "required": ["expected"],
+      "not": {"anyOf": [{"required": ["error"]}, {"required": ["invalidAt"]}]},
+      "properties": {
+        "size": {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+        "radii": {"$ref": "urn:resina:schema:logical-corner-radii:0.1.0"}
+      }
+    },
+    {
+      "required": ["error", "invalidAt"],
+      "not": {"required": ["expected"]},
+      "properties": {
+        "invalidAt": {"const": "size"},
+        "size": {"not": {"$ref": "urn:resina:schema:surface-size:0.1.0"}},
+        "radii": {"$ref": "urn:resina:schema:logical-corner-radii:0.1.0"}
+      }
+    },
+    {
+      "required": ["error", "invalidAt"],
+      "not": {"required": ["expected"]},
+      "properties": {
+        "invalidAt": {"const": "radii"},
+        "size": {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+        "radii": {"not": {"$ref": "urn:resina:schema:logical-corner-radii:0.1.0"}}
+      }
+    }
+  ]
+}

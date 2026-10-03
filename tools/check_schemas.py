@@ -133,6 +133,7 @@ def main():
         "schemas/elevation-depth-result.schema.json",
         "schemas/elevation-depth-case.schema.json",
         "schemas/color-assignments.schema.json",
+        "schemas/corner-radius-case.schema.json",
         "schemas/environment.schema.json",
         "schemas/frost-pigment.schema.json",
         "schemas/frost-legibility-request.schema.json",
@@ -148,6 +149,7 @@ def main():
         "schemas/headless-conformance-case.schema.json",
         "schemas/headless-result.schema.json",
         "schemas/material-assignments.schema.json",
+        "schemas/logical-corner-radii.schema.json",
         "schemas/opaque-color-assignments.schema.json",
         "schemas/opaque-srgb-fallback.schema.json",
         "schemas/resolver-module-case.schema.json",
@@ -157,6 +159,7 @@ def main():
         "schemas/state-set.schema.json",
         "schemas/state-composition.schema.json",
         "schemas/surface-form.schema.json",
+        "schemas/surface-size.schema.json",
         "schemas/surface-binding.schema.json",
         "schemas/surface-binding-result.schema.json",
         "schemas/surface-scenario.schema.json",
@@ -535,6 +538,38 @@ def main():
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    corner_case_schema = validator_for("schemas/corner-radius-case.schema.json")
+    corner_size_schema = validator_for("schemas/surface-size.schema.json")
+    corner_radii_schema = validator_for("schemas/logical-corner-radii.schema.json")
+    corner_cases = load_json(ROOT / "conformance/geometry/corner-radius-vectors.json")
+    corner_names = set()
+    for case in corner_cases:
+        name = case["name"]
+        if name in corner_names:
+            raise ValueError(f"duplicate corner radius case: {name}")
+        corner_names.add(name)
+        check_case(corner_case_schema, f"corner radius case: {name}", case, True)
+        invalid_at = case.get("invalidAt")
+        check_case(
+            corner_size_schema, f"corner radius size: {name}", case["size"], invalid_at != "size"
+        )
+        check_case(
+            corner_radii_schema,
+            f"corner radius input: {name}",
+            case["radii"],
+            invalid_at != "radii",
+        )
+        if "expected" in case:
+            check_case(
+                corner_radii_schema, f"corner radius result: {name}", case["expected"], True
+            )
+        else:
+            swapped = {**case, "invalidAt": "radii" if invalid_at == "size" else "size"}
+            check_case(
+                corner_case_schema, f"corner radius mislabeled invalid case: {name}", swapped, False
+            )
+        checked += 1
 
     elevation_assignments = validator_for("schemas/elevation-depth-assignments.schema.json")
     for vector in load_json(ROOT / "conformance/elevation/depth-resolution-vectors.json"):

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-size:0.1.0",
+  "title": "Resina Surface Size",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["width", "height"],
+  "properties": {
+    "width": {"type": "number", "minimum": 0},
+    "height": {"type": "number", "minimum": 0}
+  }
+}

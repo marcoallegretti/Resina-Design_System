@@ -120,7 +120,8 @@
       "bottomEnd": {"x": 0, "y": 0},
       "bottomStart": {"x": 0, "y": 0}
     },
-    "error": "width must be finite and nonnegative"
+    "error": "width must be finite and nonnegative",
+    "invalidAt": "size"
   },
   {
     "name": "negative height",
@@ -131,7 +132,8 @@
       "bottomEnd": {"x": 0, "y": 0},
       "bottomStart": {"x": 0, "y": 0}
     },
-    "error": "height must be finite and nonnegative"
+    "error": "height must be finite and nonnegative",
+    "invalidAt": "size"
   },
   {
     "name": "negative vertical radius",
@@ -142,6 +144,7 @@
       "bottomEnd": {"x": 0, "y": 0},
       "bottomStart": {"x": 0, "y": -1}
     },
-    "error": "bottomStart.y must be finite and nonnegative"
+    "error": "bottomStart.y must be finite and nonnegative",
+    "invalidAt": "radii"
   }
 ]

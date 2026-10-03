@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:logical-corner-radii:0.1.0",
+  "title": "Resina Logical Corner Radii",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["topStart", "topEnd", "bottomEnd", "bottomStart"],
+  "properties": {
+    "topStart": {"$ref": "#/$defs/corner"},
+    "topEnd": {"$ref": "#/$defs/corner"},
+    "bottomEnd": {"$ref": "#/$defs/corner"},
+    "bottomStart": {"$ref": "#/$defs/corner"}
+  },
+  "$defs": {
+    "corner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": {"type": "number", "minimum": 0},
+        "y": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}
