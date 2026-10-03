@@ -1,6 +1,8 @@
 import math
 
+from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
+from check_schemas import ROOT, load_json
 
 
 def contour_mismatch(actual, expected, path=""):
@@ -34,6 +36,7 @@ def contour_mismatch(actual, expected, path=""):
 
 
 if __name__ == "__main__":
+    baseline = load_json(ROOT / "conformance/geometry/extruded-contour-vectors.json")[0]["request"]
     raise SystemExit(
         check_backend(
             "extruded contour",
@@ -42,8 +45,8 @@ if __name__ == "__main__":
             "schemas/extruded-contour-result.schema.json",
             "conformance/geometry/extruded-contour-vectors.json",
             extra_failures=(
-                ("duplicate offset component", '{"offset":{"x":1,"x":2}}'),
-                ("overflow offset component", '{"offset":{"x":1e400}}'),
+                ("duplicate offset component", duplicate_member_source(baseline, "/offset/x")),
+                ("overflow offset component", nonfinite_member_source(baseline, "/offset/x")),
             ),
             compare=contour_mismatch,
         )

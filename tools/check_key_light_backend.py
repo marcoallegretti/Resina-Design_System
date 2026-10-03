@@ -1,7 +1,9 @@
 import math
 
+from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
 from check_headless_backend import mismatch
+from check_schemas import ROOT, load_json
 
 
 def key_light_mismatch(actual, expected):
@@ -24,6 +26,7 @@ def key_light_mismatch(actual, expected):
 
 
 if __name__ == "__main__":
+    baseline = load_json(ROOT / "conformance/lighting/key-light-vectors.json")[0]["request"]
     raise SystemExit(
         check_backend(
             "key light",
@@ -32,8 +35,8 @@ if __name__ == "__main__":
             "schemas/key-light-result.schema.json",
             "conformance/lighting/key-light-vectors.json",
             extra_failures=(
-                ("duplicate direction component", '{"keyLight":{"direction":{"x":1,"x":2}}}'),
-                ("overflow direction component", '{"keyLight":{"direction":{"x":1e400}}}'),
+                ("duplicate direction component", duplicate_member_source(baseline, "/keyLight/direction/x")),
+                ("overflow direction component", nonfinite_member_source(baseline, "/keyLight/direction/x")),
             ),
             compare=key_light_mismatch,
         )

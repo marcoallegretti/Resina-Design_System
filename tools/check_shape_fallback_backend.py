@@ -4,6 +4,7 @@ import json
 import math
 import sys
 
+from backend_source import duplicate_member_source
 from check_color_guard_backend import check_failure, check_success
 from check_schemas import ROOT, load_json, validator_for
 
@@ -134,10 +135,10 @@ def main():
         count += 1
 
         for name, source in (
-            ("duplicate request member", '{"schemaVersion":"0.1.0","schemaVersion":"0.1.0"}'),
+            ("duplicate request member", duplicate_member_source(base, "/schemaVersion")),
             (
                 "duplicate token member",
-                '{"tokens":{"radius":{"3":{"$value":{"unit":"px","unit":"px"}}}}}',
+                duplicate_member_source(base, "/tokens/radius/3/$value/unit"),
             ),
         ):
             check_failure(command, source, arguments.timeout, name)

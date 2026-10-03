@@ -3,6 +3,7 @@ import json
 import math
 import sys
 
+from backend_source import duplicate_member_source
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, load_json, parse_json, validator_for
 
@@ -76,9 +77,12 @@ def check_backend(
                 )
             else:
                 check_failure(command, source, arguments.timeout, name)
+        baseline = next((case["request"] for case in cases if "expected" in case), None)
+        if baseline is None:
+            raise ValueError(f"{label} conformance requires a successful request")
         check_failure(
             command,
-            '{"schemaVersion":"0.1.0","schemaVersion":"0.1.0"}',
+            duplicate_member_source(baseline, "/schemaVersion"),
             arguments.timeout,
             "duplicate request member",
         )

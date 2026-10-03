@@ -1,7 +1,10 @@
+from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
+from check_schemas import ROOT, load_json
 
 
 if __name__ == "__main__":
+    baseline = load_json(ROOT / "conformance/materials/opaque-pigment-vectors.json")[0]["request"]
     raise SystemExit(
         check_backend(
             "opaque pigment",
@@ -12,11 +15,11 @@ if __name__ == "__main__":
             extra_failures=(
                 (
                     "duplicate profile coefficient",
-                    '{"profiles":{"profiles":{"cast":{"sideShade":0.1,"sideShade":0.2}}}}',
+                    duplicate_member_source(baseline, "/profiles/profiles/cast/sideShade"),
                 ),
                 (
                     "nonfinite coefficient",
-                    '{"profiles":{"profiles":{"cast":{"sideShade":1e400}}}}',
+                    nonfinite_member_source(baseline, "/profiles/profiles/cast/sideShade"),
                 ),
             ),
         )

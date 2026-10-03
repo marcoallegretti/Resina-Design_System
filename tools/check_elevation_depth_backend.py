@@ -1,17 +1,11 @@
-import json
-
+from backend_source import duplicate_member_source
 from check_color_guard_backend import check_backend
 from check_schemas import ROOT, load_json
 
 
 def nested_duplicate_source():
     request = load_json(ROOT / "conformance/elevation/backend-cases.json")[0]["request"]
-    source = json.dumps(request, separators=(",", ":"), ensure_ascii=False)
-    original = '"zero":{"$value":{"value":0,"unit":"px"}}'
-    duplicated = '"zero":{"$value":{"value":0,"unit":"px"},"$value":{"value":1,"unit":"px"}}'
-    if source.count(original) != 1:
-        raise ValueError("valid elevation fixture lacks one zero depth token")
-    return source.replace(original, duplicated, 1)
+    return duplicate_member_source(request, "/tokens/depth/zero/$value")
 
 
 if __name__ == "__main__":
