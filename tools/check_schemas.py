@@ -125,6 +125,10 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/opaque-surface-appearance.schema.json",
+        "schemas/opaque-surface-request.schema.json",
+        "schemas/opaque-surface-ir.schema.json",
+        "schemas/opaque-surface-case.schema.json",
         "schemas/extruded-contour-request.schema.json",
         "schemas/extruded-contour-result.schema.json",
         "schemas/extruded-contour-case.schema.json",
@@ -212,6 +216,56 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    appearance_schema = validator_for("schemas/opaque-surface-appearance.schema.json")
+    check_case(
+        appearance_schema, "authored opaque surface appearance",
+        load_json(ROOT / "definitions/tier0-surface-appearance.json"), True,
+    )
+    check_case(
+        validator_for("schemas/elevation-depth-assignments.schema.json"),
+        "authored Tier 0 depth assignments",
+        load_json(ROOT / "definitions/tier0-depth.json"), True,
+    )
+    ir_request = load_json(ROOT / "conformance/ir/opaque-surface-request.json")
+    ir_expected = load_json(ROOT / "conformance/ir/opaque-surface-expected.json")
+    ir_cases = load_json(ROOT / "conformance/ir/opaque-surface-cases.json")
+    ir_case_schema = validator_for("schemas/opaque-surface-case.schema.json")
+    ir_request_schema = validator_for("schemas/opaque-surface-request.schema.json")
+    ir_result_schema = validator_for("schemas/opaque-surface-ir.schema.json")
+    ir_names = set()
+    for case in ir_cases:
+        check_case(ir_case_schema, case["name"], case, True)
+        if case["name"] in ir_names:
+            raise ValueError(f"duplicate opaque surface case: {case['name']}")
+        ir_names.add(case["name"])
+        check_case(
+            ir_request_schema, case["name"],
+            apply_changes(ir_request, case["requestChanges"]), case["requestSchemaValid"],
+        )
+        if "errorContains" not in case:
+            result = case.get(
+                "expected", apply_changes(ir_expected, case.get("expectedChanges", []))
+            )
+            check_case(ir_result_schema, case["name"], result, True)
+    invalid_ir_results = (
+        ("nonopaque representation", "/representation", "translucent"),
+        ("non-rest state", "/states/states", ["pressed"]),
+        ("translucent body", "/pigment/body/alpha", 0.5),
+        ("empty content", "/geometry/content/contour/bounds", None),
+        ("unresolved Frost representation on Cast", "/materialFamily", "frost"),
+        ("zero exterior edge width", "/edgeWidth", 0),
+        ("negative highlight width", "/highlightWidth", -1),
+        ("inconsistent pigment family", "/pigment/materialFamily", "gel"),
+    )
+    for name, pointer, value in invalid_ir_results:
+        invalid = copy.deepcopy(ir_expected)
+        replace_at_pointer(invalid, pointer, value)
+        check_case(ir_result_schema, name, invalid, False)
+    invalid = copy.deepcopy(ir_expected)
+    invalid["materialFamily"] = "gel"
+    invalid["pigment"]["materialFamily"] = "gel"
+    check_case(ir_result_schema, "structural role cannot carry Gel", invalid, False)
 
     check_case(
         validator_for("schemas/key-light.schema.json"),
@@ -683,7 +737,8 @@ def main():
         raise ValueError("surface binding material families differ from assignments")
 
     checked = (
-        len(backend_cases)
+        len(ir_cases) + len(invalid_ir_results) + 3
+        + len(backend_cases)
         + len(surface_backend_cases)
         + len(theme_cases)
         + len(theme_resolution_cases)

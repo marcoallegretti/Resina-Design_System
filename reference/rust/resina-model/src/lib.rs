@@ -20,6 +20,8 @@ mod shape_fallback;
 pub use shape_fallback::{CornerTokenPaths, ShapeFallbackAssignments, ShapeFallbackProfile};
 mod surface;
 pub use surface::SurfaceIntent;
+mod surface_appearance;
+pub use surface_appearance::{OpaqueSurfaceAppearance, SurfaceBandProfile};
 mod typography;
 pub use typography::{FontFamilyRole, TypographyAssignments, TypographyRole, TypographyRoleSpec};
 

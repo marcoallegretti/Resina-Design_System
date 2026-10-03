@@ -43,11 +43,12 @@ def cases():
     spatial = load_json(ROOT / "conformance/spatial/foundation-vectors.json")
     type_sizes = load_json(ROOT / "conformance/typography/foundation-vectors.json")
     radii = load_json(ROOT / "conformance/geometry/foundation-radius-vectors.json")
+    depths = load_json(ROOT / "conformance/elevation/foundation-depth-vectors.json")
     expected = {
         vector["path"]: {"token_type": "dimension", "value": vector["value"]}
-        for vector in spatial + type_sizes + radii
+        for vector in spatial + type_sizes + radii + depths
     }
-    if len(expected) != len(spatial) + len(type_sizes) + len(radii):
+    if len(expected) != len(spatial) + len(type_sizes) + len(radii) + len(depths):
         raise ValueError("duplicate foundation token path")
     resolver = json.dumps(
         {
@@ -62,7 +63,7 @@ def cases():
         }
     )
     yield (
-        "foundation: authored spatial, type, and radius scales",
+        "foundation: authored spatial, type, radius, and depth scales",
         request_source(resolver, "{}", {"foundation.json": foundation}),
         expected,
     )

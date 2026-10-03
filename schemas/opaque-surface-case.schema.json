@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-surface-case:0.1.0",
+  "title": "Resina Opaque Surface IR Case",
+  "type": "object", "additionalProperties": false,
+  "required": ["name", "requestChanges", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "requestChanges": {"$ref": "#/$defs/changes"},
+    "requestSchemaValid": {"type": "boolean"},
+    "expectedChanges": {"$ref": "#/$defs/changes"},
+    "expected": {"$ref": "urn:resina:schema:opaque-surface-ir:0.1.0"},
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {"required": ["expectedChanges"], "not": {"anyOf": [{"required": ["expected"]}, {"required": ["errorContains"]}]}, "properties": {"requestSchemaValid": {"const": true}}},
+    {"required": ["expected"], "not": {"anyOf": [{"required": ["expectedChanges"]}, {"required": ["errorContains"]}]}, "properties": {"requestSchemaValid": {"const": true}}},
+    {"required": ["errorContains"], "not": {"anyOf": [{"required": ["expectedChanges"]}, {"required": ["expected"]}]}}
+  ],
+  "$defs": {
+    "changes": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "value"],
+        "properties": {"path": {"type": "string", "pattern": "^/"}, "value": {}}
+      }
+    }
+  }
+}

@@ -1,14 +1,15 @@
 use resina_color::{composite_srgb_over_opaque, resolve_srgb_fallback};
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorRole, FrostRepresentation, InteractionState, KeyLight, MaterialFamily, MaterialRole,
-    PhysicalVector, SurfaceIntent, TypographyRole,
+    ColorRole, ContourSegment, FrostRepresentation, InteractionState, KeyLight, MaterialFamily,
+    MaterialRole, OpaqueSurfaceAppearance, PhysicalVector, SurfaceIntent, SurfaceSize,
+    TypographyRole,
 };
 use resina_resolver::{
-    HeadlessResolution, OpaquePigmentError, bind_surface, compile_theme_source_with_sources,
-    opaque_contrast_ratio, resolve_edge_contrast, resolve_focus_indicator,
-    resolve_frost_legibility, resolve_frost_surface_readability, resolve_key_light,
-    resolve_opaque_pigment, resolve_surface_readability,
+    HeadlessResolution, OpaquePigmentError, OpaqueSurfaceInput, bind_surface,
+    compile_theme_source_with_sources, opaque_contrast_ratio, resolve_edge_contrast,
+    resolve_focus_indicator, resolve_frost_legibility, resolve_frost_surface_readability,
+    resolve_key_light, resolve_opaque_pigment, resolve_opaque_surface, resolve_surface_readability,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -33,6 +34,174 @@ fn environment_for_scale(scale: f64) -> EnvironmentSnapshot {
     let mut environment = request["environment"].clone();
     environment["textScale"] = scale.into();
     serde_json::from_value(environment).unwrap()
+}
+
+fn contour_support(contour: &resina_resolver::ExtrudedContourResult, n: PhysicalVector) -> f64 {
+    let dot = |p: PhysicalVector| p.x * n.x + p.y * n.y;
+    contour
+        .segments()
+        .iter()
+        .map(|segment| match segment {
+            ContourSegment::Line { from, to } => dot(*from).max(dot(*to)),
+            ContourSegment::Arc {
+                center,
+                radii,
+                start,
+                end,
+            } => {
+                let radial = PhysicalVector {
+                    x: radii.x * n.x,
+                    y: radii.y * n.y,
+                };
+                let length = radial.x.hypot(radial.y);
+                let radial = PhysicalVector {
+                    x: radial.x / length,
+                    y: radial.y / length,
+                };
+                let evaluate = |u: PhysicalVector| {
+                    dot(PhysicalVector {
+                        x: center.x + radii.x * u.x,
+                        y: center.y + radii.y * u.y,
+                    })
+                };
+                let endpoints = evaluate(*start).max(evaluate(*end));
+                if start.x * radial.y - start.y * radial.x >= 0.0
+                    && radial.x * end.y - radial.y * end.x >= 0.0
+                {
+                    endpoints.max(evaluate(radial))
+                } else {
+                    endpoints
+                }
+            }
+        })
+        .fold(f64::NEG_INFINITY, f64::max)
+}
+
+fn assert_region_containment(geometry: &resina_resolver::OpaqueSurfaceGeometry) {
+    for degrees in 0..360 {
+        let angle = f64::from(degrees).to_radians();
+        let n = PhysicalVector {
+            x: angle.cos(),
+            y: angle.sin(),
+        };
+        let placed = |p: &resina_resolver::PlacedContour| {
+            contour_support(p.contour(), n) + p.offset().x * n.x + p.offset().y * n.y
+        };
+        let edge = placed(geometry.edge_interior());
+        let highlight = placed(geometry.highlight_outer());
+        let content = placed(geometry.content());
+        assert!(edge <= contour_support(geometry.silhouette(), n) + 1e-10);
+        assert!(highlight <= edge + 1e-10);
+        assert!(content <= highlight + 1e-10);
+        assert!(content <= contour_support(geometry.front(), n) + 1e-10);
+    }
+}
+
+#[test]
+fn authored_opaque_ir_preserves_family_shape_elevation_and_readability() {
+    let appearance: OpaqueSurfaceAppearance = serde_json::from_str(include_str!(
+        "../../../../definitions/tier0-surface-appearance.json"
+    ))
+    .unwrap();
+    let sources = BTreeMap::from([("foundation.json".to_owned(), FOUNDATION.to_owned())]);
+    let mut template: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/opaque-surface-request.json"
+    ))
+    .unwrap();
+    let template = template.as_object_mut().unwrap();
+    for source in [LIGHT, DARK] {
+        let theme = compile_theme_source_with_sources(source, &sources).unwrap();
+        for direction in ["ltr", "rtl"] {
+            let mut environment: Value = serde_json::from_str(TIER_ZERO).unwrap();
+            environment["layoutDirection"] = direction.into();
+            environment["textScale"] = 3.into();
+            let environment: EnvironmentSnapshot = serde_json::from_value(environment).unwrap();
+            let resolution = theme.resolve(&environment).unwrap();
+            let adjacent = &resolution.opaque_color_fallbacks()[&ColorRole::SurfaceBase];
+            for (role, color_role, foreground_role, family) in [
+                (
+                    "surface.base",
+                    "surface.high",
+                    ColorRole::ContentPrimary,
+                    MaterialFamily::Cast,
+                ),
+                (
+                    "surface.chrome",
+                    "surface.chrome",
+                    ColorRole::ContentPrimary,
+                    MaterialFamily::Frost,
+                ),
+                (
+                    "control.primary",
+                    "accent.primary",
+                    ColorRole::ContentInverse,
+                    MaterialFamily::Elastomer,
+                ),
+                (
+                    "feedback.selection",
+                    "selection",
+                    ColorRole::ContentPrimary,
+                    MaterialFamily::Gel,
+                ),
+            ] {
+                for (index, shape) in ["structural", "soft", "rounded", "capsule", "organic"]
+                    .into_iter()
+                    .enumerate()
+                {
+                    let mut surface = template["surface"].clone();
+                    surface["materialRole"] = role.into();
+                    surface["colorRole"] = color_role.into();
+                    surface["form"]["shape"] = shape.into();
+                    surface["form"]["elevation"] =
+                        ["embedded", "base", "raised", "floating", "overlay", "modal"]
+                            [(index + usize::from(direction == "rtl")) % 6]
+                            .into();
+                    let surface: SurfaceIntent = serde_json::from_value(surface).unwrap();
+                    let ir = resolve_opaque_surface(
+                        &theme,
+                        &environment,
+                        OpaqueSurfaceInput {
+                            surface: &surface,
+                            size: SurfaceSize {
+                                width: 240.0,
+                                height: 80.0,
+                            },
+                            appearance: &appearance,
+                            foreground_role,
+                            post_treatment_backdrop: (family == MaterialFamily::Frost)
+                                .then_some(adjacent),
+                            adjacent_color: adjacent,
+                            minimum_content_contrast: 4.5,
+                            minimum_edge_contrast: 3.0,
+                        },
+                    )
+                    .unwrap();
+                    assert_eq!(ir.material_family(), family);
+                    assert_eq!(ir.form(), surface.form());
+                    assert_eq!(ir.states(), surface.states());
+                    assert_region_containment(ir.geometry());
+                    assert_eq!(ir.pigment().body().alpha(), 1.0);
+                    assert!(ir.content_contrast_ratio() >= 4.5);
+                    assert!(ir.edge().contrast_ratio() >= 3.0);
+                    assert!(ir.geometry().content().contour().bounds().unwrap().width > 0.0);
+                    assert_eq!(
+                        ir.geometry().content().offset().x,
+                        ir.edge_width() + ir.highlight_width()
+                    );
+                    assert_eq!(
+                        ir.frost_representation(),
+                        (family == MaterialFamily::Frost)
+                            .then_some(FrostRepresentation::OpaqueDimensional)
+                    );
+                    assert!(ir.lighting().direction().x < 0.0 && ir.lighting().direction().y < 0.0);
+                    assert!(
+                        ir.lighting().side_offset().x >= 0.0
+                            && ir.lighting().side_offset().y >= 0.0
+                    );
+                }
+            }
+        }
+    }
 }
 
 fn frost_chrome_intent() -> SurfaceIntent {

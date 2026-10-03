@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-surface-request:0.1.0",
+  "title": "Resina Opaque Surface IR Request",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "theme", "surface", "size", "appearance", "foregroundRole", "adjacentColor", "minimumContentContrast", "minimumEdgeContrast"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "theme": {"$ref": "urn:resina:schema:theme-resolution-request:0.1.0"},
+    "surface": {"$ref": "urn:resina:schema:surface-binding:0.2.0"},
+    "size": {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+    "appearance": {"$ref": "urn:resina:schema:opaque-surface-appearance:0.1.0"},
+    "foregroundRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+    "postTreatmentBackdrop": {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},
+    "adjacentColor": {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},
+    "minimumContentContrast": {"type": "number", "minimum": 1, "maximum": 21},
+    "minimumEdgeContrast": {"type": "number", "minimum": 1, "maximum": 21}
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "0.1.0",
+  "shapeAssignments": {
+    "schemaVersion": "0.1.0",
+    "profiles": {
+      "structural": {
+        "kind": "uniform",
+        "radius": "radius.3"
+      },
+      "soft": {
+        "kind": "uniform",
+        "radius": "radius.4"
+      },
+      "rounded": {
+        "kind": "uniform",
+        "radius": "radius.5"
+      },
+      "capsule": {
+        "kind": "capsule"
+      },
+      "organic": {
+        "kind": "corners",
+        "radii": {
+          "topStart": "radius.6",
+          "topEnd": "radius.4",
+          "bottomEnd": "radius.6",
+          "bottomStart": "radius.4"
+        }
+      }
+    }
+  },
+  "depthAssignments": {
+    "schemaVersion": "0.1.0",
+    "roles": {
+      "embedded": "depth.0",
+      "base": "depth.0",
+      "raised": "depth.1",
+      "floating": "depth.2",
+      "overlay": "depth.3",
+      "modal": "depth.4"
+    }
+  },
+  "pigmentProfiles": {
+    "schemaVersion": "0.1.0",
+    "profiles": {
+      "cast": {
+        "sideShade": 0.1,
+        "highlightLift": 0.08
+      },
+      "frost": {
+        "sideShade": 0.14,
+        "highlightLift": 0.18
+      },
+      "elastomer": {
+        "sideShade": 0.25,
+        "highlightLift": 0.14
+      },
+      "gel": {
+        "sideShade": 0.18,
+        "highlightLift": 0.2
+      }
+    }
+  },
+  "bands": {
+    "elastomer": {
+      "highlightWidth": 2,
+      "edgeWidth": 1
+    },
+    "frost": {
+      "highlightWidth": 1,
+      "edgeWidth": 1
+    },
+    "cast": {
+      "highlightWidth": 1,
+      "edgeWidth": 1
+    },
+    "gel": {
+      "highlightWidth": 2,
+      "edgeWidth": 1
+    }
+  },
+  "keyLight": {
+    "schemaVersion": "0.1.0",
+    "direction": {
+      "x": -1,
+      "y": -1
+    }
+  }
+}

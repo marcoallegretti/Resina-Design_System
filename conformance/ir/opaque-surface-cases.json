@@ -1,0 +1,1022 @@
+[
+  {
+    "name": "sharp raised Cast with independently derived regions",
+    "requestChanges": [],
+    "requestSchemaValid": true,
+    "expectedChanges": []
+  },
+  {
+    "name": "Frost follows real reduced-transparency fallback",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "surface.chrome"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "opaque",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.base",
+      "materialFamily": "frost",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "structural",
+        "elevation": "raised"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      },
+      "geometry": {
+        "front": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 12
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        "silhouette": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 14
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 20,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 14
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 14
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        "edgeInterior": {
+          "offset": {
+            "x": 1,
+            "y": 1
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 18,
+              "height": 12
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 10
+                },
+                "to": {
+                  "x": 18,
+                  "y": 12
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 12
+                },
+                "to": {
+                  "x": 0,
+                  "y": 12
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 12
+                },
+                "to": {
+                  "x": 0,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        },
+        "highlightOuter": {
+          "offset": {
+            "x": 1,
+            "y": 1
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 18,
+              "height": 10
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        },
+        "content": {
+          "offset": {
+            "x": 2,
+            "y": 2
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 16,
+              "height": 8
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 16,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 16,
+                  "y": 0
+                },
+                "to": {
+                  "x": 16,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 16,
+                  "y": 8
+                },
+                "to": {
+                  "x": 0,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 8
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "frost",
+        "profile": {
+          "sideShade": 0.14,
+          "highlightLift": 0.18
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.86,
+            0.86,
+            0.86
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        }
+      },
+      "lighting": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": 0,
+          "y": -1
+        },
+        "sideOffset": {
+          "x": 0,
+          "y": 2
+        },
+        "edgeHighlightWeights": {
+          "top": 1,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "normalHighlightWeights": []
+      },
+      "edgeWidth": 1,
+      "highlightWidth": 1,
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "colorRole": "outline",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "contrastRatio": 21,
+        "fallbackApplied": false
+      },
+      "foregroundRole": "content.primary",
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ],
+        "alpha": 1
+      },
+      "contentContrastRatio": 21,
+      "contentFallbackApplied": false,
+      "frostRepresentation": "opaqueDimensional"
+    }
+  },
+  {
+    "name": "complete elastomer pigment composition",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "control.primary"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "control.primary"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "elastomer"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "elastomer",
+          "profile": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.75,
+              0.75,
+              0.75
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "complete gel pigment composition",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "feedback.selection"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/materialRole",
+        "value": "feedback.selection"
+      },
+      {
+        "path": "/materialFamily",
+        "value": "gel"
+      },
+      {
+        "path": "/pigment",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "gel",
+          "profile": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8200000000000001,
+              0.8200000000000001,
+              0.8200000000000001
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "zero depth preserves dimensional bands",
+    "requestChanges": [
+      {
+        "path": "/surface/form/elevation",
+        "value": "base"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/form/elevation",
+        "value": "base"
+      },
+      {
+        "path": "/lighting/sideOffset",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/geometry/silhouette",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 12
+          },
+          "segments": [
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 0
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 0
+              },
+              "to": {
+                "x": 20,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 20,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 12
+              }
+            },
+            {
+              "kind": "line",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "path": "/geometry/edgeInterior",
+        "value": {
+          "offset": {
+            "x": 1,
+            "y": 1
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 18,
+              "height": 10
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "explicit zero highlight band preserves content and edge",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast/highlightWidth",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": [
+      {
+        "path": "/highlightWidth",
+        "value": 0
+      },
+      {
+        "path": "/geometry/content",
+        "value": {
+          "offset": {
+            "x": 1,
+            "y": 1
+          },
+          "contour": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 18,
+              "height": 10
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 0
+                },
+                "to": {
+                  "x": 18,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 18,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 10
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0,
+                  "y": 10
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "physical light is unchanged by layout direction",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/layoutDirection",
+        "value": "ltr"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedChanges": []
+  },
+  {
+    "name": "non-rest state cannot pretend to be painted",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "only rest"
+  },
+  {
+    "name": "active treatment cannot pretend to be painted",
+    "requestChanges": [
+      {
+        "path": "/surface/treatmentStack/treatments",
+        "value": [
+          "lens"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "treatment must be none"
+  },
+  {
+    "name": "missing appearance bindings",
+    "requestChanges": [
+      {
+        "path": "/appearance",
+        "value": {}
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unsupported version",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "0.2.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "zero edge width",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast/edgeWidth",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "edgeWidth must be finite and positive"
+  },
+  {
+    "name": "negative highlight width",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast/highlightWidth",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "highlightWidth must be finite and nonnegative"
+  },
+  {
+    "name": "unknown family band field",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast",
+        "value": {
+          "edgeWidth": 1,
+          "highlightWidth": 1,
+          "backend": "qt"
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "missing unused depth token is diagnosed",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments/roles/modal",
+        "value": "depth.missing"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "MissingToken"
+  },
+  {
+    "name": "missing selected radius token is diagnosed",
+    "requestChanges": [
+      {
+        "path": "/appearance/shapeAssignments/profiles/structural/radius",
+        "value": "radius.missing"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "missing shape radius token"
+  },
+  {
+    "name": "unrepresentable combined bands",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast",
+        "value": {
+          "edgeWidth": 1e+308,
+          "highlightWidth": 1e+308
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "extent must be finite"
+  },
+  {
+    "name": "bands cannot silently consume content",
+    "requestChanges": [
+      {
+        "path": "/size/height",
+        "value": 4
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "positive content area"
+  },
+  {
+    "name": "bands larger than bounds fail",
+    "requestChanges": [
+      {
+        "path": "/size/height",
+        "value": 3
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "inset exceeds half"
+  },
+  {
+    "name": "collapsed surface fails before promising content",
+    "requestChanges": [
+      {
+        "path": "/size/width",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "inset exceeds half"
+  },
+  {
+    "name": "precision cannot silently remove bands",
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 1e+300,
+          "height": 1e+300
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "cannot be represented"
+  },
+  {
+    "name": "translucent adjacent color",
+    "requestChanges": [
+      {
+        "path": "/adjacentColor/alpha",
+        "value": 0.5
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "adjacentColor must be opaque"
+  },
+  {
+    "name": "null optional backdrop",
+    "requestChanges": [
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "invalid content threshold",
+    "requestChanges": [
+      {
+        "path": "/minimumContentContrast",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "minimumContentContrast"
+  },
+  {
+    "name": "missing external source",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\": \"0.1.0\", \"tokenResolver\": {\"version\": \"2025.10\", \"sets\": {\"foundation\": {\"sources\": [{\"$ref\": \"foundation.json\"}]}, \"theme\": {\"sources\": [{\"pigment\": {\"accent\": {\"primary\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.07450980392156863, 0.3568627450980392, 0.38823529411764707], \"hex\": \"#135b63\"}}, \"secondary\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.23921568627450981, 0.3333333333333333, 0.4823529411764706], \"hex\": \"#3d557b\"}}, \"tertiary\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.49411764705882355, 0.3411764705882353, 0.19215686274509805], \"hex\": \"#7e5731\"}}}, \"surface\": {\"base\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.9450980392156862, 0.9411764705882353, 0.9215686274509803], \"hex\": \"#f1f0eb\"}}, \"low\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.8901960784313725, 0.9058823529411765, 0.8901960784313725], \"hex\": \"#e3e7e3\"}}, \"high\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.9882352941176471, 0.984313725490196, 0.9725490196078431], \"hex\": \"#fcfbf8\"}}, \"chrome\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.9137254901960784, 0.9372549019607843, 0.9294117647058824], \"hex\": \"#e9efed\", \"alpha\": 0.83}}}, \"content\": {\"primary\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.09411764705882353, 0.1607843137254902, 0.17647058823529413], \"hex\": \"#18292d\"}}, \"secondary\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.23529411764705882, 0.3176470588235294, 0.3333333333333333], \"hex\": \"#3c5155\"}}, \"muted\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.3215686274509804, 0.4, 0.41568627450980394], \"hex\": \"#52666a\"}}, \"inverse\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.9725490196078431, 0.984313725490196, 0.9764705882352941], \"hex\": \"#f8fbf9\"}}}, \"outlineBase\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.42745098039215684, 0.5058823529411764, 0.5019607843137255], \"hex\": \"#6d8180\"}}, \"outlineStrong\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.27058823529411763, 0.38823529411764707, 0.4], \"hex\": \"#456366\"}}, \"status\": {\"error\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.6470588235294118, 0.24313725490196078, 0.2549019607843137], \"hex\": \"#a53e41\"}}, \"warning\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.5294117647058824, 0.3686274509803922, 0.10980392156862745], \"hex\": \"#875e1c\"}}, \"success\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.1568627450980392, 0.43137254901960786, 0.29411764705882354], \"hex\": \"#286e4b\"}}, \"info\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.19215686274509805, 0.37254901960784315, 0.5411764705882353], \"hex\": \"#315f8a\"}}}, \"focus\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.047058823529411764, 0.4235294117647059, 0.4627450980392157], \"hex\": \"#0c6c76\"}}, \"selection\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.7490196078431373, 0.8627450980392157, 0.8470588235294118], \"hex\": \"#bfdcd8\"}}, \"chromeOpaque\": {\"$type\": \"color\", \"$value\": {\"colorSpace\": \"srgb\", \"components\": [0.9058823529411765, 0.9254901960784314, 0.9098039215686274], \"hex\": \"#e7ece8\"}}}, \"type\": {\"weight\": {\"regular\": {\"$type\": \"fontWeight\", \"$value\": 400}, \"medium\": {\"$type\": \"fontWeight\", \"$value\": 500}, \"semibold\": {\"$type\": \"fontWeight\", \"$value\": 600}, \"bold\": {\"$type\": \"fontWeight\", \"$value\": 700}}, \"line\": {\"display\": {\"$type\": \"number\", \"$value\": 1.1}, \"heading\": {\"$type\": \"number\", \"$value\": 1.24}, \"body\": {\"$type\": \"number\", \"$value\": 1.48}, \"label\": {\"$type\": \"number\", \"$value\": 1.34}, \"code\": {\"$type\": \"number\", \"$value\": 1.5}}, \"tracking\": {\"tight\": {\"$type\": \"dimension\", \"$value\": {\"value\": -0.4, \"unit\": \"px\"}}, \"normal\": {\"$type\": \"dimension\", \"$value\": {\"value\": 0, \"unit\": \"px\"}}, \"wide\": {\"$type\": \"dimension\", \"$value\": {\"value\": 0.15, \"unit\": \"px\"}}}}}]}}, \"resolutionOrder\": [{\"$ref\": \"#/sets/foundation\"}, {\"$ref\": \"#/sets/theme\"}]}, \"tokenInput\": {}, \"materialAssignments\": {\"schemaVersion\": \"0.2.0\", \"surface\": {\"base\": \"cast\", \"content\": \"cast\", \"chrome\": \"frost\", \"raised\": \"cast\", \"transient\": \"gel\"}, \"control\": {\"passive\": \"cast\", \"interactive\": \"elastomer\", \"primary\": \"elastomer\"}, \"feedback\": {\"focus\": \"elastomer\", \"selection\": \"gel\", \"drag\": \"gel\"}}, \"frostPigment\": {\"schemaVersion\": \"0.1.0\", \"tintStrength\": 0.68}, \"colorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"accent.primary\": \"pigment.accent.primary\", \"accent.secondary\": \"pigment.accent.secondary\", \"accent.tertiary\": \"pigment.accent.tertiary\", \"surface.base\": \"pigment.surface.base\", \"surface.low\": \"pigment.surface.low\", \"surface.high\": \"pigment.surface.high\", \"surface.chrome\": \"pigment.surface.chrome\", \"content.primary\": \"pigment.content.primary\", \"content.secondary\": \"pigment.content.secondary\", \"content.muted\": \"pigment.content.muted\", \"content.inverse\": \"pigment.content.inverse\", \"outline\": \"pigment.outlineBase\", \"outline.strong\": \"pigment.outlineStrong\", \"status.error\": \"pigment.status.error\", \"status.warning\": \"pigment.status.warning\", \"status.success\": \"pigment.status.success\", \"status.info\": \"pigment.status.info\", \"focus\": \"pigment.focus\", \"selection\": \"pigment.selection\"}}, \"opaqueColorAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"surface.chrome\": \"pigment.chromeOpaque\"}}, \"spatialAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"space.control.inline\": \"space.2\", \"space.control.block\": \"space.2\", \"space.container.inner\": \"space.4\", \"space.container.outer\": \"space.5\", \"space.group\": \"space.5\", \"space.section\": \"space.7\", \"space.page\": \"space.6\"}}, \"typographyAssignments\": {\"schemaVersion\": \"0.1.0\", \"roles\": {\"display\": {\"familyRole\": \"display\", \"fontSize\": \"type.size.7\", \"fontWeight\": \"type.weight.bold\", \"lineHeight\": \"type.line.display\", \"letterSpacing\": \"type.tracking.tight\", \"minimumTextScale\": 1}, \"titleLarge\": {\"familyRole\": \"display\", \"fontSize\": \"type.size.6\", \"fontWeight\": \"type.weight.semibold\", \"lineHeight\": \"type.line.heading\", \"letterSpacing\": \"type.tracking.tight\", \"minimumTextScale\": 1}, \"title\": {\"familyRole\": \"display\", \"fontSize\": \"type.size.5\", \"fontWeight\": \"type.weight.semibold\", \"lineHeight\": \"type.line.heading\", \"letterSpacing\": \"type.tracking.tight\", \"minimumTextScale\": 1}, \"heading\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size.4\", \"fontWeight\": \"type.weight.semibold\", \"lineHeight\": \"type.line.heading\", \"letterSpacing\": \"type.tracking.normal\", \"minimumTextScale\": 1}, \"bodyLarge\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size.3\", \"fontWeight\": \"type.weight.regular\", \"lineHeight\": \"type.line.body\", \"letterSpacing\": \"type.tracking.normal\", \"minimumTextScale\": 1}, \"body\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size.2\", \"fontWeight\": \"type.weight.regular\", \"lineHeight\": \"type.line.body\", \"letterSpacing\": \"type.tracking.normal\", \"minimumTextScale\": 1}, \"label\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size.1\", \"fontWeight\": \"type.weight.medium\", \"lineHeight\": \"type.line.label\", \"letterSpacing\": \"type.tracking.wide\", \"minimumTextScale\": 1}, \"caption\": {\"familyRole\": \"sans\", \"fontSize\": \"type.size.1\", \"fontWeight\": \"type.weight.regular\", \"lineHeight\": \"type.line.body\", \"letterSpacing\": \"type.tracking.normal\", \"minimumTextScale\": 1}, \"numeric\": {\"familyRole\": \"numeric\", \"fontSize\": \"type.size.2\", \"fontWeight\": \"type.weight.medium\", \"lineHeight\": \"type.line.label\", \"letterSpacing\": \"type.tracking.normal\", \"minimumTextScale\": 1}, \"code\": {\"familyRole\": \"monospace\", \"fontSize\": \"type.size.1\", \"fontWeight\": \"type.weight.regular\", \"lineHeight\": \"type.line.code\", \"letterSpacing\": \"type.tracking.normal\", \"minimumTextScale\": 1}}}}"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "foundation.json"
+  }
+]

@@ -1,0 +1,439 @@
+{
+  "schemaVersion": "0.1.0",
+  "representation": "opaque",
+  "materialRole": "surface.base",
+  "colorRole": "surface.base",
+  "materialFamily": "cast",
+  "form": {
+    "schemaVersion": "0.1.0",
+    "shape": "structural",
+    "elevation": "raised"
+  },
+  "states": {
+    "schemaVersion": "0.1.0",
+    "states": [
+      "rest"
+    ]
+  },
+  "geometry": {
+    "front": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 12
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 20,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 0
+          },
+          "to": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 12
+          },
+          "to": {
+            "x": 0,
+            "y": 12
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 12
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    "silhouette": {
+      "schemaVersion": "0.1.0",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 14
+      },
+      "segments": [
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 20,
+            "y": 0
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 0
+          },
+          "to": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 12
+          },
+          "to": {
+            "x": 20,
+            "y": 14
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 20,
+            "y": 14
+          },
+          "to": {
+            "x": 0,
+            "y": 14
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 14
+          },
+          "to": {
+            "x": 0,
+            "y": 12
+          }
+        },
+        {
+          "kind": "line",
+          "from": {
+            "x": 0,
+            "y": 12
+          },
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    "edgeInterior": {
+      "offset": {
+        "x": 1,
+        "y": 1
+      },
+      "contour": {
+        "schemaVersion": "0.1.0",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 18,
+          "height": 12
+        },
+        "segments": [
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 18,
+              "y": 0
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 18,
+              "y": 0
+            },
+            "to": {
+              "x": 18,
+              "y": 10
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 18,
+              "y": 10
+            },
+            "to": {
+              "x": 18,
+              "y": 12
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 18,
+              "y": 12
+            },
+            "to": {
+              "x": 0,
+              "y": 12
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 12
+            },
+            "to": {
+              "x": 0,
+              "y": 10
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 10
+            },
+            "to": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    "highlightOuter": {
+      "offset": {
+        "x": 1,
+        "y": 1
+      },
+      "contour": {
+        "schemaVersion": "0.1.0",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 18,
+          "height": 10
+        },
+        "segments": [
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 18,
+              "y": 0
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 18,
+              "y": 0
+            },
+            "to": {
+              "x": 18,
+              "y": 10
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 18,
+              "y": 10
+            },
+            "to": {
+              "x": 0,
+              "y": 10
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 10
+            },
+            "to": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    "content": {
+      "offset": {
+        "x": 2,
+        "y": 2
+      },
+      "contour": {
+        "schemaVersion": "0.1.0",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 16,
+          "height": 8
+        },
+        "segments": [
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 0
+            },
+            "to": {
+              "x": 16,
+              "y": 0
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 16,
+              "y": 0
+            },
+            "to": {
+              "x": 16,
+              "y": 8
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 16,
+              "y": 8
+            },
+            "to": {
+              "x": 0,
+              "y": 8
+            }
+          },
+          {
+            "kind": "line",
+            "from": {
+              "x": 0,
+              "y": 8
+            },
+            "to": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    }
+  },
+  "pigment": {
+    "schemaVersion": "0.1.0",
+    "materialFamily": "cast",
+    "profile": {
+      "sideShade": 0.1,
+      "highlightLift": 0.08
+    },
+    "body": {
+      "colorSpace": "srgb",
+      "components": [
+        1,
+        1,
+        1
+      ],
+      "alpha": 1
+    },
+    "side": {
+      "colorSpace": "srgb",
+      "components": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "alpha": 1
+    },
+    "highlight": {
+      "colorSpace": "srgb",
+      "components": [
+        1,
+        1,
+        1
+      ],
+      "alpha": 1
+    }
+  },
+  "lighting": {
+    "schemaVersion": "0.1.0",
+    "direction": {
+      "x": 0,
+      "y": -1
+    },
+    "sideOffset": {
+      "x": 0,
+      "y": 2
+    },
+    "edgeHighlightWeights": {
+      "top": 1,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "normalHighlightWeights": []
+  },
+  "edgeWidth": 1,
+  "highlightWidth": 1,
+  "edge": {
+    "schemaVersion": "0.1.0",
+    "colorRole": "outline",
+    "color": {
+      "colorSpace": "srgb",
+      "components": [
+        0,
+        0,
+        0
+      ],
+      "alpha": 1
+    },
+    "contrastRatio": 21,
+    "fallbackApplied": false
+  },
+  "foregroundRole": "content.primary",
+  "foreground": {
+    "colorSpace": "srgb",
+    "components": [
+      0,
+      0,
+      0
+    ],
+    "alpha": 1
+  },
+  "contentContrastRatio": 21,
+  "contentFallbackApplied": false
+}

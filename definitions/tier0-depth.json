@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "0.1.0",
+  "roles": {
+    "embedded": "depth.0", "base": "depth.0", "raised": "depth.1",
+    "floating": "depth.2", "overlay": "depth.3", "modal": "depth.4"
+  }
+}

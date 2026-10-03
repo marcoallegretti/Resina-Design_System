@@ -1,0 +1,7 @@
+[
+  { "path": "depth.0", "value": { "value": 0, "unit": "px" } },
+  { "path": "depth.1", "value": { "value": 2, "unit": "px" } },
+  { "path": "depth.2", "value": { "value": 4, "unit": "px" } },
+  { "path": "depth.3", "value": { "value": 6, "unit": "px" } },
+  { "path": "depth.4", "value": { "value": 8, "unit": "px" } }
+]

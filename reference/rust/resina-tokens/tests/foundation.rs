@@ -16,8 +16,15 @@ fn authored_foundation_scales_resolve_to_conformance_values() {
         "../../../../conformance/geometry/foundation-radius-vectors.json"
     ))
     .unwrap();
-    assert_eq!(tokens.len(), spatial.len() + type_sizes.len() + radii.len());
-    for vectors in [spatial, type_sizes, radii] {
+    let depths: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/elevation/foundation-depth-vectors.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        tokens.len(),
+        spatial.len() + type_sizes.len() + radii.len() + depths.len()
+    );
+    for vectors in [spatial, type_sizes, radii, depths] {
         let mut previous = None;
         for vector in vectors {
             let path = vector["path"].as_str().unwrap();

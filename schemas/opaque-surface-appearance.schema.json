@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-surface-appearance:0.1.0",
+  "title": "Resina Opaque Surface Appearance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "shapeAssignments", "depthAssignments", "pigmentProfiles", "bands", "keyLight"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "shapeAssignments": {"$ref": "urn:resina:schema:shape-fallback-assignments:0.1.0"},
+    "depthAssignments": {"$ref": "urn:resina:schema:elevation-depth-assignments:0.1.0"},
+    "pigmentProfiles": {"$ref": "urn:resina:schema:opaque-pigment-profiles:0.1.0"},
+    "keyLight": {"$ref": "urn:resina:schema:key-light:0.1.0"},
+    "bands": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cast", "frost", "elastomer", "gel"],
+      "properties": {
+        "cast": {"$ref": "#/$defs/bands"}, "frost": {"$ref": "#/$defs/bands"},
+        "elastomer": {"$ref": "#/$defs/bands"}, "gel": {"$ref": "#/$defs/bands"}
+      }
+    }
+  },
+  "$defs": {
+    "bands": {
+      "type": "object", "additionalProperties": false,
+      "required": ["edgeWidth", "highlightWidth"],
+      "properties": {
+        "edgeWidth": {"type": "number", "exclusiveMinimum": 0},
+        "highlightWidth": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

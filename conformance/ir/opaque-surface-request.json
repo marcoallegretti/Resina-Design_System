@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "0.1.0",
+  "theme": {
+    "schemaVersion": "0.1.0",
+    "themeSource": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"elastomer\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.base\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.base\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}",
+    "externalSources": {},
+    "environment": {
+      "schemaVersion": "0.2.0",
+      "geometry": {
+        "width": 480,
+        "height": 320,
+        "safeArea": {
+          "start": 16,
+          "end": 16,
+          "top": 8,
+          "bottom": 8
+        }
+      },
+      "scale": 1,
+      "textScale": 2,
+      "inputCapabilities": [],
+      "viewingProfile": "unknown",
+      "densityPreference": "standard",
+      "accessibilityPreferences": {
+        "reducedMotion": true,
+        "reducedTransparency": true,
+        "highContrast": true
+      },
+      "locale": "ar",
+      "layoutDirection": "rtl",
+      "rendererCapabilities": {
+        "gradients": false,
+        "translucentSurfaces": false,
+        "innerShadow": false,
+        "advancedShadow": false,
+        "sdfShapes": false,
+        "backdropEffect": false,
+        "backdropBlur": false,
+        "shapedBackdrop": false,
+        "dynamicLighting": false,
+        "deformation": false,
+        "masks": false,
+        "customShader": false,
+        "wideGamut": false,
+        "hdr": false
+      },
+      "qualityPolicy": "full"
+    }
+  },
+  "surface": {
+    "schemaVersion": "0.2.0",
+    "materialRole": "surface.base",
+    "colorRole": "surface.base",
+    "form": {
+      "schemaVersion": "0.1.0",
+      "shape": "structural",
+      "elevation": "raised"
+    },
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest"
+      ]
+    },
+    "treatmentStack": {
+      "schemaVersion": "0.1.0",
+      "treatments": [
+        "none"
+      ]
+    }
+  },
+  "size": {
+    "width": 20,
+    "height": 12
+  },
+  "appearance": {
+    "schemaVersion": "0.1.0",
+    "shapeAssignments": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.0"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.0"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.0"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.0",
+            "topEnd": "radius.0",
+            "bottomEnd": "radius.0",
+            "bottomStart": "radius.0"
+          }
+        }
+      }
+    },
+    "depthAssignments": {
+      "schemaVersion": "0.1.0",
+      "roles": {
+        "embedded": "depth.0",
+        "base": "depth.0",
+        "raised": "depth.1",
+        "floating": "depth.2",
+        "overlay": "depth.3",
+        "modal": "depth.4"
+      }
+    },
+    "pigmentProfiles": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "frost": {
+          "sideShade": 0.14,
+          "highlightLift": 0.18
+        },
+        "elastomer": {
+          "sideShade": 0.25,
+          "highlightLift": 0.14
+        },
+        "gel": {
+          "sideShade": 0.18,
+          "highlightLift": 0.2
+        }
+      }
+    },
+    "bands": {
+      "elastomer": {
+        "highlightWidth": 1,
+        "edgeWidth": 1
+      },
+      "frost": {
+        "highlightWidth": 1,
+        "edgeWidth": 1
+      },
+      "cast": {
+        "highlightWidth": 1,
+        "edgeWidth": 1
+      },
+      "gel": {
+        "highlightWidth": 1,
+        "edgeWidth": 1
+      }
+    },
+    "keyLight": {
+      "schemaVersion": "0.1.0",
+      "direction": {
+        "x": 0,
+        "y": -1
+      }
+    }
+  },
+  "foregroundRole": "content.primary",
+  "postTreatmentBackdrop": {
+    "colorSpace": "srgb",
+    "components": [
+      1,
+      1,
+      1
+    ],
+    "alpha": 1
+  },
+  "adjacentColor": {
+    "colorSpace": "srgb",
+    "components": [
+      1,
+      1,
+      1
+    ],
+    "alpha": 1
+  },
+  "minimumContentContrast": 4.5,
+  "minimumEdgeContrast": 3
+}

@@ -58,8 +58,13 @@ pub use surface_readability::{
     resolve_surface_readability_source,
 };
 mod opaque_pigment;
+mod opaque_surface;
 pub use opaque_pigment::{
     OpaquePigmentError, OpaquePigmentResult, resolve_opaque_pigment, resolve_opaque_pigment_source,
+};
+pub use opaque_surface::{
+    OpaqueSurfaceError, OpaqueSurfaceGeometry, OpaqueSurfaceInput, OpaqueSurfaceIr, PlacedContour,
+    resolve_opaque_surface, resolve_opaque_surface_source,
 };
 mod color_fallback;
 pub use color_fallback::{

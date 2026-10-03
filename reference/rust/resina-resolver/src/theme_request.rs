@@ -1,5 +1,5 @@
 use crate::{
-    HeadlessResolution, ThemeCompilationError, TypographyResolutionError,
+    CompiledTheme, HeadlessResolution, ThemeCompilationError, TypographyResolutionError,
     compile_theme_source_with_sources,
 };
 use resina_environment::EnvironmentSnapshot;
@@ -49,6 +49,15 @@ pub fn resolve_theme_request_source(
     source: &str,
 ) -> Result<HeadlessResolution, ThemeResolutionError> {
     let document = parse_token_document(source).map_err(ThemeResolutionError::Parse)?;
+    let (theme, environment) = compile_theme_request_document(document)?;
+    theme
+        .resolve(&environment)
+        .map_err(ThemeResolutionError::Resolve)
+}
+
+pub(crate) fn compile_theme_request_document(
+    document: serde_json::Value,
+) -> Result<(CompiledTheme, EnvironmentSnapshot), ThemeResolutionError> {
     if document
         .get("schemaVersion")
         .and_then(serde_json::Value::as_str)
@@ -61,9 +70,7 @@ pub fn resolve_theme_request_source(
     debug_assert_eq!(request.schema_version, "0.1.0");
     let theme = compile_theme_source_with_sources(&request.theme_source, &request.external_sources)
         .map_err(ThemeResolutionError::Compile)?;
-    theme
-        .resolve(&request.environment)
-        .map_err(ThemeResolutionError::Resolve)
+    Ok((theme, request.environment))
 }
 
 #[cfg(test)]

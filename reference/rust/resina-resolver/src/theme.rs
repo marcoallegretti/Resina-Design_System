@@ -195,6 +195,10 @@ fn compile_theme_with_sources(
 }
 
 impl CompiledTheme {
+    pub(crate) fn tokens(&self) -> &BTreeMap<String, ResolvedToken> {
+        &self.tokens
+    }
+
     pub fn resolve(
         &self,
         environment: &EnvironmentSnapshot,

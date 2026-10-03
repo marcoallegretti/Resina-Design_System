@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-surface-ir:0.1.0",
+  "title": "Resina Opaque Base-State Surface IR",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "representation", "materialRole", "colorRole", "materialFamily", "form", "states", "geometry", "pigment", "lighting", "edgeWidth", "highlightWidth", "edge", "foregroundRole", "foreground", "contentContrastRatio", "contentFallbackApplied"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"}, "representation": {"const": "opaque"},
+    "materialRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/materialRole"},
+    "colorRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+    "materialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
+    "form": {"$ref": "urn:resina:schema:surface-form:0.1.0"},
+    "states": {"const": {"schemaVersion": "0.1.0", "states": ["rest"]}},
+    "frostRepresentation": {"const": "opaqueDimensional"},
+    "geometry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["front", "silhouette", "edgeInterior", "highlightOuter", "content"],
+      "properties": {
+        "front": {"$ref": "#/$defs/filledContour"},
+        "silhouette": {"$ref": "#/$defs/filledContour"},
+        "edgeInterior": {"$ref": "#/$defs/placedContour"},
+        "highlightOuter": {"$ref": "#/$defs/placedContour"},
+        "content": {"$ref": "#/$defs/placedContour"}
+      }
+    },
+    "pigment": {"$ref": "urn:resina:schema:opaque-pigment-result:0.1.0"},
+    "lighting": {
+      "allOf": [
+        {"$ref": "urn:resina:schema:key-light-result:0.1.0"},
+        {"properties": {"normalHighlightWeights": {"maxItems": 0}}}
+      ]
+    },
+    "edgeWidth": {"type": "number", "exclusiveMinimum": 0},
+    "highlightWidth": {"type": "number", "minimum": 0},
+    "edge": {"$ref": "urn:resina:schema:edge-contrast-result:0.1.0"},
+    "foregroundRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+    "foreground": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "contentContrastRatio": {"type": "number", "minimum": 1, "maximum": 21},
+    "contentFallbackApplied": {"type": "boolean"}
+  },
+  "allOf": [
+    {"$ref": "urn:resina:schema:surface-binding-result:0.4.0#/allOf/0"},
+    {
+      "if": {"properties": {"materialFamily": {"const": "cast"}}},
+      "then": {"properties": {"pigment": {"properties": {"materialFamily": {"const": "cast"}}}}}
+    },
+    {
+      "if": {"properties": {"materialFamily": {"const": "frost"}}},
+      "then": {"properties": {"pigment": {"properties": {"materialFamily": {"const": "frost"}}}}}
+    },
+    {
+      "if": {"properties": {"materialFamily": {"const": "elastomer"}}},
+      "then": {"properties": {"pigment": {"properties": {"materialFamily": {"const": "elastomer"}}}}}
+    },
+    {
+      "if": {"properties": {"materialFamily": {"const": "gel"}}},
+      "then": {"properties": {"pigment": {"properties": {"materialFamily": {"const": "gel"}}}}}
+    },
+    {
+      "if": {"properties": {"materialFamily": {"const": "frost"}}},
+      "then": {"required": ["frostRepresentation"]},
+      "else": {"not": {"required": ["frostRepresentation"]}, "properties": {"contentFallbackApplied": {"const": false}}}
+    }
+  ],
+  "$defs": {
+    "filledContour": {
+      "allOf": [
+        {"$ref": "urn:resina:schema:extruded-contour-result:0.1.0"},
+        {"properties": {"bounds": {"type": "object"}, "segments": {"minItems": 1}}}
+      ]
+    },
+    "placedContour": {
+      "type": "object", "additionalProperties": false, "required": ["offset", "contour"],
+      "properties": {
+        "offset": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
+        "contour": {"$ref": "#/$defs/filledContour"}
+      }
+    }
+  }
+}
