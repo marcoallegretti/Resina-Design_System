@@ -3,8 +3,83 @@ use resina_model::{
     CornerRadius, LogicalCornerRadii, ShapeFallbackAssignments, ShapeFallbackProfile, ShapeIntent,
     SurfaceSize,
 };
+use resina_tokens::{DocumentError, parse_token_document, resolve_token_document};
 use resina_tokens::{ResolvedToken, validate_resolved_value};
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ShapeFallbackRequest {
+    schema_version: String,
+    tokens: Value,
+    assignments: ShapeFallbackAssignments,
+    shape: ShapeIntent,
+    size: SurfaceSize,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ShapeFallbackResult {
+    schema_version: &'static str,
+    radii: LogicalCornerRadii,
+}
+
+#[derive(Debug)]
+pub enum ShapeFallbackSourceError {
+    Parse(serde_json::Error),
+    Request(serde_json::Error),
+    UnsupportedVersion,
+    Tokens(Vec<DocumentError>),
+    Resolution(ShapeFallbackError),
+}
+
+impl fmt::Display for ShapeFallbackSourceError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Parse(error) => write!(formatter, "shape fallback request parse failed: {error}"),
+            Self::Request(error) => write!(formatter, "invalid shape fallback request: {error}"),
+            Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::Tokens(errors) => {
+                formatter.write_str("shape fallback token resolution failed")?;
+                for error in errors {
+                    write!(formatter, "\n  {error}")?;
+                }
+                Ok(())
+            }
+            Self::Resolution(error) => {
+                write!(formatter, "shape fallback resolution failed: {error}")
+            }
+        }
+    }
+}
+
+impl std::error::Error for ShapeFallbackSourceError {}
+
+pub fn resolve_shape_fallback_source(
+    source: &str,
+) -> Result<ShapeFallbackResult, ShapeFallbackSourceError> {
+    let document = parse_token_document(source).map_err(ShapeFallbackSourceError::Parse)?;
+    if document
+        .get("schemaVersion")
+        .and_then(Value::as_str)
+        .is_some_and(|version| version != "0.1.0")
+    {
+        return Err(ShapeFallbackSourceError::UnsupportedVersion);
+    }
+    let request: ShapeFallbackRequest =
+        serde_json::from_value(document).map_err(ShapeFallbackSourceError::Request)?;
+    debug_assert_eq!(request.schema_version, "0.1.0");
+    let tokens =
+        resolve_token_document(&request.tokens).map_err(ShapeFallbackSourceError::Tokens)?;
+    let radii = resolve_shape_fallback(request.shape, request.size, &request.assignments, &tokens)
+        .map_err(ShapeFallbackSourceError::Resolution)?;
+    Ok(ShapeFallbackResult {
+        schema_version: "0.1.0",
+        radii,
+    })
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ShapeFallbackError {
@@ -275,5 +350,56 @@ mod tests {
         assert_eq!(organic.top_start, CornerRadius { x: 24.0, y: 24.0 });
         assert_eq!(organic.top_end, CornerRadius { x: 16.0, y: 16.0 });
         assert_eq!(organic.bottom_end, CornerRadius { x: 32.0, y: 32.0 });
+    }
+
+    #[test]
+    fn source_boundary_rejects_invalid_input_without_geometry() {
+        let mut request = json!({
+            "schemaVersion": "0.1.0",
+            "tokens": serde_json::from_str::<Value>(include_str!("../../../../tokens/foundation.json")).unwrap(),
+            "assignments": serde_json::from_str::<Value>(include_str!("../../../../definitions/tier0-shapes.json")).unwrap(),
+            "shape": "structural",
+            "size": {"width": 200, "height": 80}
+        });
+        assert_eq!(
+            resolve_shape_fallback_source(&request.to_string())
+                .unwrap()
+                .radii
+                .top_start,
+            CornerRadius { x: 12.0, y: 12.0 }
+        );
+        assert!(matches!(
+            resolve_shape_fallback_source(r#"{"schemaVersion":"0.1.0","schemaVersion":"0.1.0"}"#),
+            Err(ShapeFallbackSourceError::Parse(_))
+        ));
+        request["schemaVersion"] = json!("0.2.0");
+        assert!(matches!(
+            resolve_shape_fallback_source(&request.to_string()),
+            Err(ShapeFallbackSourceError::UnsupportedVersion)
+        ));
+        request["schemaVersion"] = json!("0.1.0");
+        request["assignments"]["profiles"]["structural"] = json!({"kind": "capsule"});
+        assert!(matches!(
+            resolve_shape_fallback_source(&request.to_string()),
+            Err(ShapeFallbackSourceError::Request(_))
+        ));
+        request["assignments"]["profiles"]["structural"] =
+            json!({"kind": "uniform", "radius": "radius.missing"});
+        assert!(matches!(
+            resolve_shape_fallback_source(&request.to_string()),
+            Err(ShapeFallbackSourceError::Resolution(
+                ShapeFallbackError::MissingToken(_)
+            ))
+        ));
+        request["assignments"]["profiles"]["structural"] =
+            json!({"kind": "uniform", "radius": "radius.3"});
+        request["tokens"]["radius"]["3"]["$value"] = json!("{space.3}");
+        assert_eq!(
+            resolve_shape_fallback_source(&request.to_string())
+                .unwrap()
+                .radii
+                .top_start,
+            CornerRadius { x: 12.0, y: 12.0 }
+        );
     }
 }

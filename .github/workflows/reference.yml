@@ -43,6 +43,7 @@ jobs:
       - run: python tools/check_frost_legibility_backend.py -- target/debug/resina-frost-legibility${{ matrix.executableSuffix }} -
       - run: python tools/check_edge_contrast_backend.py -- target/debug/resina-edge-contrast${{ matrix.executableSuffix }} -
       - run: python tools/check_elevation_depth_backend.py -- target/debug/resina-elevation-depth${{ matrix.executableSuffix }} -
+      - run: python tools/check_shape_fallback_backend.py -- target/debug/resina-shape-fallback${{ matrix.executableSuffix }} -
       - run: python tools/check_frost_surface_readability_backend.py -- target/debug/resina-frost-surface-readability${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_indicator_backend.py -- target/debug/resina-focus-indicator${{ matrix.executableSuffix }} -
   schemas:

@@ -54,7 +54,10 @@ pub use headless::{
 mod scenario;
 pub use scenario::{SurfaceScenarioError, resolve_surface_scenario_source};
 mod shape_fallback;
-pub use shape_fallback::{ShapeFallbackError, resolve_shape_fallback};
+pub use shape_fallback::{
+    ShapeFallbackError, ShapeFallbackResult, ShapeFallbackSourceError, resolve_shape_fallback,
+    resolve_shape_fallback_source,
+};
 mod target;
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 mod theme;

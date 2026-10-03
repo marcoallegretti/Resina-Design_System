@@ -155,6 +155,8 @@ def main():
         "schemas/shape-fallback-assignments.schema.json",
         "schemas/shape-fallback-assignment-case.schema.json",
         "schemas/shape-fallback-case.schema.json",
+        "schemas/shape-fallback-request.schema.json",
+        "schemas/shape-fallback-result.schema.json",
         "schemas/resolver-module-case.schema.json",
         "schemas/resolver-module-request.schema.json",
         "schemas/spatial-assignments.schema.json",
@@ -610,6 +612,28 @@ def main():
         shape_names.add(name)
         check_case(shape_case_schema, f"shape fallback case: {name}", case, True)
         checked += 1
+    shape_request_schema = validator_for("schemas/shape-fallback-request.schema.json")
+    shape_result_schema = validator_for("schemas/shape-fallback-result.schema.json")
+    shape_request = {
+        "schemaVersion": "0.1.0",
+        "tokens": load_json(ROOT / "tokens/foundation.json"),
+        "assignments": load_json(ROOT / "definitions/tier0-shapes.json"),
+        "shape": "structural",
+        "size": {"width": 200, "height": 80},
+    }
+    for case in shape_cases:
+        request = {**shape_request, "shape": case["shape"], "size": case["size"]}
+        result = {"schemaVersion": "0.1.0", "radii": case["expected"]}
+        check_case(shape_request_schema, f"shape request: {case['name']}", request, True)
+        check_case(shape_result_schema, f"shape result: {case['name']}", result, True)
+        checked += 2
+    check_case(
+        shape_request_schema,
+        "shape request invalid name",
+        {**shape_request, "shape": "pill"},
+        False,
+    )
+    checked += 1
 
     elevation_assignments = validator_for("schemas/elevation-depth-assignments.schema.json")
     for vector in load_json(ROOT / "conformance/elevation/depth-resolution-vectors.json"):
