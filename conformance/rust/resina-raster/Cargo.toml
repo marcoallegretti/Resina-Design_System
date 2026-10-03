@@ -1,0 +1,14 @@
+[package]
+name = "resina-raster"
+version = "0.1.0"
+edition = "2024"
+description = "Static opaque surface raster evidence for Resina conformance"
+
+[dependencies]
+resina-color = { path = "../../../reference/rust/resina-color" }
+resina-model = { path = "../../../reference/rust/resina-model" }
+resina-resolver = { path = "../../../reference/rust/resina-resolver" }
+png = "0.18.1"
+
+[dev-dependencies]
+serde_json.workspace = true

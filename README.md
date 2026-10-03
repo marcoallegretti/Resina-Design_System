@@ -48,9 +48,11 @@ Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for a
 
 Run `cargo run -p resina-resolver --bin resina-opaque-surface -- <path>` for an [opaque base-state surface request](schemas/opaque-surface-request.schema.json). It resolves one complete static opaque surface appearance from a theme, actual environment and surroundings, and explicit appearance profile. `python tools/check_opaque_surface_backend.py -- <backend-command> -` checks its portable IR and diagnostic failures. The Rust `resolve_opaque_surface` API reuses a compiled theme across surfaces.
 
-The Rust `OpaqueSurfaceIr::sample_paint` API evaluates that surface's opaque paint color at one logical physical point, including directional highlights and tied corner normals. It provides headless reference evidence for the paint law; rasterization and renderer conformance remain separate work.
+The Rust `OpaqueSurfaceIr::sample_paint` API evaluates that surface's opaque paint color at one logical physical point, including directional highlights and tied corner normals. It provides headless reference evidence for the paint law. Static raster evidence uses the separate conformance tool; renderer conformance remains separate work.
 
 Run `cargo run -p resina-motion --bin resina-spring -- <path|->` for a [normalized scalar spring request](schemas/spring-request.schema.json). The [spring contract](spec/38-spring-reference.md) defines all damping regimes, conservative endpoint settling and immediate reduced motion. `python tools/check_spring_backend.py -- <backend-command> -` checks the public protocol. This foundation does not define calibrated material motion profiles or component animation.
+
+The [static surface raster tool](conformance/raster/README.md) consumes validated opaque surface IR and writes bounded RGBA8 sRGB PNG evidence. It has explicit viewport and sampling controls, linear-light color integration and straight coverage alpha. This conformance tool is separate from the headless resolver and does not implement components or certify a visual backend.
 
 Run `cargo run -p resina-resolver --bin resina-focus-indicator -- <path>` for a [focused surface indicator request](schemas/focus-indicator-request.schema.json), or use `-` for stdin. The Rust `resolve_focus_indicator` API accepts a headless resolution and surface intent directly. `python tools/check_focus_indicator_backend.py -- <backend-command> -` checks the bound state, authored indicator color, contrast, and Tier 0 geometry against a known surrounding color.
 
