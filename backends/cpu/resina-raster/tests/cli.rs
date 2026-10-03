@@ -1,3 +1,5 @@
+#![cfg(feature = "png")]
+
 use std::{
     io::Write,
     process::{Command, Output, Stdio},
@@ -20,12 +22,12 @@ fn invoke_program(program: &str, input: &[u8], options: &[&str]) -> Output {
     child.wait_with_output().unwrap()
 }
 
-const REQUEST: &[u8] = include_bytes!("../../../ir/opaque-surface-request.json");
+const REQUEST: &[u8] = include_bytes!("../../../../conformance/ir/opaque-surface-request.json");
 const OPTIONS: &[&str] = &["24", "18", "-2", "-2", "1", "2"];
 
 #[test]
 fn focus_cli_preserves_png_and_rejects_unfocused_intent() {
-    let input = include_bytes!("../../../ir/focus-ir-request.json");
+    let input = include_bytes!("../../../../conformance/ir/focus-ir-request.json");
     let program = env!("CARGO_BIN_EXE_resina-focus-raster");
     let options = ["32", "26", "-6", "-6", "1", "4"];
     let result = invoke_program(program, input, &options);
@@ -51,7 +53,7 @@ fn focus_cli_preserves_png_and_rejects_unfocused_intent() {
     let file = Command::new(program)
         .arg(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../ir/focus-ir-request.json"
+            "/../../../conformance/ir/focus-ir-request.json"
         ))
         .args(options)
         .output()
@@ -102,7 +104,7 @@ fn stdin_and_file_paths_produce_the_same_png() {
     let file = Command::new(env!("CARGO_BIN_EXE_resina-surface-raster"))
         .arg(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../ir/opaque-surface-request.json"
+            "/../../../conformance/ir/opaque-surface-request.json"
         ))
         .args(OPTIONS)
         .output()

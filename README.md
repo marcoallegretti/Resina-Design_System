@@ -52,7 +52,7 @@ The Rust `OpaqueSurfaceIr::sample_paint` API evaluates that surface's opaque pai
 
 Run `cargo run -p resina-motion --bin resina-spring -- <path|->` for a [normalized scalar spring request](schemas/spring-request.schema.json). The [spring contract](spec/38-spring-reference.md) defines all damping regimes, conservative endpoint settling and immediate reduced motion. `python tools/check_spring_backend.py -- <backend-command> -` checks the public protocol. This foundation does not define calibrated material motion profiles or component animation.
 
-The [static surface raster tool](conformance/raster/README.md) consumes validated opaque surface IR and writes bounded RGBA8 sRGB PNG evidence. It has explicit viewport and sampling controls, linear-light color integration and straight coverage alpha. This conformance tool is separate from the headless resolver and does not implement components or certify a visual backend.
+The [CPU paint backend](backends/cpu/resina-raster/README.md) consumes validated surface/focus IR and produces bounded straight RGBA8 sRGB pixels synchronously. Its optional PNG feature supplies the [static raster evidence commands](conformance/raster/README.md). It has explicit viewport and sampling controls and linear-light color integration. Rendering remains separate from the headless resolver; this backend does not implement components or certify a toolkit adapter.
 
 The [shared static material scenes](conformance/scenes/README.md) reference the authored Light/Dark themes, environment and appearance profile. Their generator prepares sixteen portable body/ring requests, and CI checks resolved bindings and complete capture bounds on Linux and Windows.
 

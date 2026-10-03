@@ -2,11 +2,14 @@ use resina_model::PhysicalVector;
 use resina_raster::{RasterError, Viewport, render_surface};
 use resina_resolver::{OpaqueSurfaceIr, resolve_opaque_surface_source};
 use serde_json::{Value, json};
+#[cfg(feature = "png")]
 use std::io::{self, Cursor, Write};
 
 fn request() -> Value {
-    let mut request: Value =
-        serde_json::from_str(include_str!("../../../ir/opaque-surface-request.json")).unwrap();
+    let mut request: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/opaque-surface-request.json"
+    ))
+    .unwrap();
     request["surface"]["form"]["elevation"] = json!("base");
     request["appearance"]["bands"]["cast"]["highlightWidth"] = json!(0);
     request
@@ -56,6 +59,15 @@ fn square_coverage_respects_origin_scale_and_row_order() {
             .iter()
             .all(|pixel| pixel[3] == 255)
     );
+}
+
+#[test]
+fn pixel_ownership_transfer_preserves_straight_rgba_and_allocation() {
+    let image = render_surface(&surface(), viewport(-0.5, 5.0, 1, 1, 1.0), 2).unwrap();
+    let pointer = image.rgba().as_ptr();
+    let rgba = image.into_rgba();
+    assert_eq!(rgba.as_ptr(), pointer);
+    assert_eq!(rgba, [0, 0, 0, 128]);
 }
 
 #[test]
@@ -157,6 +169,7 @@ fn all_material_families_preserve_circular_coverage() {
 }
 
 #[test]
+#[cfg(feature = "png")]
 fn png_preserves_pixels_dimensions_and_srgb_metadata() {
     let image = render_surface(&surface(), viewport(-0.5, 5.0, 2, 1, 1.0), 2).unwrap();
     let mut png = Vec::new();
@@ -174,7 +187,9 @@ fn png_preserves_pixels_dimensions_and_srgb_metadata() {
     assert_eq!(&decoded[..frame.buffer_size()], image.rgba());
 }
 
+#[cfg(feature = "png")]
 struct FailedWriter;
+#[cfg(feature = "png")]
 impl Write for FailedWriter {
     fn write(&mut self, _: &[u8]) -> io::Result<usize> {
         Err(io::Error::other("output unavailable"))
@@ -185,6 +200,7 @@ impl Write for FailedWriter {
 }
 
 #[test]
+#[cfg(feature = "png")]
 fn png_writer_failure_is_reported() {
     let image = render_surface(&surface(), viewport(2.0, 2.0, 1, 1, 1.0), 1).unwrap();
     assert!(

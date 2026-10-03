@@ -1,7 +1,7 @@
 use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb_to_linear_srgb};
 use resina_model::PhysicalVector;
 use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintError};
-use std::{collections::TryReserveError, fmt, io::Write};
+use std::{collections::TryReserveError, fmt};
 
 pub const MAX_PIXELS: u64 = 4_194_304;
 pub const MAX_SAMPLES: u64 = 16_777_216;
@@ -68,7 +68,12 @@ impl RasterImage {
         &self.rgba
     }
 
-    pub fn write_png(&self, writer: impl Write) -> Result<(), png::EncodingError> {
+    pub fn into_rgba(self) -> Vec<u8> {
+        self.rgba
+    }
+
+    #[cfg(feature = "png")]
+    pub fn write_png(&self, writer: impl std::io::Write) -> Result<(), png::EncodingError> {
         let mut encoder = png::Encoder::new(writer, self.width, self.height);
         encoder.set_color(png::ColorType::Rgba);
         encoder.set_depth(png::BitDepth::Eight);

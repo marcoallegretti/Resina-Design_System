@@ -2,13 +2,25 @@
 name = "resina-raster"
 version = "0.1.0"
 edition = "2024"
-description = "Static opaque surface raster evidence for Resina conformance"
+description = "Bounded CPU realization of Resina surface and focus paint"
+
+[features]
+default = ["png"]
+png = ["dep:png"]
 
 [dependencies]
 resina-color = { path = "../../../reference/rust/resina-color" }
 resina-model = { path = "../../../reference/rust/resina-model" }
 resina-resolver = { path = "../../../reference/rust/resina-resolver" }
-png = "0.18.1"
+png = { version = "0.18.1", optional = true }
 
 [dev-dependencies]
 serde_json.workspace = true
+
+[[bin]]
+name = "resina-surface-raster"
+required-features = ["png"]
+
+[[bin]]
+name = "resina-focus-raster"
+required-features = ["png"]

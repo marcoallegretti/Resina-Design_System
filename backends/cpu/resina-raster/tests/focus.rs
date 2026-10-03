@@ -2,7 +2,7 @@ use resina_model::PhysicalVector;
 use resina_raster::{RasterError, Viewport, render_focus};
 use resina_resolver::resolve_focus_ir_source;
 
-const REQUEST: &str = include_str!("../../../ir/focus-ir-request.json");
+const REQUEST: &str = include_str!("../../../../conformance/ir/focus-ir-request.json");
 
 #[test]
 fn ring_coverage_matches_distance_to_raised_rectangle() {

@@ -1,0 +1,22 @@
+# CPU paint realization (0.1.0)
+
+`resina-raster` synchronously realizes validated opaque surface and focus indicator IR as bounded row-major, straight RGBA8 sRGB pixels. It uses the canonical point paint evaluators and deterministic regular-grid integration. This is a rendering backend operation; the viewport, sampling grid and output buffer do not enter normative Resina IR.
+
+The library accepts an explicit `Viewport` and samples per axis. `render_surface` and `render_focus` return a complete `RasterImage` or a diagnostic error, with pixel/sample/allocation/precision limits checked before sampling. There is no file loading, image decoding, worker queue or platform integration in these operations. Consumers must choose the actual device scale, reserve complete paint bounds, prepare the image before exposing a state, and reevaluate it when IR or scale changes. Performance and the renderer's upload/compositing behavior still need measurement at that boundary.
+
+Use `width`, `height` and `rgba` to inspect an image. `into_rgba` transfers ownership of its existing pixel allocation to a consumer; it does not copy or premultiply the pixels. A toolkit adapter owns any subsequent buffer conversion, GPU upload or cache. The existing [sampling, color, limit and PNG evidence contract](../../../conformance/raster/README.md) describes the complete current operation.
+
+PNG support is an optional feature, enabled by default to preserve the conformance commands and `write_png` API. A production pixel consumer can disable it:
+
+```toml
+resina-raster = { path = "../cpu/resina-raster", default-features = false }
+```
+
+The two conformance binaries require the `png` feature. The default build retains their names, arguments and PNG output. No image-format dependency is needed by a build with default features disabled, and the reference color/model/resolver layers remain free of image-format and toolkit dependencies.
+
+```sh
+cargo test -p resina-raster --no-default-features --locked
+cargo test -p resina-raster --locked
+```
+
+Both configurations are tested in Linux and Windows CI. Coverage includes independent square/circle/focus geometry oracles, linear-light filtering, straight alpha, resource and precision failures, and ownership transfer without a copy; the PNG configuration additionally checks encoding metadata, transport and failures. This backend does not implement components, input, layout, animation or optical treatments, and does not replace GUIdo's role as the high-fidelity reference renderer.

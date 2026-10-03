@@ -1,6 +1,6 @@
 # Static opaque surface and focus raster evidence
 
-`resina-raster` is conformance tooling for the [opaque surface paint law](../../spec/36-opaque-surface-ir.md) and [focus ring paint law](../../spec/37-focus-indicator-ir.md), separate from headless resolution. It produces separate static surface and focus ring images from validated Rust IR. It does not define Resina intent, certify a renderer, or implement components, layout, content, interaction, motion or optical treatments. GUIdo remains the high-fidelity reference renderer; Quickshell, Slint and Web retain their independent roles.
+The [CPU backend library](../../backends/cpu/resina-raster/README.md) `resina-raster` realizes the [opaque surface paint law](../../spec/36-opaque-surface-ir.md) and [focus ring paint law](../../spec/37-focus-indicator-ir.md), separate from headless resolution. Its optional PNG feature supplies these conformance commands, producing separate static surface and focus ring images from validated Rust IR. The raw-pixel API can also serve a toolkit adapter without image encoding or asynchronous decoding. It does not define Resina intent, certify a renderer, or implement components, layout, content, interaction, motion or optical treatments. GUIdo remains the high-fidelity reference renderer; Quickshell, Slint and Web retain their independent roles.
 
 The [shared material scene catalog](../scenes/README.md) prepares self-contained requests from the authored themes, environment and appearance profile, with a common viewport for all sixteen static body/ring images.
 
@@ -14,9 +14,9 @@ This deterministic regular-grid integration is bounded reference evidence, not a
 
 ## Output and limits
 
-Output is row-major RGBA8 PNG with an sRGB chunk using perceptual intent. [PNG](https://www.w3.org/TR/png-3/) defines straight alpha and intensity-domain compositing; the [Resina conversion contract](../../spec/04-color-conversion.md) defines decoding and encoding. Encoding belongs to this tool, not normative IR. The PNG crate is isolated here; color, model and resolver layers acquire no image-format dependency.
+The conformance commands output row-major RGBA8 PNG with an sRGB chunk using perceptual intent. [PNG](https://www.w3.org/TR/png-3/) defines straight alpha and intensity-domain compositing; the [Resina conversion contract](../../spec/04-color-conversion.md) defines decoding and encoding. Encoding belongs to the optional `png` feature, not normative IR. Color, model and resolver layers acquire no image-format dependency; raw-pixel builds can disable the default feature to exclude PNG entirely.
 
-Maximum output is 4,194,304 pixels (16 MiB raw RGBA), with at most 16,777,216 paint samples per call. Reject excessive requests before allocation or sampling. Reject coordinate ranges when endpoints are nonfinite, the viewport has no representable extent, or sample spacing is at most four machine epsilons times the larger absolute axis endpoint. This conservative precision guard avoids collapsed sample positions. Allocation, paint, conversion and output failures are reported explicitly. These limits belong to this reference tool, not backend conformance requirements.
+Maximum output is 4,194,304 pixels (16 MiB raw RGBA), with at most 16,777,216 paint samples per call. Reject excessive requests before allocation or sampling. Reject coordinate ranges when endpoints are nonfinite, the viewport has no representable extent, or sample spacing is at most four machine epsilons times the larger absolute axis endpoint. This conservative precision guard avoids collapsed sample positions. Allocation, paint, conversion and output failures are reported explicitly. These limits belong to this CPU realization, not normative Resina IR or requirements on every backend.
 
 ## CLI
 
