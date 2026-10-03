@@ -1,0 +1,21 @@
+# SVG focus realization (0.1.0)
+
+`resina-svg` realizes the complete static [focus ring IR](../../../spec/37-focus-indicator-ir.md) as SVG for the Web backend. It consumes validated Rust IR; SVG syntax stays in this backend and does not enter Resina models, resolution or normative definitions. GUIdo remains the high-fidelity reference renderer. This operation does not implement a focused component, keyboard navigation, the component's accessibility semantics, surface body paint, typography or the Web Lab.
+
+`render_focus(&FocusIndicatorIr) -> Result<String, SvgError>` returns a standalone UTF-8 SVG document with a transparent hole and exterior. The one compound path contains both translated canonical boundaries, closed separately and filled with `evenodd`. Every canonical line maps to `L`; every clockwise, axis-aligned arc of at most a quarter turn maps to `A rx ry 0 0 1 x y`. Radial parameters are converted to physical endpoints before applying placement. No ordinary front-rectangle stroke, cubic approximation, mask, shader or raster image substitutes for the resolved geometry. This mapping follows [SVG path commands](https://www.w3.org/TR/SVG2/paths.html#PathDataEllipticalArcCommands) and [SVG fill rules](https://www.w3.org/TR/SVG2/painting.html#FillRuleProperty).
+
+The document's intrinsic dimensions equal the complete outer paint bounds. Its `viewBox` retains the physical negative origin and full directional side footprint. CSS may scale the SVG, preserving its aspect ratio. Consumers must place its viewBox origin at the corresponding physical surface origin; treating the image's top-left as the surface front's top-left would move the cue. Keep the actual surroundings used to resolve indicator contrast. SVG includes no guessed background or new pigment choice. Percentage sRGB channels preserve the resolved opaque color without premature 8-bit quantization. Browser coverage and channel quantization are rendering operations, not normative resolution.
+
+Browsers may store path coordinates in binary32. This backend admits only viewBox values, physical path endpoints and radii whose binary32 rounding differs by at most `1/1024` logical `px`, less than one two-thousandth of the two-unit navigation band. This is an explicit coordinate-quality budget, not a perceptual certificate or a new Resina limit. A verified Chromium probe at width `100000000` loses the far navigation band although the headless IR remains valid. Such unsupported geometry returns `SvgError::CoordinatePrecision` with the offending coordinate; the CLI emits no partial SVG. The numeric guard preserves the original f64 SVG text and does not round accepted geometry. Other backends may support a larger domain.
+
+The SVG is a decorative cue (`aria-hidden="true"`, `focusable="false"`). Its owning component must expose the actual role, label, state, focus order and keyboard behavior. The vector itself must not become a second focus or accessibility target. It has no event handlers, script, external assets, animation or runtime dependencies.
+
+```sh
+cargo run -p resina-svg --bin resina-focus-svg -- \
+  conformance/ir/focus-ir-request.json > focus.svg
+python tools/check_focus_svg_backend.py -- target/debug/resina-focus-svg -
+```
+
+The CLI takes one existing focus IR request, from a path or `-` for stdin, with a 1 MiB UTF-8 limit. It resolves before emitting a complete SVG. Success exits 0 with no diagnostic; invalid input exits 1 with a diagnostic and no document; incorrect argument count exits 2. `--help` exits 0. The Rust API reuses an already resolved IR.
+
+The [baseline SVG](../../../conformance/web/focus-baseline.svg) maps the hand-derived public focus geometry: a 20×14 square-corner silhouette, 2-unit gap and 2-unit navigation band. Its white pigment requires the black surroundings supplied by the baseline request. The checker verifies actual XML, translated line/arc commands, closure, hole, origin, size, pigment, decorative semantics, repeated output and public failure cases on Linux and Windows. Geometry uses the existing absolute or relative `1e-12` tolerance; color uses the same resolution tolerance. Passing these checks alone does not certify browser coverage, perceptual quality, components or accessibility.
