@@ -689,7 +689,7 @@ mod tests {
         let composed = resolve_resolver_module_source(resolver, "{}", &sources).unwrap();
         let direct = crate::resolve_token_source(foundation).unwrap();
         assert_eq!(composed, direct);
-        assert_eq!(composed.len(), 17);
+        assert_eq!(composed.len(), 24);
     }
 
     #[test]

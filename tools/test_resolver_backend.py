@@ -13,7 +13,7 @@ class ResolverBackendCheckerTests(unittest.TestCase):
         self.assertEqual(len({name for name, _, _ in loaded}), len(loaded))
         self.assertTrue(
             any(
-                name == "foundation: authored spatial and type scales" and len(expected) == 17
+                name == "foundation: authored spatial, type, and radius scales" and len(expected) == 24
                 for name, _, expected in loaded
             )
         )

@@ -12,8 +12,12 @@ fn authored_foundation_scales_resolve_to_conformance_values() {
         "../../../../conformance/typography/foundation-vectors.json"
     ))
     .unwrap();
-    assert_eq!(tokens.len(), spatial.len() + type_sizes.len());
-    for vectors in [spatial, type_sizes] {
+    let radii: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/geometry/foundation-radius-vectors.json"
+    ))
+    .unwrap();
+    assert_eq!(tokens.len(), spatial.len() + type_sizes.len() + radii.len());
+    for vectors in [spatial, type_sizes, radii] {
         let mut previous = None;
         for vector in vectors {
             let path = vector["path"].as_str().unwrap();

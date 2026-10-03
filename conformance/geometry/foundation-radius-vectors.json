@@ -1,0 +1,9 @@
+[
+  { "path": "radius.0", "value": { "value": 0, "unit": "px" } },
+  { "path": "radius.1", "value": { "value": 4, "unit": "px" } },
+  { "path": "radius.2", "value": { "value": 8, "unit": "px" } },
+  { "path": "radius.3", "value": { "value": 12, "unit": "px" } },
+  { "path": "radius.4", "value": { "value": 16, "unit": "px" } },
+  { "path": "radius.5", "value": { "value": 24, "unit": "px" } },
+  { "path": "radius.6", "value": { "value": 32, "unit": "px" } }
+]

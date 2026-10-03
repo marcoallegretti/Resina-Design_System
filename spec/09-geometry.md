@@ -4,7 +4,7 @@ The canonical shape intents are `structural`, `soft`, `rounded`, `capsule`, and 
 
 A surface form supplies one shape and one [semantic elevation](08-elevation.md) under `schemaVersion` `0.1.0`. The [machine-readable schema](../schemas/surface-form.schema.json) requires all three fields and rejects unknown fields or values. Shape and elevation are independent at this generic layer, so all pairs are representable. Component contracts may impose narrower choices when justified by their anatomy or interaction. The [form vectors](../conformance/geometry/surface-form-vectors.json) cover every shape and elevation name and invalid input.
 
-The blueprint's shape hierarchy favors calmer large structural surfaces and softer small interactive controls without requiring universal pill shapes. Exact curvature, spatial dimensions, and visual realization need calibrated tokens and conformance cases before becoming normative. The surface form is an input to resolution, not a complete Resina IR or layout instruction.
+The blueprint's shape hierarchy favors calmer large structural surfaces and softer small interactive controls without requiring universal pill shapes. The [reference foundation](../tokens/foundation.json) includes an authored raw radius scale, covered by [foundation vectors](../conformance/geometry/foundation-radius-vectors.json). Its indices are not shape intents. Exact semantic curvature and visual realization need shape assignments and conformance cases before becoming normative. The surface form is an input to resolution, not a complete Resina IR or layout instruction.
 
 ## Bounded corner radii
 
