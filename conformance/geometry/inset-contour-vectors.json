@@ -1,0 +1,450 @@
+[
+  {
+    "name": "uniform edge contour",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 2,
+      "size": {"width": 96, "height": 36},
+      "radii": {
+        "topStart": {"x": 6, "y": 6},
+        "topEnd": {"x": 6, "y": 6},
+        "bottomEnd": {"x": 6, "y": 6},
+        "bottomStart": {"x": 6, "y": 6}
+      }
+    }
+  },
+  {
+    "name": "zero inset preserves bounded contour",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 0,
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      }
+    }
+  },
+  {
+    "name": "normalize outer before subtracting inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 20, "height": 10},
+      "radii": {
+        "topStart": {"x": 20, "y": 20},
+        "topEnd": {"x": 20, "y": 20},
+        "bottomEnd": {"x": 20, "y": 20},
+        "bottomStart": {"x": 20, "y": 20}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 5, "y": 5},
+        "topEnd": {"x": 5, "y": 5},
+        "bottomEnd": {"x": 5, "y": 5},
+        "bottomStart": {"x": 5, "y": 5}
+      },
+      "inset": 2,
+      "size": {"width": 16, "height": 6},
+      "radii": {
+        "topStart": {"x": 3, "y": 3},
+        "topEnd": {"x": 3, "y": 3},
+        "bottomEnd": {"x": 3, "y": 3},
+        "bottomStart": {"x": 3, "y": 3}
+      }
+    }
+  },
+  {
+    "name": "clamp negative inner radii",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 1, "y": 1},
+        "topEnd": {"x": 1, "y": 1},
+        "bottomEnd": {"x": 1, "y": 1},
+        "bottomStart": {"x": 1, "y": 1}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 1, "y": 1},
+        "topEnd": {"x": 1, "y": 1},
+        "bottomEnd": {"x": 1, "y": 1},
+        "bottomStart": {"x": 1, "y": 1}
+      },
+      "inset": 2,
+      "size": {"width": 96, "height": 36},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      }
+    }
+  },
+  {
+    "name": "collapsed inner contour",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 10, "height": 10},
+      "radii": {
+        "topStart": {"x": 5, "y": 5},
+        "topEnd": {"x": 5, "y": 5},
+        "bottomEnd": {"x": 5, "y": 5},
+        "bottomStart": {"x": 5, "y": 5}
+      },
+      "inset": 5
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 5, "y": 5},
+        "topEnd": {"x": 5, "y": 5},
+        "bottomEnd": {"x": 5, "y": 5},
+        "bottomStart": {"x": 5, "y": 5}
+      },
+      "inset": 5,
+      "size": {"width": 0, "height": 0},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      }
+    }
+  },
+  {
+    "name": "zero surface",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 0, "height": 0},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      },
+      "inset": 0,
+      "size": {"width": 0, "height": 0},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      }
+    }
+  },
+  {
+    "name": "asymmetric inner corners need normalization",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 20, "height": 20},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 20, "y": 4},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 20, "y": 4},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      },
+      "inset": 2,
+      "size": {"width": 16, "height": 16},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 16, "y": 1.7777777777777777},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      }
+    }
+  },
+  {
+    "name": "elliptical contours",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 12, "y": 6},
+        "topEnd": {"x": 12, "y": 6},
+        "bottomEnd": {"x": 12, "y": 6},
+        "bottomStart": {"x": 12, "y": 6}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 12, "y": 6},
+        "topEnd": {"x": 12, "y": 6},
+        "bottomEnd": {"x": 12, "y": 6},
+        "bottomStart": {"x": 12, "y": 6}
+      },
+      "inset": 2,
+      "size": {"width": 96, "height": 36},
+      "radii": {
+        "topStart": {"x": 10, "y": 4},
+        "topEnd": {"x": 10, "y": 4},
+        "bottomEnd": {"x": 10, "y": 4},
+        "bottomStart": {"x": 10, "y": 4}
+      }
+    }
+  },
+  {
+    "name": "oversized inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 21
+    },
+    "requestSchemaValid": true,
+    "errorContains": "inset exceeds half"
+  },
+  {
+    "name": "negative inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": -1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "inset must be finite"
+  },
+  {
+    "name": "negative width",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": -1, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "width must be finite"
+  },
+  {
+    "name": "negative radius",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": -1, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "topStart.x must be finite"
+  },
+  {
+    "name": "unsupported version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "unknown member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 2,
+      "backend": "qt"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "missing inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown nested member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 100, "height": 40, "depth": 1},
+      "radii": {
+        "topStart": {"x": 8, "y": 8},
+        "topEnd": {"x": 8, "y": 8},
+        "bottomEnd": {"x": 8, "y": 8},
+        "bottomStart": {"x": 8, "y": 8}
+      },
+      "inset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "maximum finite bounds",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 1.7976931348623157e+308, "height": 1.7976931348623157e+308},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      },
+      "inset": 4.4942328371557893e+307
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      },
+      "inset": 4.4942328371557893e+307,
+      "size": {"width": 8.988465674311579e+307, "height": 8.988465674311579e+307},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      }
+    }
+  },
+  {
+    "name": "minimum subnormal zero inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {"width": 5e-324, "height": 5e-324},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      },
+      "inset": 0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "outerRadii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      },
+      "inset": 0,
+      "size": {"width": 5e-324, "height": 5e-324},
+      "radii": {
+        "topStart": {"x": 0, "y": 0},
+        "topEnd": {"x": 0, "y": 0},
+        "bottomEnd": {"x": 0, "y": 0},
+        "bottomStart": {"x": 0, "y": 0}
+      }
+    }
+  }
+]

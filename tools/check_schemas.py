@@ -159,6 +159,9 @@ def main():
         "schemas/opaque-pigment-request.schema.json",
         "schemas/opaque-pigment-result.schema.json",
         "schemas/opaque-pigment-case.schema.json",
+        "schemas/inset-contour-request.schema.json",
+        "schemas/inset-contour-result.schema.json",
+        "schemas/inset-contour-case.schema.json",
         "schemas/shape-fallback-assignments.schema.json",
         "schemas/shape-fallback-assignment-case.schema.json",
         "schemas/shape-fallback-case.schema.json",
@@ -203,6 +206,16 @@ def main():
         validator_for(path.relative_to(ROOT))
 
     pigment_profile_schema = validator_for("schemas/opaque-pigment-profiles.schema.json")
+    contour_cases = load_json(ROOT / "conformance/geometry/inset-contour-vectors.json")
+    contour_case_schema = validator_for("schemas/inset-contour-case.schema.json")
+    contour_request_schema = validator_for("schemas/inset-contour-request.schema.json")
+    contour_names = set()
+    for case in contour_cases:
+        check_case(contour_case_schema, case["name"], case, True)
+        if case["name"] in contour_names:
+            raise ValueError(f"duplicate inset contour case: {case['name']}")
+        contour_names.add(case["name"])
+        check_case(contour_request_schema, case["name"], case["request"], case["requestSchemaValid"])
     check_case(
         pigment_profile_schema,
         "reference opaque pigment profiles",
@@ -627,6 +640,7 @@ def main():
         + len(surface_readability_cases)
         + len(pigment_profile_vectors)
         + len(pigment_cases)
+        + len(contour_cases)
         + 1
         + len(focus_cases)
         + 6

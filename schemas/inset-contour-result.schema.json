@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:inset-contour-result:0.1.0",
+  "title": "Resina Inset Contour Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "outerRadii",
+    "inset",
+    "size",
+    "radii"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "outerRadii": {
+      "$ref": "urn:resina:schema:logical-corner-radii:0.1.0"
+    },
+    "inset": {
+      "type": "number",
+      "minimum": 0
+    },
+    "size": {
+      "$ref": "urn:resina:schema:surface-size:0.1.0"
+    },
+    "radii": {
+      "$ref": "urn:resina:schema:logical-corner-radii:0.1.0"
+    }
+  }
+}
