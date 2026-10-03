@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:focus-traversal-case:0.1.0",
+  "title": "Resina Sequential Focus Traversal Conformance Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "request", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "request": {},
+    "requestSchemaValid": {"type": "boolean"},
+    "expected": {"$ref": "urn:resina:schema:focus-traversal-result:0.1.0"},
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [{"required": ["expected"]}, {"required": ["errorContains"]}]
+}

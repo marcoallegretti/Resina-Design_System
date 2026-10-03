@@ -1,0 +1,723 @@
+[
+  {
+    "name": "forward scope entry",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "first"
+    }
+  },
+  {
+    "name": "backward scope entry",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": "backward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "last"
+    }
+  },
+  {
+    "name": "forward skips ineligible",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "first",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "last"
+    }
+  },
+  {
+    "name": "backward skips ineligible",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "last",
+      "direction": "backward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "first"
+    }
+  },
+  {
+    "name": "forward boundary",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "last",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": null
+    }
+  },
+  {
+    "name": "backward boundary",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "first",
+      "direction": "backward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": null
+    }
+  },
+  {
+    "name": "forward explicit wrapping",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "last",
+      "direction": "forward",
+      "wrap": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "first"
+    }
+  },
+  {
+    "name": "backward explicit wrapping",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "first",
+      "direction": "backward",
+      "wrap": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "last"
+    }
+  },
+  {
+    "name": "ineligible current anchors forward",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "middle",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "last"
+    }
+  },
+  {
+    "name": "ineligible current anchors backward",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "middle",
+      "direction": "backward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "first"
+    }
+  },
+  {
+    "name": "empty scope",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": null
+    }
+  },
+  {
+    "name": "all ineligible",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": false
+        }
+      ],
+      "current": "first",
+      "direction": "forward",
+      "wrap": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": null
+    }
+  },
+  {
+    "name": "sole eligible without wrapping",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        }
+      ],
+      "current": "first",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": null
+    }
+  },
+  {
+    "name": "sole eligible with wrapping",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        }
+      ],
+      "current": "first",
+      "direction": "forward",
+      "wrap": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "first"
+    }
+  },
+  {
+    "name": "supplied order retained",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "z",
+          "eligible": true
+        },
+        {
+          "id": "a",
+          "eligible": true
+        }
+      ],
+      "current": "z",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "a"
+    }
+  },
+  {
+    "name": "localized identifiers",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "احفظ",
+          "eligible": true
+        },
+        {
+          "id": "通知",
+          "eligible": true
+        }
+      ],
+      "current": "احفظ",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "通知"
+    }
+  },
+  {
+    "name": "distinct unicode sequences",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "é",
+          "eligible": true
+        },
+        {
+          "id": "é",
+          "eligible": true
+        }
+      ],
+      "current": "é",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "é"
+    }
+  },
+  {
+    "name": "whitespace identifiers remain opaque",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": " first ",
+          "eligible": true
+        },
+        {
+          "id": "first",
+          "eligible": true
+        }
+      ],
+      "current": " first ",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "first"
+    }
+  },
+  {
+    "name": "case sensitive identifiers",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "A",
+          "eligible": true
+        },
+        {
+          "id": "a",
+          "eligible": true
+        }
+      ],
+      "current": "A",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "targetId": "a"
+    }
+  },
+  {
+    "name": "unknown current",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "removed",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "is not in targets"
+  },
+  {
+    "name": "duplicate ineligible identifiers",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "same",
+          "eligible": false
+        },
+        {
+          "id": "same",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "duplicate focus target"
+  },
+  {
+    "name": "empty target identifier",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must not be empty"
+  },
+  {
+    "name": "unsupported version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "unsupported direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": "left",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "invalid current type",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": 1,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "current must be"
+  },
+  {
+    "name": "empty current identifier",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": "",
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "is not in targets"
+  },
+  {
+    "name": "invalid eligibility type",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": 1
+        }
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "boolean"
+  },
+  {
+    "name": "unknown target field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true,
+          "disabled": false
+        }
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "missing current",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing wrap",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": "forward"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:focus-traversal-request:0.1.0",
+  "title": "Resina Sequential Focus Traversal Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "targets", "current", "direction", "wrap"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "eligible"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "eligible": {"type": "boolean"}
+        }
+      }
+    },
+    "current": {"type": ["string", "null"], "minLength": 1},
+    "direction": {"enum": ["forward", "backward"]},
+    "wrap": {"type": "boolean"}
+  }
+}

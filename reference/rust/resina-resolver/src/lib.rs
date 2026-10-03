@@ -98,7 +98,12 @@ pub use shape_fallback::{
     ShapeFallbackError, ShapeFallbackResult, ShapeFallbackSourceError, resolve_shape_fallback,
     resolve_shape_fallback_source,
 };
+mod focus_traversal;
 mod hit_region;
+pub use focus_traversal::{
+    FocusDirection, FocusTarget, FocusTraversalError, FocusTraversalInput, FocusTraversalResult,
+    resolve_focus_traversal, resolve_focus_traversal_source,
+};
 mod target;
 pub use hit_region::{
     HitRegionError, HitRegionInput, HitRegionIr, resolve_hit_region, resolve_hit_region_source,

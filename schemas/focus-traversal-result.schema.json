@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:focus-traversal-result:0.1.0",
+  "title": "Resina Sequential Focus Traversal Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "targetId"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "targetId": {"type": ["string", "null"], "minLength": 1}
+  }
+}
