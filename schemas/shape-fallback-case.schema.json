@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:shape-fallback-case:0.1.0",
+  "title": "Resina Tier 0 Shape Fallback Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "shape", "size", "expected"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "shape": {"enum": ["structural", "soft", "rounded", "capsule", "organic"]},
+    "size": {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+    "expected": {"$ref": "urn:resina:schema:logical-corner-radii:0.1.0"}
+  }
+}

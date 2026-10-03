@@ -10,6 +10,8 @@ mod frost;
 pub use frost::FrostPigment;
 mod spatial;
 pub use spatial::{SpatialAssignments, SpatialRole};
+mod shape_fallback;
+pub use shape_fallback::{CornerTokenPaths, ShapeFallbackAssignments, ShapeFallbackProfile};
 mod surface;
 pub use surface::SurfaceIntent;
 mod typography;

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "0.1.0",
+  "profiles": {
+    "structural": {"kind": "uniform", "radius": "radius.3"},
+    "soft": {"kind": "uniform", "radius": "radius.4"},
+    "rounded": {"kind": "uniform", "radius": "radius.5"},
+    "capsule": {"kind": "capsule"},
+    "organic": {
+      "kind": "corners",
+      "radii": {
+        "topStart": "radius.6",
+        "topEnd": "radius.4",
+        "bottomEnd": "radius.6",
+        "bottomStart": "radius.4"
+      }
+    }
+  }
+}

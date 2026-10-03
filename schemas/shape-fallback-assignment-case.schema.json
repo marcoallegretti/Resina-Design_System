@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:shape-fallback-assignment-case:0.1.0",
+  "title": "Resina Tier 0 Shape Assignment Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "document"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "document": {"type": "object"},
+    "expected": {"const": "valid"},
+    "error": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {
+      "required": ["expected"],
+      "not": {"required": ["error"]},
+      "properties": {
+        "document": {"$ref": "urn:resina:schema:shape-fallback-assignments:0.1.0"}
+      }
+    },
+    {
+      "required": ["error"],
+      "not": {"required": ["expected"]},
+      "properties": {
+        "document": {"not": {"$ref": "urn:resina:schema:shape-fallback-assignments:0.1.0"}}
+      }
+    }
+  ]
+}

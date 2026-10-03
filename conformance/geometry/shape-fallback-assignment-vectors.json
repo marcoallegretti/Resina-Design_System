@@ -1,0 +1,130 @@
+[
+  {
+    "name": "custom token paths",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "capsule must be size derived",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.4"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.6",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "capsule must use the capsule profile"
+  },
+  {
+    "name": "organic needs logical corners",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.4"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "uniform",
+          "radius": "radius.6"
+        }
+      }
+    },
+    "error": "organic must use explicit logical corners"
+  },
+  {
+    "name": "empty radius token path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": ""
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.6",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "shape token path must not be empty"
+  }
+]

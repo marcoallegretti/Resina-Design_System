@@ -152,6 +152,9 @@ def main():
         "schemas/logical-corner-radii.schema.json",
         "schemas/opaque-color-assignments.schema.json",
         "schemas/opaque-srgb-fallback.schema.json",
+        "schemas/shape-fallback-assignments.schema.json",
+        "schemas/shape-fallback-assignment-case.schema.json",
+        "schemas/shape-fallback-case.schema.json",
         "schemas/resolver-module-case.schema.json",
         "schemas/resolver-module-request.schema.json",
         "schemas/spatial-assignments.schema.json",
@@ -569,6 +572,43 @@ def main():
             check_case(
                 corner_case_schema, f"corner radius mislabeled invalid case: {name}", swapped, False
             )
+        checked += 1
+
+    shape_assignments_schema = validator_for("schemas/shape-fallback-assignments.schema.json")
+    shape_assignment_case_schema = validator_for("schemas/shape-fallback-assignment-case.schema.json")
+    shape_case_schema = validator_for("schemas/shape-fallback-case.schema.json")
+    check_case(
+        shape_assignments_schema,
+        "authored Tier 0 shape fallbacks",
+        load_json(ROOT / "definitions/tier0-shapes.json"),
+        True,
+    )
+    checked += 1
+    assignment_cases = load_json(
+        ROOT / "conformance/geometry/shape-fallback-assignment-vectors.json"
+    )
+    assignment_names = set()
+    for case in assignment_cases:
+        name = case["name"]
+        if name in assignment_names:
+            raise ValueError(f"duplicate shape fallback assignment case: {name}")
+        assignment_names.add(name)
+        check_case(shape_assignment_case_schema, f"shape assignment case: {name}", case, True)
+        check_case(
+            shape_assignments_schema,
+            f"shape assignment document: {name}",
+            case["document"],
+            "expected" in case,
+        )
+        checked += 1
+    shape_cases = load_json(ROOT / "conformance/geometry/shape-fallback-vectors.json")
+    shape_names = set()
+    for case in shape_cases:
+        name = case["name"]
+        if name in shape_names:
+            raise ValueError(f"duplicate shape fallback case: {name}")
+        shape_names.add(name)
+        check_case(shape_case_schema, f"shape fallback case: {name}", case, True)
         checked += 1
 
     elevation_assignments = validator_for("schemas/elevation-depth-assignments.schema.json")

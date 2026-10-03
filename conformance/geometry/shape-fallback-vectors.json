@@ -1,0 +1,90 @@
+[
+  {
+    "name": "structural surface",
+    "shape": "structural",
+    "size": {"width": 200, "height": 80},
+    "expected": {
+      "topStart": {"x": 12, "y": 12},
+      "topEnd": {"x": 12, "y": 12},
+      "bottomEnd": {"x": 12, "y": 12},
+      "bottomStart": {"x": 12, "y": 12}
+    }
+  },
+  {
+    "name": "soft surface",
+    "shape": "soft",
+    "size": {"width": 200, "height": 80},
+    "expected": {
+      "topStart": {"x": 16, "y": 16},
+      "topEnd": {"x": 16, "y": 16},
+      "bottomEnd": {"x": 16, "y": 16},
+      "bottomStart": {"x": 16, "y": 16}
+    }
+  },
+  {
+    "name": "rounded surface",
+    "shape": "rounded",
+    "size": {"width": 200, "height": 80},
+    "expected": {
+      "topStart": {"x": 24, "y": 24},
+      "topEnd": {"x": 24, "y": 24},
+      "bottomEnd": {"x": 24, "y": 24},
+      "bottomStart": {"x": 24, "y": 24}
+    }
+  },
+  {
+    "name": "capsule follows short side",
+    "shape": "capsule",
+    "size": {"width": 200, "height": 80},
+    "expected": {
+      "topStart": {"x": 40, "y": 40},
+      "topEnd": {"x": 40, "y": 40},
+      "bottomEnd": {"x": 40, "y": 40},
+      "bottomStart": {"x": 40, "y": 40}
+    }
+  },
+  {
+    "name": "organic logical alternation",
+    "shape": "organic",
+    "size": {"width": 200, "height": 80},
+    "expected": {
+      "topStart": {"x": 32, "y": 32},
+      "topEnd": {"x": 16, "y": 16},
+      "bottomEnd": {"x": 32, "y": 32},
+      "bottomStart": {"x": 16, "y": 16}
+    }
+  },
+  {
+    "name": "small soft surface normalizes",
+    "shape": "soft",
+    "size": {"width": 48, "height": 24},
+    "expected": {
+      "topStart": {"x": 12, "y": 12},
+      "topEnd": {"x": 12, "y": 12},
+      "bottomEnd": {"x": 12, "y": 12},
+      "bottomStart": {"x": 12, "y": 12}
+    }
+  },
+  {
+    "name": "small organic surface normalizes",
+    "shape": "organic",
+    "size": {"width": 48, "height": 24},
+    "expected": {
+      "topStart": {"x": 16, "y": 16},
+      "topEnd": {"x": 8, "y": 8},
+      "bottomEnd": {"x": 16, "y": 16},
+      "bottomStart": {"x": 8, "y": 8}
+    }
+  },
+  {
+    "name": "zero-sized capsule",
+    "shape": "capsule",
+    "size": {"width": 0, "height": 0},
+    "expected": {
+      "topStart": {"x": 0, "y": 0},
+      "topEnd": {"x": 0, "y": 0},
+      "bottomEnd": {"x": 0, "y": 0},
+      "bottomStart": {"x": 0, "y": 0}
+    }
+  }
+]
