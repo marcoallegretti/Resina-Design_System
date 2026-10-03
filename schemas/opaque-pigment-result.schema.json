@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-pigment-result:0.1.0",
+  "title": "Resina Opaque Material Pigment Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "materialFamily", "profile", "body", "side", "highlight"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "materialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
+    "profile": {"$ref": "urn:resina:schema:opaque-pigment-profiles:0.1.0#/$defs/profile"},
+    "body": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "side": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "highlight": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"}
+  }
+}

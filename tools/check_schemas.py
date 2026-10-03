@@ -155,6 +155,10 @@ def main():
         "schemas/logical-corner-radii.schema.json",
         "schemas/opaque-color-assignments.schema.json",
         "schemas/opaque-srgb-fallback.schema.json",
+        "schemas/opaque-pigment-profiles.schema.json",
+        "schemas/opaque-pigment-request.schema.json",
+        "schemas/opaque-pigment-result.schema.json",
+        "schemas/opaque-pigment-case.schema.json",
         "schemas/shape-fallback-assignments.schema.json",
         "schemas/shape-fallback-assignment-case.schema.json",
         "schemas/shape-fallback-case.schema.json",
@@ -197,6 +201,39 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    pigment_profile_schema = validator_for("schemas/opaque-pigment-profiles.schema.json")
+    check_case(
+        pigment_profile_schema,
+        "reference opaque pigment profiles",
+        load_json(ROOT / "definitions/tier0-pigment.json"),
+        True,
+    )
+    pigment_profile_vectors = load_json(
+        ROOT / "conformance/materials/opaque-pigment-profile-vectors.json"
+    )
+    pigment_profile_names = set()
+    for vector in pigment_profile_vectors:
+        if (
+            set(vector) != {"name", "document", "valid"}
+            or not isinstance(vector["name"], str)
+            or not vector["name"]
+            or not isinstance(vector["valid"], bool)
+            or vector["name"] in pigment_profile_names
+        ):
+            raise ValueError("invalid or duplicate opaque pigment profile vector")
+        pigment_profile_names.add(vector["name"])
+        check_case(pigment_profile_schema, vector["name"], vector["document"], vector["valid"])
+    pigment_cases = load_json(ROOT / "conformance/materials/opaque-pigment-vectors.json")
+    pigment_case_schema = validator_for("schemas/opaque-pigment-case.schema.json")
+    pigment_request_schema = validator_for("schemas/opaque-pigment-request.schema.json")
+    pigment_names = set()
+    for case in pigment_cases:
+        if case["name"] in pigment_names:
+            raise ValueError(f"duplicate opaque pigment case: {case['name']}")
+        pigment_names.add(case["name"])
+        check_case(pigment_case_schema, case["name"], case, True)
+        check_case(pigment_request_schema, case["name"], case["request"], case["requestSchemaValid"])
 
     resolver_case_schema = validator_for("schemas/resolver-module-case.schema.json")
     resolver_cases = load_json(ROOT / "conformance/tokens/resolver-module-vectors.json")
@@ -588,6 +625,9 @@ def main():
         + len(edge_cases)
         + len(readability_cases)
         + len(surface_readability_cases)
+        + len(pigment_profile_vectors)
+        + len(pigment_cases)
+        + 1
         + len(focus_cases)
         + 6
         + 8

@@ -43,6 +43,10 @@ pub use surface_readability::{
     SurfaceReadabilityError, SurfaceReadabilityResult, resolve_surface_readability,
     resolve_surface_readability_source,
 };
+mod opaque_pigment;
+pub use opaque_pigment::{
+    OpaquePigmentError, OpaquePigmentResult, resolve_opaque_pigment, resolve_opaque_pigment_source,
+};
 mod color_fallback;
 pub use color_fallback::{
     ColorRoleFallbackError, ColorRoleFallbackErrorKind, resolve_semantic_color_fallbacks,

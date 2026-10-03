@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "0.1.0",
+  "profiles": {
+    "cast": {"sideShade": 0.10, "highlightLift": 0.08},
+    "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+    "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+    "gel": {"sideShade": 0.18, "highlightLift": 0.20}
+  }
+}

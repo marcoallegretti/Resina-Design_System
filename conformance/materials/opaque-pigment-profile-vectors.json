@@ -1,0 +1,158 @@
+[
+  {
+    "name": "reference profiles",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "explicit zero modulation",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0, "highlightLift": 0},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "missing unselected profile",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown profile family",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2},
+        "plastic": {"sideShade": 0.1, "highlightLift": 0.1}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "missing profile coefficient",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown profile coefficient",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": 0.08, "roughness": 0.5},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "negative shade",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": -0.1, "highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "full shade loses pigment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 1, "highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "negative highlight",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": -0.1},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "full highlight loses pigment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": 1},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "invalid unselected profile",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 1}
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "unsupported profile version",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "profiles": {
+        "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+        "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+        "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+        "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+      }
+    },
+    "valid": false
+  }
+]

@@ -1,0 +1,578 @@
+[
+  {
+    "name": "cast selects its authored profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "profile": {"sideShade": 0.1, "highlightLift": 0.08},
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.18, 0.36, 0.72], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [0.264, 0.448, 0.816], "alpha": 1}
+    }
+  },
+  {
+    "name": "frost selects its authored profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "frost",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "frost",
+      "profile": {"sideShade": 0.14, "highlightLift": 0.18},
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.172, 0.344, 0.688], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [0.344, 0.508, 0.836], "alpha": 1}
+    }
+  },
+  {
+    "name": "elastomer selects its authored profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "elastomer",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "elastomer",
+      "profile": {"sideShade": 0.25, "highlightLift": 0.14},
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.15, 0.3, 0.6], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [0.312, 0.484, 0.828], "alpha": 1}
+    }
+  },
+  {
+    "name": "gel selects its authored profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "gel",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "gel",
+      "profile": {"sideShade": 0.18, "highlightLift": 0.2},
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.164, 0.328, 0.656], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [0.36, 0.52, 0.84], "alpha": 1}
+    }
+  },
+  {
+    "name": "black body",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "profile": {"sideShade": 0.1, "highlightLift": 0.08},
+      "body": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.0, 0.0, 0.0], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [0.08, 0.08, 0.08], "alpha": 1}
+    }
+  },
+  {
+    "name": "white body",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "profile": {"sideShade": 0.1, "highlightLift": 0.08},
+      "body": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.9, 0.9, 0.9], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [1.0, 1.0, 1.0], "alpha": 1}
+    }
+  },
+  {
+    "name": "saturated body",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [1, 0, 0], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "profile": {"sideShade": 0.1, "highlightLift": 0.08},
+      "body": {"colorSpace": "srgb", "components": [1, 0, 0], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.9, 0.0, 0.0], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [1.0, 0.08, 0.08], "alpha": 1}
+    }
+  },
+  {
+    "name": "zero modulation preserves all channels",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0, "highlightLift": 0},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "profile": {"sideShade": 0, "highlightLift": 0},
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1}
+    }
+  },
+  {
+    "name": "largest valid strengths stay finite",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.9999999999999999, "highlightLift": 0.9999999999999999},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "profile": {"sideShade": 0.9999999999999999, "highlightLift": 0.9999999999999999},
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "side": {"colorSpace": "srgb", "components": [2e-17, 4e-17, 8e-17], "alpha": 1},
+      "highlight": {"colorSpace": "srgb", "components": [0.9999999999999999, 0.9999999999999999, 1.0], "alpha": 1}
+    }
+  },
+  {
+    "name": "translucent body",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 0.5},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "body must be opaque"
+  },
+  {
+    "name": "non-sRGB body",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "display-p3", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "body must use sRGB"
+  },
+  {
+    "name": "out-of-range body",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [-0.1, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid opaque pigment body"
+  },
+  {
+    "name": "unknown material",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "plastic",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "missing material",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing body alpha",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8]},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown request member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      },
+      "backend": "web"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unsupported request version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "missing unselected profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown profile family",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2},
+          "plastic": {"sideShade": 0.1, "highlightLift": 0.1}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "missing profile coefficient",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown profile coefficient",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08, "roughness": 0.5},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "negative shade",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": -0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "sideShade must be finite"
+  },
+  {
+    "name": "full shade loses pigment",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "sideShade must be finite"
+  },
+  {
+    "name": "negative highlight",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": -0.1},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "highlightLift must be finite"
+  },
+  {
+    "name": "full highlight loses pigment",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 1},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "highlightLift must be finite"
+  },
+  {
+    "name": "invalid unselected profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 1}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "highlightLift must be finite"
+  },
+  {
+    "name": "unsupported profile version",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": {"colorSpace": "srgb", "components": [0.2, 0.4, 0.8], "alpha": 1},
+      "profiles": {
+        "schemaVersion": "0.2.0",
+        "profiles": {
+          "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+          "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+          "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+          "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  }
+]

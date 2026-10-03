@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-pigment-profiles:0.1.0",
+  "title": "Resina Opaque Material Pigment Profiles",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profiles"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cast", "frost", "elastomer", "gel"],
+      "properties": {
+        "cast": {"$ref": "#/$defs/profile"},
+        "frost": {"$ref": "#/$defs/profile"},
+        "elastomer": {"$ref": "#/$defs/profile"},
+        "gel": {"$ref": "#/$defs/profile"}
+      }
+    }
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sideShade", "highlightLift"],
+      "properties": {
+        "sideShade": {"type": "number", "minimum": 0, "exclusiveMaximum": 1},
+        "highlightLift": {"type": "number", "minimum": 0, "exclusiveMaximum": 1}
+      }
+    }
+  }
+}

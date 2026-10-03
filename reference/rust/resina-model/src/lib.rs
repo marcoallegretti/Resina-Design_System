@@ -8,6 +8,8 @@ mod elevation;
 pub use elevation::ElevationDepthAssignments;
 mod frost;
 pub use frost::FrostPigment;
+mod opaque_pigment;
+pub use opaque_pigment::{OpaquePigmentProfile, OpaquePigmentProfiles};
 mod spatial;
 pub use spatial::{SpatialAssignments, SpatialRole};
 mod shape_fallback;

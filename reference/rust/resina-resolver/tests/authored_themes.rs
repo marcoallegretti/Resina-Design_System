@@ -4,9 +4,10 @@ use resina_model::{
     TypographyRole,
 };
 use resina_resolver::{
-    HeadlessResolution, bind_surface, compile_theme_source_with_sources, opaque_contrast_ratio,
-    resolve_edge_contrast, resolve_focus_indicator, resolve_frost_legibility,
-    resolve_frost_surface_readability, resolve_surface_readability,
+    HeadlessResolution, OpaquePigmentError, bind_surface, compile_theme_source_with_sources,
+    opaque_contrast_ratio, resolve_edge_contrast, resolve_focus_indicator,
+    resolve_frost_legibility, resolve_frost_surface_readability, resolve_opaque_pigment,
+    resolve_surface_readability,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -263,6 +264,8 @@ fn authored_frost_chrome_keeps_content_and_edge_readable_at_tier_zero() {
 fn authored_materials_keep_content_and_edge_readable_in_both_themes() {
     let standard = environment_for_scale(1.0);
     let tier_zero: EnvironmentSnapshot = serde_json::from_str(TIER_ZERO).unwrap();
+    let pigment_profiles =
+        serde_json::from_str(include_str!("../../../../definitions/tier0-pigment.json")).unwrap();
     for source in [LIGHT, DARK] {
         for environment in [&standard, &tier_zero] {
             let resolution = resolve(source, environment);
@@ -307,6 +310,25 @@ fn authored_materials_keep_content_and_edge_readable_in_both_themes() {
                 assert_eq!(result.binding().material_family(), family);
                 assert!(result.content_contrast_ratio() >= 4.5);
                 assert!(result.edge().contrast_ratio() >= 3.0);
+                let pigment = resolve_opaque_pigment(family, result.body(), &pigment_profiles);
+                if result.body().alpha() == 1.0 {
+                    let pigment = pigment.unwrap();
+                    assert_eq!(pigment.body(), result.body());
+                    assert_eq!(pigment.side().alpha(), 1.0);
+                    assert_eq!(pigment.highlight().alpha(), 1.0);
+                    for ((side, body), highlight) in pigment
+                        .side()
+                        .components()
+                        .into_iter()
+                        .zip(pigment.body().components())
+                        .zip(pigment.highlight().components())
+                    {
+                        assert!(side <= body);
+                        assert!(highlight >= body);
+                    }
+                } else {
+                    assert!(matches!(pigment, Err(OpaquePigmentError::TranslucentBody)));
+                }
                 if family == MaterialFamily::Frost {
                     assert!(result.frost_representation().is_some());
                 } else {

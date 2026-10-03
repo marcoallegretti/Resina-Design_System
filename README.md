@@ -38,4 +38,6 @@ Run `cargo run -p resina-resolver --bin resina-frost-surface-readability -- <pat
 
 Run `cargo run -p resina-resolver --bin resina-surface-readability -- <path>` for the [base-state surface readability request](schemas/surface-readability-request.schema.json) across all four material families. `python tools/check_surface_readability_backend.py -- <backend-command> -` checks content and local edge color decisions through the public command protocol.
 
+Run `cargo run -p resina-resolver --bin resina-opaque-pigment -- <path>` for an [opaque material pigment request](schemas/opaque-pigment-request.schema.json). The operation derives opaque side and highlight colors from the selected body and explicit family profiles. `python tools/check_opaque_pigment_backend.py -- <backend-command> -` checks its numerical output and diagnostic failures.
+
 Run `cargo run -p resina-resolver --bin resina-focus-indicator -- <path>` for a [focused surface indicator request](schemas/focus-indicator-request.schema.json), or use `-` for stdin. The Rust `resolve_focus_indicator` API accepts a headless resolution and surface intent directly. `python tools/check_focus_indicator_backend.py -- <backend-command> -` checks the bound state, authored indicator color, contrast, and Tier 0 geometry against a known surrounding color.
