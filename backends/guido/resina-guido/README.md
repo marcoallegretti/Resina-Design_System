@@ -168,6 +168,47 @@ fixtures do not establish all fonts/scripts, capability tiers or full component
 conformance. Set `RESINA_COMMAND_CAPTURE_DIR` to save PPM captures for visual
 review.
 
+## Toggle content composition
+
+Call `prepare_toggle_content` with a checked `ToggleSnapshot`, the verified font
+family, actual device scale and sampling count. It returns exactly three commands:
+track material/navigation image, selected thumb image, then complete measured
+external label. Insert them into one render node in that order and replace all
+three together after preparation succeeds. A failure returns no array and
+preserves the label, track or thumb diagnostic cause.
+
+Preparation uses the snapshot's checked external-label foreground directly;
+the track's foreground is not the label's color. The caller must actually supply
+the checked uniform opaque label backdrop in its scene. The adapter does not paint
+an invented background behind the label. Complete text is remeasured with the
+supplied family. Signed placement preserves RTL coordinates without changing
+text or internal layout. Every native origin, extent and origin-plus-size corner
+stays within the existing 1/1024 logical px precision budget.
+
+Thumb geometry remains part-local in portable IR. Preparation translates the
+selected endpoint before outward device-grid alignment, then samples local paint
+against that placed grid. It avoids shifting an already rasterized local image
+through a second fractional placement. Lighting remains physical; only logical
+thumb/label placement changes in RTL. Parent transforms, their alignment and
+clipping remain caller-owned, as do glyph-overhang and actual font-fallback
+verification. These commands supply no native event routing, accessibility-tree
+delivery or complete interactive Toggle.
+
+Required Linux GPU tests cover 396 first compositions: actual Light/Dark themes,
+Cast/opaque Frost fallback/Elastomer, off/on selection, rest/hover/pressed/disabled
+and unfocused replacement, both directions and scales 1, 1.25 and 2. Wrapped Latin
+and Arabic labels use 200% text scaling. The fixture explicitly chooses zero
+tracking because GUIdo cannot represent the authored nonzero tracking profile;
+that capability limit remains an explicit error in production. The external
+label uses a distinct, validated semantic foreground. Each part's raw image is
+checked against the canonical CPU renderer on the placed sampling grid; opaque
+GPU pixels must agree within one byte. Separate label masks identify real glyph
+coverage, complete lines, slot containment and solid-glyph contrast against the
+actual backdrop. Invalid scale/sampling and approximate label measurements fail.
+Set `RESINA_TOGGLE_CAPTURE_DIR` to save the tested PPM frames for visual review.
+These fixtures verify composition transport and typography, not complete
+component styling, every script/font, motion or native accessibility conformance.
+
 ## Verification
 
 Linux needs Wayland and xkbcommon development libraries and a working GPU or

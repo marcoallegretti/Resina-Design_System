@@ -4,7 +4,7 @@ use guido::{
     widgets::font::{FontFamily, FontWeight, LineHeight},
     widgets::{Color, Rect, TextAlign},
 };
-use resina_model::SurfaceSize;
+use resina_model::{PhysicalVector, SurfaceSize};
 use resina_resolver::{CommandLabelIr, LabelMeasureInput, ResolvedTypography};
 use std::fmt;
 
@@ -138,21 +138,19 @@ impl From<LabelMeasureError> for LabelPrepareError {
         Self::Measurement(error)
     }
 }
-fn coordinate(value: f64) -> Result<f32, LabelPrepareError> {
-    let native = value as f32;
-    if !native.is_finite()
-        || native < 0.0
-        || (f64::from(native) - value).abs() > MAX_COORDINATE_ERROR
-    {
-        Err(LabelPrepareError::Geometry)
-    } else {
-        Ok(native)
-    }
-}
 pub fn prepare_command_label(
     ir: &CommandLabelIr,
     family: FontFamily,
     color: Color,
+) -> Result<DrawCommand, LabelPrepareError> {
+    prepare_command_label_at(ir, family, color, PhysicalVector { x: 0.0, y: 0.0 })
+}
+
+pub(crate) fn prepare_command_label_at(
+    ir: &CommandLabelIr,
+    family: FontFamily,
+    color: Color,
+    origin: PhysicalVector,
 ) -> Result<DrawCommand, LabelPrepareError> {
     if [color.r, color.g, color.b, color.a]
         .iter()
@@ -164,7 +162,18 @@ pub fn prepare_command_label(
     let bounds = ir.label_bounds();
     let width = wrap_width(bounds.width)?;
     let height = scalar(bounds.height, "label height")?;
-    let rect = Rect::new(coordinate(bounds.x)?, coordinate(bounds.y)?, width, height);
+    let x = bounds.x + origin.x;
+    let y = bounds.y + origin.y;
+    let rect = Rect::new(
+        crate::coordinate(x).map_err(|_| LabelPrepareError::Geometry)?,
+        crate::coordinate(y).map_err(|_| LabelPrepareError::Geometry)?,
+        width,
+        height,
+    );
+    crate::check_coordinate(x + bounds.width, rect.x + rect.width)
+        .map_err(|_| LabelPrepareError::Geometry)?;
+    crate::check_coordinate(y + bounds.height, rect.y + rect.height)
+        .map_err(|_| LabelPrepareError::Geometry)?;
     let measured = measure_command_label(
         family,
         LabelMeasureInput {

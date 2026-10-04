@@ -1,6 +1,9 @@
 #[cfg(not(target_os = "linux"))]
 compile_error!("the GUIdo backend requires Linux");
 
+mod toggle_content;
+pub use toggle_content::{ToggleContentPrepareError, prepare_toggle_content};
+
 mod command_content;
 pub use command_content::{CommandContentPrepareError, prepare_command_content};
 
@@ -119,14 +122,34 @@ pub fn prepare_surface_paint(
     device_scale: f32,
     samples_per_axis: u8,
 ) -> Result<PreparedPaint, PrepareError> {
-    let Some(focus) = ir.focus() else {
-        return prepare_surface(ir.body(), device_scale, samples_per_axis);
+    prepare_surface_paint_at(
+        ir,
+        PhysicalVector { x: 0.0, y: 0.0 },
+        device_scale,
+        samples_per_axis,
+    )
+}
+
+fn prepare_surface_paint_at(
+    ir: &SurfacePaintIr,
+    origin: PhysicalVector,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<PreparedPaint, PrepareError> {
+    let bounds = if let Some(focus) = ir.focus() {
+        let outer = focus.geometry().outer();
+        let mut bounds = outer.contour().bounds().expect("validated focus bounds");
+        bounds.x += outer.offset().x;
+        bounds.y += outer.offset().y;
+        bounds
+    } else {
+        ir.body()
+            .geometry()
+            .silhouette()
+            .bounds()
+            .expect("validated surface bounds")
     };
-    let outer = focus.geometry().outer();
-    let mut bounds = outer.contour().bounds().expect("validated focus bounds");
-    bounds.x += outer.offset().x;
-    bounds.y += outer.offset().y;
-    prepare(bounds, device_scale, |viewport| {
+    prepare_at(bounds, origin, device_scale, |viewport| {
         resina_raster::render_surface_paint(ir, viewport, samples_per_axis)
     })
 }
@@ -136,14 +159,28 @@ fn prepare(
     device_scale: f32,
     render: impl FnOnce(Viewport) -> Result<RasterImage, RasterError>,
 ) -> Result<PreparedPaint, PrepareError> {
+    prepare_at(
+        bounds,
+        PhysicalVector { x: 0.0, y: 0.0 },
+        device_scale,
+        render,
+    )
+}
+
+fn prepare_at(
+    bounds: PhysicalBounds,
+    offset: PhysicalVector,
+    device_scale: f32,
+    render: impl FnOnce(Viewport) -> Result<RasterImage, RasterError>,
+) -> Result<PreparedPaint, PrepareError> {
     if !device_scale.is_finite() || device_scale <= 0.0 {
         return Err(PrepareError::InvalidScale);
     }
     let scale = f64::from(device_scale);
-    let left = (bounds.x * scale).floor();
-    let top = (bounds.y * scale).floor();
-    let right = ((bounds.x + bounds.width) * scale).ceil();
-    let bottom = ((bounds.y + bounds.height) * scale).ceil();
+    let left = ((bounds.x + offset.x) * scale).floor();
+    let top = ((bounds.y + offset.y) * scale).floor();
+    let right = ((bounds.x + bounds.width + offset.x) * scale).ceil();
+    let bottom = ((bounds.y + bounds.height + offset.y) * scale).ceil();
     let width = right - left;
     let height = bottom - top;
     if !width.is_finite()
@@ -157,17 +194,14 @@ fn prepare(
     }
     let viewport = Viewport {
         origin: PhysicalVector {
-            x: left / scale,
-            y: top / scale,
+            x: left / scale - offset.x,
+            y: top / scale - offset.y,
         },
         width: width as u32,
         height: height as u32,
         pixels_per_unit: scale,
     };
-    let origin = (
-        coordinate(viewport.origin.x)?,
-        coordinate(viewport.origin.y)?,
-    );
+    let origin = (coordinate(left / scale)?, coordinate(top / scale)?);
     let size = Size::new(coordinate(width / scale)?, coordinate(height / scale)?);
     check_coordinate(right / scale, origin.0 + size.width)?;
     check_coordinate(bottom / scale, origin.1 + size.height)?;
