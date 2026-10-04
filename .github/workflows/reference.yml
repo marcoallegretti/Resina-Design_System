@@ -111,6 +111,7 @@ jobs:
       - run: python tools/check_hit_region_backend.py -- target/debug/resina-hit-region${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_traversal_backend.py -- target/debug/resina-focus-traversal${{ matrix.executableSuffix }} -
       - run: python tools/check_activation_backend.py -- target/debug/resina-activation${{ matrix.executableSuffix }} -
+      - run: python tools/check_command_states_backend.py -- target/debug/resina-command-states${{ matrix.executableSuffix }} -
       - run: python tools/check_command_paint_backend.py -- target/debug/resina-command-paint${{ matrix.executableSuffix }} -
       - run: python tools/check_command_motion_backend.py -- target/debug/resina-command-motion${{ matrix.executableSuffix }} -
       - run: python tools/check_material_scenarios.py --theme-backend target/debug/resina-theme-resolve${{ matrix.executableSuffix }} --surface-backend target/debug/resina-opaque-surface${{ matrix.executableSuffix }} --focus-backend target/debug/resina-focus-ir${{ matrix.executableSuffix }} --paint-backend target/debug/resina-surface-paint${{ matrix.executableSuffix }}

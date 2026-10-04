@@ -197,6 +197,8 @@ def main():
         "schemas/activation-request.schema.json",
         "schemas/activation-result.schema.json",
         "schemas/activation-case.schema.json",
+        "schemas/command-states-request.schema.json",
+        "schemas/command-states-case.schema.json",
         "schemas/extruded-contour-request.schema.json",
         "schemas/extruded-contour-result.schema.json",
         "schemas/extruded-contour-case.schema.json",
@@ -1618,6 +1620,20 @@ def main():
         checked += 1
         if "expected" in case:
             check_case(validator_for("schemas/activation-result.schema.json"), name, case["expected"], True)
+            checked += 1
+
+    command_state_names = set()
+    for case in load_json(ROOT / "conformance/interaction/command-states-cases.json"):
+        name = case["name"]
+        if name in command_state_names:
+            raise ValueError(f"duplicate command state case: {name}")
+        command_state_names.add(name)
+        check_case(validator_for("schemas/command-states-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/command-states-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 1
+        if "expected" in case:
+            check_case(validator_for("schemas/state-set.schema.json"), name, case["expected"], True)
             checked += 1
 
     checked += 2 + 2 * len(load_json(ROOT / "conformance/ir/command-paint-cases.json"))

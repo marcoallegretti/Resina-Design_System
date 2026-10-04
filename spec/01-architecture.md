@@ -42,6 +42,8 @@ protocol is separate from paint IR, native event delivery and product actions.
 
 The [ordinary command accessibility snapshot](47-command-accessibility.md) resolves semantic content, current state, focusability and invocation availability from validated label and activation inputs. It is separate from paint IR and native accessibility tree delivery.
 
+The [command interaction projection](48-command-states.md) derives supported paint signals from the same committed activation state and explicit hover observation. Native adapters supply observations; they do not recreate pressed, focused or disabled policy independently for painting.
+
 ## Backend roles
 
 GUIdo is the high-fidelity reference renderer. Its advanced drawing techniques demonstrate Resina but do not raise the minimum capability floor. Quickshell is an independent Shell conformance backend and must be able to realize the semantics without copying GUIdo's rendering architecture. Slint is the application backend for conventional interfaces. Web provides documentation, conformance views and a playground using broadly available web primitives first. Headless conformance is the shared reference for all backends.

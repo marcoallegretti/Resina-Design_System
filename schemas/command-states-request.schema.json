@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-states-request:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "activation",
+    "hovered"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "activation": {
+      "$ref": "urn:resina:schema:activation-state:0.1.0"
+    },
+    "hovered": {
+      "type": "boolean"
+    }
+  }
+}

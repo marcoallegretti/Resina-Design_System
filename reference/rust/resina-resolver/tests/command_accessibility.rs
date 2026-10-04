@@ -1,8 +1,11 @@
 use resina_environment::{LayoutDirection, SafeArea};
-use resina_model::{ActivationEvent, ActivationState, SurfaceSize, TypographyRole};
+use resina_model::{
+    ActivationEvent, ActivationState, InteractionState, SurfaceSize, TypographyRole,
+};
 use resina_resolver::{
     CommandAccessibilityError, CommandAccessibilityInput, CommandLabelInput, CommandLabelIr,
     compile_theme_source, resolve_activation, resolve_command_accessibility, resolve_command_label,
+    resolve_command_states,
 };
 use serde_json::{Value, json};
 use std::convert::Infallible;
@@ -123,6 +126,8 @@ fn semantic_invoke_uses_live_availability_and_supersedes_held_press() {
     })
     .unwrap();
     assert_eq!(before, held);
+    assert!(!resolve_command_states(&state, false).contains(InteractionState::Pressed));
+    assert!(resolve_command_states(armed.state(), false).contains(InteractionState::Pressed));
     assert!(held.actions()[0].available());
     let invoked = resolve_activation(armed.state(), &ActivationEvent::Invoke {}).unwrap();
     assert!(invoked.activate());
