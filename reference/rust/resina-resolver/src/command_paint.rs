@@ -1,13 +1,11 @@
 use crate::{
-    CompiledTheme, FocusIrError, FocusIrInput, OpaqueSurfaceError, SurfacePaintInput,
-    SurfacePaintIr, SurfacePaintResolutionError, bind_surface, focus_ir::resolve_focus_geometry,
-    opaque_surface::resolve_opaque_body_geometry, resolve_elevation_depth, resolve_focus_indicator,
-    resolve_shape_fallback, surface_readability::resolve_bound_body_readability,
+    CompiledTheme, OpaqueSurfaceError, SurfacePaintInput, SurfacePaintIr,
+    SurfacePaintResolutionError, bind_surface,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    CommandAppearance, CommandPhase, CommandResponse, InteractionState, MaterialFamily,
-    MaterialRole, resolve_command_phase,
+    CommandAppearance, CommandPhase, CommandResponse, MaterialFamily, MaterialRole,
+    resolve_command_phase,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -127,7 +125,7 @@ pub(crate) fn resolve_command_paint_with_response(
     let snapshot = theme.resolve(environment).map_err(|error| {
         SurfacePaintResolutionError::Theme(crate::ThemeResolutionError::Resolve(error))
     })?;
-    let mut binding = bind_surface(surface, &snapshot).map_err(|error| {
+    let binding = bind_surface(surface, &snapshot).map_err(|error| {
         SurfacePaintResolutionError::Body(OpaqueSurfaceError::Readability(
             crate::SurfaceReadabilityError::Binding(error),
         ))
@@ -137,74 +135,19 @@ pub(crate) fn resolve_command_paint_with_response(
         .response_for(binding.material_family(), phase)
         .map_err(CommandPaintError::Scope)?;
     let response = sample(binding.material_family(), response)?;
-    binding.apply_command_response(response);
-    let readable = resolve_bound_body_readability(
-        binding,
+    let paint = crate::control_paint::resolve_control_paint(
+        theme,
+        environment,
         &snapshot,
-        input.surface.body.foreground_role,
-        input.surface.body.post_treatment_backdrop,
-        input.surface.body.adjacent_color,
-        input.surface.body.minimum_content_contrast,
-        input.surface.body.minimum_edge_contrast,
-    )
-    .map_err(|error| SurfacePaintResolutionError::Body(OpaqueSurfaceError::Readability(error)))?;
-    let appearance = input.surface.body.appearance;
-    let depths = resolve_elevation_depth(appearance.depth_assignments(), theme.tokens())
-        .map_err(|error| SurfacePaintResolutionError::Body(OpaqueSurfaceError::Depth(error)))?;
-    let depth = depths[&surface.form().elevation()]["value"]
-        .as_f64()
-        .expect("validated depth is numeric")
-        * response.depth_scale();
-    let size = input.surface.body.size;
-    let body =
-        resolve_opaque_body_geometry(theme, environment, input.surface.body, &readable, depth)
-            .map_err(SurfacePaintResolutionError::Body)?;
-    let focus = if surface
-        .states()
-        .states()
-        .contains(&InteractionState::Focused)
-    {
-        let surrounding_color = input
-            .surface
-            .surrounding_color
-            .ok_or(SurfacePaintResolutionError::MissingSurroundingColor)?;
-        let indicator = resolve_focus_indicator(surface, &snapshot, surrounding_color)
-            .map_err(|e| SurfacePaintResolutionError::Focus(FocusIrError::Indicator(e)))?;
-        let radii = resolve_shape_fallback(
-            surface.form().shape(),
-            size,
-            appearance.shape_assignments(),
-            theme.tokens(),
-        )
-        .map_err(|e| SurfacePaintResolutionError::Focus(FocusIrError::Shape(e)))?;
-        Some(
-            resolve_focus_geometry(
-                environment,
-                FocusIrInput {
-                    surface,
-                    size,
-                    shape_assignments: appearance.shape_assignments(),
-                    depth_assignments: appearance.depth_assignments(),
-                    key_light: appearance.key_light(),
-                    surrounding_color,
-                },
-                indicator,
-                radii,
-                depth,
-            )
-            .map_err(SurfacePaintResolutionError::Focus)?,
-        )
-    } else {
-        None
-    };
+        input.surface,
+        binding,
+        response,
+        true,
+    )?;
     Ok(CommandPaintIr {
         schema_version: "0.1.0",
         phase,
         response,
-        paint: SurfacePaintIr {
-            schema_version: "0.1.0",
-            body,
-            focus,
-        },
+        paint,
     })
 }

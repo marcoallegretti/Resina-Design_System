@@ -1,3 +1,9 @@
+mod toggle_part_paint;
+pub use toggle_part_paint::{
+    TogglePart, TogglePartPaintError, TogglePartPaintInput, TogglePartPaintIr,
+    resolve_toggle_part_paint, resolve_toggle_part_paint_source,
+};
+mod control_paint;
 mod toggle_layout;
 pub use toggle_layout::{
     ToggleLayoutError, ToggleLayoutInput, ToggleLayoutIr, resolve_toggle_layout,

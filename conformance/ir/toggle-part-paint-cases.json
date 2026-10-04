@@ -1,0 +1,385 @@
+[
+  {
+    "name": "track rest",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "track rest checked",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "track hover focused",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "track hover focused checked",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "track pressed",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "track focused pressed checked",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "focused",
+          "pressed",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "track disabled",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "track hover focused checked disabled",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused",
+          "checked",
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "thumb rest",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "thumb rest checked",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "thumb hover focused",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "thumb hover focused checked",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "thumb pressed",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "thumb focused pressed checked",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "focused",
+          "pressed",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "thumb disabled",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "thumb hover focused checked disabled",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused",
+          "checked",
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "unsupported selected state",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "toggle part paint supports only"
+  },
+  {
+    "name": "unsupported busy state",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "toggle part paint supports only"
+  },
+  {
+    "name": "transient role",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/materialRole",
+        "value": "surface.transient"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "persistent control"
+  },
+  {
+    "name": "translucent surround",
+    "requestChanges": [
+      {
+        "path": "/surface/surroundingColor/alpha",
+        "value": 0.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surroundingColor must be opaque"
+  },
+  {
+    "name": "invalid part",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "button"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "invalid checked role",
+    "requestChanges": [
+      {
+        "path": "/checkedColorRole",
+        "value": "invalid"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "wrong version",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "0.2.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "invalid unused family",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/frost/pressed/depthScale",
+        "value": 2
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "depthScale"
+  }
+]

@@ -154,6 +154,10 @@ def main():
         "schemas/command-label-expansion.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-accessibility-ir.schema.json",
+        "schemas/toggle-part-body-ir.schema.json",
+        "schemas/toggle-part-paint-ir.schema.json",
+        "schemas/toggle-part-paint-request.schema.json",
+        "schemas/toggle-part-paint-case.schema.json",
         "schemas/toggle-layout-request.schema.json",
         "schemas/toggle-layout-ir.schema.json",
         "schemas/toggle-layout-case.schema.json",
@@ -1823,6 +1827,18 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
+    toggle_part_request = load_json(ROOT / "conformance/ir/toggle-part-paint-request.json")
+    check_case(validator_for("schemas/toggle-part-paint-request.schema.json"), "toggle part baseline", toggle_part_request, True)
+    checked += 1
+    toggle_part_names = set()
+    for case in load_json(ROOT / "conformance/ir/toggle-part-paint-cases.json"):
+        name = case["name"]
+        if name in toggle_part_names:
+            raise ValueError(f"duplicate toggle part paint case: {name}")
+        toggle_part_names.add(name)
+        check_case(validator_for("schemas/toggle-part-paint-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/toggle-part-paint-request.schema.json"), name, apply_changes(toggle_part_request, case["requestChanges"]), case["requestSchemaValid"])
+        checked += 1
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 

@@ -14,6 +14,11 @@ pub struct SurfaceIntent {
 }
 
 impl SurfaceIntent {
+    pub fn with_color_role(mut self, color_role: ColorRole) -> Self {
+        self.color_role = color_role;
+        self
+    }
+
     pub fn with_states(mut self, states: StateSet) -> Self {
         self.states = states;
         self

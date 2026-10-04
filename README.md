@@ -113,3 +113,8 @@ separate conformance requirements.
 track/thumb bounds and distinct logical off/on endpoints, preserving RTL and
 stable track ownership. Shape, checked paint and full component target coverage
 remain separate requirements.
+
+[Opaque Toggle part paint](spec/54-toggle-part-paint.md) composes checked color
+roles with independent interaction response and track-owned focus. Cast, Frost
+and Elastomer use existing contrast, geometry and actual-capability fallback
+laws. Part paint does not certify an assembled native Toggle.
