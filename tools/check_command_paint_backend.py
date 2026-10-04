@@ -11,7 +11,7 @@ from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json
 from check_surface_paint_backend import surface_paint_channel_mismatch
 
 
-def command_mismatch(actual, request):
+def command_mismatch(actual, request, response=None):
     states = request["surface"]["body"]["surface"]["states"]["states"]
     ordered = [state for state in ("rest", "hover", "focused", "pressed", "disabled") if state in states]
     phase = next((state for state in ("disabled", "pressed", "hover") if state in states), "rest")
@@ -21,7 +21,8 @@ def command_mismatch(actual, request):
     role = request["surface"]["body"]["surface"]["materialRole"].split(".")[1]
     if family != theme["materialAssignments"]["control"][role]:
         return "/paint/body/materialFamily"
-    response = {"bodyMix": 0, "depthScale": 1} if phase == "rest" else request["commandAppearance"]["profiles"][family][phase]
+    if response is None:
+        response = {"bodyMix": 0, "depthScale": 1} if phase == "rest" else request["commandAppearance"]["profiles"][family][phase]
     if actual["phase"] != phase:
         return "/phase"
     if mismatch(actual["response"], response):

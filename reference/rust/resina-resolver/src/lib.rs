@@ -1,3 +1,9 @@
+mod command_motion;
+pub use command_motion::{
+    CommandMotionChannel, CommandMotionChannels, CommandMotionInput, CommandMotionIr,
+    CommandMotionPolicy, CommandProjection, resolve_command_motion, resolve_command_motion_source,
+};
+
 mod command_paint;
 pub use command_paint::{
     CommandPaintError, CommandPaintInput, CommandPaintIr, resolve_command_paint,

@@ -26,19 +26,22 @@ struct ResponseInput {
 impl TryFrom<ResponseInput> for CommandResponse {
     type Error = &'static str;
     fn try_from(input: ResponseInput) -> Result<Self, Self::Error> {
-        if !input.body_mix.is_finite() || !(-1.0..=1.0).contains(&input.body_mix) {
-            return Err("bodyMix must be finite and in [-1, 1]");
-        }
-        if !input.depth_scale.is_finite() || !(0.0..=1.0).contains(&input.depth_scale) {
-            return Err("depthScale must be finite and in [0, 1]");
-        }
-        Ok(Self {
-            body_mix: input.body_mix,
-            depth_scale: input.depth_scale,
-        })
+        Self::try_new(input.body_mix, input.depth_scale)
     }
 }
 impl CommandResponse {
+    pub fn try_new(body_mix: f64, depth_scale: f64) -> Result<Self, &'static str> {
+        if !body_mix.is_finite() || !(-1.0..=1.0).contains(&body_mix) {
+            return Err("bodyMix must be finite and in [-1, 1]");
+        }
+        if !depth_scale.is_finite() || !(0.0..=1.0).contains(&depth_scale) {
+            return Err("depthScale must be finite and in [0, 1]");
+        }
+        Ok(Self {
+            body_mix,
+            depth_scale,
+        })
+    }
     pub fn body_mix(&self) -> f64 {
         self.body_mix
     }

@@ -175,6 +175,7 @@ dependencies = [
  "resina-color",
  "resina-environment",
  "resina-model",
+ "resina-motion",
  "resina-tokens",
  "serde",
  "serde_json",

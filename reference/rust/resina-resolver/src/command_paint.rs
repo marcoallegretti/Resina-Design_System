@@ -6,8 +6,8 @@ use crate::{
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    CommandAppearance, CommandPhase, CommandResponse, InteractionState, MaterialRole,
-    resolve_command_phase,
+    CommandAppearance, CommandPhase, CommandResponse, InteractionState, MaterialFamily,
+    MaterialRole, resolve_command_phase,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -44,6 +44,7 @@ pub enum CommandPaintError {
     UnsupportedVersion,
     Scope(&'static str),
     Paint(SurfacePaintResolutionError),
+    Motion(resina_motion::SpringError),
 }
 impl fmt::Display for CommandPaintError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -53,6 +54,7 @@ impl fmt::Display for CommandPaintError {
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
             Self::Scope(e) => f.write_str(e),
             Self::Paint(e) => write!(f, "command {e}"),
+            Self::Motion(e) => write!(f, "command motion: {e}"),
         }
     }
 }
@@ -94,6 +96,15 @@ pub fn resolve_command_paint(
     environment: &EnvironmentSnapshot,
     input: CommandPaintInput<'_>,
 ) -> Result<CommandPaintIr, CommandPaintError> {
+    resolve_command_paint_with_response(theme, environment, input, |_, response| Ok(response))
+}
+
+pub(crate) fn resolve_command_paint_with_response(
+    theme: &CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    input: CommandPaintInput<'_>,
+    sample: impl FnOnce(MaterialFamily, CommandResponse) -> Result<CommandResponse, CommandPaintError>,
+) -> Result<CommandPaintIr, CommandPaintError> {
     let surface = input.surface.body.surface;
     if !matches!(
         surface.material_role(),
@@ -125,6 +136,7 @@ pub fn resolve_command_paint(
         .command_appearance
         .response_for(binding.material_family(), phase)
         .map_err(CommandPaintError::Scope)?;
+    let response = sample(binding.material_family(), response)?;
     binding.apply_command_response(response);
     let readable = resolve_bound_body_readability(
         binding,

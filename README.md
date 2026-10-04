@@ -81,3 +81,5 @@ The [command activation lifecycle](spec/42-command-activation.md) resolves prima
 [Opaque command paint](spec/43-command-paint.md) resolves authored rest, hover, pressed and disabled surface endpoints with independent focus, actual capability fallback and checked content contrast. This is portable paint evidence; full command components and native gesture adapters remain separate work.
 
 [Scalar spring trajectories](spec/44-spring-trajectories.md) preserve position and velocity when changing a target, with deterministic headless sampling and immediate reduced-motion fallback. Material calibration and animated component contracts remain separate work.
+
+[Sampled command paint](spec/45-command-motion.md) connects retargetable spring state to complete guarded paint, with explicit bounded channel projection and actual reduced-motion feedback. Material calibration and native animation delivery remain separate work.

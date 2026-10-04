@@ -1125,6 +1125,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "resina-motion"
+version = "0.1.0"
+dependencies = [
+ "resina-model",
+ "resina-tokens",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "resina-raster"
 version = "0.1.0"
 dependencies = [
@@ -1140,6 +1150,7 @@ dependencies = [
  "resina-color",
  "resina-environment",
  "resina-model",
+ "resina-motion",
  "resina-tokens",
  "serde",
  "serde_json",

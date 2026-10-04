@@ -125,6 +125,9 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/command-motion-request.schema.json",
+        "schemas/command-motion-ir.schema.json",
+        "schemas/command-motion-case.schema.json",
         "schemas/spring-dynamics.schema.json",
         "schemas/spring-state.schema.json",
         "schemas/spring-trajectory-request.schema.json",
@@ -1598,6 +1601,18 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/spring-trajectory-result.schema.json"), name, case["expected"], True)
             checked += 1
+    motion_base = load_json(ROOT / "conformance/ir/command-motion-request.json")
+    motion_names = set()
+    check_case(validator_for("schemas/command-motion-request.schema.json"), "motion baseline", motion_base, True)
+    checked += 1
+    for case in load_json(ROOT / "conformance/ir/command-motion-cases.json"):
+        if case["name"] in motion_names:
+            raise ValueError("duplicate command motion case: " + case["name"])
+        motion_names.add(case["name"])
+        check_case(validator_for("schemas/command-motion-case.schema.json"), case["name"], case, True)
+        check_case(validator_for("schemas/command-motion-request.schema.json"), case["name"],
+                   apply_changes(motion_base, case["requestChanges"]), case["requestSchemaValid"])
+        checked += 2
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 
