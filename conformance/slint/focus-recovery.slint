@@ -1,0 +1,39 @@
+export component FocusRecoveryProbe inherits Window {
+    width: 1px;
+    height: 1px;
+    in-out property <bool> focusable: false;
+    in-out property <bool> available: false;
+
+    control := FocusScope {
+        enabled: root.focusable;
+        accessible-role: button;
+        accessible-label: "Save";
+        accessible-enabled: root.available;
+    }
+    successor := FocusScope { }
+
+    init => {
+        control.focus();
+        debug("resina-focus-recovery excluded", control.has-focus);
+        root.focusable = true;
+        control.focus();
+        debug("resina-focus-recovery disabled-discoverable", control.has-focus);
+        root.available = true;
+        debug("resina-focus-recovery enabled-retained", control.has-focus);
+        root.available = false;
+        debug("resina-focus-recovery disabled-retained", control.has-focus);
+
+        root.focusable = false;
+        successor.focus();
+        debug("resina-focus-recovery unsafe-old-focus", control.has-focus);
+        debug("resina-focus-recovery unsafe-successor-focus", successor.has-focus);
+
+        root.focusable = true;
+        control.focus();
+        successor.focus();
+        debug("resina-focus-recovery transferred-old-focus", control.has-focus);
+        debug("resina-focus-recovery transferred-successor-focus", successor.has-focus);
+        root.focusable = false;
+        debug("resina-focus-recovery excluded-after-transfer", control.has-focus);
+    }
+}

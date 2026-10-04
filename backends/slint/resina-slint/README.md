@@ -25,3 +25,17 @@ python tools/check_slint_focus_runtime.py --image target/slint-proof/focus-2.png
 ```
 
 Use a fresh image path. The checker decodes PNG pixels and compares opaque ring, clear hole, gap and exterior against an independent distance-to-rectangle oracle. It excludes centers within half a pixel diagonal of either boundary, so each checked pixel footprint lies entirely in one region, and requires both painted and clear pixels. It bounds execution and image dimensions. Linux CI downloads the official viewer with a pinned SHA-256 digest and checks scales 1, 1.25, 2 and 3. Local screenshots also passed with larger item dimensions without geometric scaling. Hardware rendering and complete application accessibility remain unverified. This primitive does not establish full Slint conformance or WCAG compliance.
+
+## Native focus eligibility and recovery
+
+The [focus recovery fixture](../../../conformance/slint/focus-recovery.slint) and [checker](../../../tools/check_slint_focus_recovery.py) exercise Slint 1.18.1 focus delivery independently of the painted cue. Run from the repository root with a fresh capture path:
+
+```sh
+python tools/check_slint_focus_recovery.py --image target/slint-proof/focus-recovery.png -- slint-viewer
+```
+
+Map command focusability to `FocusScope.enabled` and action availability separately to `accessible-enabled`. The pinned runtime accepts focus on a disabled but discoverable command when its scope remains enabled. Changing action availability alone retains actual focus. This matches the distinction in the [ordinary command contract](../../../spec/47-command-accessibility.md); it does not establish native assistive technology delivery or activation handling.
+
+Before excluding a focused command from focusability, transfer focus to an explicitly chosen eligible successor and verify successful native transfer, then disable the old scope. Slint 1.18.1's [focus event handler](https://github.com/slint-ui/slint/blob/v1.18.1/internal/core/items/input_items.rs) ignores focus events when `enabled` is false, including focus loss. Disabling the old scope first can therefore leave its `has-focus` true even after the successor receives focus. The fixture reproduces that unsafe order and verifies that transferring first clears the old state and retains the successor's focus. Do not derive focused state from a requested target or assume that disabling a scope clears it.
+
+The checker requires the pinned viewer, all nine exact observations, a successful bounded process and a fresh capture. Linux CI uses the existing digest-verified official viewer. The one-pixel capture only drives native item initialization; this fixture supplies no product UI or visual conformance evidence. It checks programmatic focus properties in the software screenshot runtime, not OS window activation, tab order, focus recovery without an eligible successor, platform accessibility trees or screen-reader behavior. Those remain separate integration requirements. The unsafe-order expectation documents a pinned upstream behavior rather than a normative Resina requirement.
