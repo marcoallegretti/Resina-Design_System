@@ -1622,6 +1622,46 @@ def main():
             check_case(validator_for("schemas/activation-result.schema.json"), name, case["expected"], True)
             checked += 1
 
+    activation_result_validator = validator_for("schemas/activation-result.schema.json")
+    activation_results = {
+        case["name"]: case["expected"]
+        for case in activation_cases()
+        if "expected" in case
+    }
+    for name, base, changes in [
+        ("disabled activation", "pointer arm", [
+            {"path": "/state/enabled", "value": False},
+            {"path": "/state/hold", "value": None},
+            {"path": "/pressed", "value": False},
+            {"path": "/capture", "value": None},
+            {"path": "/activate", "value": True},
+        ]),
+        ("acquisition without hold", "pointer arm", [
+            {"path": "/state/hold", "value": None},
+            {"path": "/pressed", "value": False},
+        ]),
+        ("acquisition with keyboard hold", "pointer arm", [
+            {"path": "/state/hold", "value": {"kind": "key", "key": "space"}},
+        ]),
+        ("acquisition outside target", "pointer arm", [
+            {"path": "/state/hold/inside", "value": False},
+            {"path": "/pressed", "value": False},
+        ]),
+        ("acquisition activates", "pointer arm", [
+            {"path": "/activate", "value": True},
+        ]),
+        ("release retains pointer hold", "pointer arm", [
+            {"path": "/capture/kind", "value": "release"},
+        ]),
+        ("release retains keyboard hold", "pointer arm", [
+            {"path": "/state/hold", "value": {"kind": "key", "key": "space"}},
+            {"path": "/capture/kind", "value": "release"},
+        ]),
+    ]:
+        check_case(activation_result_validator, name,
+                   apply_changes(activation_results[base], changes), False)
+        checked += 1
+
     command_state_names = set()
     for case in load_json(ROOT / "conformance/interaction/command-states-cases.json"):
         name = case["name"]

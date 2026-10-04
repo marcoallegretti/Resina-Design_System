@@ -163,6 +163,97 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "activate": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "capture": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "acquire"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "activate": {
+            "const": false
+          },
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "const": "pointer"
+                  },
+                  "inside": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "kind",
+                  "inside"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "capture": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "release"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }

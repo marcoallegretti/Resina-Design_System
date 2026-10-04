@@ -54,6 +54,11 @@ next `state`, `activate`, derived `pressed` and explicit `capture`. `pressed` is
 true for a keyboard hold or an inside pointer hold. Outside pointer holds retain
 capture but produce false pressed feedback. Capture is null, or `acquire`/`release`
 with the exact pointer ID. These are interaction effects, separate from paint IR.
+An activating result MUST remain enabled. Acquisition MUST accompany an inside
+pointer hold without activation; release MUST leave no hold. The result schema
+checks these local invariants as well as pressed feedback. It cannot compare
+capture IDs to state IDs or establish the preceding event history; conformance
+still checks the complete transition against its input.
 
 Commit next state before delivering an activation to product code, which may
 disable or remove the control. Execute each activation intent once; replaying a
