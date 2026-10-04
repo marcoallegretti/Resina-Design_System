@@ -23,10 +23,11 @@ use resina_model::{
 use resina_raster::{Viewport, render_surface_paint};
 use resina_resolver::{
     CommandLabelInput, CommandLabelIr, HitRegionInput, HitRegionIr, SrgbFallback,
-    ToggleLayoutInput, ToggleLayoutIr, TogglePartPaintIr, ToggleSnapshot, ToggleSnapshotInput,
-    opaque_contrast_ratio, resolve_command_label, resolve_hit_region, resolve_srgb_fallback,
-    resolve_theme_request_source, resolve_toggle_layout, resolve_toggle_part_paint_source,
-    resolve_toggle_snapshot, resolve_toggle_travel,
+    ToggleLayoutInput, ToggleLayoutIr, TogglePartMotionIr, TogglePartPaintError, TogglePartPaintIr,
+    ToggleSnapshot, ToggleSnapshotInput, opaque_contrast_ratio, resolve_command_label,
+    resolve_hit_region, resolve_srgb_fallback, resolve_theme_request_source, resolve_toggle_layout,
+    resolve_toggle_part_motion_source, resolve_toggle_part_paint_source, resolve_toggle_snapshot,
+    resolve_toggle_travel,
 };
 use serde_json::{Value, json};
 use std::{path::Path, rc::Rc};
@@ -56,6 +57,8 @@ fn padding() -> SafeArea {
 
 struct Fixture {
     environment: EnvironmentSnapshot,
+    track_request: Value,
+    thumb_request: Value,
     label: CommandLabelIr,
     foreground: SrgbFallback,
     background: SrgbFallback,
@@ -121,6 +124,7 @@ impl Fixture {
             .unwrap();
         let mut request = json!({"schemaVersion":"0.1.0","part":"track","surface":surface,
             "checkedColorRole":"surface.high","interactionAppearance":appearance});
+        let track_request = request.clone();
         let track = resolve_toggle_part_paint_source(&request.to_string()).unwrap();
         assert_eq!(track.paint().focus().is_some(), focused);
         request["part"] = json!("thumb");
@@ -132,6 +136,7 @@ impl Fixture {
             serde_json::to_value(track.paint().body().pigment().body()).unwrap();
         request["surface"]["body"]["postTreatmentBackdrop"] =
             request["surface"]["body"]["adjacentColor"].clone();
+        let thumb_request = request.clone();
         let thumb = resolve_toggle_part_paint_source(&request.to_string()).unwrap();
         assert!(thumb.paint().focus().is_none());
         let theme = &request["surface"]["body"]["theme"];
@@ -206,6 +211,8 @@ impl Fixture {
         .unwrap();
         Self {
             environment,
+            track_request,
+            thumb_request,
             label,
             foreground: resolved.color_fallbacks()[&ColorRole::ContentSecondary].clone(),
             background: resolve_srgb_fallback(&request["surface"]["surroundingColor"]).unwrap(),
@@ -219,8 +226,41 @@ impl Fixture {
             checked,
         }
     }
+    fn sample_parts(
+        &mut self,
+        channels: &[Value; 2],
+        time: f64,
+        reduced_motion: bool,
+    ) -> Result<[TogglePartMotionIr; 2], TogglePartPaintError> {
+        let mut track_request = self.track_request.clone();
+        track_request["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["reducedMotion"] =
+            json!(reduced_motion);
+        track_request["channels"] = channels[0].clone();
+        track_request["time"] = json!(time);
+        let track = resolve_toggle_part_motion_source(&track_request.to_string())?;
+        let mut thumb_request = self.thumb_request.clone();
+        thumb_request["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["reducedMotion"] =
+            json!(reduced_motion);
+        thumb_request["channels"] = channels[1].clone();
+        thumb_request["time"] = json!(time);
+        thumb_request["surface"]["body"]["adjacentColor"] =
+            serde_json::to_value(track.part_paint().paint().body().pigment().body()).unwrap();
+        thumb_request["surface"]["body"]["postTreatmentBackdrop"] =
+            thumb_request["surface"]["body"]["adjacentColor"].clone();
+        let thumb = resolve_toggle_part_motion_source(&thumb_request.to_string())?;
+        self.track = track.part_paint().clone();
+        self.thumb = thumb.part_paint().clone();
+        self.environment = serde_json::from_value(
+            track_request["surface"]["body"]["theme"]["environment"].clone(),
+        )
+        .unwrap();
+        Ok([track, thumb])
+    }
     fn snapshot(&self) -> ToggleSnapshot<'_> {
-        resolve_toggle_snapshot(ToggleSnapshotInput {
+        resolve_toggle_snapshot(self.snapshot_input()).unwrap()
+    }
+    fn snapshot_input(&self) -> ToggleSnapshotInput<'_, '_> {
+        ToggleSnapshotInput {
             label: &self.label,
             label_origin: self.origin,
             label_foreground: &self.foreground,
@@ -240,8 +280,7 @@ impl Fixture {
             available_bounds: available(),
             component_minimum: size(48.0, 48.0),
             occupied_regions: &[],
-        })
-        .unwrap()
+        }
     }
 }
 struct Frames {
@@ -652,4 +691,281 @@ fn checked_toggle_content_preserves_placed_paint_and_complete_native_labels() {
         }
     }
     assert_eq!(count, 396);
+}
+
+fn motion_channels() -> [Value; 2] {
+    let template: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/toggle-part-motion-request.json"
+    ))
+    .unwrap();
+    let mut channels = [template["channels"].clone(), template["channels"].clone()];
+    for (part, stiffness, damping) in [(0, 100, 20), (1, 64, 16)] {
+        for channel in ["bodyMix", "depthScale"] {
+            channels[part][channel]["dynamics"]["stiffness"] = json!(stiffness);
+            channels[part][channel]["dynamics"]["damping"] = json!(damping);
+        }
+    }
+    channels
+}
+fn continue_channels(parts: &[TogglePartMotionIr; 2]) -> [Value; 2] {
+    let mut channels = motion_channels();
+    for (index, part) in parts.iter().enumerate() {
+        channels[index]["bodyMix"]["initial"] =
+            serde_json::to_value(part.body_mix().state()).unwrap();
+        channels[index]["depthScale"]["initial"] =
+            serde_json::to_value(part.depth_scale().state()).unwrap();
+    }
+    channels
+}
+#[test]
+fn sampled_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state() {
+    guido::load_font(
+        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
+            .unwrap(),
+    );
+    let family = FontFamily::name("DejaVu Sans");
+    let scenes: Value = serde_json::from_str(
+        &std::fs::read_to_string(std::env::var("RESINA_SCENES").expect("RESINA_SCENES required"))
+            .unwrap(),
+    )
+    .unwrap();
+    let capture = std::env::var_os("RESINA_TOGGLE_CAPTURE_DIR").map(std::path::PathBuf::from);
+    let dynamics = SpringDynamics::try_new(1.0, 100.0, 20.0, 0.0001, 0.0001).unwrap();
+    let mut frames = Frames::new();
+    let mut count = 0;
+    for scheme in ["light", "dark"] {
+        for material in ["cast", "frost", "elastomer"] {
+            let name = format!("{scheme}-{material}-paint-focused");
+            let scene = scenes["scenarios"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|scene| scene["name"] == name)
+                .unwrap();
+            for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+                for checked in [false, true] {
+                    let text = if direction == LayoutDirection::Ltr {
+                        "Automatic updates"
+                    } else {
+                        "التحديثات التلقائية"
+                    };
+                    let mut f =
+                        Fixture::new(scene, "pressed", direction, checked, family, 1.0, text);
+                    let reserved = f.target.bounds();
+                    let initial =
+                        SpringState::try_new(if checked { 0.0 } else { 1.0 }, 0.0).unwrap();
+                    let channels = motion_channels();
+                    for time in [0.0, 0.1, 100.0] {
+                        let parts = f.sample_parts(&channels, time, false).unwrap();
+                        if material != "cast" && time == 0.1 {
+                            let mut stale_request = f.thumb_request.clone();
+                            stale_request["channels"] = channels[1].clone();
+                            stale_request["time"] = json!(time);
+                            let stale =
+                                resolve_toggle_part_motion_source(&stale_request.to_string())
+                                    .unwrap();
+                            f.thumb = stale.part_paint().clone();
+                            assert!(matches!(
+                                resolve_toggle_snapshot(f.snapshot_input()),
+                                Err(
+                                    resina_resolver::ToggleSnapshotError::ThumbAdjacencyMismatch { .. }
+                                )
+                            ));
+                            f.thumb = parts[1].part_paint().clone();
+                        }
+                        let snapshot = f.snapshot();
+                        let travel =
+                            resolve_toggle_travel(&snapshot, &dynamics, initial, time).unwrap();
+                        assert_eq!(
+                            travel.policy(),
+                            if material == "cast" {
+                                resina_resolver::ToggleTravelPolicy::CastImmediate
+                            } else {
+                                resina_resolver::ToggleTravelPolicy::Spring
+                            }
+                        );
+                        if material == "cast" || time == 100.0 {
+                            assert_eq!(travel.thumb_bounds(), f.layout.thumb_bounds());
+                            assert!(travel.trajectory().settled());
+                            for part in &parts {
+                                assert!(part.body_mix().settled());
+                                assert!(part.depth_scale().settled());
+                                assert_eq!(part.part_paint().response(), part.target());
+                            }
+                        } else if time == 0.0 {
+                            assert_eq!(
+                                travel.thumb_bounds(),
+                                if checked {
+                                    f.layout.off_thumb_bounds()
+                                } else {
+                                    f.layout.on_thumb_bounds()
+                                }
+                            );
+                        }
+                        assert_eq!(snapshot.hit_region().bounds(), reserved);
+                        assert_eq!(snapshot.accessibility().name(), text);
+                        assert_eq!(snapshot.accessibility().state().checked(), checked);
+                        assert!(snapshot.accessibility().state().enabled());
+                        assert!(snapshot.accessibility().state().focused());
+                        assert!(snapshot.accessibility().actions()[0].available());
+                        for part in &parts {
+                            assert_eq!(
+                                part.policy(),
+                                if material == "cast" {
+                                    resina_resolver::CommandMotionPolicy::CastImmediate
+                                } else {
+                                    resina_resolver::CommandMotionPolicy::Spring
+                                }
+                            );
+                            if material != "cast" && time == 0.1 {
+                                assert_ne!(part.part_paint().response(), part.target());
+                                assert_ne!(part.part_paint().response().depth_scale(), 1.0);
+                                assert_ne!(travel.thumb_bounds(), f.layout.off_thumb_bounds());
+                                assert_ne!(travel.thumb_bounds(), f.layout.on_thumb_bounds());
+                            }
+                        }
+                        let commands =
+                            prepare_toggle_travel_content(&travel, family, 1.25, 4).unwrap();
+                        check_commands(
+                            &mut frames,
+                            &f,
+                            1.25,
+                            &format!("{name}-joint-pressed-{direction:?}-{checked}-{time}"),
+                            capture.as_deref(),
+                            &commands,
+                            travel.thumb_bounds(),
+                        );
+                        count += 1;
+                    }
+                    let parts = f.sample_parts(&channels, 0.1, false).unwrap();
+                    let snapshot = f.snapshot();
+                    let before = resolve_toggle_travel(&snapshot, &dynamics, initial, 0.1).unwrap();
+                    let retained = before.trajectory().state();
+                    let retained_bounds = before.thumb_bounds();
+                    let continued = continue_channels(&parts);
+                    let mut rest =
+                        Fixture::new(scene, "rest", direction, !checked, family, 1.0, text);
+                    assert_eq!(rest.target.bounds(), reserved);
+                    for time in [0.0, 0.1] {
+                        let retargeted = rest.sample_parts(&continued, time, false).unwrap();
+                        for part in &retargeted {
+                            assert_eq!(
+                                part.target(),
+                                resina_model::CommandResponse::try_new(0.0, 1.0).unwrap()
+                            );
+                        }
+                        let snapshot = rest.snapshot();
+                        let travel =
+                            resolve_toggle_travel(&snapshot, &dynamics, retained, time).unwrap();
+                        assert_eq!(snapshot.accessibility().state().checked(), !checked);
+                        assert_eq!(snapshot.hit_region().bounds(), reserved);
+                        if material != "cast" && time == 0.0 {
+                            assert_eq!(travel.trajectory().state(), retained);
+                            assert_eq!(travel.thumb_bounds(), retained_bounds);
+                            for (old, new) in parts.iter().zip(&retargeted) {
+                                assert_eq!(old.body_mix().state(), new.body_mix().state());
+                                assert_eq!(old.depth_scale().state(), new.depth_scale().state());
+                                assert_eq!(
+                                    old.part_paint().paint().body().geometry(),
+                                    new.part_paint().paint().body().geometry()
+                                );
+                            }
+                        }
+                        let commands =
+                            prepare_toggle_travel_content(&travel, family, 1.25, 4).unwrap();
+                        check_commands(
+                            &mut frames,
+                            &rest,
+                            1.25,
+                            &format!("{name}-joint-retarget-{direction:?}-{checked}-{time}"),
+                            capture.as_deref(),
+                            &commands,
+                            travel.thumb_bounds(),
+                        );
+                        count += 1;
+                    }
+                    let mut disabled =
+                        Fixture::new(scene, "disabled", direction, checked, family, 1.0, text);
+                    disabled.sample_parts(&continued, 0.1, false).unwrap();
+                    let snapshot = disabled.snapshot();
+                    let travel =
+                        resolve_toggle_travel(&snapshot, &dynamics, retained, 0.1).unwrap();
+                    assert_eq!(snapshot.hit_region().bounds(), reserved);
+                    assert!(!snapshot.accessibility().state().enabled());
+                    assert!(!snapshot.accessibility().state().focused());
+                    assert!(!snapshot.accessibility().actions()[0].available());
+                    assert!(snapshot.track().paint().focus().is_none());
+                    let commands = prepare_toggle_travel_content(&travel, family, 1.25, 4).unwrap();
+                    check_commands(
+                        &mut frames,
+                        &disabled,
+                        1.25,
+                        &format!("{name}-joint-disabled-{direction:?}-{checked}"),
+                        capture.as_deref(),
+                        &commands,
+                        travel.thumb_bounds(),
+                    );
+                    count += 1;
+                    let immediate = f.sample_parts(&channels, 0.0, true).unwrap();
+                    for part in &immediate {
+                        assert_eq!(
+                            part.policy(),
+                            resina_resolver::CommandMotionPolicy::ReducedMotion
+                        );
+                        assert!(part.body_mix().settled());
+                        assert!(part.depth_scale().settled());
+                        assert_eq!(part.body_mix().state().velocity(), 0.0);
+                        assert_eq!(part.depth_scale().state().velocity(), 0.0);
+                        assert_eq!(part.part_paint().response(), part.target());
+                    }
+                    let snapshot = f.snapshot();
+                    let travel = resolve_toggle_travel(&snapshot, &dynamics, initial, 0.0).unwrap();
+                    assert_eq!(
+                        travel.policy(),
+                        resina_resolver::ToggleTravelPolicy::ReducedMotion
+                    );
+                    assert_eq!(travel.thumb_bounds(), f.layout.thumb_bounds());
+                    assert_eq!(snapshot.hit_region().bounds(), reserved);
+                    let commands = prepare_toggle_travel_content(&travel, family, 1.25, 4).unwrap();
+                    check_commands(
+                        &mut frames,
+                        &f,
+                        1.25,
+                        &format!("{name}-joint-reduced-{direction:?}-{checked}"),
+                        capture.as_deref(),
+                        &commands,
+                        travel.thumb_bounds(),
+                    );
+                    count += 1;
+                }
+                let text = if direction == LayoutDirection::Ltr {
+                    "Install updates automatically when connected to power"
+                } else {
+                    "تثبيت التحديثات تلقائيًا عند الاتصال بمصدر الطاقة"
+                };
+                let mut f = Fixture::new(scene, "pressed", direction, true, family, 2.0, text);
+                f.sample_parts(&motion_channels(), 0.1, false).unwrap();
+                let snapshot = f.snapshot();
+                let travel = resolve_toggle_travel(
+                    &snapshot,
+                    &dynamics,
+                    SpringState::try_new(0.0, 0.0).unwrap(),
+                    0.1,
+                )
+                .unwrap();
+                let commands = prepare_toggle_travel_content(&travel, family, 1.25, 4).unwrap();
+                check_commands(
+                    &mut frames,
+                    &f,
+                    1.25,
+                    &format!("{name}-joint-scaled-{direction:?}"),
+                    capture.as_deref(),
+                    &commands,
+                    travel.thumb_bounds(),
+                );
+                count += 1;
+            }
+        }
+    }
+    assert_eq!(count, 180);
 }

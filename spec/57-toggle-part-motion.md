@@ -93,3 +93,20 @@ frames plus 216 sampled frames across both parts, selections, focus states, thre
 families, three times and three device scales. Tests explicitly use ordinary
 motion and verify intermediate spring responses differ from both endpoints.
 Captures are isolated diagnostic parts, not complete Toggle UI release evidence.
+
+Joint native composition conformance adds 180 complete frames across Light/Dark,
+Cast/Frost/Elastomer, LTR/RTL and both selections. It samples independent track
+and thumb response dynamics, supplies the current track pigment to thumb
+resolution, validates the coherent snapshot and applies checked thumb travel.
+Tests cover initial/intermediate/settled press response, raw-state retargeting to
+rest with selection reversal, immediate disabled semantics and focus removal,
+reduced-motion endpoints for every channel, and wrapped labels at textScale 2.
+The reserved target remains unchanged. A thumb resolved against a stale static
+track pigment must fail snapshot adjacency validation for a moving sample.
+
+The existing complete pixel-grid and full-label checks apply to these frames at
+fractional device scale. The 180 frames supplement the 428 existing static/travel
+frames. Retargeting preserves raw part/travel state and physical geometry at time
+zero under unchanged allocation. Captures remain diagnostic component proportions;
+this evidence does not publish native assistive technology or event routing,
+calibrate motion coefficients, or certify complete component styling.

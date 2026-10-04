@@ -276,3 +276,15 @@ both parts/selections/focus states, three families, times 0/0.25/100 and scales
 `RESINA_TOGGLE_PART_CAPTURE_DIR` for isolated diagnostic PPM captures. These tests
 do not certify complete component styling, calibrated motion, native scheduling,
 input or assistive technology publication.
+
+The complete content test adds 180 joint motion frames to its existing 428
+static/travel frames. Actual current track pigment feeds thumb adjacency before
+snapshot validation; stale static adjacency fails. Independent response channels
+and travel retain raw retarget state, current switch semantics and a stable target.
+Coverage includes both themes, three families, both directions/selections,
+disabling during motion, reduced-motion endpoints and wrapped text at textScale 2.
+Placed-grid/GPU and complete-label checks remain required. Use
+`RESINA_TOGGLE_CAPTURE_DIR` to inspect the complete frames. Their broad diagnostic
+track/thumb proportions and explicit arithmetic springs are not release styling
+or calibrated material defaults. Native input, clocks and AT publication remain
+unimplemented component obligations.
