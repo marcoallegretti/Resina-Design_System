@@ -66,3 +66,30 @@ with complete JSON; input or resolution failure exits 1 with a diagnostic and no
 result; usage errors exit 2. The public cases and external checker exercise
 minimum resolution, placement, clipping, overlap and strict transport. This does
 not establish complete component interaction or accessibility conformance.
+
+## Resolved surface composition
+
+The Rust reference provides `resolve_surface_hit_region` for a validated opaque
+surface body, including the opaque fallback of Frost. It derives `visualBounds`
+from the body's complete resolved silhouette, including extrusion, and applies
+the same rectangular target policy and diagnostics. Pass the body from static
+or sampled command paint. A command's label size or front contour omits its
+swept footprint; a navigation ring is not part of its body. Unsupported visible
+geometry fails explicitly.
+
+The environment, available rectangle and occupied reservations MUST refer to
+the same layout snapshot as the body. All coordinates remain in the body's
+physical logical-pixel frame, including negative silhouette coordinates. The
+owner maps placement transforms and native pointer coordinates into that frame
+once; this operation neither guesses a placement nor converts device pixels.
+Recompute and validate reservations when a sampled body footprint changes.
+Disabled availability does not release its occupied reservation. The resulting
+rectangle remains fully active even outside rounded paint or label bounds;
+actual invocation remains subject to the current activation lifecycle.
+
+Integration evidence connects complete label containment, interaction projection,
+static and sampled command paint, target membership and accessible availability.
+It checks body footprint coverage, independent focus geometry, clipping and
+neighbor conflicts. Label extents in these cases are supplied layout arithmetic
+fixtures, not font measurements. These headless cases do not establish native event routing,
+pointer capture, assistive technology delivery or a complete Button.

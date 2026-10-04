@@ -140,7 +140,8 @@ pub use focus_traversal::{
 };
 mod target;
 pub use hit_region::{
-    HitRegionError, HitRegionInput, HitRegionIr, resolve_hit_region, resolve_hit_region_source,
+    HitRegionError, HitRegionInput, HitRegionIr, SurfaceHitRegionInput, resolve_hit_region,
+    resolve_hit_region_source, resolve_surface_hit_region,
 };
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 mod theme;

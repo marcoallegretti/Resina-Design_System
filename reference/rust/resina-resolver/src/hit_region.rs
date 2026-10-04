@@ -1,4 +1,4 @@
-use crate::resolve_minimum_hit_target;
+use crate::{OpaqueSurfaceIr, resolve_minimum_hit_target};
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{PhysicalBounds, PhysicalVector, SurfaceSize};
 use resina_tokens::parse_token_document;
@@ -11,6 +11,33 @@ pub struct HitRegionInput<'a> {
     pub available_bounds: PhysicalBounds,
     pub component_minimum: SurfaceSize,
     pub occupied_regions: &'a [PhysicalBounds],
+}
+
+pub struct SurfaceHitRegionInput<'a> {
+    pub environment: &'a EnvironmentSnapshot,
+    pub body: &'a OpaqueSurfaceIr,
+    pub available_bounds: PhysicalBounds,
+    pub component_minimum: SurfaceSize,
+    pub occupied_regions: &'a [PhysicalBounds],
+}
+
+/// Resolves in the body's physical coordinate frame, including its swept footprint.
+pub fn resolve_surface_hit_region(
+    input: SurfaceHitRegionInput<'_>,
+) -> Result<HitRegionIr, HitRegionError> {
+    let visual_bounds = input
+        .body
+        .geometry()
+        .silhouette()
+        .bounds()
+        .ok_or(HitRegionError::UnsupportedBodyGeometry)?;
+    resolve_hit_region(HitRegionInput {
+        environment: input.environment,
+        visual_bounds,
+        available_bounds: input.available_bounds,
+        component_minimum: input.component_minimum,
+        occupied_regions: input.occupied_regions,
+    })
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
@@ -47,6 +74,7 @@ pub enum HitRegionError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    UnsupportedBodyGeometry,
     InvalidBounds(&'static str),
     NumericRange(&'static str),
     InvalidMinimum,
@@ -61,6 +89,9 @@ impl fmt::Display for HitRegionError {
             Self::Parse(error) => write!(formatter, "hit region parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid hit region request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::UnsupportedBodyGeometry => {
+                formatter.write_str("surface body has no supported visible bounds")
+            }
             Self::InvalidBounds(field) => write!(
                 formatter,
                 "{field} must have finite coordinates and positive finite dimensions"
