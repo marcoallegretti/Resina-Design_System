@@ -57,6 +57,15 @@ impl HitRegionIr {
         self.minimum_size
     }
 
+    pub fn contains_bounds(&self, bounds: PhysicalBounds) -> Result<bool, HitRegionError> {
+        let (right, bottom) = endpoints(self.bounds, "hit bounds")?;
+        let (other_right, other_bottom) = endpoints(bounds, "contained bounds")?;
+        Ok(bounds.x >= self.bounds.x
+            && bounds.y >= self.bounds.y
+            && !other_right.exceeds(right)
+            && !other_bottom.exceeds(bottom))
+    }
+
     pub fn contains(&self, point: PhysicalVector) -> Result<bool, HitRegionError> {
         if !point.x.is_finite() || !point.y.is_finite() {
             return Err(HitRegionError::InvalidPoint);

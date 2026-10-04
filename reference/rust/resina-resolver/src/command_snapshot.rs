@@ -1,8 +1,7 @@
 use crate::{
     CommandAccessibilityError, CommandAccessibilityInput, CommandAccessibilityIr,
-    CommandContentError, CommandLabelIr, CommandPaintIr, HitRegionError, HitRegionIr,
-    SurfaceHitRegionInput, resolve_command_accessibility, resolve_command_states,
-    resolve_surface_hit_region,
+    CommandContentError, CommandLabelIr, CommandPaintIr, HitRegionError, HitRegionInput,
+    HitRegionIr, resolve_command_accessibility, resolve_command_states, resolve_hit_region,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{ActivationState, PhysicalBounds, StateSet, SurfaceSize};
@@ -11,6 +10,7 @@ use std::fmt;
 pub struct CommandSnapshotInput<'a, 'context> {
     pub label: &'a CommandLabelIr,
     pub paint: &'a CommandPaintIr,
+    pub hit_region: HitRegionIr,
     pub activation: &'context ActivationState,
     pub hovered: bool,
     pub description: Option<&'context str>,
@@ -51,6 +51,8 @@ pub enum CommandSnapshotError {
         actual: StateSet,
     },
     DirectionMismatch,
+    TargetResize,
+    TargetDoesNotContainBody,
     Content(CommandContentError),
     HitRegion(HitRegionError),
     Accessibility(CommandAccessibilityError),
@@ -67,6 +69,12 @@ impl fmt::Display for CommandSnapshotError {
             ),
             Self::DirectionMismatch => {
                 f.write_str("command label direction disagrees with the current environment")
+            }
+            Self::TargetResize => f.write_str(
+                "reserved command target does not meet the current minimum without resizing",
+            ),
+            Self::TargetDoesNotContainBody => {
+                f.write_str("reserved command target does not contain the complete painted body")
             }
             Self::Content(error) => write!(f, "command snapshot content: {error}"),
             Self::HitRegion(error) => write!(f, "command snapshot target: {error}"),
@@ -104,14 +112,30 @@ pub fn resolve_command_snapshot<'a>(
         .label
         .validate_content(body)
         .map_err(CommandSnapshotError::Content)?;
-    let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
+    let hit_region = resolve_hit_region(HitRegionInput {
         environment: input.environment,
-        body,
+        visual_bounds: input.hit_region.bounds(),
         available_bounds: input.available_bounds,
         component_minimum: input.component_minimum,
         occupied_regions: input.occupied_regions,
     })
     .map_err(CommandSnapshotError::HitRegion)?;
+    if hit_region.bounds() != input.hit_region.bounds() {
+        return Err(CommandSnapshotError::TargetResize);
+    }
+    let visual_bounds =
+        body.geometry()
+            .silhouette()
+            .bounds()
+            .ok_or(CommandSnapshotError::HitRegion(
+                HitRegionError::UnsupportedBodyGeometry,
+            ))?;
+    if !hit_region
+        .contains_bounds(visual_bounds)
+        .map_err(CommandSnapshotError::HitRegion)?
+    {
+        return Err(CommandSnapshotError::TargetDoesNotContainBody);
+    }
     let accessibility = resolve_command_accessibility(CommandAccessibilityInput {
         label: input.label,
         activation: input.activation,

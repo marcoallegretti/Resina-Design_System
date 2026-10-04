@@ -82,7 +82,10 @@ the same layout snapshot as the body. All coordinates remain in the body's
 physical logical-pixel frame, including negative silhouette coordinates. The
 owner maps placement transforms and native pointer coordinates into that frame
 once; this operation neither guesses a placement nor converts device pixels.
-Recompute and validate reservations when a sampled body footprint changes.
+Layout reserves stable interaction geometry over a command's supported feedback
+domain; do not move an active target solely because sampled extrusion changes.
+Use the [command snapshot contract](49-command-snapshot.md) to revalidate that
+reservation and check each actual body footprint.
 Disabled availability does not release its occupied reservation. The resulting
 rectangle remains fully active even outside rounded paint or label bounds;
 actual invocation remains subject to the current activation lifecycle.
@@ -93,3 +96,8 @@ It checks body footprint coverage, independent focus geometry, clipping and
 neighbor conflicts. Label extents in these cases are supplied layout arithmetic
 fixtures, not font measurements. These headless cases do not establish native event routing,
 pointer capture, assistive technology delivery or a complete Button.
+
+`HitRegionIr::contains_bounds` checks closed geometric containment of another
+positive finite rectangle using exact endpoint residuals. Right/bottom boundaries
+are included for complete body coverage; point membership remains half-open for
+shared-edge ownership. Invalid or unrepresentable input bounds fail diagnostically.

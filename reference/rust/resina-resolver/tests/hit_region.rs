@@ -59,6 +59,40 @@ fn public_placements_and_failures_match_exactly() {
 }
 
 #[test]
+fn bounds_containment_is_closed_and_preserves_endpoint_residuals() {
+    let mut request = request();
+    let origin = 9_007_199_254_740_992.0;
+    request["visualBounds"] = serde_json::json!({"x":origin,"y":0,"width":24,"height":24});
+    request["availableBounds"] = serde_json::json!({"x":origin,"y":0,"width":1024,"height":1024});
+    let hit = resolve_hit_region_source(&request.to_string()).unwrap();
+    assert!(hit.contains_bounds(hit.bounds()).unwrap());
+    for (width, contained) in [(24.0_f64.next_down(), true), (24.0_f64.next_up(), false)] {
+        assert_eq!(
+            hit.contains_bounds(PhysicalBounds {
+                width,
+                ..hit.bounds()
+            })
+            .unwrap(),
+            contained
+        );
+    }
+    assert!(
+        !hit.contains(PhysicalVector {
+            x: origin + 24.0,
+            y: 0.0
+        })
+        .unwrap()
+    );
+    assert!(matches!(
+        hit.contains_bounds(PhysicalBounds {
+            width: f64::NAN,
+            ..hit.bounds()
+        }),
+        Err(HitRegionError::InvalidBounds("contained bounds"))
+    ));
+}
+
+#[test]
 fn adjacent_targets_have_one_owner_at_shared_edges() {
     let first = resolve_hit_region_source(&request().to_string()).unwrap();
     let mut second = request();

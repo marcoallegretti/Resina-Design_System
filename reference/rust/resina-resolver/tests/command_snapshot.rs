@@ -1,13 +1,14 @@
-use resina_environment::{EnvironmentSnapshot, LayoutDirection, SafeArea};
+use resina_environment::{EnvironmentSnapshot, InputCapability, LayoutDirection, SafeArea};
 use resina_model::{
-    ActivationEvent, ActivationState, InteractionState, PhysicalBounds, SurfaceIntent, SurfaceSize,
-    TypographyRole,
+    ActivationEvent, ActivationState, InteractionState, PhysicalBounds, PhysicalVector,
+    SurfaceIntent, SurfaceSize, TypographyRole,
 };
 use resina_resolver::{
     CommandAccessibilityError, CommandContentError, CommandLabelInput, CommandLabelIr,
-    CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, HitRegionError,
-    compile_theme_source, resolve_activation, resolve_command_label, resolve_command_motion_source,
-    resolve_command_paint_source, resolve_command_snapshot, resolve_command_states,
+    CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, HitRegionError, HitRegionInput,
+    SurfaceHitRegionInput, compile_theme_source, resolve_activation, resolve_command_label,
+    resolve_command_motion_source, resolve_command_paint_source, resolve_command_snapshot,
+    resolve_command_states, resolve_hit_region, resolve_surface_hit_region,
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -67,9 +68,29 @@ fn input<'a, 'context>(
     activation: &'context ActivationState,
     hovered: bool,
 ) -> CommandSnapshotInput<'a, 'context> {
+    let mut baseline = request();
+    baseline["surface"]["body"]["theme"]["environment"] = serde_json::to_value(env).unwrap();
+    let baseline = resolve_command_paint_source(&baseline.to_string()).unwrap();
+    let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
+        environment: env,
+        body: baseline.paint().body(),
+        available_bounds: PhysicalBounds {
+            x: -100.0,
+            y: -100.0,
+            width: 400.0,
+            height: 400.0,
+        },
+        component_minimum: SurfaceSize {
+            width: 48.0,
+            height: 48.0,
+        },
+        occupied_regions: &[],
+    })
+    .unwrap();
     CommandSnapshotInput {
         label,
         paint,
+        hit_region,
         activation,
         hovered,
         description: Some("Reconnect to the saved network"),
@@ -154,6 +175,119 @@ fn public_cases_reject_stale_signals_even_when_body_phase_matches() {
             );
         }
     }
+}
+
+#[test]
+fn stationary_pointer_at_touch_edge_keeps_activation_through_feedback() {
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct BoundsInput {
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    }
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct Case {
+        schema_version: String,
+        size: SurfaceSize,
+        component_minimum: SurfaceSize,
+        input_capabilities: Vec<InputCapability>,
+        reserved_bounds: BoundsInput,
+        stationary_point: PhysicalVector,
+        activate_on_release: bool,
+    }
+    let case: Case = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/command-target-stability.json"
+    ))
+    .unwrap();
+    assert_eq!(case.schema_version, "0.1.0");
+    let mut request = request();
+    request["surface"]["body"]["size"] = serde_json::to_value(case.size).unwrap();
+    request["surface"]["body"]["theme"]["environment"]["inputCapabilities"] =
+        serde_json::to_value(case.input_capabilities).unwrap();
+    let env = environment(&request);
+    let label = label(&request, 64.0, 8.0, env.layout_direction());
+    let rest = resolve_command_paint_source(&request.to_string()).unwrap();
+    let initial = ActivationState::try_new(true, false, None).unwrap();
+    let point = case.stationary_point;
+    let mut initial_input = input(&env, &label, &rest, &initial, false);
+    initial_input.component_minimum = case.component_minimum;
+    let snapshot = resolve_command_snapshot(initial_input).unwrap();
+    assert_eq!(
+        snapshot.hit_region().bounds(),
+        PhysicalBounds {
+            x: case.reserved_bounds.x,
+            y: case.reserved_bounds.y,
+            width: case.reserved_bounds.width,
+            height: case.reserved_bounds.height,
+        }
+    );
+    assert!(snapshot.hit_region().contains(point).unwrap());
+    let pressed = resolve_activation(
+        &initial,
+        &ActivationEvent::PointerDown {
+            id: "primary".into(),
+            inside: snapshot.hit_region().contains(point).unwrap(),
+        },
+    )
+    .unwrap();
+    let surface: SurfaceIntent =
+        serde_json::from_value(request["surface"]["body"]["surface"].clone()).unwrap();
+    request["surface"]["body"]["surface"] =
+        serde_json::to_value(surface.with_states(resolve_command_states(pressed.state(), false)))
+            .unwrap();
+    let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+    let mut pressed_input = input(&env, &label, &paint, pressed.state(), false);
+    pressed_input.hit_region = *snapshot.hit_region();
+    pressed_input.component_minimum = case.component_minimum;
+    let pressed_snapshot = resolve_command_snapshot(pressed_input).unwrap();
+    assert_eq!(pressed_snapshot.hit_region(), snapshot.hit_region());
+    assert!(pressed_snapshot.hit_region().contains(point).unwrap());
+    let released = resolve_activation(
+        pressed.state(),
+        &ActivationEvent::PointerUp {
+            id: "primary".into(),
+            inside: pressed_snapshot.hit_region().contains(point).unwrap(),
+        },
+    )
+    .unwrap();
+    assert_eq!(released.activate(), case.activate_on_release);
+    assert!(released.state().hold().is_none());
+}
+
+#[test]
+fn reserved_target_cannot_resize_silently_or_belong_to_another_body() {
+    let request = request();
+    let env = environment(&request);
+    let label = label(&request, 64.0, 8.0, env.layout_direction());
+    let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+    let state = ActivationState::try_new(true, false, None).unwrap();
+    let mut larger = input(&env, &label, &paint, &state, false);
+    larger.component_minimum.height = 60.0;
+    assert!(matches!(
+        resolve_command_snapshot(larger),
+        Err(CommandSnapshotError::TargetResize)
+    ));
+    let mut wrong = input(&env, &label, &paint, &state, false);
+    wrong.hit_region = resolve_hit_region(HitRegionInput {
+        environment: &env,
+        visual_bounds: PhysicalBounds {
+            x: 100.0,
+            y: 0.0,
+            width: 64.0,
+            height: 48.0,
+        },
+        available_bounds: wrong.available_bounds,
+        component_minimum: wrong.component_minimum,
+        occupied_regions: &[],
+    })
+    .unwrap();
+    assert!(matches!(
+        resolve_command_snapshot(wrong),
+        Err(CommandSnapshotError::TargetDoesNotContainBody)
+    ));
 }
 
 #[test]
@@ -353,5 +487,14 @@ fn sampled_motion_publishes_checked_members_without_rewriting_the_sample() {
         assert!(snapshot.accessibility().actions()[0].available());
         assert!(snapshot.paint().paint().focus().is_some());
         assert_eq!(snapshot.hit_region().bounds().width, label.size().width);
+        assert_eq!(
+            snapshot.hit_region().bounds(),
+            PhysicalBounds {
+                x: 0.0,
+                y: -3.0,
+                width: 64.0,
+                height: 48.0,
+            }
+        );
     }
 }
