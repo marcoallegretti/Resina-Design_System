@@ -26,8 +26,20 @@ struct ShapeFallbackProfiles {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+#[serde(
+    tag = "kind",
+    rename_all = "camelCase",
+    from = "ShapeFallbackProfileInput"
+)]
 pub enum ShapeFallbackProfile {
+    Uniform { radius: String },
+    Corners { radii: CornerTokenPaths },
+    Capsule,
+}
+
+#[derive(Deserialize)]
+#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+enum ShapeFallbackProfileInput {
     Uniform {
         #[serde(deserialize_with = "deserialize_token_path")]
         radius: String,
@@ -35,7 +47,18 @@ pub enum ShapeFallbackProfile {
     Corners {
         radii: CornerTokenPaths,
     },
-    Capsule,
+    // Internally tagged unit variants accept unknown members despite deny_unknown_fields.
+    Capsule {},
+}
+
+impl From<ShapeFallbackProfileInput> for ShapeFallbackProfile {
+    fn from(input: ShapeFallbackProfileInput) -> Self {
+        match input {
+            ShapeFallbackProfileInput::Uniform { radius } => Self::Uniform { radius },
+            ShapeFallbackProfileInput::Corners { radii } => Self::Corners { radii },
+            ShapeFallbackProfileInput::Capsule {} => Self::Capsule,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

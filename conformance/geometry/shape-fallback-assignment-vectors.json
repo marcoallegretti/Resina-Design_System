@@ -126,5 +126,39 @@
       }
     },
     "error": "shape token path must not be empty"
+  },
+  {
+    "name": "capsule rejects extra radius",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule",
+          "radius": "radius.1"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "unknown field"
   }
 ]

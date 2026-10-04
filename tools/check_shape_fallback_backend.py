@@ -134,6 +134,15 @@ def main():
         )
         count += 1
 
+        for shape in ("capsule", "structural"):
+            extra_capsule = copy.deepcopy(base)
+            extra_capsule["shape"] = shape
+            extra_capsule["assignments"]["profiles"]["capsule"]["radius"] = "radius.1"
+            name = f"unknown capsule member while resolving {shape}"
+            check_request(request_validator, extra_capsule, False, name)
+            check_failure(command, json.dumps(extra_capsule), arguments.timeout, name)
+            count += 1
+
         for name, source in (
             ("duplicate request member", duplicate_member_source(base, "/schemaVersion")),
             (

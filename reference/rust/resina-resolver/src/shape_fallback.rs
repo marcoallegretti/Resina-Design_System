@@ -378,6 +378,14 @@ mod tests {
             Err(ShapeFallbackSourceError::UnsupportedVersion)
         ));
         request["schemaVersion"] = json!("0.1.0");
+        request["assignments"]["profiles"]["capsule"]["radius"] = json!("radius.1");
+        for shape in ["capsule", "structural"] {
+            request["shape"] = json!(shape);
+            let error = resolve_shape_fallback_source(&request.to_string()).unwrap_err();
+            assert!(error.to_string().contains("unknown field"));
+        }
+        request["assignments"]["profiles"]["capsule"] = json!({"kind": "capsule"});
+        request["shape"] = json!("structural");
         request["assignments"]["profiles"]["structural"] = json!({"kind": "capsule"});
         assert!(matches!(
             resolve_shape_fallback_source(&request.to_string()),
