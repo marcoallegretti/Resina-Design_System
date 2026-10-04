@@ -1,0 +1,838 @@
+[
+  {
+    "name": "rest / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest"
+      ]
+    }
+  },
+  {
+    "name": "rest / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "hover / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover"
+      ]
+    }
+  },
+  {
+    "name": "hover / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "focused rest / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused"
+      ]
+    }
+  },
+  {
+    "name": "focused rest / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "focused hover / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused"
+      ]
+    }
+  },
+  {
+    "name": "focused hover / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "unfocused pointer press / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": false,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed"
+      ]
+    }
+  },
+  {
+    "name": "unfocused pointer press / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "focused pointer press with hover / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": true,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed"
+      ]
+    }
+  },
+  {
+    "name": "focused pointer press with hover / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": true,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "outside pointer hold / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": false,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest"
+      ]
+    }
+  },
+  {
+    "name": "outside pointer hold / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "outside pointer hold with independent hover / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": true,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused"
+      ]
+    }
+  },
+  {
+    "name": "outside pointer hold with independent hover / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": true,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "space hold / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": false,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed"
+      ]
+    }
+  },
+  {
+    "name": "space hold / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "enter hold / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "enter"
+        }
+      },
+      "hovered": true,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed"
+      ]
+    }
+  },
+  {
+    "name": "enter hold / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "enter"
+        }
+      },
+      "hovered": true,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "checked"
+      ]
+    }
+  },
+  {
+    "name": "disabled / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "disabled"
+      ]
+    }
+  },
+  {
+    "name": "disabled / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "checked",
+        "disabled"
+      ]
+    }
+  },
+  {
+    "name": "disabled focused discoverable / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "disabled"
+      ]
+    }
+  },
+  {
+    "name": "disabled focused discoverable / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "checked",
+        "disabled"
+      ]
+    }
+  },
+  {
+    "name": "disabled focused hover / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "disabled"
+      ]
+    }
+  },
+  {
+    "name": "disabled focused hover / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "checked",
+        "disabled"
+      ]
+    }
+  },
+  {
+    "name": "missing hover",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "hovered"
+  },
+  {
+    "name": "missing activation",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "activation"
+  },
+  {
+    "name": "unsupported version",
+    "request": {
+      "schemaVersion": "9.0.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "string hover",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": "false",
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "boolean"
+  },
+  {
+    "name": "unknown member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "unexpected": false,
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unexpected"
+  },
+  {
+    "name": "missing null hold",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "hold"
+  },
+  {
+    "name": "disabled held pointer",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "disabled state"
+  },
+  {
+    "name": "unfocused key hold",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "keyboard hold"
+  },
+  {
+    "name": "empty held pointer id",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "",
+          "inside": false
+        }
+      },
+      "hovered": false,
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "pointer ID"
+  },
+  {
+    "name": "mixed checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": "mixed"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "boolean"
+  },
+  {
+    "name": "null checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": null
+    },
+    "requestSchemaValid": false,
+    "errorContains": "boolean"
+  },
+  {
+    "name": "numeric checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": 1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "boolean"
+  },
+  {
+    "name": "missing checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "checked"
+  }
+]

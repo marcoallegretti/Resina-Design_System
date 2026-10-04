@@ -200,6 +200,8 @@ def main():
         "schemas/activation-request.schema.json",
         "schemas/activation-result.schema.json",
         "schemas/activation-case.schema.json",
+        "schemas/toggle-states-request.schema.json",
+        "schemas/toggle-states-case.schema.json",
         "schemas/command-states-request.schema.json",
         "schemas/command-states-case.schema.json",
         "schemas/extruded-contour-request.schema.json",
@@ -1677,6 +1679,20 @@ def main():
         checked += 1
         if "expected" in case:
             check_case(validator_for("schemas/toggle-activation-result.schema.json"), name, case["expected"], True)
+            checked += 1
+
+    toggle_state_names = set()
+    for case in load_json(ROOT / "conformance/interaction/toggle-states-cases.json"):
+        name = case["name"]
+        check_case(validator_for("schemas/toggle-states-case.schema.json"), name, case, True)
+        if name in toggle_state_names:
+            raise ValueError(f"duplicate toggle state case: {name}")
+        toggle_state_names.add(name)
+        check_case(validator_for("schemas/toggle-states-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 1
+        if "expected" in case:
+            check_case(validator_for("schemas/state-set.schema.json"), name, case["expected"], True)
             checked += 1
 
     command_state_names = set()

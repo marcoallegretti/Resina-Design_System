@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-states-case:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "request",
+    "requestSchemaValid"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request": {},
+    "requestSchemaValid": {
+      "type": "boolean"
+    },
+    "expected": {
+      "$ref": "urn:resina:schema:state-set:0.1.0"
+    },
+    "errorContains": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "expected"
+      ]
+    },
+    {
+      "required": [
+        "errorContains"
+      ]
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+mod toggle_states;
+pub use toggle_states::{ToggleStatesError, resolve_toggle_states, resolve_toggle_states_source};
+
 mod toggle_activation;
 pub use toggle_activation::{
     ToggleActivationError, ToggleActivationResult, resolve_toggle_activation,

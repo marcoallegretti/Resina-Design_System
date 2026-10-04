@@ -98,3 +98,8 @@ availability and focus changes. Run `resina-toggle-activation <path|->` and
 `python tools/check_toggle_activation_backend.py -- <backend-command> -` for the
 portable protocol. Complete Toggle appearance and native accessibility delivery
 remain separate component requirements.
+
+[Toggle interaction projection](spec/51-toggle-states.md) retains checked selection
+alongside current activation, hover, body rest and actual focus. Its public
+protocol and checker run on Linux and Windows. Checked-state appearance remains
+an explicit Toggle requirement; ordinary command paint rejects that state.
