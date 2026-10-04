@@ -73,6 +73,31 @@ responsible for keyboard events, focus scope boundaries, recovery, scrolling,
 activation and accessibility semantics. This adapter does not establish complete
 component keyboard conformance.
 
+## Complete label drawing
+
+Load the selected font before GUIdo initializes its font systems. Supply an
+explicit family to `measure_command_label` when resolving portable label layout.
+Select and verify that family and its fallback policy before calling the adapter. Then call `prepare_command_label` with that IR, the same
+family and the actual guarded content color. It returns a native `DrawCommand`
+for the caller's render node. The rectangle is relative to the command origin;
+parent transforms and clipping remain the caller's responsibility.
+
+Preparation remeasures complete text and rejects a mismatch with resolved layout.
+It preserves the offered wrapping width, uses centered line alignment and emits
+no line limit or ellipsis. Unsupported tracking, fractional weight, excessive
+numeric rounding and invalid color channels fail explicitly. Do not substitute
+the ordinary GUIdo text widget without preserving these constraints: its layout
+can shrink the text box to the longest line before drawing.
+
+The native label test requires `RESINA_LABEL_FONT` to name the installed
+DejaVuSans.ttf file and loads it before measurement and rendering. On Ubuntu with
+`fonts-dejavu-core`, this is `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf`.
+Actual GPU readback checks Latin, expanded German and Arabic labels at three text
+scales and four device scales. Set `RESINA_LABEL_CAPTURE_DIR` to an output directory
+to save each tested frame as a PPM for visual review. These are static typography
+conformance probes, not interactive controls. Component accessibility and native
+event delivery remain separate work.
+
 ## Verification
 
 Linux needs Wayland and xkbcommon development libraries and a working GPU or
@@ -83,7 +108,7 @@ context cannot be created; it never skips rendering checks.
 python -m pip install -r tools/requirements-schema.txt
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-RESINA_SCENES="$PWD/target/material-scenes.json" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
+RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT="$RESINA_LABEL_FONT" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
 cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
 

@@ -1116,6 +1116,7 @@ dependencies = [
  "resina-raster",
  "resina-resolver",
  "serde_json",
+ "wgpu",
 ]
 
 [[package]]

@@ -2,7 +2,9 @@
 compile_error!("the GUIdo backend requires Linux");
 
 mod text;
-pub use text::{LabelMeasureError, measure_command_label};
+pub use text::{
+    LabelMeasureError, LabelPrepareError, measure_command_label, prepare_command_label,
+};
 
 mod focus;
 pub use focus::{FocusBinding, FocusTransferError, RequestedFocus, request_focus};

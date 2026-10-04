@@ -3,32 +3,11 @@
 use guido::widgets::font::FontFamily;
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{LabelMeasureError, measure_command_label};
-use resina_model::{SurfaceSize, TypographyRole};
-use resina_resolver::{
-    CommandLabelInput, LabelMeasureInput, ResolvedTypography, compile_theme_source,
-    resolve_command_label,
-};
-use serde_json::{Value, json};
-
-fn style(scale: f64, tracking: f64, weight: f64, line: f64) -> ResolvedTypography {
-    let request: Value = serde_json::from_str(include_str!(
-        "../../../../conformance/ir/command-motion-request.json"
-    ))
-    .unwrap();
-    let source = &request["surface"]["body"]["theme"];
-    let mut theme: Value = serde_json::from_str(source["themeSource"].as_str().unwrap()).unwrap();
-    theme["tokens"]["type"]["tracking"]["$value"]["value"] = json!(tracking);
-    theme["tokens"]["type"]["weight"]["$value"] = json!(weight);
-    theme["tokens"]["type"]["line"]["$value"] = json!(line);
-    let mut environment = source["environment"].clone();
-    environment["textScale"] = json!(scale);
-    compile_theme_source(&theme.to_string())
-        .unwrap()
-        .resolve(&serde_json::from_value(environment).unwrap())
-        .unwrap()
-        .typography()[&TypographyRole::Label]
-        .clone()
-}
+use resina_model::SurfaceSize;
+use resina_resolver::{CommandLabelInput, LabelMeasureInput, resolve_command_label};
+#[path = "common/label.rs"]
+mod label_style;
+use label_style::style;
 
 #[test]
 fn actual_font_shapes_complete_scaled_and_expanded_labels() {
