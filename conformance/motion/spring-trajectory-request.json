@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "0.1.0",
+  "dynamics": {
+    "schemaVersion": "0.1.0",
+    "mass": 1,
+    "stiffness": 4,
+    "damping": 4,
+    "positionThreshold": 1e-06,
+    "velocityThreshold": 1e-06
+  },
+  "initial": {
+    "position": 3,
+    "velocity": -2
+  },
+  "target": -1,
+  "time": 0.7,
+  "reducedMotion": false
+}

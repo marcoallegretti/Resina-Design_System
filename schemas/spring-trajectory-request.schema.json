@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:spring-trajectory-request:0.1.0",
+  "title": "Resina Spring Trajectory Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "dynamics",
+    "initial",
+    "target",
+    "time",
+    "reducedMotion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "dynamics": {
+      "$ref": "urn:resina:schema:spring-dynamics:0.1.0"
+    },
+    "initial": {
+      "$ref": "urn:resina:schema:spring-state:0.1.0"
+    },
+    "target": {
+      "type": "number"
+    },
+    "time": {
+      "type": "number",
+      "minimum": 0
+    },
+    "reducedMotion": {
+      "type": "boolean"
+    }
+  }
+}

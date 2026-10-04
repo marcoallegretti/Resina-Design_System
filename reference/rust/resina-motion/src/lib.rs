@@ -1,6 +1,10 @@
-use resina_model::SpringParameters;
+use resina_model::{SpringDynamics, SpringParameters, SpringState};
+mod trajectory;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+pub use trajectory::{
+    SpringTrajectorySample, resolve_spring_trajectory_source, sample_spring_trajectory,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,6 +43,7 @@ pub enum SpringError {
     Request(serde_json::Error),
     UnsupportedVersion,
     InvalidTime,
+    InvalidTarget,
     NumericRange(&'static str),
 }
 impl fmt::Display for SpringError {
@@ -48,6 +53,7 @@ impl fmt::Display for SpringError {
             Self::Request(e) => write!(formatter, "invalid spring request: {e}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::InvalidTime => formatter.write_str("time must be finite and nonnegative"),
+            Self::InvalidTarget => formatter.write_str("target must be finite"),
             Self::NumericRange(field) => {
                 write!(formatter, "spring {field} exceeds representable arithmetic")
             }
@@ -79,11 +85,30 @@ pub fn sample_spring(
     time: f64,
     reduced_motion: bool,
 ) -> Result<SpringSample, SpringError> {
+    sample_state(
+        &spring.dynamics(),
+        SpringState::try_new(0.0, spring.initial_velocity()).expect("validated initial velocity"),
+        1.0,
+        time,
+        reduced_motion,
+    )
+}
+
+fn sample_state(
+    spring: &SpringDynamics,
+    initial: SpringState,
+    target: f64,
+    time: f64,
+    reduced_motion: bool,
+) -> Result<SpringSample, SpringError> {
+    if !target.is_finite() {
+        return Err(SpringError::InvalidTarget);
+    }
     if !time.is_finite() || time < 0.0 {
         return Err(SpringError::InvalidTime);
     }
     if reduced_motion {
-        return Ok(sample(SpringRepresentation::Immediate, 1.0, 0.0, true));
+        return Ok(sample(SpringRepresentation::Immediate, target, 0.0, true));
     }
     let mass_root = spring.mass().sqrt();
     let stiffness_root = spring.stiffness().sqrt();
@@ -99,18 +124,19 @@ pub fn sample_spring(
     if spring.damping() > 0.0 && zeta == 0.0 {
         return Err(SpringError::NumericRange("damping ratio"));
     }
-    let q = finite(spring.initial_velocity() / omega, "normalized velocity")?;
-    if spring.initial_velocity() != 0.0 && q == 0.0 {
+    let q = finite(initial.velocity() / omega, "normalized velocity")?;
+    if initial.velocity() != 0.0 && q == 0.0 {
         return Err(SpringError::NumericRange("normalized velocity"));
     }
     let u = finite(omega * time, "normalized time")?;
     if time > 0.0 && u == 0.0 {
         return Err(SpringError::NumericRange("normalized time"));
     }
-    let (displacement, normalized_velocity) = propagate(zeta, u, -1.0, q)?;
+    let initial_displacement = finite(initial.position() - target, "initial displacement")?;
+    let (displacement, normalized_velocity) = propagate(zeta, u, initial_displacement, q, 1.0)?;
     // Separate scaling prevents normalized underflow from erasing the physical velocity bound.
     let (scaled_displacement, physical_velocity) =
-        propagate(zeta, u, -omega, spring.initial_velocity())?;
+        propagate(zeta, u, initial_displacement, initial.velocity(), omega)?;
     let radius = finite(displacement.hypot(normalized_velocity), "energy radius")?;
     let physical_radius = finite(
         scaled_displacement.hypot(physical_velocity),
@@ -119,11 +145,11 @@ pub fn sample_spring(
     let settled =
         radius <= spring.position_threshold() && physical_radius <= spring.velocity_threshold();
     let position = if settled {
-        1.0
+        target
     } else if time == 0.0 {
-        0.0
+        initial.position()
     } else {
-        finite(1.0 + displacement, "position")?
+        finite(target + displacement, "position")?
     };
     let velocity = if settled { 0.0 } else { physical_velocity };
     Ok(sample(
@@ -134,9 +160,18 @@ pub fn sample_spring(
     ))
 }
 
-fn propagate(zeta: f64, u: f64, position: f64, velocity: f64) -> Result<(f64, f64), SpringError> {
+fn propagate(
+    zeta: f64,
+    u: f64,
+    position: f64,
+    velocity: f64,
+    position_scale: f64,
+) -> Result<(f64, f64), SpringError> {
     if u == 0.0 {
-        return Ok((position, velocity));
+        return Ok((
+            finite(position * position_scale, "scaled initial displacement")?,
+            velocity,
+        ));
     }
     let (position, velocity) = if zeta <= 1.0 {
         let beta = ((1.0 - zeta) * (1.0 + zeta)).sqrt();
@@ -145,10 +180,10 @@ fn propagate(zeta: f64, u: f64, position: f64, velocity: f64) -> Result<(f64, f6
         let decay = -zeta * u;
         let cosine = phase.cos();
         (
-            product_exp(position, cosine + zeta * kernel, decay)?
-                + product_exp(velocity, kernel, decay)?,
-            product_exp(-position, kernel, decay)?
-                + product_exp(velocity, cosine - zeta * kernel, decay)?,
+            product_exp(&[position, position_scale, cosine + zeta * kernel], decay)?
+                + product_exp(&[velocity, kernel], decay)?,
+            product_exp(&[-position, position_scale, kernel], decay)?
+                + product_exp(&[velocity, cosine - zeta * kernel], decay)?,
         )
     } else {
         let beta = positive((zeta - 1.0).sqrt() * (zeta + 1.0).sqrt(), "overdamped root")?;
@@ -165,12 +200,12 @@ fn propagate(zeta: f64, u: f64, position: f64, velocity: f64) -> Result<(f64, f6
             difference * (0.5 / beta)
         };
         (
-            product_exp(position, 1.0, decay)?
-                + product_exp(-position * slow, kernel, decay)?
-                + product_exp(velocity, kernel, decay)?,
-            product_exp(-position, kernel, decay)?
-                + product_exp(velocity, 1.0, decay + gap_time)?
-                + product_exp(velocity * slow, kernel, decay)?,
+            product_exp(&[position, position_scale], decay)?
+                + product_exp(&[-position, position_scale, slow, kernel], decay)?
+                + product_exp(&[velocity, kernel], decay)?,
+            product_exp(&[-position, position_scale, kernel], decay)?
+                + product_exp(&[velocity], decay + gap_time)?
+                + product_exp(&[velocity, slow, kernel], decay)?,
         )
     };
     Ok((
@@ -219,19 +254,22 @@ fn scaled_exp(coefficient: f64, exponent: f64) -> Result<f64, SpringError> {
     finite(value, "solution")
 }
 
-fn product_exp(left: f64, right: f64, exponent: f64) -> Result<f64, SpringError> {
-    finite(left, "solution factor")?;
-    finite(right, "solution factor")?;
-    if left == 0.0 || right == 0.0 {
+fn product_exp(factors: &[f64], exponent: f64) -> Result<f64, SpringError> {
+    for factor in factors {
+        finite(*factor, "solution factor")?;
+    }
+    if factors.contains(&0.0) {
         return Ok(0.0);
     }
-    let product = left * right;
+    let product = factors.iter().product::<f64>();
     if product.is_finite() && product != 0.0 {
         scaled_exp(product, exponent)
     } else {
-        finite(
-            left.signum() * right.signum() * (left.abs().ln() + right.abs().ln() + exponent).exp(),
-            "solution",
-        )
+        let sign = factors
+            .iter()
+            .map(|factor| factor.signum())
+            .product::<f64>();
+        let logarithm = factors.iter().map(|factor| factor.abs().ln()).sum::<f64>();
+        finite(sign * (logarithm + exponent).exp(), "solution")
     }
 }

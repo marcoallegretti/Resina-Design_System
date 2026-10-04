@@ -7,7 +7,7 @@ use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 mod activation;
 pub use activation::{ActivationEvent, ActivationKey, ActivationState, PressHold};
 mod spring;
-pub use spring::SpringParameters;
+pub use spring::{SpringDynamics, SpringParameters, SpringState};
 
 mod color;
 pub use color::{ColorAssignments, ColorRole, OpaqueColorAssignments};

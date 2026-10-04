@@ -79,3 +79,5 @@ The [sequential focus operation](spec/41-focus-traversal.md) chooses a target fr
 The [command activation lifecycle](spec/42-command-activation.md) resolves primary pointer gestures, Space/Enter, cancellation, availability and semantic invocation into next state, momentary pressed feedback, capture changes and one activation intent. Run `resina-activation <path|->`; `python tools/check_activation_backend.py -- <backend-command> -` checks the portable protocol. Native event routing, product action delivery and full component appearance remain separate responsibilities.
 
 [Opaque command paint](spec/43-command-paint.md) resolves authored rest, hover, pressed and disabled surface endpoints with independent focus, actual capability fallback and checked content contrast. This is portable paint evidence; full command components and native gesture adapters remain separate work.
+
+[Scalar spring trajectories](spec/44-spring-trajectories.md) preserve position and velocity when changing a target, with deterministic headless sampling and immediate reduced-motion fallback. Material calibration and animated component contracts remain separate work.

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:spring-trajectory-case:0.1.0",
+  "title": "Resina Spring Trajectory Conformance Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "request",
+    "requestSchemaValid"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request": {
+      "type": "object"
+    },
+    "requestSchemaValid": {
+      "type": "boolean"
+    },
+    "expected": {
+      "$ref": "urn:resina:schema:spring-trajectory-result:0.1.0"
+    },
+    "errorContains": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "expected"
+      ],
+      "not": {
+        "required": [
+          "errorContains"
+        ]
+      }
+    },
+    {
+      "required": [
+        "errorContains"
+      ],
+      "not": {
+        "required": [
+          "expected"
+        ]
+      }
+    }
+  ]
+}

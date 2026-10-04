@@ -86,6 +86,7 @@ jobs:
       - run: python tools/check_focus_qml_backend.py -- target/debug/resina-focus-qml${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_svg_backend.py -- target/debug/resina-focus-svg${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_backend.py -- target/debug/resina-spring${{ matrix.executableSuffix }} -
+      - run: python tools/check_spring_trajectory_backend.py -- target/debug/resina-spring-trajectory${{ matrix.executableSuffix }} -
       - run: python tools/check_token_backend.py -- target/debug/resina-token-resolve${{ matrix.executableSuffix }} -
       - run: python tools/check_resolver_backend.py -- target/debug/resina-token-compose${{ matrix.executableSuffix }} -
       - run: python tools/check_headless_backend.py -- target/debug/resina-headless${{ matrix.executableSuffix }} -

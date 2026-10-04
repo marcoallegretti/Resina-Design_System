@@ -1,0 +1,1530 @@
+[
+  {
+    "name": "damping 0 initial 3/-2 target -1 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": 3,
+        "velocity": -2
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial 3/-2 target -1 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": -1.305581158387496,
+        "velocity": -8.223532125708163
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial 3/-2 target -1 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": -2.85777198814652,
+        "velocity": 7.361707204190649
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial -4/3 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": -4,
+        "velocity": 3
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial -4/3 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2.458371737581244,
+        "velocity": 12.335298188562245
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial -4/3 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 4.786657982219779,
+        "velocity": -11.042560806285973
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial 2/5 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2,
+        "velocity": 5
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial 2/5 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 4.46362432497115,
+        "velocity": 0.8498357145012052
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0 initial 2/5 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 0.10799376173017938,
+        "velocity": -3.2682181043180596
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial 3/-2 target -1 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": 3,
+        "velocity": -2
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial 3/-2 target -1 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": -0.9008941468528338,
+        "velocity": -7.015240489342502
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial 3/-2 target -1 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": -2.4923780147723593,
+        "velocity": 4.80367659785486
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial -4/3 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": -4,
+        "velocity": 3
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial -4/3 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 1.8513412202792505,
+        "velocity": 10.522860734013754
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial -4/3 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 4.238567022158539,
+        "velocity": -7.205514896782288
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial 2/5 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2,
+        "velocity": 5
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial 2/5 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 4.149903568755839,
+        "velocity": 0.3388726733095417
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 0.4 initial 2/5 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 0.4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 0.7476890152874442,
+        "velocity": -1.9907036169367045
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial 3/-2 target -1 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": 3,
+        "velocity": -2
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial 3/-2 target -1 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": 1.0220951043211732,
+        "velocity": -2.564608424992707
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial 3/-2 target -1 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": -0.7069497777802531,
+        "velocity": -0.4762066111070886
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial -4/3 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": -4,
+        "velocity": 3
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial -4/3 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": -1.0331426564817598,
+        "velocity": 3.846912637489061
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial -4/3 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 1.5604246666703796,
+        "velocity": 0.7143099166606329
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial 2/5 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2,
+        "velocity": 5
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial 2/5 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2.8630893737956224,
+        "velocity": -0.493193927883213
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 4 initial 2/5 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2.1831563888873418,
+        "velocity": -0.2747345833310127
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial 3/-2 target -1 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": 3,
+        "velocity": -2
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial 3/-2 target -1 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": 1.7629342106042616,
+        "velocity": -1.4798792964443397
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial 3/-2 target -1 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": 0.37666745959673364,
+        "velocity": -0.7377538208950154
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial -4/3 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": -4,
+        "velocity": 3
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial -4/3 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": -2.144401315906392,
+        "velocity": 2.219818944666509
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial -4/3 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -4,
+        "velocity": 3
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": -0.06500118939510058,
+        "velocity": 1.1066307313425228
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial 2/5 target 2 time 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2,
+        "velocity": 5
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial 2/5 target 2 time 0.7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2.4920609557110405,
+        "velocity": -0.2367894045774773
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "damping 8 initial 2/5 target 2 time 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 8,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 2,
+        "velocity": 5
+      },
+      "target": 2,
+      "time": 2,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 2,
+      "state": {
+        "position": 2.247100455483241,
+        "velocity": -0.13241909162839197
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "settled negative endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 100,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": -1,
+        "velocity": 0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "reduced motion at time zero",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "target": -1,
+      "state": {
+        "position": -1,
+        "velocity": 0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "settled equilibrium",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": -1,
+        "velocity": 0
+      },
+      "target": -1,
+      "time": 0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1,
+      "state": {
+        "position": -1,
+        "velocity": 0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "reduced motion validates inputs without derived range requirements",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5e-324,
+        "stiffness": 1.7976931348623157e+308,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1.7976931348623157e+308,
+        "velocity": -1.7976931348623157e+308
+      },
+      "target": -1.7976931348623157e+308,
+      "time": 0,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "target": -1.7976931348623157e+308,
+      "state": {
+        "position": -1.7976931348623157e+308,
+        "velocity": 0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "negative time",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": -1,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "time must"
+  },
+  {
+    "name": "zero mass",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "mass must"
+  },
+  {
+    "name": "negative damping",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": -1,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "damping must"
+  },
+  {
+    "name": "zero threshold",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 0
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "velocityThreshold"
+  },
+  {
+    "name": "unknown initial field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2,
+        "extra": 1
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unsupported root version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must"
+  },
+  {
+    "name": "unsupported dynamics version",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.2.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must"
+  },
+  {
+    "name": "ordinary displacement overflow",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1.7976931348623157e+308,
+        "velocity": -2
+      },
+      "target": -1.7976931348623157e+308,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "initial displacement"
+  },
+  {
+    "name": "missing target",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing initial",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing reducedMotion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  }
+]

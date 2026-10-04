@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:spring-trajectory-result:0.1.0",
+  "title": "Resina Spring Trajectory Sample",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "representation",
+    "target",
+    "state",
+    "settled"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "representation": {
+      "enum": [
+        "spring",
+        "immediate"
+      ]
+    },
+    "target": {
+      "type": "number"
+    },
+    "state": {
+      "$ref": "urn:resina:schema:spring-state:0.1.0"
+    },
+    "settled": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "settled": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "velocity": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "representation": {
+            "const": "immediate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "settled": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}
