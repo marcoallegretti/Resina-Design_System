@@ -1,6 +1,9 @@
 #[cfg(not(target_os = "linux"))]
 compile_error!("the GUIdo backend requires Linux");
 
+mod command_content;
+pub use command_content::{CommandContentPrepareError, prepare_command_content};
+
 mod text;
 pub use text::{
     LabelMeasureError, LabelPrepareError, measure_command_label, prepare_command_label,

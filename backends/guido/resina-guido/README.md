@@ -100,6 +100,45 @@ to save each tested frame as a PPM for visual review. These are static typograph
 conformance probes, not interactive controls. Component accessibility and native
 event delivery remain separate work.
 
+## Command content composition
+
+Use `prepare_command_content` for a resolved `CommandPaintIr`, its complete
+`CommandLabelIr`, the same verified font family, device scale and sampling count.
+It validates shared front size/origin and actual content-contour containment,
+remeasures complete native text, takes its foreground from the body's readability
+result, and prepares material and navigation paint. A failure returns no command
+pair and preserves its diagnostic cause.
+
+The result is exactly two native draw commands, in order: the prepared RGBA image
+and complete centered text. Both use the command's physical origin. The image
+rectangle includes its prepared negative origin and full focus/side extent;
+text stays relative to the front origin. Insert both into the same render node
+and replace them together, including when consuming a sampled motion command.
+Do not apply the image rectangle's origin a second time to the node or label.
+The prepared RGBA source uses no deferred image decode or tint.
+
+The caller still owns the common environment/typography context, font mapping,
+glyph overhang verification and surrounding clipping. Color conversion and
+antialiasing are native operations; nominal IR contrast alone is not evidence of
+final pixel contrast. This API prepares content paint, not invocation, keyboard
+routing, an accessibility tree or a complete Button.
+
+Required Linux GPU tests compose actual text over authored Light/Dark material
+paint. The scene-derived label profile explicitly selects `type.tracking.normal`
+because pinned GUIdo rejects nonzero tracking; it does not silently alter the
+public default typography. Tests include the existing six-label expansion/script
+matrix at three text scales and four device scales, all four command phases
+across Cast, opaque Frost fallback and Elastomer in both schemes, and four sampled
+Elastomer motion times, plus unfocused replacement: 188 first composite frames.
+Compositions use the authored surrounding color. Subsequent material-only and
+text-only readbacks identify actual glyph coverage. Every covered pixel footprint
+must remain inside the content contour on uniform opaque pigment; solid native
+foreground/background pairs must retain at least 4.5 contrast. Missing lines,
+material changes outside coverage and diagnostic failures are checked. These
+fixtures do not establish all fonts/scripts, capability tiers or full component
+conformance. Set `RESINA_COMMAND_CAPTURE_DIR` to save PPM captures for visual
+review.
+
 ## Verification
 
 Linux needs Wayland and xkbcommon development libraries and a working GPU or
