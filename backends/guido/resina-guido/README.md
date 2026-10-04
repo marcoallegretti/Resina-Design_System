@@ -1,4 +1,4 @@
-# GUIdo paint preparation
+# GUIdo backend primitives
 
 This Linux backend prepares the existing Tier 0 opaque surface and focus-ring IR
 as complete raw images for GUIdo. Resina IR remains independent of the renderer.
@@ -42,8 +42,36 @@ share that allocation. Raw images require no asynchronous image decoding.
 The canonical CPU renderer enforces its pixel and sample limits before raster
 allocation. Invalid scales, unrepresentable bounds, excessive coordinate
 rounding, invalid sampling and resource limits return diagnostic errors. This
-paint backend supplies no input, text, accessibility semantics or component
+paint preparation supplies no input, text, accessibility semantics or component
 state management; consuming applications must provide those behaviors.
+
+## Native focus transfer
+
+After native layout, map opaque focus-scope IDs to mounted GUIdo `WidgetRef`s
+using `FocusBinding`. Pass the validated headless `FocusTraversalResult` and
+these bindings to `resina_guido::request_focus`. The owner supplies the actual
+localized order and eligibility to headless resolution; this adapter does not
+derive eligibility from native enabled state.
+
+A null target returns `None` without inspecting bindings or changing current or
+pending focus. For a selected target, all binding IDs must be nonempty and unique,
+and mounted native widgets must not be aliased by different IDs. The selected
+binding must exist and be mounted. Unselected unmounted bindings are permitted.
+Validation failures queue no request and leave any existing pending request intact.
+
+Success queues GUIdo's deferred native request and returns `RequestedFocus`.
+It does not acknowledge transfer. `is_focused()` observes actual native focus,
+subscribing to focus changes inside a GUIdo reactive scope. It returns an error
+if the handle no longer names the original mounted widget. A later request can
+supersede an earlier request, and native removal can cancel it. GUIdo queues a
+handle: rebinding that handle before the frame can change its destination; the
+owner must keep bindings stable during transfer and recover explicitly after
+tree changes. The observer detects a changed identity rather than accepting it.
+
+Resolve and publish focused paint from observed native focus. The owner remains
+responsible for keyboard events, focus scope boundaries, recovery, scrolling,
+activation and accessibility semantics. This adapter does not establish complete
+component keyboard conformance.
 
 ## Verification
 
@@ -68,3 +96,6 @@ partial-alpha and clear pixels are checked against the prepared straight pixels,
 allowing one byte of GPU rounding after premultiplication. Preparation tests also
 check complete bounds, shared image storage and explicit failures. These checks
 establish the implemented paint slice, not complete GUIdo component conformance.
+The native focus test uses real mounted widgets and frames to verify deferred
+transfer, superseding requests, null outcomes, validation before side effects,
+pending-request preservation and stale-handle diagnostics after disposal.

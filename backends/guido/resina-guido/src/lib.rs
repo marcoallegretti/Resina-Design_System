@@ -1,6 +1,9 @@
 #[cfg(not(target_os = "linux"))]
 compile_error!("the GUIdo backend requires Linux");
 
+mod focus;
+pub use focus::{FocusBinding, FocusTransferError, RequestedFocus, request_focus};
+
 use guido::{layout::Size, prelude::ImageSource};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{RasterError, RasterImage, Viewport};
