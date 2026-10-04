@@ -1,3 +1,6 @@
+mod slider_value;
+pub use slider_value::SliderValue;
+
 mod command_appearance;
 pub use command_appearance::{
     CommandAppearance, CommandPhase, CommandResponse, resolve_command_phase,

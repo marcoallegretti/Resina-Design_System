@@ -137,3 +137,9 @@ frame scheduling and material calibration remain owner responsibilities.
 [Sampled Toggle interaction paint](spec/57-toggle-part-motion.md) retains independent
 pigment/depth trajectories while preserving selection and track-only focus. Each
 sample reruns contrast and geometry guards before component assembly.
+
+[Bounded Slider values](spec/58-slider-value.md) validate explicit numeric bounds
+and current value before resolving normalized progress. The strict portable
+protocol and independent rational checker preserve endpoints and diagnose
+unrepresentable progress. Steps, complete control interaction, appearance and
+accessibility publication remain separate component obligations.

@@ -1,0 +1,530 @@
+[
+  {
+    "name": "minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "value": 0.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "value": 0.0,
+      "progress": 0.0
+    }
+  },
+  {
+    "name": "maximum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "value": 100.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "value": 100.0,
+      "progress": 1.0
+    }
+  },
+  {
+    "name": "midpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "value": 50.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "value": 50.0,
+      "progress": 0.5
+    }
+  },
+  {
+    "name": "negative interval",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -100.0,
+      "maximum": -20.0,
+      "value": -80.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": -100.0,
+      "maximum": -20.0,
+      "value": -80.0,
+      "progress": 0.25
+    }
+  },
+  {
+    "name": "zero crossing",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -10.0,
+      "maximum": 30.0,
+      "value": 0.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": -10.0,
+      "maximum": 30.0,
+      "value": 0.0,
+      "progress": 0.25
+    }
+  },
+  {
+    "name": "fractional interval",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.125,
+      "maximum": 0.625,
+      "value": 0.25
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.125,
+      "maximum": 0.625,
+      "value": 0.25,
+      "progress": 0.25
+    }
+  },
+  {
+    "name": "large opposite signs",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": 0.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": 0.0,
+      "progress": 0.5
+    }
+  },
+  {
+    "name": "large upper quarter",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": 5e+307
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": 5e+307,
+      "progress": 0.75
+    }
+  },
+  {
+    "name": "large near upper endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": 9.999999999999998e+307
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": 9.999999999999998e+307,
+      "progress": 0.9999999999999999
+    }
+  },
+  {
+    "name": "large near lower endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": -9.999999999999998e+307
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1e+308,
+      "value": -9.999999999999998e+307,
+      "progress": 9.9792015476736e-17
+    }
+  },
+  {
+    "name": "tiny subnormal interval",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 2e-323,
+      "value": 5e-324
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 2e-323,
+      "value": 5e-324,
+      "progress": 0.25
+    }
+  },
+  {
+    "name": "subnormal progress",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1e+308,
+      "value": 1.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1e+308,
+      "value": 1.0,
+      "progress": 1e-308
+    }
+  },
+  {
+    "name": "one ulp interval minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 1.0,
+      "maximum": 1.0000000000000002,
+      "value": 1.0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 1.0,
+      "maximum": 1.0000000000000002,
+      "value": 1.0,
+      "progress": 0.0
+    }
+  },
+  {
+    "name": "one ulp interval maximum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 1.0,
+      "maximum": 1.0000000000000002,
+      "value": 1.0000000000000002
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 1.0,
+      "maximum": 1.0000000000000002,
+      "value": 1.0000000000000002,
+      "progress": 1.0
+    }
+  },
+  {
+    "name": "near upper endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": 0.9999999999999999
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": 0.9999999999999999,
+      "progress": 0.9999999999999999
+    }
+  },
+  {
+    "name": "collapsed range",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 0.0,
+      "value": 0.0
+    },
+    "requestSchemaValid": true,
+    "errorContains": "less than"
+  },
+  {
+    "name": "reversed range",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 2.0,
+      "maximum": 1.0,
+      "value": 0.5
+    },
+    "requestSchemaValid": true,
+    "errorContains": "less than"
+  },
+  {
+    "name": "value below minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": -0.01
+    },
+    "requestSchemaValid": true,
+    "errorContains": "within"
+  },
+  {
+    "name": "value above maximum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": 1.01
+    },
+    "requestSchemaValid": true,
+    "errorContains": "within"
+  },
+  {
+    "name": "progress underflow",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1e+308,
+      "value": 5e-324
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "progress rounds to upper endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1e+308,
+      "maximum": 1.0,
+      "value": 0.0
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "unsupported version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": 0.5
+    },
+    "requestSchemaValid": false,
+    "errorContains": "0.1.0"
+  },
+  {
+    "name": "unknown member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": 0.5,
+      "backend": "guido"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "null value",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": null
+    },
+    "requestSchemaValid": false,
+    "errorContains": "number"
+  },
+  {
+    "name": "string value",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": "0.5"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "number"
+  },
+  {
+    "name": "missing schemaVersion",
+    "request": {
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "value": 0.5
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "maximum": 1.0,
+      "value": 0.5
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing maximum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "value": 0.5
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing value",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "inexact integer minimum -9007199254740993",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -9007199254740993,
+      "maximum": 18014398509481984,
+      "value": 9007199254740992
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  },
+  {
+    "name": "inexact integer maximum 9007199254740993",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 9007199254740993,
+      "value": 9007199254740992
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  },
+  {
+    "name": "inexact integer value 9007199254740993",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 18014398509481984,
+      "value": 9007199254740993
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  },
+  {
+    "name": "inexact integer minimum -9223372036854775807",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -9223372036854775807,
+      "maximum": 18014398509481984,
+      "value": 9007199254740992
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  },
+  {
+    "name": "inexact integer maximum 18446744073709551615",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 18446744073709551615,
+      "value": 9007199254740992
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  },
+  {
+    "name": "exact large integer",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 18014398509481984,
+      "value": 9007199254740992
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 18014398509481984,
+      "value": 9007199254740992,
+      "progress": 0.5
+    }
+  },
+  {
+    "name": "exact integer beyond unsigned64",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 5070602400912917605986812821504,
+      "value": 1267650600228229401496703205376
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 5070602400912917605986812821504,
+      "value": 1267650600228229401496703205376,
+      "progress": 0.25
+    }
+  },
+  {
+    "name": "inexact integer beyond unsigned64 minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": -1267650600228229401496703205377,
+      "maximum": 5070602400912917605986812821504,
+      "value": 1267650600228229401496703205376
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  },
+  {
+    "name": "inexact integer beyond unsigned64 maximum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 1267650600228229401496703205377,
+      "value": 1267650600228229401496703205376
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  },
+  {
+    "name": "inexact integer beyond unsigned64 value",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "minimum": 0,
+      "maximum": 5070602400912917605986812821504,
+      "value": 1267650600228229401496703205377
+    },
+    "requestSchemaValid": true,
+    "errorContains": "exact binary64"
+  }
+]

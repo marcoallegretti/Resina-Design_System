@@ -1,3 +1,8 @@
+mod slider_value;
+pub use slider_value::{
+    SliderValueError, SliderValueIr, resolve_slider_value, resolve_slider_value_source,
+};
+
 mod control_motion;
 mod toggle_part_motion;
 pub use toggle_part_motion::{

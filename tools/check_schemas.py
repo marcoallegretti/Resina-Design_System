@@ -207,6 +207,9 @@ def main():
         "schemas/focus-traversal-request.schema.json",
         "schemas/focus-traversal-result.schema.json",
         "schemas/focus-traversal-case.schema.json",
+        "schemas/slider-value-request.schema.json",
+        "schemas/slider-value-ir.schema.json",
+        "schemas/slider-value-case.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -1680,6 +1683,17 @@ def main():
         check_case(activation_result_validator, name,
                    apply_changes(activation_results[base], changes), False)
         checked += 1
+
+    for case in load_json(ROOT / "conformance/interaction/slider-value-cases.json"):
+        name = case["name"]
+        check_case(validator_for("schemas/slider-value-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/slider-value-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 2
+        if "expected" in case:
+            check_case(validator_for("schemas/slider-value-ir.schema.json"), name,
+                       case["expected"], True)
+            checked += 1
 
     toggle_names = set()
     for case in load_json(ROOT / "conformance/interaction/toggle-activation-cases.json"):

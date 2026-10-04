@@ -3,4 +3,4 @@ members = ["backends/cpu/resina-raster", "backends/quickshell/resina-qml", "back
 resolver = "2"
 
 [workspace.dependencies]
-serde_json = { version = "1", features = ["float_roundtrip"] }
+serde_json = { version = "1", features = ["float_roundtrip", "raw_value"] }
