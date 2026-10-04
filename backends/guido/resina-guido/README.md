@@ -8,8 +8,27 @@ dependencies do not enter the portable reference workspace.
 GUIdo is pinned to maintainer commit
 `e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb` from
 [upstream image-cache correction](https://github.com/MalpenZibo/guido/pull/607).
-That correction is currently unmerged. Required renderer tests cover image
-identity, first-frame readiness and replacement at this exact revision.
+That correction was merged upstream on 2026-10-04. This package retains its
+verified exact revision; required renderer tests cover image identity, first-frame
+readiness and replacement at that pin.
+
+## Native conformance limits
+
+The checked paint and content paths are implemented primitives. The following
+limits prevent claiming complete native command conformance:
+
+| Requirement | Verified boundary | Current behavior |
+| --- | --- | --- |
+| Authored nonzero letter spacing | The pinned GUIdo [text command](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/renderer/commands.rs#L246-L268) and [shared shaper](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/renderer/text.rs#L112-L165) have no spacing input. | Native measurement/preparation returns `LabelMeasureError::LetterSpacing`. The zero-tracking probe profile does not certify the authored default label profile. |
+| Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/input.rs#L850-L880) and [repeat](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/input.rs#L950-L978) both emit the same `KeyDown` fields. | No conforming native activation adapter is supplied. Do not infer repeat from the semantic hold: an independent invocation can clear that hold while the physical key remains down. |
+| Native assistive technology delivery | This package resolves/consumes portable [command semantics](../../../spec/47-command-accessibility.md) but supplies no native semantic-tree publication. | Headless accessibility checks and rendered pixels do not establish native screen-reader discovery or action delivery. |
+
+The first two upstream API gaps were also verified at main revision
+`04f67b4854f79cc080ba65fe4773f9f610b37874` on 2026-10-04. These are source-backed
+capability limits, not claims that a newly implemented GUIdo Button failed a
+native interaction test. The accessibility boundary describes this package's
+implemented scope; it does not certify or diagnose every upstream integration.
+Keep the authored Resina contracts intact while resolving these native gaps.
 
 ## Integration
 
