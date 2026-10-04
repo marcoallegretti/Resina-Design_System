@@ -210,6 +210,8 @@ def main():
         "schemas/slider-value-request.schema.json",
         "schemas/slider-value-ir.schema.json",
         "schemas/slider-value-case.schema.json",
+        "schemas/slider-adjustment-ir.schema.json",
+        "schemas/slider-adjustment-cases.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -1694,6 +1696,31 @@ def main():
             check_case(validator_for("schemas/slider-value-ir.schema.json"), name,
                        case["expected"], True)
             checked += 1
+
+    slider_adjustments = load_json(ROOT / "conformance/interaction/slider-adjustment-cases.json")
+    check_case(validator_for("schemas/slider-adjustment-cases.schema.json"),
+               "slider adjustment matrix", slider_adjustments, True)
+    names = [case["name"] for case in slider_adjustments["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider adjustment case")
+    checked += 1 + len(names)
+    adjustment_result = slider_adjustments["cases"][0]["expected"]
+    adjustment_validator = validator_for("schemas/slider-adjustment-ir.schema.json")
+    for name, changes in [
+        ("rejected adjustment changed", [{"path": "/accepted", "value": False}]),
+        ("unsupported adjustment version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+        ("unbounded adjustment progress", [{"path": "/value/progress", "value": 2}]),
+    ]:
+        check_case(adjustment_validator, name, apply_changes(adjustment_result, changes), False)
+        checked += 1
+    check_case(adjustment_validator, "unknown adjustment result member",
+               dict(adjustment_result, backend="native"), False)
+    checked += 1
+    for field in adjustment_result:
+        incomplete = copy.deepcopy(adjustment_result)
+        incomplete.pop(field)
+        check_case(adjustment_validator, f"missing adjustment result {field}", incomplete, False)
+        checked += 1
 
     toggle_names = set()
     for case in load_json(ROOT / "conformance/interaction/toggle-activation-cases.json"):

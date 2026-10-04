@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-adjustment-ir:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "value",
+    "accepted",
+    "changed"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "value": {
+      "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    },
+    "accepted": {
+      "type": "boolean"
+    },
+    "changed": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "accepted": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "changed": {
+            "const": false
+          }
+        }
+      }
+    }
+  ]
+}

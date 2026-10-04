@@ -143,3 +143,8 @@ and current value before resolving normalized progress. The strict portable
 protocol and independent rational checker preserve endpoints and diagnose
 unrepresentable progress. Steps, complete control interaction, appearance and
 accessibility publication remain separate component obligations.
+
+[Slider adjustment](spec/59-slider-adjustment.md) applies explicit numeric intents
+to the current bounded value with live enabled/read-only permission, bounded
+increment/decrement and distinct accepted/changed results. Native delivery,
+discrete steps and complete Slider components remain separate requirements.

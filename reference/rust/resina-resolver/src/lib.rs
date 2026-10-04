@@ -1,3 +1,9 @@
+mod slider_adjustment;
+pub use slider_adjustment::{
+    SliderAdjustment, SliderAdjustmentError, SliderAdjustmentInput, SliderAdjustmentIr,
+    resolve_slider_adjustment,
+};
+
 mod slider_value;
 pub use slider_value::{
     SliderValueError, SliderValueIr, resolve_slider_value, resolve_slider_value_source,
