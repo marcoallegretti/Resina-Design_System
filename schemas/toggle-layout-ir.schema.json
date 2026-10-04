@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-layout-ir:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "layoutDirection",
+    "checked",
+    "trackBounds",
+    "offThumbBounds",
+    "onThumbBounds",
+    "thumbBounds"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "layoutDirection": {
+      "enum": [
+        "ltr",
+        "rtl"
+      ]
+    },
+    "checked": {
+      "type": "boolean"
+    },
+    "trackBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    },
+    "offThumbBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    },
+    "onThumbBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    },
+    "thumbBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    }
+  }
+}

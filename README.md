@@ -108,3 +108,8 @@ an explicit Toggle requirement; ordinary command paint rejects that state.
 stable labeling, boolean checked state, actual focus and explicit invocation
 availability in a portable snapshot. Native tree and action delivery remain
 separate conformance requirements.
+
+[Horizontal Toggle part layout](spec/53-toggle-layout.md) allocates authored
+track/thumb bounds and distinct logical off/on endpoints, preserving RTL and
+stable track ownership. Shape, checked paint and full component target coverage
+remain separate requirements.

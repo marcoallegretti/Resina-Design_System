@@ -1,0 +1,1298 @@
+[
+  {
+    "name": "asymmetric ltr False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 52.0,
+        "height": 28.0
+      },
+      "offThumbBounds": {
+        "x": 4.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 26.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 4.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "asymmetric ltr True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 52.0,
+        "height": 28.0
+      },
+      "offThumbBounds": {
+        "x": 4.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 26.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 26.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "asymmetric rtl False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "rtl",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 52.0,
+        "height": 28.0
+      },
+      "offThumbBounds": {
+        "x": 28.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 6.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 28.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "asymmetric rtl True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "rtl",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 52.0,
+        "height": 28.0
+      },
+      "offThumbBounds": {
+        "x": 28.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 6.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 6.0,
+        "y": 3.0,
+        "width": 20.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "vertical centering ltr False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 64,
+        "height": 32
+      },
+      "thumbSize": {
+        "width": 18,
+        "height": 14
+      },
+      "insets": {
+        "start": 5,
+        "end": 7,
+        "top": 4,
+        "bottom": 2
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 64.0,
+        "height": 32.0
+      },
+      "offThumbBounds": {
+        "x": 5.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "onThumbBounds": {
+        "x": 39.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "thumbBounds": {
+        "x": 5.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      }
+    }
+  },
+  {
+    "name": "vertical centering ltr True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 64,
+        "height": 32
+      },
+      "thumbSize": {
+        "width": 18,
+        "height": 14
+      },
+      "insets": {
+        "start": 5,
+        "end": 7,
+        "top": 4,
+        "bottom": 2
+      },
+      "layoutDirection": "ltr",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 64.0,
+        "height": 32.0
+      },
+      "offThumbBounds": {
+        "x": 5.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "onThumbBounds": {
+        "x": 39.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "thumbBounds": {
+        "x": 39.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      }
+    }
+  },
+  {
+    "name": "vertical centering rtl False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 64,
+        "height": 32
+      },
+      "thumbSize": {
+        "width": 18,
+        "height": 14
+      },
+      "insets": {
+        "start": 5,
+        "end": 7,
+        "top": 4,
+        "bottom": 2
+      },
+      "layoutDirection": "rtl",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 64.0,
+        "height": 32.0
+      },
+      "offThumbBounds": {
+        "x": 41.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "onThumbBounds": {
+        "x": 7.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "thumbBounds": {
+        "x": 41.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      }
+    }
+  },
+  {
+    "name": "vertical centering rtl True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 64,
+        "height": 32
+      },
+      "thumbSize": {
+        "width": 18,
+        "height": 14
+      },
+      "insets": {
+        "start": 5,
+        "end": 7,
+        "top": 4,
+        "bottom": 2
+      },
+      "layoutDirection": "rtl",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 64.0,
+        "height": 32.0
+      },
+      "offThumbBounds": {
+        "x": 41.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "onThumbBounds": {
+        "x": 7.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      },
+      "thumbBounds": {
+        "x": 7.0,
+        "y": 10.0,
+        "width": 18.0,
+        "height": 14.0
+      }
+    }
+  },
+  {
+    "name": "zero inset ltr False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 40,
+        "height": 20
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 20
+      },
+      "insets": {
+        "start": 0,
+        "end": 0,
+        "top": 0,
+        "bottom": 0
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 40.0,
+        "height": 20.0
+      },
+      "offThumbBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 24.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "zero inset ltr True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 40,
+        "height": 20
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 20
+      },
+      "insets": {
+        "start": 0,
+        "end": 0,
+        "top": 0,
+        "bottom": 0
+      },
+      "layoutDirection": "ltr",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 40.0,
+        "height": 20.0
+      },
+      "offThumbBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 24.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 24.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "zero inset rtl False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 40,
+        "height": 20
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 20
+      },
+      "insets": {
+        "start": 0,
+        "end": 0,
+        "top": 0,
+        "bottom": 0
+      },
+      "layoutDirection": "rtl",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 40.0,
+        "height": 20.0
+      },
+      "offThumbBounds": {
+        "x": 24.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 24.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "zero inset rtl True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 40,
+        "height": 20
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 20
+      },
+      "insets": {
+        "start": 0,
+        "end": 0,
+        "top": 0,
+        "bottom": 0
+      },
+      "layoutDirection": "rtl",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 40.0,
+        "height": 20.0
+      },
+      "offThumbBounds": {
+        "x": 24.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "onThumbBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      },
+      "thumbBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 16.0,
+        "height": 20.0
+      }
+    }
+  },
+  {
+    "name": "fractional ltr False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 50.5,
+        "height": 24.5
+      },
+      "thumbSize": {
+        "width": 18.5,
+        "height": 16.5
+      },
+      "insets": {
+        "start": 2.5,
+        "end": 3.5,
+        "top": 1.5,
+        "bottom": 2.5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 50.5,
+        "height": 24.5
+      },
+      "offThumbBounds": {
+        "x": 2.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "onThumbBounds": {
+        "x": 28.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "thumbBounds": {
+        "x": 2.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      }
+    }
+  },
+  {
+    "name": "fractional ltr True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 50.5,
+        "height": 24.5
+      },
+      "thumbSize": {
+        "width": 18.5,
+        "height": 16.5
+      },
+      "insets": {
+        "start": 2.5,
+        "end": 3.5,
+        "top": 1.5,
+        "bottom": 2.5
+      },
+      "layoutDirection": "ltr",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "ltr",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 50.5,
+        "height": 24.5
+      },
+      "offThumbBounds": {
+        "x": 2.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "onThumbBounds": {
+        "x": 28.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "thumbBounds": {
+        "x": 28.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      }
+    }
+  },
+  {
+    "name": "fractional rtl False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 50.5,
+        "height": 24.5
+      },
+      "thumbSize": {
+        "width": 18.5,
+        "height": 16.5
+      },
+      "insets": {
+        "start": 2.5,
+        "end": 3.5,
+        "top": 1.5,
+        "bottom": 2.5
+      },
+      "layoutDirection": "rtl",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": false,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 50.5,
+        "height": 24.5
+      },
+      "offThumbBounds": {
+        "x": 29.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "onThumbBounds": {
+        "x": 3.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "thumbBounds": {
+        "x": 29.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      }
+    }
+  },
+  {
+    "name": "fractional rtl True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 50.5,
+        "height": 24.5
+      },
+      "thumbSize": {
+        "width": 18.5,
+        "height": 16.5
+      },
+      "insets": {
+        "start": 2.5,
+        "end": 3.5,
+        "top": 1.5,
+        "bottom": 2.5
+      },
+      "layoutDirection": "rtl",
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "layoutDirection": "rtl",
+      "checked": true,
+      "trackBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 50.5,
+        "height": 24.5
+      },
+      "offThumbBounds": {
+        "x": 29.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "onThumbBounds": {
+        "x": 3.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      },
+      "thumbBounds": {
+        "x": 3.5,
+        "y": 3.5,
+        "width": 18.5,
+        "height": 16.5
+      }
+    }
+  },
+  {
+    "name": "collapsed track",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 0,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "sizes"
+  },
+  {
+    "name": "collapsed thumb",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 0
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "sizes"
+  },
+  {
+    "name": "negative inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": -1,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "insets"
+  },
+  {
+    "name": "no travel",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 42,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "travel"
+  },
+  {
+    "name": "thumb too wide",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 43,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "fit"
+  },
+  {
+    "name": "thumb too tall",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 21
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "fit"
+  },
+  {
+    "name": "no horizontal interior",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 48,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "fit"
+  },
+  {
+    "name": "no vertical interior",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 25
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "fit"
+  },
+  {
+    "name": "lost horizontal inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 1e+308,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "lost vertical inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 1e+308
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "nonbinary checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": "mixed"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "boolean"
+  },
+  {
+    "name": "wrong direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "vertical",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "wrong version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "unknown field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false,
+      "renderer": "qt"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "missing schemaVersion",
+    "request": {
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "missing trackSize",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "trackSize"
+  },
+  {
+    "name": "missing thumbSize",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "thumbSize"
+  },
+  {
+    "name": "missing insets",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "insets"
+  },
+  {
+    "name": "missing layoutDirection",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "layoutDirection"
+  },
+  {
+    "name": "missing checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": "ltr"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "checked"
+  }
+]

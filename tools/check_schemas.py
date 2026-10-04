@@ -154,6 +154,9 @@ def main():
         "schemas/command-label-expansion.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-accessibility-ir.schema.json",
+        "schemas/toggle-layout-request.schema.json",
+        "schemas/toggle-layout-ir.schema.json",
+        "schemas/toggle-layout-case.schema.json",
         "schemas/toggle-accessibility-ir.schema.json",
         "schemas/toggle-accessibility-case.schema.json",
         "schemas/command-accessibility-case.schema.json",
@@ -1807,6 +1810,18 @@ def main():
         checked += 1
         if "expected" in case:
             check_case(validator_for("schemas/toggle-accessibility-ir.schema.json"), name, case["expected"], True)
+            checked += 1
+    toggle_layout_names = set()
+    for case in load_json(ROOT / "conformance/geometry/toggle-layout-cases.json"):
+        name = case["name"]
+        if name in toggle_layout_names:
+            raise ValueError(f"duplicate toggle layout case: {name}")
+        toggle_layout_names.add(name)
+        check_case(validator_for("schemas/toggle-layout-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/toggle-layout-request.schema.json"), name, case["request"], case["requestSchemaValid"])
+        checked += 1
+        if "expected" in case:
+            check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
