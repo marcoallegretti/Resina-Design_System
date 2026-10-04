@@ -1,3 +1,8 @@
+mod toggle_accessibility;
+pub use toggle_accessibility::{
+    ToggleAccessibilityAction, ToggleAccessibilityError, ToggleAccessibilityInput,
+    ToggleAccessibilityIr, ToggleAccessibilityState, resolve_toggle_accessibility,
+};
 mod toggle_states;
 pub use toggle_states::{ToggleStatesError, resolve_toggle_states, resolve_toggle_states_source};
 

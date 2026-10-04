@@ -103,3 +103,8 @@ remain separate component requirements.
 alongside current activation, hover, body rest and actual focus. Its public
 protocol and checker run on Linux and Windows. Checked-state appearance remains
 an explicit Toggle requirement; ordinary command paint rejects that state.
+
+[Binary Toggle accessibility](spec/52-toggle-accessibility.md) carries complete
+stable labeling, boolean checked state, actual focus and explicit invocation
+availability in a portable snapshot. Native tree and action delivery remain
+separate conformance requirements.

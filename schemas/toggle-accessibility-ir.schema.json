@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-accessibility-ir:0.1.0",
+  "title": "Resina Binary Toggle Accessibility",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "role",
+    "name",
+    "description",
+    "value",
+    "state",
+    "actions",
+    "focusable",
+    "relationships"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "role": {
+      "const": "switch"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
+    },
+    "value": {
+      "type": "null"
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "focused",
+        "checked"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "focused": {
+          "type": "boolean"
+        },
+        "checked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "available"
+        ],
+        "properties": {
+          "kind": {
+            "const": "invoke"
+          },
+          "available": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "focusable": {
+      "type": "boolean"
+    },
+    "relationships": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "focusable": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "focused": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "focusable": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "actions": {
+            "items": {
+              "properties": {
+                "available": {
+                  "const": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "enabled": {
+                "const": false
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "actions": {
+            "items": {
+              "properties": {
+                "available": {
+                  "const": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

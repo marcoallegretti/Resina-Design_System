@@ -1,0 +1,532 @@
+[
+  {
+    "name": "ordinary / off",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Reconnect",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "checked": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "ordinary / on",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Reconnect",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "checked": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "focused description / off",
+    "input": {
+      "labelText": "Reconnect now",
+      "description": "Connect using the saved network settings.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Reconnect now",
+      "description": "Connect using the saved network settings.",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "checked": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "focused description / on",
+    "input": {
+      "labelText": "Reconnect now",
+      "description": "Connect using the saved network settings.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Reconnect now",
+      "description": "Connect using the saved network settings.",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "checked": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled discoverable / off",
+    "input": {
+      "labelText": "Reconnect to Wi-Fi",
+      "description": "Network unavailable.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Reconnect to Wi-Fi",
+      "description": "Network unavailable.",
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": true,
+        "checked": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled discoverable / on",
+    "input": {
+      "labelText": "Reconnect to Wi-Fi",
+      "description": "Network unavailable.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Reconnect to Wi-Fi",
+      "description": "Network unavailable.",
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": true,
+        "checked": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled excluded / off",
+    "input": {
+      "labelText": "Verbindung erneut herstellen",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false,
+      "checked": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Verbindung erneut herstellen",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "checked": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": false,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled excluded / on",
+    "input": {
+      "labelText": "Verbindung erneut herstellen",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false,
+      "checked": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "Verbindung erneut herstellen",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "checked": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": false,
+      "relationships": []
+    }
+  },
+  {
+    "name": "keyboard held / off",
+    "input": {
+      "labelText": "إعادة الاتصال بالشبكة",
+      "description": "إعادة الاتصال",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "focusable": true,
+      "checked": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "إعادة الاتصال بالشبكة",
+      "description": "إعادة الاتصال",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "checked": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "keyboard held / on",
+    "input": {
+      "labelText": "إعادة الاتصال بالشبكة",
+      "description": "إعادة الاتصال",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "focusable": true,
+      "checked": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "إعادة الاتصال بالشبكة",
+      "description": "إعادة الاتصال",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "checked": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "pointer held / off",
+    "input": {
+      "labelText": "  Save\nas…  ",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "pointer-1",
+          "inside": true
+        }
+      },
+      "focusable": true,
+      "checked": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "  Save\nas…  ",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "checked": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "pointer held / on",
+    "input": {
+      "labelText": "  Save\nas…  ",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "pointer-1",
+          "inside": true
+        }
+      },
+      "focusable": true,
+      "checked": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "switch",
+      "name": "  Save\nas…  ",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "checked": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "blank description / off",
+    "input": {
+      "labelText": "Reconnect",
+      "description": "  \t",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": false
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "blank description / on",
+    "input": {
+      "labelText": "Reconnect",
+      "description": "  \t",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true,
+      "checked": true
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "enabled not focusable / off",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false,
+      "checked": false
+    },
+    "error": "EnabledNotFocusable"
+  },
+  {
+    "name": "enabled not focusable / on",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false,
+      "checked": true
+    },
+    "error": "EnabledNotFocusable"
+  },
+  {
+    "name": "focused not focusable / off",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": false,
+      "checked": false
+    },
+    "error": "FocusedNotFocusable"
+  },
+  {
+    "name": "focused not focusable / on",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": false,
+      "checked": true
+    },
+    "error": "FocusedNotFocusable"
+  }
+]

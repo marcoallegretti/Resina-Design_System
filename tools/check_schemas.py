@@ -154,6 +154,8 @@ def main():
         "schemas/command-label-expansion.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-accessibility-ir.schema.json",
+        "schemas/toggle-accessibility-ir.schema.json",
+        "schemas/toggle-accessibility-case.schema.json",
         "schemas/command-accessibility-case.schema.json",
         "schemas/command-motion-request.schema.json",
         "schemas/command-motion-ir.schema.json",
@@ -1795,6 +1797,17 @@ def main():
         document = dict(accessibility, **{field: value})
         check_case(accessibility_validator, f"unsupported accessibility {field}", document, False)
         checked += 1
+    toggle_accessibility_names = set()
+    for case in load_json(ROOT / "conformance/accessibility/toggle-cases.json"):
+        name = case["name"]
+        if name in toggle_accessibility_names:
+            raise ValueError(f"duplicate toggle accessibility case: {name}")
+        toggle_accessibility_names.add(name)
+        check_case(validator_for("schemas/toggle-accessibility-case.schema.json"), name, case, True)
+        checked += 1
+        if "expected" in case:
+            check_case(validator_for("schemas/toggle-accessibility-ir.schema.json"), name, case["expected"], True)
+            checked += 1
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 
