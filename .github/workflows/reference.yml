@@ -70,7 +70,7 @@ jobs:
       - run: cargo build -p resina-qml --bins --locked
       - run: cargo build -p resina-slint --bins --locked
       - run: python tools/check_focus_slint_backend.py -- target/debug/resina-focus-slint${{ matrix.executableSuffix }} -
-      - name: Check native Slint focus and availability
+      - name: Check native Slint focus
         if: runner.os == 'Linux'
         shell: bash
         run: |
@@ -82,13 +82,19 @@ jobs:
           tar -xzf target/slint-viewer.tar.gz -C target/slint-viewer
           target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/focus-recovery.slint
           python tools/check_slint_focus_recovery.py --image target/slint-viewer/focus-recovery.png -- target/slint-viewer/slint-viewer/slint-viewer
-          target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/availability-probe.slint
-          xvfb-run -a python tools/check_slint_native_availability.py --report-only -- target/slint-viewer/slint-viewer/slint-viewer > target/slint-viewer/native-availability.json
-          cat target/slint-viewer/native-availability.json
           target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/focus-probe.slint
           for scale in 1 1.25 2 3; do
             python tools/check_slint_focus_runtime.py --image "target/slint-viewer/focus-$scale.png" --scale "$scale" -- env SLINT_SCALE_FACTOR="$scale" target/slint-viewer/slint-viewer/slint-viewer --screenshot "target/slint-viewer/focus-$scale.png" conformance/slint/focus-probe.slint
           done
+      - name: Measure native Slint availability
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/availability-probe.slint
+          resina_probe_status=0
+          xvfb-run -a -e /dev/stderr python tools/check_slint_native_availability.py --report-only -- target/slint-viewer/slint-viewer/slint-viewer > target/slint-viewer/native-availability.json || resina_probe_status=$?
+          cat target/slint-viewer/native-availability.json
+          exit "$resina_probe_status"
       - name: Save native Slint availability report
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v7
