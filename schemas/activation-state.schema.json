@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:activation-state:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "enabled",
+    "focused",
+    "hold"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "focused": {
+      "type": "boolean"
+    },
+    "hold": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "inside"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pointer"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inside": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "key"
+          ],
+          "properties": {
+            "kind": {
+              "const": "key"
+            },
+            "key": {
+              "enum": [
+                "space",
+                "enter"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "enabled": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "hold": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "hold": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "key"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "focused": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}

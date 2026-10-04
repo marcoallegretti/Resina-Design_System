@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:activation-request:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "state",
+    "event"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "state": {
+      "$ref": "urn:resina:schema:activation-state:0.1.0"
+    },
+    "event": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "inside"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pointerDown"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inside": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "inside"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pointerMove"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inside": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "inside"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pointerUp"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inside": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pointerCancel"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "key",
+            "repeat"
+          ],
+          "properties": {
+            "kind": {
+              "const": "keyDown"
+            },
+            "key": {
+              "enum": [
+                "space",
+                "enter"
+              ]
+            },
+            "repeat": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "key"
+          ],
+          "properties": {
+            "kind": {
+              "const": "keyUp"
+            },
+            "key": {
+              "enum": [
+                "space",
+                "enter"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "focused"
+          ],
+          "properties": {
+            "kind": {
+              "const": "focus"
+            },
+            "focused": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "enabled"
+          ],
+          "properties": {
+            "kind": {
+              "const": "availability"
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "invoke"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "cancel"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

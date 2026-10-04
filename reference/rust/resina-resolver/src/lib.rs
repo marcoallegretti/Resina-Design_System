@@ -4,6 +4,11 @@ use resina_tokens::{ResolvedToken, validate_resolved_value};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
+mod activation;
+pub use activation::{
+    ActivationError, ActivationResult, CaptureChange, resolve_activation, resolve_activation_source,
+};
+
 mod edge_contrast;
 mod elevation;
 mod extruded_contour;

@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:activation-result:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "state",
+    "activate",
+    "pressed",
+    "capture"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "state": {
+      "$ref": "urn:resina:schema:activation-state:0.1.0"
+    },
+    "activate": {
+      "type": "boolean"
+    },
+    "pressed": {
+      "type": "boolean"
+    },
+    "capture": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "acquire",
+                "release"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pressed": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "const": "key"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pressed": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "const": "pointer"
+                  },
+                  "inside": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "kind",
+                  "inside"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pressed": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "const": "pointer"
+                  },
+                  "inside": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "kind",
+                  "inside"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pressed": {
+            "const": false
+          }
+        }
+      }
+    }
+  ]
+}
