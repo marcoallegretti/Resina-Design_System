@@ -1,0 +1,22 @@
+export component AvailabilityProbe inherits Window {
+    title: "Resina native availability conformance probe";
+    width: 180px;
+    height: 120px;
+
+    for configuration[index] in [
+        { label: "Enabled command", available: true, focusable: true },
+        { label: "Disabled command", available: false, focusable: true },
+        { label: "Excluded command", available: false, focusable: false },
+    ] : FocusScope {
+        y: index * 40px;
+        width: parent.width;
+        height: 40px;
+        enabled: configuration.focusable;
+        accessible-role: button;
+        accessible-label: configuration.label;
+        accessible-description: "Native availability conformance fixture.";
+        accessible-enabled: configuration.available;
+        accessible-action-default => { debug("resina-availability-native-action", configuration.label); }
+        Text { text: configuration.label; accessible-role: none; }
+    }
+}

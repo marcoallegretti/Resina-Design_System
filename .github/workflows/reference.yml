@@ -70,22 +70,32 @@ jobs:
       - run: cargo build -p resina-qml --bins --locked
       - run: cargo build -p resina-slint --bins --locked
       - run: python tools/check_focus_slint_backend.py -- target/debug/resina-focus-slint${{ matrix.executableSuffix }} -
-      - name: Check native Slint focus
+      - name: Check native Slint focus and availability
         if: runner.os == 'Linux'
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends --no-upgrade -y libinput10
+          sudo apt-get install --no-install-recommends --no-upgrade -y libinput10 at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth
           mkdir -p target/slint-viewer
           curl --fail --location --retry 3 https://github.com/slint-ui/slint/releases/download/v1.18.1/slint-viewer-x86_64-unknown-linux-gnu.tar.gz -o target/slint-viewer.tar.gz
           echo '86b260e661cdc24dcadaf63266b034f3281cbec542afc26545a72a986fe42a13  target/slint-viewer.tar.gz' | sha256sum --check
           tar -xzf target/slint-viewer.tar.gz -C target/slint-viewer
           target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/focus-recovery.slint
           python tools/check_slint_focus_recovery.py --image target/slint-viewer/focus-recovery.png -- target/slint-viewer/slint-viewer/slint-viewer
+          target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/availability-probe.slint
+          xvfb-run -a python tools/check_slint_native_availability.py --report-only -- target/slint-viewer/slint-viewer/slint-viewer > target/slint-viewer/native-availability.json
+          cat target/slint-viewer/native-availability.json
           target/slint-viewer/slint-viewer/slint-viewer --check conformance/slint/focus-probe.slint
           for scale in 1 1.25 2 3; do
             python tools/check_slint_focus_runtime.py --image "target/slint-viewer/focus-$scale.png" --scale "$scale" -- env SLINT_SCALE_FACTOR="$scale" target/slint-viewer/slint-viewer/slint-viewer --screenshot "target/slint-viewer/focus-$scale.png" conformance/slint/focus-probe.slint
           done
+      - name: Save native Slint availability report
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: slint-native-availability
+          path: target/slint-viewer/native-availability.json
+          if-no-files-found: error
       - run: python tools/check_focus_qml_backend.py -- target/debug/resina-focus-qml${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_svg_backend.py -- target/debug/resina-focus-svg${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_backend.py -- target/debug/resina-spring${{ matrix.executableSuffix }} -
