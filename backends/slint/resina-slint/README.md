@@ -42,7 +42,7 @@ The checker requires the pinned viewer, all nine exact observations, a successfu
 
 ## Native availability conformance
 
-The [availability fixture](../../../conformance/slint/availability-probe.slint) and [Linux AT-SPI checker](../../../tools/check_slint_native_availability.py) inspect three ordinary command policies through a fresh native accessibility bus: enabled/focusable, disabled/discoverable, and disabled/excluded. They require the official Slint viewer 1.18.1, a native X11 or Wayland compositor, `dbus-send`, `dbus-run-session`, AT-SPI services and the desktop GSettings schemas. Run from the repository root:
+The [availability fixture](../../../conformance/slint/availability-probe.slint) and [Linux AT-SPI checker](../../../tools/check_slint_native_availability.py) inspect three ordinary command policies through a fresh native accessibility bus: enabled/focusable, disabled/discoverable, and disabled/excluded. They require the official Slint viewer 1.18.1, a native X11 or Wayland compositor, `dbus-send`, `dbus-run-session`, AT-SPI services and the desktop GSettings schemas. X11 additionally requires `libxkbcommon-x11.so.0` (Ubuntu package `libxkbcommon-x11-0`); the pinned Winit keyboard loader opens that library dynamically. Run from the repository root:
 
 ```sh
 python tools/check_slint_native_availability.py -- slint-viewer
