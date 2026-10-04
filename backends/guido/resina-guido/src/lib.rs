@@ -103,10 +103,15 @@ pub fn prepare_focus(
 
 fn coordinate(value: f64) -> Result<f32, PrepareError> {
     let rounded = value as f32;
-    if !rounded.is_finite() || (value - f64::from(rounded)).abs() > MAX_COORDINATE_ERROR {
+    check_coordinate(value, rounded)?;
+    Ok(rounded)
+}
+
+fn check_coordinate(value: f64, native: f32) -> Result<(), PrepareError> {
+    if !native.is_finite() || (value - f64::from(native)).abs() > MAX_COORDINATE_ERROR {
         return Err(PrepareError::CoordinatePrecision(value));
     }
-    Ok(rounded)
+    Ok(())
 }
 
 pub fn prepare_surface_paint(
@@ -164,8 +169,8 @@ fn prepare(
         coordinate(viewport.origin.y)?,
     );
     let size = Size::new(coordinate(width / scale)?, coordinate(height / scale)?);
-    coordinate(right / scale)?;
-    coordinate(bottom / scale)?;
+    check_coordinate(right / scale, origin.0 + size.width)?;
+    check_coordinate(bottom / scale, origin.1 + size.height)?;
     let image = render(viewport).map_err(PrepareError::Raster)?;
     let source = ImageSource::Rgba {
         width: image.width(),
@@ -177,4 +182,66 @@ fn prepare(
         origin,
         size,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn image_corner_addition_must_preserve_the_coordinate_budget_before_rasterizing() {
+        for (scale, start, pixels) in [
+            (1.25_f32, 40_001.0, 1.0),
+            (1.5, 40_000.0, 1.0),
+            (1.75, 40_000.0, 6.0),
+            (3.0, 49_129.0, 24.0),
+        ] {
+            let scale64 = f64::from(scale);
+            let origin = start / scale64;
+            let extent = pixels / scale64;
+            let edge = (start + pixels) / scale64;
+            let native_origin = coordinate(origin).unwrap();
+            let native_extent = coordinate(extent).unwrap();
+            coordinate(edge).unwrap();
+            assert!((f64::from(native_origin + native_extent) - edge).abs() > MAX_COORDINATE_ERROR);
+            for horizontal in [true, false] {
+                let bounds = PhysicalBounds {
+                    x: if horizontal {
+                        (start + 0.125) / scale64
+                    } else {
+                        0.0
+                    },
+                    y: if horizontal {
+                        0.0
+                    } else {
+                        (start + 0.125) / scale64
+                    },
+                    width: (pixels - 0.25) / scale64,
+                    height: (pixels - 0.25) / scale64,
+                };
+                assert!(matches!(
+                    prepare(bounds, scale, |_| panic!("invalid native corners must fail before rasterization")),
+                    Err(PrepareError::CoordinatePrecision(value)) if value == edge
+                ));
+            }
+        }
+    }
+
+    #[test]
+    fn representable_image_corners_reach_rasterization() {
+        let bounds = PhysicalBounds {
+            x: 32_000.1,
+            y: -32_000.7,
+            width: 0.2,
+            height: 0.2,
+        };
+        assert!(matches!(
+            prepare(bounds, 1.25, |viewport| {
+                assert_eq!(viewport.width, 1);
+                assert_eq!(viewport.height, 1);
+                Err(RasterError::InvalidSampling)
+            }),
+            Err(PrepareError::Raster(RasterError::InvalidSampling))
+        ));
+    }
 }

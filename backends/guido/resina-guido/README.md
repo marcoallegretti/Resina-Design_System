@@ -53,7 +53,10 @@ additional transforms or fractional parent placement can resample the image.
 
 Preparation encloses the complete silhouette or placed outer focus contour in an
 outward-aligned device-pixel viewport. Coordinates use GUIdo's binary32 values;
-conversion errors above 1/1024 logical px fail explicitly. Pixel buffers contain
+conversion errors above 1/1024 logical px fail explicitly. This budget also checks
+GUIdo's binary32 origin-plus-size addition at both far image corners before
+rasterization; individually representable origin and size do not certify those
+corners. Parent transforms remain the caller's responsibility. Pixel buffers contain
 straight RGBA8, as required by GUIdo. Converting the owned raster buffer to an
 `Arc` can allocate and copy once; subsequent source and prepared-paint clones
 share that allocation. Raw images require no asynchronous image decoding.
