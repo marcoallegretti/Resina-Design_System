@@ -1382,7 +1382,10 @@ def main():
     for vector in load_json(ROOT / "conformance/tokens/primitive-value-vectors.json"):
         if vector["type"] == "color":
             check_case(color_value, vector["name"], vector["value"], "error" not in vector)
-            checked += 1
+            document = copy.deepcopy(expected_result)
+            document["colors"]["focus"] = vector["value"]
+            check_case(result_schema, f"headless result: {vector['name']}", document, "error" not in vector)
+            checked += 2
     for vector in load_json(ROOT / "conformance/tokens/color-space-vectors.json"):
         check_case(color_value, vector["name"], vector["value"], "error" not in vector)
         checked += 1

@@ -29,6 +29,12 @@
   {"name": "color component range", "type": "color", "value": {"colorSpace": "srgb", "components": [1.2, 0, 0]}, "error": "OutOfRange"},
   {"name": "color unknown space", "type": "color", "value": {"colorSpace": "unknown", "components": [0, 0, 0]}, "error": "InvalidValue"},
   {"name": "color alpha range", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": -0.1}, "error": "OutOfRange"},
+  {"name": "color hex accepts mixed case", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#aB12eF"}},
+  {"name": "color hex rejects trailing LF", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#000000\n"}, "error": "InvalidValue"},
+  {"name": "color hex rejects trailing CR", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#000000\r"}, "error": "InvalidValue"},
+  {"name": "color hex rejects trailing CRLF", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#000000\r\n"}, "error": "InvalidValue"},
+  {"name": "color hex rejects trailing space", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#000000 "}, "error": "InvalidValue"},
+  {"name": "color hex rejects alpha digits", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#000000ff"}, "error": "InvalidValue"},
   {"name": "color hex requires six digits", "type": "color", "value": {"colorSpace": "srgb", "components": [0, 0, 0], "hex": "#000"}, "error": "InvalidValue"},
   {"name": "unknown type is rejected", "type": "unknown", "value": {}, "error": "UnsupportedType"}
 ]
