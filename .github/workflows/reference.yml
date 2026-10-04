@@ -23,7 +23,7 @@ jobs:
       - name: Install GUIdo build and software GPU dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends --no-upgrade -y libwayland-dev libxkbcommon-dev libvulkan1 mesa-vulkan-drivers
+          sudo apt-get install --no-install-recommends --no-upgrade -y libwayland-dev libxkbcommon-dev libvulkan1 mesa-vulkan-drivers fonts-dejavu-core
       - run: cargo fmt --manifest-path backends/guido/resina-guido/Cargo.toml -- --check
       - run: python -m pip install -r tools/requirements-schema.txt
       - run: cargo build -p resina-resolver --bin resina-theme-resolve --locked
@@ -31,6 +31,7 @@ jobs:
       - name: Check preparation and required GPU rendering
         env:
           RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
+          RESINA_LABEL_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
         run: cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
       - run: cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
   rust:

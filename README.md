@@ -83,3 +83,5 @@ The [command activation lifecycle](spec/42-command-activation.md) resolves prima
 [Scalar spring trajectories](spec/44-spring-trajectories.md) preserve position and velocity when changing a target, with deterministic headless sampling and immediate reduced-motion fallback. Material calibration and animated component contracts remain separate work.
 
 [Sampled command paint](spec/45-command-motion.md) connects retargetable spring state to complete guarded paint, with explicit bounded channel projection and actual reduced-motion feedback. Material calibration and native animation delivery remain separate work.
+
+[Complete command label layout](spec/46-command-label-layout.md) resolves content sizing and bounded reflow from complete producer measurements. Its portable IR preserves resolved typography and offered wrapping width. The GUIdo producer has real Linux font shaping evidence at 100%, 150% and 200% text scaling; complete components and native text pixel conformance remain pending.

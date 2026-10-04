@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "0.1.0",
+  "text": "Reconnect",
+  "typography": {
+    "familyRole": "sans",
+    "fontSize": {
+      "value": 40.0,
+      "unit": "px"
+    },
+    "fontWeight": 600.0,
+    "lineHeight": 1.4,
+    "letterSpacing": {
+      "value": 0.5,
+      "unit": "px"
+    }
+  },
+  "size": {
+    "width": 200.0,
+    "height": 70.0
+  },
+  "labelBounds": {
+    "x": 12.0,
+    "y": 6.0,
+    "width": 180.0,
+    "height": 54.0
+  },
+  "layoutDirection": "ltr"
+}

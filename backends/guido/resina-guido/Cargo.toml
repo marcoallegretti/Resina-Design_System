@@ -16,4 +16,5 @@ resina-resolver = { path = "../../../reference/rust/resina-resolver" }
 resina-raster = { path = "../../cpu/resina-raster", default-features = false }
 
 [dev-dependencies]
+resina-environment = { path = "../../../reference/rust/resina-environment" }
 serde_json = { version = "1", features = ["float_roundtrip"] }

@@ -125,6 +125,7 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/command-label-ir.schema.json",
         "schemas/command-motion-request.schema.json",
         "schemas/command-motion-ir.schema.json",
         "schemas/command-motion-case.schema.json",
@@ -1613,6 +1614,22 @@ def main():
         check_case(validator_for("schemas/command-motion-request.schema.json"), case["name"],
                    apply_changes(motion_base, case["requestChanges"]), case["requestSchemaValid"])
         checked += 2
+    label = load_json(ROOT / "conformance/ir/command-label-ir.json")
+    label_validator = validator_for("schemas/command-label-ir.schema.json")
+    check_case(label_validator, "complete label IR", label, True)
+    checked += 1
+    for name, changes in [
+        ("empty label", [{"path": "/text", "value": ""}]),
+        ("zero label width", [{"path": "/labelBounds/width", "value": 0}]),
+        ("negative label origin", [{"path": "/labelBounds/x", "value": -1}]),
+        ("invalid direction", [{"path": "/layoutDirection", "value": "auto"}]),
+        ("unsupported label version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+    ]:
+        check_case(label_validator, name, apply_changes(label, changes), False)
+        checked += 1
+    extra = dict(label, renderer="native")
+    check_case(label_validator, "renderer leakage", extra, False)
+    checked += 1
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 
