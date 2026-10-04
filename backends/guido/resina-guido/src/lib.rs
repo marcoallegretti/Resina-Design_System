@@ -2,7 +2,9 @@
 compile_error!("the GUIdo backend requires Linux");
 
 mod toggle_content;
-pub use toggle_content::{ToggleContentPrepareError, prepare_toggle_content};
+pub use toggle_content::{
+    ToggleContentPrepareError, prepare_toggle_content, prepare_toggle_travel_content,
+};
 
 mod command_content;
 pub use command_content::{CommandContentPrepareError, prepare_command_content};

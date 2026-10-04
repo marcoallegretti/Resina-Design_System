@@ -78,6 +78,8 @@ fn request(family: &str, direction: LayoutDirection) -> Value {
     r["surface"]["body"]["theme"]["themeSource"] = json!(theme.to_string());
     r["surface"]["body"]["theme"]["environment"]["layoutDirection"] =
         serde_json::to_value(direction).unwrap();
+    r["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["reducedMotion"] =
+        json!(false);
     r
 }
 struct Fixture {
@@ -647,4 +649,196 @@ fn published_label_colors_do_not_borrow_live_palette_inputs() {
     assert_eq!(snapshot.label_background(), &f.label_background);
     assert_ne!(snapshot.label_foreground(), &foreground);
     assert_ne!(snapshot.label_background(), &background);
+}
+
+#[test]
+fn thumb_travel_preserves_checked_semantics_target_and_unprojected_retarget_state() {
+    use resina_model::{SpringDynamics, SpringState};
+    use resina_resolver::{ToggleTravelPolicy, ToggleTravelProjection, resolve_toggle_travel};
+    let dynamics = SpringDynamics::try_new(1.0, 100.0, 20.0, 0.0001, 0.0001).unwrap();
+    for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+        for checked in [false, true] {
+            let mut case = cases().remove(0);
+            case.checked = checked;
+            case.layout_checked = checked;
+            if checked {
+                case.track_states.push("checked".into());
+                case.thumb_states.push("checked".into());
+            }
+            let f = Fixture::new("elastomer", direction, &case);
+            let snapshot = resolve_toggle_snapshot(f.input()).unwrap();
+            let initial = SpringState::try_new(if checked { 0.0 } else { 1.0 }, 0.0).unwrap();
+            let sample = resolve_toggle_travel(&snapshot, &dynamics, initial, 0.1).unwrap();
+            assert_eq!(sample.policy(), ToggleTravelPolicy::Spring);
+            assert_eq!(sample.projection(), ToggleTravelProjection::None);
+            let decay = (-1.0_f64).exp();
+            let expected = if checked {
+                1.0 - 2.0 * decay
+            } else {
+                2.0 * decay
+            };
+            let velocity = if checked { 10.0 * decay } else { -10.0 * decay };
+            assert!((sample.trajectory().state().position() - expected).abs() < 1e-12);
+            assert!((sample.trajectory().state().velocity() - velocity).abs() < 1e-12);
+            let off = f.layout.off_thumb_bounds();
+            let on = f.layout.on_thumb_bounds();
+            assert!((sample.thumb_bounds().x - (off.x + (on.x - off.x) * expected)).abs() < 1e-12);
+            assert_eq!(sample.snapshot().hit_region().bounds(), f.target.bounds());
+            assert_eq!(sample.snapshot().accessibility().state().checked(), checked);
+            assert_eq!(sample.thumb_bounds().y, off.y);
+            assert_eq!(sample.thumb_bounds().width, off.width);
+            let continued =
+                resolve_toggle_travel(&snapshot, &dynamics, sample.trajectory().state(), 0.0)
+                    .unwrap();
+            assert_eq!(continued.trajectory().state(), sample.trajectory().state());
+            let mut reverse = case;
+            reverse.checked = !checked;
+            reverse.layout_checked = !checked;
+            reverse.track_states.retain(|state| state != "checked");
+            reverse.thumb_states.retain(|state| state != "checked");
+            if !checked {
+                reverse.track_states.push("checked".into());
+                reverse.thumb_states.push("checked".into());
+            }
+            let reversed = Fixture::new("elastomer", direction, &reverse);
+            let reversed = resolve_toggle_snapshot(reversed.input()).unwrap();
+            let retargeted =
+                resolve_toggle_travel(&reversed, &dynamics, sample.trajectory().state(), 0.0)
+                    .unwrap();
+            assert_eq!(retargeted.trajectory().state(), sample.trajectory().state());
+            assert_eq!(retargeted.thumb_bounds(), sample.thumb_bounds());
+            assert_eq!(
+                retargeted.trajectory().target(),
+                if checked { 0.0 } else { 1.0 }
+            );
+
+            for (position, projection, bounds) in [
+                (-0.5, ToggleTravelProjection::OffEndpoint, off),
+                (1.5, ToggleTravelProjection::OnEndpoint, on),
+            ] {
+                let initial = SpringState::try_new(position, 2.0).unwrap();
+                let sample = resolve_toggle_travel(&snapshot, &dynamics, initial, 0.0).unwrap();
+                assert_eq!(sample.projection(), projection);
+                assert_eq!(sample.thumb_bounds(), bounds);
+                assert_eq!(sample.trajectory().state(), initial);
+                assert!(!sample.trajectory().settled());
+            }
+        }
+    }
+}
+
+#[test]
+fn thumb_travel_uses_snapshot_preferences_and_cast_endpoint_without_hiding_invalid_time() {
+    use resina_model::{SpringDynamics, SpringState};
+    use resina_resolver::{ToggleTravelError, ToggleTravelPolicy, resolve_toggle_travel};
+    let dynamics = SpringDynamics::try_new(1.0, 100.0, 20.0, 0.0001, 0.0001).unwrap();
+    let initial = SpringState::try_new(0.5, 3.0).unwrap();
+    for family in ["cast", "frost", "elastomer"] {
+        for reduced in [false, true] {
+            let mut f = Fixture::new(family, LayoutDirection::Ltr, &cases()[0]);
+            let mut environment = serde_json::to_value(&f.environment).unwrap();
+            environment["accessibilityPreferences"]["reducedMotion"] = json!(reduced);
+            f.environment = serde_json::from_value(environment).unwrap();
+            let snapshot = resolve_toggle_snapshot(f.input()).unwrap();
+            let sample = resolve_toggle_travel(&snapshot, &dynamics, initial, 0.0).unwrap();
+            let immediate = family == "cast" || reduced;
+            assert_eq!(
+                sample.policy(),
+                if reduced {
+                    ToggleTravelPolicy::ReducedMotion
+                } else if family == "cast" {
+                    ToggleTravelPolicy::CastImmediate
+                } else {
+                    ToggleTravelPolicy::Spring
+                }
+            );
+            assert_eq!(sample.trajectory().settled(), immediate);
+            if immediate {
+                assert_eq!(sample.thumb_bounds(), f.layout.off_thumb_bounds());
+                assert_eq!(sample.trajectory().state().velocity(), 0.0);
+            } else {
+                assert_eq!(sample.trajectory().state(), initial);
+            }
+            for time in [-1.0, f64::NAN, f64::INFINITY] {
+                let error = resolve_toggle_travel(&snapshot, &dynamics, initial, time).unwrap_err();
+                assert!(matches!(error, ToggleTravelError::Motion(_)));
+                assert!(std::error::Error::source(&error).is_some());
+            }
+        }
+    }
+}
+
+#[test]
+fn public_thumb_travel_vectors_match_complete_checked_snapshots_in_both_directions() {
+    use resina_model::{SpringDynamics, SpringState};
+    use resina_resolver::resolve_toggle_travel;
+    let matrix: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/motion/toggle-travel-cases.json"
+    ))
+    .unwrap();
+    let dynamics: SpringDynamics = serde_json::from_value(matrix["dynamics"].clone()).unwrap();
+    for vector in matrix["cases"].as_array().unwrap() {
+        for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+            let mut case = cases().remove(0);
+            let checked = vector["checked"].as_bool().unwrap();
+            case.checked = checked;
+            case.layout_checked = checked;
+            if checked {
+                case.track_states.push("checked".into());
+                case.thumb_states.push("checked".into());
+            }
+            let f = Fixture::new("elastomer", direction, &case);
+            let snapshot = resolve_toggle_snapshot(f.input()).unwrap();
+            let initial: SpringState = serde_json::from_value(vector["initial"].clone()).unwrap();
+            let travel = resolve_toggle_travel(
+                &snapshot,
+                &dynamics,
+                initial,
+                vector["time"].as_f64().unwrap(),
+            )
+            .unwrap();
+            assert!(
+                (travel.trajectory().state().position() - vector["position"].as_f64().unwrap())
+                    .abs()
+                    < 1e-12,
+                "{}",
+                vector["name"]
+            );
+            assert!(
+                (travel.trajectory().state().velocity() - vector["velocity"].as_f64().unwrap())
+                    .abs()
+                    < 1e-12,
+                "{}",
+                vector["name"]
+            );
+            assert_eq!(
+                serde_json::to_value(travel.projection()).unwrap(),
+                vector["projection"]
+            );
+            assert_eq!(travel.snapshot().accessibility().state().checked(), checked);
+            let progress = vector["position"].as_f64().unwrap().clamp(0.0, 1.0);
+            let off = f.layout.off_thumb_bounds();
+            let on = f.layout.on_thumb_bounds();
+            assert!((travel.thumb_bounds().x - (off.x + (on.x - off.x) * progress)).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
+fn thumb_travel_rejects_swallowed_interior_progress_without_mutating_static_snapshot() {
+    use resina_model::{SpringDynamics, SpringState};
+    use resina_resolver::{ToggleTravelError, resolve_toggle_travel};
+    let dynamics = SpringDynamics::try_new(1.0, 100.0, 20.0, 0.0001, 0.0001).unwrap();
+    let f = Fixture::new("elastomer", LayoutDirection::Ltr, &cases()[0]);
+    let snapshot = resolve_toggle_snapshot(f.input()).unwrap();
+    let initial = SpringState::try_new(f64::MIN_POSITIVE, 1.0).unwrap();
+    assert!(matches!(
+        resolve_toggle_travel(&snapshot, &dynamics, initial, 0.0),
+        Err(ToggleTravelError::NumericRange)
+    ));
+    assert_eq!(
+        snapshot.layout().thumb_bounds(),
+        f.layout.off_thumb_bounds()
+    );
+    assert_eq!(snapshot.hit_region().bounds(), f.target.bounds());
 }

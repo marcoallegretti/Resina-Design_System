@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-travel-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "dynamics",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "dynamics": {
+      "$ref": "urn:resina:schema:spring-dynamics:0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "checked",
+          "initial",
+          "time",
+          "position",
+          "velocity",
+          "projection"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "checked": {
+            "type": "boolean"
+          },
+          "initial": {
+            "$ref": "urn:resina:schema:spring-state:0.1.0"
+          },
+          "time": {
+            "type": "number",
+            "minimum": 0
+          },
+          "position": {
+            "type": "number"
+          },
+          "velocity": {
+            "type": "number"
+          },
+          "projection": {
+            "enum": [
+              "none",
+              "offEndpoint",
+              "onEndpoint"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "position": {
+                  "exclusiveMaximum": 0
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "projection": {
+                  "const": "offEndpoint"
+                }
+              }
+            },
+            "else": {
+              "if": {
+                "properties": {
+                  "position": {
+                    "exclusiveMinimum": 1
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "projection": {
+                    "const": "onEndpoint"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "projection": {
+                    "const": "none"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

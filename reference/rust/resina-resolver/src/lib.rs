@@ -1,3 +1,9 @@
+mod toggle_travel;
+pub use toggle_travel::{
+    ToggleTravelError, ToggleTravelPolicy, ToggleTravelProjection, ToggleTravelSnapshot,
+    resolve_toggle_travel,
+};
+
 mod toggle_snapshot;
 pub use toggle_snapshot::{
     ToggleSnapshot, ToggleSnapshotError, ToggleSnapshotInput, resolve_toggle_snapshot,

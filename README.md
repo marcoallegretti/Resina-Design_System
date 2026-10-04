@@ -128,3 +128,8 @@ and complete external label as one native command array. Required GPU tests
 cover actual themes, selection, interaction/focus replacement, RTL placement,
 wrapped/scaled native text and fractional device scales. This paint composition
 does not provide native Toggle event or accessibility-tree delivery.
+
+[Checked thumb travel](spec/56-toggle-thumb-travel.md) samples complete Toggle
+snapshots with retained spring state, bounded placement, stable targets and
+immediate Cast/reduced-motion endpoints. GUIdo consumes the checked placement;
+frame scheduling and material calibration remain owner responsibilities.

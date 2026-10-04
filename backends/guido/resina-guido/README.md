@@ -209,6 +209,31 @@ Set `RESINA_TOGGLE_CAPTURE_DIR` to save the tested PPM frames for visual review.
 These fixtures verify composition transport and typography, not complete
 component styling, every script/font, motion or native accessibility conformance.
 
+## Checked thumb travel
+
+Resolve `resolve_toggle_travel` from a current complete snapshot, explicit scalar
+dynamics, retained unprojected initial state and elapsed seconds. Call
+`prepare_toggle_travel_content` with that checked view, verified font family,
+actual device scale and sampling grid. It prepares the same complete three-command
+array at the sampled thumb bounds. Translation still precedes device-grid
+alignment. Track navigation, complete label, checked palette, target and semantics
+come from the original snapshot; the backend performs no separate interpolation.
+Replace all commands together after success. Preserve unprojected state for
+retargeting, and replace the underlying snapshot after context/state changes.
+
+The [travel contract](../../../spec/56-toggle-thumb-travel.md) supplies immediate
+Cast/reduced-motion endpoints without hiding invalid inputs. Required GPU tests
+add 32 frames across Light/Dark Elastomer, both directions/selections, four sample
+times and scale 1.25. The existing complete pixel-grid and label checks apply to
+these frames. These coefficients are arithmetic fixtures, not calibrated motion.
+Native clocks, interaction routing and assistive technology publication remain
+owner responsibilities; no complete animated product Toggle is supplied.
+
+The ordinary-travel GPU fixture explicitly sets reducedMotion false before
+resolving paint and snapshots, and asserts spring policy, opposite initial
+placement, intermediate non-endpoint placement and exact settled placement.
+Reduced-motion policy is tested separately in the portable snapshot matrix.
+
 ## Verification
 
 Linux needs Wayland and xkbcommon development libraries and a working GPU or

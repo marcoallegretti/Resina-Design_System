@@ -155,6 +155,7 @@ def main():
         "schemas/command-label-ir.schema.json",
         "schemas/command-accessibility-ir.schema.json",
         "schemas/toggle-snapshot-cases.schema.json",
+        "schemas/toggle-travel-cases.schema.json",
         "schemas/toggle-part-body-ir.schema.json",
         "schemas/toggle-part-paint-ir.schema.json",
         "schemas/toggle-part-paint-request.schema.json",
@@ -1828,6 +1829,12 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
+    toggle_travel = load_json(ROOT / "conformance/motion/toggle-travel-cases.json")
+    check_case(validator_for("schemas/toggle-travel-cases.schema.json"), "toggle travel matrix", toggle_travel, True)
+    names = [case["name"] for case in toggle_travel["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate toggle travel case")
+    checked += 1 + len(names)
     toggle_snapshots = load_json(ROOT / "conformance/interaction/toggle-snapshot-cases.json")
     check_case(validator_for("schemas/toggle-snapshot-cases.schema.json"), "toggle snapshot matrix", toggle_snapshots, True)
     names = [case["name"] for case in toggle_snapshots["cases"]]

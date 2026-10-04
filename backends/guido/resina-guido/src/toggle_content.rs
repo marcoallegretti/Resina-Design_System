@@ -6,8 +6,8 @@ use guido::{
     renderer::DrawCommand,
     widgets::{Color, ContentFit, Rect, font::FontFamily},
 };
-use resina_model::PhysicalVector;
-use resina_resolver::ToggleSnapshot;
+use resina_model::{PhysicalBounds, PhysicalVector};
+use resina_resolver::{ToggleSnapshot, ToggleTravelSnapshot};
 use std::fmt;
 
 #[derive(Debug)]
@@ -53,6 +53,37 @@ pub fn prepare_toggle_content(
     device_scale: f32,
     samples_per_axis: u8,
 ) -> Result<[DrawCommand; 3], ToggleContentPrepareError> {
+    prepare_content_at(
+        snapshot,
+        snapshot.layout().thumb_bounds(),
+        family,
+        device_scale,
+        samples_per_axis,
+    )
+}
+
+pub fn prepare_toggle_travel_content(
+    travel: &ToggleTravelSnapshot<'_, '_>,
+    family: FontFamily,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<[DrawCommand; 3], ToggleContentPrepareError> {
+    prepare_content_at(
+        travel.snapshot(),
+        travel.thumb_bounds(),
+        family,
+        device_scale,
+        samples_per_axis,
+    )
+}
+
+fn prepare_content_at(
+    snapshot: &ToggleSnapshot<'_>,
+    thumb: PhysicalBounds,
+    family: FontFamily,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<[DrawCommand; 3], ToggleContentPrepareError> {
     let foreground = snapshot.label_foreground();
     let [r, g, b] = foreground.components().map(|value| value as f32);
     let text = prepare_command_label_at(
@@ -69,7 +100,6 @@ pub fn prepare_toggle_content(
         samples_per_axis,
     )
     .map_err(ToggleContentPrepareError::Track)?;
-    let thumb = snapshot.layout().thumb_bounds();
     let thumb = prepare_surface_paint_at(
         snapshot.thumb().paint(),
         PhysicalVector {

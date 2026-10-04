@@ -14,11 +14,11 @@ use guido::{
 use resina_environment::{EnvironmentSnapshot, LayoutDirection, SafeArea};
 use resina_guido::{
     LabelPrepareError, PrepareError, ToggleContentPrepareError, measure_command_label,
-    prepare_toggle_content,
+    prepare_toggle_content, prepare_toggle_travel_content,
 };
 use resina_model::{
-    ActivationState, ColorRole, PhysicalBounds, PhysicalVector, PressHold, SurfaceSize,
-    TypographyRole,
+    ActivationState, ColorRole, PhysicalBounds, PhysicalVector, PressHold, SpringDynamics,
+    SpringState, SurfaceSize, TypographyRole,
 };
 use resina_raster::{Viewport, render_surface_paint};
 use resina_resolver::{
@@ -26,7 +26,7 @@ use resina_resolver::{
     ToggleLayoutInput, ToggleLayoutIr, TogglePartPaintIr, ToggleSnapshot, ToggleSnapshotInput,
     opaque_contrast_ratio, resolve_command_label, resolve_hit_region, resolve_srgb_fallback,
     resolve_theme_request_source, resolve_toggle_layout, resolve_toggle_part_paint_source,
-    resolve_toggle_snapshot,
+    resolve_toggle_snapshot, resolve_toggle_travel,
 };
 use serde_json::{Value, json};
 use std::{path::Path, rc::Rc};
@@ -96,6 +96,8 @@ impl Fixture {
                 "en"
             });
         surface["body"]["theme"]["environment"]["textScale"] = json!(text_scale);
+        surface["body"]["theme"]["environment"]["accessibilityPreferences"]["reducedMotion"] =
+            json!(false);
         let focused = phase != "disabled" && phase != "unfocused";
         let mut states = vec![if phase == "unfocused" { "rest" } else { phase }];
         if focused {
@@ -288,7 +290,25 @@ fn check_frame(
 ) {
     let snapshot = f.snapshot();
     let commands = prepare_toggle_content(&snapshot, family, scale, 4).unwrap();
-    let thumb = f.layout.thumb_bounds();
+    check_commands(
+        frames,
+        f,
+        scale,
+        name,
+        capture,
+        &commands,
+        f.layout.thumb_bounds(),
+    );
+}
+fn check_commands(
+    frames: &mut Frames,
+    f: &Fixture,
+    scale: f32,
+    name: &str,
+    capture: Option<&Path>,
+    commands: &[DrawCommand; 3],
+    thumb: PhysicalBounds,
+) {
     let output_width = (520.0 * scale) as u32;
     for (index, paint, offset) in [
         (0, f.track.paint(), PhysicalVector { x: 0.0, y: 0.0 }),
@@ -404,7 +424,7 @@ fn check_frame(
     );
     let background = color(&f.background);
     let backdrop_bytes = f.background.components().map(|v| (v * 255.0).round() as u8);
-    let combined = frames.render(&commands, scale, background);
+    let combined = frames.render(commands, scale, background);
     let parts = frames.render(&commands[..2], scale, background);
     let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
     let line_height = f.label.typography().font_size() * f.label.typography().line_height();
@@ -539,6 +559,56 @@ fn checked_toggle_content_preserves_placed_paint_and_complete_native_labels() {
                         capture.as_deref(),
                     );
                     count += 1;
+                }
+            }
+            if material == "elastomer" {
+                let dynamics = SpringDynamics::try_new(1.0, 100.0, 20.0, 0.0001, 0.0001).unwrap();
+                for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+                    for checked in [false, true] {
+                        let text = if direction == LayoutDirection::Ltr {
+                            "Automatic updates"
+                        } else {
+                            "التحديثات التلقائية"
+                        };
+                        let f = Fixture::new(scene, "rest", direction, checked, family, 1.0, text);
+                        let snapshot = f.snapshot();
+                        let initial =
+                            SpringState::try_new(if checked { 0.0 } else { 1.0 }, 0.0).unwrap();
+                        for time in [0.0, 0.1, 0.25, 100.0] {
+                            let travel =
+                                resolve_toggle_travel(&snapshot, &dynamics, initial, time).unwrap();
+                            assert_eq!(
+                                travel.policy(),
+                                resina_resolver::ToggleTravelPolicy::Spring
+                            );
+                            if time == 0.0 {
+                                assert_eq!(
+                                    travel.thumb_bounds(),
+                                    if checked {
+                                        f.layout.off_thumb_bounds()
+                                    } else {
+                                        f.layout.on_thumb_bounds()
+                                    }
+                                );
+                            } else if time == 100.0 {
+                                assert_eq!(travel.thumb_bounds(), f.layout.thumb_bounds());
+                            } else {
+                                assert_ne!(travel.thumb_bounds(), f.layout.off_thumb_bounds());
+                                assert_ne!(travel.thumb_bounds(), f.layout.on_thumb_bounds());
+                            }
+                            let commands =
+                                prepare_toggle_travel_content(&travel, family, 1.25, 4).unwrap();
+                            check_commands(
+                                &mut frames,
+                                &f,
+                                1.25,
+                                &format!("{name}-travel-{direction:?}-{checked}-{time}"),
+                                capture.as_deref(),
+                                &commands,
+                                travel.thumb_bounds(),
+                            );
+                        }
+                    }
                 }
             }
             let mut f = Fixture::new(

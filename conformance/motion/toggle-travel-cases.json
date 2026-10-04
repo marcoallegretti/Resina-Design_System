@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "0.1.0",
+  "dynamics": {
+    "schemaVersion": "0.1.0",
+    "mass": 1,
+    "stiffness": 100,
+    "damping": 20,
+    "positionThreshold": 0.0001,
+    "velocityThreshold": 0.0001
+  },
+  "cases": [
+    {
+      "name": "on critical sample",
+      "checked": true,
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "time": 0.1,
+      "position": 0.26424111765711533,
+      "velocity": 3.6787944117144233,
+      "projection": "none"
+    },
+    {
+      "name": "off critical sample",
+      "checked": false,
+      "initial": {
+        "position": 1,
+        "velocity": 0
+      },
+      "time": 0.1,
+      "position": 0.7357588823428847,
+      "velocity": -3.6787944117144233,
+      "projection": "none"
+    },
+    {
+      "name": "unprojected on overshoot",
+      "checked": true,
+      "initial": {
+        "position": 1.5,
+        "velocity": 2
+      },
+      "time": 0,
+      "position": 1.5,
+      "velocity": 2,
+      "projection": "onEndpoint"
+    },
+    {
+      "name": "unprojected off overshoot",
+      "checked": false,
+      "initial": {
+        "position": -0.5,
+        "velocity": -2
+      },
+      "time": 0,
+      "position": -0.5,
+      "velocity": -2,
+      "projection": "offEndpoint"
+    },
+    {
+      "name": "midtravel retained velocity",
+      "checked": true,
+      "initial": {
+        "position": 0.5,
+        "velocity": 3
+      },
+      "time": 0,
+      "position": 0.5,
+      "velocity": 3,
+      "projection": "none"
+    },
+    {
+      "name": "settled on",
+      "checked": true,
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "time": 100,
+      "position": 1,
+      "velocity": 0,
+      "projection": "none"
+    },
+    {
+      "name": "settled off",
+      "checked": false,
+      "initial": {
+        "position": 1,
+        "velocity": 0
+      },
+      "time": 100,
+      "position": 0,
+      "velocity": 0,
+      "projection": "none"
+    }
+  ]
+}

@@ -46,6 +46,7 @@ pub struct ToggleSnapshot<'a> {
     hit_region: HitRegionIr,
     accessibility: ToggleAccessibilityIr,
     thumb_contrast_ratio: f64,
+    pub(crate) reduced_motion: bool,
 }
 impl ToggleSnapshot<'_> {
     pub fn label(&self) -> &CommandLabelIr {
@@ -80,6 +81,61 @@ impl ToggleSnapshot<'_> {
     }
     pub fn thumb_contrast_ratio(&self) -> f64 {
         self.thumb_contrast_ratio
+    }
+    pub(crate) fn validate_thumb_placement(
+        &self,
+        placement: PhysicalBounds,
+    ) -> Result<(), ToggleSnapshotError> {
+        let bounds = self
+            .thumb
+            .paint()
+            .body()
+            .geometry()
+            .silhouette()
+            .bounds()
+            .ok_or(ToggleSnapshotError::Geometry(
+                SurfacePaintError::UnsupportedContour,
+            ))?;
+        let bounds = placed(
+            bounds,
+            PhysicalVector {
+                x: placement.x,
+                y: placement.y,
+            },
+        )?;
+        let (right, bottom) = endpoints(bounds)?;
+        for x in [bounds.x, right] {
+            for y in [bounds.y, bottom] {
+                if !placed_contains(
+                    self.track.paint().body().geometry().content(),
+                    PhysicalVector { x, y },
+                )
+                .map_err(ToggleSnapshotError::Geometry)?
+                {
+                    return Err(ToggleSnapshotError::ThumbOutsideContent("sampled"));
+                }
+            }
+        }
+        if !self
+            .hit_region
+            .contains_bounds(bounds)
+            .map_err(ToggleSnapshotError::Target)?
+        {
+            return Err(ToggleSnapshotError::TargetCoverage("sampled thumb"));
+        }
+        let label_size = self.label.size();
+        if overlap(
+            bounds,
+            PhysicalBounds {
+                x: self.label_origin.x,
+                y: self.label_origin.y,
+                width: label_size.width,
+                height: label_size.height,
+            },
+        )? {
+            return Err(ToggleSnapshotError::LabelOverlap);
+        }
+        Ok(())
     }
 }
 
@@ -421,5 +477,6 @@ pub fn resolve_toggle_snapshot<'a>(
         hit_region,
         accessibility,
         thumb_contrast_ratio: ratio,
+        reduced_motion: input.environment.accessibility_preferences().reduced_motion,
     })
 }
