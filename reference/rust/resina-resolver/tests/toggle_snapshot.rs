@@ -1,12 +1,13 @@
 use resina_environment::{EnvironmentSnapshot, LayoutDirection, SafeArea};
 use resina_model::{
-    ActivationEvent, ActivationState, PhysicalBounds, PhysicalVector, SurfaceSize, TypographyRole,
+    ActivationEvent, ActivationState, ColorRole, PhysicalBounds, PhysicalVector, SurfaceSize,
+    TypographyRole,
 };
 use resina_resolver::{
-    CommandLabelInput, CommandLabelIr, HitRegionError, HitRegionInput, HitRegionIr,
+    CommandLabelInput, CommandLabelIr, HitRegionError, HitRegionInput, HitRegionIr, SrgbFallback,
     ToggleAccessibilityError, ToggleLayoutInput, ToggleLayoutIr, TogglePart, TogglePartPaintIr,
     ToggleSnapshotError, ToggleSnapshotInput, compile_theme_source, resolve_activation,
-    resolve_command_label, resolve_hit_region, resolve_toggle_layout,
+    resolve_command_label, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
     resolve_toggle_part_paint_source, resolve_toggle_snapshot,
 };
 use serde::Deserialize;
@@ -83,6 +84,8 @@ struct Fixture {
     request: Value,
     environment: EnvironmentSnapshot,
     label: CommandLabelIr,
+    label_foreground: SrgbFallback,
+    label_background: SrgbFallback,
     track: TogglePartPaintIr,
     thumb: TogglePartPaintIr,
     layout: ToggleLayoutIr,
@@ -157,6 +160,8 @@ impl Fixture {
             request: r,
             environment,
             label,
+            label_foreground: resolved.color_fallbacks()[&ColorRole::ContentPrimary].clone(),
+            label_background: resolved.color_fallbacks()[&ColorRole::SurfaceChrome].clone(),
             track,
             thumb,
             layout,
@@ -169,6 +174,9 @@ impl Fixture {
     fn input(&self) -> ToggleSnapshotInput<'_, '_> {
         ToggleSnapshotInput {
             label: &self.label,
+            label_foreground: &self.label_foreground,
+            label_background: &self.label_background,
+            minimum_label_contrast: 4.5,
             label_origin: PhysicalVector {
                 x: if self.environment.layout_direction() == LayoutDirection::Ltr {
                     80.0
@@ -536,4 +544,107 @@ fn contrast_metadata_tolerance_never_relaxes_the_minimum() {
         resolve_toggle_snapshot(i),
         Err(ToggleSnapshotError::ThumbContrast { .. })
     ));
+}
+
+#[test]
+fn external_label_contrast_uses_existing_independent_color_vectors() {
+    let f = fixture();
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/color/contrast-vectors.json"
+    ))
+    .unwrap();
+    for vector in vectors {
+        let foreground = resolve_srgb_fallback(&vector["foreground"]).unwrap();
+        let background = resolve_srgb_fallback(&vector["background"]).unwrap();
+        let mut i = f.input();
+        i.label_foreground = &foreground;
+        i.label_background = &background;
+        i.minimum_label_contrast = 1.0;
+        let result = resolve_toggle_snapshot(i);
+        if let Some(expected) = vector.get("expected") {
+            let snapshot = result.unwrap();
+            assert!((snapshot.label_contrast_ratio() - expected.as_f64().unwrap()).abs() <= 1e-12);
+            assert_eq!(snapshot.label_foreground(), &foreground);
+            assert_eq!(snapshot.label_background(), &background);
+        } else {
+            let error = result.unwrap_err();
+            let ToggleSnapshotError::LabelColor(cause) = &error else {
+                panic!("{error}")
+            };
+            assert_eq!(format!("{cause:?}"), vector["error"].as_str().unwrap());
+            assert!(std::error::Error::source(&error).is_some());
+        }
+    }
+}
+
+#[test]
+fn track_readability_cannot_certify_an_external_label() {
+    let f = fixture();
+    assert!(f.track.paint().body().content_contrast_ratio() >= 4.5);
+    let black = resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":[0,0,0]})).unwrap();
+    let white = resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":[1,1,1]})).unwrap();
+    let mut i = f.input();
+    i.label_foreground = &black;
+    i.label_background = &black;
+    assert!(matches!(
+        resolve_toggle_snapshot(i),
+        Err(ToggleSnapshotError::LabelContrast {
+            actual: 1.0,
+            minimum: 4.5
+        })
+    ));
+    let mut i = f.input();
+    i.label_foreground = &white;
+    i.label_background = &black;
+    let snapshot = resolve_toggle_snapshot(i).unwrap();
+    assert_eq!(snapshot.label_contrast_ratio(), 21.0);
+    assert_eq!(snapshot.label_foreground(), &white);
+    assert_eq!(snapshot.track().paint().body().foreground(), &black);
+}
+
+#[test]
+fn label_minimum_is_explicit_finite_and_strict() {
+    let f = fixture();
+    for minimum in [f64::NAN, f64::INFINITY, 0.0, 21.0000000000001] {
+        let mut i = f.input();
+        i.minimum_label_contrast = minimum;
+        assert!(matches!(
+            resolve_toggle_snapshot(i),
+            Err(ToggleSnapshotError::InvalidLabelContrast)
+        ));
+    }
+    let gray =
+        resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":[0.5,0.5,0.5]})).unwrap();
+    let mut i = f.input();
+    i.label_foreground = &gray;
+    i.label_background = &gray;
+    i.minimum_label_contrast = 1.0;
+    assert_eq!(
+        resolve_toggle_snapshot(i).unwrap().label_contrast_ratio(),
+        1.0
+    );
+    let mut i = f.input();
+    i.label_foreground = &gray;
+    i.label_background = &gray;
+    i.minimum_label_contrast = 1.0 + 1e-13;
+    assert!(matches!(
+        resolve_toggle_snapshot(i),
+        Err(ToggleSnapshotError::LabelContrast { .. })
+    ));
+}
+
+#[test]
+fn published_label_colors_do_not_borrow_live_palette_inputs() {
+    let f = fixture();
+    let mut foreground = f.label_foreground.clone();
+    let mut background = f.label_background.clone();
+    let mut i = f.input();
+    i.label_foreground = &foreground;
+    i.label_background = &background;
+    let snapshot = resolve_toggle_snapshot(i).unwrap();
+    std::mem::swap(&mut foreground, &mut background);
+    assert_eq!(snapshot.label_foreground(), &f.label_foreground);
+    assert_eq!(snapshot.label_background(), &f.label_background);
+    assert_ne!(snapshot.label_foreground(), &foreground);
+    assert_ne!(snapshot.label_background(), &background);
 }

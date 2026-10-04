@@ -1,8 +1,9 @@
 use crate::{
-    CommandLabelIr, HitRegionError, HitRegionInput, HitRegionIr, SurfacePaintError,
-    ToggleAccessibilityError, ToggleAccessibilityInput, ToggleAccessibilityIr, ToggleLayoutIr,
-    TogglePart, TogglePartPaintIr, opaque_contrast_ratio, opaque_paint::placed_contains,
-    resolve_hit_region, resolve_toggle_accessibility, resolve_toggle_states,
+    CommandLabelIr, ContrastError, HitRegionError, HitRegionInput, HitRegionIr, SrgbFallback,
+    SurfacePaintError, ToggleAccessibilityError, ToggleAccessibilityInput, ToggleAccessibilityIr,
+    ToggleLayoutIr, TogglePart, TogglePartPaintIr, opaque_contrast_ratio,
+    opaque_paint::placed_contains, resolve_hit_region, resolve_toggle_accessibility,
+    resolve_toggle_states,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{ActivationState, PhysicalBounds, PhysicalVector, StateSet, SurfaceSize};
@@ -13,6 +14,9 @@ const CONTRAST_TOLERANCE: f64 = 1e-12;
 pub struct ToggleSnapshotInput<'a, 'context> {
     pub label: &'a CommandLabelIr,
     pub label_origin: PhysicalVector,
+    pub label_foreground: &'context SrgbFallback,
+    pub label_background: &'context SrgbFallback,
+    pub minimum_label_contrast: f64,
     pub layout: &'a ToggleLayoutIr,
     pub track: &'a TogglePartPaintIr,
     pub thumb: &'a TogglePartPaintIr,
@@ -33,6 +37,9 @@ pub struct ToggleSnapshotInput<'a, 'context> {
 pub struct ToggleSnapshot<'a> {
     label: &'a CommandLabelIr,
     label_origin: PhysicalVector,
+    label_foreground: SrgbFallback,
+    label_background: SrgbFallback,
+    label_contrast_ratio: f64,
     layout: &'a ToggleLayoutIr,
     track: &'a TogglePartPaintIr,
     thumb: &'a TogglePartPaintIr,
@@ -46,6 +53,15 @@ impl ToggleSnapshot<'_> {
     }
     pub fn label_origin(&self) -> PhysicalVector {
         self.label_origin
+    }
+    pub fn label_foreground(&self) -> &SrgbFallback {
+        &self.label_foreground
+    }
+    pub fn label_background(&self) -> &SrgbFallback {
+        &self.label_background
+    }
+    pub fn label_contrast_ratio(&self) -> f64 {
+        self.label_contrast_ratio
     }
     pub fn layout(&self) -> &ToggleLayoutIr {
         self.layout
@@ -81,6 +97,12 @@ pub enum ToggleSnapshotError {
     NumericRange,
     ThumbOutsideContent(&'static str),
     InvalidContrast,
+    InvalidLabelContrast,
+    LabelColor(ContrastError),
+    LabelContrast {
+        actual: f64,
+        minimum: f64,
+    },
     ThumbContrast {
         actual: f64,
         minimum: f64,
@@ -127,6 +149,13 @@ impl fmt::Display for ToggleSnapshotError {
                 f,
                 "toggle {endpoint} thumb footprint exceeds the uniform track content region"
             ),
+            Self::InvalidLabelContrast => {
+                f.write_str("minimumLabelContrast must be finite and in [1, 21]")
+            }
+            Self::LabelColor(e) => write!(f, "toggle label contrast: {e}"),
+            Self::LabelContrast { actual, minimum } => {
+                write!(f, "toggle label contrast is {actual}, below {minimum}")
+            }
             Self::InvalidContrast => {
                 f.write_str("minimumThumbContrast must be finite and in [1, 21]")
             }
@@ -156,6 +185,7 @@ impl fmt::Display for ToggleSnapshotError {
 impl std::error::Error for ToggleSnapshotError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
+            Self::LabelColor(e) => Some(e),
             Self::Geometry(e) => Some(e),
             Self::Target(e) => Some(e),
             Self::Accessibility(e) => Some(e),
@@ -358,6 +388,19 @@ pub fn resolve_toggle_snapshot<'a>(
     {
         return Err(ToggleSnapshotError::TargetCoverage("label layout box"));
     }
+    let minimum = input.minimum_label_contrast;
+    if !minimum.is_finite() || !(1.0..=21.0).contains(&minimum) {
+        return Err(ToggleSnapshotError::InvalidLabelContrast);
+    }
+    let label_contrast_ratio =
+        opaque_contrast_ratio(input.label_foreground, input.label_background)
+            .map_err(ToggleSnapshotError::LabelColor)?;
+    if label_contrast_ratio < minimum {
+        return Err(ToggleSnapshotError::LabelContrast {
+            actual: label_contrast_ratio,
+            minimum,
+        });
+    }
     let accessibility = resolve_toggle_accessibility(ToggleAccessibilityInput {
         label: input.label,
         activation: input.activation,
@@ -369,6 +412,9 @@ pub fn resolve_toggle_snapshot<'a>(
     Ok(ToggleSnapshot {
         label: input.label,
         label_origin: input.label_origin,
+        label_foreground: input.label_foreground.clone(),
+        label_background: input.label_background.clone(),
+        label_contrast_ratio,
         layout: input.layout,
         track: input.track,
         thumb: input.thumb,
