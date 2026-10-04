@@ -1,0 +1,1423 @@
+[
+  {
+    "name": "pointer arm / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "pointer",
+            "id": "p",
+            "inside": true
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": {
+          "kind": "acquire",
+          "id": "p"
+        }
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "pointer arm / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "pointer",
+            "id": "p",
+            "inside": true
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": {
+          "kind": "acquire",
+          "id": "p"
+        }
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "pointer without focus / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": false,
+          "hold": {
+            "kind": "pointer",
+            "id": "p",
+            "inside": true
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": {
+          "kind": "acquire",
+          "id": "p"
+        }
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "pointer without focus / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": false,
+          "hold": {
+            "kind": "pointer",
+            "id": "p",
+            "inside": true
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": {
+          "kind": "acquire",
+          "id": "p"
+        }
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "inside release activates / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "p",
+        "inside": true
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "inside release activates / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "p",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "release uses current hit membership / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": false
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "p",
+        "inside": true
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "release uses current hit membership / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": false
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "p",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "outside release cancels / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "p",
+        "inside": false
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "outside release cancels / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "p",
+        "inside": false
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "space arm / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "space",
+        "repeat": false
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "key",
+            "key": "space"
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "space arm / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "space",
+        "repeat": false
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "key",
+            "key": "space"
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "space releases once / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": "space"
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "space releases once / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": "space"
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "enter activates on down / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": false
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "key",
+            "key": "enter"
+          }
+        },
+        "activate": true,
+        "pressed": true,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "enter activates on down / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": false
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "key",
+            "key": "enter"
+          }
+        },
+        "activate": true,
+        "pressed": true,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "repeat key enter / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "enter"
+        }
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": true
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "key",
+            "key": "enter"
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "repeat key enter / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "enter"
+        }
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": {
+            "kind": "key",
+            "key": "enter"
+          }
+        },
+        "activate": false,
+        "pressed": true,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "unarmed repeat enter / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": true
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "unarmed repeat enter / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "semantic invoke cancels space / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "invoke"
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "semantic invoke cancels space / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "invoke"
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "disabled invoke / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "invoke"
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": false,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "disabled invoke / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "invoke"
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": false,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "disable pointer / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "availability",
+        "enabled": false
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": false,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "disable pointer / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "availability",
+        "enabled": false
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": false,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "p"
+        }
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "blur cancels keyboard / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "focus",
+        "focused": false
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": false,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "blur cancels keyboard / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "focus",
+        "focused": false
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": false,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "exact unicode pointer release / off",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "é",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "é",
+        "inside": true
+      },
+      "checked": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "é"
+        }
+      },
+      "checked": true
+    }
+  },
+  {
+    "name": "exact unicode pointer release / on",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "é",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "é",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": true,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "é"
+        }
+      },
+      "checked": false
+    }
+  },
+  {
+    "name": "unfocused keyboard hold",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "keyboard hold requires actual focus"
+  },
+  {
+    "name": "disabled existing hold",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "p",
+          "inside": true
+        }
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "disabled state must not hold a press"
+  },
+  {
+    "name": "empty event pointer",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "pointer ID must not be empty"
+  },
+  {
+    "name": "disabled still validates event",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "pointer ID must not be empty"
+  },
+  {
+    "name": "repeat required",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": "space"
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown member on invoke",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "invoke",
+        "unknown": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unsupported request version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "mixed checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": "mixed"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "expected a boolean"
+  },
+  {
+    "name": "null checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": null
+    },
+    "requestSchemaValid": false,
+    "errorContains": "expected a boolean"
+  },
+  {
+    "name": "numeric checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": 1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "expected a boolean"
+  },
+  {
+    "name": "missing checked",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field `checked`"
+  },
+  {
+    "name": "unknown selection field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "pointerDown",
+        "id": "p",
+        "inside": true
+      },
+      "checked": false,
+      "selected": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field `selected`"
+  }
+]

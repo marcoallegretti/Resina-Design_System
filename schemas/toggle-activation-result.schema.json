@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-activation-result:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "activation",
+    "checked"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "activation": {
+      "$ref": "urn:resina:schema:activation-result:0.1.0"
+    },
+    "checked": {
+      "type": "boolean"
+    }
+  }
+}

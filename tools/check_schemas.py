@@ -193,6 +193,9 @@ def main():
         "schemas/focus-traversal-request.schema.json",
         "schemas/focus-traversal-result.schema.json",
         "schemas/focus-traversal-case.schema.json",
+        "schemas/toggle-activation-request.schema.json",
+        "schemas/toggle-activation-result.schema.json",
+        "schemas/toggle-activation-case.schema.json",
         "schemas/activation-state.schema.json",
         "schemas/activation-request.schema.json",
         "schemas/activation-result.schema.json",
@@ -1661,6 +1664,20 @@ def main():
         check_case(activation_result_validator, name,
                    apply_changes(activation_results[base], changes), False)
         checked += 1
+
+    toggle_names = set()
+    for case in load_json(ROOT / "conformance/interaction/toggle-activation-cases.json"):
+        name = case["name"]
+        check_case(validator_for("schemas/toggle-activation-case.schema.json"), name, case, True)
+        if name in toggle_names:
+            raise ValueError(f"duplicate toggle activation case: {name}")
+        toggle_names.add(name)
+        check_case(validator_for("schemas/toggle-activation-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 1
+        if "expected" in case:
+            check_case(validator_for("schemas/toggle-activation-result.schema.json"), name, case["expected"], True)
+            checked += 1
 
     command_state_names = set()
     for case in load_json(ROOT / "conformance/interaction/command-states-cases.json"):

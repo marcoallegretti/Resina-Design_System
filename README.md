@@ -91,3 +91,10 @@ The [command activation lifecycle](spec/42-command-activation.md) resolves prima
 [Command interaction projection](spec/48-command-states.md) connects current activation and explicit hover to paint state, retaining actual focus through disabled discovery and reflecting gesture cancellation from the shared lifecycle. The public command and external checker verify this boundary independently of native adapters.
 
 [Coherent command snapshots](spec/49-command-snapshot.md) bind validated label and static or sampled paint to current interaction, a stable reserved target and accessible semantics. They reject stale signals, mismatched direction and any content/target/semantic failure before publishing the checked channels. Press feedback cannot move the target under a stationary pointer. Native component delivery remains separate work.
+
+[Binary toggle activation](spec/50-toggle-activation.md) composes the checked on/off value
+with the verified gesture lifecycle, preserving selection through cancellation,
+availability and focus changes. Run `resina-toggle-activation <path|->` and
+`python tools/check_toggle_activation_backend.py -- <backend-command> -` for the
+portable protocol. Complete Toggle appearance and native accessibility delivery
+remain separate component requirements.

@@ -1,3 +1,9 @@
+mod toggle_activation;
+pub use toggle_activation::{
+    ToggleActivationError, ToggleActivationResult, resolve_toggle_activation,
+    resolve_toggle_activation_source,
+};
+
 mod command_snapshot;
 pub use command_snapshot::{
     CommandSnapshot, CommandSnapshotError, CommandSnapshotInput, resolve_command_snapshot,
