@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-appearance:0.1.0",
+  "title": "Resina Command Appearance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "profiles"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cast",
+        "frost",
+        "elastomer"
+      ],
+      "properties": {
+        "cast": {
+          "$ref": "#/$defs/phases"
+        },
+        "frost": {
+          "$ref": "#/$defs/phases"
+        },
+        "elastomer": {
+          "$ref": "#/$defs/phases"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bodyMix",
+        "depthScale"
+      ],
+      "properties": {
+        "bodyMix": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "depthScale": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "phases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "properties": {
+        "hover": {
+          "$ref": "#/$defs/response"
+        },
+        "pressed": {
+          "$ref": "#/$defs/response"
+        },
+        "disabled": {
+          "$ref": "#/$defs/response"
+        }
+      }
+    }
+  }
+}

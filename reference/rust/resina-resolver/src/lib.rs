@@ -1,3 +1,9 @@
+mod command_paint;
+pub use command_paint::{
+    CommandPaintError, CommandPaintInput, CommandPaintIr, resolve_command_paint,
+    resolve_command_paint_source,
+};
+
 use resina_environment::{AccessibilityPreferences, QualityPolicy, RendererCapabilities};
 use resina_model::{ColorAssignments, ColorRole, FrostRepresentation};
 use resina_tokens::{ResolvedToken, validate_resolved_value};

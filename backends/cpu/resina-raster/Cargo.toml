@@ -34,3 +34,7 @@ required-features = ["png"]
 [[bin]]
 name = "resina-paint-raster"
 required-features = ["png"]
+
+[[bin]]
+name = "resina-command-raster"
+required-features = ["png"]

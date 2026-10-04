@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-paint-case:0.1.0",
+  "title": "Resina Command Paint Conformance Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "requestChanges",
+    "requestSchemaValid"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requestChanges": {
+      "$ref": "urn:resina:schema:surface-paint-case:0.1.0#/properties/requestChanges"
+    },
+    "requestSchemaValid": {
+      "type": "boolean"
+    },
+    "expectedPhase": {
+      "enum": [
+        "rest",
+        "hover",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "errorContains": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "expectedPhase"
+      ],
+      "not": {
+        "required": [
+          "errorContains"
+        ]
+      }
+    },
+    {
+      "required": [
+        "errorContains"
+      ],
+      "not": {
+        "required": [
+          "expectedPhase"
+        ]
+      }
+    }
+  ]
+}

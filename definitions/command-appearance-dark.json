@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "0.1.0",
+  "profiles": {
+    "cast": {
+      "hover": {
+        "bodyMix": 0.035,
+        "depthScale": 1
+      },
+      "pressed": {
+        "bodyMix": 0.05,
+        "depthScale": 0.9
+      },
+      "disabled": {
+        "bodyMix": 0.16,
+        "depthScale": 0.7
+      }
+    },
+    "frost": {
+      "hover": {
+        "bodyMix": 0.05,
+        "depthScale": 1
+      },
+      "pressed": {
+        "bodyMix": 0.06,
+        "depthScale": 0.85
+      },
+      "disabled": {
+        "bodyMix": 0.14,
+        "depthScale": 0.7
+      }
+    },
+    "elastomer": {
+      "hover": {
+        "bodyMix": -0.06,
+        "depthScale": 1
+      },
+      "pressed": {
+        "bodyMix": 0.09,
+        "depthScale": 0.25
+      },
+      "disabled": {
+        "bodyMix": -0.16,
+        "depthScale": 0.7
+      }
+    }
+  }
+}

@@ -1,3 +1,8 @@
+mod command_appearance;
+pub use command_appearance::{
+    CommandAppearance, CommandPhase, CommandResponse, resolve_command_phase,
+};
+
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 mod activation;
 pub use activation::{ActivationEvent, ActivationKey, ActivationState, PressHold};

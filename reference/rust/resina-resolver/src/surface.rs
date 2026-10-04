@@ -27,6 +27,14 @@ pub struct BoundSurface {
 }
 
 impl BoundSurface {
+    pub(crate) fn apply_command_response(&mut self, response: resina_model::CommandResponse) {
+        self.opaque_color_fallback = mix_body_color(&self.opaque_color_fallback, response);
+        self.frost_portable_body = self
+            .frost_portable_body
+            .as_ref()
+            .map(|color| mix_body_color(color, response));
+    }
+
     pub fn material_role(&self) -> MaterialRole {
         self.material_role
     }
@@ -70,6 +78,21 @@ impl BoundSurface {
     pub fn frost_representation(&self) -> Option<FrostRepresentation> {
         self.frost_representation
     }
+}
+
+fn mix_body_color(color: &SrgbFallback, response: resina_model::CommandResponse) -> SrgbFallback {
+    let mix = response.body_mix();
+    let components = color.components().map(|channel| {
+        if mix < 0.0 {
+            channel * (1.0 + mix)
+        } else {
+            channel + (1.0 - channel) * mix
+        }
+    });
+    crate::resolve_srgb_fallback(&serde_json::json!({
+        "colorSpace": "srgb", "components": components, "alpha": color.alpha()
+    }))
+    .expect("validated response preserves finite sRGB channels and alpha")
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

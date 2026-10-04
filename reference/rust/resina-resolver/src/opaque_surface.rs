@@ -271,6 +271,21 @@ pub(crate) fn resolve_opaque_surface_with_snapshot(
         input.minimum_edge_contrast,
     )
     .map_err(OpaqueSurfaceError::Readability)?;
+    let depths = resolve_elevation_depth(input.appearance.depth_assignments(), theme.tokens())
+        .map_err(OpaqueSurfaceError::Depth)?;
+    let depth = depths[&readable.binding().form().elevation()]["value"]
+        .as_f64()
+        .expect("validated depth is numeric");
+    resolve_opaque_body_geometry(theme, environment, input, &readable, depth)
+}
+
+pub(crate) fn resolve_opaque_body_geometry(
+    theme: &crate::CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    input: OpaqueSurfaceInput<'_>,
+    readable: &crate::SurfaceReadabilityResult,
+    depth: f64,
+) -> Result<OpaqueSurfaceIr, OpaqueSurfaceError> {
     if readable.body().alpha() != 1.0 {
         return Err(OpaqueSurfaceError::TranslucentBody);
     }
@@ -288,11 +303,6 @@ pub(crate) fn resolve_opaque_surface_with_snapshot(
         theme.tokens(),
     )
     .map_err(OpaqueSurfaceError::Shape)?;
-    let depths = resolve_elevation_depth(input.appearance.depth_assignments(), theme.tokens())
-        .map_err(OpaqueSurfaceError::Depth)?;
-    let depth = depths[&binding.form().elevation()]["value"]
-        .as_f64()
-        .expect("validated depth is numeric");
     let lighting = resolve_key_light(input.appearance.key_light(), depth, &[])
         .map_err(OpaqueSurfaceError::Light)?;
     let edge_inset = resolve_inset_contour(input.size, radii, bands.edge_width())

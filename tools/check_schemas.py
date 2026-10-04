@@ -125,6 +125,11 @@ def check_vectors(schema_path, vector_path):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/command-appearance.schema.json",
+        "schemas/command-paint-request.schema.json",
+        "schemas/command-body-ir.schema.json",
+        "schemas/command-paint-ir.schema.json",
+        "schemas/command-paint-case.schema.json",
         "schemas/spring-parameters.schema.json",
         "schemas/spring-request.schema.json",
         "schemas/spring-result.schema.json",
@@ -267,6 +272,17 @@ def main():
         replace_at_pointer(changed, pointer, value)
         check_case(material_scene_schema, name, changed, False)
     check_case(material_scene_schema, "unknown scene manifest field", {**material_scenes, "extra": True}, False)
+
+    command_request = load_json(ROOT / "conformance/ir/command-paint-request.json")
+    for name in ("light", "dark"):
+        check_case(validator_for("schemas/command-appearance.schema.json"),
+                   "authored command " + name,
+                   load_json(ROOT / ("definitions/command-appearance-" + name + ".json")), True)
+    command_request_schema = validator_for("schemas/command-paint-request.schema.json")
+    for case in load_json(ROOT / "conformance/ir/command-paint-cases.json"):
+        check_case(validator_for("schemas/command-paint-case.schema.json"), case["name"], case, True)
+        check_case(command_request_schema, case["name"],
+                   apply_changes(command_request, case["requestChanges"]), case["requestSchemaValid"])
 
     spring_request = load_json(ROOT / "conformance/motion/spring-request.json")
     spring_expected = load_json(ROOT / "conformance/motion/spring-expected.json")
@@ -1563,6 +1579,7 @@ def main():
             check_case(validator_for("schemas/activation-result.schema.json"), name, case["expected"], True)
             checked += 1
 
+    checked += 2 + 2 * len(load_json(ROOT / "conformance/ir/command-paint-cases.json"))
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 

@@ -188,6 +188,16 @@ pub(crate) fn resolve_focus_ir_with_snapshot(
     let depth = depths[&indicator.binding().form().elevation()]["value"]
         .as_f64()
         .expect("validated depth is numeric");
+    resolve_focus_geometry(environment, input, indicator, radii, depth)
+}
+
+pub(crate) fn resolve_focus_geometry(
+    environment: &EnvironmentSnapshot,
+    input: FocusIrInput<'_>,
+    indicator: FocusIndicatorResult,
+    radii: LogicalCornerRadii,
+    depth: f64,
+) -> Result<FocusIndicatorIr, FocusIrError> {
     let lighting = resolve_key_light(input.key_light, depth, &[]).map_err(FocusIrError::Light)?;
     let contour = |size, radii| {
         resolve_extruded_contour(

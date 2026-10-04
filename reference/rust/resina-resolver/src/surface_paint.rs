@@ -20,10 +20,10 @@ pub struct SurfacePaintInput<'a> {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SurfacePaintIr {
-    schema_version: &'static str,
-    body: OpaqueSurfaceIr,
+    pub(crate) schema_version: &'static str,
+    pub(crate) body: OpaqueSurfaceIr,
     #[serde(skip_serializing_if = "Option::is_none")]
-    focus: Option<FocusIndicatorIr>,
+    pub(crate) focus: Option<FocusIndicatorIr>,
 }
 
 impl SurfacePaintIr {
@@ -84,7 +84,7 @@ impl std::error::Error for SurfacePaintResolutionError {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct SurfacePaintRequest {
+pub(crate) struct SurfacePaintRequest {
     schema_version: String,
     body: OpaqueSurfaceRequest,
     #[serde(default, deserialize_with = "present_surrounding")]
@@ -102,6 +102,41 @@ pub fn resolve_surface_paint_source(
     let document = parse_token_document(source).map_err(SurfacePaintResolutionError::Parse)?;
     let request: SurfacePaintRequest =
         serde_json::from_value(document).map_err(SurfacePaintResolutionError::Request)?;
+    let (theme, environment, owned) = parse_surface_paint_request(request)?;
+    resolve_surface_paint(&theme, &environment, owned.input())
+}
+
+pub(crate) struct OwnedPaintInput {
+    surface: resina_model::SurfaceIntent,
+    size: resina_model::SurfaceSize,
+    appearance: resina_model::OpaqueSurfaceAppearance,
+    foreground_role: resina_model::ColorRole,
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+    backdrop: Option<SrgbFallback>,
+    adjacent: SrgbFallback,
+    surrounding: Option<SrgbFallback>,
+}
+impl OwnedPaintInput {
+    pub(crate) fn input(&self) -> SurfacePaintInput<'_> {
+        SurfacePaintInput {
+            body: OpaqueSurfaceInput {
+                surface: &self.surface,
+                size: self.size,
+                appearance: &self.appearance,
+                foreground_role: self.foreground_role,
+                post_treatment_backdrop: self.backdrop.as_ref(),
+                adjacent_color: &self.adjacent,
+                minimum_content_contrast: self.minimum_content_contrast,
+                minimum_edge_contrast: self.minimum_edge_contrast,
+            },
+            surrounding_color: self.surrounding.as_ref(),
+        }
+    }
+}
+pub(crate) fn parse_surface_paint_request(
+    request: SurfacePaintRequest,
+) -> Result<(CompiledTheme, EnvironmentSnapshot, OwnedPaintInput), SurfacePaintResolutionError> {
     if request.schema_version != "0.1.0" || request.body.schema_version != "0.1.0" {
         return Err(SurfacePaintResolutionError::UnsupportedVersion);
     }
@@ -125,23 +160,21 @@ pub fn resolve_surface_paint_source(
         .surrounding_color
         .map(|input| color("surroundingColor", input))
         .transpose()?;
-    resolve_surface_paint(
-        &theme,
-        &environment,
-        SurfacePaintInput {
-            body: OpaqueSurfaceInput {
-                surface: &body.surface,
-                size: body.size,
-                appearance: &body.appearance,
-                foreground_role: body.foreground_role,
-                post_treatment_backdrop: backdrop.as_ref(),
-                adjacent_color: &adjacent,
-                minimum_content_contrast: body.minimum_content_contrast,
-                minimum_edge_contrast: body.minimum_edge_contrast,
-            },
-            surrounding_color: surrounding.as_ref(),
+    Ok((
+        theme,
+        environment,
+        OwnedPaintInput {
+            surface: body.surface,
+            size: body.size,
+            appearance: body.appearance,
+            foreground_role: body.foreground_role,
+            minimum_content_contrast: body.minimum_content_contrast,
+            minimum_edge_contrast: body.minimum_edge_contrast,
+            backdrop,
+            adjacent,
+            surrounding,
         },
-    )
+    ))
 }
 
 pub fn resolve_surface_paint(

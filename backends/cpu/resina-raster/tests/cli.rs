@@ -179,3 +179,48 @@ fn malformed_input_and_invalid_render_options_emit_no_png() {
     assert!(oversized.stdout.is_empty());
     assert!(String::from_utf8_lossy(&oversized.stderr).contains("request size limit exceeded"));
 }
+
+#[test]
+fn command_cli_paints_pressed_body_and_independent_focus_without_partial_failure() {
+    let mut request: serde_json::Value = serde_json::from_slice(include_bytes!(
+        "../../../../conformance/ir/command-paint-request.json"
+    ))
+    .unwrap();
+    request["surface"]["body"]["surface"]["states"]["states"] =
+        serde_json::json!(["pressed", "focused"]);
+    let program = env!("CARGO_BIN_EXE_resina-command-raster");
+    let options = ["40", "32", "-8", "-8", "1", "4"];
+    let output = invoke_program(program, request.to_string().as_bytes(), &options);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let mut reader = png::Decoder::new(std::io::Cursor::new(output.stdout))
+        .read_info()
+        .unwrap();
+    assert_eq!(
+        reader.info().srgb,
+        Some(png::SrgbRenderingIntent::Perceptual)
+    );
+    let mut rgba = vec![0; reader.output_buffer_size().unwrap()];
+    let frame = reader.next_frame(&mut rgba).unwrap();
+    assert_eq!((frame.width, frame.height), (40, 32));
+    for (x, y, expected) in [
+        (18, 14, [186, 162, 139, 255]),
+        (18, 4, [255; 4]),
+        (18, 6, [0; 4]),
+        (0, 0, [0; 4]),
+    ] {
+        let offset = (y * 40 + x) * 4;
+        assert_eq!(&rgba[offset..offset + 4], &expected);
+    }
+    request["surface"]
+        .as_object_mut()
+        .unwrap()
+        .remove("surroundingColor");
+    let failure = invoke_program(program, request.to_string().as_bytes(), &options);
+    assert_eq!(failure.status.code(), Some(1));
+    assert!(failure.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&failure.stderr).contains("surroundingColor"));
+}

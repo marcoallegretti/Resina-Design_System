@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-body-ir:0.1.0",
+  "title": "Resina Opaque Command Body IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "representation",
+    "materialRole",
+    "colorRole",
+    "materialFamily",
+    "form",
+    "states",
+    "geometry",
+    "pigment",
+    "lighting",
+    "edgeWidth",
+    "highlightWidth",
+    "edge",
+    "foregroundRole",
+    "foreground",
+    "contentContrastRatio",
+    "contentFallbackApplied"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/schemaVersion"
+    },
+    "representation": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/representation"
+    },
+    "materialRole": {
+      "enum": [
+        "control.passive",
+        "control.interactive",
+        "control.primary"
+      ]
+    },
+    "colorRole": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/colorRole"
+    },
+    "materialFamily": {
+      "enum": [
+        "cast",
+        "frost",
+        "elastomer"
+      ]
+    },
+    "form": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/form"
+    },
+    "states": {
+      "allOf": [
+        {
+          "$ref": "urn:resina:schema:state-set:0.1.0"
+        },
+        {
+          "properties": {
+            "states": {
+              "items": {
+                "enum": [
+                  "rest",
+                  "hover",
+                  "pressed",
+                  "disabled",
+                  "focused"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "frostRepresentation": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/frostRepresentation"
+    },
+    "geometry": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/geometry"
+    },
+    "pigment": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/pigment"
+    },
+    "lighting": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/lighting"
+    },
+    "edgeWidth": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/edgeWidth"
+    },
+    "highlightWidth": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/highlightWidth"
+    },
+    "edge": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/edge"
+    },
+    "foregroundRole": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/foregroundRole"
+    },
+    "foreground": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/foreground"
+    },
+    "contentContrastRatio": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/contentContrastRatio"
+    },
+    "contentFallbackApplied": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/contentFallbackApplied"
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/allOf/0"
+    },
+    {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/allOf/1"
+    },
+    {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/allOf/2"
+    },
+    {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/allOf/3"
+    },
+    {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/allOf/4"
+    },
+    {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/allOf/5"
+    }
+  ]
+}

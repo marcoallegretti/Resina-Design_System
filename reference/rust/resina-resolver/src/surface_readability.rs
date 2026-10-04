@@ -1,7 +1,7 @@
 use crate::{
     BoundSurface, EdgeContrastError, EdgeContrastResult, FrostSurfaceReadabilityError,
     HeadlessResolution, SrgbFallback, SurfaceBindingError, bind_surface,
-    frost_surface_readability::resolve_bound_frost_surface_readability,
+    frost_surface_readability::resolve_bound_frost_body_readability,
     opaque_contrast_ratio, resolve_edge_contrast,
     scenario::{SurfaceScenarioError, resolve_surface_scenario_document},
     srgb_input::{SrgbInput, SrgbInputError},
@@ -221,6 +221,26 @@ fn resolve_bound_surface_readability(
     {
         return Err(SurfaceReadabilityError::NonBaseState);
     }
+    resolve_bound_body_readability(
+        binding,
+        context,
+        foreground_role,
+        backdrop,
+        adjacent,
+        minimum_content_contrast,
+        minimum_edge_contrast,
+    )
+}
+
+pub(crate) fn resolve_bound_body_readability(
+    binding: BoundSurface,
+    context: &HeadlessResolution,
+    foreground_role: ColorRole,
+    backdrop: Option<&SrgbFallback>,
+    adjacent: &SrgbFallback,
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+) -> Result<SurfaceReadabilityResult, SurfaceReadabilityError> {
     if binding.treatment_stack().treatments().last() != Some(&OpticalTreatment::None) {
         return Err(SurfaceReadabilityError::ActiveTreatment);
     }
@@ -235,7 +255,7 @@ fn resolve_bound_surface_readability(
     }
     if binding.material_family() == MaterialFamily::Frost {
         let backdrop = backdrop.ok_or(SurfaceReadabilityError::MissingFrostBackdrop)?;
-        let resolved = resolve_bound_frost_surface_readability(
+        let resolved = resolve_bound_frost_body_readability(
             binding,
             context,
             foreground_role,

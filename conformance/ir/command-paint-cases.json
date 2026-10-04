@@ -1,0 +1,421 @@
+[
+  {
+    "name": "rest",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "hover",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "pressed",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "disabled",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "focused",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "pressed + focused",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "hover + pressed + focused",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "pressed",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "disabled + pressed + hover + focused",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "pressed",
+          "hover",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "rest + hover + pressed + disabled + focused",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "hover",
+          "pressed",
+          "disabled",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "unsupported active",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "active"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "unsupported selected",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "unsupported checked",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "unsupported busy",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "busy"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "unsupported dragging",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "unsupported error",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "error"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "unsupported warning",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "warning"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "unsupported success",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "success"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "command paint supports only"
+  },
+  {
+    "name": "structural role",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/materialRole",
+        "value": "surface.base"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "control material role"
+  },
+  {
+    "name": "translucent surrounding",
+    "requestChanges": [
+      {
+        "path": "/surface/surroundingColor/alpha",
+        "value": 0.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surroundingColor must be opaque"
+  },
+  {
+    "name": "insufficient state contrast",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/pressed/bodyMix",
+        "value": -1
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "contrast is insufficient"
+  },
+  {
+    "name": "nonfinite-scale domain",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/cast/pressed/depthScale",
+        "value": 1.01
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "depthScale"
+  },
+  {
+    "name": "invalid unselected family",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/frost/hover/bodyMix",
+        "value": -1.01
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "bodyMix"
+  },
+  {
+    "name": "unknown response member",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/cast/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 1,
+          "extra": 1
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unknown family",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles",
+        "value": {
+          "cast": {
+            "hover": {
+              "bodyMix": 0.035,
+              "depthScale": 1
+            },
+            "pressed": {
+              "bodyMix": -0.05,
+              "depthScale": 0.9
+            },
+            "disabled": {
+              "bodyMix": -0.16,
+              "depthScale": 0.7
+            }
+          },
+          "frost": {
+            "hover": {
+              "bodyMix": 0.05,
+              "depthScale": 1
+            },
+            "pressed": {
+              "bodyMix": -0.06,
+              "depthScale": 0.85
+            },
+            "disabled": {
+              "bodyMix": -0.14,
+              "depthScale": 0.7
+            }
+          },
+          "elastomer": {
+            "hover": {
+              "bodyMix": 0.06,
+              "depthScale": 1
+            },
+            "pressed": {
+              "bodyMix": -0.09,
+              "depthScale": 0.25
+            },
+            "disabled": {
+              "bodyMix": -0.18,
+              "depthScale": 0.7
+            }
+          },
+          "gel": {
+            "hover": {
+              "bodyMix": 0.035,
+              "depthScale": 1
+            },
+            "pressed": {
+              "bodyMix": -0.05,
+              "depthScale": 0.9
+            },
+            "disabled": {
+              "bodyMix": -0.16,
+              "depthScale": 0.7
+            }
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "null optional color",
+    "requestChanges": [
+      {
+        "path": "/surface/surroundingColor",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "unsupported version",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "0.2.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "complete compression retains independent focus",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      },
+      {
+        "path": "/commandAppearance/profiles/elastomer/pressed/depthScale",
+        "value": 0
+      },
+      {
+        "path": "/commandAppearance/profiles/elastomer/pressed/bodyMix",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  }
+]

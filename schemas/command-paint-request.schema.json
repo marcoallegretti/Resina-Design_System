@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-paint-request:0.1.0",
+  "title": "Resina Command Paint Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "surface",
+    "commandAppearance"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "surface": {
+      "$ref": "urn:resina:schema:surface-paint-request:0.1.0"
+    },
+    "commandAppearance": {
+      "$ref": "urn:resina:schema:command-appearance:0.1.0"
+    }
+  }
+}

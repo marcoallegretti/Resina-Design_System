@@ -187,6 +187,32 @@ pub(crate) fn resolve_bound_frost_surface_readability(
     minimum_edge_contrast: f64,
 ) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
     validate_surface_scope(&binding)?;
+    resolve_bound_frost_body_readability(
+        binding,
+        context,
+        foreground_role,
+        backdrop,
+        adjacent,
+        minimum_content_contrast,
+        minimum_edge_contrast,
+    )
+}
+
+pub(crate) fn resolve_bound_frost_body_readability(
+    binding: BoundSurface,
+    context: &HeadlessResolution,
+    foreground_role: ColorRole,
+    backdrop: &SrgbFallback,
+    adjacent: &SrgbFallback,
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
+    if binding.material_family() != MaterialFamily::Frost {
+        return Err(FrostSurfaceReadabilityError::NonFrostSurface);
+    }
+    if binding.treatment_stack().treatments().last() != Some(&OpticalTreatment::None) {
+        return Err(FrostSurfaceReadabilityError::ActiveTreatment);
+    }
     let foreground = context
         .color_fallbacks()
         .get(&foreground_role)
