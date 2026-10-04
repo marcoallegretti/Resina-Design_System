@@ -96,7 +96,7 @@ struct Nearest {
     weight: f64,
 }
 
-fn placed_contains(
+pub(crate) fn placed_contains(
     contour: &PlacedContour,
     point: PhysicalVector,
 ) -> Result<bool, SurfacePaintError> {

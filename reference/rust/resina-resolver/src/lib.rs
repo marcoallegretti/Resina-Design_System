@@ -11,7 +11,8 @@ pub use command_accessibility::{
 
 mod command_label;
 pub use command_label::{
-    CommandLabelError, CommandLabelInput, CommandLabelIr, LabelMeasureInput, resolve_command_label,
+    CommandContentError, CommandLabelError, CommandLabelInput, CommandLabelIr, LabelMeasureInput,
+    resolve_command_label,
 };
 
 mod command_motion;

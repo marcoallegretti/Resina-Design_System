@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "0.1.0",
+  "size": {
+    "width": 64,
+    "height": 40
+  },
+  "roundedRadius": 12,
+  "edgeWidth": 1,
+  "highlightWidth": 1,
+  "cases": [
+    {
+      "name": "square-closed-boundary",
+      "shape": "structural",
+      "padding": 2.0,
+      "height": 36.0,
+      "contained": true
+    },
+    {
+      "name": "square-highlight-overlap",
+      "shape": "structural",
+      "padding": 1.0,
+      "height": 36.0,
+      "contained": false
+    },
+    {
+      "name": "rounded-box-is-not-contour",
+      "shape": "rounded",
+      "padding": 2.0,
+      "height": 36.0,
+      "contained": false
+    },
+    {
+      "name": "rounded-inset-label",
+      "shape": "rounded",
+      "padding": 8.0,
+      "height": 24.0,
+      "contained": true
+    },
+    {
+      "name": "capsule-rectangular-bounds-fail",
+      "shape": "capsule",
+      "padding": 2.0,
+      "height": 8.0,
+      "contained": false
+    },
+    {
+      "name": "capsule-contained-label",
+      "shape": "capsule",
+      "padding": 8.0,
+      "height": 8.0,
+      "contained": true
+    },
+    {
+      "name": "capsule-tall-label-fails",
+      "shape": "capsule",
+      "padding": 8.0,
+      "height": 36.0,
+      "contained": false
+    }
+  ]
+}

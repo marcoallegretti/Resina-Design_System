@@ -1,6 +1,8 @@
-use crate::ResolvedTypography;
+use crate::{
+    OpaqueSurfaceIr, ResolvedTypography, SurfacePaintError, opaque_paint::placed_contains,
+};
 use resina_environment::{LayoutDirection, SafeArea};
-use resina_model::{PhysicalBounds, SurfaceSize};
+use resina_model::{PhysicalBounds, PhysicalVector, SurfaceSize};
 use serde::Serialize;
 use std::fmt;
 
@@ -28,6 +30,45 @@ pub struct CommandLabelIr {
     layout_direction: LayoutDirection,
 }
 impl CommandLabelIr {
+    pub fn validate_content(&self, body: &OpaqueSurfaceIr) -> Result<(), CommandContentError> {
+        let front = body
+            .geometry()
+            .front()
+            .bounds()
+            .ok_or(CommandContentError::Geometry(
+                SurfacePaintError::UnsupportedContour,
+            ))?;
+        if front.x != 0.0
+            || front.y != 0.0
+            || front.width != self.size.width
+            || front.height != self.size.height
+        {
+            return Err(CommandContentError::SizeMismatch);
+        }
+        let bounds = self.label_bounds;
+        let right = bounds.x + bounds.width;
+        let bottom = bounds.y + bounds.height;
+        if !right.is_finite()
+            || !bottom.is_finite()
+            || right <= bounds.x
+            || bottom <= bounds.y
+            || (bounds.x > 0.0 && right <= bounds.width)
+            || (bounds.y > 0.0 && bottom <= bounds.height)
+        {
+            return Err(CommandContentError::NumericRange);
+        }
+        // Resolved content contours are convex; containing all corners contains the box.
+        for x in [bounds.x, right] {
+            for y in [bounds.y, bottom] {
+                if !placed_contains(body.geometry().content(), PhysicalVector { x, y })
+                    .map_err(CommandContentError::Geometry)?
+                {
+                    return Err(CommandContentError::OutsideContent);
+                }
+            }
+        }
+        Ok(())
+    }
     pub fn text(&self) -> &str {
         &self.text
     }
@@ -42,6 +83,37 @@ impl CommandLabelIr {
     }
     pub fn layout_direction(&self) -> LayoutDirection {
         self.layout_direction
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommandContentError {
+    SizeMismatch,
+    OutsideContent,
+    NumericRange,
+    Geometry(SurfacePaintError),
+}
+impl fmt::Display for CommandContentError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::SizeMismatch => {
+                f.write_str("command label and body must share the same front size and origin")
+            }
+            Self::OutsideContent => {
+                f.write_str("command label layout box exceeds the uniform body content region")
+            }
+            Self::NumericRange => {
+                f.write_str("command label box exceeds representable containment arithmetic")
+            }
+            Self::Geometry(error) => write!(f, "command content geometry: {error}"),
+        }
+    }
+}
+impl std::error::Error for CommandContentError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Geometry(error) => Some(error),
+            _ => None,
+        }
     }
 }
 #[derive(Debug, PartialEq)]
