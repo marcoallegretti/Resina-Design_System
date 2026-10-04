@@ -92,8 +92,10 @@ can shrink the text box to the longest line before drawing.
 The native label test requires `RESINA_LABEL_FONT` to name the installed
 DejaVuSans.ttf file and loads it before measurement and rendering. On Ubuntu with
 `fonts-dejavu-core`, this is `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf`.
-Actual GPU readback checks Latin, expanded German and Arabic labels at three text
-scales and four device scales. Set `RESINA_LABEL_CAPTURE_DIR` to an output directory
+Actual GPU readback checks Latin, expanded German and Arabic labels plus the
+public 100/150/200% string-length matrix at three text scales and four device
+scales: 72 frames. Character counts classify those ASCII test strings only; all
+widths come from actual font shaping. Set `RESINA_LABEL_CAPTURE_DIR` to an output directory
 to save each tested frame as a PPM for visual review. These are static typography
 conformance probes, not interactive controls. Component accessibility and native
 event delivery remain separate work.

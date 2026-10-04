@@ -96,15 +96,10 @@ fn complete_centered_labels_reach_every_native_line_at_all_scales() {
     }
     for text_scale in [1.0, 1.5, 2.0] {
         let typography = label_style::style(text_scale, 0.0, 400.0, 1.4);
-        for (name, text, direction) in [
-            ("save", "Save", LayoutDirection::Ltr),
-            (
-                "expanded",
-                "Verbindung erneut herstellen",
-                LayoutDirection::Ltr,
-            ),
-            ("arabic", "إعادة الاتصال بالشبكة", LayoutDirection::Rtl),
-        ] {
+        for case in label_style::cases() {
+            let name = case.name.as_str();
+            let text = case.text.as_str();
+            let direction = case.direction;
             let ir = resolve_command_label(
                 CommandLabelInput {
                     text,

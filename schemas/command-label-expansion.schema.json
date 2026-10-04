@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-label-expansion:0.1.0",
+  "title": "Resina ASCII Label Length Expansion Conformance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "baselineText",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "baselineText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[\\u0020-\\u007e]+(?![\\s\\S])"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "targetExpansion",
+          "scalarLength",
+          "text"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9-]*(?![\\s\\S])"
+          },
+          "targetExpansion": {
+            "enum": [
+              1.0,
+              1.5,
+              2.0
+            ]
+          },
+          "scalarLength": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[\\u0020-\\u007e]+(?![\\s\\S])"
+          }
+        }
+      }
+    }
+  }
+}

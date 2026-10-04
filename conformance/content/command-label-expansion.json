@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "0.1.0",
+  "baselineText": "Reconnect",
+  "cases": [
+    {
+      "name": "length-100",
+      "targetExpansion": 1.0,
+      "scalarLength": 9,
+      "text": "Reconnect"
+    },
+    {
+      "name": "length-150",
+      "targetExpansion": 1.5,
+      "scalarLength": 13,
+      "text": "Reconnect now"
+    },
+    {
+      "name": "length-200",
+      "targetExpansion": 2.0,
+      "scalarLength": 18,
+      "text": "Reconnect to Wi-Fi"
+    }
+  ]
+}

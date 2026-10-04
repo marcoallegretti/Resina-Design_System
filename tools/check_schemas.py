@@ -122,9 +122,36 @@ def check_vectors(schema_path, vector_path):
     return len(vectors)
 
 
+def check_label_expansion(expansion):
+    check_case(
+        validator_for("schemas/command-label-expansion.schema.json"),
+        "label length expansion",
+        expansion,
+        True,
+    )
+    baseline_length = len(expansion["baselineText"])
+    if not expansion["baselineText"].strip():
+        raise ValueError("label expansion baseline must not be blank")
+    targets, names = set(), set()
+    for case in expansion["cases"]:
+        if case["name"] in names or case["targetExpansion"] in targets:
+            raise ValueError("duplicate label expansion case or target")
+        names.add(case["name"])
+        targets.add(case["targetExpansion"])
+        if not case["text"].strip() or len(case["text"]) != case["scalarLength"]:
+            raise ValueError("label expansion text disagrees with declared length")
+        actual = case["scalarLength"] / baseline_length
+        if abs(actual / case["targetExpansion"] - 1.0) > 0.05:
+            raise ValueError("label expansion case is not within five percent of target")
+    if targets != {1.0, 1.5, 2.0}:
+        raise ValueError("label expansion needs 100, 150 and 200 percent coverage")
+    return 1 + len(expansion["cases"])
+
+
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/command-label-expansion.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-motion-request.schema.json",
         "schemas/command-motion-ir.schema.json",
@@ -1630,6 +1657,8 @@ def main():
     extra = dict(label, renderer="native")
     check_case(label_validator, "renderer leakage", extra, False)
     checked += 1
+    expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
+    checked += check_label_expansion(expansion)
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 

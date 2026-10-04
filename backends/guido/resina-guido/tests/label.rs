@@ -1,7 +1,7 @@
 #![cfg(feature = "testing")]
 
 use guido::widgets::font::FontFamily;
-use resina_environment::{LayoutDirection, SafeArea};
+use resina_environment::SafeArea;
 use resina_guido::{LabelMeasureError, measure_command_label};
 use resina_model::SurfaceSize;
 use resina_resolver::{CommandLabelInput, LabelMeasureInput, resolve_command_label};
@@ -17,11 +17,9 @@ fn actual_font_shapes_complete_scaled_and_expanded_labels() {
     for scale in [1.0, 1.5, 2.0] {
         let typography = style(scale, 0.0, 400.0, 1.4);
         assert_eq!(typography.font_size(), 20.0 * scale);
-        for (text, direction) in [
-            ("Save", LayoutDirection::Ltr),
-            ("Verbindung erneut herstellen", LayoutDirection::Ltr),
-            ("إعادة الاتصال بالشبكة", LayoutDirection::Rtl),
-        ] {
+        for case in label_style::cases() {
+            let text = case.text.as_str();
+            let direction = case.direction;
             let mut measurements = Vec::new();
             let ir = resolve_command_label(
                 CommandLabelInput {
