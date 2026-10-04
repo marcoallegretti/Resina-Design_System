@@ -4,7 +4,8 @@ use crate::{
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorRole, CommandAppearance, CommandPhase, CommandResponse, InteractionState, MaterialRole,
+    ColorRole, CommandAppearance, CommandPhase, CommandResponse, InteractionState, MaterialFamily,
+    MaterialRole,
 };
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -56,6 +57,7 @@ pub enum TogglePartPaintError {
     UnsupportedVersion,
     Scope(&'static str),
     Paint(SurfacePaintResolutionError),
+    Motion(resina_motion::SpringError),
 }
 impl fmt::Display for TogglePartPaintError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -65,6 +67,7 @@ impl fmt::Display for TogglePartPaintError {
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
             Self::Scope(e) => f.write_str(e),
             Self::Paint(e) => write!(f, "toggle part {e}"),
+            Self::Motion(e) => write!(f, "toggle part motion: {e}"),
         }
     }
 }
@@ -73,6 +76,7 @@ impl std::error::Error for TogglePartPaintError {
         match self {
             Self::Parse(e) | Self::Request(e) => Some(e),
             Self::Paint(e) => Some(e),
+            Self::Motion(e) => Some(e),
             _ => None,
         }
     }
@@ -87,6 +91,18 @@ pub fn resolve_toggle_part_paint(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
     input: TogglePartPaintInput<'_>,
+) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    resolve_toggle_part_paint_with_response(theme, environment, input, |_, response| Ok(response))
+}
+
+pub(crate) fn resolve_toggle_part_paint_with_response(
+    theme: &CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    input: TogglePartPaintInput<'_>,
+    sample: impl FnOnce(
+        MaterialFamily,
+        CommandResponse,
+    ) -> Result<CommandResponse, TogglePartPaintError>,
 ) -> Result<TogglePartPaintIr, TogglePartPaintError> {
     let original = input.surface.body.surface;
     if !matches!(
@@ -149,6 +165,7 @@ pub fn resolve_toggle_part_paint(
         .interaction_appearance
         .response_for(binding.material_family(), phase)
         .map_err(TogglePartPaintError::Scope)?;
+    let response = sample(binding.material_family(), response)?;
     let b = input.surface.body;
     let paint = crate::control_paint::resolve_control_paint(
         theme,

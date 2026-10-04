@@ -260,3 +260,19 @@ establish the implemented paint slice, not complete GUIdo component conformance.
 The native focus test uses real mounted widgets and frames to verify deferred
 transfer, superseding requests, null outcomes, validation before side effects,
 pending-request preservation and stale-handle diagnostics after disposal.
+
+## Sampled Toggle part paint
+
+`resolve_toggle_part_motion` returns complete checked part paint with retained raw
+pigment/depth motion state. Pass `part_paint().paint()` to the existing surface
+preparation path; no native interpolation is required. The [portable contract](../../../spec/57-toggle-part-motion.md)
+owns motion policy and each sample's contrast/geometry checks. Resolve the current
+track first and supply its actual pigment as thumb adjacency before complete
+snapshot assembly and optional checked thumb travel.
+
+Required GPU readback retains 72 static frames and adds 216 sampled frames over
+both parts/selections/focus states, three families, times 0/0.25/100 and scales
+1/1.25/2. Intermediate spring responses must differ from both endpoints. Set
+`RESINA_TOGGLE_PART_CAPTURE_DIR` for isolated diagnostic PPM captures. These tests
+do not certify complete component styling, calibrated motion, native scheduling,
+input or assistive technology publication.

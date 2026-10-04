@@ -2,158 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:resina:schema:toggle-part-paint-ir:0.1.0",
   "title": "Resina Toggle Part Paint",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schemaVersion",
-    "phase",
-    "response",
-    "paint",
-    "part",
-    "checked"
-  ],
-  "properties": {
-    "schemaVersion": {
-      "const": "0.1.0"
-    },
-    "phase": {
-      "enum": [
-        "rest",
-        "hover",
-        "pressed",
-        "disabled"
-      ]
-    },
-    "response": {
-      "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
-    },
-    "paint": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "schemaVersion",
-        "body"
-      ],
-      "properties": {
-        "schemaVersion": {
-          "const": "0.1.0"
-        },
-        "body": {
-          "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0"
-        },
-        "focus": {
-          "$ref": "urn:resina:schema:focus-indicator-ir:0.1.0"
-        }
-      }
-    },
-    "part": {
-      "enum": [
-        "track",
-        "thumb"
-      ]
-    },
-    "checked": {
-      "type": "boolean"
-    }
-  },
+  "$ref": "#/$defs/sampled",
   "allOf": [
-    {
-      "if": {
-        "properties": {
-          "paint": {
-            "properties": {
-              "body": {
-                "properties": {
-                  "states": {
-                    "properties": {
-                      "states": {
-                        "contains": {
-                          "const": "disabled"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "phase": {
-            "const": "disabled"
-          }
-        }
-      },
-      "else": {
-        "if": {
-          "properties": {
-            "paint": {
-              "properties": {
-                "body": {
-                  "properties": {
-                    "states": {
-                      "properties": {
-                        "states": {
-                          "contains": {
-                            "const": "pressed"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "then": {
-          "properties": {
-            "phase": {
-              "const": "pressed"
-            }
-          }
-        },
-        "else": {
-          "if": {
-            "properties": {
-              "paint": {
-                "properties": {
-                  "body": {
-                    "properties": {
-                      "states": {
-                        "properties": {
-                          "states": {
-                            "contains": {
-                              "const": "hover"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "phase": {
-                "const": "hover"
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "phase": {
-                "const": "rest"
-              }
-            }
-          }
-        }
-      }
-    },
     {
       "if": {
         "properties": {
@@ -172,18 +22,67 @@
           }
         }
       }
-    },
-    {
-      "if": {
-        "allOf": [
-          {
-            "properties": {
-              "part": {
-                "const": "track"
-              }
+    }
+  ],
+  "$defs": {
+    "sampled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "phase",
+        "response",
+        "paint",
+        "part",
+        "checked"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "0.1.0"
+        },
+        "phase": {
+          "enum": [
+            "rest",
+            "hover",
+            "pressed",
+            "disabled"
+          ]
+        },
+        "response": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        },
+        "paint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "body"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": "0.1.0"
+            },
+            "body": {
+              "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0"
+            },
+            "focus": {
+              "$ref": "urn:resina:schema:focus-indicator-ir:0.1.0"
             }
-          },
-          {
+          }
+        },
+        "part": {
+          "enum": [
+            "track",
+            "thumb"
+          ]
+        },
+        "checked": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
             "properties": {
               "paint": {
                 "properties": {
@@ -193,7 +92,7 @@
                         "properties": {
                           "states": {
                             "contains": {
-                              "const": "focused"
+                              "const": "disabled"
                             }
                           }
                         }
@@ -203,42 +102,150 @@
                 }
               }
             }
-          }
-        ]
-      },
-      "then": {
-        "properties": {
-          "paint": {
-            "required": [
-              "focus"
-            ]
-          }
-        }
-      },
-      "else": {
-        "properties": {
-          "paint": {
-            "not": {
-              "required": [
-                "focus"
-              ]
+          },
+          "then": {
+            "properties": {
+              "phase": {
+                "const": "disabled"
+              }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "paint": {
+                  "properties": {
+                    "body": {
+                      "properties": {
+                        "states": {
+                          "properties": {
+                            "states": {
+                              "contains": {
+                                "const": "pressed"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "phase": {
+                  "const": "pressed"
+                }
+              }
+            },
+            "else": {
+              "if": {
+                "properties": {
+                  "paint": {
+                    "properties": {
+                      "body": {
+                        "properties": {
+                          "states": {
+                            "properties": {
+                              "states": {
+                                "contains": {
+                                  "const": "hover"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "phase": {
+                    "const": "hover"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "phase": {
+                    "const": "rest"
+                  }
+                }
+              }
             }
           }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "paint": {
-            "properties": {
-              "body": {
+        },
+        {
+          "if": {
+            "allOf": [
+              {
                 "properties": {
-                  "states": {
+                  "part": {
+                    "const": "track"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "paint": {
+                    "properties": {
+                      "body": {
+                        "properties": {
+                          "states": {
+                            "properties": {
+                              "states": {
+                                "contains": {
+                                  "const": "focused"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "paint": {
+                "required": [
+                  "focus"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "paint": {
+                "not": {
+                  "required": [
+                    "focus"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "paint": {
+                "properties": {
+                  "body": {
                     "properties": {
                       "states": {
-                        "contains": {
-                          "const": "checked"
+                        "properties": {
+                          "states": {
+                            "contains": {
+                              "const": "checked"
+                            }
+                          }
                         }
                       }
                     }
@@ -246,23 +253,23 @@
                 }
               }
             }
+          },
+          "then": {
+            "properties": {
+              "checked": {
+                "const": true
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "checked": {
+                "const": false
+              }
+            }
           }
         }
-      },
-      "then": {
-        "properties": {
-          "checked": {
-            "const": true
-          }
-        }
-      },
-      "else": {
-        "properties": {
-          "checked": {
-            "const": false
-          }
-        }
-      }
+      ]
     }
-  ]
+  }
 }

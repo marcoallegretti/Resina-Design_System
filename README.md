@@ -133,3 +133,7 @@ does not provide native Toggle event or accessibility-tree delivery.
 snapshots with retained spring state, bounded placement, stable targets and
 immediate Cast/reduced-motion endpoints. GUIdo consumes the checked placement;
 frame scheduling and material calibration remain owner responsibilities.
+
+[Sampled Toggle interaction paint](spec/57-toggle-part-motion.md) retains independent
+pigment/depth trajectories while preserving selection and track-only focus. Each
+sample reruns contrast and geometry guards before component assembly.

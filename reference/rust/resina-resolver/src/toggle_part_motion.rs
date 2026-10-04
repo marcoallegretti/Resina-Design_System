@@ -1,46 +1,21 @@
 use crate::{
-    CommandPaintError, CommandPaintInput, CommandPaintIr, CompiledTheme,
-    command_paint::resolve_command_paint_with_response,
+    CommandMotionChannels, CommandMotionPolicy, CommandProjection, CompiledTheme,
+    TogglePartPaintError, TogglePartPaintInput, TogglePartPaintIr,
+    toggle_part_paint::resolve_toggle_part_paint_with_response,
 };
 use resina_environment::EnvironmentSnapshot;
-use resina_model::{CommandAppearance, CommandResponse, SpringDynamics, SpringState};
+use resina_model::{CommandAppearance, CommandResponse};
 use resina_motion::SpringTrajectorySample;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct CommandMotionChannel {
-    pub dynamics: SpringDynamics,
-    pub initial: SpringState,
-}
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct CommandMotionChannels {
-    pub body_mix: CommandMotionChannel,
-    pub depth_scale: CommandMotionChannel,
-}
-pub struct CommandMotionInput<'a> {
-    pub command: CommandPaintInput<'a>,
+pub struct TogglePartMotionInput<'a> {
+    pub part: TogglePartPaintInput<'a>,
     pub channels: &'a CommandMotionChannels,
     pub time: f64,
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub enum CommandMotionPolicy {
-    Spring,
-    CastImmediate,
-    ReducedMotion,
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub enum CommandProjection {
-    None,
-    LowerBound,
-    UpperBound,
-}
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CommandMotionIr {
+pub struct TogglePartMotionIr {
     schema_version: &'static str,
     policy: CommandMotionPolicy,
     target: CommandResponse,
@@ -48,9 +23,9 @@ pub struct CommandMotionIr {
     depth_scale: SpringTrajectorySample,
     body_mix_projection: CommandProjection,
     depth_scale_projection: CommandProjection,
-    command: CommandPaintIr,
+    part_paint: TogglePartPaintIr,
 }
-impl CommandMotionIr {
+impl TogglePartMotionIr {
     pub fn policy(&self) -> CommandMotionPolicy {
         self.policy
     }
@@ -69,20 +44,20 @@ impl CommandMotionIr {
     pub fn depth_scale_projection(&self) -> CommandProjection {
         self.depth_scale_projection
     }
-    pub fn command(&self) -> &CommandPaintIr {
-        &self.command
+    pub fn part_paint(&self) -> &TogglePartPaintIr {
+        &self.part_paint
     }
 }
-pub fn resolve_command_motion(
+pub fn resolve_toggle_part_motion(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
-    input: CommandMotionInput<'_>,
-) -> Result<CommandMotionIr, CommandPaintError> {
+    input: TogglePartMotionInput<'_>,
+) -> Result<TogglePartMotionIr, TogglePartPaintError> {
     let mut sampled = None;
-    let command = resolve_command_paint_with_response(
+    let part_paint = resolve_toggle_part_paint_with_response(
         theme,
         environment,
-        input.command,
+        input.part,
         |family, target| {
             let sample = crate::control_motion::sample_control_response(
                 family,
@@ -91,14 +66,14 @@ pub fn resolve_command_motion(
                 input.channels,
                 input.time,
             )
-            .map_err(CommandPaintError::Motion)?;
+            .map_err(TogglePartPaintError::Motion)?;
             let response = sample.response;
             sampled = Some((sample, target));
             Ok(response)
         },
     )?;
     let (sample, target) = sampled.expect("successful paint samples both channels");
-    Ok(CommandMotionIr {
+    Ok(TogglePartMotionIr {
         schema_version: "0.1.0",
         policy: sample.policy,
         target,
@@ -106,7 +81,7 @@ pub fn resolve_command_motion(
         depth_scale: sample.depth_scale,
         body_mix_projection: sample.body_mix_projection,
         depth_scale_projection: sample.depth_scale_projection,
-        command,
+        part_paint,
     })
 }
 #[derive(Deserialize)]
@@ -114,25 +89,33 @@ pub fn resolve_command_motion(
 struct Request {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
-    command_appearance: CommandAppearance,
+    interaction_appearance: CommandAppearance,
+    part: crate::TogglePart,
+    checked_color_role: resina_model::ColorRole,
     channels: CommandMotionChannels,
     time: f64,
 }
-pub fn resolve_command_motion_source(source: &str) -> Result<CommandMotionIr, CommandPaintError> {
-    let document = resina_tokens::parse_token_document(source).map_err(CommandPaintError::Parse)?;
-    let request: Request = serde_json::from_value(document).map_err(CommandPaintError::Request)?;
+pub fn resolve_toggle_part_motion_source(
+    source: &str,
+) -> Result<TogglePartMotionIr, TogglePartPaintError> {
+    let document =
+        resina_tokens::parse_token_document(source).map_err(TogglePartPaintError::Parse)?;
+    let request: Request =
+        serde_json::from_value(document).map_err(TogglePartPaintError::Request)?;
     if request.schema_version != "0.1.0" {
-        return Err(CommandPaintError::UnsupportedVersion);
+        return Err(TogglePartPaintError::UnsupportedVersion);
     }
     let (theme, environment, owned) =
         crate::surface_paint::parse_surface_paint_request(request.surface)?;
-    resolve_command_motion(
+    resolve_toggle_part_motion(
         &theme,
         &environment,
-        CommandMotionInput {
-            command: CommandPaintInput {
+        TogglePartMotionInput {
+            part: TogglePartPaintInput {
                 surface: owned.input(),
-                command_appearance: &request.command_appearance,
+                interaction_appearance: &request.interaction_appearance,
+                part: request.part,
+                checked_color_role: request.checked_color_role,
             },
             channels: &request.channels,
             time: request.time,

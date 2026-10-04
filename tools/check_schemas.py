@@ -160,6 +160,9 @@ def main():
         "schemas/toggle-part-paint-ir.schema.json",
         "schemas/toggle-part-paint-request.schema.json",
         "schemas/toggle-part-paint-case.schema.json",
+        "schemas/toggle-part-motion-request.schema.json",
+        "schemas/toggle-part-motion-ir.schema.json",
+        "schemas/toggle-part-motion-case.schema.json",
         "schemas/toggle-layout-request.schema.json",
         "schemas/toggle-layout-ir.schema.json",
         "schemas/toggle-layout-case.schema.json",
@@ -1841,6 +1844,17 @@ def main():
     if len(names) != len(set(names)):
         raise ValueError("duplicate toggle snapshot case")
     checked += 1 + len(names)
+    toggle_motion = load_json(ROOT / "conformance/ir/toggle-part-motion-request.json")
+    check_case(validator_for("schemas/toggle-part-motion-request.schema.json"), "toggle motion baseline", toggle_motion, True)
+    checked += 1
+    names = set()
+    for case in load_json(ROOT / "conformance/ir/toggle-part-motion-cases.json"):
+        if case["name"] in names:
+            raise ValueError("duplicate toggle part motion case: " + case["name"])
+        names.add(case["name"])
+        check_case(validator_for("schemas/toggle-part-motion-case.schema.json"), case["name"], case, True)
+        check_case(validator_for("schemas/toggle-part-motion-request.schema.json"), case["name"], apply_changes(toggle_motion, case["requestChanges"]), case["requestSchemaValid"])
+        checked += 2
     toggle_part_request = load_json(ROOT / "conformance/ir/toggle-part-paint-request.json")
     check_case(validator_for("schemas/toggle-part-paint-request.schema.json"), "toggle part baseline", toggle_part_request, True)
     checked += 1

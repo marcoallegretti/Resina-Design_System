@@ -11,7 +11,7 @@ from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json
 from check_surface_paint_backend import surface_paint_channel_mismatch
 
 
-def toggle_part_mismatch(actual, request):
+def toggle_part_mismatch(actual, request, sampled_response=None):
     states = request["surface"]["body"]["surface"]["states"]["states"]
     ordered = [state for state in ("rest", "hover", "focused", "pressed", "checked", "disabled") if state in states]
     phase = next((state for state in ("disabled", "pressed", "hover") if state in states), "rest")
@@ -25,6 +25,8 @@ def toggle_part_mismatch(actual, request):
     if family != theme["materialAssignments"]["control"][role]:
         return "/paint/body/materialFamily"
     response = {"bodyMix": 0, "depthScale": 1} if phase == "rest" else request["interactionAppearance"]["profiles"][family][phase]
+    if sampled_response is not None:
+        response = sampled_response
     if actual["phase"] != phase:
         return "/phase"
     if mismatch(actual["response"], response):

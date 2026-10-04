@@ -1,0 +1,472 @@
+[
+  {
+    "name": "track-rest-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "track-hover-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "track-pressed-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "track-disabled-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "track-rest-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "track-hover-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "track-pressed-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "track-disabled-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-rest-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-hover-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-pressed-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-disabled-off",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-rest-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-hover-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-pressed-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "thumb-disabled-on",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "focused",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "reduced-motion",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "reducedMotion"
+  },
+  {
+    "name": "bodyMix-1.5-retains-velocity",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/initial",
+        "value": {
+          "position": 1.5,
+          "velocity": 2
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "depthScale-1.5-retains-velocity",
+    "requestChanges": [
+      {
+        "path": "/channels/depthScale/initial",
+        "value": {
+          "position": 1.5,
+          "velocity": 2
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "depthScale--0.5-retains-velocity",
+    "requestChanges": [
+      {
+        "path": "/channels/depthScale/initial",
+        "value": {
+          "position": -0.5,
+          "velocity": 2
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "sample-contrast-fails",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/initial",
+        "value": {
+          "position": -0.9,
+          "velocity": 0
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "contrast"
+  },
+  {
+    "name": "invalid-time",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "time"
+  },
+  {
+    "name": "invalid-dynamics",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/dynamics/mass",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "mass"
+  },
+  {
+    "name": "unsupported-state",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only"
+  },
+  {
+    "name": "invalid-version",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "0.2.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "damping-0",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/dynamics/damping",
+        "value": 0
+      },
+      {
+        "path": "/channels/depthScale/dynamics/damping",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "damping-0.4",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/dynamics/damping",
+        "value": 0.4
+      },
+      {
+        "path": "/channels/depthScale/dynamics/damping",
+        "value": 0.4
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "damping-8",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/dynamics/damping",
+        "value": 8
+      },
+      {
+        "path": "/channels/depthScale/dynamics/damping",
+        "value": 8
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  }
+]

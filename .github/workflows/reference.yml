@@ -134,6 +134,7 @@ jobs:
       - run: python tools/check_command_paint_backend.py -- target/debug/resina-command-paint${{ matrix.executableSuffix }} -
       - run: python tools/check_toggle_part_paint_backend.py -- target/debug/resina-toggle-part-paint${{ matrix.executableSuffix }} -
       - run: python tools/check_command_motion_backend.py -- target/debug/resina-command-motion${{ matrix.executableSuffix }} -
+      - run: python tools/check_toggle_part_motion_backend.py -- target/debug/resina-toggle-part-motion${{ matrix.executableSuffix }} -
       - run: python tools/check_material_scenarios.py --theme-backend target/debug/resina-theme-resolve${{ matrix.executableSuffix }} --surface-backend target/debug/resina-opaque-surface${{ matrix.executableSuffix }} --focus-backend target/debug/resina-focus-ir${{ matrix.executableSuffix }} --paint-backend target/debug/resina-surface-paint${{ matrix.executableSuffix }}
       - run: python tools/check_focus_indicator_backend.py -- target/debug/resina-focus-indicator${{ matrix.executableSuffix }} -
   schemas:

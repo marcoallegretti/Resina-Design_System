@@ -1,3 +1,10 @@
+mod control_motion;
+mod toggle_part_motion;
+pub use toggle_part_motion::{
+    TogglePartMotionInput, TogglePartMotionIr, resolve_toggle_part_motion,
+    resolve_toggle_part_motion_source,
+};
+
 mod toggle_travel;
 pub use toggle_travel::{
     ToggleTravelError, ToggleTravelPolicy, ToggleTravelProjection, ToggleTravelSnapshot,
