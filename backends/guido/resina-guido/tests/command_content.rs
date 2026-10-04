@@ -18,11 +18,16 @@ use resina_guido::{
     CommandContentPrepareError, LabelPrepareError, PrepareError, measure_command_label,
     prepare_command_content,
 };
-use resina_model::{ContourSegment, PhysicalVector, SurfaceSize, TypographyRole};
+use resina_model::{
+    ActivationState, ContourSegment, PhysicalBounds, PhysicalVector, PressHold, SurfaceSize,
+    TypographyRole,
+};
 use resina_resolver::{
     CommandContentError, CommandLabelInput, CommandLabelIr, CommandMotionPolicy, CommandPaintIr,
-    PlacedContour, opaque_contrast_ratio, resolve_command_label, resolve_command_motion_source,
-    resolve_command_paint_source, resolve_srgb_fallback, resolve_theme_request_source,
+    CommandSnapshot, CommandSnapshotError, CommandSnapshotInput, PlacedContour,
+    SurfaceHitRegionInput, opaque_contrast_ratio, resolve_command_label,
+    resolve_command_motion_source, resolve_command_paint_source, resolve_command_snapshot,
+    resolve_srgb_fallback, resolve_surface_hit_region, resolve_theme_request_source,
 };
 use serde_json::{Value, json};
 use std::{collections::HashSet, rc::Rc};
@@ -85,6 +90,70 @@ fn resolve_label(
     .unwrap();
     request["surface"]["body"]["size"] = serde_json::to_value(label.size()).unwrap();
     label
+}
+
+fn snapshot<'a>(
+    request: &Value,
+    label: &'a CommandLabelIr,
+    paint: &'a CommandPaintIr,
+    phase: &str,
+    focused: bool,
+) -> Result<CommandSnapshot<'a>, CommandSnapshotError> {
+    let (enabled, hovered, hold) = match phase {
+        "rest" => (true, false, None),
+        "hover" => (true, true, None),
+        "pressed" => (
+            true,
+            false,
+            Some(PressHold::Pointer {
+                id: "primary".into(),
+                inside: true,
+            }),
+        ),
+        "disabled" => (false, false, None),
+        _ => panic!("unknown test phase {phase}"),
+    };
+    let activation = ActivationState::try_new(enabled, focused, hold).unwrap();
+    let environment =
+        serde_json::from_value(request["surface"]["body"]["theme"]["environment"].clone()).unwrap();
+    let mut rest = json!({
+        "schemaVersion": request["schemaVersion"],
+        "surface": request["surface"],
+        "commandAppearance": request["commandAppearance"],
+    });
+    rest["surface"]["body"]["surface"]["states"]["states"] = json!(["rest"]);
+    let rest = resolve_command_paint_source(&rest.to_string()).unwrap();
+    let available_bounds = PhysicalBounds {
+        x: -1024.0,
+        y: -1024.0,
+        width: 4096.0,
+        height: 4096.0,
+    };
+    let component_minimum = SurfaceSize {
+        width: 48.0,
+        height: 48.0,
+    };
+    let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
+        environment: &environment,
+        body: rest.paint().body(),
+        available_bounds,
+        component_minimum,
+        occupied_regions: &[],
+    })
+    .unwrap();
+    resolve_command_snapshot(CommandSnapshotInput {
+        label,
+        paint,
+        hit_region,
+        activation: &activation,
+        hovered,
+        description: None,
+        focusable: true,
+        environment: &environment,
+        available_bounds,
+        component_minimum,
+        occupied_regions: &[],
+    })
 }
 
 fn background(request: &Value) -> Color {
@@ -172,14 +241,30 @@ fn pixel_color(pixel: &[u8]) -> resina_resolver::SrgbFallback {
 }
 fn check_frame(
     frames: &mut NativeFrames,
-    paint: &CommandPaintIr,
-    label: &CommandLabelIr,
+    snapshot: &CommandSnapshot<'_>,
     scale: f32,
     name: &str,
     capture: Option<&std::path::Path>,
     background: Color,
 ) {
-    let commands = prepare_command_content(paint, label, frames.family, scale, 4).unwrap();
+    let paint = snapshot.paint();
+    let label = snapshot.label();
+    assert_eq!(snapshot.accessibility().name(), label.text());
+    assert!(
+        snapshot
+            .hit_region()
+            .contains_bounds(
+                paint
+                    .paint()
+                    .body()
+                    .geometry()
+                    .silhouette()
+                    .bounds()
+                    .unwrap()
+            )
+            .unwrap()
+    );
+    let commands = prepare_command_content(snapshot, frames.family, scale, 4).unwrap();
     let DrawCommand::Image {
         source:
             guido::prelude::ImageSource::Rgba {
@@ -383,8 +468,7 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
             for scale in [1.0, 1.25, 2.0, 3.0] {
                 check_frame(
                     &mut frames,
-                    &paint,
-                    &label,
+                    &snapshot(&request, &label, &paint, "rest", true).unwrap(),
                     scale,
                     &format!("{}-text-{text_scale}", case.name),
                     captures.as_deref(),
@@ -408,8 +492,7 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
                 for scale in [1.0, 1.25, 2.0, 3.0] {
                     check_frame(
                         &mut frames,
-                        &paint,
-                        &label,
+                        &snapshot(&request, &label, &paint, phase, true).unwrap(),
                         scale,
                         &format!("{scheme}-{material}-{phase}"),
                         captures.as_deref(),
@@ -433,8 +516,7 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
     for scale in [1.0, 1.25, 2.0, 3.0] {
         check_frame(
             &mut frames,
-            &paint,
-            &label,
+            &snapshot(&rest, &label, &paint, "rest", false).unwrap(),
             scale,
             "unfocused-rest",
             captures.as_deref(),
@@ -463,8 +545,7 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
         for scale in [1.0, 1.25, 2.0, 3.0] {
             check_frame(
                 &mut frames,
-                motion.command(),
-                &label,
+                &snapshot(&request, &label, motion.command(), "pressed", true).unwrap(),
                 scale,
                 &format!("motion-{time}"),
                 captures.as_deref(),
@@ -483,21 +564,35 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
     let label = resolve_label(&mut request, "Save", family, 24.0);
     let paint = resolve_command_paint_source(&request.to_string()).unwrap();
     assert!(matches!(
-        prepare_command_content(&paint, &label, family, 0.0, 4),
+        snapshot(&request, &label, &paint, "pressed", true),
+        Err(CommandSnapshotError::StatesMismatch { .. })
+    ));
+    assert!(matches!(
+        prepare_command_content(
+            &snapshot(&request, &label, &paint, "rest", true).unwrap(),
+            family,
+            0.0,
+            4
+        ),
         Err(CommandContentPrepareError::Paint(
             PrepareError::InvalidScale
         ))
     ));
     assert!(matches!(
-        prepare_command_content(&paint, &label, family, 1.0, 0),
+        prepare_command_content(
+            &snapshot(&request, &label, &paint, "rest", true).unwrap(),
+            family,
+            1.0,
+            0
+        ),
         Err(CommandContentPrepareError::Paint(PrepareError::Raster(_)))
     ));
     request["surface"]["body"]["size"]["width"] = json!(label.size().width + 1.0);
     let mismatch = resolve_command_paint_source(&request.to_string()).unwrap();
-    let error = prepare_command_content(&mismatch, &label, family, 1.0, 4).unwrap_err();
+    let error = snapshot(&request, &label, &mismatch, "rest", true).unwrap_err();
     assert!(matches!(
         error,
-        CommandContentPrepareError::Content(CommandContentError::SizeMismatch)
+        CommandSnapshotError::Content(CommandContentError::SizeMismatch)
     ));
     assert!(std::error::Error::source(&error).is_some());
     let mut request = command_request(
@@ -509,8 +604,8 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
     let unsafe_label = resolve_label(&mut request, "Save", family, 0.0);
     let paint = resolve_command_paint_source(&request.to_string()).unwrap();
     assert!(matches!(
-        prepare_command_content(&paint, &unsafe_label, family, 1.0, 4),
-        Err(CommandContentPrepareError::Content(
+        snapshot(&request, &unsafe_label, &paint, "rest", true),
+        Err(CommandSnapshotError::Content(
             CommandContentError::OutsideContent
         ))
     ));
@@ -546,7 +641,12 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
     )
     .unwrap();
     assert!(matches!(
-        prepare_command_content(&paint, &label, family, 1.0, 4),
+        prepare_command_content(
+            &snapshot(&request, &label, &paint, "rest", true).unwrap(),
+            family,
+            1.0,
+            4
+        ),
         Err(CommandContentPrepareError::Label(
             LabelPrepareError::Measurement(_)
         ))

@@ -102,10 +102,12 @@ event delivery remain separate work.
 
 ## Command content composition
 
-Use `prepare_command_content` for a resolved `CommandPaintIr`, its complete
-`CommandLabelIr`, the same verified font family, device scale and sampling count.
-It validates shared front size/origin and actual content-contour containment,
-remeasures complete native text, takes its foreground from the body's readability
+Use `prepare_command_content` for a checked `CommandSnapshot`, the same verified
+font family, device scale and sampling count. Resolve the snapshot with current
+activation, explicit hover, a stable reserved target and accessible semantics
+before native preparation. Its existing guards validate shared front size/origin
+and actual content-contour containment. Native preparation remeasures complete
+text, takes its foreground from the body's readability
 result, and prepares material and navigation paint. A failure returns no command
 pair and preserves its diagnostic cause.
 
@@ -121,7 +123,10 @@ The caller still owns the common environment/typography context, font mapping,
 glyph overhang verification and surrounding clipping. Color conversion and
 antialiasing are native operations; nominal IR contrast alone is not evidence of
 final pixel contrast. This API prepares content paint, not invocation, keyboard
-routing, an accessibility tree or a complete Button.
+routing, an accessibility tree or a complete Button. The owner still publishes
+the snapshot's target and semantics through its native mechanisms, replaces
+stale snapshots after state/layout changes, and checks current activation when
+an action is delivered.
 
 Required Linux GPU tests compose actual text over authored Light/Dark material
 paint. The scene-derived label profile explicitly selects `type.tracking.normal`
@@ -130,6 +135,8 @@ public default typography. Tests include the existing six-label expansion/script
 matrix at three text scales and four device scales, all four command phases
 across Cast, opaque Frost fallback and Elastomer in both schemes, and four sampled
 Elastomer motion times, plus unfocused replacement: 188 first composite frames.
+Every composition consumes a checked snapshot with an explicit test interaction
+state and a reservation derived from the same profile's neutral rest body.
 Compositions use the authored surrounding color. Subsequent material-only and
 text-only readbacks identify actual glyph coverage. Every covered pixel footprint
 must remain inside the content contour on uniform opaque pigment; solid native

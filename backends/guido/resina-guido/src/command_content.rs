@@ -3,19 +3,17 @@ use guido::{
     renderer::DrawCommand,
     widgets::{Color, ContentFit, Rect, font::FontFamily},
 };
-use resina_resolver::{CommandContentError, CommandLabelIr, CommandPaintIr};
+use resina_resolver::CommandSnapshot;
 use std::fmt;
 
 #[derive(Debug)]
 pub enum CommandContentPrepareError {
-    Content(CommandContentError),
     Label(LabelPrepareError),
     Paint(PrepareError),
 }
 impl fmt::Display for CommandContentPrepareError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Content(error) => write!(f, "command content containment: {error}"),
             Self::Label(error) => write!(f, "command content label: {error}"),
             Self::Paint(error) => write!(f, "command content paint: {error}"),
         }
@@ -24,7 +22,6 @@ impl fmt::Display for CommandContentPrepareError {
 impl std::error::Error for CommandContentPrepareError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            Self::Content(error) => Some(error),
             Self::Label(error) => Some(error),
             Self::Paint(error) => Some(error),
         }
@@ -35,16 +32,14 @@ impl std::error::Error for CommandContentPrepareError {
 /// Keep both commands together when replacing static or sampled motion content.
 /// The caller owns font mapping, glyph overhang verification and surrounding clipping.
 pub fn prepare_command_content(
-    paint: &CommandPaintIr,
-    label: &CommandLabelIr,
+    snapshot: &CommandSnapshot<'_>,
     family: FontFamily,
     device_scale: f32,
     samples_per_axis: u8,
 ) -> Result<[DrawCommand; 2], CommandContentPrepareError> {
+    let paint = snapshot.paint();
+    let label = snapshot.label();
     let body = paint.paint().body();
-    label
-        .validate_content(body)
-        .map_err(CommandContentPrepareError::Content)?;
     let [r, g, b] = body.foreground().components().map(|value| value as f32);
     let text = prepare_command_label(
         label,
