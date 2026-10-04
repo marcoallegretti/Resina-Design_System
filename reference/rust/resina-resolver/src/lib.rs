@@ -1,3 +1,9 @@
+mod command_accessibility;
+pub use command_accessibility::{
+    CommandAccessibilityAction, CommandAccessibilityError, CommandAccessibilityInput,
+    CommandAccessibilityIr, CommandAccessibilityState, resolve_command_accessibility,
+};
+
 mod command_label;
 pub use command_label::{
     CommandLabelError, CommandLabelInput, CommandLabelIr, LabelMeasureInput, resolve_command_label,

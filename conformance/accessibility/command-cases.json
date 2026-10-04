@@ -1,0 +1,252 @@
+[
+  {
+    "name": "ordinary",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Reconnect",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "focused description",
+    "input": {
+      "labelText": "Reconnect now",
+      "description": "Connect using the saved network settings.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Reconnect now",
+      "description": "Connect using the saved network settings.",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled discoverable",
+    "input": {
+      "labelText": "Reconnect to Wi-Fi",
+      "description": "Network unavailable.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Reconnect to Wi-Fi",
+      "description": "Network unavailable.",
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled excluded",
+    "input": {
+      "labelText": "Verbindung erneut herstellen",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Verbindung erneut herstellen",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": false,
+      "relationships": []
+    }
+  },
+  {
+    "name": "keyboard held",
+    "input": {
+      "labelText": "إعادة الاتصال بالشبكة",
+      "description": "إعادة الاتصال",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "إعادة الاتصال بالشبكة",
+      "description": "إعادة الاتصال",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "pointer held",
+    "input": {
+      "labelText": "  Save\nas…  ",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "pointer-1",
+          "inside": true
+        }
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "  Save\nas…  ",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "blank description",
+    "input": {
+      "labelText": "Reconnect",
+      "description": "  \t",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "enabled not focusable",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false
+    },
+    "error": "EnabledNotFocusable"
+  },
+  {
+    "name": "focused not focusable",
+    "input": {
+      "labelText": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": false
+    },
+    "error": "FocusedNotFocusable"
+  }
+]

@@ -153,6 +153,8 @@ def main():
     expected_paths = {
         "schemas/command-label-expansion.schema.json",
         "schemas/command-label-ir.schema.json",
+        "schemas/command-accessibility-ir.schema.json",
+        "schemas/command-accessibility-case.schema.json",
         "schemas/command-motion-request.schema.json",
         "schemas/command-motion-ir.schema.json",
         "schemas/command-motion-case.schema.json",
@@ -1662,6 +1664,48 @@ def main():
     checked += 1
     expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
     checked += check_label_expansion(expansion)
+    accessibility_validator = validator_for("schemas/command-accessibility-ir.schema.json")
+    accessibility_names = set()
+    for case in load_json(ROOT / "conformance/accessibility/command-cases.json"):
+        name = case["name"]
+        if name in accessibility_names:
+            raise ValueError(f"duplicate command accessibility case: {name}")
+        accessibility_names.add(name)
+        check_case(validator_for("schemas/command-accessibility-case.schema.json"), name, case, True)
+        checked += 1
+        if "expected" in case:
+            check_case(accessibility_validator, name, case["expected"], True)
+            checked += 1
+    accessibility = load_json(ROOT / "conformance/accessibility/command-cases.json")[0]["expected"]
+    for name, changes in [
+        ("wrong role", [{"path": "/role", "value": "link"}]),
+        ("empty name", [{"path": "/name", "value": ""}]),
+        ("empty description", [{"path": "/description", "value": ""}]),
+        ("invented value", [{"path": "/value", "value": 1}]),
+        ("toggle state", [{"path": "/state", "value": {"enabled": True, "focused": False, "pressed": True}}]),
+        ("missing invocation", [{"path": "/actions", "value": []}]),
+        ("unknown action", [{"path": "/actions/0/kind", "value": "click"}]),
+        ("unavailable enabled action", [{"path": "/actions/0/available", "value": False}]),
+        ("available disabled action", [{"path": "/state/enabled", "value": False}]),
+        ("enabled not focusable", [{"path": "/focusable", "value": False}]),
+        ("focused not focusable", [{"path": "/state/enabled", "value": False},
+                                  {"path": "/actions/0/available", "value": False},
+                                  {"path": "/state/focused", "value": True},
+                                  {"path": "/focusable", "value": False}]),
+        ("unsupported relationship", [{"path": "/relationships", "value": ["external"]}]),
+        ("unsupported version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+    ]:
+        check_case(accessibility_validator, name, apply_changes(accessibility, changes), False)
+        checked += 1
+    for field in accessibility:
+        document = copy.deepcopy(accessibility)
+        document.pop(field)
+        check_case(accessibility_validator, f"missing accessibility {field}", document, False)
+        checked += 1
+    for field, value in [("pressed", True), ("backend", "native")]:
+        document = dict(accessibility, **{field: value})
+        check_case(accessibility_validator, f"unsupported accessibility {field}", document, False)
+        checked += 1
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 
