@@ -118,3 +118,7 @@ remain separate requirements.
 roles with independent interaction response and track-owned focus. Cast, Frost
 and Elastomer use existing contrast, geometry and actual-capability fallback
 laws. Part paint does not certify an assembled native Toggle.
+
+[Coherent Toggle snapshots](spec/55-toggle-snapshot.md) validate full current
+part states, selection, uniform track adjacency, label placement, reserved target
+coverage and binary semantics together before publication.

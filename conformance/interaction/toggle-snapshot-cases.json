@@ -1,0 +1,800 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "off rest",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "rest"
+      ],
+      "thumbStates": [
+        "rest"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off focused rest",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "rest",
+        "focused"
+      ],
+      "thumbStates": [
+        "rest",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "hover"
+      ],
+      "thumbStates": [
+        "hover"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off focused hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "hover",
+        "focused"
+      ],
+      "thumbStates": [
+        "hover",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off disabled discovery",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "disabled",
+        "focused"
+      ],
+      "thumbStates": [
+        "disabled",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off disabled hover discovery",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "disabled",
+        "hover",
+        "focused"
+      ],
+      "thumbStates": [
+        "disabled",
+        "hover",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off inside pointer",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "pressed"
+      ],
+      "thumbStates": [
+        "pressed"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off outside pointer with independent hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": true,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "hover"
+      ],
+      "thumbStates": [
+        "hover"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off held Space",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "pressed",
+        "focused"
+      ],
+      "thumbStates": [
+        "pressed",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off held Enter",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "enter"
+        }
+      },
+      "hovered": true,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "pressed",
+        "hover",
+        "focused"
+      ],
+      "thumbStates": [
+        "pressed",
+        "hover",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "off stale availability",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "rest",
+        "focused"
+      ],
+      "thumbStates": [
+        "rest",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "off missing actual focus",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "rest"
+      ],
+      "thumbStates": [
+        "rest"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "off stale focus",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "rest",
+        "focused"
+      ],
+      "thumbStates": [
+        "rest",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "off missing hover on pressed phase",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": true,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "pressed",
+        "focused"
+      ],
+      "thumbStates": [
+        "pressed",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "off stale hover on disabled phase",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "disabled",
+        "hover",
+        "focused"
+      ],
+      "thumbStates": [
+        "disabled",
+        "hover",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "off stale pointer membership",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": false,
+      "checked": false,
+      "layoutChecked": false,
+      "trackStates": [
+        "pressed"
+      ],
+      "thumbStates": [
+        "pressed"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "on rest",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "rest",
+        "checked"
+      ],
+      "thumbStates": [
+        "rest",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on focused rest",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "rest",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "rest",
+        "focused",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "hover",
+        "checked"
+      ],
+      "thumbStates": [
+        "hover",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on focused hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on disabled discovery",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "disabled",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "disabled",
+        "focused",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on disabled hover discovery",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "disabled",
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "disabled",
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on inside pointer",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "pressed",
+        "checked"
+      ],
+      "thumbStates": [
+        "pressed",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on outside pointer with independent hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": true,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "hover",
+        "checked"
+      ],
+      "thumbStates": [
+        "hover",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on held Space",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "pressed",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "pressed",
+        "focused",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on held Enter",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "enter"
+        }
+      },
+      "hovered": true,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "pressed",
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "pressed",
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "on stale availability",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "rest",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "rest",
+        "focused",
+        "checked"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "on missing actual focus",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "rest",
+        "checked"
+      ],
+      "thumbStates": [
+        "rest",
+        "checked"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "on stale focus",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "rest",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "rest",
+        "focused",
+        "checked"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "on missing hover on pressed phase",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": true,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "pressed",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "pressed",
+        "focused",
+        "checked"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "on stale hover on disabled phase",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "disabled",
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "thumbStates": [
+        "disabled",
+        "hover",
+        "focused",
+        "checked"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "on stale pointer membership",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "pressed",
+        "checked"
+      ],
+      "thumbStates": [
+        "pressed",
+        "checked"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "stale track selection",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "rest"
+      ],
+      "thumbStates": [
+        "rest",
+        "checked"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "stale thumb selection",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": true,
+      "trackStates": [
+        "rest",
+        "checked"
+      ],
+      "thumbStates": [
+        "rest"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "stale layout selection",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "checked": true,
+      "layoutChecked": false,
+      "trackStates": [
+        "rest",
+        "checked"
+      ],
+      "thumbStates": [
+        "rest",
+        "checked"
+      ],
+      "coherent": false
+    }
+  ]
+}

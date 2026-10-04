@@ -1,3 +1,7 @@
+mod toggle_snapshot;
+pub use toggle_snapshot::{
+    ToggleSnapshot, ToggleSnapshotError, ToggleSnapshotInput, resolve_toggle_snapshot,
+};
 mod toggle_part_paint;
 pub use toggle_part_paint::{
     TogglePart, TogglePartPaintError, TogglePartPaintInput, TogglePartPaintIr,
