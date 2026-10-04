@@ -1,0 +1,263 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "rest",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "paintStates": [
+        "rest"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "focused rest",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "paintStates": [
+        "rest",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": true,
+      "paintStates": [
+        "hover"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "focused hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "paintStates": [
+        "hover",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "disabled discovery",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "paintStates": [
+        "disabled",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "disabled hover discovery",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": true,
+      "paintStates": [
+        "disabled",
+        "hover",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "inside pointer",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": true
+        }
+      },
+      "hovered": false,
+      "paintStates": [
+        "pressed"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "outside pointer with independent hover",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": true,
+      "paintStates": [
+        "hover"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "held Space",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": false,
+      "paintStates": [
+        "pressed",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "held Enter",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "enter"
+        }
+      },
+      "hovered": true,
+      "paintStates": [
+        "pressed",
+        "hover",
+        "focused"
+      ],
+      "coherent": true
+    },
+    {
+      "name": "stale availability",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "paintStates": [
+        "rest",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "missing actual focus",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "paintStates": [
+        "rest"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "stale focus",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "hovered": false,
+      "paintStates": [
+        "rest",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "missing hover on pressed phase",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "hovered": true,
+      "paintStates": [
+        "pressed",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "stale hover on disabled phase",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "hovered": false,
+      "paintStates": [
+        "disabled",
+        "hover",
+        "focused"
+      ],
+      "coherent": false
+    },
+    {
+      "name": "stale pointer membership",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "primary",
+          "inside": false
+        }
+      },
+      "hovered": false,
+      "paintStates": [
+        "pressed"
+      ],
+      "coherent": false
+    }
+  ]
+}

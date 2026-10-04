@@ -1,3 +1,8 @@
+mod command_snapshot;
+pub use command_snapshot::{
+    CommandSnapshot, CommandSnapshotError, CommandSnapshotInput, resolve_command_snapshot,
+};
+
 mod command_states;
 pub use command_states::{
     CommandStatesError, resolve_command_states, resolve_command_states_source,
