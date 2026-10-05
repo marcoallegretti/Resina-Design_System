@@ -15,6 +15,7 @@ pub use command_content::{CommandContentPrepareError, prepare_command_content};
 mod text;
 pub use text::{
     LabelMeasureError, LabelPrepareError, measure_command_label, prepare_command_label,
+    prepare_command_label_at,
 };
 
 mod focus;
@@ -135,7 +136,8 @@ pub fn prepare_surface_paint(
     )
 }
 
-fn prepare_surface_paint_at(
+/// Applies parent placement before device-grid sampling; the returned origin includes it.
+pub fn prepare_surface_paint_at(
     ir: &SurfacePaintIr,
     origin: PhysicalVector,
     device_scale: f32,

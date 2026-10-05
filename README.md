@@ -227,6 +227,12 @@ navigation paint on the thumb against all supplied surrounding ranges.
 interaction, part allocation, paint, semantics and reserved target coverage.
 Thumb contrast includes the track's continuous paint and the actual canvas.
 
+The [native Material Board](lab/guido/README.md) captures the public Tier 0
+catalog through GUIdo, comparing all four materials across Light/Dark and
+rest/focus at explicit device and text scales. This reproducible static Lab
+operation has required native pixel and PNG evidence; the full interactive Lab
+and component boards remain required.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.

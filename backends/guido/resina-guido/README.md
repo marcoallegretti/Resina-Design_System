@@ -234,6 +234,16 @@ resolving paint and snapshots, and asserts spring policy, opposite initial
 placement, intermediate non-endpoint placement and exact settled placement.
 Reduced-motion policy is tested separately in the portable snapshot matrix.
 
+## Placed surface and text preparation
+
+The public `prepare_surface_paint_at` and `prepare_command_label_at` functions
+accept a parent-relative origin. Their returned image/text command already
+includes that placement; do not translate it a second time. Surface placement
+precedes device-grid sampling, and both functions apply the existing coordinate
+precision checks. The separate [native Material Board](../../../lab/guido/README.md)
+uses these APIs to inspect the public opaque material catalog at real device
+scales.
+
 ## Checked Slider content
 
 `prepare_slider_content` accepts a complete

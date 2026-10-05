@@ -1,0 +1,18 @@
+[package]
+name = "resina-lab"
+version = "0.1.0"
+edition = "2024"
+description = "Native Resina material inspection captures"
+
+[workspace]
+
+[dependencies]
+guido = { git = "https://github.com/MalpenZibo/guido", rev = "e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb", default-features = false, features = ["testing"] }
+resina-guido = { path = "../../backends/guido/resina-guido" }
+resina-model = { path = "../../reference/rust/resina-model" }
+resina-environment = { path = "../../reference/rust/resina-environment" }
+resina-resolver = { path = "../../reference/rust/resina-resolver" }
+serde_json = { version = "1", features = ["float_roundtrip"] }
+fontdb = { version = "=0.23.0", default-features = false }
+png = "=0.18.1"
+wgpu = { version = "=30.0.1", default-features = false }

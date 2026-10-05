@@ -34,6 +34,13 @@ jobs:
           RESINA_LABEL_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
         run: cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
       - run: cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
+      - run: cargo fmt --manifest-path lab/guido/Cargo.toml -- --check
+      - name: Check native Material Board
+        env:
+          RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
+          RESINA_LABEL_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+        run: cargo test --manifest-path lab/guido/Cargo.toml --locked
+      - run: cargo clippy --manifest-path lab/guido/Cargo.toml --all-targets --locked -- -D warnings
   rust:
     runs-on: ${{ matrix.os }}
     strategy:

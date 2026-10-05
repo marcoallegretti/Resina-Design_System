@@ -146,7 +146,8 @@ pub fn prepare_command_label(
     prepare_command_label_at(ir, family, color, PhysicalVector { x: 0.0, y: 0.0 })
 }
 
-pub(crate) fn prepare_command_label_at(
+/// The returned text rectangle includes the parent origin and must not be translated again.
+pub fn prepare_command_label_at(
     ir: &CommandLabelIr,
     family: FontFamily,
     color: Color,
