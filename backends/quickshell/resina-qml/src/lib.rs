@@ -2,6 +2,9 @@ use resina_model::{ContourSegment, PhysicalVector};
 use resina_resolver::{FocusIndicatorIr, PlacedContour};
 use std::fmt::{self, Write};
 
+mod paint;
+pub use paint::{PaintQmlError, render_surface_paint};
+
 const MAX_COORDINATE_ERROR: f64 = 1.0 / 1024.0;
 
 #[derive(Debug, PartialEq)]
