@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-accessibility-ir:0.1.0",
+  "title": "Resina Intrinsic Slider Accessibility",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "role",
+    "name",
+    "description",
+    "value",
+    "state",
+    "actions",
+    "focusable",
+    "relationships",
+    "valueText",
+    "orientation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "role": {
+      "const": "slider"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
+    },
+    "value": {
+      "$ref": "urn:resina:schema:slider-value-request:0.1.0"
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "focused",
+        "readOnly"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "focused": {
+          "type": "boolean"
+        },
+        "readOnly": {
+          "type": "boolean"
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available"
+          ],
+          "properties": {
+            "kind": {
+              "const": "setValue"
+            },
+            "available": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available"
+          ],
+          "properties": {
+            "kind": {
+              "const": "increase"
+            },
+            "available": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available"
+          ],
+          "properties": {
+            "kind": {
+              "const": "decrease"
+            },
+            "available": {
+              "type": "boolean"
+            }
+          }
+        }
+      ],
+      "items": false
+    },
+    "focusable": {
+      "type": "boolean"
+    },
+    "relationships": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "valueText": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
+    },
+    "orientation": {
+      "enum": [
+        "horizontal",
+        "vertical"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "focusable": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "focused": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "focusable": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {
+              "enabled": {
+                "const": true
+              },
+              "readOnly": {
+                "const": false
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "actions": {
+            "items": {
+              "properties": {
+                "available": {
+                  "const": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "actions": {
+            "items": {
+              "properties": {
+                "available": {
+                  "const": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

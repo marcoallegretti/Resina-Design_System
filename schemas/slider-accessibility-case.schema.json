@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-accessibility-case:0.1.0",
+  "title": "Resina Intrinsic Slider Accessibility Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "input"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "labelText",
+        "description",
+        "value",
+        "valueText",
+        "enabled",
+        "readOnly",
+        "focused",
+        "focusable",
+        "orientation",
+        "labelDirection"
+      ],
+      "properties": {
+        "labelText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "$ref": "urn:resina:schema:slider-value-request:0.1.0"
+        },
+        "valueText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "focused": {
+          "type": "boolean"
+        },
+        "focusable": {
+          "type": "boolean"
+        },
+        "orientation": {
+          "enum": [
+            "horizontal",
+            "vertical"
+          ]
+        },
+        "labelDirection": {
+          "enum": [
+            "ltr",
+            "rtl"
+          ]
+        }
+      }
+    },
+    "expected": {
+      "$ref": "urn:resina:schema:slider-accessibility-ir:0.1.0"
+    },
+    "error": {
+      "enum": [
+        "BlankDescription",
+        "BlankValueText",
+        "EnabledNotFocusable",
+        "FocusedNotFocusable"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "expected"
+      ],
+      "not": {
+        "required": [
+          "error"
+        ]
+      }
+    },
+    {
+      "required": [
+        "error"
+      ],
+      "not": {
+        "required": [
+          "expected"
+        ]
+      }
+    }
+  ]
+}

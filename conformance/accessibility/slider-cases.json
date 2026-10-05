@@ -1,0 +1,1527 @@
+[
+  {
+    "name": "horizontal enabled True readOnly False focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "horizontal enabled True readOnly False focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "horizontal enabled True readOnly True focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": true
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "horizontal enabled True readOnly True focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "readOnly": true
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "horizontal enabled False readOnly False focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "horizontal enabled False readOnly False focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": true,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "horizontal enabled False readOnly True focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "readOnly": true
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "horizontal enabled False readOnly True focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": true,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": true,
+        "readOnly": true
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled True readOnly False focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled True readOnly False focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "readOnly": false
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled True readOnly True focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": true
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled True readOnly True focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": true,
+        "readOnly": true
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled False readOnly False focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled False readOnly False focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": true,
+        "readOnly": false
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled False readOnly True focused False",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": false,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "readOnly": true
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "vertical enabled False readOnly True focused True",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": true,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": true,
+        "readOnly": true
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "minimum action permission",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "maximum action permission",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled unfocusable",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "focusable": false,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": false,
+      "relationships": []
+    }
+  },
+  {
+    "name": "disabled readOnly unfocusable",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": false,
+      "focusable": false,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "state": {
+        "enabled": false,
+        "focused": false,
+        "readOnly": true
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": false
+        },
+        {
+          "kind": "increase",
+          "available": false
+        },
+        {
+          "kind": "decrease",
+          "available": false
+        }
+      ],
+      "focusable": false,
+      "relationships": []
+    }
+  },
+  {
+    "name": "complete German text",
+    "input": {
+      "labelText": "  Lautstärke\n",
+      "description": "  Wiedergabelautstärke.\n",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0
+      },
+      "valueText": "  zwanzig Dezibel\n",
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "  Lautstärke\n",
+      "description": "  Wiedergabelautstärke.\n",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0
+      },
+      "valueText": "  zwanzig Dezibel\n",
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "horizontal",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "complete Arabic text",
+    "input": {
+      "labelText": "مستوى الصوت",
+      "description": "مستوى صوت التشغيل",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0
+      },
+      "valueText": "عشرون ديسيبل",
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "vertical",
+      "labelDirection": "rtl"
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "slider",
+      "name": "مستوى الصوت",
+      "description": "مستوى صوت التشغيل",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0
+      },
+      "valueText": "عشرون ديسيبل",
+      "state": {
+        "enabled": true,
+        "focused": false,
+        "readOnly": false
+      },
+      "orientation": "vertical",
+      "actions": [
+        {
+          "kind": "setValue",
+          "available": true
+        },
+        {
+          "kind": "increase",
+          "available": true
+        },
+        {
+          "kind": "decrease",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "description blank 0",
+    "input": {
+      "labelText": "Volume",
+      "description": "",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "description blank 1",
+    "input": {
+      "labelText": "Volume",
+      "description": " ",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "description blank 2",
+    "input": {
+      "labelText": "Volume",
+      "description": "\n\t",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "description blank 3",
+    "input": {
+      "labelText": "Volume",
+      "description": " ",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "valueText blank 0",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": "",
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankValueText"
+  },
+  {
+    "name": "valueText blank 1",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": " ",
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankValueText"
+  },
+  {
+    "name": "valueText blank 2",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": "\n\t",
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankValueText"
+  },
+  {
+    "name": "valueText blank 3",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": " ",
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankValueText"
+  },
+  {
+    "name": "enabled not focusable",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "focusable": false,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "EnabledNotFocusable"
+  },
+  {
+    "name": "readOnly enabled not focusable",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "focusable": false,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "EnabledNotFocusable"
+  },
+  {
+    "name": "focused disabled not focusable",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "focusable": false,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "FocusedNotFocusable"
+  },
+  {
+    "name": "description blank while disabled",
+    "input": {
+      "labelText": "Volume",
+      "description": " ",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "description blank while readOnly",
+    "input": {
+      "labelText": "Volume",
+      "description": " ",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "valueText blank while disabled",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": " ",
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankValueText"
+  },
+  {
+    "name": "valueText blank while readOnly",
+    "input": {
+      "labelText": "Volume",
+      "description": null,
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "valueText": " ",
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "focusable": true,
+      "orientation": "horizontal",
+      "labelDirection": "ltr"
+    },
+    "error": "BlankValueText"
+  }
+]

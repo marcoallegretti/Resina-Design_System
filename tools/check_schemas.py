@@ -212,6 +212,8 @@ def main():
         "schemas/slider-value-case.schema.json",
         "schemas/slider-adjustment-ir.schema.json",
         "schemas/slider-adjustment-cases.schema.json",
+        "schemas/slider-accessibility-ir.schema.json",
+        "schemas/slider-accessibility-case.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -1850,6 +1852,51 @@ def main():
         document = dict(accessibility, **{field: value})
         check_case(accessibility_validator, f"unsupported accessibility {field}", document, False)
         checked += 1
+    slider_accessibility_names = set()
+    for case in load_json(ROOT / "conformance/accessibility/slider-cases.json"):
+        name = case["name"]
+        if name in slider_accessibility_names:
+            raise ValueError(f"duplicate slider accessibility case: {name}")
+        slider_accessibility_names.add(name)
+        check_case(validator_for("schemas/slider-accessibility-case.schema.json"), name, case, True)
+        checked += 1
+        if "expected" in case:
+            check_case(validator_for("schemas/slider-accessibility-ir.schema.json"),
+                       name, case["expected"], True)
+            checked += 1
+    slider_semantics = load_json(ROOT / "conformance/accessibility/slider-cases.json")[0]["expected"]
+    slider_semantics_validator = validator_for("schemas/slider-accessibility-ir.schema.json")
+    for name, changes in [
+        ("slider wrong role", [{"path": "/role", "value": "spinbutton"}]),
+        ("slider empty name", [{"path": "/name", "value": ""}]),
+        ("slider missing numeric value", [{"path": "/value", "value": None}]),
+        ("slider unsupported orientation", [{"path": "/orientation", "value": "auto"}]),
+        ("slider readonly available action", [{"path": "/state/readOnly", "value": True}]),
+        ("slider disabled available action", [{"path": "/state/enabled", "value": False}]),
+        ("slider writable unavailable action", [{"path": "/actions/1/available", "value": False}]),
+        ("slider unknown action", [{"path": "/actions/0/kind", "value": "invoke"}]),
+        ("slider duplicate action", [{"path": "/actions/2/kind", "value": "increase"}]),
+        ("slider missing action", [{"path": "/actions", "value": slider_semantics["actions"][:2]}]),
+        ("slider enabled not focusable", [{"path": "/focusable", "value": False}]),
+        ("slider focused not focusable", [{"path": "/state/enabled", "value": False},
+                                           {"path": "/state/focused", "value": True},
+                                           {"path": "/focusable", "value": False},
+                                           {"path": "/actions/0/available", "value": False},
+                                           {"path": "/actions/1/available", "value": False},
+                                           {"path": "/actions/2/available", "value": False}]),
+        ("slider unsupported relationships", [{"path": "/relationships", "value": ["external"]}]),
+        ("slider unsupported version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+    ]:
+        check_case(slider_semantics_validator, name, apply_changes(slider_semantics, changes), False)
+        checked += 1
+    for field in slider_semantics:
+        incomplete = copy.deepcopy(slider_semantics)
+        incomplete.pop(field)
+        check_case(slider_semantics_validator, f"missing slider semantics {field}", incomplete, False)
+        checked += 1
+    check_case(slider_semantics_validator, "slider paint state leakage",
+               dict(slider_semantics, pressed=True), False)
+    checked += 1
     toggle_accessibility_names = set()
     for case in load_json(ROOT / "conformance/accessibility/toggle-cases.json"):
         name = case["name"]

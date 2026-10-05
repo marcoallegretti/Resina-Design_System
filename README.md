@@ -148,3 +148,8 @@ accessibility publication remain separate component obligations.
 to the current bounded value with live enabled/read-only permission, bounded
 increment/decrement and distinct accepted/changed results. Native delivery,
 discrete steps and complete Slider components remain separate requirements.
+
+[Slider accessibility](spec/60-slider-accessibility.md) preserves complete localized
+label/value text, bounded numeric value, explicit orientation and focus state,
+and supported numeric actions under live enabled/read-only permission. Native
+assistive-technology delivery and complete Slider interaction remain required.

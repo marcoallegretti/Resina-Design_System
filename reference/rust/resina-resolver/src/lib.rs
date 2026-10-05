@@ -1,3 +1,10 @@
+mod slider_accessibility;
+pub use slider_accessibility::{
+    SliderAccessibilityAction, SliderAccessibilityError, SliderAccessibilityInput,
+    SliderAccessibilityIr, SliderAccessibilityState, SliderOrientation,
+    resolve_slider_accessibility,
+};
+
 mod slider_adjustment;
 pub use slider_adjustment::{
     SliderAdjustment, SliderAdjustmentError, SliderAdjustmentInput, SliderAdjustmentIr,
