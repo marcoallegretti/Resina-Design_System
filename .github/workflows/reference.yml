@@ -56,6 +56,7 @@ jobs:
       - run: cargo test --release -p resina-model --test slider_appearance --locked
       - run: cargo test --release -p resina-color --test contrast_range --locked
       - run: cargo test --release -p resina-resolver --test common_contrast --locked
+      - run: cargo test --release -p resina-resolver --test readability_ranges --locked
       - run: cargo test --release -p resina-resolver --test hit_region --test slider_value --test slider_adjustment --test slider_layout --test slider_position --test slider_edit --test slider_anchor --test slider_pointer --test slider_stops --test slider_key --test slider_presentation --test slider_accessibility --test slider_states --locked
       - run: cargo test -p resina-raster --no-default-features --locked
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings

@@ -24,7 +24,7 @@ pub(crate) fn resolve_control_paint(
         snapshot,
         input.body.foreground_role,
         input.body.post_treatment_backdrop,
-        input.body.adjacent_color,
+        crate::background_contrast::EdgeBackground::Uniform(input.body.adjacent_color),
         input.body.minimum_content_contrast,
         input.body.minimum_edge_contrast,
     )

@@ -211,6 +211,10 @@ responsibility.
 edge or focus color that passes every supplied background range. Empty sets and
 incompatible per-region candidates fail explicitly; uniform results stay compatible.
 
+[Range-based surface readability](spec/74-range-surface-readability.md) resolves
+common edge contrast inside Cast, Frost and Elastomer readability, preserving
+actual Frost legibility and capability fallbacks before publishing a result.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.

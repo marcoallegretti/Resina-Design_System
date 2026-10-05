@@ -1,12 +1,14 @@
 use crate::{
     BoundSurface, EdgeContrastError, EdgeContrastResult, FrostSurfaceReadabilityError,
-    HeadlessResolution, SrgbFallback, SurfaceBindingError, bind_surface,
+    HeadlessResolution, SrgbFallback, SurfaceBindingError,
+    background_contrast::EdgeBackground,
+    bind_surface,
     frost_surface_readability::resolve_bound_frost_body_readability,
-    opaque_contrast_ratio, resolve_edge_contrast,
+    opaque_contrast_ratio,
     scenario::{SurfaceScenarioError, resolve_surface_scenario_document},
     srgb_input::{SrgbInput, SrgbInputError},
 };
-use resina_color::ColorFallbackError;
+use resina_color::{ColorFallbackError, OpaqueSrgbRange};
 use resina_model::{
     ColorRole, FrostRepresentation, InteractionState, MaterialFamily, OpticalTreatment,
     SurfaceIntent,
@@ -133,7 +135,19 @@ impl fmt::Display for SurfaceReadabilityError {
     }
 }
 
-impl std::error::Error for SurfaceReadabilityError {}
+impl std::error::Error for SurfaceReadabilityError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Parse(error) | Self::Request(error) => Some(error),
+            Self::Scenario(error) => Some(error),
+            Self::Binding(error) => Some(error),
+            Self::Color(_, error) => Some(error),
+            Self::Frost(error) => Some(error),
+            Self::Edge(error) => Some(error),
+            _ => None,
+        }
+    }
+}
 
 fn parse_color(
     field: &'static str,
@@ -177,7 +191,7 @@ pub fn resolve_surface_readability_source(
         &context,
         request.foreground_role,
         backdrop.as_ref(),
-        &adjacent,
+        EdgeBackground::Uniform(&adjacent),
         request.minimum_content_contrast,
         request.minimum_edge_contrast,
     )
@@ -198,7 +212,28 @@ pub fn resolve_surface_readability(
         context,
         foreground_role,
         post_treatment_backdrop,
-        adjacent_color,
+        EdgeBackground::Uniform(adjacent_color),
+        minimum_content_contrast,
+        minimum_edge_contrast,
+    )
+}
+
+pub fn resolve_surface_readability_over_ranges(
+    intent: &SurfaceIntent,
+    context: &HeadlessResolution,
+    foreground_role: ColorRole,
+    post_treatment_backdrop: Option<&SrgbFallback>,
+    adjacent_ranges: &[OpaqueSrgbRange],
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+) -> Result<SurfaceReadabilityResult, SurfaceReadabilityError> {
+    let binding = bind_surface(intent, context).map_err(SurfaceReadabilityError::Binding)?;
+    resolve_bound_surface_readability(
+        binding,
+        context,
+        foreground_role,
+        post_treatment_backdrop,
+        EdgeBackground::Ranges(adjacent_ranges),
         minimum_content_contrast,
         minimum_edge_contrast,
     )
@@ -209,7 +244,7 @@ fn resolve_bound_surface_readability(
     context: &HeadlessResolution,
     foreground_role: ColorRole,
     backdrop: Option<&SrgbFallback>,
-    adjacent: &SrgbFallback,
+    adjacent: EdgeBackground<'_>,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
 ) -> Result<SurfaceReadabilityResult, SurfaceReadabilityError> {
@@ -237,7 +272,7 @@ pub(crate) fn resolve_bound_body_readability(
     context: &HeadlessResolution,
     foreground_role: ColorRole,
     backdrop: Option<&SrgbFallback>,
-    adjacent: &SrgbFallback,
+    adjacent: EdgeBackground<'_>,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
 ) -> Result<SurfaceReadabilityResult, SurfaceReadabilityError> {
@@ -247,9 +282,12 @@ pub(crate) fn resolve_bound_body_readability(
     if backdrop.is_some_and(|color| color.alpha() != 1.0) {
         return Err(SurfaceReadabilityError::TranslucentBackdrop);
     }
-    if adjacent.alpha() != 1.0 {
-        return Err(SurfaceReadabilityError::TranslucentAdjacentColor);
-    }
+    adjacent.validate().map_err(|error| match error {
+        EdgeContrastError::TranslucentAdjacentColor => {
+            SurfaceReadabilityError::TranslucentAdjacentColor
+        }
+        error => SurfaceReadabilityError::Edge(error),
+    })?;
     if !minimum_content_contrast.is_finite() || !(1.0..=21.0).contains(&minimum_content_contrast) {
         return Err(SurfaceReadabilityError::InvalidContentThreshold);
     }
@@ -302,7 +340,8 @@ pub(crate) fn resolve_bound_body_readability(
         .ok_or(SurfaceReadabilityError::MissingColor(
             ColorRole::OutlineStrong,
         ))?;
-    let edge = resolve_edge_contrast(outline, strong, adjacent, minimum_edge_contrast)
+    let edge = adjacent
+        .resolve(outline, strong, minimum_edge_contrast)
         .map_err(SurfaceReadabilityError::Edge)?;
     Ok(SurfaceReadabilityResult {
         schema_version: "0.1.0",

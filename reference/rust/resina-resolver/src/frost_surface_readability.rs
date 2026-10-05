@@ -1,11 +1,12 @@
 use crate::{
     BoundSurface, EdgeContrastError, EdgeContrastResult, FrostLegibilityError,
-    FrostLegibilityResult, HeadlessResolution, SrgbFallback, SurfaceBindingError, bind_surface,
-    resolve_edge_contrast, resolve_frost_legibility,
+    FrostLegibilityResult, HeadlessResolution, SrgbFallback, SurfaceBindingError,
+    background_contrast::EdgeBackground,
+    bind_surface, resolve_frost_legibility,
     scenario::{SurfaceScenarioError, resolve_surface_scenario_document},
     srgb_input::{SrgbInput, SrgbInputError},
 };
-use resina_color::ColorFallbackError;
+use resina_color::{ColorFallbackError, OpaqueSrgbRange};
 use resina_model::{ColorRole, InteractionState, MaterialFamily, OpticalTreatment, SurfaceIntent};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
@@ -113,7 +114,19 @@ impl fmt::Display for FrostSurfaceReadabilityError {
     }
 }
 
-impl std::error::Error for FrostSurfaceReadabilityError {}
+impl std::error::Error for FrostSurfaceReadabilityError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Parse(error) | Self::Request(error) => Some(error),
+            Self::Scenario(error) => Some(error),
+            Self::Binding(error) => Some(error),
+            Self::Color(_, error) => Some(error),
+            Self::Legibility(error) => Some(error),
+            Self::Edge(error) => Some(error),
+            _ => None,
+        }
+    }
+}
 
 fn parse_color(
     field: &'static str,
@@ -150,7 +163,7 @@ pub fn resolve_frost_surface_readability_source(
         &context,
         request.foreground_role,
         &backdrop,
-        &adjacent,
+        EdgeBackground::Uniform(&adjacent),
         request.minimum_content_contrast,
         request.minimum_edge_contrast,
     )
@@ -171,7 +184,28 @@ pub fn resolve_frost_surface_readability(
         context,
         foreground_role,
         post_treatment_backdrop,
-        adjacent_color,
+        EdgeBackground::Uniform(adjacent_color),
+        minimum_content_contrast,
+        minimum_edge_contrast,
+    )
+}
+
+pub fn resolve_frost_surface_readability_over_ranges(
+    intent: &SurfaceIntent,
+    context: &HeadlessResolution,
+    foreground_role: ColorRole,
+    post_treatment_backdrop: &SrgbFallback,
+    adjacent_ranges: &[OpaqueSrgbRange],
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
+    let binding = bind_surface(intent, context).map_err(FrostSurfaceReadabilityError::Binding)?;
+    resolve_bound_frost_surface_readability(
+        binding,
+        context,
+        foreground_role,
+        post_treatment_backdrop,
+        EdgeBackground::Ranges(adjacent_ranges),
         minimum_content_contrast,
         minimum_edge_contrast,
     )
@@ -182,7 +216,7 @@ pub(crate) fn resolve_bound_frost_surface_readability(
     context: &HeadlessResolution,
     foreground_role: ColorRole,
     backdrop: &SrgbFallback,
-    adjacent: &SrgbFallback,
+    adjacent: EdgeBackground<'_>,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
 ) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
@@ -203,7 +237,7 @@ pub(crate) fn resolve_bound_frost_body_readability(
     context: &HeadlessResolution,
     foreground_role: ColorRole,
     backdrop: &SrgbFallback,
-    adjacent: &SrgbFallback,
+    adjacent: EdgeBackground<'_>,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
 ) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
@@ -226,9 +260,12 @@ pub(crate) fn resolve_bound_frost_body_readability(
     if backdrop.alpha() != 1.0 {
         return Err(FrostSurfaceReadabilityError::TranslucentBackdrop);
     }
-    if adjacent.alpha() != 1.0 {
-        return Err(FrostSurfaceReadabilityError::TranslucentAdjacentColor);
-    }
+    adjacent.validate().map_err(|error| match error {
+        EdgeContrastError::TranslucentAdjacentColor => {
+            FrostSurfaceReadabilityError::TranslucentAdjacentColor
+        }
+        error => FrostSurfaceReadabilityError::Edge(error),
+    })?;
     let representation = binding
         .frost_representation()
         .ok_or(FrostSurfaceReadabilityError::InvalidFrostBinding)?;
@@ -256,7 +293,8 @@ pub(crate) fn resolve_bound_frost_body_readability(
         .ok_or(FrostSurfaceReadabilityError::MissingColor(
             ColorRole::OutlineStrong,
         ))?;
-    let edge = resolve_edge_contrast(outline, strong, adjacent, minimum_edge_contrast)
+    let edge = adjacent
+        .resolve(outline, strong, minimum_edge_contrast)
         .map_err(FrostSurfaceReadabilityError::Edge)?;
     Ok(FrostSurfaceReadabilityResult {
         schema_version: "0.1.0",

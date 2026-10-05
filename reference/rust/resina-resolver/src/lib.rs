@@ -192,7 +192,7 @@ pub use frost_legibility::{
 };
 pub use frost_surface_readability::{
     FrostSurfaceReadabilityError, FrostSurfaceReadabilityResult, resolve_frost_surface_readability,
-    resolve_frost_surface_readability_source,
+    resolve_frost_surface_readability_over_ranges, resolve_frost_surface_readability_source,
 };
 pub use geometry::{CornerGeometryError, normalize_corner_radii};
 pub use inset_contour::{
@@ -211,7 +211,7 @@ pub use surface::{BoundSurface, SurfaceBindingError, bind_surface};
 mod surface_readability;
 pub use surface_readability::{
     SurfaceReadabilityError, SurfaceReadabilityResult, resolve_surface_readability,
-    resolve_surface_readability_source,
+    resolve_surface_readability_over_ranges, resolve_surface_readability_source,
 };
 mod opaque_paint;
 mod opaque_pigment;
