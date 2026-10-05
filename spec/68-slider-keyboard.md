@@ -59,9 +59,12 @@ permission. Valid resolution returns complete current/next value, explicit commi
 Errors produce no result and retain numeric/domain causes. Unsupported follows
 domain coherence, independently of permission. Native propagation/consumption
 belongs to the adapter's actual binding/routing contract, not enum membership.
+During an edit, resolve against the checked visible preview and use
+[value presentation](69-slider-presentation.md) to adopt the candidate against the
+committed baseline. Candidate changed and product changed may differ.
 Owners commit complete next state before notifying once when changed. Every
 delivered repeated key-down uses the latest value and permission; do not replay
-a cached result. Saturated or endpoint no-ops do not notify. Key-up does not
+a cached result. No-ops against the committed baseline do not notify. Key-up does not
 adjust. Resolution neither generates repeats nor controls their timing. Adapters
 select owned bindings and preserve shortcut/modifier policy; arbitrary key events
 must not be reclassified as Slider commands.

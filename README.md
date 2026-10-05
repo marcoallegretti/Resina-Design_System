@@ -192,3 +192,7 @@ native routing and complete styled controls remain required.
 endpoint and optional Page policies to live values. Stopped arrows visit adjacent
 values; repeat delivery, focus/permission loss and pointer interruption have
 headless evidence. Native keyboard and assistive routing remain required.
+
+[Slider value presentation](spec/69-slider-presentation.md) pairs checked committed
+and visible values, keeps preview semantics coherent, and adopts keyboard or
+semantic adjustments against the product baseline with live permission checks.

@@ -10,7 +10,7 @@ intrinsic label and optional intrinsic description. It depends on
 The reference takes a checked complete CommandLabelIr and checked SliderValueIr,
 optional description and valueText, explicit enabled/readOnly/actual focused and
 focusable booleans, and explicit horizontal/vertical orientation. Inputs MUST
-belong to one control and one coherent committed snapshot. The owner binds a
+belong to one control and one coherent currently presented snapshot. The owner binds a
 stable identity. The shared label object supplies portable complete text and
 layout; it does not change the control's semantic role.
 
@@ -18,7 +18,10 @@ Localization precedes resolution. Preserve complete label, description and
 valueText exactly; null means absent, while supplied blank text fails. ValueText
 is the owner's localized human-readable representation of the current value,
 including units or category names when numeric speech alone is insufficient.
-It MUST correspond to the committed numeric value and be updated with it.
+It MUST correspond to the visible numeric value and be updated with it.
+During an edit, semantics follow the checked preview without issuing a product
+commit; cancellation restores current committed semantics. See
+[value presentation](69-slider-presentation.md).
 Resolution does not invent locale, units, formatting, bounds or orientation.
 
 Enabled controls MUST be focusable, including read-only controls. Actual focus
@@ -64,6 +67,9 @@ permission, rather than trusting a previously available action. The owner suppli
 increment/decrement amounts and validates any discrete grid; no default amount or
 step is inferred. Endpoint keyboard intents can use absolute endpoint adjustments.
 
+When an edit is open, resolve the action against its current visible value and
+adopt it against the committed baseline through spec69. Acceptance closes the edit
+even when the resulting product value is unchanged.
 Commit the complete next bounded value and its updated valueText before publishing
 semantics or notifying product code once when changed. External value/bound changes
 require a freshly validated value and coherent localized text. A stale semantic

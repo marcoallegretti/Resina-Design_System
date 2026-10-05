@@ -1,5 +1,6 @@
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_model::{SliderValue, SurfaceSize};
+use resina_resolver::SliderPresentation;
 use resina_resolver::SliderValuePolicy;
 use resina_resolver::{
     SliderEditAction, SliderEditError, SliderEditInput, SliderEditOutcome, SliderEditSession,
@@ -82,6 +83,11 @@ fn public_traces_verify_complete_preview_commit_and_abort_results() {
     let source = corpus();
     assert_eq!(source["schemaVersion"], "0.1.0");
     let mut verified_steps = 0;
+    let presentations: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/slider-presentation-cases.json"
+    ))
+    .unwrap();
+    let mut verified_presentations = 0;
     for case in source["cases"].as_array().unwrap() {
         let name = case["name"].as_str().unwrap();
         let begin: Begin = serde_json::from_value(case["begin"].clone()).unwrap();
@@ -90,7 +96,7 @@ fn public_traces_verify_complete_preview_commit_and_abort_results() {
         let mut session =
             Some(SliderEditSession::begin(&baseline, &begin.revision, &begin_policy).unwrap());
         let mut commits = 0;
-        for raw in case["steps"].as_array().unwrap() {
+        for (step_index, raw) in case["steps"].as_array().unwrap().iter().enumerate() {
             verified_steps += 1;
             let step: Step = serde_json::from_value(raw.clone()).unwrap();
             let current = resolve_slider_value(&step.current).unwrap();
@@ -148,6 +154,21 @@ fn public_traces_verify_complete_preview_commit_and_abort_results() {
                     assert_eq!(next.revision(), begin.revision);
                     assert_eq!(next.preview(), result.preview());
                     assert_eq!(next.value_policy(), &begin_policy);
+                    let presentation =
+                        SliderPresentation::try_new(&current, &step.revision, &policy, Some(next))
+                            .unwrap();
+                    assert_eq!(presentation.committed(), &current);
+                    assert_eq!(presentation.visible(), result.preview());
+                    assert!(presentation.editing());
+                    for vector in presentations["cases"].as_array().unwrap() {
+                        if vector["editTrace"] == name && vector["stepIndex"] == step_index {
+                            assert_eq!(
+                                serde_json::to_value(&presentation).unwrap(),
+                                vector["expected"]
+                            );
+                            verified_presentations += 1;
+                        }
+                    }
                 }
                 if let Some(commit) = result.commit() {
                     commits += 1;
@@ -161,6 +182,10 @@ fn public_traces_verify_complete_preview_commit_and_abort_results() {
         assert!(commits <= 1, "{name}: commit belongs only to completion");
     }
     assert_eq!(verified_steps, 205);
+    assert_eq!(
+        verified_presentations,
+        presentations["cases"].as_array().unwrap().len()
+    );
 }
 #[test]
 fn revision_changes_detect_change_and_return_without_overwriting_current() {

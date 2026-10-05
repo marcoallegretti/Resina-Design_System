@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-presentation-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "editTrace",
+          "stepIndex",
+          "expected"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "editTrace": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stepIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected": {
+            "$ref": "urn:resina:schema:slider-presentation:0.1.0"
+          }
+        }
+      }
+    }
+  }
+}

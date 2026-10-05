@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "continuous preview presentation",
+      "editTrace": "horizontal ltr minimum start preview twice then commit",
+      "stepIndex": 0,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "revision": "r0",
+        "committed": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "visible": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "valuePolicy": {
+          "kind": "continuous"
+        },
+        "editing": true
+      }
+    },
+    {
+      "name": "stops preview presentation",
+      "editTrace": "horizontal ltr start discrete higher",
+      "stepIndex": 0,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "revision": "r0",
+        "committed": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "visible": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "valuePolicy": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": -10.0,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 30.0,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "higher"
+        },
+        "editing": true
+      }
+    }
+  ]
+}

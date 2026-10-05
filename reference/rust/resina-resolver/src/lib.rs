@@ -1,5 +1,11 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_presentation;
+pub use slider_presentation::{
+    SliderPresentation, SliderPresentationCommitInput, SliderPresentationError,
+    resolve_slider_presentation_commit,
+};
+
 mod slider_key;
 pub use slider_key::{
     SliderKey, SliderKeyError, SliderKeyInput, SliderKeyIr, SliderKeyOutcome, SliderKeyPolicy,

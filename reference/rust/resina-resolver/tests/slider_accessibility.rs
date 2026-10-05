@@ -6,6 +6,10 @@ use resina_resolver::{
     resolve_command_label, resolve_slider_accessibility, resolve_slider_adjustment,
     resolve_slider_value,
 };
+use resina_resolver::{
+    SliderEditAction, SliderEditInput, SliderEditSession, SliderLayoutInput, SliderMinimumPosition,
+    SliderPresentation, SliderValuePolicy, resolve_slider_edit, resolve_slider_layout,
+};
 use serde_json::Value;
 use std::convert::Infallible;
 
@@ -56,6 +60,93 @@ fn label(text: &str, direction: LayoutDirection) -> CommandLabelIr {
 
 fn value(current: f64) -> SliderValueIr {
     resolve_slider_value(&SliderValue::try_new(-10.0, 30.0, current).unwrap()).unwrap()
+}
+#[test]
+fn semantic_value_tracks_preview_and_restores_after_cancel_or_conflict() {
+    let label = label("Gain", LayoutDirection::Ltr);
+    let current = value(0.0);
+    let policy = SliderValuePolicy::Continuous;
+    let begin = SliderEditSession::begin(&current, "r0", &policy).unwrap();
+    let layout = resolve_slider_layout(SliderLayoutInput {
+        allocation_size: SurfaceSize {
+            width: 160.0,
+            height: 40.0,
+        },
+        thumb_size: SurfaceSize {
+            width: 20.0,
+            height: 24.0,
+        },
+        track_thickness: 4.0,
+        insets: &SafeArea {
+            start: 12.0,
+            end: 8.0,
+            top: 6.0,
+            bottom: 10.0,
+        },
+        layout_direction: LayoutDirection::Ltr,
+        orientation: SliderOrientation::Horizontal,
+        minimum_position: SliderMinimumPosition::Start,
+        value: &current,
+    })
+    .unwrap();
+    let preview = resolve_slider_edit(SliderEditInput {
+        session: &begin,
+        current: &current,
+        revision: "r0",
+        value_policy: &policy,
+        enabled: true,
+        read_only: false,
+        action: SliderEditAction::Preview {
+            layout: &layout,
+            desired_origin: 72.0,
+        },
+    })
+    .unwrap();
+    assert!(preview.commit().is_none());
+    let edit = preview.session().unwrap();
+    let presentation = SliderPresentation::try_new(&current, "r0", &policy, Some(edit)).unwrap();
+    let semantics = |presentation: &SliderPresentation, text: &str| {
+        let result = resolve_slider_accessibility(SliderAccessibilityInput {
+            label: &label,
+            value: presentation.visible(),
+            description: None,
+            value_text: Some(text),
+            enabled: true,
+            read_only: false,
+            focused: true,
+            focusable: true,
+            orientation: SliderOrientation::Horizontal,
+        })
+        .unwrap();
+        assert_eq!(result.value(), presentation.visible().value());
+        assert_eq!(result.value_text(), Some(text));
+        result
+    };
+    assert_eq!(semantics(&presentation, "10 dB").value().value(), 10.0);
+    assert_eq!(presentation.committed(), &current);
+    for (replacement, revision, action, expected, text) in [
+        (current, "r0", SliderEditAction::Cancel, 0.0, "0 dB"),
+        (value(20.0), "r1", SliderEditAction::Commit, 20.0, "20 dB"),
+        (current, "r0", SliderEditAction::Commit, 10.0, "10 dB"),
+    ] {
+        let result = resolve_slider_edit(SliderEditInput {
+            session: edit,
+            current: &replacement,
+            revision,
+            value_policy: &policy,
+            enabled: true,
+            read_only: false,
+            action,
+        })
+        .unwrap();
+        assert!(result.session().is_none());
+        let committed = result
+            .commit()
+            .map_or(&replacement, |commit| commit.value());
+        let idle = SliderPresentation::try_new(committed, "r2", &policy, None).unwrap();
+        assert_eq!(semantics(&idle, text).value().value(), expected);
+        assert_eq!(idle.visible(), idle.committed());
+    }
 }
 #[test]
 fn public_semantics_cases_preserve_complete_text_value_and_state() {

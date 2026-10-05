@@ -223,6 +223,8 @@ def main():
         "schemas/slider-key-policy.schema.json",
         "schemas/slider-key-ir.schema.json",
         "schemas/slider-key-cases.schema.json",
+        "schemas/slider-presentation.schema.json",
+        "schemas/slider-presentation-cases.schema.json",
         "schemas/slider-edit-result.schema.json",
         "schemas/slider-edit-cases.schema.json",
         "schemas/slider-anchor-cases.schema.json",
@@ -1983,6 +1985,43 @@ def main():
     check_case(slider_position_validator, "slider position backend leakage", leaked, False)
     checked += 1
     slider_edits = load_json(ROOT / "conformance/interaction/slider-edit-cases.json")
+    presentations = load_json(ROOT / "conformance/interaction/slider-presentation-cases.json")
+    check_case(validator_for("schemas/slider-presentation-cases.schema.json"),
+               "slider presentation cases", presentations, True)
+    names = [case["name"] for case in presentations["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider presentation case")
+    traces = {case["name"]: case for case in slider_edits["cases"]}
+    for case in presentations["cases"]:
+        step = traces[case["editTrace"]]["steps"][case["stepIndex"]]
+        session = step["expected"]["session"]
+        expected = case["expected"]
+        if session is None or not expected["editing"] or any([
+            {key: expected["committed"][key] for key in step["current"]} != step["current"],
+            expected["visible"] != session["preview"],
+            expected["revision"] != session["revision"],
+            expected["valuePolicy"] != session["valuePolicy"],
+        ]):
+            raise ValueError(f"incoherent slider presentation case: {case['name']}")
+    checked += 1 + len(presentations["cases"])
+    presentation = presentations["cases"][0]["expected"]
+    presentation_validator = validator_for("schemas/slider-presentation.schema.json")
+    for field in presentation:
+        incomplete = copy.deepcopy(presentation)
+        incomplete.pop(field)
+        check_case(presentation_validator, f"missing presentation {field}", incomplete, False)
+        checked += 1
+    for name, changes in [
+        ("empty presentation revision", [{"path": "/revision", "value": ""}]),
+        ("invalid presentation editing", [{"path": "/editing", "value": "true"}]),
+        ("bare visible value", [{"path": "/visible", "value": 10}]),
+    ]:
+        check_case(presentation_validator, name, apply_changes(presentation, changes), False)
+        checked += 1
+    leaked = copy.deepcopy(presentation)
+    leaked["renderer"] = "native"
+    check_case(presentation_validator, "presentation backend leakage", leaked, False)
+    checked += 1
     slider_keys = load_json(ROOT / "conformance/interaction/slider-key-cases.json")
     key_validator = validator_for("schemas/slider-key-cases.schema.json")
     check_case(key_validator, "slider keyboard cases", slider_keys, True)
