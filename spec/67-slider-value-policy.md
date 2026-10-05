@@ -87,3 +87,7 @@ production source protocol or unchecked state constructor.
 This contract does not establish complete keyboard policy, native pointer or
 assistive routing, localized value formatting, styled rendering or visual
 certification. Those complete control obligations remain required in every tier.
+
+[Keyboard adjustment](68-slider-keyboard.md) composes explicit key policy with
+the same value policy. Accepted keyboard intents must abort an open pointer edit,
+including unchanged endpoint intents; value/revision equality is not an abort.

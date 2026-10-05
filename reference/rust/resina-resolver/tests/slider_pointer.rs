@@ -134,6 +134,140 @@ fn error_name(error: &SliderPointerError) -> &'static str {
         SliderPointerError::ValuePolicy(_) => "valuePolicy",
     }
 }
+
+#[test]
+fn keyboard_commit_closes_pending_and_acquired_pointer_edits_before_stale_layout() {
+    use resina_resolver::{
+        SliderKey, SliderKeyInput, SliderKeyPolicy, SliderKeySteps, SliderStops, SliderTieBreak,
+        resolve_slider_key,
+    };
+    let cases = corpus();
+    let case = &cases[0];
+    let first = &case.steps[0];
+    let control = case.region("control");
+    let Event::Down { id, point, .. } = &first.event else {
+        panic!("fixture must start a press")
+    };
+    for domain in [
+        SliderValuePolicy::Continuous,
+        SliderValuePolicy::Stops {
+            stops: SliderStops::try_new(-10.0, 30.0, &[-10.0, 0.0, 3.0, 21.0, 30.0]).unwrap(),
+            tie_break: SliderTieBreak::Lower,
+        },
+    ] {
+        for (acquired, no_op) in [(false, false), (true, false), (false, true), (true, true)] {
+            let mut visual = case.layouts[&first.layout].clone();
+            if no_op {
+                visual.value = SliderValue::try_new(-10.0, 30.0, 30.0).unwrap();
+            }
+            let layout = visual.resolve();
+            let current = *layout.value();
+            let bounds = layout.thumb_bounds();
+            let point = if no_op {
+                PhysicalVector {
+                    x: bounds.x + 3.0,
+                    y: bounds.y + 3.0,
+                }
+            } else {
+                *point
+            };
+            let mut target_request = case.regions["thumb"].clone();
+            target_request["visualBounds"] = serde_json::to_value(bounds).unwrap();
+            target_request["environment"] = case.environment.clone();
+            let target = resolve_hit_region_source(&target_request.to_string()).unwrap();
+            let armed = resolve_slider_pointer(SliderPointerInput {
+                state: &SliderPointerState::idle(),
+                current: &current,
+                revision: "r0",
+                value_policy: &domain,
+                layout: &layout,
+                control_region: &control,
+                enabled: true,
+                read_only: false,
+                routing: SliderPointerRouting::Continuous,
+                event: SliderPointerEvent::Down {
+                    id,
+                    point,
+                    target: SliderPointerTarget::Thumb,
+                    region: &target,
+                },
+            })
+            .unwrap();
+            let mut state = armed.state().clone();
+            if acquired {
+                state = resolve_slider_pointer(SliderPointerInput {
+                    state: &state,
+                    current: &current,
+                    revision: "r0",
+                    value_policy: &domain,
+                    layout: &layout,
+                    control_region: &control,
+                    enabled: true,
+                    read_only: false,
+                    routing: SliderPointerRouting::Continuous,
+                    event: SliderPointerEvent::RoutingAcquired { id },
+                })
+                .unwrap()
+                .state()
+                .clone();
+            }
+            let steps = match domain {
+                SliderValuePolicy::Continuous => SliderKeySteps::Continuous {
+                    step: 2.5,
+                    page: None,
+                },
+                SliderValuePolicy::Stops { .. } => SliderKeySteps::Stops {
+                    step: 1,
+                    page: None,
+                },
+            };
+            let policy = SliderKeyPolicy::try_new(steps, true, true).unwrap();
+            let key = resolve_slider_key(SliderKeyInput {
+                current: &current,
+                value_policy: &domain,
+                key_policy: &policy,
+                key: SliderKey::ArrowRight,
+                enabled: true,
+                read_only: false,
+                focused: true,
+            })
+            .unwrap();
+            assert_eq!(key.commit().unwrap().changed(), !no_op);
+            let closed = resolve_slider_pointer(SliderPointerInput {
+                state: &state,
+                current: key.value(),
+                revision: if no_op { "r0" } else { "r1" },
+                value_policy: &domain,
+                layout: &layout,
+                control_region: &control,
+                enabled: true,
+                read_only: false,
+                routing: SliderPointerRouting::Continuous,
+                event: if no_op {
+                    SliderPointerEvent::Abort
+                } else {
+                    SliderPointerEvent::Refresh
+                },
+            })
+            .unwrap();
+            assert_eq!(
+                closed.outcome(),
+                if no_op {
+                    SliderPointerOutcome::Cancelled
+                } else {
+                    SliderPointerOutcome::Conflict
+                }
+            );
+            assert!(closed.state().held_id().is_none());
+            assert!(closed.commit().is_none());
+            assert_eq!(closed.preview(), key.value());
+            assert_eq!(
+                serde_json::to_value(closed.routing()).unwrap(),
+                serde_json::json!({"kind":"release","id":id})
+            );
+        }
+    }
+}
 #[test]
 fn public_traces_verify_complete_pointer_state_and_effects() {
     let cases = corpus();

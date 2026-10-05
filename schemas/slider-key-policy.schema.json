@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-key-policy:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "steps",
+    "increaseOnRight",
+    "increaseOnUp"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "steps": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "step",
+            "page"
+          ],
+          "properties": {
+            "kind": {
+              "const": "continuous"
+            },
+            "step": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "page": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "step",
+            "page"
+          ],
+          "properties": {
+            "kind": {
+              "const": "stops"
+            },
+            "step": {
+              "const": 1
+            },
+            "page": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 2,
+                  "maximum": 18446744073709551615
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "increaseOnRight": {
+      "type": "boolean"
+    },
+    "increaseOnUp": {
+      "type": "boolean"
+    }
+  }
+}

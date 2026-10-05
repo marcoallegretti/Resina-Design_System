@@ -220,6 +220,9 @@ def main():
         "schemas/slider-edit-session.schema.json",
         "schemas/slider-value-policy.schema.json",
         "schemas/slider-value-policy-fixture.schema.json",
+        "schemas/slider-key-policy.schema.json",
+        "schemas/slider-key-ir.schema.json",
+        "schemas/slider-key-cases.schema.json",
         "schemas/slider-edit-result.schema.json",
         "schemas/slider-edit-cases.schema.json",
         "schemas/slider-anchor-cases.schema.json",
@@ -1980,6 +1983,73 @@ def main():
     check_case(slider_position_validator, "slider position backend leakage", leaked, False)
     checked += 1
     slider_edits = load_json(ROOT / "conformance/interaction/slider-edit-cases.json")
+    slider_keys = load_json(ROOT / "conformance/interaction/slider-key-cases.json")
+    key_validator = validator_for("schemas/slider-key-cases.schema.json")
+    check_case(key_validator, "slider keyboard cases", slider_keys, True)
+    names = [case["name"] for case in slider_keys["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider keyboard case")
+    checked += 1 + len(slider_keys["cases"])
+    key_result = next(case["expected"] for case in slider_keys["cases"]
+                      if case.get("expected", {}).get("outcome") == "adjusted")
+    key_result_validator = validator_for("schemas/slider-key-ir.schema.json")
+    for field in key_result:
+        incomplete = copy.deepcopy(key_result)
+        incomplete.pop(field)
+        check_case(key_result_validator, f"missing key result {field}", incomplete, False)
+        checked += 1
+    for name, changes in [
+        ("adjusted key needs commit", [{"path": "/commit", "value": None}]),
+        ("unavailable key cannot commit", [{"path": "/outcome", "value": "unavailable"}]),
+        ("unsupported key cannot commit", [{"path": "/outcome", "value": "unsupported"}]),
+        ("unknown key outcome", [{"path": "/outcome", "value": "held"}]),
+        ("key commit must be accepted", [{"path": "/commit/accepted", "value": False},
+                                         {"path": "/commit/changed", "value": False}]),
+    ]:
+        check_case(key_result_validator, name, apply_changes(key_result, changes), False)
+        checked += 1
+    check_case(key_result_validator, "key result cannot retain native events",
+               dict(key_result, nativeKey=1), False)
+    checked += 1
+    policy = dict(slider_keys["cases"][0]["keyPolicy"], schemaVersion="0.1.0")
+    key_policy_validator = validator_for("schemas/slider-key-policy.schema.json")
+    check_case(key_policy_validator, "complete checked key policy", policy, True)
+    checked += 1
+    for field in policy:
+        incomplete = copy.deepcopy(policy)
+        incomplete.pop(field)
+        check_case(key_policy_validator, f"missing checked key policy {field}", incomplete, False)
+        checked += 1
+    for field in policy["steps"]:
+        incomplete = copy.deepcopy(policy)
+        incomplete["steps"].pop(field)
+        check_case(key_policy_validator, f"missing checked key quantum {field}", incomplete, False)
+        checked += 1
+    stopped_keys = copy.deepcopy(policy)
+    stopped_keys["steps"] = {"kind": "stops", "step": 1, "page": 3}
+    for name, changes in [
+        ("stopped arrows cannot skip allowed values", [{"path": "/steps/step", "value": 2}]),
+        ("stopped page must exceed one index", [{"path": "/steps/page", "value": 1}]),
+    ]:
+        check_case(key_policy_validator, name, apply_changes(stopped_keys, changes), False)
+        checked += 1
+    check_case(key_policy_validator, "key policy cannot retain backend tags",
+               dict(policy, renderer="native"), False)
+    checked += 1
+    for name, changes in [
+        ("key step must be positive", [{"path": "/steps/step", "value": 0}]),
+        ("unknown key quantum", [{"path": "/steps/kind", "value": "automatic"}]),
+        ("unknown key", [{"path": "/cases/0/key", "value": "nativeCode42"}]),
+    ]:
+        is_case = name == "unknown key"
+        check_case(key_validator if is_case else key_policy_validator, name,
+                   apply_changes(slider_keys if is_case else policy, changes), False)
+        checked += 1
+    for path in ["keyPolicy", "valuePolicy", "focused"]:
+        incomplete = copy.deepcopy(slider_keys)
+        incomplete["cases"][0].pop(path)
+        check_case(key_validator, f"key delivery needs {path}", incomplete, False)
+        checked += 1
     check_case(validator_for("schemas/slider-edit-cases.schema.json"),
                "slider edit traces", slider_edits, True)
     names = [case["name"] for case in slider_edits["cases"]]

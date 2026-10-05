@@ -1,5 +1,11 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_key;
+pub use slider_key::{
+    SliderKey, SliderKeyError, SliderKeyInput, SliderKeyIr, SliderKeyOutcome, SliderKeyPolicy,
+    SliderKeySteps, resolve_slider_key,
+};
+
 mod slider_value_policy;
 pub use slider_value_policy::SliderValuePolicy;
 

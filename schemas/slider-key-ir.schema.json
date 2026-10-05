@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-key-ir:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "value",
+    "commit",
+    "outcome"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "value": {
+      "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    },
+    "commit": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "urn:resina:schema:slider-adjustment-ir:0.1.0"
+        }
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "adjusted",
+        "unavailable",
+        "unsupported"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "adjusted"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "commit": {
+            "$ref": "urn:resina:schema:slider-adjustment-ir:0.1.0",
+            "properties": {
+              "accepted": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "commit": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

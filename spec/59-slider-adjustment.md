@@ -81,3 +81,6 @@ the typed operation does not certify a permissive JSON adapter.
 Full semantic snapshots, discrete steps, key/controller adapters, pointer/touch
 lifecycle, visual/material feedback and native accessibility remain component
 requirements. No Slider UI is published by this operation.
+
+[Keyboard adjustment](68-slider-keyboard.md) supplies checked key steps,
+explicit arrow choices and actual focus gating. Native routing remains required.

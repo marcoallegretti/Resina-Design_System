@@ -187,3 +187,8 @@ tie policy are checked; native key delivery remains required.
 admissibility explicit throughout edit and pointer sessions. Allowed previews,
 policy conflicts and release-only clicks have headless conformance evidence;
 native routing and complete styled controls remain required.
+
+[Slider keyboard adjustment](spec/68-slider-keyboard.md) applies explicit arrow,
+endpoint and optional Page policies to live values. Stopped arrows visit adjacent
+values; repeat delivery, focus/permission loss and pointer interruption have
+headless evidence. Native keyboard and assistive routing remain required.
