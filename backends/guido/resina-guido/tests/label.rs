@@ -5,6 +5,8 @@ use resina_environment::SafeArea;
 use resina_guido::{LabelMeasureError, measure_command_label};
 use resina_model::SurfaceSize;
 use resina_resolver::{CommandLabelInput, LabelMeasureInput, resolve_command_label};
+#[path = "common/cases.rs"]
+mod label_cases;
 #[path = "common/label.rs"]
 mod label_style;
 use label_style::style;
@@ -17,7 +19,7 @@ fn actual_font_shapes_complete_scaled_and_expanded_labels() {
     for scale in [1.0, 1.5, 2.0] {
         let typography = style(scale, 0.0, 400.0, 1.4);
         assert_eq!(typography.font_size(), 20.0 * scale);
-        for case in label_style::cases() {
+        for case in label_cases::cases() {
             let text = case.text.as_str();
             let direction = case.direction;
             let mut measurements = Vec::new();

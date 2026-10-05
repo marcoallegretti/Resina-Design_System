@@ -2,10 +2,6 @@ use resina_model::TypographyRole;
 use resina_resolver::{ResolvedTypography, compile_theme_source};
 use serde_json::{Value, json};
 
-#[path = "cases.rs"]
-mod cases;
-pub use cases::cases;
-
 pub fn style(scale: f64, tracking: f64, weight: f64, line: f64) -> ResolvedTypography {
     let request: Value = serde_json::from_str(include_str!(
         "../../../../../conformance/ir/command-motion-request.json"

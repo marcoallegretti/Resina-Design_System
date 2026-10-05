@@ -57,5 +57,10 @@ pub fn capture(path: &Path, width: u32, height: u32, pixels: &[u8]) {
     for pixel in pixels.as_chunks::<4>().0 {
         ppm.extend_from_slice(&pixel[..3]);
     }
-    std::fs::write(path, ppm).unwrap();
+    let mut file = std::fs::File::options()
+        .write(true)
+        .create_new(true)
+        .open(path)
+        .unwrap();
+    std::io::Write::write_all(&mut file, &ppm).unwrap();
 }

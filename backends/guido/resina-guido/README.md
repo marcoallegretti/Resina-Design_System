@@ -144,10 +144,21 @@ DejaVuSans.ttf file and loads it before measurement and rendering. On Ubuntu wit
 Actual GPU readback checks Latin, expanded German and Arabic labels plus the
 public 100/150/200% string-length matrix at three text scales and four device
 scales: 72 frames. Character counts classify those ASCII test strings only; all
-widths come from actual font shaping. Set `RESINA_LABEL_CAPTURE_DIR` to an output directory
+widths come from actual font shaping. Set `RESINA_LABEL_CAPTURE_DIR` to a fresh output directory
 to save each tested frame as a PPM for visual review. These are static typography
 conformance probes, not interactive controls. Component accessibility and native
 event delivery remain separate work.
+
+The separate [glyph-ink test](tests/label_ink.rs) verifies that a command's
+advance box does not crop a centered DejaVu Sans “j” at 60 logical px. It
+compares the adapter's exact resolved label rectangle with a wider diagnostic
+rectangle at an identical glyph position, at device scales 1, 1.25, 2 and 3.
+Every corresponding pixel must match, with visible ink outside the resolved
+box on each scale. The current pin passes this check without widening the
+production wrapping constraint. This establishes overhang for the tested
+upright glyph and unclipped render node, not arbitrary fonts, transforms or
+surrounding clip contours. Optional PPM captures use exclusive creation and
+never replace an existing frame.
 
 ## Command content composition
 
