@@ -6,6 +6,11 @@ use std::{error::Error, fmt};
 
 const MAX_COORDINATE_ERROR: f64 = 1.0 / 1024.0;
 
+#[cfg(feature = "native-text")]
+mod label;
+#[cfg(feature = "native-text")]
+pub use label::{LabelMeasureError, LabelMeasurer, NativeLabelMeasure};
+
 #[derive(Debug)]
 pub enum PrepareError {
     InvalidScale,

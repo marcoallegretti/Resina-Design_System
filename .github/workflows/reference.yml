@@ -49,8 +49,10 @@ jobs:
         include:
           - os: ubuntu-latest
             executableSuffix: ''
+            labelFont: '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
           - os: windows-latest
             executableSuffix: '.exe'
+            labelFont: 'C:/Windows/Fonts/arial.ttf'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -77,10 +79,16 @@ jobs:
       - run: python -m pip install -r tools/requirements-render.txt
       - run: python -m unittest discover -s tools -p 'test_*.py'
       - run: cargo build -p resina-resolver --bins --locked
-      - name: Check compiled Slint runtime publication
+      - name: Install Slint test font
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --no-upgrade -y fonts-dejavu-core
+      - name: Check compiled Slint runtime publication and measurement
         shell: bash
         env:
           RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
+          RESINA_LABEL_FONT: ${{ matrix.labelFont }}
         run: |
           python tools/material_scenarios.py -- target/debug/resina-theme-resolve${{ matrix.executableSuffix }} - > target/material-scenes.json
           cargo fmt --manifest-path backends/slint/resina-slint-runtime/Cargo.toml -- --check

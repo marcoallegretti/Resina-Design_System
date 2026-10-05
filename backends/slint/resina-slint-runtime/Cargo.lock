@@ -3149,10 +3149,12 @@ dependencies = [
 name = "resina-slint-runtime"
 version = "0.1.0"
 dependencies = [
+ "resina-environment",
  "resina-model",
  "resina-raster",
  "resina-resolver",
  "serde_json",
+ "skrifa",
  "slint",
 ]
 

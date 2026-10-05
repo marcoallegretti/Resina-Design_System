@@ -1,0 +1,40 @@
+export struct ResinaLabelRequest {
+    text: string,
+    font-family: string,
+    font-size: length,
+    font-weight: int,
+    letter-spacing: length,
+    line-height-factor: float,
+    constrained: bool,
+    wrapping-width: length,
+}
+
+export component ResinaLabelMeasure inherits Rectangle {
+    in property <ResinaLabelRequest> request;
+    out property <length> measured-width: request.constrained ? request.wrapping-width : label.preferred-width;
+    out property <length> measured-height: label.preferred-height;
+    out property <length> minimum-required-width: label.min-width;
+    width: measured-width;
+    height: measured-height;
+    background: transparent;
+    visible: false;
+    clip: false;
+    accessible-role: none;
+    label := Text {
+        x: 0px;
+        y: 0px;
+        width: root.measured-width;
+        height: root.measured-height;
+        text: root.request.text;
+        font-family: root.request.font-family;
+        font-size: root.request.font-size;
+        font-weight: root.request.font-weight;
+        letter-spacing: root.request.letter-spacing;
+        line-height-factor: root.request.line-height-factor;
+        wrap: word-wrap;
+        overflow: clip;
+        horizontal-alignment: center;
+        vertical-alignment: top;
+        accessible-role: none;
+    }
+}
