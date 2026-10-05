@@ -142,7 +142,20 @@ tested contexts, not visual shaping fidelity or full script coverage.
 [shared text renderer](https://github.com/slint-ui/slint/blob/372cf0ee5577c3dfec309a45e7b778ba4e81b734/internal/core/textlayout/sharedparley.rs#L195-L230)
 clips `overflow: clip` to the Text rectangle, and its
 [legacy software path](https://github.com/slint-ui/slint/blob/372cf0ee5577c3dfec309a45e7b778ba4e81b734/internal/renderers/software/lib.rs#L2834-L2845)
-also clips to Text bounds. These are source observations. No native
-overhang comparison has established a conformant drawing solution. A generic
-label renderer cannot yet claim the command contract's uncropped glyph ink;
-using ellipsis or increasing the wrapping width would change that contract.
+also clips to Text bounds. The compiled
+[ink probe](tests/label_ink.rs) confirms this behavior for a single centered
+“j” at 96 logical px and device scale 1. It compares an advance-sized Text box
+with a diagnostic box extended by 20 logical px on each side. The added width
+and centered alignment preserve the glyph position. Every pixel within the
+advance box must match, and every difference must be cropped left overhang.
+Linux DejaVu Sans produced a 27 px advance with 16 cropped pixels; Windows
+Arial produced a 22 px advance with 33 cropped pixels. These counts describe
+the tested font files, not a universal threshold.
+
+This test records the pinned SDK's known clipping capability; a future SDK
+change that permits overhang must update this evidence and its assertions.
+The wider box is a single-glyph diagnostic, not a production wrapping solution.
+No native overhang comparison has established a conformant complete label
+renderer. Using ellipsis or increasing the wrapping width would change the
+command contract. Native label drawing remains an explicit application
+backend limitation.
