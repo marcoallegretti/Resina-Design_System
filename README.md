@@ -197,6 +197,11 @@ headless evidence. Native keyboard and assistive routing remain required.
 and visible values, keeps preview semantics coherent, and adopts keyboard or
 semantic adjustments against the product baseline with live permission checks.
 
+[Slider appearance profiles](spec/71-slider-appearance.md) require explicit track
+and thumb responses for dragging and read-only feedback, with independent focus
+and strict state coherence. Public coefficients are arithmetic fixtures; complete
+paint and visual calibration remain required.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.

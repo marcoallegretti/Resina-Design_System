@@ -4,6 +4,9 @@ pub use slider::SliderOrientation;
 mod slider_value;
 pub use slider_value::SliderValue;
 
+mod slider_appearance;
+pub use slider_appearance::{SliderAppearance, SliderPart, SliderPhase, resolve_slider_phase};
+
 mod command_appearance;
 pub use command_appearance::{
     CommandAppearance, CommandPhase, CommandResponse, resolve_command_phase,

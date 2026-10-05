@@ -1,5 +1,5 @@
 use resina_environment::{LayoutDirection, SafeArea};
-use resina_model::{PhysicalVector, SliderValue, SurfaceSize};
+use resina_model::{PhysicalVector, SliderPhase, SliderValue, SurfaceSize, resolve_slider_phase};
 use resina_resolver::{
     HitRegionIr, SliderLayoutInput, SliderLayoutIr, SliderMinimumPosition, SliderOrientation,
     SliderPointerError, SliderPointerEvent, SliderPointerInput, SliderPointerOutcome,
@@ -381,6 +381,16 @@ fn public_traces_verify_complete_pointer_state_and_effects() {
                 } else {
                     vec!["pressed"]
                 };
+                assert_eq!(
+                    resolve_slider_phase(&projected, step.read_only).unwrap(),
+                    if expected["state"]["hold"]["phase"] == "acquired" {
+                        SliderPhase::Dragging
+                    } else {
+                        SliderPhase::Pressed
+                    },
+                    "{} step{steps}",
+                    case.name
+                );
                 assert_eq!(
                     serde_json::to_value(projected).unwrap(),
                     serde_json::json!({"schemaVersion":"0.1.0", "states":signals})

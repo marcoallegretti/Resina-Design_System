@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-appearance:0.1.0",
+  "title": "Resina Slider Appearance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "track",
+    "thumb"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "track": {
+      "$ref": "#/$defs/families"
+    },
+    "thumb": {
+      "$ref": "#/$defs/families"
+    }
+  },
+  "$defs": {
+    "families": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cast",
+        "frost",
+        "elastomer"
+      ],
+      "properties": {
+        "cast": {
+          "$ref": "#/$defs/phases"
+        },
+        "frost": {
+          "$ref": "#/$defs/phases"
+        },
+        "elastomer": {
+          "$ref": "#/$defs/phases"
+        }
+      }
+    },
+    "phases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hover",
+        "pressed",
+        "dragging",
+        "disabled",
+        "readOnly",
+        "readOnlyHover"
+      ],
+      "properties": {
+        "hover": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        },
+        "pressed": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        },
+        "dragging": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        },
+        "disabled": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        },
+        "readOnly": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        },
+        "readOnlyHover": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        }
+      }
+    }
+  }
+}

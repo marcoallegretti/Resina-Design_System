@@ -1,0 +1,1730 @@
+[
+  {
+    "name": "rest-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest"
+      ]
+    },
+    "readOnly": false,
+    "expected": "rest"
+  },
+  {
+    "name": "rest-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest"
+      ]
+    },
+    "readOnly": true,
+    "expected": "readOnly"
+  },
+  {
+    "name": "hover-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover"
+      ]
+    },
+    "readOnly": false,
+    "expected": "hover"
+  },
+  {
+    "name": "hover-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover"
+      ]
+    },
+    "readOnly": true,
+    "expected": "readOnlyHover"
+  },
+  {
+    "name": "rest-hover-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover"
+      ]
+    },
+    "readOnly": true,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "focused-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "focused-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused"
+      ]
+    },
+    "readOnly": true,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-focused-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused"
+      ]
+    },
+    "readOnly": false,
+    "expected": "rest"
+  },
+  {
+    "name": "rest-focused-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused"
+      ]
+    },
+    "readOnly": true,
+    "expected": "readOnly"
+  },
+  {
+    "name": "hover-focused-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused"
+      ]
+    },
+    "readOnly": false,
+    "expected": "hover"
+  },
+  {
+    "name": "hover-focused-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused"
+      ]
+    },
+    "readOnly": true,
+    "expected": "readOnlyHover"
+  },
+  {
+    "name": "rest-hover-focused-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-focused-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused"
+      ]
+    },
+    "readOnly": true,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "expected": "pressed"
+  },
+  {
+    "name": "pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "expected": "pressed"
+  },
+  {
+    "name": "hover-pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "expected": "pressed"
+  },
+  {
+    "name": "focused-pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-focused-pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "expected": "pressed"
+  },
+  {
+    "name": "hover-focused-pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-pressed-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-focused-pressed-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "expected": "disabled"
+  },
+  {
+    "name": "disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "expected": "disabled"
+  },
+  {
+    "name": "rest-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "hover-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "expected": "disabled"
+  },
+  {
+    "name": "hover-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "expected": "disabled"
+  },
+  {
+    "name": "rest-hover-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "focused-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "expected": "disabled"
+  },
+  {
+    "name": "focused-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "expected": "disabled"
+  },
+  {
+    "name": "rest-focused-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-focused-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "hover-focused-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "expected": "disabled"
+  },
+  {
+    "name": "hover-focused-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "expected": "disabled"
+  },
+  {
+    "name": "rest-hover-focused-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-focused-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-pressed-disabled-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-pressed-disabled-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed",
+        "disabled"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "rest-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "hover-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "rest-hover-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "focused-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "rest-focused-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "hover-focused-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider dragging appearance requires pressed state"
+  },
+  {
+    "name": "rest-hover-focused-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "expected": "dragging"
+  },
+  {
+    "name": "pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "expected": "dragging"
+  },
+  {
+    "name": "hover-pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "expected": "dragging"
+  },
+  {
+    "name": "focused-pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-focused-pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "expected": "dragging"
+  },
+  {
+    "name": "hover-focused-pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-pressed-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider rest state must match its current body interaction"
+  },
+  {
+    "name": "rest-hover-focused-pressed-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "focused-pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-focused-pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "hover-focused-pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "hover",
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-pressed-disabled-dragging-writable",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": false,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "rest-hover-focused-pressed-disabled-dragging-read-only",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "hover",
+        "focused",
+        "pressed",
+        "disabled",
+        "dragging"
+      ]
+    },
+    "readOnly": true,
+    "error": "disabled or read-only slider appearance cannot retain a press or drag"
+  },
+  {
+    "name": "unsupported-active",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "active"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider appearance supports only rest, hover, focused, pressed, disabled and dragging states"
+  },
+  {
+    "name": "unsupported-selected",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "selected"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider appearance supports only rest, hover, focused, pressed, disabled and dragging states"
+  },
+  {
+    "name": "unsupported-checked",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "checked"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider appearance supports only rest, hover, focused, pressed, disabled and dragging states"
+  },
+  {
+    "name": "unsupported-busy",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "busy"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider appearance supports only rest, hover, focused, pressed, disabled and dragging states"
+  },
+  {
+    "name": "unsupported-error",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "error"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider appearance supports only rest, hover, focused, pressed, disabled and dragging states"
+  },
+  {
+    "name": "unsupported-warning",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "warning"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider appearance supports only rest, hover, focused, pressed, disabled and dragging states"
+  },
+  {
+    "name": "unsupported-success",
+    "states": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        "rest",
+        "success"
+      ]
+    },
+    "readOnly": false,
+    "error": "slider appearance supports only rest, hover, focused, pressed, disabled and dragging states"
+  }
+]

@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "0.1.0",
+  "track": {
+    "cast": {
+      "hover": {
+        "bodyMix": -0.425,
+        "depthScale": 0.025
+      },
+      "pressed": {
+        "bodyMix": -0.4,
+        "depthScale": 0.05
+      },
+      "dragging": {
+        "bodyMix": -0.375,
+        "depthScale": 0.075
+      },
+      "disabled": {
+        "bodyMix": -0.35,
+        "depthScale": 0.1
+      },
+      "readOnly": {
+        "bodyMix": -0.325,
+        "depthScale": 0.125
+      },
+      "readOnlyHover": {
+        "bodyMix": -0.3,
+        "depthScale": 0.15
+      }
+    },
+    "frost": {
+      "hover": {
+        "bodyMix": -0.275,
+        "depthScale": 0.175
+      },
+      "pressed": {
+        "bodyMix": -0.25,
+        "depthScale": 0.2
+      },
+      "dragging": {
+        "bodyMix": -0.225,
+        "depthScale": 0.225
+      },
+      "disabled": {
+        "bodyMix": -0.2,
+        "depthScale": 0.25
+      },
+      "readOnly": {
+        "bodyMix": -0.175,
+        "depthScale": 0.275
+      },
+      "readOnlyHover": {
+        "bodyMix": -0.15,
+        "depthScale": 0.3
+      }
+    },
+    "elastomer": {
+      "hover": {
+        "bodyMix": -0.125,
+        "depthScale": 0.325
+      },
+      "pressed": {
+        "bodyMix": -0.1,
+        "depthScale": 0.35
+      },
+      "dragging": {
+        "bodyMix": -0.075,
+        "depthScale": 0.375
+      },
+      "disabled": {
+        "bodyMix": -0.05,
+        "depthScale": 0.4
+      },
+      "readOnly": {
+        "bodyMix": -0.025,
+        "depthScale": 0.425
+      },
+      "readOnlyHover": {
+        "bodyMix": 0.0,
+        "depthScale": 0.45
+      }
+    }
+  },
+  "thumb": {
+    "cast": {
+      "hover": {
+        "bodyMix": 0.025,
+        "depthScale": 0.475
+      },
+      "pressed": {
+        "bodyMix": 0.05,
+        "depthScale": 0.5
+      },
+      "dragging": {
+        "bodyMix": 0.075,
+        "depthScale": 0.525
+      },
+      "disabled": {
+        "bodyMix": 0.1,
+        "depthScale": 0.55
+      },
+      "readOnly": {
+        "bodyMix": 0.125,
+        "depthScale": 0.575
+      },
+      "readOnlyHover": {
+        "bodyMix": 0.15,
+        "depthScale": 0.6
+      }
+    },
+    "frost": {
+      "hover": {
+        "bodyMix": 0.175,
+        "depthScale": 0.625
+      },
+      "pressed": {
+        "bodyMix": 0.2,
+        "depthScale": 0.65
+      },
+      "dragging": {
+        "bodyMix": 0.225,
+        "depthScale": 0.675
+      },
+      "disabled": {
+        "bodyMix": 0.25,
+        "depthScale": 0.7
+      },
+      "readOnly": {
+        "bodyMix": 0.275,
+        "depthScale": 0.725
+      },
+      "readOnlyHover": {
+        "bodyMix": 0.3,
+        "depthScale": 0.75
+      }
+    },
+    "elastomer": {
+      "hover": {
+        "bodyMix": 0.325,
+        "depthScale": 0.775
+      },
+      "pressed": {
+        "bodyMix": 0.35,
+        "depthScale": 0.8
+      },
+      "dragging": {
+        "bodyMix": 0.375,
+        "depthScale": 0.825
+      },
+      "disabled": {
+        "bodyMix": 0.4,
+        "depthScale": 0.85
+      },
+      "readOnly": {
+        "bodyMix": 0.425,
+        "depthScale": 0.875
+      },
+      "readOnlyHover": {
+        "bodyMix": 0.45,
+        "depthScale": 0.9
+      }
+    }
+  }
+}

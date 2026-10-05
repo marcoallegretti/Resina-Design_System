@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-phase-cases:0.1.0",
+  "title": "Resina Slider Phase Cases",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "name",
+      "states",
+      "readOnly"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "states": {
+        "$ref": "urn:resina:schema:state-set:0.1.0"
+      },
+      "readOnly": {
+        "type": "boolean"
+      },
+      "expected": {
+        "enum": [
+          "rest",
+          "hover",
+          "pressed",
+          "dragging",
+          "disabled",
+          "readOnly",
+          "readOnlyHover"
+        ]
+      },
+      "error": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "oneOf": [
+      {
+        "required": [
+          "expected"
+        ],
+        "not": {
+          "required": [
+            "error"
+          ]
+        }
+      },
+      {
+        "required": [
+          "error"
+        ],
+        "not": {
+          "required": [
+            "expected"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -178,6 +178,8 @@ def main():
         "schemas/spring-trajectory-result.schema.json",
         "schemas/spring-trajectory-case.schema.json",
         "schemas/command-appearance.schema.json",
+        "schemas/slider-appearance.schema.json",
+        "schemas/slider-phase-cases.schema.json",
         "schemas/command-paint-request.schema.json",
         "schemas/command-body-ir.schema.json",
         "schemas/command-paint-ir.schema.json",
@@ -361,6 +363,30 @@ def main():
     check_case(material_scene_schema, "unknown scene manifest field", {**material_scenes, "extra": True}, False)
 
     command_request = load_json(ROOT / "conformance/ir/command-paint-request.json")
+    slider_appearance = load_json(ROOT / "conformance/appearance/slider-appearance.json")
+    slider_appearance_schema = validator_for("schemas/slider-appearance.schema.json")
+    check_case(slider_appearance_schema, "slider arithmetic profiles", slider_appearance, True)
+    for part in ("track", "thumb"):
+        for family in ("cast", "frost", "elastomer"):
+            for phase in ("hover", "pressed", "dragging", "disabled", "readOnly", "readOnlyHover"):
+                missing = copy.deepcopy(slider_appearance)
+                del missing[part][family][phase]
+                check_case(slider_appearance_schema, "missing slider phase", missing, False)
+                for key, value in (("bodyMix", -1.01), ("bodyMix", 1.01),
+                                   ("depthScale", -0.01), ("depthScale", 1.01),
+                                   ("unknown", 0)):
+                    invalid = copy.deepcopy(slider_appearance)
+                    invalid[part][family][phase][key] = value
+                    check_case(slider_appearance_schema, "invalid slider response", invalid, False)
+    phase_cases = load_json(ROOT / "conformance/interaction/slider-phase-cases.json")
+    phase_schema = validator_for("schemas/slider-phase-cases.schema.json")
+    check_case(phase_schema, "slider phase cases", phase_cases, True)
+    if len({case["name"] for case in phase_cases}) != len(phase_cases):
+        raise ValueError("duplicate slider phase case names")
+    for key, value in (("readOnly", None), ("expected", "active"), ("extra", True)):
+        invalid = copy.deepcopy(phase_cases)
+        invalid[0][key] = value
+        check_case(phase_schema, "invalid slider phase record", invalid, False)
     for name in ("light", "dark"):
         check_case(validator_for("schemas/command-appearance.schema.json"),
                    "authored command " + name,
@@ -971,6 +997,7 @@ def main():
 
     checked = (
         len(spring_cases) + 4
+        + len(phase_cases) + 5 + 36 * 6
         + len(invalid_material_scenes) + 2
         + len(focus_ir_cases) + len(invalid_focus_ir_results)
         + len(focus_paint_vectors) + 3
