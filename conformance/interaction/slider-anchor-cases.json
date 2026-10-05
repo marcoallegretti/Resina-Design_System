@@ -1,0 +1,5621 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "horizontal ltr start grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 45.0,
+        "y": 999.0
+      },
+      "expected": 42.0
+    },
+    {
+      "name": "horizontal ltr start grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 63.0,
+        "y": 999.0
+      },
+      "expected": 60.0
+    },
+    {
+      "name": "horizontal ltr start grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 27.0,
+        "y": 999.0
+      },
+      "expected": 24.0
+    },
+    {
+      "name": "horizontal ltr start grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 38.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 56.0,
+        "y": 999.0
+      },
+      "expected": 60.0
+    },
+    {
+      "name": "horizontal ltr start grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 66.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 48.0,
+        "y": 999.0
+      },
+      "expected": 24.0
+    },
+    {
+      "name": "horizontal ltr start center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 52.0,
+        "y": 17.0
+      },
+      "expected": 42.0
+    },
+    {
+      "name": "horizontal ltr start center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 70.0,
+        "y": 17.0
+      },
+      "expected": 60.0
+    },
+    {
+      "name": "horizontal ltr start center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 34.0,
+        "y": 17.0
+      },
+      "expected": 24.0
+    },
+    {
+      "name": "horizontal ltr start preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 63.0,
+        "y": 17.0
+      },
+      "expected": 60.0
+    },
+    {
+      "name": "horizontal ltr start track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 320.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 63.0,
+        "y": 17.0
+      },
+      "expected": 60.0
+    },
+    {
+      "name": "horizontal ltr end grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 105.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 105.0,
+        "y": 999.0
+      },
+      "expected": 102.0
+    },
+    {
+      "name": "horizontal ltr end grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 105.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 123.0,
+        "y": 999.0
+      },
+      "expected": 120.0
+    },
+    {
+      "name": "horizontal ltr end grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 105.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 87.0,
+        "y": 999.0
+      },
+      "expected": 84.0
+    },
+    {
+      "name": "horizontal ltr end grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 98.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 116.0,
+        "y": 999.0
+      },
+      "expected": 120.0
+    },
+    {
+      "name": "horizontal ltr end grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 126.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 108.0,
+        "y": 999.0
+      },
+      "expected": 84.0
+    },
+    {
+      "name": "horizontal ltr end center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 112.0,
+        "y": 17.0
+      },
+      "expected": 102.0
+    },
+    {
+      "name": "horizontal ltr end center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 130.0,
+        "y": 17.0
+      },
+      "expected": 120.0
+    },
+    {
+      "name": "horizontal ltr end center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 94.0,
+        "y": 17.0
+      },
+      "expected": 84.0
+    },
+    {
+      "name": "horizontal ltr end preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 105.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 123.0,
+        "y": 17.0
+      },
+      "expected": 120.0
+    },
+    {
+      "name": "horizontal ltr end track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 320.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 105.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 123.0,
+        "y": 17.0
+      },
+      "expected": 120.0
+    },
+    {
+      "name": "horizontal rtl start grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 101.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 101.0,
+        "y": 999.0
+      },
+      "expected": 98.0
+    },
+    {
+      "name": "horizontal rtl start grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 101.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 119.0,
+        "y": 999.0
+      },
+      "expected": 116.0
+    },
+    {
+      "name": "horizontal rtl start grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 101.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 83.0,
+        "y": 999.0
+      },
+      "expected": 80.0
+    },
+    {
+      "name": "horizontal rtl start grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 94.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 112.0,
+        "y": 999.0
+      },
+      "expected": 116.0
+    },
+    {
+      "name": "horizontal rtl start grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 122.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 104.0,
+        "y": 999.0
+      },
+      "expected": 80.0
+    },
+    {
+      "name": "horizontal rtl start center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 108.0,
+        "y": 17.0
+      },
+      "expected": 98.0
+    },
+    {
+      "name": "horizontal rtl start center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 126.0,
+        "y": 17.0
+      },
+      "expected": 116.0
+    },
+    {
+      "name": "horizontal rtl start center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 90.0,
+        "y": 17.0
+      },
+      "expected": 80.0
+    },
+    {
+      "name": "horizontal rtl start preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 101.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 119.0,
+        "y": 17.0
+      },
+      "expected": 116.0
+    },
+    {
+      "name": "horizontal rtl start track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 320.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 101.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 119.0,
+        "y": 17.0
+      },
+      "expected": 116.0
+    },
+    {
+      "name": "horizontal rtl end grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 41.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 41.0,
+        "y": 999.0
+      },
+      "expected": 38.0
+    },
+    {
+      "name": "horizontal rtl end grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 41.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 59.0,
+        "y": 999.0
+      },
+      "expected": 56.0
+    },
+    {
+      "name": "horizontal rtl end grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 41.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 23.0,
+        "y": 999.0
+      },
+      "expected": 20.0
+    },
+    {
+      "name": "horizontal rtl end grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 34.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 52.0,
+        "y": 999.0
+      },
+      "expected": 56.0
+    },
+    {
+      "name": "horizontal rtl end grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 62.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 44.0,
+        "y": 999.0
+      },
+      "expected": 20.0
+    },
+    {
+      "name": "horizontal rtl end center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 48.0,
+        "y": 17.0
+      },
+      "expected": 38.0
+    },
+    {
+      "name": "horizontal rtl end center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 66.0,
+        "y": 17.0
+      },
+      "expected": 56.0
+    },
+    {
+      "name": "horizontal rtl end center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 30.0,
+        "y": 17.0
+      },
+      "expected": 20.0
+    },
+    {
+      "name": "horizontal rtl end preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 41.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 59.0,
+        "y": 17.0
+      },
+      "expected": 56.0
+    },
+    {
+      "name": "horizontal rtl end track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 320.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 41.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 59.0,
+        "y": 17.0
+      },
+      "expected": 56.0
+    },
+    {
+      "name": "vertical ltr start grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 40.0
+      },
+      "expected": 37.0
+    },
+    {
+      "name": "vertical ltr start grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 58.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical ltr start grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 22.0
+      },
+      "expected": 19.0
+    },
+    {
+      "name": "vertical ltr start grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 33.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 51.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical ltr start grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 61.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 43.0
+      },
+      "expected": 19.0
+    },
+    {
+      "name": "vertical ltr start center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 47.0
+      },
+      "expected": 37.0
+    },
+    {
+      "name": "vertical ltr start center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 65.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical ltr start center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 29.0
+      },
+      "expected": 19.0
+    },
+    {
+      "name": "vertical ltr start preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 58.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical ltr start track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 320.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 58.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical ltr end grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 102.0
+      },
+      "expected": 99.0
+    },
+    {
+      "name": "vertical ltr end grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 120.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical ltr end grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 84.0
+      },
+      "expected": 81.0
+    },
+    {
+      "name": "vertical ltr end grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 95.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 113.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical ltr end grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 123.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 105.0
+      },
+      "expected": 81.0
+    },
+    {
+      "name": "vertical ltr end center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 109.0
+      },
+      "expected": 99.0
+    },
+    {
+      "name": "vertical ltr end center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 127.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical ltr end center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 91.0
+      },
+      "expected": 81.0
+    },
+    {
+      "name": "vertical ltr end preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 120.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical ltr end track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 320.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 120.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical rtl start grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 40.0
+      },
+      "expected": 37.0
+    },
+    {
+      "name": "vertical rtl start grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 58.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical rtl start grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 22.0
+      },
+      "expected": 19.0
+    },
+    {
+      "name": "vertical rtl start grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 33.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 51.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical rtl start grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 61.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 43.0
+      },
+      "expected": 19.0
+    },
+    {
+      "name": "vertical rtl start center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 47.0
+      },
+      "expected": 37.0
+    },
+    {
+      "name": "vertical rtl start center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 65.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical rtl start center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 29.0
+      },
+      "expected": 19.0
+    },
+    {
+      "name": "vertical rtl start preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 58.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical rtl start track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 320.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 40.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 58.0
+      },
+      "expected": 55.0
+    },
+    {
+      "name": "vertical rtl end grab offset 3 delta 0",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 102.0
+      },
+      "expected": 99.0
+    },
+    {
+      "name": "vertical rtl end grab offset 3 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 120.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical rtl end grab offset 3 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 84.0
+      },
+      "expected": 81.0
+    },
+    {
+      "name": "vertical rtl end grab offset -4 delta 18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 95.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 113.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical rtl end grab offset 24 delta -18",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 123.0
+      },
+      "point": {
+        "x": 999.0,
+        "y": 105.0
+      },
+      "expected": 81.0
+    },
+    {
+      "name": "vertical rtl end center delta 0",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 109.0
+      },
+      "expected": 99.0
+    },
+    {
+      "name": "vertical rtl end center delta 18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 127.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical rtl end center delta -18",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 17.0,
+        "y": 91.0
+      },
+      "expected": 81.0
+    },
+    {
+      "name": "vertical rtl end preview does not reanchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 120.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "vertical rtl end track resize retains grab distance",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 320.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10
+        }
+      },
+      "grabPoint": {
+        "x": 17.0,
+        "y": 102.0
+      },
+      "point": {
+        "x": 17.0,
+        "y": 120.0
+      },
+      "expected": 117.0
+    },
+    {
+      "name": "changed orientation rejects stale anchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 48.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "error": "incompatibleLayout"
+    },
+    {
+      "name": "changed layoutDirection rejects stale anchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "error": "incompatibleLayout"
+    },
+    {
+      "name": "changed minimumPosition rejects stale anchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "error": "incompatibleLayout"
+    },
+    {
+      "name": "changed extent rejects stale anchor",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 22,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "point": {
+        "x": 45.0,
+        "y": 17.0
+      },
+      "error": "incompatibleLayout"
+    },
+    {
+      "name": "grab far finite point -1e+300",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": -1e+300,
+        "y": 17.0
+      },
+      "expected": -1e+300,
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      }
+    },
+    {
+      "name": "grab far finite point 1e+300",
+      "mode": "grab",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 1e+300,
+        "y": 17.0
+      },
+      "expected": 1e+300,
+      "grabPoint": {
+        "x": 45.0,
+        "y": 17.0
+      }
+    },
+    {
+      "name": "center far finite point -1e+300",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": -1e+300,
+        "y": 17.0
+      },
+      "expected": -1e+300
+    },
+    {
+      "name": "center far finite point 1e+300",
+      "mode": "center",
+      "initialLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "currentLayout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0
+        }
+      },
+      "point": {
+        "x": 1e+300,
+        "y": 17.0
+      },
+      "expected": 1e+300
+    }
+  ]
+}

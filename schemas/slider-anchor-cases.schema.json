@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-anchor-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "mode",
+          "initialLayout",
+          "currentLayout",
+          "point"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mode": {
+            "enum": [
+              "grab",
+              "center"
+            ]
+          },
+          "initialLayout": {
+            "$ref": "urn:resina:schema:slider-layout-cases:0.1.0#/properties/cases/items/properties/input"
+          },
+          "currentLayout": {
+            "$ref": "urn:resina:schema:slider-layout-cases:0.1.0#/properties/cases/items/properties/input"
+          },
+          "grabPoint": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            }
+          },
+          "point": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            }
+          },
+          "expected": {
+            "type": "number"
+          },
+          "error": {
+            "enum": [
+              "invalidPoint",
+              "incompatibleLayout",
+              "numericRange"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "grab"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "grabPoint"
+              ]
+            },
+            "else": {
+              "not": {
+                "required": [
+                  "grabPoint"
+                ]
+              }
+            }
+          }
+        ],
+        "oneOf": [
+          {
+            "required": [
+              "expected"
+            ],
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          },
+          {
+            "required": [
+              "error"
+            ],
+            "not": {
+              "required": [
+                "expected"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

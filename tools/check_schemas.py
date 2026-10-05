@@ -220,6 +220,7 @@ def main():
         "schemas/slider-edit-session.schema.json",
         "schemas/slider-edit-result.schema.json",
         "schemas/slider-edit-cases.schema.json",
+        "schemas/slider-anchor-cases.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -2008,6 +2009,33 @@ def main():
     check_case(edit_result_validator, "preview cannot emit commit",
                dict(edit_result, commit=completed_edit["commit"]), False)
     checked += 1
+    slider_anchors = load_json(ROOT / "conformance/interaction/slider-anchor-cases.json")
+    anchor_validator = validator_for("schemas/slider-anchor-cases.schema.json")
+    check_case(anchor_validator, "slider pointer anchor cases", slider_anchors, True)
+    names = [case["name"] for case in slider_anchors["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider pointer anchor case")
+    checked += 1 + len(slider_anchors["cases"])
+    missing_grab = copy.deepcopy(slider_anchors)
+    missing_grab["cases"][0].pop("grabPoint")
+    check_case(anchor_validator, "grab requires point", missing_grab, False)
+    checked += 1
+    for name, changes in [
+        ("grab point cannot be null", [{"path": "/cases/0/grabPoint", "value": None}]),
+        ("center rejects grab point", [{"path": "/cases/0/mode", "value": "center"}]),
+        ("unknown anchor mode", [{"path": "/cases/0/mode", "value": "auto"}]),
+    ]:
+        check_case(anchor_validator, name, apply_changes(slider_anchors, changes), False)
+        checked += 1
+    for name, path in [("unknown pointer coordinate", "point"),
+                       ("anchor cannot hide backend state", None)]:
+        extra = copy.deepcopy(slider_anchors)
+        if path is None:
+            extra["cases"][0]["renderer"] = "native"
+        else:
+            extra["cases"][0][path]["z"] = 0
+        check_case(anchor_validator, name, extra, False)
+        checked += 1
     toggle_travel = load_json(ROOT / "conformance/motion/toggle-travel-cases.json")
     check_case(validator_for("schemas/toggle-travel-cases.schema.json"), "toggle travel matrix", toggle_travel, True)
     names = [case["name"] for case in toggle_travel["cases"]]

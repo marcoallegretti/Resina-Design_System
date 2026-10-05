@@ -169,3 +169,7 @@ fails diagnostically. Native coordinate conversion and capture remain required.
 preview separately from committed value. Completion checks live permission and
 the current revision; cancellation or conflict closes the edit and preserves
 current committed state. Native gesture routing and styled controls remain required.
+
+[Slider pointer anchoring](spec/64-slider-pointer-anchor.md) maps pointer points
+to desired thumb origins while retaining an explicit grab distance or track-jump
+center. Anchors persist across previews; incompatible geometry fails explicitly.
