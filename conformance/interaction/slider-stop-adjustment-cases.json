@@ -1,0 +1,4613 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "fractional increase 1",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.7,
+          "progress": 0.7
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional decrease 1",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.1,
+          "progress": 0.1
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional increase 18446744073709551615",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 1.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional decrease 18446744073709551615",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional minimum ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional maximum ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 1.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional setValue ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.3
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "fractional nearest ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.3,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "fractional increase endpoint noop",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 1.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 1.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "fractional decrease endpoint noop",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "nonuniform increase 1",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 7.0,
+          "progress": 0.425
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform decrease 1",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -2.0,
+          "progress": 0.2
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform increase 18446744073709551615",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform decrease 18446744073709551615",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform minimum ",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform maximum ",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform setValue ",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.0
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "nonuniform nearest ",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "nonuniform increase endpoint noop",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "nonuniform decrease endpoint noop",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "opposite extremes increase 1",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 1.7976931348623157e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "opposite extremes decrease 1",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": -1.7976931348623157e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "opposite extremes increase 18446744073709551615",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 1.7976931348623157e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "opposite extremes decrease 18446744073709551615",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": -1.7976931348623157e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "opposite extremes minimum ",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": -1.7976931348623157e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "opposite extremes maximum ",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 1.7976931348623157e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "opposite extremes setValue ",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.0
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 0.0,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "opposite extremes nearest ",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 0.0,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "opposite extremes increase endpoint noop",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 1.7976931348623157e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "opposite extremes decrease endpoint noop",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": -1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": -1.7976931348623157e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "subnormal increase 1",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 1e-323,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "subnormal decrease 1",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 0.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "subnormal increase 18446744073709551615",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 1e-323,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "subnormal decrease 18446744073709551615",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 0.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "subnormal minimum ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 0.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "subnormal maximum ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 1e-323,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "subnormal setValue ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 5e-324
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 5e-324,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "subnormal nearest ",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 5e-324,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 5e-324,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "subnormal increase endpoint noop",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 1e-323
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 1e-323,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "subnormal decrease endpoint noop",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1e-323,
+          "value": 0.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "adjacent increase 1",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0000000000000004,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "adjacent decrease 1",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "adjacent increase 18446744073709551615",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0000000000000004,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "adjacent decrease 18446744073709551615",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "adjacent minimum ",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "adjacent maximum ",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0000000000000004,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "adjacent setValue ",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 1.0000000000000002
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0000000000000002,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "adjacent nearest ",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000002
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 1.0000000000000002,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0000000000000002,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "adjacent increase endpoint noop",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0000000000000004
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0000000000000004,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "adjacent decrease endpoint noop",
+      "domain": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "value": 1.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000004,
+          "value": 1.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "two stops increase 1",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": 12.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "two stops decrease 1",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": -8.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "two stops increase 18446744073709551615",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": 12.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "two stops decrease 18446744073709551615",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": -8.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "two stops minimum ",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": -8.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "two stops maximum ",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": 12.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "two stops setValue ",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": 12.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "two stops nearest ",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 12.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": 12.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "two stops increase endpoint noop",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": 12.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": 12.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "two stops decrease endpoint noop",
+      "domain": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "value": -8.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -8.0,
+          "maximum": 12.0,
+          "value": -8.0,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "rounded distances increase 1",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "rounded distances decrease 1",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": -1e+16,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "rounded distances increase 18446744073709551615",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "rounded distances decrease 18446744073709551615",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": -1e+16,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "rounded distances minimum ",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": -1e+16,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "rounded distances maximum ",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "rounded distances setValue ",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 1e+16
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "rounded distances nearest ",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 1e+16,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "rounded distances increase endpoint noop",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": 1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "rounded distances decrease endpoint noop",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": -1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": -1e+16,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "shared interior progress increase 1",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": 1e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "shared interior progress decrease 1",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": 1.0,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "shared interior progress increase 18446744073709551615",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": 1e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "shared interior progress decrease 18446744073709551615",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 18446744073709551615
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": -1e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "shared interior progress minimum ",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": -1e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "shared interior progress maximum ",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": 1e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "shared interior progress setValue ",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 2.0
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": 2.0,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "shared interior progress nearest ",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 2.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 2.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": 2.0,
+          "progress": 0.5
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "shared interior progress increase endpoint noop",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 1e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": 1e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "shared interior progress decrease endpoint noop",
+      "domain": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": -1e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": -1e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "exact distance -1.0 lower",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": -1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": -1.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": -1e+16,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "exact distance -1.0 higher",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": -1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": -1.0,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": -1e+16,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "exact distance 0.0 lower",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": -1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": -1e+16,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "exact distance 0.0 higher",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": -1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.0,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "exact distance 1.0 lower",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": -1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 1.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "exact distance 1.0 higher",
+      "domain": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "value": -1e+16
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 1.0,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+16,
+          "maximum": 1e+16,
+          "value": 1e+16,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "overflow distance -8.988465674311579e+307 lower",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": -1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": -8.988465674311579e+307,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": -1.7976931348623157e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "overflow distance -8.988465674311579e+307 higher",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": -1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": -8.988465674311579e+307,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": -1.7976931348623157e+308,
+          "progress": 0.0
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "overflow distance 8.988465674311579e+307 lower",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": -1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 8.988465674311579e+307,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 1.7976931348623157e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "overflow distance 8.988465674311579e+307 higher",
+      "domain": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          1.7976931348623157e+308
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": -1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 8.988465674311579e+307,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": 1.7976931348623157e+308,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional nearest 0.2 lower",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.2,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "fractional nearest 0.2 higher",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.2,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "fractional nearest 0.5 lower",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.5,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.7,
+          "progress": 0.7
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional nearest 0.5 higher",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.5,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.7,
+          "progress": 0.7
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional nearest 0.9 lower",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.9,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 1.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "fractional nearest 0.9 higher",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.9,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 1.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform nearest 2.0 lower",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 2.0,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "nonuniform nearest 2.0 higher",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 2.0,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "nonuniform nearest 3.5 lower",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 3.5,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "accepted": true,
+        "changed": false
+      }
+    },
+    {
+      "name": "nonuniform nearest 3.5 higher",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 3.5,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 7.0,
+          "progress": 0.425
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform nearest 18.5 lower",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 18.5,
+        "tieBreak": "lower"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 7.0,
+          "progress": 0.425
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "nonuniform nearest 18.5 higher",
+      "domain": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 18.5,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "accepted": true,
+        "changed": true
+      }
+    },
+    {
+      "name": "permission False False increase",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "permission False False nearest",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.5,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "permission False False maximum",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "invalid unavailable False False increase",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "count": 0
+      },
+      "error": "invalidCount"
+    },
+    {
+      "name": "invalid unavailable False False decrease",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 0
+      },
+      "error": "invalidCount"
+    },
+    {
+      "name": "invalid unavailable False False setValue",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.2
+      },
+      "error": "targetNotAllowed"
+    },
+    {
+      "name": "invalid unavailable False False nearest",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 2,
+        "tieBreak": "lower"
+      },
+      "error": "invalidTarget"
+    },
+    {
+      "name": "off domain current False False",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.2
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "error": "currentNotAllowed"
+    },
+    {
+      "name": "replaced bounds False False",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1,
+        "maximum": 1,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "error": "currentBounds"
+    },
+    {
+      "name": "permission True True increase",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "permission True True nearest",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.5,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "permission True True maximum",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "invalid unavailable True True increase",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "increase",
+        "count": 0
+      },
+      "error": "invalidCount"
+    },
+    {
+      "name": "invalid unavailable True True decrease",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 0
+      },
+      "error": "invalidCount"
+    },
+    {
+      "name": "invalid unavailable True True setValue",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.2
+      },
+      "error": "targetNotAllowed"
+    },
+    {
+      "name": "invalid unavailable True True nearest",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 2,
+        "tieBreak": "lower"
+      },
+      "error": "invalidTarget"
+    },
+    {
+      "name": "off domain current True True",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.2
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "error": "currentNotAllowed"
+    },
+    {
+      "name": "replaced bounds True True",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1,
+        "maximum": 1,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "error": "currentBounds"
+    },
+    {
+      "name": "permission False True increase",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "increase",
+        "count": 1
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "permission False True nearest",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 0.5,
+        "tieBreak": "higher"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "permission False True maximum",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.3,
+          "progress": 0.3
+        },
+        "accepted": false,
+        "changed": false
+      }
+    },
+    {
+      "name": "invalid unavailable False True increase",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "increase",
+        "count": 0
+      },
+      "error": "invalidCount"
+    },
+    {
+      "name": "invalid unavailable False True decrease",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "decrease",
+        "count": 0
+      },
+      "error": "invalidCount"
+    },
+    {
+      "name": "invalid unavailable False True setValue",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.2
+      },
+      "error": "targetNotAllowed"
+    },
+    {
+      "name": "invalid unavailable False True nearest",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "nearest",
+        "value": 2,
+        "tieBreak": "lower"
+      },
+      "error": "invalidTarget"
+    },
+    {
+      "name": "off domain current False True",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.2
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "error": "currentNotAllowed"
+    },
+    {
+      "name": "replaced bounds False True",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1,
+        "maximum": 1,
+        "value": 0.3
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "minimum"
+      },
+      "error": "currentBounds"
+    },
+    {
+      "name": "exact current membership nextafter",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.30000000000000004
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      },
+      "error": "currentNotAllowed"
+    },
+    {
+      "name": "exact absolute membership nextafter",
+      "domain": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.3
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.30000000000000004
+      },
+      "error": "targetNotAllowed"
+    }
+  ]
+}

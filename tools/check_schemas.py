@@ -224,6 +224,9 @@ def main():
         "schemas/slider-pointer-state.schema.json",
         "schemas/slider-pointer-result.schema.json",
         "schemas/slider-pointer-cases.schema.json",
+        "schemas/slider-stops-ir.schema.json",
+        "schemas/slider-stops-cases.schema.json",
+        "schemas/slider-stop-adjustment-cases.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -2109,6 +2112,48 @@ def main():
     malformed_event["cases"][0]["steps"][0]["event"]["button"] = "primary"
     check_case(pointer_validator, "undeclared slider pointer event field", malformed_event, False)
     checked += 1
+    for filename, schema_name in [
+        ("slider-stops-cases.json", "slider-stops-cases"),
+        ("slider-stop-adjustment-cases.json", "slider-stop-adjustment-cases"),
+    ]:
+        documents = load_json(ROOT / "conformance/interaction" / filename)
+        check_case(validator_for(f"schemas/{schema_name}.schema.json"), schema_name, documents, True)
+        names = [case["name"] for case in documents["cases"]]
+        if len(names) != len(set(names)):
+            raise ValueError(f"duplicate {schema_name} case")
+        checked += 1 + len(documents["cases"])
+    stops = load_json(ROOT / "conformance/interaction/slider-stops-cases.json")["cases"][0]["expected"]
+    stops_validator = validator_for("schemas/slider-stops-ir.schema.json")
+    for name, document in [
+        ("missing slider stops version", {"values": stops["values"]}),
+        ("missing slider stops values", {"schemaVersion": "0.1.0"}),
+        ("empty slider stops", dict(stops, values=[])),
+        ("single slider stop", dict(stops, values=stops["values"][:1])),
+        ("duplicate slider stops", dict(stops, values=[stops["values"][0], stops["values"][0]])),
+        ("slider stops backend leakage", dict(stops, renderer="native")),
+    ]:
+        check_case(stops_validator, name, document, False)
+        checked += 1
+    for field in stops["values"][1]:
+        incomplete = copy.deepcopy(stops)
+        incomplete["values"][1].pop(field)
+        check_case(stops_validator, f"incomplete slider stop {field}", incomplete, False)
+        checked += 1
+    stop_adjustments = load_json(ROOT / "conformance/interaction/slider-stop-adjustment-cases.json")
+    stop_cases_validator = validator_for("schemas/slider-stop-adjustment-cases.schema.json")
+    nearest_case = next(case for case in stop_adjustments["cases"] if case["adjustment"]["kind"] == "nearest")
+    for name, action in [
+        ("missing nearest tie policy", {"kind": "nearest", "value": 0.5}),
+        ("unsupported nearest tie policy", {"kind": "nearest", "value": 0.5, "tieBreak": "automatic"}),
+        ("negative stop count", {"kind": "increase", "count": -1}),
+        ("fractional stop count", {"kind": "decrease", "count": 0.5}),
+        ("boolean stop count", {"kind": "increase", "count": True}),
+        ("stop count exceeds reference integer", {"kind": "increase", "count": 18446744073709551616}),
+        ("undeclared stop action field", {"kind": "minimum", "repeat": True}),
+    ]:
+        malformed = dict(nearest_case, adjustment=action)
+        check_case(stop_cases_validator, name, {"schemaVersion": "0.1.0", "cases": [malformed]}, False)
+        checked += 1
     toggle_travel = load_json(ROOT / "conformance/motion/toggle-travel-cases.json")
     check_case(validator_for("schemas/toggle-travel-cases.schema.json"), "toggle travel matrix", toggle_travel, True)
     names = [case["name"] for case in toggle_travel["cases"]]

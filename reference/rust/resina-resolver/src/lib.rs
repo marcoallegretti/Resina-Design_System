@@ -1,5 +1,11 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_stops;
+pub use slider_stops::{
+    SliderStopAdjustment, SliderStopInput, SliderStops, SliderStopsError, SliderTieBreak,
+    resolve_slider_stop_adjustment,
+};
+
 mod slider_pointer;
 pub use slider_pointer::{
     SliderPointerError, SliderPointerEvent, SliderPointerInput, SliderPointerOutcome,

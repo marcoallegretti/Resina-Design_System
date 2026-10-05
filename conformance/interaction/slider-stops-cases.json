@@ -1,0 +1,482 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "fractional",
+      "input": {
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "values": [
+          0.0,
+          0.1,
+          0.3,
+          0.7,
+          1.0
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "value": 0.0,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "value": 0.1,
+            "progress": 0.1
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "value": 0.3,
+            "progress": 0.3
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "value": 0.7,
+            "progress": 0.7
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "value": 1.0,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "nonuniform",
+      "input": {
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "values": [
+          -10.0,
+          -2.0,
+          0.0,
+          7.0,
+          30.0
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": -10.0,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": -2.0,
+            "progress": 0.2
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0,
+            "progress": 0.25
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 7.0,
+            "progress": 0.425
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 30.0,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "opposite extremes",
+      "input": {
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          -1.7976931348623157e+308,
+          0.0,
+          1.7976931348623157e+308
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1.7976931348623157e+308,
+            "maximum": 1.7976931348623157e+308,
+            "value": -1.7976931348623157e+308,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1.7976931348623157e+308,
+            "maximum": 1.7976931348623157e+308,
+            "value": 0.0,
+            "progress": 0.5
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1.7976931348623157e+308,
+            "maximum": 1.7976931348623157e+308,
+            "value": 1.7976931348623157e+308,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "subnormal",
+      "input": {
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "values": [
+          0.0,
+          5e-324,
+          1e-323
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1e-323,
+            "value": 0.0,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1e-323,
+            "value": 5e-324,
+            "progress": 0.5
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 1e-323,
+            "value": 1e-323,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "adjacent",
+      "input": {
+        "minimum": 1.0,
+        "maximum": 1.0000000000000004,
+        "values": [
+          1.0,
+          1.0000000000000002,
+          1.0000000000000004
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 1.0000000000000004,
+            "value": 1.0,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 1.0000000000000004,
+            "value": 1.0000000000000002,
+            "progress": 0.5
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 1.0000000000000004,
+            "value": 1.0000000000000004,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "two stops",
+      "input": {
+        "minimum": -8.0,
+        "maximum": 12.0,
+        "values": [
+          -8.0,
+          12.0
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -8.0,
+            "maximum": 12.0,
+            "value": -8.0,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -8.0,
+            "maximum": 12.0,
+            "value": 12.0,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "rounded distances",
+      "input": {
+        "minimum": -1e+16,
+        "maximum": 1e+16,
+        "values": [
+          -1e+16,
+          1e+16
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1e+16,
+            "maximum": 1e+16,
+            "value": -1e+16,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1e+16,
+            "maximum": 1e+16,
+            "value": 1e+16,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "shared interior progress",
+      "input": {
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "values": [
+          -1e+308,
+          1.0,
+          2.0,
+          1e+308
+        ]
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "values": [
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1e+308,
+            "maximum": 1e+308,
+            "value": -1e+308,
+            "progress": 0.0
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1e+308,
+            "maximum": 1e+308,
+            "value": 1.0,
+            "progress": 0.5
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1e+308,
+            "maximum": 1e+308,
+            "value": 2.0,
+            "progress": 0.5
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "minimum": -1e+308,
+            "maximum": 1e+308,
+            "value": 1e+308,
+            "progress": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "empty",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": []
+      },
+      "error": "tooFewStops"
+    },
+    {
+      "name": "one stop",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": [
+          0
+        ]
+      },
+      "error": "tooFewStops"
+    },
+    {
+      "name": "collapsed",
+      "input": {
+        "minimum": 1,
+        "maximum": 1,
+        "values": [
+          1,
+          1
+        ]
+      },
+      "error": "invalidBounds"
+    },
+    {
+      "name": "reversed",
+      "input": {
+        "minimum": 1,
+        "maximum": 0,
+        "values": [
+          0,
+          1
+        ]
+      },
+      "error": "invalidBounds"
+    },
+    {
+      "name": "descending",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": [
+          0,
+          0.7,
+          0.3,
+          1
+        ]
+      },
+      "error": "unorderedStops"
+    },
+    {
+      "name": "duplicate",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": [
+          0,
+          0.5,
+          0.5,
+          1
+        ]
+      },
+      "error": "unorderedStops"
+    },
+    {
+      "name": "signed zero duplicate",
+      "input": {
+        "minimum": -1,
+        "maximum": 1,
+        "values": [
+          -1,
+          -0.0,
+          0.0,
+          1
+        ]
+      },
+      "error": "unorderedStops"
+    },
+    {
+      "name": "below bound",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": [
+          -1,
+          0,
+          1
+        ]
+      },
+      "error": "invalidStop"
+    },
+    {
+      "name": "above bound",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": [
+          0,
+          1,
+          2
+        ]
+      },
+      "error": "invalidStop"
+    },
+    {
+      "name": "missing minimum",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": [
+          0.1,
+          1
+        ]
+      },
+      "error": "endpointMismatch"
+    },
+    {
+      "name": "missing maximum",
+      "input": {
+        "minimum": 0,
+        "maximum": 1,
+        "values": [
+          0,
+          0.7
+        ]
+      },
+      "error": "endpointMismatch"
+    },
+    {
+      "name": "indistinguishable interior progress",
+      "input": {
+        "minimum": 0,
+        "maximum": 1.7976931348623157e+308,
+        "values": [
+          0,
+          5e-324,
+          1.7976931348623157e+308
+        ]
+      },
+      "error": "value"
+    }
+  ]
+}

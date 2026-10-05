@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-stop-adjustment-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "domain",
+          "current",
+          "enabled",
+          "readOnly",
+          "adjustment"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "domain": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "minimum",
+              "maximum",
+              "values"
+            ],
+            "properties": {
+              "minimum": {
+                "type": "number"
+              },
+              "maximum": {
+                "type": "number"
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "current": {
+            "$ref": "urn:resina:schema:slider-value-request:0.1.0"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "readOnly": {
+            "type": "boolean"
+          },
+          "adjustment": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "setValue"
+                  },
+                  "value": {
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "value",
+                  "tieBreak"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "nearest"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "tieBreak": {
+                    "enum": [
+                      "lower",
+                      "higher"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "count"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "increase"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 18446744073709551615
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "count"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "decrease"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 18446744073709551615
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "minimum"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "maximum"
+                  }
+                }
+              }
+            ]
+          },
+          "expected": {
+            "$ref": "urn:resina:schema:slider-adjustment-ir:0.1.0"
+          },
+          "error": {
+            "enum": [
+              "invalidBounds",
+              "tooFewStops",
+              "invalidStop",
+              "unorderedStops",
+              "endpointMismatch",
+              "currentBounds",
+              "currentNotAllowed",
+              "invalidCount",
+              "invalidTarget",
+              "targetNotAllowed",
+              "numericRange",
+              "value",
+              "adjustment"
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "expected"
+            ],
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          },
+          {
+            "required": [
+              "error"
+            ],
+            "not": {
+              "required": [
+                "expected"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

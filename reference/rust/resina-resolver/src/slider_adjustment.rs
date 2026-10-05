@@ -133,7 +133,7 @@ pub fn resolve_slider_adjustment(
     })
 }
 
-fn sum_roundoff(a: f64, b: f64, sum: f64) -> f64 {
+pub(crate) fn sum_roundoff(a: f64, b: f64, sum: f64) -> f64 {
     // FastTwoSum requires finite sum and operands ordered by magnitude.
     let (larger, smaller) = if a.abs() >= b.abs() { (a, b) } else { (b, a) };
     smaller - (sum - larger)

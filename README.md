@@ -178,3 +178,7 @@ center. Anchors persist across previews; incompatible geometry fails explicitly.
 targets, held anchors and cancellable edits. Continuous routing requires actual
 acquisition; a release-only track path supports clicks without dragging. Loss,
 conflict or invalidation clears ownership without publishing a product change.
+
+[Discrete Slider stops](spec/66-slider-stops.md) retain explicit allowed values
+for index movement and nearest-stop selection. Permission, exact membership and
+tie policy are checked; native keys and stepped gesture composition remain required.

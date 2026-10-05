@@ -18,8 +18,10 @@ The owner provides current value and permission at delivery, not cached action
 availability. Disabled or read-only controls reject adjustment without changing
 any current value/progress. The operation does not infer focus, source device,
 locale, unit, direction, step admissibility, gesture lifecycle or repeat policy.
-Discrete owners validate their allowed grid and choose explicit amounts before
-calling this operation. A pointer gesture still needs its own complete capture,
+Discrete owners validate their allowed domain and select an allowed absolute
+value or explicit numeric amount before calling this operation. The
+[explicit stop contract](66-slider-stops.md) supplies checked index and nearest
+selection for finite discrete domains. A pointer gesture still needs its own complete capture,
 cancellation, stable target and current-layout mapping contract.
 
 ## Resolution and commit
