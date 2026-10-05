@@ -39,8 +39,8 @@ Do not resolve against one sampled color and repair the published edge afterward
 
 ## Reference and evidence
 
-The typed Rust result retains part, readOnly, selected phase and response plus
-the complete body/focus paint IR. Rust is the reference, not this contract's
+The typed Rust result retains part, readOnly, actual layoutDirection, selected
+phase and response plus the complete body/focus paint IR. Rust is the reference, not this contract's
 normative definition. No new source parser or renderer dependency is introduced.
 The shared private paint core accepts genuine scalar or ranged backgrounds;
 geometry helpers accept only their actual geometry inputs. Existing Command,

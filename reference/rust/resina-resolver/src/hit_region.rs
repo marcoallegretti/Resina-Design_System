@@ -219,12 +219,7 @@ pub fn resolve_hit_region(input: HitRegionInput<'_>) -> Result<HitRegionIr, HitR
         return Err(HitRegionError::Clipped);
     }
     for (index, &occupied) in input.occupied_regions.iter().enumerate() {
-        let (occupied_right, occupied_bottom) = endpoints(occupied, "occupiedRegions")?;
-        if occupied_right.above(bounds.x)
-            && right.above(occupied.x)
-            && occupied_bottom.above(bounds.y)
-            && bottom.above(occupied.y)
-        {
+        if bounds_overlap(bounds, occupied)? {
             return Err(HitRegionError::Occupied(index));
         }
     }
@@ -233,6 +228,12 @@ pub fn resolve_hit_region(input: HitRegionInput<'_>) -> Result<HitRegionIr, HitR
         bounds,
         minimum_size,
     })
+}
+
+pub(crate) fn bounds_overlap(a: PhysicalBounds, b: PhysicalBounds) -> Result<bool, HitRegionError> {
+    let (ar, ab) = endpoints(a, "overlap bounds")?;
+    let (br, bb) = endpoints(b, "overlap bounds")?;
+    Ok(ar.above(b.x) && br.above(a.x) && ab.above(b.y) && bb.above(a.y))
 }
 
 #[derive(Deserialize)]

@@ -1,5 +1,10 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_snapshot;
+pub use slider_snapshot::{
+    SliderSnapshot, SliderSnapshotError, SliderSnapshotInput, resolve_slider_snapshot,
+};
+
 mod slider_states;
 pub use slider_states::{SliderStatesError, SliderStatesInput, resolve_slider_states};
 

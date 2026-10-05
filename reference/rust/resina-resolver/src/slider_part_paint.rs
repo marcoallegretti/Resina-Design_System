@@ -6,7 +6,7 @@ use crate::{
     control_paint::{ControlPaintInput, resolve_control_paint_inputs},
 };
 use resina_color::OpaqueSrgbRange;
-use resina_environment::EnvironmentSnapshot;
+use resina_environment::{EnvironmentSnapshot, LayoutDirection};
 use resina_model::{
     ColorRole, CommandResponse, InteractionState, MaterialRole, OpaqueSurfaceAppearance,
     SliderAppearance, SliderPart, SliderPhase, SurfaceIntent, SurfaceSize, resolve_slider_phase,
@@ -35,6 +35,7 @@ pub struct SliderPartPaintIr {
     schema_version: &'static str,
     part: SliderPart,
     read_only: bool,
+    layout_direction: LayoutDirection,
     phase: SliderPhase,
     response: CommandResponse,
     paint: SurfacePaintIr,
@@ -45,6 +46,9 @@ impl SliderPartPaintIr {
     }
     pub fn read_only(&self) -> bool {
         self.read_only
+    }
+    pub fn layout_direction(&self) -> LayoutDirection {
+        self.layout_direction
     }
     pub fn phase(&self) -> SliderPhase {
         self.phase
@@ -151,6 +155,7 @@ pub fn resolve_slider_part_paint(
         schema_version: "0.1.0",
         part: input.part,
         read_only: input.read_only,
+        layout_direction: environment.layout_direction(),
         phase,
         response,
         paint,

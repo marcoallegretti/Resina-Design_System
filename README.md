@@ -223,6 +223,10 @@ IR. It accounts for reference arithmetic; spatial adjacency remains explicit.
 before readability and geometry, retains dragging/read-only states, and places
 navigation paint on the thumb against all supplied surrounding ranges.
 
+[Coherent Slider snapshots](spec/77-slider-snapshot.md) join actual visible value,
+interaction, part allocation, paint, semantics and reserved target coverage.
+Thumb contrast includes the track's continuous paint and the actual canvas.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.
