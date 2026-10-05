@@ -23,7 +23,7 @@ pub use focus::{FocusBinding, FocusTransferError, RequestedFocus, request_focus}
 
 use guido::{layout::Size, prelude::ImageSource};
 use resina_model::{PhysicalBounds, PhysicalVector};
-use resina_raster::{RasterError, RasterImage, Viewport};
+use resina_raster::{RasterError, RasterImage, Viewport, prepare_viewport};
 use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintIr};
 use std::fmt;
 
@@ -184,35 +184,15 @@ fn prepare_at(
         return Err(PrepareError::InvalidScale);
     }
     let scale = f64::from(device_scale);
-    let left = ((bounds.x + offset.x) * scale).floor();
-    let top = ((bounds.y + offset.y) * scale).floor();
-    let right = ((bounds.x + bounds.width + offset.x) * scale).ceil();
-    let bottom = ((bounds.y + bounds.height + offset.y) * scale).ceil();
-    let width = right - left;
-    let height = bottom - top;
-    if !width.is_finite()
-        || !height.is_finite()
-        || width < 1.0
-        || height < 1.0
-        || width > f64::from(u32::MAX)
-        || height > f64::from(u32::MAX)
-    {
-        return Err(PrepareError::UnrepresentableBounds);
-    }
-    let viewport = Viewport {
-        origin: PhysicalVector {
-            x: left / scale - offset.x,
-            y: top / scale - offset.y,
-        },
-        width: width as u32,
-        height: height as u32,
-        pixels_per_unit: scale,
-    };
-    let origin = (coordinate(left / scale)?, coordinate(top / scale)?);
-    let size = Size::new(coordinate(width / scale)?, coordinate(height / scale)?);
-    check_coordinate(right / scale, origin.0 + size.width)?;
-    check_coordinate(bottom / scale, origin.1 + size.height)?;
-    let image = render(viewport).map_err(PrepareError::Raster)?;
+    let prepared =
+        prepare_viewport(bounds, offset, scale).map_err(|_| PrepareError::UnrepresentableBounds)?;
+    let bounds = prepared.bounds();
+    let far_corner = prepared.far_corner();
+    let origin = (coordinate(bounds.x)?, coordinate(bounds.y)?);
+    let size = Size::new(coordinate(bounds.width)?, coordinate(bounds.height)?);
+    check_coordinate(far_corner.x, origin.0 + size.width)?;
+    check_coordinate(far_corner.y, origin.1 + size.height)?;
+    let image = render(prepared.viewport()).map_err(PrepareError::Raster)?;
     let source = ImageSource::Rgba {
         width: image.width(),
         height: image.height(),

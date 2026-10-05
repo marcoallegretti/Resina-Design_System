@@ -4,6 +4,8 @@ use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintError, Surf
 use std::{collections::TryReserveError, fmt};
 mod uniform;
 use uniform::SampleBox;
+mod placement;
+pub use placement::{PreparedViewport, prepare_viewport};
 #[cfg(test)]
 mod tests;
 

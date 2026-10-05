@@ -1,6 +1,6 @@
 use crate::{QmlError, check_coordinates};
 use resina_model::PhysicalVector;
-use resina_raster::{RasterError, Viewport};
+use resina_raster::{RasterError, prepare_viewport};
 use resina_resolver::SurfacePaintIr;
 use std::{error::Error, fmt, fmt::Write};
 
@@ -61,41 +61,26 @@ pub fn render_surface_paint(
             .bounds()
             .expect("validated body bounds")
     };
-    let left = ((bounds.x + placement.x) * device_scale).floor();
-    let top = ((bounds.y + placement.y) * device_scale).floor();
-    let right = ((bounds.x + bounds.width + placement.x) * device_scale).ceil();
-    let bottom = ((bounds.y + bounds.height + placement.y) * device_scale).ceil();
-    let width = right - left;
-    let height = bottom - top;
-    if ![left, top, right, bottom, width, height]
-        .iter()
-        .all(|v| v.is_finite())
-        || width < 1.0
-        || height < 1.0
-        || width > f64::from(u32::MAX)
-        || height > f64::from(u32::MAX)
-    {
-        return Err(PaintQmlError::UnrepresentableBounds);
-    }
-    let origin_x = left / device_scale;
-    let origin_y = top / device_scale;
-    let logical_width = width / device_scale;
-    let logical_height = height / device_scale;
+    let prepared = prepare_viewport(bounds, placement, device_scale)
+        .map_err(|_| PaintQmlError::UnrepresentableBounds)?;
+    let bounds = prepared.bounds();
+    let far_corner = prepared.far_corner();
+    let origin_x = bounds.x;
+    let origin_y = bounds.y;
+    let logical_width = bounds.width;
+    let logical_height = bounds.height;
     check_coordinates([
         origin_x,
         origin_y,
         logical_width,
         logical_height,
-        right / device_scale,
-        bottom / device_scale,
+        far_corner.x,
+        far_corner.y,
     ])
     .map_err(PaintQmlError::Coordinates)?;
     for (expected, native) in [
-        (right / device_scale, origin_x as f32 + logical_width as f32),
-        (
-            bottom / device_scale,
-            origin_y as f32 + logical_height as f32,
-        ),
+        (far_corner.x, origin_x as f32 + logical_width as f32),
+        (far_corner.y, origin_y as f32 + logical_height as f32),
     ] {
         if (expected - f64::from(native)).abs() > crate::MAX_COORDINATE_ERROR {
             return Err(PaintQmlError::Coordinates(QmlError::CoordinatePrecision(
@@ -103,20 +88,8 @@ pub fn render_surface_paint(
             )));
         }
     }
-    let image = resina_raster::render_surface_paint(
-        ir,
-        Viewport {
-            origin: PhysicalVector {
-                x: origin_x - placement.x,
-                y: origin_y - placement.y,
-            },
-            width: width as u32,
-            height: height as u32,
-            pixels_per_unit: device_scale,
-        },
-        samples_per_axis,
-    )
-    .map_err(PaintQmlError::Raster)?;
+    let image = resina_raster::render_surface_paint(ir, prepared.viewport(), samples_per_axis)
+        .map_err(PaintQmlError::Raster)?;
     let mut png = Vec::new();
     image
         .write_png(&mut png)
