@@ -45,6 +45,10 @@ Slint's allocation API itself does not expose recoverable allocation failure.
 
 ## Conformance
 
+On Ubuntu, install `libfontconfig-dev` and `fonts-dejavu-core` before building
+this crate. The locked native font dependency discovers Fontconfig
+through `pkg-config`; runtime libraries or a font file alone are insufficient.
+
 ```sh
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json

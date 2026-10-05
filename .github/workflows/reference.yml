@@ -79,11 +79,12 @@ jobs:
       - run: python -m pip install -r tools/requirements-render.txt
       - run: python -m unittest discover -s tools -p 'test_*.py'
       - run: cargo build -p resina-resolver --bins --locked
-      - name: Install Slint test font
+      - name: Install Slint build and test font dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends --no-upgrade -y fonts-dejavu-core
+          sudo apt-get install --no-install-recommends --no-upgrade -y libfontconfig-dev fonts-dejavu-core
+          pkg-config --modversion fontconfig
       - name: Check compiled Slint runtime publication and measurement
         shell: bash
         env:
