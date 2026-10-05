@@ -1,3 +1,6 @@
+mod paint;
+pub use paint::{PaintSlintError, render_surface_paint};
+
 use resina_model::{ContourSegment, PhysicalVector};
 use resina_resolver::{FocusIndicatorIr, PlacedContour};
 use std::fmt::{self, Write};

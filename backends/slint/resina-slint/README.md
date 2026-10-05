@@ -53,3 +53,37 @@ The checker requires exactly the three singular button nodes, their full names a
 The pinned Winit/AccessKit path currently fails this check: disabled buttons expose enabled/sensitive, and the excluded button still exposes focusable. The [AccessKit AT-SPI conversion](https://github.com/AccessKit/accesskit/blob/c88605b96d04431f9c3c792464a0f2f253480e94/platforms/atspi-common/src/node.rs) emits enabled/sensitive for a button even when disabled; Slint's [native mapper](https://github.com/slint-ui/slint/blob/372cf0ee5577c3dfec309a45e7b778ba4e81b734/internal/backends/winit/accesskit.rs) advertises focus for the button role independently of `FocusScope.enabled`. A fresh compiled application reproduces the disabled-state discrepancy. These unsupported semantics prevent this path from claiming ordinary command accessibility conformance. Keep the current canonical activation guard; a published accessible action is not permission to invoke an unavailable command.
 
 Linux CI runs the digest-verified viewer under Xvfb with `--report-only` and saves `slint-native-availability`. This diagnostic mode exits successfully after a valid native measurement while retaining `conformant: false` and every mismatch in the JSON report; it is not a conformance gate. Without that option, any mismatch exits 1. Missing services, malformed replies, missing/duplicate nodes, startup failure and timeouts fail in both modes. A future repair must pass the strict check before native command accessibility is claimed. Normative Resina semantics remain unchanged.
+
+## Prepared complete surface paint
+
+`render_surface_paint` accepts one validated complete body/navigation result, parent placement, actual device scale and samples per axis. It prepares both paint channels on one CPU sampling grid and emits a complete `ResinaSurfacePaint` component with an embedded sRGB PNG. It reserves the full focus contour, including negative origins. Parent placement is applied before grid sampling; `paint-origin-x` and `paint-origin-y` already include it. The component and image have `accessible-role: none` and contain no input or focus handlers.
+
+Place the component using its reported origins:
+
+```slint
+import { ResinaSurfacePaint } from "prepared-paint.slint";
+
+export component PaintProbe inherits Window {
+    width: 320px;
+    height: 160px;
+    ResinaSurfacePaint {
+        x: self.paint-origin-x;
+        y: self.paint-origin-y;
+    }
+}
+```
+
+The image retains its prepared logical size and uses `image-rendering: pixelated`; changing the enclosing component's size does not stretch the paint. Regenerate the complete preparation when placement, actual device scale or IR changes. Native binary32 origin, extent and cumulative corner precision are checked before raster allocation. Resource limits, linear-light filtering, straight RGBA and complete body/ring integration remain in the CPU backend. Invalid preparation returns a diagnostic and no component. The source embeds only percent-encoded PNG bytes, without external assets or source text from requests. No Slint runtime dependency enters the portable reference layers.
+
+`resina-paint-slint <path|-> <device-scale> <samples-per-axis> <origin-x> <origin-y>` accepts one UTF-8 surface paint request of at most 1 MiB. Success exits 0 with one complete component and no diagnostic; input or preparation failure exits 1 without a component; usage errors exit 2. File failures identify the requested path. The existing independent native focus mapper remains available.
+
+The [runtime checker](../../../tools/check_slint_paint_runtime.py) requires Slint viewer 1.18.1 and a fresh output directory:
+
+```sh
+python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
+python tools/check_slint_paint_runtime.py --backend target/debug/resina-paint-slint --raster target/debug/resina-paint-raster --resolver target/debug/resina-surface-paint --viewer /absolute/path/slint-viewer --scenes target/material-scenes.json --output-dir target/slint-paint
+```
+
+It compiles the actual emitted components and captures all 16 authored light/dark material scenes at scales 0.5, 1, 1.25 and 2, plus one resized container. It independently derives prepared bounds from resolved IR and composites a separately rasterized reference over each scene's authored surrounding color. Every pixel must retain opaque alpha and agree in RGB within one byte of compositing rounding. Missing paint, clipped or shifted regions, incorrect pigment, dimensions, diagnostics and timeouts fail. Linux CI uses the digest-verified pinned viewer and saves the captures. Rust tests separately decode embedded pixels, preserve deterministic output, exercise fractional and negative placement, and reject malformed requests and unsupported preparation.
+
+This is a static source preparation and software capture contract. It proves neither compiled application image loading nor GPU rendering, dynamic publication, input, text, motion or application accessibility. Those need their own integration evidence. Prepare outside frame handling; source generation and toolkit compilation are not an interactive rendering path. The native availability limitations documented above still apply.

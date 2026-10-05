@@ -187,7 +187,9 @@ dependencies = [
 name = "resina-slint"
 version = "0.1.0"
 dependencies = [
+ "png",
  "resina-model",
+ "resina-raster",
  "resina-resolver",
  "serde_json",
 ]

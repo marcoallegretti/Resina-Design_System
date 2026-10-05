@@ -2,11 +2,13 @@
 name = "resina-slint"
 version = "0.1.0"
 edition = "2024"
-description = "Native Slint realization of validated Resina focus ring IR"
+description = "Native Slint realization of validated Resina focus and surface paint IR"
 
 [dependencies]
 resina-model = { path = "../../../reference/rust/resina-model" }
 resina-resolver = { path = "../../../reference/rust/resina-resolver" }
+resina-raster = { path = "../../cpu/resina-raster" }
 
 [dev-dependencies]
 serde_json.workspace = true
+png = "=0.18.1"

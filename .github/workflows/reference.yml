@@ -82,6 +82,7 @@ jobs:
       - run: cargo build -p resina-svg --bins --locked
       - run: cargo build -p resina-qml --bins --locked
       - run: cargo build -p resina-slint --bins --locked
+      - run: cargo build -p resina-raster --bin resina-paint-raster --locked
       - run: python tools/check_focus_slint_backend.py -- target/debug/resina-focus-slint${{ matrix.executableSuffix }} -
       - name: Check native Slint focus
         if: runner.os == 'Linux'
@@ -99,6 +100,18 @@ jobs:
           for scale in 1 1.25 2 3; do
             python tools/check_slint_focus_runtime.py --image "target/slint-viewer/focus-$scale.png" --scale "$scale" -- env SLINT_SCALE_FACTOR="$scale" target/slint-viewer/slint-viewer/slint-viewer --screenshot "target/slint-viewer/focus-$scale.png" conformance/slint/focus-probe.slint
           done
+      - name: Check native Slint complete paint
+        if: runner.os == 'Linux'
+        run: |
+          python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/slint-viewer/material-scenes.json
+          python tools/check_slint_paint_runtime.py --backend target/debug/resina-paint-slint --raster target/debug/resina-paint-raster --resolver target/debug/resina-surface-paint --viewer target/slint-viewer/slint-viewer/slint-viewer --scenes target/slint-viewer/material-scenes.json --output-dir target/slint-viewer/paint
+      - name: Save Slint paint captures
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: slint-material-paint
+          path: target/slint-viewer/paint/*.png
+          if-no-files-found: warn
       - name: Measure native Slint availability
         if: runner.os == 'Linux'
         shell: bash
