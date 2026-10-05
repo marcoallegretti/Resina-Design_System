@@ -13,8 +13,6 @@ Item {
             throw new Error("Qt Quick label text must not be blank");
         if (text.includes("\u009c"))
             throw new Error("Qt Quick label cannot contain the native multi-length string separator");
-        if (text.includes("\u2029"))
-            throw new Error("Qt Quick label paragraph separators require independent paragraph layout");
         if (typeof family !== "string" || !Qt.fontFamilies().includes(family))
             throw new Error("Qt Quick label font family is not registered");
         if (!Number.isInteger(pixelSize) || pixelSize <= 0 || pixelSize > 2147483647)
@@ -32,7 +30,7 @@ Item {
         if (!Number.isFinite(fixedHeight) || fixedHeight <= 0)
             throw new Error("Qt Quick label resolved line height is not representable");
 
-        label.text = text.replace(/\r\n?|[\u000b\u000c\u0085]/g, "\n");
+        const nativeText = text.replace(/\r\n?|[\u000b\u000c\u0085]/g, "\n");
         label.font.family = family;
         label.font.pixelSize = pixelSize;
         label.font.weight = weight;
@@ -40,19 +38,35 @@ Item {
         if (Math.abs(label.font.letterSpacing - spacing) > 1 / 1024)
             throw new Error("Qt Quick label letter spacing exceeds the 1/1024 logical px native precision budget");
         label.lineHeight = fixedHeight;
-        label.forceLayout();
-        label.width = maximumWidth === null ? label.implicitWidth : maximumWidth;
-        label.forceLayout();
-        if (label.fontInfo.family !== family || label.fontInfo.pixelSize !== pixelSize
-            || label.fontInfo.weight !== weight)
-            throw new Error("Qt Quick label substituted the requested family, pixel size or weight");
-        const width = maximumWidth === null ? label.implicitWidth : label.contentWidth;
-        const height = label.implicitHeight;
-        if (label.truncated || !Number.isFinite(width) || width <= 0
-            || !Number.isFinite(height) || height <= 0
-            || (maximumWidth !== null && width > maximumWidth))
-            throw new Error("Qt Quick complete label extent is invalid or exceeds the wrapping width");
-        return { width: width, height: height, nativeText: label.text };
+        const paragraphs = [];
+        let width = 0;
+        let height = 0;
+        for (const paragraph of nativeText.split("\u2029")) {
+            label.text = paragraph;
+            label.forceLayout();
+            label.width = maximumWidth === null ? label.implicitWidth : maximumWidth;
+            label.forceLayout();
+            // Qt does not refresh fontInfo for an empty layout, which has no glyphs.
+            if (paragraph.length && (label.fontInfo.family !== family
+                || label.fontInfo.pixelSize !== pixelSize || label.fontInfo.weight !== weight))
+                throw new Error("Qt Quick label substituted the requested family, pixel size or weight");
+            const paragraphWidth = maximumWidth === null ? label.implicitWidth : label.contentWidth;
+            const paragraphHeight = label.implicitHeight;
+            if (label.truncated || !Number.isFinite(paragraphWidth) || paragraphWidth < 0
+                || !Number.isFinite(paragraphHeight) || paragraphHeight <= 0
+                || (maximumWidth !== null && paragraphWidth > maximumWidth))
+                throw new Error("Qt Quick complete paragraph extent is invalid or exceeds the wrapping width");
+            const nextHeight = height + paragraphHeight;
+            if (!Number.isFinite(nextHeight) || nextHeight <= height
+                || (height > 0 && nextHeight <= paragraphHeight))
+                throw new Error("Qt Quick complete paragraph height exceeds representable arithmetic");
+            paragraphs.push({ nativeText: paragraph, width: paragraphWidth, height: paragraphHeight, y: height });
+            width = Math.max(width, paragraphWidth);
+            height = nextHeight;
+        }
+        if (width <= 0)
+            throw new Error("Qt Quick complete label advance must be positive");
+        return { width: width, height: height, nativeText: nativeText, paragraphs: paragraphs };
     }
 
     Text {

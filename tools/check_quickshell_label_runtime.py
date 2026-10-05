@@ -13,7 +13,7 @@ def check_log(result, scale):
     if result.returncode or "RESINA_LABEL_FAIL" in log or len(matches) != 1:
         raise ValueError(f"native label probe failed (exit {result.returncode}): {log[-2000:]}")
     count, failures, actual_scale = matches[0]
-    if int(count) != 171 or int(failures) != 13 or not math.isclose(float(actual_scale), scale, rel_tol=0, abs_tol=0.00001):
+    if int(count) != 243 or int(failures) != 13 or not math.isclose(float(actual_scale), scale, rel_tol=0, abs_tol=0.00001):
         raise ValueError(f"native label evidence counts or actual scale differ: {matches[0]}")
 
 
@@ -47,7 +47,7 @@ def main():
     except (OSError, UnicodeError, ValueError, subprocess.TimeoutExpired) as error:
         print(f"FAIL Quickshell label runtime: {error}", file=sys.stderr)
         return 1
-    print(f"Quickshell native label measurement passed {171 * len(arguments.scales)} cases and {13 * len(arguments.scales)} diagnostic cases on {arguments.platform}")
+    print(f"Quickshell native label measurement passed {243 * len(arguments.scales)} cases and {13 * len(arguments.scales)} diagnostic cases on {arguments.platform}")
     return 0
 
 

@@ -1,4 +1,4 @@
-# Quickshell paint realization (0.1.0)
+# Quickshell paint and measurement (0.1.0)
 
 This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. It does not implement a complete control, interaction, animation, or a complete Shell conformance claim.
 
@@ -11,13 +11,25 @@ The component is invisible, has no input target and is ignored by accessibility.
 Call its synchronous `measure(text, family, pixelSize, weight, spacing,
 lineHeight, maximumWidth)` method on the Qt UI thread for each natural/fitted
 request from the [portable label policy](../../../spec/46-command-label-layout.md).
-It returns `{width, height, nativeText}` or throws a diagnostic error;
+It returns `{width, height, nativeText, paragraphs}` or throws a diagnostic error;
 an error publishes no extent. `maximumWidth` is explicitly `null` for natural
 measurement or a finite positive logical wrapping constraint.
-Both dimensions are logical pixels. Bind subsequent native drawing to the
-returned `nativeText`: CRLF, CR, VT, FF and NEL hard breaks are converted to LF
-so Qt preserves them, while U+2028 line separators remain intact. This follows
+Both dimensions are logical pixels. CRLF, CR, VT, FF and NEL hard breaks are
+converted to LF so Qt preserves them, while U+2028 line separators remain intact. This follows
 the mandatory break classes in [Unicode line breaking](https://www.unicode.org/reports/tr14/tr14-54.html).
+
+U+2029 separates independently shaped paragraphs, including empty leading,
+trailing and consecutive paragraphs. Each `paragraphs` entry contains its
+`nativeText`, complete `width` and `height`, and logical vertical offset `y`.
+Draw each entry as a separate native Text item at that offset within the
+resolved label box, using the same offered wrapping width for every entry and
+centered lines. Do not replace
+paragraph separators with line separators or submit the combined `nativeText`
+to one Qt Text item: those paths lose independent paragraph direction.
+Paragraph widths are measured advances, not permission to narrow the wrapping
+box. Total width is their maximum; total height is their checked sum. Zero
+advance is valid for a blank paragraph, while the complete nonblank label must
+retain a positive advance. No artificial glyph supplies blank-line metrics.
 
 Size and spacing are already text-scaled logical pixels. Weight is an integer
 OpenType weight in 1..1000. `lineHeight` is the resolved font-size multiplier;
@@ -30,7 +42,10 @@ omits on Qt 6.11.2. Natural width is the native implicit width; fitted width is
 the complete content width, checked against the unchanged offered constraint.
 
 The selected primary family, pixel size and reported weight must match the
-request. Qt's native font selection/synthesis supplies the weight; per-glyph
+request for every nonempty paragraph. [Qt's empty-layout path](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L430-L455)
+uses current native font metrics without refreshing `fontInfo`; blank entries
+retain those metrics, while nonempty entries validate the actual selected face.
+Qt's native font selection/synthesis supplies the weight; per-glyph
 fallback availability remains the application's explicit font mapping policy.
 Preserve that context, typography and wrapping constraint for drawing, allow
 glyph overhang and invalidate measurements when the font environment changes.
@@ -49,25 +64,29 @@ Values outside [Qt's signed 26.6 fixed-point range](https://github.com/qt/qtbase
 fail before native assignment; quantization is checked through the native
 readout. U+009C fails because [Qt interprets it as a multi-length separator and
 discards the suffix](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L224-L229),
-even with plain text and no ellipsis. U+2029 also fails: the native plain-text
-layout ignores its paragraph break, and replacing it with a line separator
-would lose independent paragraph direction semantics. A complete paragraph
-layout owner is required before accepting it. These limits do not narrow IR.
+even with plain text and no ellipsis. The paragraph owner avoids Qt's ignored
+plain-text U+2029 break by using independent native layouts, consistent with
+[Unicode paragraph direction](https://www.unicode.org/reports/tr9/#P1).
+Native limits do not narrow IR.
 
 ```sh
 python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf
 python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --platform wayland
 ```
 
-The native probe checks 19 labels, three text scales and three signed spacing
+The native probe checks 27 labels, three text scales and three signed spacing
 values on each of five actual device scales (0.5, 1, 1.25, 2 and 1.3). It includes
 Latin, expanded German, Arabic, 100/150/200% string-length fixtures, literal
 markup, LF/CRLF/CR, VT/FF/NEL, line separators and leading/trailing/consecutive
-blank lines. It independently checks explicit line heights, wide-word reflow,
-spacing effects, weights, 13 invalid/unsupported inputs and recovery after
-failure. All 855 measurement and 65 diagnostic cases passed locally on both
-software/offscreen and
-software/Wayland with Quickshell 0.3.1 / Qt 6.11.2 on WSLg. Runtime CI and other
+blank lines and mixed-script/blank paragraphs. A separate native Text oracle
+checks Arabic, neutral and Latin paragraph extents and natural alignment;
+each fitted paragraph also matches its isolated native measurement. The probe
+checks complete line heights, contiguous paragraph offsets, wide-word reflow,
+spacing effects, weights with blank paragraphs, fractional line heights and
+13 invalid/unsupported inputs, including failure after a valid paragraph and
+recovery afterward. All 1215 measurement and 65 diagnostic cases passed locally
+on both software/offscreen and software/Wayland with Quickshell 0.3.1 /
+Qt 6.11.2 on WSLg. Runtime CI and other
 fonts/compositors remain unverified. The checker itself is covered by portable
 CI tests that reject incomplete, duplicate, failed and wrong-scale evidence.
 
