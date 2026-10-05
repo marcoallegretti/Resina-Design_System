@@ -1,6 +1,9 @@
 #[cfg(not(target_os = "linux"))]
 compile_error!("the GUIdo backend requires Linux");
 
+mod slider_content;
+pub use slider_content::{SliderContentPrepareError, prepare_slider_content};
+
 mod toggle_content;
 pub use toggle_content::{
     ToggleContentPrepareError, prepare_toggle_content, prepare_toggle_travel_content,

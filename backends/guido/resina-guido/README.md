@@ -234,6 +234,39 @@ resolving paint and snapshots, and asserts spring policy, opposite initial
 placement, intermediate non-endpoint placement and exact settled placement.
 Reduced-motion policy is tested separately in the portable snapshot matrix.
 
+## Checked Slider content
+
+`prepare_slider_content` accepts a complete
+[Slider snapshot](../../../spec/77-slider-snapshot.md), an explicitly mapped font,
+the actual device scale and a sampling grid. It returns track, thumb and native
+label commands together. Both parts use their actual layout origins before
+device-grid alignment. The thumb image includes its checked navigation paint;
+the track has no separate focus ring. The label uses the snapshot's checked
+foreground and origin, and is measured again with the supplied native font.
+Replace the complete command array only after preparation succeeds.
+
+Label, track and thumb failures identify the failed part and preserve their
+underlying error. Nonzero letter spacing remains an explicit unsupported error
+at the unchanged GUIdo pin; this path does not alter authored typography or
+silently substitute measurements. Native input, pointer routing, clocks and
+assistive technology publication remain component-owner responsibilities.
+
+Required GPU tests cover 192 complete opaque frames: Cast, Frost and Elastomer,
+both axes and directions, rest/focused/disabled/read-only/pointer-preview states,
+scales 1/1.25/2, and wrapped English/Arabic labels at textScale 2. Every part's
+placed sampling grid is checked against the canonical CPU paint, opaque native
+pixels against the prepared image, and actual glyph coverage against the
+reserved label slot and checked backdrop. Unsupported spacing, approximate
+measurements and invalid raster inputs fail before command publication.
+`RESINA_SLIDER_CAPTURE_DIR` saves the tested PPM frames.
+
+These shared conformance fixtures deliberately use structural geometry and a
+black/white palette. Visual inspection confirms placement, focus and complete
+text, but their appearance is not accepted as release component styling: material
+differentiation, proportions, theme coverage and calibrated motion still need
+the component and Lab implementation. No interactive Slider widget is supplied
+by this paint-preparation API.
+
 ## Verification
 
 Linux needs Wayland and xkbcommon development libraries and a working GPU or

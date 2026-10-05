@@ -16,6 +16,7 @@ resina-resolver = { path = "../../../reference/rust/resina-resolver" }
 resina-raster = { path = "../../cpu/resina-raster", default-features = false }
 
 [dev-dependencies]
+resina-color = { path = "../../../reference/rust/resina-color" }
 resina-environment = { path = "../../../reference/rust/resina-environment" }
 serde_json = { version = "1", features = ["float_roundtrip"] }
 wgpu = { version = "=30.0.1", default-features = false }

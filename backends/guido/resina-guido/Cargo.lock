@@ -1111,6 +1111,7 @@ name = "resina-guido"
 version = "0.1.0"
 dependencies = [
  "guido",
+ "resina-color",
  "resina-environment",
  "resina-model",
  "resina-raster",
