@@ -1,0 +1,6391 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "horizontal ltr minimum start preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "horizontal ltr minimum end preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 42.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "horizontal rtl minimum start preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 68.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 38.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "horizontal rtl minimum end preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "horizontal",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 68.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "horizontal",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 98.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "vertical ltr minimum start preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "vertical",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "vertical",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "vertical ltr minimum end preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "vertical",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "vertical",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 42.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "vertical rtl minimum start preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "vertical",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "vertical",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "vertical rtl minimum end preview twice then commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "vertical",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 40.0,
+                "height": 160.0
+              },
+              "thumbSize": {
+                "width": 24.0,
+                "height": 20.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 6.0,
+                "end": 10.0,
+                "top": 12.0,
+                "bottom": 8.0
+              },
+              "layoutDirection": "rtl",
+              "orientation": "vertical",
+              "minimumPosition": "end",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 42.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 20.0,
+              "progress": 0.75
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 20.0,
+                "progress": 0.75
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "preview then cancel does not commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "stationary preview then accepted no-op commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 42.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "accepted": true,
+              "changed": false
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "immediate commit is accepted no-op",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "accepted": true,
+              "changed": false
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "permission loss enabled False readOnly False at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "permission loss enabled False readOnly False at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled False readOnly False action preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled False readOnly False action commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled False readOnly False action cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "permission loss enabled True readOnly True at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "permission loss enabled True readOnly True at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled True readOnly True action preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled True readOnly True action commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled True readOnly True action cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "permission loss enabled False readOnly True at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "permission loss enabled False readOnly True at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled False readOnly True action preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled False readOnly True action commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unavailable initial enabled False readOnly True action cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "external numeric change at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 12.0
+          },
+          "revision": "r1",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 12.0,
+              "progress": 0.55
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "external numeric change at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 12.0
+          },
+          "revision": "r1",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 12.0,
+              "progress": 0.55
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "external numeric change at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 12.0
+          },
+          "revision": "r1",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 12.0,
+              "progress": 0.55
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "external bounds change at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 100.0,
+            "value": 60.0
+          },
+          "revision": "r1",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": 0.0,
+              "maximum": 100.0,
+              "value": 60.0,
+              "progress": 0.6
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "external bounds change at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 100.0,
+            "value": 60.0
+          },
+          "revision": "r1",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": 0.0,
+              "maximum": 100.0,
+              "value": 60.0,
+              "progress": 0.6
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "external bounds change at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 0.0,
+            "maximum": 100.0,
+            "value": 60.0
+          },
+          "revision": "r1",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": 0.0,
+              "maximum": 100.0,
+              "value": 60.0,
+              "progress": 0.6
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "revision-only change and return at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r2",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "revision-only change and return at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r2",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "revision-only change and return at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r2",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unreported revision with changed value at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 12.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 12.0,
+              "progress": 0.55
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unreported revision with changed value at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 12.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 12.0,
+              "progress": 0.55
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unreported revision with changed value at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 12.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 12.0,
+              "progress": 0.55
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "incoherent visual preview enabled True readOnly False",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "error": "incoherentLayout"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unrepresentable preview enabled True readOnly False",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": 1.0,
+                "maximum": 2.0,
+                "value": 1.5
+              }
+            },
+            "desiredOrigin": 72.00000000000001
+          },
+          "error": "position"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": 1.0,
+              "maximum": 2.0,
+              "value": 1.5,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled True readOnly False at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled True readOnly False at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled True readOnly False at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "incoherent visual preview enabled False readOnly False",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "error": "incoherentLayout"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unrepresentable preview enabled False readOnly False",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": 1.0,
+                "maximum": 2.0,
+                "value": 1.5
+              }
+            },
+            "desiredOrigin": 72.00000000000001
+          },
+          "error": "position"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": 1.0,
+              "maximum": 2.0,
+              "value": 1.5,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled False readOnly False at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled False readOnly False at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled False readOnly False at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": false,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "incoherent visual preview enabled True readOnly True",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "error": "incoherentLayout"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unrepresentable preview enabled True readOnly True",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": 1.0,
+                "maximum": 2.0,
+                "value": 1.5
+              }
+            },
+            "desiredOrigin": 72.00000000000001
+          },
+          "error": "position"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": 1.0,
+              "maximum": 2.0,
+              "value": 1.5,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled True readOnly True at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled True readOnly True at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "commit"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled True readOnly True at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": true,
+          "readOnly": true,
+          "action": {
+            "kind": "cancel"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "incoherent visual preview enabled False readOnly True",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": "r0",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 102.0
+          },
+          "error": "incoherentLayout"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unrepresentable preview enabled False readOnly True",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": 1.0,
+                "maximum": 2.0,
+                "value": 1.5
+              }
+            },
+            "desiredOrigin": 72.00000000000001
+          },
+          "error": "position"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "value": 1.5
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": 1.0,
+              "maximum": 2.0,
+              "value": 1.5,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled False readOnly True at preview",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled False readOnly True at commit",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "commit"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty current revision enabled False readOnly True at cancel",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "",
+          "enabled": false,
+          "readOnly": true,
+          "action": {
+            "kind": "cancel"
+          },
+          "error": "invalidRevision"
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": "r0",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "cancel"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "opaque revisions compare exactly without trimming",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": "r0"
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": " r0 ",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 0.0,
+              "progress": 0.25
+            },
+            "commit": null,
+            "outcome": "conflict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "opaque revision retained without normalization",
+      "begin": {
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "revision": " r0 "
+      },
+      "steps": [
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": " r0 ",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "preview",
+            "layout": {
+              "allocationSize": {
+                "width": 160.0,
+                "height": 40.0
+              },
+              "thumbSize": {
+                "width": 20.0,
+                "height": 24.0
+              },
+              "trackThickness": 4.0,
+              "insets": {
+                "start": 12.0,
+                "end": 8.0,
+                "top": 6.0,
+                "bottom": 10.0
+              },
+              "layoutDirection": "ltr",
+              "orientation": "horizontal",
+              "minimumPosition": "start",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0
+              }
+            },
+            "desiredOrigin": 72.0
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": {
+              "schemaVersion": "0.1.0",
+              "revision": " r0 ",
+              "baseline": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 0.0,
+                "progress": 0.25
+              },
+              "preview": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              }
+            },
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": null,
+            "outcome": "previewed"
+          }
+        },
+        {
+          "current": {
+            "schemaVersion": "0.1.0",
+            "minimum": -10.0,
+            "maximum": 30.0,
+            "value": 0.0
+          },
+          "revision": " r0 ",
+          "enabled": true,
+          "readOnly": false,
+          "action": {
+            "kind": "commit"
+          },
+          "expected": {
+            "schemaVersion": "0.1.0",
+            "session": null,
+            "preview": {
+              "schemaVersion": "0.1.0",
+              "minimum": -10.0,
+              "maximum": 30.0,
+              "value": 10.0,
+              "progress": 0.5
+            },
+            "commit": {
+              "schemaVersion": "0.1.0",
+              "value": {
+                "schemaVersion": "0.1.0",
+                "minimum": -10.0,
+                "maximum": 30.0,
+                "value": 10.0,
+                "progress": 0.5
+              },
+              "accepted": true,
+              "changed": true
+            },
+            "outcome": "committed"
+          }
+        }
+      ]
+    }
+  ]
+}

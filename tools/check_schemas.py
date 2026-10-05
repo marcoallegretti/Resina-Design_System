@@ -217,6 +217,9 @@ def main():
         "schemas/slider-layout-ir.schema.json",
         "schemas/slider-layout-cases.schema.json",
         "schemas/slider-position-cases.schema.json",
+        "schemas/slider-edit-session.schema.json",
+        "schemas/slider-edit-result.schema.json",
+        "schemas/slider-edit-cases.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -1966,6 +1969,44 @@ def main():
     leaked = copy.deepcopy(slider_position)
     leaked["cases"][0]["input"]["renderer"] = "native"
     check_case(slider_position_validator, "slider position backend leakage", leaked, False)
+    checked += 1
+    slider_edits = load_json(ROOT / "conformance/interaction/slider-edit-cases.json")
+    check_case(validator_for("schemas/slider-edit-cases.schema.json"),
+               "slider edit traces", slider_edits, True)
+    names = [case["name"] for case in slider_edits["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider edit trace")
+    checked += 1 + sum(len(case["steps"]) for case in slider_edits["cases"])
+    edit_result = slider_edits["cases"][0]["steps"][0]["expected"]
+    edit_result_validator = validator_for("schemas/slider-edit-result.schema.json")
+    for field in edit_result:
+        incomplete = copy.deepcopy(edit_result)
+        incomplete.pop(field)
+        check_case(edit_result_validator, f"missing slider edit result {field}", incomplete, False)
+        checked += 1
+    for name, changes in [
+        ("preview must retain session", [{"path": "/session", "value": None}]),
+        ("cancel must close session", [{"path": "/outcome", "value": "cancelled"}]),
+        ("commit needs intent", [{"path": "/outcome", "value": "committed"},
+                                 {"path": "/session", "value": None}]),
+        ("edit revision must not be empty", [{"path": "/session/revision", "value": ""}]),
+        ("unknown edit outcome", [{"path": "/outcome", "value": "rebased"}]),
+    ]:
+        check_case(edit_result_validator, name, apply_changes(edit_result, changes), False)
+        checked += 1
+    check_case(edit_result_validator, "slider edit backend leakage",
+               dict(edit_result, renderer="native"), False)
+    checked += 1
+    completed_edit = slider_edits["cases"][0]["steps"][-1]["expected"]
+    for name, changes in [
+        ("completed edit cannot retain session", [{"path": "/session", "value": edit_result["session"]}]),
+        ("completed edit requires accepted intent", [{"path": "/commit/accepted", "value": False},
+                                                     {"path": "/commit/changed", "value": False}]),
+    ]:
+        check_case(edit_result_validator, name, apply_changes(completed_edit, changes), False)
+        checked += 1
+    check_case(edit_result_validator, "preview cannot emit commit",
+               dict(edit_result, commit=completed_edit["commit"]), False)
     checked += 1
     toggle_travel = load_json(ROOT / "conformance/motion/toggle-travel-cases.json")
     check_case(validator_for("schemas/toggle-travel-cases.schema.json"), "toggle travel matrix", toggle_travel, True)

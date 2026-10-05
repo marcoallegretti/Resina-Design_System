@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "revision",
+    "baseline",
+    "preview"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "baseline": {
+      "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    },
+    "preview": {
+      "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-edit-session:0.1.0"
+}

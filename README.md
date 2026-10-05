@@ -164,3 +164,8 @@ component obligations.
 origin through current allocation and numeric bounds with live adjustment
 permission. Stationary origins preserve exact values; unrepresentable movement
 fails diagnostically. Native coordinate conversion and capture remain required.
+
+[Cancellable Slider edits](spec/63-slider-edit.md) retain a complete visible
+preview separately from committed value. Completion checks live permission and
+the current revision; cancellation or conflict closes the edit and preserves
+current committed state. Native gesture routing and styled controls remain required.

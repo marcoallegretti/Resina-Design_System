@@ -1,5 +1,11 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_edit;
+pub use slider_edit::{
+    SliderEditAction, SliderEditError, SliderEditInput, SliderEditOutcome, SliderEditResult,
+    SliderEditSession, resolve_slider_edit,
+};
+
 mod slider_position;
 pub use slider_position::{SliderPositionError, SliderPositionInput, resolve_slider_position};
 

@@ -1,0 +1,118 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "session",
+    "preview",
+    "commit",
+    "outcome"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "session": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "urn:resina:schema:slider-edit-session:0.1.0"
+        }
+      ]
+    },
+    "preview": {
+      "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    },
+    "commit": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "urn:resina:schema:slider-adjustment-ir:0.1.0"
+        }
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "previewed",
+        "committed",
+        "cancelled",
+        "unavailable",
+        "conflict"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-edit-result:0.1.0",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "previewed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "session": {
+            "$ref": "urn:resina:schema:slider-edit-session:0.1.0"
+          },
+          "commit": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "committed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "session": {
+            "type": "null"
+          },
+          "commit": {
+            "$ref": "urn:resina:schema:slider-adjustment-ir:0.1.0",
+            "properties": {
+              "accepted": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "cancelled",
+              "unavailable",
+              "conflict"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "session": {
+            "type": "null"
+          },
+          "commit": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}
