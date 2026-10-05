@@ -12,6 +12,24 @@ That correction was merged upstream on 2026-10-04. This package retains its
 verified exact revision; required renderer tests cover image identity, first-frame
 readiness and replacement at that pin.
 
+## Live Linux runtime
+
+The pinned GUIdo runtime creates Wayland layer-shell surfaces. Its
+[connection setup](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/wayland.rs#L296-L317)
+requires `wl_compositor` and `zwlr_layer_shell_v1`; an `xdg_wm_base` global alone
+is insufficient. Check the actual session registry with `wayland-info` before
+launching a live GUIdo product. A missing layer-shell global produces
+`PlatformError::MissingLayerShell`. Live presentation also requires a usable GPU
+adapter for the created surface.
+
+Offscreen GPU tests and the static Material Board capture do not create Wayland
+surfaces. They can pass on a host whose compositor lacks layer-shell. Their
+pixels establish rendering evidence, without certifying live focus/input,
+compositor behavior or native assistive technology. Those need separate tests
+on a compatible compositor; changing portable Resina contracts cannot resolve a
+missing host protocol. A separate test compositor can supply that protocol
+without changing the active desktop session.
+
 ## Native conformance limits
 
 The checked paint and content paths are implemented primitives. The following
