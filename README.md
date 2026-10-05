@@ -181,4 +181,9 @@ conflict or invalidation clears ownership without publishing a product change.
 
 [Discrete Slider stops](spec/66-slider-stops.md) retain explicit allowed values
 for index movement and nearest-stop selection. Permission, exact membership and
-tie policy are checked; native keys and stepped gesture composition remain required.
+tie policy are checked; native key delivery remains required.
+
+[Slider value policy](spec/67-slider-value-policy.md) keeps continuous or stopped
+admissibility explicit throughout edit and pointer sessions. Allowed previews,
+policy conflicts and release-only clicks have headless conformance evidence;
+native routing and complete styled controls remain required.

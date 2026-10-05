@@ -1,5 +1,8 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_value_policy;
+pub use slider_value_policy::SliderValuePolicy;
+
 mod slider_stops;
 pub use slider_stops::{
     SliderStopAdjustment, SliderStopInput, SliderStops, SliderStopsError, SliderTieBreak,

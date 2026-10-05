@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-value-policy-fixture:0.1.0",
+  "description": "Conformance fixture input; checked policy construction is owned by the reference test harness.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "continuous"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "minimum",
+        "maximum",
+        "values",
+        "tieBreak"
+      ],
+      "properties": {
+        "kind": {
+          "const": "stops"
+        },
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        },
+        "values": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "number"
+          }
+        },
+        "tieBreak": {
+          "enum": [
+            "lower",
+            "higher"
+          ]
+        }
+      }
+    }
+  ]
+}

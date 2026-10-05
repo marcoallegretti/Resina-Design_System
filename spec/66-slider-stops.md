@@ -80,6 +80,10 @@ distinct from changed. No default value, count or tie policy exists.
 
 ## Integration and fallback
 
+[Value policy](67-slider-value-policy.md) composes this domain with cancellable
+edit and pointer sessions, retaining the policy and selecting allowed previews
+before completion. Native keyboard and complete control delivery remain required.
+
 Owners commit complete next value before notifying once when changed. This pure
 operation executes no callback and owns no focus, revision, edit session or native
 input routing. It is usable in every capability tier without animation, shaders,

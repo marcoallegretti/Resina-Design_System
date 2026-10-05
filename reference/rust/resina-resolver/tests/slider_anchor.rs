@@ -1,5 +1,6 @@
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_model::{PhysicalVector, SliderValue, SurfaceSize};
+use resina_resolver::SliderValuePolicy;
 use resina_resolver::{
     SliderAnchorError, SliderEditAction, SliderEditInput, SliderEditSession, SliderLayoutInput,
     SliderLayoutIr, SliderMinimumPosition, SliderOrientation, SliderPointerAnchor,
@@ -214,7 +215,8 @@ fn one_grab_anchor_drives_preview_frames_and_one_final_commit() {
     let initial = visual.resolve();
     let committed = *initial.value();
     let anchor = SliderPointerAnchor::grab(&initial, PhysicalVector { x: 45.0, y: 17.0 }).unwrap();
-    let mut session = SliderEditSession::begin(&committed, "initial").unwrap();
+    let mut session =
+        SliderEditSession::begin(&committed, "initial", &SliderValuePolicy::Continuous).unwrap();
     for (pointer, value) in [(75.0, 10.0), (105.0, 20.0)] {
         let layout = visual.resolve();
         let desired_origin = anchor
@@ -227,6 +229,7 @@ fn one_grab_anchor_drives_preview_frames_and_one_final_commit() {
             )
             .unwrap();
         let result = resolve_slider_edit(SliderEditInput {
+            value_policy: &SliderValuePolicy::Continuous,
             session: &session,
             current: &committed,
             revision: "initial",
@@ -244,6 +247,7 @@ fn one_grab_anchor_drives_preview_frames_and_one_final_commit() {
         session = result.session().unwrap().clone();
     }
     let result = resolve_slider_edit(SliderEditInput {
+        value_policy: &SliderValuePolicy::Continuous,
         session: &session,
         current: &committed,
         revision: "initial",

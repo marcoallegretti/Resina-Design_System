@@ -1,7 +1,8 @@
 use crate::{
     SliderAdjustment, SliderAdjustmentError, SliderAdjustmentInput, SliderAdjustmentIr,
-    SliderLayoutIr, SliderPositionError, SliderPositionInput, SliderValueIr,
-    resolve_slider_adjustment, resolve_slider_position,
+    SliderLayoutIr, SliderPositionError, SliderPositionInput, SliderStopAdjustment,
+    SliderStopInput, SliderStopsError, SliderValueIr, SliderValuePolicy, resolve_slider_adjustment,
+    resolve_slider_position, resolve_slider_stop_adjustment,
 };
 use serde::Serialize;
 use std::fmt;
@@ -13,17 +14,26 @@ pub struct SliderEditSession {
     revision: String,
     baseline: SliderValueIr,
     preview: SliderValueIr,
+    value_policy: SliderValuePolicy,
 }
 impl SliderEditSession {
-    pub fn begin(value: &SliderValueIr, revision: &str) -> Result<Self, SliderEditError> {
+    pub fn begin(
+        value: &SliderValueIr,
+        revision: &str,
+        value_policy: &SliderValuePolicy,
+    ) -> Result<Self, SliderEditError> {
         if revision.is_empty() {
             return Err(SliderEditError::InvalidRevision);
         }
+        value_policy
+            .validate_current(value)
+            .map_err(SliderEditError::ValuePolicy)?;
         Ok(Self {
             schema_version: "0.1.0",
             revision: revision.to_owned(),
             baseline: *value,
             preview: *value,
+            value_policy: value_policy.clone(),
         })
     }
     pub fn revision(&self) -> &str {
@@ -34,6 +44,9 @@ impl SliderEditSession {
     }
     pub fn preview(&self) -> &SliderValueIr {
         &self.preview
+    }
+    pub fn value_policy(&self) -> &SliderValuePolicy {
+        &self.value_policy
     }
 }
 
@@ -50,6 +63,7 @@ pub struct SliderEditInput<'a> {
     pub session: &'a SliderEditSession,
     pub current: &'a SliderValueIr,
     pub revision: &'a str,
+    pub value_policy: &'a SliderValuePolicy,
     pub enabled: bool,
     pub read_only: bool,
     pub action: SliderEditAction<'a>,
@@ -93,6 +107,7 @@ pub enum SliderEditError {
     IncoherentLayout,
     Position(SliderPositionError),
     Adjustment(SliderAdjustmentError),
+    ValuePolicy(SliderStopsError),
 }
 impl fmt::Display for SliderEditError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -104,6 +119,7 @@ impl fmt::Display for SliderEditError {
             }
             Self::Position(error) => write!(f, "slider edit: {error}"),
             Self::Adjustment(error) => write!(f, "slider edit: {error}"),
+            Self::ValuePolicy(error) => write!(f, "slider edit policy: {error}"),
         }
     }
 }
@@ -112,6 +128,7 @@ impl std::error::Error for SliderEditError {
         match self {
             Self::Position(error) => Some(error),
             Self::Adjustment(error) => Some(error),
+            Self::ValuePolicy(error) => Some(error),
             _ => None,
         }
     }
@@ -138,7 +155,10 @@ pub fn resolve_slider_edit(
     if matches!(input.action, SliderEditAction::Cancel) {
         return Ok(result);
     }
-    if input.revision != input.session.revision() || input.current != input.session.baseline() {
+    if input.revision != input.session.revision()
+        || input.current != input.session.baseline()
+        || input.value_policy != input.session.value_policy()
+    {
         result.outcome = SliderEditOutcome::Conflict;
         return Ok(result);
     }
@@ -150,21 +170,51 @@ pub fn resolve_slider_edit(
         if layout.value() != input.session.preview() {
             return Err(SliderEditError::IncoherentLayout);
         }
-        resolve_slider_position(SliderPositionInput {
+        let candidate = resolve_slider_position(SliderPositionInput {
             layout,
             desired_origin,
             enabled: input.enabled,
             read_only: input.read_only,
         })
-        .map_err(SliderEditError::Position)?
+        .map_err(SliderEditError::Position)?;
+        match input.value_policy {
+            SliderValuePolicy::Continuous => candidate,
+            SliderValuePolicy::Stops { stops, tie_break } => {
+                resolve_slider_stop_adjustment(SliderStopInput {
+                    stops,
+                    current: input.session.preview(),
+                    enabled: input.enabled,
+                    read_only: input.read_only,
+                    adjustment: SliderStopAdjustment::Nearest {
+                        value: candidate.value().value().value(),
+                        tie_break: *tie_break,
+                    },
+                })
+                .map_err(SliderEditError::ValuePolicy)?
+            }
+        }
     } else {
-        resolve_slider_adjustment(SliderAdjustmentInput {
-            current: input.current,
-            enabled: input.enabled,
-            read_only: input.read_only,
-            adjustment: SliderAdjustment::SetValue(input.session.preview().value().value()),
-        })
-        .map_err(SliderEditError::Adjustment)?
+        match input.value_policy {
+            SliderValuePolicy::Continuous => resolve_slider_adjustment(SliderAdjustmentInput {
+                current: input.current,
+                enabled: input.enabled,
+                read_only: input.read_only,
+                adjustment: SliderAdjustment::SetValue(input.session.preview().value().value()),
+            })
+            .map_err(SliderEditError::Adjustment)?,
+            SliderValuePolicy::Stops { stops, .. } => {
+                resolve_slider_stop_adjustment(SliderStopInput {
+                    stops,
+                    current: input.current,
+                    enabled: input.enabled,
+                    read_only: input.read_only,
+                    adjustment: SliderStopAdjustment::SetValue(
+                        input.session.preview().value().value(),
+                    ),
+                })
+                .map_err(SliderEditError::ValuePolicy)?
+            }
+        }
     };
     if !adjustment.accepted() {
         result.outcome = SliderEditOutcome::Unavailable;

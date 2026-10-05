@@ -218,6 +218,8 @@ def main():
         "schemas/slider-layout-cases.schema.json",
         "schemas/slider-position-cases.schema.json",
         "schemas/slider-edit-session.schema.json",
+        "schemas/slider-value-policy.schema.json",
+        "schemas/slider-value-policy-fixture.schema.json",
         "schemas/slider-edit-result.schema.json",
         "schemas/slider-edit-cases.schema.json",
         "schemas/slider-anchor-cases.schema.json",
@@ -1986,6 +1988,41 @@ def main():
     checked += 1 + sum(len(case["steps"]) for case in slider_edits["cases"])
     edit_result = slider_edits["cases"][0]["steps"][0]["expected"]
     edit_result_validator = validator_for("schemas/slider-edit-result.schema.json")
+    policy_validator = validator_for("schemas/slider-value-policy.schema.json")
+    stopped = next(case for case in slider_edits["cases"]
+                   if case["begin"]["valuePolicy"]["kind"] == "stops")
+    stopped_policy = stopped["steps"][0]["expected"]["session"]["valuePolicy"]
+    check_case(policy_validator, "complete stopped value policy", stopped_policy, True)
+    checked += 1
+    for policy in [edit_result["session"]["valuePolicy"], stopped_policy]:
+        for field in policy:
+            incomplete = copy.deepcopy(policy)
+            incomplete.pop(field)
+            check_case(policy_validator, f"missing policy {field}", incomplete, False)
+            checked += 1
+        check_case(policy_validator, "policy cannot retain native routing",
+                   dict(policy, nativeHandle=1), False)
+        checked += 1
+    for name, changes in [
+        ("unknown policy", [{"path": "/kind", "value": "automatic"}]),
+        ("unknown tie rule", [{"path": "/tieBreak", "value": "closestPixel"}]),
+        ("stops need full numeric IR", [{"path": "/stops/values/0", "value": -10}]),
+    ]:
+        check_case(policy_validator, name, apply_changes(stopped_policy, changes), False)
+        checked += 1
+    for path in ["begin", "steps"]:
+        incomplete = copy.deepcopy(slider_edits)
+        obj = incomplete["cases"][0][path]
+        if path == "steps":
+            obj = obj[0]
+        obj.pop("valuePolicy")
+        check_case(validator_for("schemas/slider-edit-cases.schema.json"),
+                   f"edit {path} needs explicit policy", incomplete, False)
+        checked += 1
+    incomplete = copy.deepcopy(edit_result)
+    incomplete["session"].pop("valuePolicy")
+    check_case(edit_result_validator, "session needs frozen policy", incomplete, False)
+    checked += 1
     for field in edit_result:
         incomplete = copy.deepcopy(edit_result)
         incomplete.pop(field)
@@ -2045,6 +2082,10 @@ def main():
     slider_pointers = load_json(ROOT / "conformance/interaction/slider-pointer-cases.json")
     pointer_validator = validator_for("schemas/slider-pointer-cases.schema.json")
     check_case(pointer_validator, "slider pointer traces", slider_pointers, True)
+    incomplete = copy.deepcopy(slider_pointers)
+    incomplete["cases"][0]["steps"][0].pop("valuePolicy")
+    check_case(pointer_validator, "pointer needs explicit value policy", incomplete, False)
+    checked += 1
     names = [case["name"] for case in slider_pointers["cases"]]
     if len(names) != len(set(names)):
         raise ValueError("duplicate slider pointer trace")

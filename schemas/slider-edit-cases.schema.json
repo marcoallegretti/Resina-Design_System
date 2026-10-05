@@ -30,7 +30,8 @@
             "additionalProperties": false,
             "required": [
               "value",
-              "revision"
+              "revision",
+              "valuePolicy"
             ],
             "properties": {
               "value": {
@@ -39,6 +40,9 @@
               "revision": {
                 "type": "string",
                 "minLength": 1
+              },
+              "valuePolicy": {
+                "$ref": "urn:resina:schema:slider-value-policy-fixture:0.1.0"
               }
             }
           },
@@ -53,7 +57,8 @@
                 "revision",
                 "enabled",
                 "readOnly",
-                "action"
+                "action",
+                "valuePolicy"
               ],
               "properties": {
                 "current": {
@@ -125,8 +130,12 @@
                     "invalidPosition",
                     "incoherentLayout",
                     "position",
-                    "adjustment"
+                    "adjustment",
+                    "valuePolicy"
                   ]
+                },
+                "valuePolicy": {
+                  "$ref": "urn:resina:schema:slider-value-policy-fixture:0.1.0"
                 }
               },
               "oneOf": [

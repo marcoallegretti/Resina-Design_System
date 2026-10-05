@@ -7,7 +7,8 @@ pointer owner can abort an edit before completion. It composes [bounded values](
 
 ## Session ownership
 
-Begin explicitly with a checked committed value and a nonempty opaque revision
+Begin explicitly with a checked committed value, [value policy](67-slider-value-policy.md)
+and a nonempty opaque revision
 string. The owner gives the revision an exact identity within the control's
 lifetime, changing it whenever committed value, bounds or their meaning change.
 Never reuse a previous revision after an intervening change. Comparison is exact,
@@ -16,8 +17,9 @@ leave the current number equal to the original number. No timestamp or sequence
 format is inferred.
 
 The immutable session retains that revision, the complete baseline value and the
-complete preview, initially equal to the baseline. Each delivery supplies the
-current committed value/revision, live enabled/readOnly permission and one action:
+complete preview, initially equal to the baseline, and the complete value policy.
+Each delivery supplies the current committed value/revision and policy,
+live enabled/readOnly permission and one action:
 preview with checked current visual layout and finite desired thumb origin;
 commit; or cancel. Visual layout must contain the session's current preview,
 including bounds and normalized progress, before a preview can be updated.
@@ -31,7 +33,7 @@ preview, with no commit intent. It does not restore the old baseline into a
 product that may have changed externally.
 
 For preview or commit, a changed revision or a committed value different from
-the baseline produces conflict: close the session, expose the current committed
+the baseline, or a changed policy, produces conflict: close the session, expose the current committed
 value and emit no commit. This check precedes layout coherence because a visual
 layout from the abandoned edit is expected to be stale after an external change.
 Conflict is explicit; it never silently rebases or overwrites a concurrent edit.
@@ -39,7 +41,8 @@ An owner that fails to change revision is still caught when value/bounds differ;
 the reference cannot detect an unreported change-and-return history.
 
 With matching current baseline/revision, preview requires a coherent visual
-layout and maps its desired origin through spec62 under live permission. Mapping
+layout and maps its desired origin through spec62 under live permission. Stopped
+policies select an allowed value through spec67 before publishing preview. Mapping
 failures remain diagnostic even when unavailable. An accepted preview returns a
 new open session and complete visible value, without committing or notifying
 product code. Rebuild layout, localized value text and semantics from that visible
@@ -47,7 +50,8 @@ value before the next frame; keyboard/semantic mutation of committed state must
 update revision and abandon the old edit.
 
 Commit applies the preview's absolute value to the current baseline through
-spec59 under live permission. Accepted commit closes the session and returns its
+spec59 under live permission, or exact allowed selection through spec66 for stopped
+policies. Accepted commit closes the session and returns its
 complete adjustment intent, including accepted no-op versus changed. Unavailable
 preview or commit closes the session, exposes the current committed value and
 emits no commit. Disabled/readOnly state never publishes a product change.

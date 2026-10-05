@@ -1,5 +1,6 @@
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_model::{PhysicalVector, SliderValue, SurfaceSize};
+use resina_resolver::SliderValuePolicy;
 use resina_resolver::{
     HitRegionIr, SliderLayoutInput, SliderLayoutIr, SliderMinimumPosition, SliderOrientation,
     SliderPointerError, SliderPointerEvent, SliderPointerInput, SliderPointerOutcome,
@@ -9,6 +10,8 @@ use resina_resolver::{
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::BTreeMap;
+#[path = "common/slider_value_policy.rs"]
+mod value_policy;
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Layout {
@@ -72,6 +75,7 @@ enum Event {
 struct Step {
     current: SliderValue,
     revision: String,
+    value_policy: value_policy::Policy,
     visual_value: SliderValue,
     layout: String,
     control: String,
@@ -127,12 +131,13 @@ fn error_name(error: &SliderPointerError) -> &'static str {
         SliderPointerError::Hit(_) => "hit",
         SliderPointerError::Anchor(_) => "anchor",
         SliderPointerError::Edit(_) => "edit",
+        SliderPointerError::ValuePolicy(_) => "valuePolicy",
     }
 }
 #[test]
 fn public_traces_verify_complete_pointer_state_and_effects() {
     let cases = corpus();
-    assert_eq!(cases.len(), 75);
+    assert_eq!(cases.len(), 121);
     let mut steps = 0;
     for case in cases {
         let mut state = SliderPointerState::idle();
@@ -141,6 +146,7 @@ fn public_traces_verify_complete_pointer_state_and_effects() {
             steps += 1;
             let layout = case.layout(step);
             let current = resolve_slider_value(&step.current).unwrap();
+            let policy = step.value_policy.resolve();
             let control = case.region(&step.control);
             let target = match &step.event {
                 Event::Down { region, .. } => Some(case.region(region)),
@@ -167,6 +173,7 @@ fn public_traces_verify_complete_pointer_state_and_effects() {
                 Event::Refresh => SliderPointerEvent::Refresh,
             };
             let result = resolve_slider_pointer(SliderPointerInput {
+                value_policy: &policy,
                 state: &state,
                 current: &current,
                 revision: &step.revision,
@@ -226,7 +233,7 @@ fn public_traces_verify_complete_pointer_state_and_effects() {
         );
         assert!(commits <= 1, "{}: duplicate commit", case.name);
     }
-    assert_eq!(steps, 271);
+    assert_eq!(steps, 438);
 }
 #[test]
 fn malformed_points_fail_before_permission_identity_and_conflict_guards() {
@@ -236,6 +243,7 @@ fn malformed_points_fail_before_permission_identity_and_conflict_guards() {
     let control = case.region("control");
     let target = case.region("thumb");
     let state = resolve_slider_pointer(SliderPointerInput {
+        value_policy: &SliderValuePolicy::Continuous,
         state: &SliderPointerState::idle(),
         current: &current,
         revision: "r0",
@@ -275,6 +283,7 @@ fn malformed_points_fail_before_permission_identity_and_conflict_guards() {
                     },
                 ] {
                     let error = resolve_slider_pointer(SliderPointerInput {
+                        value_policy: &SliderValuePolicy::Continuous,
                         state: &state,
                         current: &current,
                         revision: "changed",
@@ -314,6 +323,7 @@ fn numeric_preview_errors_keep_ownership_until_explicit_abort() {
         SliderPointerEvent::RoutingAcquired { id: "press" },
     ] {
         state = resolve_slider_pointer(SliderPointerInput {
+            value_policy: &SliderValuePolicy::Continuous,
             state: &state,
             current: &current,
             revision: "r0",
@@ -330,6 +340,7 @@ fn numeric_preview_errors_keep_ownership_until_explicit_abort() {
     }
     let before = serde_json::to_value(&state).unwrap();
     let error = resolve_slider_pointer(SliderPointerInput {
+        value_policy: &SliderValuePolicy::Continuous,
         state: &state,
         current: &current,
         revision: "r0",
@@ -351,6 +362,7 @@ fn numeric_preview_errors_keep_ownership_until_explicit_abort() {
     assert!(std::error::Error::source(&error).is_some());
     assert_eq!(serde_json::to_value(&state).unwrap(), before);
     let result = resolve_slider_pointer(SliderPointerInput {
+        value_policy: &SliderValuePolicy::Continuous,
         state: &state,
         current: &current,
         revision: "r0",
@@ -388,6 +400,7 @@ fn unrepresentable_track_center_fails_even_when_starting_unavailable() {
     let region = resolve_hit_region_source(&request.to_string()).unwrap();
     for (enabled, read_only) in [(true, false), (false, false), (true, true), (false, true)] {
         let error = resolve_slider_pointer(SliderPointerInput {
+            value_policy: &SliderValuePolicy::Continuous,
             state: &SliderPointerState::idle(),
             current: layout.value(),
             revision: "r0",
@@ -433,6 +446,7 @@ fn overflowing_grab_displacement_requires_abort_without_partial_preview() {
         SliderPointerEvent::RoutingAcquired { id: "press" },
     ] {
         state = resolve_slider_pointer(SliderPointerInput {
+            value_policy: &SliderValuePolicy::Continuous,
             state: &state,
             current: layout.value(),
             revision: "r0",
@@ -449,6 +463,7 @@ fn overflowing_grab_displacement_requires_abort_without_partial_preview() {
     }
     let before = serde_json::to_value(&state).unwrap();
     let error = resolve_slider_pointer(SliderPointerInput {
+        value_policy: &SliderValuePolicy::Continuous,
         state: &state,
         current: layout.value(),
         revision: "r0",
@@ -469,6 +484,7 @@ fn overflowing_grab_displacement_requires_abort_without_partial_preview() {
     assert!(matches!(error, SliderPointerError::Anchor(_)));
     assert_eq!(serde_json::to_value(&state).unwrap(), before);
     let result = resolve_slider_pointer(SliderPointerInput {
+        value_policy: &SliderValuePolicy::Continuous,
         state: &state,
         current: layout.value(),
         revision: "r0",

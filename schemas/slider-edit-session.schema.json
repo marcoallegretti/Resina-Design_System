@@ -5,7 +5,8 @@
     "schemaVersion",
     "revision",
     "baseline",
-    "preview"
+    "preview",
+    "valuePolicy"
   ],
   "properties": {
     "schemaVersion": {
@@ -20,6 +21,9 @@
     },
     "preview": {
       "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    },
+    "valuePolicy": {
+      "$ref": "urn:resina:schema:slider-value-policy:0.1.0"
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",

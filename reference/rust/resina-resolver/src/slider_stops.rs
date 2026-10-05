@@ -5,13 +5,33 @@ use crate::{
 };
 use resina_model::SliderValue;
 use serde::{Deserialize, Serialize};
-use std::{cmp::Ordering, fmt};
+use std::{cmp::Ordering, fmt, sync::Arc};
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
 pub struct SliderStops {
     schema_version: &'static str,
-    values: Vec<SliderValueIr>,
+    values: Arc<[SliderValueIr]>,
+}
+
+impl PartialEq for SliderStops {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.values, &other.values) || self.values == other.values
+    }
+}
+impl Serialize for SliderStops {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        #[derive(Serialize)]
+        #[serde(rename_all = "camelCase")]
+        struct View<'a> {
+            schema_version: &'static str,
+            values: &'a [SliderValueIr],
+        }
+        View {
+            schema_version: self.schema_version,
+            values: &self.values,
+        }
+        .serialize(serializer)
+    }
 }
 
 #[derive(Debug)]
@@ -103,7 +123,7 @@ impl SliderStops {
         }
         Ok(Self {
             schema_version: "0.1.0",
-            values,
+            values: values.into(),
         })
     }
     pub fn values(&self) -> &[SliderValueIr] {
@@ -112,6 +132,15 @@ impl SliderStops {
     fn search(&self, value: f64) -> Result<usize, usize> {
         self.values
             .binary_search_by(|stop| stop.value().value().partial_cmp(&value).unwrap())
+    }
+    pub(crate) fn current_index(&self, current: &SliderValueIr) -> Result<usize, SliderStopsError> {
+        let bounds = self.values[0].value();
+        let value = current.value();
+        if value.minimum() != bounds.minimum() || value.maximum() != bounds.maximum() {
+            return Err(SliderStopsError::CurrentBounds);
+        }
+        self.search(value.value())
+            .map_err(|_| SliderStopsError::CurrentNotAllowed)
     }
 }
 
@@ -183,14 +212,7 @@ pub fn resolve_slider_stop_adjustment(
 ) -> Result<SliderAdjustmentIr, SliderStopsError> {
     let values = &input.stops.values;
     let bounds = values[0].value();
-    let current = input.current.value();
-    if current.minimum() != bounds.minimum() || current.maximum() != bounds.maximum() {
-        return Err(SliderStopsError::CurrentBounds);
-    }
-    let index = input
-        .stops
-        .search(current.value())
-        .map_err(|_| SliderStopsError::CurrentNotAllowed)?;
+    let index = input.stops.current_index(input.current)?;
     let last = values.len() - 1;
     let target = match input.adjustment {
         SliderStopAdjustment::SetValue(value) | SliderStopAdjustment::Nearest { value, .. } => {

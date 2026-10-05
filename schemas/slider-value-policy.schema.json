@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-value-policy:0.1.0",
+  "description": "Explicit value policy retained by a checked slider edit session.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "continuous"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "stops",
+        "tieBreak"
+      ],
+      "properties": {
+        "kind": {
+          "const": "stops"
+        },
+        "stops": {
+          "$ref": "urn:resina:schema:slider-stops-ir:0.1.0"
+        },
+        "tieBreak": {
+          "enum": [
+            "lower",
+            "higher"
+          ]
+        }
+      }
+    }
+  ]
+}

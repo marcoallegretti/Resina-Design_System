@@ -97,7 +97,8 @@
                 "enabled",
                 "readOnly",
                 "routing",
-                "event"
+                "event",
+                "valuePolicy"
               ],
               "properties": {
                 "current": {
@@ -330,8 +331,12 @@
                     "incoherentLayout",
                     "hit",
                     "anchor",
-                    "edit"
+                    "edit",
+                    "valuePolicy"
                   ]
+                },
+                "valuePolicy": {
+                  "$ref": "urn:resina:schema:slider-value-policy-fixture:0.1.0"
                 }
               },
               "oneOf": [

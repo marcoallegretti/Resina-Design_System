@@ -1,7 +1,8 @@
 use crate::{
     CaptureChange, HitRegionError, HitRegionIr, SliderAdjustmentIr, SliderAnchorError,
     SliderEditAction, SliderEditError, SliderEditInput, SliderEditResult, SliderEditSession,
-    SliderLayoutIr, SliderPointerAnchor, SliderValueIr, resolve_slider_edit,
+    SliderLayoutIr, SliderPointerAnchor, SliderStopsError, SliderValueIr, SliderValuePolicy,
+    resolve_slider_edit,
 };
 use resina_model::PhysicalVector;
 use serde::{Deserialize, Serialize};
@@ -114,6 +115,7 @@ pub struct SliderPointerInput<'a> {
     pub state: &'a SliderPointerState,
     pub current: &'a SliderValueIr,
     pub revision: &'a str,
+    pub value_policy: &'a SliderValuePolicy,
     pub layout: &'a SliderLayoutIr,
     pub control_region: &'a HitRegionIr,
     pub enabled: bool,
@@ -174,6 +176,7 @@ pub enum SliderPointerError {
     Hit(HitRegionError),
     Anchor(SliderAnchorError),
     Edit(SliderEditError),
+    ValuePolicy(SliderStopsError),
 }
 impl fmt::Display for SliderPointerError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -193,6 +196,7 @@ impl fmt::Display for SliderPointerError {
             Self::Hit(error) => write!(f, "slider pointer: {error}"),
             Self::Anchor(error) => write!(f, "slider pointer: {error}"),
             Self::Edit(error) => write!(f, "slider pointer: {error}"),
+            Self::ValuePolicy(error) => write!(f, "slider pointer policy: {error}"),
         }
     }
 }
@@ -202,6 +206,7 @@ impl std::error::Error for SliderPointerError {
             Self::Hit(error) => Some(error),
             Self::Anchor(error) => Some(error),
             Self::Edit(error) => Some(error),
+            Self::ValuePolicy(error) => Some(error),
             _ => None,
         }
     }
@@ -233,6 +238,7 @@ fn preview(
         session: &hold.edit,
         current: input.current,
         revision: input.revision,
+        value_policy: input.value_policy,
         enabled: input.enabled,
         read_only: input.read_only,
         action: SliderEditAction::Preview {
@@ -289,6 +295,12 @@ pub fn resolve_slider_pointer(
         }
         inside = region.contains(point).map_err(SliderPointerError::Hit)?;
     }
+    if input.state.hold.is_none() {
+        input
+            .value_policy
+            .validate_current(input.current)
+            .map_err(SliderPointerError::ValuePolicy)?;
+    }
     let mut result = SliderPointerResult {
         schema_version: "0.1.0",
         state: input.state.clone(),
@@ -312,7 +324,10 @@ pub fn resolve_slider_pointer(
         {
             return Ok(close(&input, SliderPointerOutcome::Cancelled));
         }
-        if input.revision != hold.edit.revision() || input.current != hold.edit.baseline() {
+        if input.revision != hold.edit.revision()
+            || input.current != hold.edit.baseline()
+            || input.value_policy != hold.edit.value_policy()
+        {
             return Ok(close(&input, SliderPointerOutcome::Conflict));
         }
         if !input.enabled || input.read_only {
@@ -389,6 +404,7 @@ pub fn resolve_slider_pointer(
                         .expect("live preview must retain its session"),
                     current: input.current,
                     revision: input.revision,
+                    value_policy: input.value_policy,
                     enabled: input.enabled,
                     read_only: input.read_only,
                     action: SliderEditAction::Commit,
@@ -427,7 +443,7 @@ pub fn resolve_slider_pointer(
             control_region: *input.control_region,
             target_region: *region,
             anchor,
-            edit: SliderEditSession::begin(input.current, input.revision)
+            edit: SliderEditSession::begin(input.current, input.revision, input.value_policy)
                 .map_err(SliderPointerError::Edit)?,
         };
         let edit = preview(&input, &hold, point)?;

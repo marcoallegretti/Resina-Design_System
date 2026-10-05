@@ -9,7 +9,8 @@ completion and cancellation. It does not execute product code or native protocol
 ## Inputs and ownership
 
 Each delivery supplies immutable current controller state, checked current
-committed value, a nonempty current revision, checked current visible layout,
+committed value, explicit [value policy](67-slider-value-policy.md), a nonempty
+current revision, checked current visible layout,
 current checked control hit region, live enabled/readOnly flags, explicit routing
 capability and one event. Layout contains the visible preview while held and the
 committed value when starting from idle. Revision follows spec63 and also changes
