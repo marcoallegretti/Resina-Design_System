@@ -159,3 +159,8 @@ track and thumb within an explicit outer allocation for both axes, RTL and
 explicit numeric endpoint placement. Geometry uses checked bounded value progress
 and exact containment; material paint, targets and full gestures remain separate
 component obligations.
+
+[Slider position mapping](spec/62-slider-position.md) maps an explicit thumb
+origin through current allocation and numeric bounds with live adjustment
+permission. Stationary origins preserve exact values; unrepresentable movement
+fails diagnostically. Native coordinate conversion and capture remain required.

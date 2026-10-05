@@ -1,5 +1,8 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_position;
+pub use slider_position::{SliderPositionError, SliderPositionInput, resolve_slider_position};
+
 mod slider_layout;
 pub use slider_layout::{
     SliderLayoutError, SliderLayoutInput, SliderLayoutIr, SliderMinimumPosition,

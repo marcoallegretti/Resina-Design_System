@@ -216,6 +216,7 @@ def main():
         "schemas/slider-accessibility-case.schema.json",
         "schemas/slider-layout-ir.schema.json",
         "schemas/slider-layout-cases.schema.json",
+        "schemas/slider-position-cases.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -1949,6 +1950,22 @@ def main():
         checked += 1
     check_case(slider_geometry_validator, "slider layout backend leakage",
                dict(slider_geometry, renderer="native"), False)
+    checked += 1
+    slider_position = load_json(ROOT / "conformance/interaction/slider-position-cases.json")
+    slider_position_validator = validator_for("schemas/slider-position-cases.schema.json")
+    check_case(slider_position_validator, "slider position matrix", slider_position, True)
+    names = [case["name"] for case in slider_position["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider position case")
+    checked += 1 + len(names)
+    for field in slider_position["cases"][0]["input"]:
+        incomplete = copy.deepcopy(slider_position)
+        incomplete["cases"][0]["input"].pop(field)
+        check_case(slider_position_validator, f"missing slider position {field}", incomplete, False)
+        checked += 1
+    leaked = copy.deepcopy(slider_position)
+    leaked["cases"][0]["input"]["renderer"] = "native"
+    check_case(slider_position_validator, "slider position backend leakage", leaked, False)
     checked += 1
     toggle_travel = load_json(ROOT / "conformance/motion/toggle-travel-cases.json")
     check_case(validator_for("schemas/toggle-travel-cases.schema.json"), "toggle travel matrix", toggle_travel, True)

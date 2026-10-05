@@ -113,7 +113,11 @@ fn half(extent: f64) -> Result<f64, SliderLayoutError> {
 fn centered(origin: f64, space: f64, extent: f64) -> Result<f64, SliderLayoutError> {
     add(origin, half(subtract(space, extent)?)?)
 }
-fn interpolate(minimum: f64, maximum: f64, progress: f64) -> Result<f64, SliderLayoutError> {
+pub(crate) fn interpolate(
+    minimum: f64,
+    maximum: f64,
+    progress: f64,
+) -> Result<f64, SliderLayoutError> {
     if progress == 0.0 {
         return Ok(minimum);
     }
