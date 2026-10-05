@@ -77,6 +77,16 @@ jobs:
       - run: python -m pip install -r tools/requirements-render.txt
       - run: python -m unittest discover -s tools -p 'test_*.py'
       - run: cargo build -p resina-resolver --bins --locked
+      - name: Check compiled Slint runtime publication
+        shell: bash
+        env:
+          RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
+        run: |
+          python tools/material_scenarios.py -- target/debug/resina-theme-resolve${{ matrix.executableSuffix }} - > target/material-scenes.json
+          cargo fmt --manifest-path backends/slint/resina-slint-runtime/Cargo.toml -- --check
+          cargo test --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --no-default-features --locked
+          cargo test --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --features testing --locked
+          cargo clippy --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --all-targets --features testing --locked -- -D warnings
       - run: cargo build -p resina-tokens --bins --locked
       - run: cargo build -p resina-motion --bins --locked
       - run: cargo build -p resina-svg --bins --locked

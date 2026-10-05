@@ -86,4 +86,10 @@ python tools/check_slint_paint_runtime.py --backend target/debug/resina-paint-sl
 
 It compiles the actual emitted components and captures all 16 authored light/dark material scenes at scales 0.5, 1, 1.25 and 2, plus one resized container. It independently derives prepared bounds from resolved IR and composites a separately rasterized reference over each scene's authored surrounding color. Every pixel must retain opaque alpha and agree in RGB within one byte of compositing rounding. Missing paint, clipped or shifted regions, incorrect pigment, dimensions, diagnostics and timeouts fail. Linux CI uses the digest-verified pinned viewer and saves the captures. Rust tests separately decode embedded pixels, preserve deterministic output, exercise fractional and negative placement, and reject malformed requests and unsupported preparation.
 
-This is a static source preparation and software capture contract. It proves neither compiled application image loading nor GPU rendering, dynamic publication, input, text, motion or application accessibility. Those need their own integration evidence. Prepare outside frame handling; source generation and toolkit compilation are not an interactive rendering path. The native availability limitations documented above still apply.
+This is a static source preparation and software capture contract. For compiled
+applications, the separate [runtime adapter](../resina-slint-runtime/README.md)
+publishes shared pixels and geometry without generating or compiling source for
+each change. GPU rendering, input, text, motion and application accessibility
+need their own integration evidence. Prepare outside frame handling; source
+generation and toolkit compilation are not an interactive rendering path. The
+native availability limitations documented above still apply.

@@ -1,0 +1,19 @@
+[package]
+name = "resina-slint-runtime"
+version = "0.1.0"
+edition = "2024"
+description = "Runtime Slint image publication of validated Resina surface paint"
+
+[workspace]
+
+[features]
+testing = ["slint/renderer-software"]
+
+[dependencies]
+slint = { git = "https://github.com/slint-ui/slint", rev = "372cf0ee5577c3dfec309a45e7b778ba4e81b734", default-features = false, features = ["std", "compat-1-2"] }
+resina-model = { path = "../../../reference/rust/resina-model" }
+resina-resolver = { path = "../../../reference/rust/resina-resolver" }
+resina-raster = { path = "../../cpu/resina-raster", default-features = false }
+
+[dev-dependencies]
+serde_json = { version = "1", features = ["float_roundtrip"] }
