@@ -1,0 +1,900 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "idle 00000",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 00001",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 00010",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 00011",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 00100",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 00101",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 00110",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 00111",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 01000",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 01001",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 01010",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 01011",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 01100",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 01101",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 01110",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "disabled"
+        ]
+      }
+    },
+    {
+      "name": "idle 01111",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": false,
+      "readOnly": true,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 10000",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      }
+    },
+    {
+      "name": "idle 10001",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": true,
+      "error": "unfocusedKeyHold"
+    },
+    {
+      "name": "idle 10010",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover"
+        ]
+      }
+    },
+    {
+      "name": "idle 10011",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": true,
+      "error": "unfocusedKeyHold"
+    },
+    {
+      "name": "idle 10100",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest",
+          "focused"
+        ]
+      }
+    },
+    {
+      "name": "idle 10101",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "idle 10110",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused"
+        ]
+      }
+    },
+    {
+      "name": "idle 10111",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": true,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "idle 11000",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest"
+        ]
+      }
+    },
+    {
+      "name": "idle 11001",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 11010",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover"
+        ]
+      }
+    },
+    {
+      "name": "idle 11011",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 11100",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "rest",
+          "focused"
+        ]
+      }
+    },
+    {
+      "name": "idle 11101",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "idle 11110",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused"
+        ]
+      }
+    },
+    {
+      "name": "idle 11111",
+      "pointerTrace": null,
+      "stepIndex": null,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": true,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "pending thumb focus0 hover0",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "pending thumb focus0 hover1",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "pending thumb focus1 hover0",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "pending thumb focus1 hover1",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "pending thumb disabled stale hold",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 0,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "pending thumb read-only stale hold",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "pending thumb simultaneous held key",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "acquired thumb focus0 hover0",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 2,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired thumb focus0 hover1",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 2,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired thumb focus1 hover0",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 2,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired thumb focus1 hover1",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 2,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired thumb disabled stale hold",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 2,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "acquired thumb read-only stale hold",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 2,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "acquired thumb simultaneous held key",
+      "pointerTrace": "horizontal ltr start captured thumb",
+      "stepIndex": 2,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "release-only track focus0 hover0",
+      "pointerTrace": "horizontal ltr start track release alternative",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "release-only track focus0 hover1",
+      "pointerTrace": "horizontal ltr start track release alternative",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "release-only track focus1 hover0",
+      "pointerTrace": "horizontal ltr start track release alternative",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "release-only track focus1 hover1",
+      "pointerTrace": "horizontal ltr start track release alternative",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "release-only track disabled stale hold",
+      "pointerTrace": "horizontal ltr start track release alternative",
+      "stepIndex": 0,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "release-only track read-only stale hold",
+      "pointerTrace": "horizontal ltr start track release alternative",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "release-only track simultaneous held key",
+      "pointerTrace": "horizontal ltr start track release alternative",
+      "stepIndex": 0,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed"
+        ]
+      }
+    },
+    {
+      "name": "acquired track focus0 hover0",
+      "pointerTrace": "horizontal ltr start captured track",
+      "stepIndex": 1,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired track focus0 hover1",
+      "pointerTrace": "horizontal ltr start captured track",
+      "stepIndex": 1,
+      "enabled": true,
+      "readOnly": false,
+      "focused": false,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired track focus1 hover0",
+      "pointerTrace": "horizontal ltr start captured track",
+      "stepIndex": 1,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired track focus1 hover1",
+      "pointerTrace": "horizontal ltr start captured track",
+      "stepIndex": 1,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": true,
+      "keyPressed": false,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "hover",
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      }
+    },
+    {
+      "name": "acquired track disabled stale hold",
+      "pointerTrace": "horizontal ltr start captured track",
+      "stepIndex": 1,
+      "enabled": false,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "acquired track read-only stale hold",
+      "pointerTrace": "horizontal ltr start captured track",
+      "stepIndex": 1,
+      "enabled": true,
+      "readOnly": true,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": false,
+      "error": "unavailableHold"
+    },
+    {
+      "name": "acquired track simultaneous held key",
+      "pointerTrace": "horizontal ltr start captured track",
+      "stepIndex": 1,
+      "enabled": true,
+      "readOnly": false,
+      "focused": true,
+      "hovered": false,
+      "keyPressed": true,
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      }
+    }
+  ]
+}

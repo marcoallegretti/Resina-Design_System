@@ -196,3 +196,7 @@ headless evidence. Native keyboard and assistive routing remain required.
 [Slider value presentation](spec/69-slider-presentation.md) pairs checked committed
 and visible values, keeps preview semantics coherent, and adopts keyboard or
 semantic adjustments against the product baseline with live permission checks.
+
+[Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
+hover, keyboard press and pointer manipulation without treating read-only as
+disabled or release-only clicks as continuous dragging.

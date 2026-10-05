@@ -6,7 +6,10 @@ use resina_resolver::{
     SliderPointerRouting, SliderPointerState, SliderPointerTarget, resolve_hit_region_source,
     resolve_slider_layout, resolve_slider_pointer, resolve_slider_value,
 };
-use resina_resolver::{SliderPresentation, SliderValuePolicy};
+use resina_resolver::{
+    SliderPresentation, SliderStatesError, SliderStatesInput, SliderValuePolicy,
+    resolve_slider_states,
+};
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -271,12 +274,17 @@ fn keyboard_commit_closes_pending_and_acquired_pointer_edits_before_stale_layout
 #[test]
 fn public_traces_verify_complete_pointer_state_and_effects() {
     let cases = corpus();
+    let state_cases: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/slider-states-cases.json"
+    ))
+    .unwrap();
+    let mut verified_states = 0;
     assert_eq!(cases.len(), 121);
     let mut steps = 0;
     for case in cases {
         let mut state = SliderPointerState::idle();
         let mut commits = 0;
-        for step in &case.steps {
+        for (step_index, step) in case.steps.iter().enumerate() {
             steps += 1;
             let layout = case.layout(step);
             let current = resolve_slider_value(&step.current).unwrap();
@@ -358,6 +366,81 @@ fn public_traces_verify_complete_pointer_state_and_effects() {
                 assert_eq!(presentation.committed(), &current);
                 assert_eq!(presentation.visible(), result.preview());
                 assert!(presentation.editing());
+                let projected = resolve_slider_states(SliderStatesInput {
+                    presentation: &presentation,
+                    pointer: result.state(),
+                    enabled: step.enabled,
+                    read_only: step.read_only,
+                    focused: false,
+                    hovered: false,
+                    key_pressed: false,
+                })
+                .unwrap();
+                let signals = if expected["state"]["hold"]["phase"] == "acquired" {
+                    vec!["pressed", "dragging"]
+                } else {
+                    vec!["pressed"]
+                };
+                assert_eq!(
+                    serde_json::to_value(projected).unwrap(),
+                    serde_json::json!({"schemaVersion":"0.1.0", "states":signals})
+                );
+                let idle_presentation =
+                    SliderPresentation::try_new(&current, &step.revision, &policy, None).unwrap();
+                assert!(matches!(
+                    resolve_slider_states(SliderStatesInput {
+                        presentation: &idle_presentation,
+                        pointer: result.state(),
+                        enabled: true,
+                        read_only: false,
+                        focused: false,
+                        hovered: false,
+                        key_pressed: false,
+                    }),
+                    Err(SliderStatesError::IncoherentPresentation)
+                ));
+                let stale_presentation =
+                    SliderPresentation::try_new(&current, "different revision", &policy, None)
+                        .unwrap();
+                assert!(matches!(
+                    resolve_slider_states(SliderStatesInput {
+                        presentation: &stale_presentation,
+                        pointer: result.state(),
+                        enabled: false,
+                        read_only: true,
+                        focused: false,
+                        hovered: false,
+                        key_pressed: false,
+                    }),
+                    Err(SliderStatesError::Presentation(_))
+                ));
+                for vector in state_cases["cases"].as_array().unwrap() {
+                    if vector["pointerTrace"] != case.name || vector["stepIndex"] != step_index {
+                        continue;
+                    }
+                    let result = resolve_slider_states(SliderStatesInput {
+                        presentation: &presentation,
+                        pointer: result.state(),
+                        enabled: vector["enabled"].as_bool().unwrap(),
+                        read_only: vector["readOnly"].as_bool().unwrap(),
+                        focused: vector["focused"].as_bool().unwrap(),
+                        hovered: vector["hovered"].as_bool().unwrap(),
+                        key_pressed: vector["keyPressed"].as_bool().unwrap(),
+                    });
+                    if let Some(error) = vector["error"].as_str() {
+                        let actual = match result.unwrap_err() {
+                            SliderStatesError::UnavailableHold => "unavailableHold",
+                            error => panic!("unexpected state error: {error}"),
+                        };
+                        assert_eq!(actual, error);
+                    } else {
+                        assert_eq!(
+                            serde_json::to_value(result.unwrap()).unwrap(),
+                            vector["expected"]
+                        );
+                    }
+                    verified_states += 1;
+                }
             }
             assert_eq!(
                 result.commit().is_some(),
@@ -384,6 +467,15 @@ fn public_traces_verify_complete_pointer_state_and_effects() {
         assert!(commits <= 1, "{}: duplicate commit", case.name);
     }
     assert_eq!(steps, 438);
+    assert_eq!(
+        verified_states,
+        state_cases["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|case| !case["pointerTrace"].is_null())
+            .count()
+    );
 }
 #[test]
 fn malformed_points_fail_before_permission_identity_and_conflict_guards() {

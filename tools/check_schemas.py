@@ -225,6 +225,7 @@ def main():
         "schemas/slider-key-cases.schema.json",
         "schemas/slider-presentation.schema.json",
         "schemas/slider-presentation-cases.schema.json",
+        "schemas/slider-states-cases.schema.json",
         "schemas/slider-edit-result.schema.json",
         "schemas/slider-edit-cases.schema.json",
         "schemas/slider-anchor-cases.schema.json",
@@ -1985,6 +1986,36 @@ def main():
     check_case(slider_position_validator, "slider position backend leakage", leaked, False)
     checked += 1
     slider_edits = load_json(ROOT / "conformance/interaction/slider-edit-cases.json")
+    slider_states = load_json(ROOT / "conformance/interaction/slider-states-cases.json")
+    states_validator = validator_for("schemas/slider-states-cases.schema.json")
+    check_case(states_validator, "slider state cases", slider_states, True)
+    names = [case["name"] for case in slider_states["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider state case")
+    state_pointer_traces = {case["name"]: case for case in
+                            load_json(ROOT / "conformance/interaction/slider-pointer-cases.json")["cases"]}
+    for case in slider_states["cases"]:
+        if case["pointerTrace"] is not None:
+            step = state_pointer_traces[case["pointerTrace"]]["steps"][case["stepIndex"]]
+            if step.get("expected", {}).get("state", {}).get("hold") is None:
+                raise ValueError(f"slider state case needs an open pointer hold: {case['name']}")
+    checked += 1 + len(slider_states["cases"])
+    for field in slider_states["cases"][0]:
+        incomplete = copy.deepcopy(slider_states)
+        incomplete["cases"][0].pop(field)
+        check_case(states_validator, f"missing slider state {field}", incomplete, False)
+        checked += 1
+    for name, changes in [
+        ("state permission must be explicit boolean", [{"path": "/cases/0/enabled", "value": "true"}]),
+        ("state trace requires step", [{"path": "/cases/0/pointerTrace", "value": "trace"}]),
+        ("state cannot invent read-only signal", [{"path": "/cases/0/expected/states/0", "value": "readOnly"}]),
+    ]:
+        check_case(states_validator, name, apply_changes(slider_states, changes), False)
+        checked += 1
+    leaked = copy.deepcopy(slider_states)
+    leaked["cases"][0]["renderer"] = "native"
+    check_case(states_validator, "slider state backend leakage", leaked, False)
+    checked += 1
     presentations = load_json(ROOT / "conformance/interaction/slider-presentation-cases.json")
     check_case(validator_for("schemas/slider-presentation-cases.schema.json"),
                "slider presentation cases", presentations, True)

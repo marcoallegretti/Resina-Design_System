@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-states-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "pointerTrace",
+          "stepIndex",
+          "enabled",
+          "readOnly",
+          "focused",
+          "hovered",
+          "keyPressed"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pointerTrace": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "stepIndex": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "readOnly": {
+            "type": "boolean"
+          },
+          "focused": {
+            "type": "boolean"
+          },
+          "hovered": {
+            "type": "boolean"
+          },
+          "keyPressed": {
+            "type": "boolean"
+          },
+          "expected": {
+            "$ref": "urn:resina:schema:state-set:0.1.0"
+          },
+          "error": {
+            "enum": [
+              "unavailableHold",
+              "unfocusedKeyHold"
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "expected"
+            ],
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          },
+          {
+            "required": [
+              "error"
+            ],
+            "not": {
+              "required": [
+                "expected"
+              ]
+            }
+          }
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "pointerTrace": {
+                  "type": "null"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "stepIndex": {
+                  "type": "null"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "stepIndex": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

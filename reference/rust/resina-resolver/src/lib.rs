@@ -1,5 +1,8 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_states;
+pub use slider_states::{SliderStatesError, SliderStatesInput, resolve_slider_states};
+
 mod slider_presentation;
 pub use slider_presentation::{
     SliderPresentation, SliderPresentationCommitInput, SliderPresentationError,
