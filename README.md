@@ -202,6 +202,11 @@ and thumb responses for dragging and read-only feedback, with independent focus
 and strict state coherence. Public coefficients are arithmetic fixtures; complete
 paint and visual calibration remain required.
 
+[Bounded background contrast](spec/72-bounded-background-contrast.md) gives a
+conservative contrast bound across checked opaque sRGB channel ranges, including
+interior luminance crossings. Actual background coverage remains the producer's
+responsibility.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.

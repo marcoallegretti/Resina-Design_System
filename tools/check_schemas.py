@@ -180,6 +180,8 @@ def main():
         "schemas/command-appearance.schema.json",
         "schemas/slider-appearance.schema.json",
         "schemas/slider-phase-cases.schema.json",
+        "schemas/opaque-srgb-range.schema.json",
+        "schemas/contrast-range-cases.schema.json",
         "schemas/command-paint-request.schema.json",
         "schemas/command-body-ir.schema.json",
         "schemas/command-paint-ir.schema.json",
@@ -363,6 +365,25 @@ def main():
     check_case(material_scene_schema, "unknown scene manifest field", {**material_scenes, "extra": True}, False)
 
     command_request = load_json(ROOT / "conformance/ir/command-paint-request.json")
+    contrast_range_cases = load_json(ROOT / "conformance/color/contrast-range-cases.json")
+    contrast_range_case_schema = validator_for("schemas/contrast-range-cases.schema.json")
+    contrast_range_schema = validator_for("schemas/opaque-srgb-range.schema.json")
+    check_case(contrast_range_case_schema, "bounded contrast records", contrast_range_cases, True)
+    if len({case["name"] for case in contrast_range_cases}) != len(contrast_range_cases):
+        raise ValueError("duplicate bounded contrast case names")
+    for case in contrast_range_cases:
+        check_case(contrast_range_schema, case["name"], case["range"],
+                   case["range"]["lower"]["alpha"] == 1 and case["range"]["upper"]["alpha"] == 1)
+    for pointer, value in (("/lower/alpha", 0.5), ("/upper/alpha", 0.5),
+                           ("/lower/components/0", -0.1), ("/upper/components/2", 1.1),
+                           ("/lower/colorSpace", "display-p3")):
+        invalid = copy.deepcopy(contrast_range_cases[0]["range"])
+        replace_at_pointer(invalid, pointer, value)
+        check_case(contrast_range_schema, "invalid range bounds", invalid, False)
+    check_case(contrast_range_schema, "unknown range field",
+               {**contrast_range_cases[0]["range"], "extra": 0}, False)
+    check_case(contrast_range_schema, "missing range upper",
+               {"lower": contrast_range_cases[0]["range"]["lower"]}, False)
     slider_appearance = load_json(ROOT / "conformance/appearance/slider-appearance.json")
     slider_appearance_schema = validator_for("schemas/slider-appearance.schema.json")
     check_case(slider_appearance_schema, "slider arithmetic profiles", slider_appearance, True)
@@ -997,6 +1018,7 @@ def main():
 
     checked = (
         len(spring_cases) + 4
+        + len(contrast_range_cases) + 8
         + len(phase_cases) + 5 + 36 * 6
         + len(invalid_material_scenes) + 2
         + len(focus_ir_cases) + len(invalid_focus_ir_results)

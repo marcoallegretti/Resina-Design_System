@@ -1,0 +1,629 @@
+[
+  {
+    "name": "black over white uniform",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 21.0
+  },
+  {
+    "name": "white over black uniform",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 21.0
+  },
+  {
+    "name": "interior crossing despite contrasting endpoints",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1,
+          0.1,
+          0.1
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9,
+          0.9,
+          0.9
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 1.0
+  },
+  {
+    "name": "foreground below entire interval",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.4,
+          0.4,
+          0.4
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8,
+          0.8,
+          0.8
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 3.6573664310763596
+  },
+  {
+    "name": "foreground above entire interval",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1,
+          0.1,
+          0.1
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.3,
+          0.3,
+          0.3
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 8.520033235562218
+  },
+  {
+    "name": "identical gray bounds",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 1.0
+  },
+  {
+    "name": "black below transfer boundary",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.04045,
+          0.04045,
+          0.04045
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.04046,
+          0.04046,
+          0.04046
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 1.0626160990712075
+  },
+  {
+    "name": "white above transfer boundary",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.04045,
+          0.04045,
+          0.04045
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.04046,
+          0.04046,
+          0.04046
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 19.76225273944577
+  },
+  {
+    "name": "red foreground crosses green luminance without channel inclusion",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0,
+          0.9,
+          0.0
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 1.0
+  },
+  {
+    "name": "white over red channel interval",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2,
+          0.0,
+          0.0
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 3.9984767707539985
+  },
+  {
+    "name": "blue uniform uses unequal weights",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 2.148936170212766
+  },
+  {
+    "name": "colored lift bound",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.05,
+        0.02,
+        0.01
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.4,
+          0.5,
+          0.6
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.52,
+          0.6,
+          0.68
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 4.890964682182195
+  },
+  {
+    "name": "whole gamut includes every foreground luminance",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.2,
+        0.7,
+        0.1
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "alpha": 1.0
+      }
+    },
+    "expected": 1.0
+  },
+  {
+    "name": "translucent foreground",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 0.5
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1,
+          0.1,
+          0.1
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9,
+          0.9,
+          0.9
+        ],
+        "alpha": 1.0
+      }
+    },
+    "error": "foreground is translucent"
+  },
+  {
+    "name": "translucent lower",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1,
+          0.1,
+          0.1
+        ],
+        "alpha": 0.5
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9,
+          0.9,
+          0.9
+        ],
+        "alpha": 1.0
+      }
+    },
+    "error": "lower range bound must be opaque"
+  },
+  {
+    "name": "translucent upper",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1,
+          0.1,
+          0.1
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9,
+          0.9,
+          0.9
+        ],
+        "alpha": 0.5
+      }
+    },
+    "error": "upper range bound must be opaque"
+  },
+  {
+    "name": "inverted channel 0",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8,
+          0.1,
+          0.1
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2,
+          0.9,
+          0.9
+        ],
+        "alpha": 1.0
+      }
+    },
+    "error": "lower exceeds upper at sRGB channel 0"
+  },
+  {
+    "name": "inverted channel 1",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1,
+          0.8,
+          0.1
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9,
+          0.2,
+          0.9
+        ],
+        "alpha": 1.0
+      }
+    },
+    "error": "lower exceeds upper at sRGB channel 1"
+  },
+  {
+    "name": "inverted channel 2",
+    "foreground": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "range": {
+      "lower": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1,
+          0.1,
+          0.8
+        ],
+        "alpha": 1.0
+      },
+      "upper": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9,
+          0.9,
+          0.2
+        ],
+        "alpha": 1.0
+      }
+    },
+    "error": "lower exceeds upper at sRGB channel 2"
+  }
+]

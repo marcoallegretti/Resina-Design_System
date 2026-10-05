@@ -1,5 +1,8 @@
 mod contrast;
-pub use contrast::{ContrastError, opaque_contrast_ratio};
+pub use contrast::{
+    ContrastError, ContrastRangeError, OpaqueSrgbRange, opaque_contrast_over_range,
+    opaque_contrast_ratio,
+};
 
 mod fallback;
 pub use fallback::{

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:opaque-srgb-range:0.1.0",
+  "title": "Resina Opaque sRGB Range",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lower",
+    "upper"
+  ],
+  "properties": {
+    "lower": {
+      "allOf": [
+        {
+          "$ref": "urn:resina:schema:srgb-fallback:0.1.0"
+        },
+        {
+          "properties": {
+            "alpha": {
+              "const": 1
+            }
+          }
+        }
+      ]
+    },
+    "upper": {
+      "allOf": [
+        {
+          "$ref": "urn:resina:schema:srgb-fallback:0.1.0"
+        },
+        {
+          "properties": {
+            "alpha": {
+              "const": 1
+            }
+          }
+        }
+      ]
+    }
+  }
+}
