@@ -183,6 +183,7 @@ def main():
         "schemas/opaque-srgb-range.schema.json",
         "schemas/contrast-range-cases.schema.json",
         "schemas/common-contrast-cases.schema.json",
+        "schemas/opaque-paint-range-cases.schema.json",
         "schemas/command-paint-request.schema.json",
         "schemas/command-body-ir.schema.json",
         "schemas/command-paint-ir.schema.json",
@@ -368,6 +369,15 @@ def main():
     command_request = load_json(ROOT / "conformance/ir/command-paint-request.json")
     contrast_range_cases = load_json(ROOT / "conformance/color/contrast-range-cases.json")
     common_contrast_cases = load_json(ROOT / "conformance/color/common-contrast-cases.json")
+    paint_range_cases = load_json(ROOT / "conformance/ir/opaque-paint-range-cases.json")
+    paint_range_schema = validator_for("schemas/opaque-paint-range-cases.schema.json")
+    check_case(paint_range_schema, "opaque paint range cases", paint_range_cases, True)
+    for key, value in (("extra", 0), ("expectedCount", 1), ("body", [0, 0, 2])):
+        invalid = copy.deepcopy(paint_range_cases)
+        invalid[0][key] = value
+        check_case(paint_range_schema, "invalid opaque paint range record", invalid, False)
+    if len({case["name"] for case in paint_range_cases}) != len(paint_range_cases):
+        raise ValueError("duplicate opaque paint range case names")
     check_case(validator_for("schemas/common-contrast-cases.schema.json"),
                "common contrast cases", common_contrast_cases, True)
     for key, value in (("extra", 0), ("error", "insufficient"), ("backgrounds", [])):
@@ -1031,6 +1041,7 @@ def main():
         len(spring_cases) + 4
         + len(contrast_range_cases) + 8
         + len(common_contrast_cases) + 4
+        + len(paint_range_cases) + 4
         + len(phase_cases) + 5 + 36 * 6
         + len(invalid_material_scenes) + 2
         + len(focus_ir_cases) + len(invalid_focus_ir_results)

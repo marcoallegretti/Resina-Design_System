@@ -215,6 +215,10 @@ incompatible per-region candidates fail explicitly; uniform results stay compati
 common edge contrast inside Cast, Frost and Elastomer readability, preserving
 actual Frost legibility and capability fallbacks before publishing a result.
 
+[Opaque paint color coverage](spec/75-opaque-paint-color-ranges.md) derives separate
+flat regions and a conservative continuous-highlight range from resolved surface
+IR. It accounts for reference arithmetic; spatial adjacency remains explicit.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.

@@ -1,6 +1,7 @@
 use crate::{
     ExtrudedContourResult, FocusIndicatorIr, OpaqueSurfaceIr, PlacedContour, SrgbFallback,
 };
+use resina_color::OpaqueSrgbRange;
 use resina_model::{ContourSegment, PhysicalVector};
 use std::{fmt, sync::OnceLock};
 
@@ -24,6 +25,44 @@ impl fmt::Display for SurfacePaintError {
 impl std::error::Error for SurfacePaintError {}
 
 impl OpaqueSurfaceIr {
+    pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {
+        let uniform = |color: &SrgbFallback| {
+            OpaqueSrgbRange::try_new(color.clone(), color.clone())
+                .expect("resolved surface pigments and edge are opaque")
+        };
+        let mut ranges = vec![uniform(self.pigment().body()), uniform(self.edge().color())];
+        let offset = self.lighting().side_offset();
+        if offset.x != 0.0 || offset.y != 0.0 {
+            ranges.push(uniform(self.pigment().side()));
+        }
+        if self.highlight_width() > 0.0 && self.pigment().profile().highlight_lift() > 0.0 {
+            // Source-over has three rounded operations; both sample and endpoint
+            // errors fit within four epsilons. Round the enclosing bounds outward.
+            let margin = 4.0 * f64::EPSILON;
+            let lower = self
+                .pigment()
+                .body()
+                .components()
+                .map(|channel| (channel - margin).next_down().max(0.0));
+            let upper = self
+                .pigment()
+                .highlight()
+                .components()
+                .map(|channel| (channel + margin).next_up().min(1.0));
+            let color = |components| {
+                resina_color::resolve_srgb_fallback(&serde_json::json!({
+                    "colorSpace": "srgb", "components": components, "alpha": 1
+                }))
+                .expect("outward surface channel bounds are finite and in gamut")
+            };
+            ranges.push(
+                OpaqueSrgbRange::try_new(color(lower), color(upper))
+                    .expect("positive white lift orders opaque channel bounds"),
+            );
+        }
+        ranges
+    }
+
     pub fn sample_paint(
         &self,
         point: PhysicalVector,

@@ -1,0 +1,202 @@
+[
+  {
+    "name": "Cast square continuous highlight",
+    "family": "cast",
+    "body": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "sideShade": 0.1,
+    "highlightLift": 0.08,
+    "highlightWidth": 1,
+    "elevation": "raised",
+    "radius": 0,
+    "expectedCount": 4,
+    "expectedHighlight": [
+      0.31,
+      0.31,
+      0.31
+    ]
+  },
+  {
+    "name": "Frost chromatic rounded highlight",
+    "family": "frost",
+    "body": [
+      0.2,
+      0.4,
+      0.6
+    ],
+    "sideShade": 0.14,
+    "highlightLift": 0.18,
+    "highlightWidth": 1,
+    "elevation": "raised",
+    "radius": 4,
+    "expectedCount": 4,
+    "expectedHighlight": [
+      0.344,
+      0.508,
+      0.672
+    ]
+  },
+  {
+    "name": "Elastomer rounded highlight",
+    "family": "elastomer",
+    "body": [
+      0.2,
+      0.4,
+      0.6
+    ],
+    "sideShade": 0.25,
+    "highlightLift": 0.14,
+    "highlightWidth": 1,
+    "elevation": "raised",
+    "radius": 4,
+    "expectedCount": 4,
+    "expectedHighlight": [
+      0.312,
+      0.484,
+      0.656
+    ]
+  },
+  {
+    "name": "Gel black gamut boundary",
+    "family": "gel",
+    "body": [
+      0,
+      0,
+      0
+    ],
+    "sideShade": 0.18,
+    "highlightLift": 0.2,
+    "highlightWidth": 1,
+    "elevation": "raised",
+    "radius": 4,
+    "expectedCount": 4,
+    "expectedHighlight": [
+      0.2,
+      0.2,
+      0.2
+    ]
+  },
+  {
+    "name": "White gamut boundary",
+    "family": "cast",
+    "body": [
+      1,
+      1,
+      1
+    ],
+    "sideShade": 0.1,
+    "highlightLift": 0.08,
+    "highlightWidth": 1,
+    "elevation": "raised",
+    "radius": 4,
+    "expectedCount": 4,
+    "expectedHighlight": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "No highlight band",
+    "family": "cast",
+    "body": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "sideShade": 0.1,
+    "highlightLift": 0.08,
+    "highlightWidth": 0,
+    "elevation": "raised",
+    "radius": 0,
+    "expectedCount": 3,
+    "expectedHighlight": [
+      0.31,
+      0.31,
+      0.31
+    ]
+  },
+  {
+    "name": "No highlight modulation",
+    "family": "cast",
+    "body": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "sideShade": 0.1,
+    "highlightLift": 0,
+    "highlightWidth": 1,
+    "elevation": "raised",
+    "radius": 0,
+    "expectedCount": 3,
+    "expectedHighlight": [
+      0.25,
+      0.25,
+      0.25
+    ]
+  },
+  {
+    "name": "No side offset",
+    "family": "cast",
+    "body": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "sideShade": 0.1,
+    "highlightLift": 0.08,
+    "highlightWidth": 1,
+    "elevation": "base",
+    "radius": 0,
+    "expectedCount": 3,
+    "expectedHighlight": [
+      0.31,
+      0.31,
+      0.31
+    ]
+  },
+  {
+    "name": "Flat separated regions",
+    "family": "cast",
+    "body": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "sideShade": 0.1,
+    "highlightLift": 0.08,
+    "highlightWidth": 0,
+    "elevation": "base",
+    "radius": 0,
+    "expectedCount": 2,
+    "expectedHighlight": [
+      0.31,
+      0.31,
+      0.31
+    ]
+  },
+  {
+    "name": "Near-unit modulation",
+    "family": "elastomer",
+    "body": [
+      0,
+      0.5,
+      1
+    ],
+    "sideShade": 0.99,
+    "highlightLift": 0.999,
+    "highlightWidth": 1,
+    "elevation": "raised",
+    "radius": 4,
+    "expectedCount": 4,
+    "expectedHighlight": [
+      0.999,
+      0.9995,
+      1
+    ]
+  }
+]
