@@ -1,15 +1,20 @@
 use crate::{SliderLayoutIr, SliderMinimumPosition, SliderOrientation};
 use resina_environment::LayoutDirection;
 use resina_model::PhysicalVector;
+use serde::Serialize;
 use std::fmt;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SliderPointerAnchor {
     orientation: SliderOrientation,
     layout_direction: LayoutDirection,
     minimum_position: SliderMinimumPosition,
+    #[serde(rename = "mainExtent")]
     extent: f64,
+    #[serde(rename = "referencePointer")]
     pointer: f64,
+    #[serde(rename = "initialOrigin")]
     origin: f64,
 }
 
@@ -91,18 +96,7 @@ impl SliderPointerAnchor {
         point: PhysicalVector,
     ) -> Result<f64, SliderAnchorError> {
         let pointer = coordinate(self.orientation, point)?;
-        let bounds = layout.thumb_bounds();
-        let extent = match layout.orientation() {
-            SliderOrientation::Horizontal => bounds.width,
-            SliderOrientation::Vertical => bounds.height,
-        };
-        if layout.orientation() != self.orientation
-            || layout.layout_direction() != self.layout_direction
-            || layout.minimum_position() != self.minimum_position
-            || extent != self.extent
-        {
-            return Err(SliderAnchorError::IncompatibleLayout);
-        }
+        self.validate_layout(layout)?;
         if pointer == self.pointer {
             return Ok(self.origin);
         }
@@ -116,5 +110,21 @@ impl SliderPointerAnchor {
             return Err(SliderAnchorError::NumericRange);
         }
         Ok(desired)
+    }
+
+    pub(crate) fn validate_layout(&self, layout: &SliderLayoutIr) -> Result<(), SliderAnchorError> {
+        let bounds = layout.thumb_bounds();
+        let extent = match layout.orientation() {
+            SliderOrientation::Horizontal => bounds.width,
+            SliderOrientation::Vertical => bounds.height,
+        };
+        if layout.orientation() != self.orientation
+            || layout.layout_direction() != self.layout_direction
+            || layout.minimum_position() != self.minimum_position
+            || extent != self.extent
+        {
+            return Err(SliderAnchorError::IncompatibleLayout);
+        }
+        Ok(())
     }
 }

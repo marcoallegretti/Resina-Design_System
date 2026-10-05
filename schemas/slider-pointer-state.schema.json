@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-pointer-state:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "hold"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "hold": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "target",
+            "phase",
+            "controlRegion",
+            "targetRegion",
+            "anchor",
+            "edit"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target": {
+              "enum": [
+                "thumb",
+                "track"
+              ]
+            },
+            "phase": {
+              "enum": [
+                "pending",
+                "acquired",
+                "terminationOnly"
+              ]
+            },
+            "controlRegion": {
+              "$ref": "urn:resina:schema:hit-region-ir:0.1.0"
+            },
+            "targetRegion": {
+              "$ref": "urn:resina:schema:hit-region-ir:0.1.0"
+            },
+            "anchor": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "orientation",
+                "layoutDirection",
+                "minimumPosition",
+                "mainExtent",
+                "referencePointer",
+                "initialOrigin"
+              ],
+              "properties": {
+                "orientation": {
+                  "enum": [
+                    "horizontal",
+                    "vertical"
+                  ]
+                },
+                "layoutDirection": {
+                  "enum": [
+                    "ltr",
+                    "rtl"
+                  ]
+                },
+                "minimumPosition": {
+                  "enum": [
+                    "start",
+                    "end"
+                  ]
+                },
+                "mainExtent": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "referencePointer": {
+                  "type": "number"
+                },
+                "initialOrigin": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            "edit": {
+              "$ref": "urn:resina:schema:slider-edit-session:0.1.0"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

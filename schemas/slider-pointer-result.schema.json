@@ -1,0 +1,327 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-pointer-result:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "state",
+    "preview",
+    "commit",
+    "routing",
+    "outcome"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "state": {
+      "$ref": "urn:resina:schema:slider-pointer-state:0.1.0"
+    },
+    "preview": {
+      "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    },
+    "commit": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "urn:resina:schema:slider-adjustment-ir:0.1.0"
+        }
+      ]
+    },
+    "routing": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "acquire",
+                "release"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "ignored",
+        "armed",
+        "routingAcquired",
+        "previewed",
+        "committed",
+        "cancelled",
+        "unavailable",
+        "conflict",
+        "deliveryUnavailable",
+        "layoutChanged",
+        "targetChanged"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "committed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "null"
+              }
+            }
+          },
+          "commit": {
+            "$ref": "urn:resina:schema:slider-adjustment-ir:0.1.0",
+            "properties": {
+              "accepted": {
+                "const": true
+              }
+            }
+          },
+          "routing": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "id"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "release"
+                  },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "cancelled",
+              "unavailable",
+              "conflict",
+              "deliveryUnavailable",
+              "layoutChanged",
+              "targetChanged"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "null"
+              }
+            }
+          },
+          "commit": {
+            "type": "null"
+          },
+          "routing": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "id"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "release"
+                  },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "ignored"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "commit": {
+            "type": "null"
+          },
+          "routing": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "routingAcquired",
+              "previewed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "object",
+                "properties": {
+                  "phase": {
+                    "enum": [
+                      "acquired"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "commit": {
+            "type": "null"
+          },
+          "routing": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "armed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "properties": {
+              "hold": {
+                "type": "object",
+                "properties": {
+                  "phase": {
+                    "enum": [
+                      "pending",
+                      "terminationOnly"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "commit": {
+            "type": "null"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "properties": {
+                    "hold": {
+                      "type": "object",
+                      "properties": {
+                        "phase": {
+                          "enum": [
+                            "pending"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "routing": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "id"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "acquire"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "routing": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

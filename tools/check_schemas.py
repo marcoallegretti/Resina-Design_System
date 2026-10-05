@@ -221,6 +221,9 @@ def main():
         "schemas/slider-edit-result.schema.json",
         "schemas/slider-edit-cases.schema.json",
         "schemas/slider-anchor-cases.schema.json",
+        "schemas/slider-pointer-state.schema.json",
+        "schemas/slider-pointer-result.schema.json",
+        "schemas/slider-pointer-cases.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -2036,6 +2039,76 @@ def main():
             extra["cases"][0][path]["z"] = 0
         check_case(anchor_validator, name, extra, False)
         checked += 1
+    slider_pointers = load_json(ROOT / "conformance/interaction/slider-pointer-cases.json")
+    pointer_validator = validator_for("schemas/slider-pointer-cases.schema.json")
+    check_case(pointer_validator, "slider pointer traces", slider_pointers, True)
+    names = [case["name"] for case in slider_pointers["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider pointer trace")
+    for case in slider_pointers["cases"]:
+        for step in case["steps"]:
+            if step["layout"] not in case["layouts"] or step["control"] not in case["regions"]:
+                raise ValueError(f"unknown slider pointer fixture reference: {case['name']}")
+            if step["event"]["kind"] == "down" and step["event"]["region"] not in case["regions"]:
+                raise ValueError(f"unknown slider pointer target fixture: {case['name']}")
+    checked += 1 + sum(len(case["steps"]) for case in slider_pointers["cases"])
+    armed = slider_pointers["cases"][0]["steps"][0]["expected"]
+    pointer_result_validator = validator_for("schemas/slider-pointer-result.schema.json")
+    for field in armed:
+        missing = copy.deepcopy(armed)
+        missing.pop(field)
+        check_case(pointer_result_validator, f"missing slider pointer result {field}", missing, False)
+        checked += 1
+    for name, changes in [
+        ("armed pointer needs hold", [{"path": "/state/hold", "value": None}]),
+        ("pending pointer needs acquisition request", [{"path": "/routing", "value": None}]),
+        ("armed pointer cannot be acquired", [{"path": "/state/hold/phase", "value": "acquired"}]),
+        ("armed pointer cannot release", [{"path": "/routing/kind", "value": "release"}]),
+        ("held identity must not be empty", [{"path": "/state/hold/id", "value": ""}]),
+    ]:
+        check_case(pointer_result_validator, name, apply_changes(armed, changes), False)
+        checked += 1
+    completed = next(step["expected"] for step in slider_pointers["cases"][0]["steps"]
+                     if step.get("expected", {}).get("outcome") == "committed")
+    for name, changes in [
+        ("committed pointer must close", [{"path": "/state/hold", "value": armed["state"]["hold"]}]),
+        ("committed pointer needs intent", [{"path": "/commit", "value": None}]),
+        ("committed pointer needs accepted intent", [{"path": "/commit/accepted", "value": False},
+                                                   {"path": "/commit/changed", "value": False}]),
+        ("committed pointer cannot acquire", [{"path": "/routing/kind", "value": "acquire"}]),
+    ]:
+        check_case(pointer_result_validator, name, apply_changes(completed, changes), False)
+        checked += 1
+    check_case(pointer_result_validator, "armed pointer cannot commit",
+               dict(armed, commit=completed["commit"]), False)
+    checked += 1
+    previewed = next(step["expected"] for step in slider_pointers["cases"][0]["steps"]
+                     if step.get("expected", {}).get("outcome") == "previewed")
+    ignored = slider_pointers["cases"][0]["steps"][1]["expected"]
+    fallback = next(step["expected"] for case in slider_pointers["cases"] for step in case["steps"]
+                    if step.get("expected", {}).get("outcome") == "armed"
+                    and step["expected"]["state"]["hold"]["phase"] == "terminationOnly")
+    for name, document in [
+        ("preview requires acquired routing", apply_changes(previewed, [{"path": "/state/hold/phase", "value": "pending"}])),
+        ("ignored pointer cannot acquire", dict(ignored, routing=armed["routing"])),
+        ("fallback pointer cannot acquire", dict(fallback, routing=armed["routing"])),
+        ("cancelled pointer cannot commit", dict(completed, outcome="cancelled")),
+        ("unknown pointer outcome", dict(armed, outcome="captured")),
+    ]:
+        check_case(pointer_result_validator, name, document, False)
+        checked += 1
+    for where in [None, "anchor"]:
+        leaked = copy.deepcopy(armed)
+        if where is None:
+            leaked["renderer"] = "native"
+        else:
+            leaked["state"]["hold"][where]["renderer"] = "native"
+        check_case(pointer_result_validator, "slider pointer backend leakage", leaked, False)
+        checked += 1
+    malformed_event = copy.deepcopy(slider_pointers)
+    malformed_event["cases"][0]["steps"][0]["event"]["button"] = "primary"
+    check_case(pointer_validator, "undeclared slider pointer event field", malformed_event, False)
+    checked += 1
     toggle_travel = load_json(ROOT / "conformance/motion/toggle-travel-cases.json")
     check_case(validator_for("schemas/toggle-travel-cases.schema.json"), "toggle travel matrix", toggle_travel, True)
     names = [case["name"] for case in toggle_travel["cases"]]

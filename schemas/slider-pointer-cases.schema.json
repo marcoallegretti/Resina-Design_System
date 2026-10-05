@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-pointer-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "environment",
+          "layouts",
+          "regions",
+          "steps"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "environment": {
+            "$ref": "urn:resina:schema:environment:0.2.0"
+          },
+          "layouts": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1
+            },
+            "additionalProperties": {
+              "$ref": "urn:resina:schema:slider-layout-cases:0.1.0#/properties/cases/items/properties/input"
+            }
+          },
+          "regions": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1
+            },
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "visualBounds",
+                "availableBounds",
+                "componentMinimum",
+                "occupiedRegions"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": "0.1.0"
+                },
+                "visualBounds": {
+                  "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+                },
+                "availableBounds": {
+                  "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+                },
+                "componentMinimum": {
+                  "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/size"
+                },
+                "occupiedRegions": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+                  }
+                }
+              }
+            }
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "current",
+                "revision",
+                "visualValue",
+                "layout",
+                "control",
+                "enabled",
+                "readOnly",
+                "routing",
+                "event"
+              ],
+              "properties": {
+                "current": {
+                  "$ref": "urn:resina:schema:slider-value-request:0.1.0"
+                },
+                "revision": {
+                  "type": "string"
+                },
+                "visualValue": {
+                  "$ref": "urn:resina:schema:slider-value-request:0.1.0"
+                },
+                "layout": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "control": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "readOnly": {
+                  "type": "boolean"
+                },
+                "routing": {
+                  "enum": [
+                    "continuous",
+                    "terminationOnly",
+                    "unavailable"
+                  ]
+                },
+                "event": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "id",
+                        "point",
+                        "target",
+                        "region"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "down"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "point": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          }
+                        },
+                        "target": {
+                          "enum": [
+                            "thumb",
+                            "track"
+                          ]
+                        },
+                        "region": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "id",
+                        "point"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "move"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "point": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "id",
+                        "point"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "up"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "point": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "id"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "routingAcquired"
+                        },
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "id"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "routingLost"
+                        },
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "id"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "cancel"
+                        },
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "abort"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "refresh"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "expected": {
+                  "$ref": "urn:resina:schema:slider-pointer-result:0.1.0"
+                },
+                "error": {
+                  "enum": [
+                    "invalidRevision",
+                    "invalidIdentity",
+                    "invalidPoint",
+                    "invalidControlRegion",
+                    "invalidTargetRegion",
+                    "incoherentLayout",
+                    "hit",
+                    "anchor",
+                    "edit"
+                  ]
+                }
+              },
+              "oneOf": [
+                {
+                  "required": [
+                    "expected"
+                  ],
+                  "not": {
+                    "required": [
+                      "error"
+                    ]
+                  }
+                },
+                {
+                  "required": [
+                    "error"
+                  ],
+                  "not": {
+                    "required": [
+                      "expected"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

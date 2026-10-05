@@ -173,3 +173,8 @@ current committed state. Native gesture routing and styled controls remain requi
 [Slider pointer anchoring](spec/64-slider-pointer-anchor.md) maps pointer points
 to desired thumb origins while retaining an explicit grab distance or track-jump
 center. Anchors persist across previews; incompatible geometry fails explicitly.
+
+[Slider pointer lifecycle](spec/65-slider-pointer-lifecycle.md) composes checked
+targets, held anchors and cancellable edits. Continuous routing requires actual
+acquisition; a release-only track path supports clicks without dragging. Loss,
+conflict or invalidation clears ownership without publishing a product change.

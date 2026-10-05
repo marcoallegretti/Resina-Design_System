@@ -76,7 +76,8 @@ arbitration, cancellation, release eligibility and localized accessible feedback
 No complete gesture, native delivery or styled Slider is certified here.
 
 The Rust reference exposes only checked constructors and a desired-origin method;
-there is no production serialization or source protocol for transient anchors.
+anchors serialize as part of complete pointer lifecycle state for conformance.
+There is no production deserialization or source request protocol for anchors.
 [Public cases](../conformance/interaction/slider-anchor-cases.json) cover both axes,
 directions, minimum placements, expanded-target offsets, preview continuity,
 track resizing, incompatible geometry and far finite coordinates. Typed tests

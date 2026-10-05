@@ -1,5 +1,12 @@
 pub use resina_model::SliderOrientation;
 
+mod slider_pointer;
+pub use slider_pointer::{
+    SliderPointerError, SliderPointerEvent, SliderPointerInput, SliderPointerOutcome,
+    SliderPointerPhase, SliderPointerResult, SliderPointerRouting, SliderPointerState,
+    SliderPointerTarget, resolve_slider_pointer,
+};
+
 mod slider_anchor;
 pub use slider_anchor::{SliderAnchorError, SliderPointerAnchor};
 
