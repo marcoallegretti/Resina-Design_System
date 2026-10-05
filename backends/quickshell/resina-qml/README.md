@@ -1,6 +1,75 @@
 # Quickshell paint realization (0.1.0)
 
-This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It is independent of GUIdo and the Web SVG mapper. It does not implement a component, interaction, layout, animation, or a complete Shell conformance claim.
+This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. It does not implement a complete control, interaction, animation, or a complete Shell conformance claim.
+
+## Native label measurement
+
+Import [ResinaLabelMeasure.qml](qml/ResinaLabelMeasure.qml) into the application's
+QML module, or load it through a runtime `Loader`. Register the application's
+fonts before use, for example by waiting for an explicit `FontLoader.Ready`.
+The component is invisible, has no input target and is ignored by accessibility.
+Call its synchronous `measure(text, family, pixelSize, weight, spacing,
+lineHeight, maximumWidth)` method on the Qt UI thread for each natural/fitted
+request from the [portable label policy](../../../spec/46-command-label-layout.md).
+It returns `{width, height, nativeText}` or throws a diagnostic error;
+an error publishes no extent. `maximumWidth` is explicitly `null` for natural
+measurement or a finite positive logical wrapping constraint.
+Both dimensions are logical pixels. Bind subsequent native drawing to the
+returned `nativeText`: CRLF, CR, VT, FF and NEL hard breaks are converted to LF
+so Qt preserves them, while U+2028 line separators remain intact. This follows
+the mandatory break classes in [Unicode line breaking](https://www.unicode.org/reports/tr14/tr14-54.html).
+
+Size and spacing are already text-scaled logical pixels. Weight is an integer
+OpenType weight in 1..1000. `lineHeight` is the resolved font-size multiplier;
+the component converts it to [Qt's fixed logical line height](https://doc.qt.io/qt-6.11/qml-qtquick-text.html#lineHeightMode-prop).
+Device scale is supplied by the actual Qt window and must not be applied to
+these inputs a second time. Complete native shaping uses plain text, centered
+lines, word or glyph-boundary wrapping, fixed font size and no ellipsis or line
+limit. `implicitHeight` preserves trailing blank lines that `contentHeight`
+omits on Qt 6.11.2. Natural width is the native implicit width; fitted width is
+the complete content width, checked against the unchanged offered constraint.
+
+The selected primary family, pixel size and reported weight must match the
+request. Qt's native font selection/synthesis supplies the weight; per-glyph
+fallback availability remains the application's explicit font mapping policy.
+Preserve that context, typography and wrapping constraint for drawing, allow
+glyph overhang and invalidate measurements when the font environment changes.
+Use `Text.QtRendering`, upright mixed-case text with no underline or strikeout,
+matching the helper's explicit font traits and layout metrics.
+This helper measures layout; native label drawing, ink, accessibility and a
+Rust/QML product binding require their own evidence.
+
+Native limits are explicit. [Qt's pixel-size property is integer-valued](https://doc.qt.io/qt-6.11/qml-qtquick-text.html#font.pixelSize-prop),
+so fractional resolved font sizes fail rather than rounding or shrinking.
+Using points does not provide arbitrary precision: [Qt 6.11.2 rounds the Text
+font to half-point steps](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L1630-L1634).
+Continuous text-scale conformance remains open for this backend. Native letter
+spacing conversion must retain the requested value within 1/1024 logical px.
+Values outside [Qt's signed 26.6 fixed-point range](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/painting/qfixed_p.h)
+fail before native assignment; quantization is checked through the native
+readout. U+009C fails because [Qt interprets it as a multi-length separator and
+discards the suffix](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L224-L229),
+even with plain text and no ellipsis. U+2029 also fails: the native plain-text
+layout ignores its paragraph break, and replacing it with a line separator
+would lose independent paragraph direction semantics. A complete paragraph
+layout owner is required before accepting it. These limits do not narrow IR.
+
+```sh
+python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf
+python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --platform wayland
+```
+
+The native probe checks 19 labels, three text scales and three signed spacing
+values on each of five actual device scales (0.5, 1, 1.25, 2 and 1.3). It includes
+Latin, expanded German, Arabic, 100/150/200% string-length fixtures, literal
+markup, LF/CRLF/CR, VT/FF/NEL, line separators and leading/trailing/consecutive
+blank lines. It independently checks explicit line heights, wide-word reflow,
+spacing effects, weights, 13 invalid/unsupported inputs and recovery after
+failure. All 855 measurement and 65 diagnostic cases passed locally on both
+software/offscreen and
+software/Wayland with Quickshell 0.3.1 / Qt 6.11.2 on WSLg. Runtime CI and other
+fonts/compositors remain unverified. The checker itself is covered by portable
+CI tests that reject incomplete, duplicate, failed and wrong-scale evidence.
 
 ## Complete opaque paint
 
