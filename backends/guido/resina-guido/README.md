@@ -41,12 +41,21 @@ limits prevent claiming complete native command conformance:
 | Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/input.rs#L850-L880) and [repeat](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/input.rs#L950-L978) both emit the same `KeyDown` fields. | No conforming native activation adapter is supplied. Do not infer repeat from the semantic hold: an independent invocation can clear that hold while the physical key remains down. |
 | Native assistive technology delivery | This package resolves/consumes portable [command semantics](../../../spec/47-command-accessibility.md) but supplies no native semantic-tree publication. | Headless accessibility checks and rendered pixels do not establish native screen-reader discovery or action delivery. |
 
-The first two upstream API gaps were also verified at main revision
-`04f67b4854f79cc080ba65fe4773f9f610b37874` on 2026-10-04. These are source-backed
-capability limits, not claims that a newly implemented GUIdo Button failed a
-native interaction test. The accessibility boundary describes this package's
-implemented scope; it does not certify or diagnose every upstream integration.
-Keep the authored Resina contracts intact while resolving these native gaps.
+The first two limits above describe the pinned revision. Upstream added
+[letter spacing](https://github.com/MalpenZibo/guido/pull/619) and
+[key-repeat metadata](https://github.com/MalpenZibo/guido/pull/616) on 2026-10-05.
+Source inspection at main revision
+`ae29dc97a869434b51b768ad39b974e76db9a4dc` confirms
+[`TextStyle::letter_spacing`](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/widgets/text_style.rs#L239-L243)
+and the
+[`Container::on_key_down` repeat argument](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/widgets/container/mod.rs#L1111-L1124).
+These APIs have not been integrated or verified by this package's native tests;
+their upstream availability does not remove the pinned backend's limits or
+establish text shaping, input routing or live keyboard conformance.
+
+The accessibility boundary describes this package's implemented scope; it does
+not certify or diagnose every upstream integration. Keep the authored Resina
+contracts intact while addressing the remaining native integration work.
 
 ## Integration
 
