@@ -188,17 +188,25 @@ pub(crate) fn resolve_focus_ir_with_snapshot(
     let depth = depths[&indicator.binding().form().elevation()]["value"]
         .as_f64()
         .expect("validated depth is numeric");
-    resolve_focus_geometry(environment, input, indicator, radii, depth)
+    resolve_focus_geometry(
+        environment,
+        input.size,
+        input.key_light,
+        indicator,
+        radii,
+        depth,
+    )
 }
 
 pub(crate) fn resolve_focus_geometry(
     environment: &EnvironmentSnapshot,
-    input: FocusIrInput<'_>,
+    size: SurfaceSize,
+    key_light: &KeyLight,
     indicator: FocusIndicatorResult,
     radii: LogicalCornerRadii,
     depth: f64,
 ) -> Result<FocusIndicatorIr, FocusIrError> {
-    let lighting = resolve_key_light(input.key_light, depth, &[]).map_err(FocusIrError::Light)?;
+    let lighting = resolve_key_light(key_light, depth, &[]).map_err(FocusIrError::Light)?;
     let contour = |size, radii| {
         resolve_extruded_contour(
             size,
@@ -208,11 +216,11 @@ pub(crate) fn resolve_focus_geometry(
         )
         .map_err(FocusIrError::Contour)
     };
-    let silhouette = contour(input.size, radii)?;
+    let silhouette = contour(size, radii)?;
     let outset = |extent: f64| -> Result<PlacedContour, FocusIrError> {
-        let size = SurfaceSize {
-            width: input.size.width + 2.0 * extent,
-            height: input.size.height + 2.0 * extent,
+        let grown_size = SurfaceSize {
+            width: size.width + 2.0 * extent,
+            height: size.height + 2.0 * extent,
         };
         let grow = |corner: CornerRadius| CornerRadius {
             x: corner.x + extent,
@@ -224,10 +232,10 @@ pub(crate) fn resolve_focus_geometry(
             bottom_end: grow(radii.bottom_end),
             bottom_start: grow(radii.bottom_start),
         };
-        if !size.width.is_finite() || !size.height.is_finite() {
+        if !grown_size.width.is_finite() || !grown_size.height.is_finite() {
             return Err(FocusIrError::OutsetOverflow);
         }
-        if size.width <= input.size.width || size.height <= input.size.height {
+        if grown_size.width <= size.width || grown_size.height <= size.height {
             return Err(FocusIrError::UnrepresentableRing);
         }
         Ok(PlacedContour::new(
@@ -235,7 +243,7 @@ pub(crate) fn resolve_focus_geometry(
                 x: -extent,
                 y: -extent,
             },
-            contour(size, grown)?,
+            contour(grown_size, grown)?,
         ))
     };
     let inner = outset(indicator.gap())?;

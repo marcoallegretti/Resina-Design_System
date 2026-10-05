@@ -276,13 +276,21 @@ pub(crate) fn resolve_opaque_surface_with_snapshot(
     let depth = depths[&readable.binding().form().elevation()]["value"]
         .as_f64()
         .expect("validated depth is numeric");
-    resolve_opaque_body_geometry(theme, environment, input, &readable, depth)
+    resolve_opaque_body_geometry(
+        theme,
+        environment,
+        input.size,
+        input.appearance,
+        &readable,
+        depth,
+    )
 }
 
 pub(crate) fn resolve_opaque_body_geometry(
     theme: &crate::CompiledTheme,
     environment: &EnvironmentSnapshot,
-    input: OpaqueSurfaceInput<'_>,
+    size: SurfaceSize,
+    appearance: &OpaqueSurfaceAppearance,
     readable: &crate::SurfaceReadabilityResult,
     depth: f64,
 ) -> Result<OpaqueSurfaceIr, OpaqueSurfaceError> {
@@ -291,29 +299,29 @@ pub(crate) fn resolve_opaque_body_geometry(
     }
     let binding = readable.binding();
     let family = binding.material_family();
-    let bands = input.appearance.bands_for(family);
+    let bands = appearance.bands_for(family);
     let extent = bands.edge_width() + bands.highlight_width();
     if !extent.is_finite() {
         return Err(OpaqueSurfaceError::InvalidBandExtent);
     }
     let radii = resolve_shape_fallback(
         binding.form().shape(),
-        input.size,
-        input.appearance.shape_assignments(),
+        size,
+        appearance.shape_assignments(),
         theme.tokens(),
     )
     .map_err(OpaqueSurfaceError::Shape)?;
-    let lighting = resolve_key_light(input.appearance.key_light(), depth, &[])
-        .map_err(OpaqueSurfaceError::Light)?;
-    let edge_inset = resolve_inset_contour(input.size, radii, bands.edge_width())
+    let lighting =
+        resolve_key_light(appearance.key_light(), depth, &[]).map_err(OpaqueSurfaceError::Light)?;
+    let edge_inset = resolve_inset_contour(size, radii, bands.edge_width())
         .map_err(OpaqueSurfaceError::Inset)?;
     let content_inset =
-        resolve_inset_contour(input.size, radii, extent).map_err(OpaqueSurfaceError::Inset)?;
+        resolve_inset_contour(size, radii, extent).map_err(OpaqueSurfaceError::Inset)?;
     if content_inset.size().width == 0.0 || content_inset.size().height == 0.0 {
         return Err(OpaqueSurfaceError::InsufficientContentArea);
     }
-    if edge_inset.size().width >= input.size.width
-        || edge_inset.size().height >= input.size.height
+    if edge_inset.size().width >= size.width
+        || edge_inset.size().height >= size.height
         || (bands.highlight_width() > 0.0
             && (content_inset.size().width >= edge_inset.size().width
                 || content_inset.size().height >= edge_inset.size().height))
@@ -336,15 +344,14 @@ pub(crate) fn resolve_opaque_body_geometry(
             ))
         };
     let geometry = OpaqueSurfaceGeometry {
-        front: contour(input.size, radii, zero)?,
-        silhouette: contour(input.size, radii, lighting.side_offset())?,
+        front: contour(size, radii, zero)?,
+        silhouette: contour(size, radii, lighting.side_offset())?,
         edge_interior: placed(&edge_inset, lighting.side_offset())?,
         highlight_outer: placed(&edge_inset, zero)?,
         content: placed(&content_inset, zero)?,
     };
-    let pigment =
-        resolve_opaque_pigment(family, readable.body(), input.appearance.pigment_profiles())
-            .expect("readability selected an opaque body");
+    let pigment = resolve_opaque_pigment(family, readable.body(), appearance.pigment_profiles())
+        .expect("readability selected an opaque body");
     Ok(OpaqueSurfaceIr {
         schema_version: "0.1.0",
         representation: "opaque",

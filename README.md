@@ -219,6 +219,10 @@ actual Frost legibility and capability fallbacks before publishing a result.
 flat regions and a conservative continuous-highlight range from resolved surface
 IR. It accounts for reference arithmetic; spatial adjacency remains explicit.
 
+[Slider part paint](spec/76-slider-part-paint.md) applies actual part responses
+before readability and geometry, retains dragging/read-only states, and places
+navigation paint on the thumb against all supplied surrounding ranges.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.
