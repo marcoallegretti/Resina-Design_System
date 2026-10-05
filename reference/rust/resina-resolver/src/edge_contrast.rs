@@ -2,7 +2,7 @@ use crate::{
     SrgbFallback, opaque_contrast_ratio,
     srgb_input::{SrgbInput, SrgbInputError},
 };
-use resina_color::ColorFallbackError;
+use resina_color::{ColorFallbackError, OpaqueSrgbRange};
 use resina_model::ColorRole;
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
@@ -57,6 +57,7 @@ pub enum EdgeContrastError {
     TranslucentOutline,
     TranslucentStrongOutline,
     TranslucentAdjacentColor,
+    EmptyAdjacentRanges,
     InsufficientContrast { outline: f64, strong: f64 },
 }
 
@@ -74,6 +75,7 @@ impl fmt::Display for EdgeContrastError {
             Self::TranslucentOutline => formatter.write_str("outline must be opaque"),
             Self::TranslucentStrongOutline => formatter.write_str("outlineStrong must be opaque"),
             Self::TranslucentAdjacentColor => formatter.write_str("adjacentColor must be opaque"),
+            Self::EmptyAdjacentRanges => formatter.write_str("adjacent ranges must not be empty"),
             Self::InsufficientContrast { outline, strong } => write!(
                 formatter,
                 "edge contrast is insufficient: outline {outline}, outline.strong {strong}"
@@ -115,6 +117,36 @@ pub fn resolve_edge_contrast(
     adjacent_color: &SrgbFallback,
     minimum_contrast: f64,
 ) -> Result<EdgeContrastResult, EdgeContrastError> {
+    validate_candidates(outline, outline_strong, minimum_contrast)?;
+    if adjacent_color.alpha() != 1.0 {
+        return Err(EdgeContrastError::TranslucentAdjacentColor);
+    }
+    select_candidate(outline, outline_strong, minimum_contrast, |candidate| {
+        opaque_contrast_ratio(candidate, adjacent_color)
+            .expect("validated candidate and adjacent color are opaque")
+    })
+}
+
+pub fn resolve_edge_contrast_over_ranges(
+    outline: &SrgbFallback,
+    outline_strong: &SrgbFallback,
+    adjacent_ranges: &[OpaqueSrgbRange],
+    minimum_contrast: f64,
+) -> Result<EdgeContrastResult, EdgeContrastError> {
+    validate_candidates(outline, outline_strong, minimum_contrast)?;
+    if adjacent_ranges.is_empty() {
+        return Err(EdgeContrastError::EmptyAdjacentRanges);
+    }
+    select_candidate(outline, outline_strong, minimum_contrast, |candidate| {
+        crate::background_contrast::minimum_range_contrast(candidate, adjacent_ranges)
+    })
+}
+
+fn validate_candidates(
+    outline: &SrgbFallback,
+    outline_strong: &SrgbFallback,
+    minimum_contrast: f64,
+) -> Result<(), EdgeContrastError> {
     if !minimum_contrast.is_finite() || !(1.0..=21.0).contains(&minimum_contrast) {
         return Err(EdgeContrastError::InvalidMinimumContrast);
     }
@@ -124,11 +156,16 @@ pub fn resolve_edge_contrast(
     if outline_strong.alpha() != 1.0 {
         return Err(EdgeContrastError::TranslucentStrongOutline);
     }
-    if adjacent_color.alpha() != 1.0 {
-        return Err(EdgeContrastError::TranslucentAdjacentColor);
-    }
-    let outline_ratio = opaque_contrast_ratio(outline, adjacent_color)
-        .expect("validated outline and adjacent color are opaque");
+    Ok(())
+}
+
+fn select_candidate(
+    outline: &SrgbFallback,
+    outline_strong: &SrgbFallback,
+    minimum_contrast: f64,
+    ratio: impl Fn(&SrgbFallback) -> f64,
+) -> Result<EdgeContrastResult, EdgeContrastError> {
+    let outline_ratio = ratio(outline);
     if outline_ratio >= minimum_contrast {
         return Ok(EdgeContrastResult {
             schema_version: "0.1.0",
@@ -138,8 +175,7 @@ pub fn resolve_edge_contrast(
             fallback_applied: false,
         });
     }
-    let strong_ratio = opaque_contrast_ratio(outline_strong, adjacent_color)
-        .expect("validated strong outline and adjacent color are opaque");
+    let strong_ratio = ratio(outline_strong);
     if strong_ratio >= minimum_contrast {
         return Ok(EdgeContrastResult {
             schema_version: "0.1.0",

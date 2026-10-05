@@ -182,6 +182,7 @@ def main():
         "schemas/slider-phase-cases.schema.json",
         "schemas/opaque-srgb-range.schema.json",
         "schemas/contrast-range-cases.schema.json",
+        "schemas/common-contrast-cases.schema.json",
         "schemas/command-paint-request.schema.json",
         "schemas/command-body-ir.schema.json",
         "schemas/command-paint-ir.schema.json",
@@ -366,6 +367,16 @@ def main():
 
     command_request = load_json(ROOT / "conformance/ir/command-paint-request.json")
     contrast_range_cases = load_json(ROOT / "conformance/color/contrast-range-cases.json")
+    common_contrast_cases = load_json(ROOT / "conformance/color/common-contrast-cases.json")
+    check_case(validator_for("schemas/common-contrast-cases.schema.json"),
+               "common contrast cases", common_contrast_cases, True)
+    for key, value in (("extra", 0), ("error", "insufficient"), ("backgrounds", [])):
+        invalid = copy.deepcopy(common_contrast_cases)
+        invalid[0][key] = value
+        check_case(validator_for("schemas/common-contrast-cases.schema.json"),
+                   "invalid common contrast record", invalid, False)
+    if len({case["name"] for case in common_contrast_cases}) != len(common_contrast_cases):
+        raise ValueError("duplicate common contrast case names")
     contrast_range_case_schema = validator_for("schemas/contrast-range-cases.schema.json")
     contrast_range_schema = validator_for("schemas/opaque-srgb-range.schema.json")
     check_case(contrast_range_case_schema, "bounded contrast records", contrast_range_cases, True)
@@ -1019,6 +1030,7 @@ def main():
     checked = (
         len(spring_cases) + 4
         + len(contrast_range_cases) + 8
+        + len(common_contrast_cases) + 4
         + len(phase_cases) + 5 + 36 * 6
         + len(invalid_material_scenes) + 2
         + len(focus_ir_cases) + len(invalid_focus_ir_results)

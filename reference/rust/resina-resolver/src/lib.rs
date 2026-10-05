@@ -153,6 +153,7 @@ pub use activation::{
     ActivationError, ActivationResult, CaptureChange, resolve_activation, resolve_activation_source,
 };
 
+mod background_contrast;
 mod edge_contrast;
 mod elevation;
 mod extruded_contour;
@@ -166,7 +167,8 @@ mod key_light;
 mod spatial;
 mod srgb_input;
 pub use edge_contrast::{
-    EdgeContrastError, EdgeContrastResult, resolve_edge_contrast, resolve_edge_contrast_source,
+    EdgeContrastError, EdgeContrastResult, resolve_edge_contrast,
+    resolve_edge_contrast_over_ranges, resolve_edge_contrast_source,
 };
 pub use elevation::{
     ElevationDepthError, ElevationDepthResolutionError, ElevationDepthResolutionErrorKind,
@@ -178,7 +180,7 @@ pub use extruded_contour::{
 };
 pub use focus_indicator::{
     FocusIndicatorError, FocusIndicatorResult, resolve_focus_indicator,
-    resolve_focus_indicator_source,
+    resolve_focus_indicator_over_ranges, resolve_focus_indicator_source,
 };
 pub use focus_ir::{
     FocusIndicatorIr, FocusIrError, FocusIrInput, FocusRingGeometry, resolve_focus_ir,

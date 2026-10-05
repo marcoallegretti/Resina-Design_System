@@ -207,6 +207,10 @@ conservative contrast bound across checked opaque sRGB channel ranges, including
 interior luminance crossings. Actual background coverage remains the producer's
 responsibility.
 
+[Common background contrast](spec/73-common-background-contrast.md) selects one
+edge or focus color that passes every supplied background range. Empty sets and
+incompatible per-region candidates fail explicitly; uniform results stay compatible.
+
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.

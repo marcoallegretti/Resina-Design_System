@@ -1,10 +1,9 @@
 use crate::{
     BoundSurface, HeadlessResolution, SrgbFallback, SurfaceBindingError, bind_surface,
-    opaque_contrast_ratio,
     scenario::{SurfaceScenarioError, resolve_surface_scenario_document},
     srgb_input::{SrgbInput, SrgbInputError},
 };
-use resina_color::ColorFallbackError;
+use resina_color::{ColorFallbackError, OpaqueSrgbRange};
 use resina_model::{ColorRole, InteractionState, SurfaceIntent};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
@@ -77,6 +76,7 @@ pub enum FocusIndicatorError {
     InvalidColorSpace,
     Color(ColorFallbackError),
     TranslucentSurround,
+    EmptySurroundingRanges,
     MissingColor(ColorRole),
     InsufficientContrast { focus: f64, outline_strong: f64 },
 }
@@ -95,6 +95,9 @@ impl fmt::Display for FocusIndicatorError {
             Self::InvalidColorSpace => formatter.write_str("surroundingColor must use sRGB"),
             Self::Color(error) => write!(formatter, "invalid surroundingColor: {error}"),
             Self::TranslucentSurround => formatter.write_str("surroundingColor must be opaque"),
+            Self::EmptySurroundingRanges => {
+                formatter.write_str("surrounding ranges must not be empty")
+            }
             Self::MissingColor(role) => write!(formatter, "missing opaque color role {role:?}"),
             Self::InsufficientContrast {
                 focus,
@@ -145,6 +148,15 @@ pub fn resolve_focus_indicator(
     resolve_bound_focus_indicator(binding, context, surrounding_color)
 }
 
+pub fn resolve_focus_indicator_over_ranges(
+    intent: &SurfaceIntent,
+    context: &HeadlessResolution,
+    surrounding_ranges: &[OpaqueSrgbRange],
+) -> Result<FocusIndicatorResult, FocusIndicatorError> {
+    let binding = bind_surface(intent, context).map_err(FocusIndicatorError::Binding)?;
+    resolve_bound_focus_over_ranges(binding, context, surrounding_ranges)
+}
+
 fn validate_focus(binding: &BoundSurface) -> Result<(), FocusIndicatorError> {
     if binding.states().contains(InteractionState::Focused) {
         Ok(())
@@ -162,6 +174,20 @@ fn resolve_bound_focus_indicator(
     if surrounding.alpha() != 1.0 {
         return Err(FocusIndicatorError::TranslucentSurround);
     }
+    let range = OpaqueSrgbRange::try_new(surrounding.clone(), surrounding.clone())
+        .expect("validated opaque surrounding color defines a uniform range");
+    resolve_bound_focus_over_ranges(binding, context, &[range])
+}
+
+fn resolve_bound_focus_over_ranges(
+    binding: BoundSurface,
+    context: &HeadlessResolution,
+    surrounding_ranges: &[OpaqueSrgbRange],
+) -> Result<FocusIndicatorResult, FocusIndicatorError> {
+    validate_focus(&binding)?;
+    if surrounding_ranges.is_empty() {
+        return Err(FocusIndicatorError::EmptySurroundingRanges);
+    }
     let focus = context
         .opaque_color_fallbacks()
         .get(&ColorRole::Focus)
@@ -170,13 +196,12 @@ fn resolve_bound_focus_indicator(
         .opaque_color_fallbacks()
         .get(&ColorRole::OutlineStrong)
         .ok_or(FocusIndicatorError::MissingColor(ColorRole::OutlineStrong))?;
-    let focus_ratio = opaque_contrast_ratio(focus, surrounding)
-        .expect("headless opaque fallbacks and surrounding color are opaque");
+    let focus_ratio = crate::background_contrast::minimum_range_contrast(focus, surrounding_ranges);
     let (color_role, color, contrast_ratio, fallback_applied) = if focus_ratio >= MINIMUM_CONTRAST {
         (ColorRole::Focus, focus, focus_ratio, false)
     } else {
-        let strong_ratio = opaque_contrast_ratio(strong, surrounding)
-            .expect("headless opaque fallbacks and surrounding color are opaque");
+        let strong_ratio =
+            crate::background_contrast::minimum_range_contrast(strong, surrounding_ranges);
         if strong_ratio < MINIMUM_CONTRAST {
             return Err(FocusIndicatorError::InsufficientContrast {
                 focus: focus_ratio,

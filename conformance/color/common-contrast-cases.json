@@ -1,0 +1,473 @@
+[
+  {
+    "name": "preferred passes every region",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8,
+            0.8,
+            0.8
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "alpha": 1.0
+        }
+      },
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 1.0
+        }
+      }
+    ],
+    "expected": {
+      "candidate": "preferred",
+      "contrastRatio": 13.076546777106756
+    },
+    "candidateBounds": {
+      "preferred": 13.076546777106756,
+      "fallback": 7.8675070737085715
+    }
+  },
+  {
+    "name": "fallback must also pass earlier region",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 1.0
+        }
+      },
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6,
+            0.6,
+            0.6
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.65,
+            0.65,
+            0.65
+          ],
+          "alpha": 1.0
+        }
+      }
+    ],
+    "expected": {
+      "candidate": "fallback",
+      "contrastRatio": 7.3709355625018365
+    },
+    "candidateBounds": {
+      "preferred": 2.0153669864390857,
+      "fallback": 7.3709355625018365
+    }
+  },
+  {
+    "name": "different passing candidates per region are insufficient",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 1.0
+        }
+      },
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8,
+            0.8,
+            0.8
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 1.0
+        }
+      }
+    ],
+    "error": "insufficient",
+    "candidateBounds": {
+      "preferred": 1.0,
+      "fallback": 1.0
+    }
+  },
+  {
+    "name": "reversing regions cannot repair incompatible candidates",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8,
+            0.8,
+            0.8
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 1.0
+        }
+      },
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 1.0
+        }
+      }
+    ],
+    "error": "insufficient",
+    "candidateBounds": {
+      "preferred": 1.0,
+      "fallback": 1.0
+    }
+  },
+  {
+    "name": "interior crossing rejects preferred",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.4,
+            0.4
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "alpha": 1.0
+        }
+      }
+    ],
+    "expected": {
+      "candidate": "fallback",
+      "contrastRatio": 3.6573664310763596
+    },
+    "candidateBounds": {
+      "preferred": 1.0,
+      "fallback": 3.6573664310763596
+    }
+  },
+  {
+    "name": "contrasting endpoints hide an interior failure",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "alpha": 1.0
+        }
+      }
+    ],
+    "error": "insufficient",
+    "candidateBounds": {
+      "preferred": 1.0,
+      "fallback": 1.2004565114973809
+    }
+  },
+  {
+    "name": "separate flat regions permit common gray",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "alpha": 1.0
+        }
+      },
+      {
+        "lower": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "alpha": 1.0
+        },
+        "upper": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "alpha": 1.0
+        }
+      }
+    ],
+    "expected": {
+      "candidate": "preferred",
+      "contrastRatio": 3.1715220130704114
+    },
+    "candidateBounds": {
+      "preferred": 3.1715220130704114,
+      "fallback": 1.2004565114973809
+    }
+  },
+  {
+    "name": "empty regions cannot certify contrast",
+    "preferred": {
+      "colorSpace": "srgb",
+      "components": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 1.0
+    },
+    "fallback": {
+      "colorSpace": "srgb",
+      "components": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "alpha": 1.0
+    },
+    "backgrounds": [],
+    "error": "empty"
+  }
+]
