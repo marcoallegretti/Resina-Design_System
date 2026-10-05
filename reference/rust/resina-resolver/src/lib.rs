@@ -1,8 +1,15 @@
+pub use resina_model::SliderOrientation;
+
+mod slider_layout;
+pub use slider_layout::{
+    SliderLayoutError, SliderLayoutInput, SliderLayoutIr, SliderMinimumPosition,
+    resolve_slider_layout,
+};
+
 mod slider_accessibility;
 pub use slider_accessibility::{
     SliderAccessibilityAction, SliderAccessibilityError, SliderAccessibilityInput,
-    SliderAccessibilityIr, SliderAccessibilityState, SliderOrientation,
-    resolve_slider_accessibility,
+    SliderAccessibilityIr, SliderAccessibilityState, resolve_slider_accessibility,
 };
 
 mod slider_adjustment;

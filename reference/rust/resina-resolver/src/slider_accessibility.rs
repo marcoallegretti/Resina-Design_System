@@ -1,14 +1,8 @@
 use crate::{CommandLabelIr, SliderValueIr};
-use resina_model::SliderValue;
-use serde::{Deserialize, Serialize};
+use resina_model::{SliderOrientation, SliderValue};
+use serde::Serialize;
 use std::fmt;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum SliderOrientation {
-    Horizontal,
-    Vertical,
-}
 pub struct SliderAccessibilityInput<'a> {
     pub label: &'a CommandLabelIr,
     pub value: &'a SliderValueIr,

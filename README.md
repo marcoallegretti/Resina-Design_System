@@ -153,3 +153,9 @@ discrete steps and complete Slider components remain separate requirements.
 label/value text, bounded numeric value, explicit orientation and focus state,
 and supported numeric actions under live enabled/read-only permission. Native
 assistive-technology delivery and complete Slider interaction remain required.
+
+[Slider part allocation](spec/61-slider-layout.md) places independently sized
+track and thumb within an explicit outer allocation for both axes, RTL and
+explicit numeric endpoint placement. Geometry uses checked bounded value progress
+and exact containment; material paint, targets and full gestures remain separate
+component obligations.

@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-layout-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "input"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "input": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "allocationSize",
+              "thumbSize",
+              "trackThickness",
+              "insets",
+              "layoutDirection",
+              "orientation",
+              "minimumPosition",
+              "value"
+            ],
+            "properties": {
+              "allocationSize": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "width",
+                  "height"
+                ],
+                "properties": {
+                  "width": {
+                    "type": "number"
+                  },
+                  "height": {
+                    "type": "number"
+                  }
+                }
+              },
+              "thumbSize": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "width",
+                  "height"
+                ],
+                "properties": {
+                  "width": {
+                    "type": "number"
+                  },
+                  "height": {
+                    "type": "number"
+                  }
+                }
+              },
+              "trackThickness": {
+                "type": "number"
+              },
+              "insets": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "start",
+                  "end",
+                  "top",
+                  "bottom"
+                ],
+                "properties": {
+                  "start": {
+                    "type": "number"
+                  },
+                  "end": {
+                    "type": "number"
+                  },
+                  "top": {
+                    "type": "number"
+                  },
+                  "bottom": {
+                    "type": "number"
+                  }
+                }
+              },
+              "layoutDirection": {
+                "enum": [
+                  "ltr",
+                  "rtl"
+                ]
+              },
+              "orientation": {
+                "enum": [
+                  "horizontal",
+                  "vertical"
+                ]
+              },
+              "minimumPosition": {
+                "enum": [
+                  "start",
+                  "end"
+                ]
+              },
+              "value": {
+                "$ref": "urn:resina:schema:slider-value-request:0.1.0"
+              }
+            }
+          },
+          "expected": {
+            "$ref": "urn:resina:schema:slider-layout-ir:0.1.0"
+          },
+          "error": {
+            "enum": [
+              "InvalidSize",
+              "InvalidInsets",
+              "DoesNotFit",
+              "NoTravel",
+              "NumericRange"
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "expected"
+            ],
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          },
+          {
+            "required": [
+              "error"
+            ],
+            "not": {
+              "required": [
+                "expected"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

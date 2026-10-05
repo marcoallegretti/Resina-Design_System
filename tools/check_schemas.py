@@ -214,6 +214,8 @@ def main():
         "schemas/slider-adjustment-cases.schema.json",
         "schemas/slider-accessibility-ir.schema.json",
         "schemas/slider-accessibility-case.schema.json",
+        "schemas/slider-layout-ir.schema.json",
+        "schemas/slider-layout-cases.schema.json",
         "schemas/toggle-activation-request.schema.json",
         "schemas/toggle-activation-result.schema.json",
         "schemas/toggle-activation-case.schema.json",
@@ -1920,6 +1922,34 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
+    slider_layout = load_json(ROOT / "conformance/geometry/slider-layout-cases.json")
+    check_case(validator_for("schemas/slider-layout-cases.schema.json"),
+               "slider layout matrix", slider_layout, True)
+    names = [case["name"] for case in slider_layout["cases"]]
+    if len(names) != len(set(names)):
+        raise ValueError("duplicate slider layout case")
+    checked += 1 + len(names)
+    slider_geometry = slider_layout["cases"][0]["expected"]
+    slider_geometry_validator = validator_for("schemas/slider-layout-ir.schema.json")
+    for name, changes in [
+        ("slider layout wrong version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+        ("slider layout invalid axis", [{"path": "/orientation", "value": "auto"}]),
+        ("slider layout invalid minimum position", [{"path": "/minimumPosition", "value": "top"}]),
+        ("slider layout displaced allocation", [{"path": "/allocationBounds/x", "value": 1}]),
+        ("slider layout empty track", [{"path": "/trackBounds/width", "value": 0}]),
+        ("slider layout missing thumb extent", [{"path": "/thumbBounds/height", "value": 0}]),
+        ("slider layout invalid progress", [{"path": "/value/progress", "value": -1}]),
+    ]:
+        check_case(slider_geometry_validator, name, apply_changes(slider_geometry, changes), False)
+        checked += 1
+    for field in slider_geometry:
+        incomplete = copy.deepcopy(slider_geometry)
+        incomplete.pop(field)
+        check_case(slider_geometry_validator, f"missing slider layout {field}", incomplete, False)
+        checked += 1
+    check_case(slider_geometry_validator, "slider layout backend leakage",
+               dict(slider_geometry, renderer="native"), False)
+    checked += 1
     toggle_travel = load_json(ROOT / "conformance/motion/toggle-travel-cases.json")
     check_case(validator_for("schemas/toggle-travel-cases.schema.json"), "toggle travel matrix", toggle_travel, True)
     names = [case["name"] for case in toggle_travel["cases"]]

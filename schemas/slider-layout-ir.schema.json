@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-layout-ir:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "layoutDirection",
+    "orientation",
+    "minimumPosition",
+    "value",
+    "allocationBounds",
+    "trackBounds",
+    "minimumThumbBounds",
+    "maximumThumbBounds",
+    "thumbBounds"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "layoutDirection": {
+      "enum": [
+        "ltr",
+        "rtl"
+      ]
+    },
+    "orientation": {
+      "enum": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    "minimumPosition": {
+      "enum": [
+        "start",
+        "end"
+      ]
+    },
+    "value": {
+      "$ref": "urn:resina:schema:slider-value-ir:0.1.0"
+    },
+    "allocationBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds",
+      "properties": {
+        "x": {
+          "const": 0
+        },
+        "y": {
+          "const": 0
+        }
+      }
+    },
+    "trackBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    },
+    "minimumThumbBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    },
+    "maximumThumbBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    },
+    "thumbBounds": {
+      "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+    }
+  }
+}

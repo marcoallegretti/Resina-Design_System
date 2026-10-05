@@ -58,12 +58,7 @@ impl HitRegionIr {
     }
 
     pub fn contains_bounds(&self, bounds: PhysicalBounds) -> Result<bool, HitRegionError> {
-        let (right, bottom) = endpoints(self.bounds, "hit bounds")?;
-        let (other_right, other_bottom) = endpoints(bounds, "contained bounds")?;
-        Ok(bounds.x >= self.bounds.x
-            && bounds.y >= self.bounds.y
-            && !other_right.exceeds(right)
-            && !other_bottom.exceeds(bottom))
+        bounds_contain_bounds(self.bounds, bounds)
     }
 
     pub fn contains(&self, point: PhysicalVector) -> Result<bool, HitRegionError> {
@@ -289,4 +284,16 @@ pub fn resolve_hit_region_source(source: &str) -> Result<HitRegionIr, HitRegionE
         component_minimum: request.component_minimum,
         occupied_regions: &occupied,
     })
+}
+
+pub(crate) fn bounds_contain_bounds(
+    container: PhysicalBounds,
+    bounds: PhysicalBounds,
+) -> Result<bool, HitRegionError> {
+    let (right, bottom) = endpoints(container, "hit bounds")?;
+    let (other_right, other_bottom) = endpoints(bounds, "contained bounds")?;
+    Ok(bounds.x >= container.x
+        && bounds.y >= container.y
+        && !other_right.exceeds(right)
+        && !other_bottom.exceeds(bottom))
 }

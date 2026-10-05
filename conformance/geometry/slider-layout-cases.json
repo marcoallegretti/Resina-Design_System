@@ -1,0 +1,3479 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "horizontal ltr minimum start value -10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum start value 0",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 42.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum start value 10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 72.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum start value 20",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 102.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum start value 30",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum end value -10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum end value 0",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 102.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum end value 10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 72.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum end value 20",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 42.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal ltr minimum end value 30",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 22.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 132.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 12.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum start value -10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum start value 0",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 98.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum start value 10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 68.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum start value 20",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 38.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum start value 30",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum end value -10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum end value 0",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 38.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum end value 10",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 68.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum end value 20",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 98.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "horizontal rtl minimum end value 30",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 18.0,
+          "y": 16.0,
+          "width": 120.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 8.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 128.0,
+          "y": 6.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum start value -10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum start value 0",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 42.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum start value 10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 72.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum start value 20",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 102.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum start value 30",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum end value -10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum end value 0",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 102.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum end value 10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 72.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum end value 20",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 42.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical ltr minimum end value 30",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 16.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 6.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 6.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum start value -10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum start value 0",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 42.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum start value 10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 72.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum start value 20",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 102.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum start value 30",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum end value -10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": -10.0,
+          "progress": 0.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum end value 0",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 102.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum end value 10",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0,
+          "progress": 0.5
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 72.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum end value 20",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 20.0,
+          "progress": 0.75
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 42.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "vertical rtl minimum end value 30",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 30.0,
+          "progress": 1.0
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 40.0,
+          "height": 160.0
+        },
+        "trackBounds": {
+          "x": 20.0,
+          "y": 22.0,
+          "width": 4.0,
+          "height": 120.0
+        },
+        "minimumThumbBounds": {
+          "x": 10.0,
+          "y": 132.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "maximumThumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        },
+        "thumbBounds": {
+          "x": 10.0,
+          "y": 12.0,
+          "width": 24.0,
+          "height": 20.0
+        }
+      }
+    },
+    {
+      "name": "fractional allocation",
+      "input": {
+        "allocationSize": {
+          "width": 160.5,
+          "height": 40.5
+        },
+        "thumbSize": {
+          "width": 20.5,
+          "height": 24.5
+        },
+        "trackThickness": 3.5,
+        "insets": {
+          "start": 0.5,
+          "end": 1.5,
+          "top": 2.5,
+          "bottom": 3.5
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.5,
+          "height": 40.5
+        },
+        "trackBounds": {
+          "x": 10.75,
+          "y": 18.0,
+          "width": 138.0,
+          "height": 3.5
+        },
+        "minimumThumbBounds": {
+          "x": 0.5,
+          "y": 7.5,
+          "width": 20.5,
+          "height": 24.5
+        },
+        "maximumThumbBounds": {
+          "x": 138.5,
+          "y": 7.5,
+          "width": 20.5,
+          "height": 24.5
+        },
+        "thumbBounds": {
+          "x": 35.0,
+          "y": 7.5,
+          "width": 20.5,
+          "height": 24.5
+        }
+      }
+    },
+    {
+      "name": "zero insets",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 0.0,
+          "end": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "expected": {
+        "schemaVersion": "0.1.0",
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "allocationBounds": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackBounds": {
+          "x": 10.0,
+          "y": 18.0,
+          "width": 140.0,
+          "height": 4.0
+        },
+        "minimumThumbBounds": {
+          "x": 0.0,
+          "y": 8.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "maximumThumbBounds": {
+          "x": 140.0,
+          "y": 8.0,
+          "width": 20.0,
+          "height": 24.0
+        },
+        "thumbBounds": {
+          "x": 35.0,
+          "y": 8.0,
+          "width": 20.0,
+          "height": 24.0
+        }
+      }
+    },
+    {
+      "name": "zero allocation width",
+      "input": {
+        "allocationSize": {
+          "width": 0.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "InvalidSize"
+    },
+    {
+      "name": "negative thumb height",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": -1.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "InvalidSize"
+    },
+    {
+      "name": "zero track thickness",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 0.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "InvalidSize"
+    },
+    {
+      "name": "negative inset",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": -1.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "InvalidInsets"
+    },
+    {
+      "name": "oversized thumb main axis",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 141.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "DoesNotFit"
+    },
+    {
+      "name": "oversized thumb cross axis",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 25.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "DoesNotFit"
+    },
+    {
+      "name": "oversized track cross axis",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 25.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "DoesNotFit"
+    },
+    {
+      "name": "no thumb travel",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 140.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "NoTravel"
+    },
+    {
+      "name": "insets exceed allocation",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 161.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "DoesNotFit"
+    },
+    {
+      "name": "swallowed inset",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 5e-324,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "NumericRange"
+    },
+    {
+      "name": "swallowed thumb extent",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 5e-324,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "NumericRange"
+    },
+    {
+      "name": "swallowed track extent",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 5e-324,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "NumericRange"
+    },
+    {
+      "name": "interior progress cannot move thumb",
+      "input": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 5e-324
+        }
+      },
+      "error": "NumericRange"
+    },
+    {
+      "name": "center slack underflow",
+      "input": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 1e-323
+        },
+        "thumbSize": {
+          "width": 10.0,
+          "height": 5e-324
+        },
+        "trackThickness": 5e-324,
+        "insets": {
+          "start": 0.0,
+          "end": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "NumericRange"
+    },
+    {
+      "name": "thumb half extent underflow",
+      "input": {
+        "allocationSize": {
+          "width": 1e-323,
+          "height": 2.0
+        },
+        "thumbSize": {
+          "width": 5e-324,
+          "height": 1.0
+        },
+        "trackThickness": 1.0,
+        "insets": {
+          "start": 0.0,
+          "end": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "error": "NumericRange"
+    }
+  ]
+}

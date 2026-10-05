@@ -1,3 +1,6 @@
+mod slider;
+pub use slider::SliderOrientation;
+
 mod slider_value;
 pub use slider_value::SliderValue;
 
