@@ -1,12 +1,12 @@
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_model::{PhysicalVector, SliderValue, SurfaceSize};
-use resina_resolver::SliderValuePolicy;
 use resina_resolver::{
     HitRegionIr, SliderLayoutInput, SliderLayoutIr, SliderMinimumPosition, SliderOrientation,
     SliderPointerError, SliderPointerEvent, SliderPointerInput, SliderPointerOutcome,
     SliderPointerRouting, SliderPointerState, SliderPointerTarget, resolve_hit_region_source,
     resolve_slider_layout, resolve_slider_pointer, resolve_slider_value,
 };
+use resina_resolver::{SliderPresentation, SliderValuePolicy};
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -343,6 +343,22 @@ fn public_traces_verify_complete_pointer_state_and_effects() {
                 result.state().target().is_some(),
                 result.state().held_id().is_some()
             );
+            assert_eq!(
+                result.state().edit().is_some(),
+                result.state().held_id().is_some()
+            );
+            if let Some(edit) = result.state().edit() {
+                assert_eq!(
+                    serde_json::to_value(edit).unwrap(),
+                    expected["state"]["hold"]["edit"]
+                );
+                let presentation =
+                    SliderPresentation::try_new(&current, &step.revision, &policy, Some(edit))
+                        .unwrap_or_else(|error| panic!("{} step{steps}: {error}", case.name));
+                assert_eq!(presentation.committed(), &current);
+                assert_eq!(presentation.visible(), result.preview());
+                assert!(presentation.editing());
+            }
             assert_eq!(
                 result.commit().is_some(),
                 result.outcome() == SliderPointerOutcome::Committed

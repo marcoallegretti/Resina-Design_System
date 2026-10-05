@@ -13,6 +13,12 @@ committed value, revision and policy. Its checked preview becomes visible; witho
 an edit, visible equals committed. Both values MUST satisfy the current domain.
 An inconsistent session fails explicitly rather than rebasing or hiding it.
 
+The Rust pointer state exposes its current checked edit through a read-only
+accessor. A live pointer owner can pass that session directly to presentation
+resolution without copying serialized state or constructing a second edit.
+Idle and closed pointer states expose no edit. This observation grants no routing
+ownership or permission to commit; termination still follows spec65.
+
 The owner resolves layout, localized value text and accessibility from the visible
 value. Preview semantics describe the value currently presented without committing
 it to product state or issuing a product change notification. Cancellation restores

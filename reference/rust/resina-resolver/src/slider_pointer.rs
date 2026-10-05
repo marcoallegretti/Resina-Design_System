@@ -61,6 +61,9 @@ impl SliderPointerState {
     pub fn target(&self) -> Option<SliderPointerTarget> {
         self.hold.as_ref().map(|hold| hold.target)
     }
+    pub fn edit(&self) -> Option<&SliderEditSession> {
+        self.hold.as_ref().map(|hold| &hold.edit)
+    }
 }
 #[derive(Debug, Clone, Copy)]
 pub enum SliderPointerEvent<'a> {
