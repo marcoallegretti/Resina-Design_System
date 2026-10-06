@@ -41,6 +41,7 @@ limits prevent claiming complete native command conformance:
 | Requirement | Verified boundary | Current behavior |
 | --- | --- | --- |
 | Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L956-L960) and [repeat](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L969-L972) emit `KeyDown` with distinct `repeat` values. | No conforming native activation adapter consumes that flag yet. Do not infer repeat from the semantic hold: an independent invocation can clear that hold while the physical key remains down. |
+| Mandatory line breaks | The pinned shaper's [line iterator](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/line_ending.rs#L51-L72) ends lines only at LF, CR and CRLF, and consumes an LF followed by CR as one ending unless that LF completes a CRLF; [Unicode line breaking](https://www.unicode.org/reports/tr14/tr14-57.html#LB5) keeps only CR LF together. | Label measurement and preparation reject VT, FF, NEL, U+2028, U+2029 and any CR/LF sequence whose lines differ from Unicode line breaking with `UnsupportedLineBreak`. |
 | Native assistive technology delivery | This package resolves/consumes portable [command semantics](../../../spec/47-command-accessibility.md) but supplies no native semantic-tree publication. | Headless accessibility checks and rendered pixels do not establish native screen-reader discovery or action delivery. |
 
 The repeat flag also reaches the
@@ -141,8 +142,8 @@ pixels, so a line that exactly fills its box can wrap again at a device scale:
 scaled advances and spacing round independently of the scaled width. Following
 the [layout drawing rule](../../../spec/46-command-label-layout.md), a label whose
 fitted measurement wrapped no text is drawn without wrapping, which keeps one
-line per hard break at every scale. GUIdo ends lines only at LF and CR and treats
-LF followed by CR as one break; other mandatory breaks do not end a line. A
+line per hard break at every scale. Text with a mandatory break GUIdo does not
+honor fails first; see the limits above. A
 wrapping label keeps its offered width and is shaped again at the device scale.
 GUIdo measurement reports no individual lines, so every prefix ending at a
 character boundary is shaped at both scales: greedy breaking makes the first
@@ -177,7 +178,9 @@ same text drawn in a box 200 px wider, and wrapped labels rely on the
 device-scale line check. GUIdo's shaping height is the box
 height with a 50 px minimum. Hard breaks, an empty paragraph, a leading break and an RTL
 Hebrew/Latin pair draw one inked line per nonempty paragraph at device scales 1,
-1.5 and 3. Character counts classify the ASCII test strings only; all widths come
+1.5 and 3, as do CR, CRLF, consecutive CRLF and LF before CRLF. VT, FF, NEL, U+2028,
+U+2029 and CR/LF sequences GUIdo splits into different lines fail measurement,
+and preparation rejects them in IR from another producer. Character counts classify the ASCII test strings only; all widths come
 from actual font shaping. Spacing evidence measures “Save” four spacings wider
 than unspaced text, and its drawn ink span changes by the three interior
 spacings at device scales 1 and 2. A wrapped fixture whose lines exactly fill

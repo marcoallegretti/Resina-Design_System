@@ -1,8 +1,10 @@
 #![cfg(feature = "testing")]
 
-use guido::widgets::font::FontFamily;
-use resina_environment::SafeArea;
-use resina_guido::{LabelMeasureError, measure_command_label};
+use guido::widgets::{Color, font::FontFamily};
+use resina_environment::{LayoutDirection, SafeArea};
+use resina_guido::{
+    LabelMeasureError, LabelPrepareError, measure_command_label, prepare_command_label,
+};
 use resina_model::SurfaceSize;
 use resina_resolver::{CommandLabelInput, LabelMeasureInput, resolve_command_label};
 #[path = "common/cases.rs"]
@@ -78,6 +80,68 @@ fn actual_font_shapes_complete_scaled_and_expanded_labels() {
     };
     assert_eq!(measure("Save\nSave", None).unwrap().height, 56.0);
     assert_eq!(measure("Save\nSave", Some(192.0)).unwrap().height, 56.0);
+    for (text, lines) in [
+        ("Save\rNow", 2.0),
+        ("Save\r\nNow", 2.0),
+        ("Save\n\nNow", 3.0),
+        ("Save\r\n\r\nNow", 3.0),
+        ("Save\r\n\rNow", 3.0),
+        ("Save\n\r\nNow", 3.0),
+    ] {
+        assert_eq!(
+            measure(text, None).unwrap().height,
+            lines * 28.0,
+            "{text:?}"
+        );
+    }
+    for (text, break_char) in [
+        ("Save\u{b}Now", '\u{b}'),
+        ("Save\u{c}Now", '\u{c}'),
+        ("Save\u{85}Now", '\u{85}'),
+        ("Save\u{2028}Now", '\u{2028}'),
+        ("Save\u{2029}Now", '\u{2029}'),
+        ("Save\n\rNow", '\r'),
+        ("Save\n\r\rNow", '\r'),
+        ("Save\n\r\n\rNow", '\r'),
+    ] {
+        assert_eq!(
+            measure(text, None).unwrap_err(),
+            LabelMeasureError::UnsupportedLineBreak(break_char),
+            "{text:?}"
+        );
+    }
+    let foreign = resolve_command_label(
+        CommandLabelInput {
+            text: "Save\u{2028}Now",
+            typography: &typography,
+            minimum_size: SurfaceSize {
+                width: 64.0,
+                height: 44.0,
+            },
+            maximum_size: SurfaceSize {
+                width: 220.0,
+                height: 300.0,
+            },
+            padding: SafeArea {
+                start: 16.0,
+                end: 12.0,
+                top: 8.0,
+                bottom: 8.0,
+            },
+            direction: LayoutDirection::Ltr,
+        },
+        |_| {
+            Ok::<_, LabelMeasureError>(SurfaceSize {
+                width: 40.0,
+                height: 56.0,
+            })
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        prepare_command_label(&foreign, family, Color::BLACK, 1.0).unwrap_err(),
+        LabelPrepareError::Measurement(LabelMeasureError::UnsupportedLineBreak('\u{2028}'))
+    );
     let fractional_width = 192.0000001;
     assert!(
         measure("Verbindung erneut herstellen", Some(fractional_width))

@@ -13,6 +13,7 @@ pub enum LabelMeasureError {
     FontWeight,
     Precision(&'static str),
     Extent,
+    UnsupportedLineBreak(char),
 }
 impl fmt::Display for LabelMeasureError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -20,10 +21,47 @@ impl fmt::Display for LabelMeasureError {
             Self::FontWeight => f.write_str("GUIdo font weight must be an integer"),
             Self::Precision(field) => write!(f, "GUIdo label {field} exceeds coordinate precision"),
             Self::Extent => f.write_str("GUIdo label measurement is empty or nonfinite"),
+            Self::UnsupportedLineBreak(break_char) => write!(
+                f,
+                "GUIdo text does not end a line at mandatory break U+{:04X}",
+                u32::from(*break_char)
+            ),
         }
     }
 }
 impl std::error::Error for LabelMeasureError {}
+/// Line contents split at CR and LF the way GUIdo's shaper does: each ending starts
+/// at the next CR or LF and takes CRLF, then (only with `lf_cr`) LF CR, as one.
+fn hard_lines(text: &str, lf_cr: bool) -> Vec<&str> {
+    let mut lines = Vec::new();
+    let mut rest = text;
+    while let Some(index) = rest.find(['\r', '\n']) {
+        lines.push(&rest[..index]);
+        let after = &rest[index..];
+        let ending = if after.starts_with("\r\n") || (lf_cr && after.starts_with("\n\r")) {
+            2
+        } else {
+            1
+        };
+        rest = &after[ending..];
+    }
+    lines.push(rest);
+    lines
+}
+/// GUIdo ends lines only at CR and LF; Unicode mandatory breaks keep only CR LF
+/// together, while GUIdo's shaper also joins an LF CR that does not continue a CRLF.
+fn supported_breaks(text: &str) -> Result<(), LabelMeasureError> {
+    if let Some(break_char) = text
+        .chars()
+        .find(|c| matches!(c, '\u{b}' | '\u{c}' | '\u{85}' | '\u{2028}' | '\u{2029}'))
+    {
+        return Err(LabelMeasureError::UnsupportedLineBreak(break_char));
+    }
+    if hard_lines(text, true) != hard_lines(text, false) {
+        return Err(LabelMeasureError::UnsupportedLineBreak('\r'));
+    }
+    Ok(())
+}
 fn scalar(value: f64, name: &'static str) -> Result<f32, LabelMeasureError> {
     let native = value as f32;
     if !native.is_finite()
@@ -122,6 +160,7 @@ pub fn measure_command_label(
     family: FontFamily,
     input: LabelMeasureInput<'_>,
 ) -> Result<SurfaceSize, LabelMeasureError> {
+    supported_breaks(input.text)?;
     let style = native_style(input.typography)?;
     let width = input.maximum_width.map(wrap_width).transpose()?;
     let measured = measure_native(input.text, family, &style, width, 1.0)?;
@@ -206,6 +245,7 @@ pub fn prepare_command_label_at(
     {
         return Err(LabelPrepareError::Color);
     }
+    supported_breaks(ir.text())?;
     let style = native_style(ir.typography())?;
     let bounds = ir.label_bounds();
     let width = wrap_width(bounds.width)?;

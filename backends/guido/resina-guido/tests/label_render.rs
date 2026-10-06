@@ -490,8 +490,13 @@ fn hard_breaks_and_empty_paragraphs_draw_their_measured_lines() {
         ("Save\n\nNow", LayoutDirection::Ltr),
         ("\nSave", LayoutDirection::Ltr),
         ("\u{5e9}\u{5de}\u{5d5}\u{5e8}\nSave", LayoutDirection::Rtl),
+        ("Save\rNow", LayoutDirection::Ltr),
+        ("Save\r\nNow", LayoutDirection::Ltr),
+        ("Save\r\n\r\nNow", LayoutDirection::Ltr),
+        ("Save\n\r\nNow", LayoutDirection::Ltr),
     ] {
-        let paragraphs: Vec<_> = text.split('\n').collect();
+        let normalized = text.replace("\r\n", "\n").replace('\r', "\n");
+        let paragraphs: Vec<_> = normalized.split('\n').collect();
         let ir = resolve_command_label(
             CommandLabelInput {
                 text,
