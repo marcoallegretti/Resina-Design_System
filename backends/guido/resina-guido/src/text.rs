@@ -14,6 +14,7 @@ pub enum LabelMeasureError {
     Precision(&'static str),
     Extent,
     UnsupportedLineBreak(char),
+    UnsupportedParagraphSeparator(char),
 }
 impl fmt::Display for LabelMeasureError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -25,6 +26,11 @@ impl fmt::Display for LabelMeasureError {
                 f,
                 "GUIdo text does not end a line at mandatory break U+{:04X}",
                 u32::from(*break_char)
+            ),
+            Self::UnsupportedParagraphSeparator(separator) => write!(
+                f,
+                "GUIdo text cannot separate bidirectional paragraphs at U+{:04X}",
+                u32::from(*separator)
             ),
         }
     }
@@ -50,7 +56,8 @@ fn hard_lines(text: &str, lf_cr: bool) -> Vec<&str> {
 }
 /// GUIdo ends lines only at CR and LF; Unicode mandatory breaks keep only CR LF
 /// together, while GUIdo's shaper also joins an LF CR that does not continue a CRLF.
-fn supported_breaks(text: &str) -> Result<(), LabelMeasureError> {
+/// It also cannot separate bidirectional paragraphs within one line.
+fn supported_separators(text: &str) -> Result<(), LabelMeasureError> {
     if let Some(break_char) = text
         .chars()
         .find(|c| matches!(c, '\u{b}' | '\u{c}' | '\u{85}' | '\u{2028}' | '\u{2029}'))
@@ -59,6 +66,12 @@ fn supported_breaks(text: &str) -> Result<(), LabelMeasureError> {
     }
     if hard_lines(text, true) != hard_lines(text, false) {
         return Err(LabelMeasureError::UnsupportedLineBreak('\r'));
+    }
+    // Bidirectional paragraph separators that do not break lines. When the
+    // paragraphs they separate resolve to different directions, the pinned
+    // shaper panics.
+    if let Some(separator) = text.chars().find(|c| ('\u{1c}'..='\u{1e}').contains(c)) {
+        return Err(LabelMeasureError::UnsupportedParagraphSeparator(separator));
     }
     Ok(())
 }
@@ -160,7 +173,7 @@ pub fn measure_command_label(
     family: FontFamily,
     input: LabelMeasureInput<'_>,
 ) -> Result<SurfaceSize, LabelMeasureError> {
-    supported_breaks(input.text)?;
+    supported_separators(input.text)?;
     let style = native_style(input.typography)?;
     let width = input.maximum_width.map(wrap_width).transpose()?;
     let measured = measure_native(input.text, family, &style, width, 1.0)?;
@@ -245,7 +258,7 @@ pub fn prepare_command_label_at(
     {
         return Err(LabelPrepareError::Color);
     }
-    supported_breaks(ir.text())?;
+    supported_separators(ir.text())?;
     let style = native_style(ir.typography())?;
     let bounds = ir.label_bounds();
     let width = wrap_width(bounds.width)?;

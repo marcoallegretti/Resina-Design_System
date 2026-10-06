@@ -110,38 +110,61 @@ fn actual_font_shapes_complete_scaled_and_expanded_labels() {
             "{text:?}"
         );
     }
-    let foreign = resolve_command_label(
-        CommandLabelInput {
-            text: "Save\u{2028}Now",
-            typography: &typography,
-            minimum_size: SurfaceSize {
-                width: 64.0,
-                height: 44.0,
+    for (text, separator) in [
+        ("\u{5e9}\u{1c}Save", '\u{1c}'),
+        ("Save\u{1d}\u{5e9}", '\u{1d}'),
+        ("\u{5e9}\u{1e}Save", '\u{1e}'),
+        ("Save\u{1c}Now", '\u{1c}'),
+    ] {
+        assert_eq!(
+            measure(text, None).unwrap_err(),
+            LabelMeasureError::UnsupportedParagraphSeparator(separator),
+            "{text:?}"
+        );
+    }
+    for (text, expected) in [
+        (
+            "Save\u{2028}Now",
+            LabelMeasureError::UnsupportedLineBreak('\u{2028}'),
+        ),
+        (
+            "\u{5e9}\u{1c}Save",
+            LabelMeasureError::UnsupportedParagraphSeparator('\u{1c}'),
+        ),
+    ] {
+        let foreign = resolve_command_label(
+            CommandLabelInput {
+                text,
+                typography: &typography,
+                minimum_size: SurfaceSize {
+                    width: 64.0,
+                    height: 44.0,
+                },
+                maximum_size: SurfaceSize {
+                    width: 220.0,
+                    height: 300.0,
+                },
+                padding: SafeArea {
+                    start: 16.0,
+                    end: 12.0,
+                    top: 8.0,
+                    bottom: 8.0,
+                },
+                direction: LayoutDirection::Ltr,
             },
-            maximum_size: SurfaceSize {
-                width: 220.0,
-                height: 300.0,
+            |_| {
+                Ok::<_, LabelMeasureError>(SurfaceSize {
+                    width: 40.0,
+                    height: 56.0,
+                })
             },
-            padding: SafeArea {
-                start: 16.0,
-                end: 12.0,
-                top: 8.0,
-                bottom: 8.0,
-            },
-            direction: LayoutDirection::Ltr,
-        },
-        |_| {
-            Ok::<_, LabelMeasureError>(SurfaceSize {
-                width: 40.0,
-                height: 56.0,
-            })
-        },
-    )
-    .unwrap();
-    assert_eq!(
-        prepare_command_label(&foreign, family, Color::BLACK, 1.0).unwrap_err(),
-        LabelPrepareError::Measurement(LabelMeasureError::UnsupportedLineBreak('\u{2028}'))
-    );
+        )
+        .unwrap();
+        assert_eq!(
+            prepare_command_label(&foreign, family, Color::BLACK, 1.0).unwrap_err(),
+            LabelPrepareError::Measurement(expected)
+        );
+    }
     let fractional_width = 192.0000001;
     assert!(
         measure("Verbindung erneut herstellen", Some(fractional_width))
