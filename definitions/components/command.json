@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "0.1.0",
+  "component": "command",
+  "variants": {
+    "standard": {
+      "body": {
+        "materialRole": "control.interactive",
+        "colorRole": "surface.high",
+        "shape": "rounded",
+        "elevation": "raised",
+        "contentRole": "content.primary"
+      },
+      "label": {
+        "typographyRole": "label"
+      }
+    },
+    "primary": {
+      "body": {
+        "materialRole": "control.primary",
+        "colorRole": "accent.primary",
+        "shape": "rounded",
+        "elevation": "raised",
+        "contentRole": "content.inverse"
+      },
+      "label": {
+        "typographyRole": "label"
+      }
+    }
+  }
+}

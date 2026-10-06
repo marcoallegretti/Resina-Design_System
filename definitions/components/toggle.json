@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "0.1.0",
+  "component": "toggle",
+  "track": {
+    "materialRole": "control.passive",
+    "colorRole": "surface.low",
+    "checkedColorRole": "selection",
+    "shape": "capsule",
+    "elevation": "embedded",
+    "contentRole": "content.primary"
+  },
+  "thumb": {
+    "materialRole": "control.interactive",
+    "colorRole": "content.secondary",
+    "checkedColorRole": "content.primary",
+    "shape": "capsule",
+    "elevation": "raised",
+    "contentRole": "content.inverse"
+  },
+  "label": {
+    "typographyRole": "label",
+    "colorRole": "content.primary"
+  }
+}

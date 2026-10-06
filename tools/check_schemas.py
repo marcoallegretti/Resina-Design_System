@@ -178,6 +178,7 @@ def main():
         "schemas/spring-trajectory-result.schema.json",
         "schemas/spring-trajectory-case.schema.json",
         "schemas/command-appearance.schema.json",
+        "schemas/component-anatomy.schema.json",
         "schemas/slider-appearance.schema.json",
         "schemas/slider-phase-cases.schema.json",
         "schemas/opaque-srgb-range.schema.json",
@@ -429,6 +430,45 @@ def main():
         invalid = copy.deepcopy(phase_cases)
         invalid[0][key] = value
         check_case(phase_schema, "invalid slider phase record", invalid, False)
+    anatomy_schema = validator_for("schemas/component-anatomy.schema.json")
+    command_anatomy = load_json(ROOT / "definitions/components/command.json")
+    toggle_anatomy = load_json(ROOT / "definitions/components/toggle.json")
+    check_case(anatomy_schema, "authored command anatomy", command_anatomy, True)
+    check_case(anatomy_schema, "authored toggle anatomy", toggle_anatomy, True)
+    for document, pointer, value in (
+            (command_anatomy, "/schemaVersion", "0.2.0"),
+            (command_anatomy, "/component", "toggle"),
+            (command_anatomy, "/variants/standard/body/materialRole", "surface.base"),
+            (command_anatomy, "/variants/primary/body/colorRole", "accent"),
+            (command_anatomy, "/variants/primary/label/typographyRole", "small"),
+            (toggle_anatomy, "/component", "command"),
+            (toggle_anatomy, "/thumb/materialRole", "feedback.drag"),
+            (toggle_anatomy, "/track/elevation", "sunken")):
+        invalid = copy.deepcopy(document)
+        replace_at_pointer(invalid, pointer, value)
+        check_case(anatomy_schema, "invalid anatomy " + pointer, invalid, False)
+    for document, path, member in (
+            (command_anatomy, ("variants",), "primary"),
+            (command_anatomy, ("variants", "standard", "body"), "contentRole"),
+            (toggle_anatomy, (), "label"),
+            (toggle_anatomy, ("thumb",), "checkedColorRole"),
+            (toggle_anatomy, ("track",), "contentRole")):
+        invalid = copy.deepcopy(document)
+        container = invalid
+        for key in path:
+            container = container[key]
+        del container[member]
+        check_case(anatomy_schema, "missing anatomy " + member, invalid, False)
+    for document, path, member in (
+            (command_anatomy, ("variants", "standard", "body"), "checkedColorRole"),
+            (toggle_anatomy, ("track",), "foregroundRole"),
+            (toggle_anatomy, (), "variants")):
+        invalid = copy.deepcopy(document)
+        container = invalid
+        for key in path:
+            container = container[key]
+        container[member] = "selection"
+        check_case(anatomy_schema, "unknown anatomy " + member, invalid, False)
     for name in ("light", "dark"):
         check_case(validator_for("schemas/command-appearance.schema.json"),
                    "authored command " + name,

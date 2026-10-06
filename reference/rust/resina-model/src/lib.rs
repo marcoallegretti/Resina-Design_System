@@ -7,6 +7,11 @@ pub use slider_value::SliderValue;
 mod slider_appearance;
 pub use slider_appearance::{SliderAppearance, SliderPart, SliderPhase, resolve_slider_phase};
 
+mod component_anatomy;
+pub use component_anatomy::{
+    CommandAnatomy, CommandBody, CommandEmphasis, CommandVariant, SelectablePart, ToggleAnatomy,
+};
+
 mod command_appearance;
 pub use command_appearance::{
     CommandAppearance, CommandPhase, CommandResponse, resolve_command_phase,
@@ -230,6 +235,14 @@ pub struct SurfaceForm {
 }
 
 impl SurfaceForm {
+    pub(crate) fn new(shape: ShapeIntent, elevation: ElevationRole) -> Self {
+        Self {
+            schema_version: "0.1.0".to_owned(),
+            shape,
+            elevation,
+        }
+    }
+
     pub fn shape(&self) -> ShapeIntent {
         self.shape
     }
@@ -299,6 +312,13 @@ impl TryFrom<TreatmentStackInput> for TreatmentStack {
 }
 
 impl TreatmentStack {
+    pub(crate) fn untreated() -> Self {
+        Self {
+            schema_version: "0.1.0".to_owned(),
+            treatments: vec![OpticalTreatment::None],
+        }
+    }
+
     pub fn treatments(&self) -> &[OpticalTreatment] {
         &self.treatments
     }

@@ -14,6 +14,22 @@ pub struct SurfaceIntent {
 }
 
 impl SurfaceIntent {
+    pub(crate) fn untreated(
+        material_role: MaterialRole,
+        color_role: ColorRole,
+        form: SurfaceForm,
+        states: StateSet,
+    ) -> Self {
+        Self {
+            schema_version: "0.2.0".to_owned(),
+            material_role,
+            color_role,
+            form,
+            states,
+            treatment_stack: TreatmentStack::untreated(),
+        }
+    }
+
     pub fn with_color_role(mut self, color_role: ColorRole) -> Self {
         self.color_role = color_role;
         self
