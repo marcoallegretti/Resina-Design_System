@@ -51,8 +51,8 @@ Preserve that context, typography and wrapping constraint for drawing, allow
 glyph overhang and invalidate measurements when the font environment changes.
 Use `Text.QtRendering`, upright mixed-case text with no underline or strikeout,
 matching the helper's explicit font traits and layout metrics.
-This helper measures layout; native label drawing, ink, accessibility and a
-Rust/QML product binding require their own evidence.
+This helper measures layout; accessibility and a Rust/QML product binding
+require their own evidence. The drawing counterpart is described below.
 
 Native limits are explicit. [Qt's pixel-size property is integer-valued](https://doc.qt.io/qt-6.11/qml-qtquick-text.html#font.pixelSize-prop),
 so fractional resolved font sizes fail rather than rounding or shrinking.
@@ -89,6 +89,65 @@ on both software/offscreen and software/Wayland with Quickshell 0.3.1 /
 Qt 6.11.2 on WSLg. Runtime CI and other
 fonts/compositors remain unverified. The checker itself is covered by portable
 CI tests that reject incomplete, duplicate, failed and wrong-scale evidence.
+
+## Native label drawing
+
+[ResinaLabel.qml](qml/ResinaLabel.qml) draws a previously resolved label using
+the same native measurement context. Install it alongside `ResinaLabelMeasure.qml`
+and register the selected fonts before calling `prepare(request)` on the Qt UI
+thread. The request requires exactly these fields:
+
+```text
+text, family, pixelSize, weight, spacing, lineHeight,
+wrappingWidth, height, color, x, y
+```
+
+Map content and resolved typography from validated command label IR. The font
+family comes from the application's explicit font mapping. `wrappingWidth` and
+`height` are the resolved label box dimensions; `x` and `y` place its physical
+origin in the parent item's logical coordinates. `color` is four finite sRGB
+channels in [0, 1], supplied after the composition owner's content contrast and
+containment checks. The component does not parse IR or repeat Resina layout policy.
+
+Preparation remeasures every complete paragraph at the unchanged offered width,
+verifies the resolved complete height, and checks native coordinate precision
+within 1/1024 logical px, including cumulative paragraph placement. It copies
+the request before publishing the paragraph Text items. Later mutation of the
+caller's object cannot change drawing. `paintReady` reports publication and
+`paintError` reports failure; a rejected request throws and clears previous
+drawing. `paintOriginX` and `paintOriginY` expose the prepared placement.
+Each paragraph retains the prepared wrapping width rather than following a
+later resize of the containing item. Native text is complete, centered and
+unclipped. Input is disabled and accessibility ignores this decorative drawing;
+the complete control owner must provide its own semantics and interaction.
+Font environment changes require preparation again. Ancestor transforms,
+clipping, font fallback, overhang background and guarded color remain the
+composition owner's responsibility.
+
+```sh
+python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --output-dir target/qt-label-software
+python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --scene-graph rhi --scales 0.5 1 1.25 2 1.3 --output-dir target/qt-label-rhi
+```
+
+Use fresh output directories. The probe compares 25 actual drawing/reference
+capture pairs per device scale, including glyph overhang, three text scales,
+expanded German, Arabic, independent mixed-script paragraphs, literal markup,
+string-length expansion and blank paragraphs. It also checks request mutation,
+nine rejected requests and recovery. References use independent native Text
+items at the same physical position; this avoids GPU rounding differences from
+translating the reference across the viewport. Captures use logical item size:
+[Qt applies the window's device scale itself](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquickitemgrabresult.cpp#L244-L280).
+The checker rejects missing, stale, translucent, incorrectly sized or differing
+captures and requires visible ink outside the `j` advance box. Portable tests
+cover both image inputs and the one-byte channel comparison tolerance.
+
+On local Quickshell 0.3.1 / Qt 6.11.2, software/offscreen and software/Wayland
+passed scales 1, 1.25, 2 and 1.3; OpenGL RHI on Mesa software graphics passed
+0.5, 1, 1.25, 2 and 1.3 on both surfaces. Software `grabToImage` at 0.5 produces
+an invalid partially black capture and fails the checker when requested.
+Live software presentation at 0.5, hardware GPUs, runtime CI, continuous text
+scaling, other fonts and complete component/accessibility conformance remain
+unverified.
 
 ## Complete opaque paint
 
