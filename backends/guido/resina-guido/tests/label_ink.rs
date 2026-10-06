@@ -53,28 +53,30 @@ fn native_label_advance_does_not_crop_glyph_overhang() {
     assert!(label.label_bounds().width < 60.0);
     let bounded_origin = PhysicalVector { x: 80.0, y: 40.0 };
     let reference_origin = PhysicalVector { x: 220.0, y: 40.0 };
-    let bounded = prepare_command_label_at(&label, family, Color::BLACK, bounded_origin).unwrap();
-    let mut reference =
-        prepare_command_label_at(&label, family, Color::BLACK, reference_origin).unwrap();
-    let DrawCommand::Text { rect, .. } = &mut reference else {
-        panic!("native text command required")
-    };
-    rect.x -= 20.0;
-    rect.width += 40.0;
-    let mut root = RenderNode::new(1);
-    root.commands.extend([Rc::new(bounded), Rc::new(reference)]);
-    let mut commands = Vec::new();
-    let mut layers = Vec::new();
-    flatten_root_into(
-        &root,
-        &mut commands,
-        &mut layers,
-        &mut FlattenScratch::default(),
-    );
     let gpu = GpuContext::try_new().expect("native glyph GPU rendering is required");
     let mut target = RenderTarget::offscreen(&gpu, 400, 240);
     let mut renderer = Renderer::new(gpu.device.clone(), gpu.queue.clone(), target.format());
     for scale in [1.0_f32, 1.25, 2.0, 3.0] {
+        let bounded =
+            prepare_command_label_at(&label, family, Color::BLACK, bounded_origin, scale).unwrap();
+        let mut reference =
+            prepare_command_label_at(&label, family, Color::BLACK, reference_origin, scale)
+                .unwrap();
+        let DrawCommand::Text { rect, .. } = &mut reference else {
+            panic!("native text command required")
+        };
+        rect.x -= 20.0;
+        rect.width += 40.0;
+        let mut root = RenderNode::new(1);
+        root.commands.extend([Rc::new(bounded), Rc::new(reference)]);
+        let mut commands = Vec::new();
+        let mut layers = Vec::new();
+        flatten_root_into(
+            &root,
+            &mut commands,
+            &mut layers,
+            &mut FlattenScratch::default(),
+        );
         let width = (400.0 * scale) as u32;
         let height = (240.0 * scale) as u32;
         target.resize(width, height);

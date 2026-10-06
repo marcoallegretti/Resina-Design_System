@@ -5,11 +5,11 @@ mod readback;
 
 use guido::{
     renderer::{
-        DrawCommand, FlattenScratch, GpuContext, RenderNode, RenderTarget, Renderer,
+        DrawCommand, FlattenScratch, GpuContext, LineFit, RenderNode, RenderTarget, Renderer,
         flatten_root_into,
     },
     transform::Transform,
-    widgets::{Color, ContentFit, font::FontFamily},
+    widgets::{Color, ContentFit, TextOverflow, font::FontFamily},
 };
 use resina_environment::{EnvironmentSnapshot, LayoutDirection, SafeArea};
 use resina_guido::{
@@ -32,6 +32,12 @@ use resina_resolver::{
 use serde_json::{Value, json};
 use std::{path::Path, rc::Rc};
 
+const UNWRAPPED: LineFit = LineFit {
+    width: None,
+    max_lines: None,
+    overflow: TextOverflow::Clip,
+    wrap: false,
+};
 fn size(width: f64, height: f64) -> SurfaceSize {
     SurfaceSize { width, height }
 }
@@ -87,8 +93,6 @@ impl Fixture {
                 .unwrap();
         source["materialAssignments"]["control"]["interactive"] =
             scene["expectedMaterialFamily"].clone();
-        source["typographyAssignments"]["roles"]["label"]["letterSpacing"] =
-            json!("type.tracking.normal");
         surface["body"]["theme"]["themeSource"] = json!(source.to_string());
         surface["body"]["theme"]["environment"]["layoutDirection"] =
             serde_json::to_value(direction).unwrap();
@@ -448,7 +452,11 @@ fn check_commands(
         panic!("complete measured label required")
     };
     assert_eq!(text, f.label.text());
-    assert!(fit.is_none());
+    let lines = (f.label.label_bounds().height
+        / (f.label.typography().font_size() * f.label.typography().line_height()))
+    .round();
+    let paragraphs = f.label.text().split('\n').count() as f64;
+    assert_eq!(*fit, (lines == paragraphs).then_some(UNWRAPPED));
     let label = f.label.label_bounds();
     assert!((f64::from(rect.x) - f.origin.x - label.x).abs() <= 1.0 / 1024.0);
     assert!((f64::from(rect.y) - f.origin.y - label.y).abs() <= 1.0 / 1024.0);

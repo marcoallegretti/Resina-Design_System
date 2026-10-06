@@ -41,14 +41,15 @@ pub fn prepare_command_content(
     let label = snapshot.label();
     let body = paint.paint().body();
     let [r, g, b] = body.foreground().components().map(|value| value as f32);
+    let material = prepare_surface_paint(paint.paint(), device_scale, samples_per_axis)
+        .map_err(CommandContentPrepareError::Paint)?;
     let text = prepare_command_label(
         label,
         family,
         Color::rgba(r, g, b, body.foreground().alpha() as f32),
+        device_scale,
     )
     .map_err(CommandContentPrepareError::Label)?;
-    let material = prepare_surface_paint(paint.paint(), device_scale, samples_per_axis)
-        .map_err(CommandContentPrepareError::Paint)?;
     let origin = material.origin();
     let size = material.logical_size();
     Ok([

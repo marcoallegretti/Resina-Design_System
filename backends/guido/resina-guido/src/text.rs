@@ -1,8 +1,8 @@
 use crate::MAX_COORDINATE_ERROR;
 use guido::{
-    renderer::{DrawCommand, measure_text_styled},
+    renderer::{DrawCommand, LineFit, Measured, measure_text_full},
     widgets::font::{FontFamily, FontWeight, LineHeight},
-    widgets::{Color, Rect, TextAlign},
+    widgets::{Color, Rect, TextAlign, TextOverflow},
 };
 use resina_model::{PhysicalVector, SurfaceSize};
 use resina_resolver::{CommandLabelIr, LabelMeasureInput, ResolvedTypography};
@@ -10,7 +10,6 @@ use std::fmt;
 
 #[derive(Debug, PartialEq)]
 pub enum LabelMeasureError {
-    LetterSpacing,
     FontWeight,
     Precision(&'static str),
     Extent,
@@ -18,7 +17,6 @@ pub enum LabelMeasureError {
 impl fmt::Display for LabelMeasureError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::LetterSpacing => f.write_str("pinned GUIdo text does not support letter spacing"),
             Self::FontWeight => f.write_str("GUIdo font weight must be an integer"),
             Self::Precision(field) => write!(f, "GUIdo label {field} exceeds coordinate precision"),
             Self::Extent => f.write_str("GUIdo label measurement is empty or nonfinite"),
@@ -41,11 +39,9 @@ struct NativeLabelStyle {
     size: f32,
     weight: FontWeight,
     line: LineHeight,
+    spacing: f32,
 }
 fn native_style(style: &ResolvedTypography) -> Result<NativeLabelStyle, LabelMeasureError> {
-    if style.letter_spacing() != 0.0 {
-        return Err(LabelMeasureError::LetterSpacing);
-    }
     if style.font_weight().fract() != 0.0 {
         return Err(LabelMeasureError::FontWeight);
     }
@@ -63,10 +59,17 @@ fn native_style(style: &ResolvedTypography) -> Result<NativeLabelStyle, LabelMea
     {
         return Err(LabelMeasureError::Precision("resolved line height"));
     }
+    let spacing = style.letter_spacing() as f32;
+    if !spacing.is_finite()
+        || (f64::from(spacing) - style.letter_spacing()).abs() > MAX_COORDINATE_ERROR
+    {
+        return Err(LabelMeasureError::Precision("letter spacing"));
+    }
     Ok(NativeLabelStyle {
         size,
         weight: FontWeight(style.font_weight() as u16),
         line: LineHeight::Relative(line),
+        spacing,
     })
 }
 fn wrap_width(value: f64) -> Result<f32, LabelMeasureError> {
@@ -79,49 +82,81 @@ fn wrap_width(value: f64) -> Result<f32, LabelMeasureError> {
     }
     Ok(native)
 }
+/// Shapes with the same scaled size, spacing and width as GUIdo's draw path at `scale`.
+fn shape_native(
+    text: &str,
+    family: FontFamily,
+    style: &NativeLabelStyle,
+    width: Option<f32>,
+    scale: f32,
+) -> Measured {
+    measure_text_full(
+        text,
+        style.size * scale,
+        width.map(|width| width * scale),
+        family,
+        style.weight,
+        style.line,
+        style.spacing * scale,
+        None,
+    )
+}
+fn measure_native(
+    text: &str,
+    family: FontFamily,
+    style: &NativeLabelStyle,
+    width: Option<f32>,
+    scale: f32,
+) -> Result<Measured, LabelMeasureError> {
+    let measured = shape_native(text, family, style, width, scale);
+    if !measured.size.width.is_finite()
+        || measured.size.width <= 0.0
+        || !measured.size.height.is_finite()
+        || measured.size.height <= 0.0
+    {
+        return Err(LabelMeasureError::Extent);
+    }
+    Ok(measured)
+}
 pub fn measure_command_label(
     family: FontFamily,
     input: LabelMeasureInput<'_>,
 ) -> Result<SurfaceSize, LabelMeasureError> {
     let style = native_style(input.typography)?;
     let width = input.maximum_width.map(wrap_width).transpose()?;
-    let measured = measure_text_styled(
-        input.text,
-        style.size,
-        width,
-        family,
-        style.weight,
-        style.line,
-    );
-    if !measured.width.is_finite()
-        || measured.width <= 0.0
-        || !measured.height.is_finite()
-        || measured.height <= 0.0
-    {
-        return Err(LabelMeasureError::Extent);
-    }
+    let measured = measure_native(input.text, family, &style, width, 1.0)?;
     Ok(SurfaceSize {
-        width: f64::from(measured.width),
-        height: f64::from(measured.height),
+        width: f64::from(measured.size.width),
+        height: f64::from(measured.size.height),
     })
 }
 
 #[derive(Debug, PartialEq)]
 pub enum LabelPrepareError {
     Measurement(LabelMeasureError),
+    InvalidScale,
     Geometry,
     Color,
     MeasurementMismatch,
+    ScaledMetrics,
+    ScaledLineMismatch,
 }
 impl fmt::Display for LabelPrepareError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Measurement(error) => write!(f, "label preparation failed: {error}"),
+            Self::InvalidScale => f.write_str("device scale must be finite and positive"),
             Self::Geometry => f.write_str("label bounds exceed native coordinate precision"),
             Self::Color => f.write_str("label color must have finite sRGB channels in [0, 1]"),
             Self::MeasurementMismatch => {
                 f.write_str("native complete label measurement disagrees with resolved layout")
             }
+            Self::ScaledMetrics => {
+                f.write_str("label metrics at the device scale are not representable by GUIdo")
+            }
+            Self::ScaledLineMismatch => f.write_str(
+                "native label lines shaped at the device scale disagree with resolved layout",
+            ),
         }
     }
 }
@@ -142,17 +177,29 @@ pub fn prepare_command_label(
     ir: &CommandLabelIr,
     family: FontFamily,
     color: Color,
+    device_scale: f32,
 ) -> Result<DrawCommand, LabelPrepareError> {
-    prepare_command_label_at(ir, family, color, PhysicalVector { x: 0.0, y: 0.0 })
+    prepare_command_label_at(
+        ir,
+        family,
+        color,
+        PhysicalVector { x: 0.0, y: 0.0 },
+        device_scale,
+    )
 }
 
 /// The returned text rectangle includes the parent origin and must not be translated again.
+/// GUIdo shapes text in device pixels, so prepare again when the device scale changes.
 pub fn prepare_command_label_at(
     ir: &CommandLabelIr,
     family: FontFamily,
     color: Color,
     origin: PhysicalVector,
+    device_scale: f32,
 ) -> Result<DrawCommand, LabelPrepareError> {
+    if !device_scale.is_finite() || device_scale <= 0.0 {
+        return Err(LabelPrepareError::InvalidScale);
+    }
     if [color.r, color.g, color.b, color.a]
         .iter()
         .any(|value| !value.is_finite() || !(0.0..=1.0).contains(value))
@@ -175,20 +222,55 @@ pub fn prepare_command_label_at(
         .map_err(|_| LabelPrepareError::Geometry)?;
     crate::check_coordinate(y + bounds.height, rect.y + rect.height)
         .map_err(|_| LabelPrepareError::Geometry)?;
-    let measured = measure_command_label(
-        family,
-        LabelMeasureInput {
-            text: ir.text(),
-            typography: ir.typography(),
-            maximum_width: Some(bounds.width),
-        },
-    )?;
-    if measured.width > f64::from(width)
-        || measured.height > f64::from(height)
-        || (measured.height - bounds.height).abs() > MAX_COORDINATE_ERROR
+    // GUIdo raises a device font size below 0.01 px and drops nonfinite spacing
+    // instead of failing.
+    if style.size * device_scale < 0.01
+        || [style.size, style.spacing, width, height]
+            .iter()
+            .any(|value| !(value * device_scale).is_finite())
+    {
+        return Err(LabelPrepareError::ScaledMetrics);
+    }
+    let measured = measure_native(ir.text(), family, &style, Some(width), 1.0)?;
+    if measured.size.width > width
+        || measured.size.height > height
+        || (f64::from(measured.size.height) - bounds.height).abs() > MAX_COORDINATE_ERROR
     {
         return Err(LabelPrepareError::MeasurementMismatch);
     }
+    // A line that exactly fills the box can wrap again when shaped at device size:
+    // scaled advances and spacing round independently of the scaled width. GUIdo's
+    // transformed text path shapes at twice the device scale; doubling is exact in
+    // binary32, so this check also covers that path.
+    let fit = if measured.wraps {
+        let scaled = measure_native(ir.text(), family, &style, Some(width), device_scale)?;
+        let scale = f64::from(device_scale);
+        let budget = MAX_COORDINATE_ERROR * scale;
+        if (f64::from(scaled.size.width) - f64::from(measured.size.width) * scale).abs() > budget {
+            return Err(LabelPrepareError::ScaledLineMismatch);
+        }
+        // Greedy breaking makes the first differing break change the line count of
+        // the prefix that ends at one of the two break positions.
+        let ends = ir.text().char_indices().skip(1).map(|(end, _)| end);
+        for end in ends.chain([ir.text().len()]) {
+            let prefix = &ir.text()[..end];
+            let logical = shape_native(prefix, family, &style, Some(width), 1.0);
+            let device = shape_native(prefix, family, &style, Some(width), device_scale);
+            if (f64::from(device.size.height) - f64::from(logical.size.height) * scale).abs()
+                > budget
+            {
+                return Err(LabelPrepareError::ScaledLineMismatch);
+            }
+        }
+        None
+    } else {
+        Some(LineFit {
+            width: None,
+            max_lines: None,
+            overflow: TextOverflow::Clip,
+            wrap: false,
+        })
+    };
     Ok(DrawCommand::Text {
         text: ir.text().to_owned(),
         rect,
@@ -197,7 +279,8 @@ pub fn prepare_command_label_at(
         font_family: family,
         font_weight: style.weight,
         line_height: style.line,
+        letter_spacing: style.spacing,
         align: TextAlign::Center,
-        fit: None,
+        fit,
     })
 }

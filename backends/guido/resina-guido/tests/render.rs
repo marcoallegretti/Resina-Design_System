@@ -1,12 +1,23 @@
 #![cfg(feature = "testing")]
 
 use guido::prelude::*;
-use resina_guido::{PreparedPaint, prepare_focus, prepare_surface, prepare_surface_paint};
+use resina_guido::{
+    MAX_TEXTURE_DIMENSION, PreparedPaint, prepare_focus, prepare_surface, prepare_surface_paint,
+};
 use resina_resolver::{
     resolve_focus_ir_source, resolve_opaque_surface_source, resolve_surface_paint_source,
 };
 use serde_json::Value;
 use std::{cell::Cell, rc::Rc};
+
+#[test]
+fn prepared_paint_limit_is_the_native_device_texture_dimension() {
+    let gpu = guido::renderer::GpuContext::try_new().expect("GUIdo GPU rendering is required");
+    assert_eq!(
+        gpu.device.limits().max_texture_dimension_2d,
+        MAX_TEXTURE_DIMENSION
+    );
+}
 
 #[test]
 fn authored_paint_is_ready_on_first_frame_and_after_source_and_scale_changes() {

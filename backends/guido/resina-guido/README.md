@@ -5,17 +5,20 @@ as complete raw images for GUIdo. Resina IR remains independent of the renderer.
 This package has its own Cargo workspace and lockfile so GUIdo's Linux runtime
 dependencies do not enter the portable reference workspace.
 
-GUIdo is pinned to maintainer commit
-`e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb` from
-[upstream image-cache correction](https://github.com/MalpenZibo/guido/pull/607).
-That correction was merged upstream on 2026-10-04. This package retains its
-verified exact revision; required renderer tests cover image identity, first-frame
-readiness and replacement at that pin.
+GUIdo is pinned to upstream main revision
+`ae29dc97a869434b51b768ad39b974e76db9a4dc`. It includes the merged
+[image-cache correction](https://github.com/MalpenZibo/guido/pull/607),
+[letter spacing](https://github.com/MalpenZibo/guido/pull/619) and
+[key-repeat metadata](https://github.com/MalpenZibo/guido/pull/616), with
+[text placement in the laid-out width](https://github.com/MalpenZibo/guido/pull/627)
+and [image downsampling to the device texture limit](https://github.com/MalpenZibo/guido/pull/612).
+Required renderer tests cover image identity, first-frame readiness, replacement
+and spaced text at that pin.
 
 ## Live Linux runtime
 
 The pinned GUIdo runtime creates Wayland layer-shell surfaces. Its
-[connection setup](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/wayland.rs#L296-L317)
+[connection setup](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/wayland.rs#L296-L317)
 requires `wl_compositor` and `zwlr_layer_shell_v1`; an `xdg_wm_base` global alone
 is insufficient. Check the actual session registry with `wayland-info` before
 launching a live GUIdo product. A missing layer-shell global produces
@@ -37,21 +40,12 @@ limits prevent claiming complete native command conformance:
 
 | Requirement | Verified boundary | Current behavior |
 | --- | --- | --- |
-| Authored nonzero letter spacing | The pinned GUIdo [text command](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/renderer/commands.rs#L246-L268) and [shared shaper](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/renderer/text.rs#L112-L165) have no spacing input. | Native measurement/preparation returns `LabelMeasureError::LetterSpacing`. The zero-tracking probe profile does not certify the authored default label profile. |
-| Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/input.rs#L850-L880) and [repeat](https://github.com/MalpenZibo/guido/blob/e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb/src/platform/input.rs#L950-L978) both emit the same `KeyDown` fields. | No conforming native activation adapter is supplied. Do not infer repeat from the semantic hold: an independent invocation can clear that hold while the physical key remains down. |
+| Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L956-L960) and [repeat](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L969-L972) emit `KeyDown` with distinct `repeat` values. | No conforming native activation adapter consumes that flag yet. Do not infer repeat from the semantic hold: an independent invocation can clear that hold while the physical key remains down. |
 | Native assistive technology delivery | This package resolves/consumes portable [command semantics](../../../spec/47-command-accessibility.md) but supplies no native semantic-tree publication. | Headless accessibility checks and rendered pixels do not establish native screen-reader discovery or action delivery. |
 
-The first two limits above describe the pinned revision. Upstream added
-[letter spacing](https://github.com/MalpenZibo/guido/pull/619) and
-[key-repeat metadata](https://github.com/MalpenZibo/guido/pull/616) on 2026-10-05.
-Source inspection at main revision
-`ae29dc97a869434b51b768ad39b974e76db9a4dc` confirms
-[`TextStyle::letter_spacing`](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/widgets/text_style.rs#L239-L243)
-and the
+The repeat flag also reaches the
 [`Container::on_key_down` repeat argument](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/widgets/container/mod.rs#L1111-L1124).
-These APIs have not been integrated or verified by this package's native tests;
-their upstream availability does not remove the pinned backend's limits or
-establish text shaping, input routing or live keyboard conformance.
+Its availability does not establish input routing or live keyboard conformance.
 
 The accessibility boundary describes this package's implemented scope; it does
 not certify or diagnose every upstream integration. Keep the authored Resina
@@ -87,6 +81,14 @@ corners. Parent transforms remain the caller's responsibility. Pixel buffers con
 straight RGBA8, as required by GUIdo. Converting the owned raster buffer to an
 `Arc` can allocate and copy once; subsequent source and prepared-paint clones
 share that allocation. Raw images require no asynchronous image decoding.
+
+GUIdo creates its device with `wgpu::Limits::default()`, whose 8192 px
+`max_texture_dimension_2d` applies even when the adapter supports more, and it
+downsamples a larger raster with only a log warning. That would replace the
+prepared device-grid paint, so preparation fails with `TextureLimit` when either
+axis exceeds `MAX_TEXTURE_DIMENSION`. The CPU pixel limit alone does not bound
+one dimension. A GPU test checks the constant against the native device. An
+application that supplies its own GUIdo device must allow at least this dimension.
 
 The canonical CPU renderer enforces its pixel and sample limits before raster
 allocation. Invalid scales, unrepresentable bounds, excessive coordinate
@@ -127,24 +129,61 @@ component keyboard conformance.
 Load the selected font before GUIdo initializes its font systems. Supply an
 explicit family to `measure_command_label` when resolving portable label layout.
 Select and verify that family and its fallback policy before calling the adapter. Then call `prepare_command_label` with that IR, the same
-family and the actual guarded content color. It returns a native `DrawCommand`
-for the caller's render node. The rectangle is relative to the command origin;
-parent transforms and clipping remain the caller's responsibility.
+family, the actual guarded content color and the actual device scale. It returns
+a native `DrawCommand` for the caller's render node. The rectangle is relative to
+the command origin; parent transforms and clipping remain the caller's
+responsibility.
+
+Resolved letter spacing reaches GUIdo unchanged in logical pixels and follows
+every shaped glyph, including the last, in both measurement and drawing. Text
+scaling is already part of the resolved value. GUIdo shapes drawn text in device
+pixels, so a line that exactly fills its box can wrap again at a device scale:
+scaled advances and spacing round independently of the scaled width. Following
+the [layout drawing rule](../../../spec/46-command-label-layout.md), a label whose
+fitted measurement wrapped no text is drawn without wrapping, which keeps one
+line per hard break at every scale. GUIdo ends lines only at LF and CR and treats
+LF followed by CR as one break; other mandatory breaks do not end a line. A
+wrapping label keeps its offered width and is shaped again at the device scale.
+GUIdo measurement reports no individual lines, so every prefix ending at a
+character boundary is shaped at both scales: greedy breaking makes the first
+differing break change the line count of the prefix ending at one of the two
+break positions. A different prefix height or widest line fails with
+`ScaledLineMismatch`. A prefix cut can shape differently from its full context,
+through cursive joining, kerning or bidirectional resolution at the cut, so a
+break at such a cut is checked only as closely as its prefix shaping matches. The
+check costs time quadratic in label length; it suits command labels, not long
+text. Lines that exactly fill the box can fail at common scales such as 1.5, as
+can a prefix ending inside a word that exactly fills the box even when the drawn
+lines would agree; choose another valid layout for that device scale rather than
+drawing different lines. Prepare again when the device scale changes.
 
 Preparation remeasures complete text and rejects a mismatch with resolved layout.
-It preserves the offered wrapping width, uses centered line alignment and emits
-no line limit or ellipsis. Unsupported tracking, fractional weight, excessive
-numeric rounding and invalid color channels fail explicitly. Do not substitute
-the ordinary GUIdo text widget without preserving these constraints: its layout
-can shrink the text box to the longest line before drawing.
+It keeps the offered box width, uses centered line alignment and emits
+no line limit or ellipsis. Fractional weight, metrics or spacing beyond the
+binary32 precision budget, invalid device scales, device-scaled metrics GUIdo
+would clamp or drop (`ScaledMetrics`) and invalid color channels fail explicitly. Do not substitute the ordinary GUIdo text widget without preserving
+these constraints: its layout can shrink the text box to the longest line before
+drawing.
 
 The native label test requires `RESINA_LABEL_FONT` to name the installed
 DejaVuSans.ttf file and loads it before measurement and rendering. On Ubuntu with
 `fonts-dejavu-core`, this is `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf`.
 Actual GPU readback checks Latin, expanded German and Arabic labels plus the
 public 100/150/200% string-length matrix at three text scales and four device
-scales: 72 frames. Character counts classify those ASCII test strings only; all
-widths come from actual font shaping. Set `RESINA_LABEL_CAPTURE_DIR` to a fresh output directory
+scales: 72 frames, each with 0.15 px tracking before text scaling and no ink a
+line below the resolved box. That check cannot see a line GUIdo drops beyond its
+shaping height, so every unwrapped label must also match the ink bounds of the
+same text drawn in a box 200 px wider, and wrapped labels rely on the
+device-scale line check. GUIdo's shaping height is the box
+height with a 50 px minimum. Hard breaks, an empty paragraph, a leading break and an RTL
+Hebrew/Latin pair draw one inked line per nonempty paragraph at device scales 1,
+1.5 and 3. Character counts classify the ASCII test strings only; all widths come
+from actual font shaping. Spacing evidence measures “Save” four spacings wider
+than unspaced text, and its drawn ink span changes by the three interior
+spacings at device scales 1 and 2. A wrapped fixture whose lines exactly fill
+their box agrees at device scale 2 and fails with `ScaledLineMismatch` at 1.5
+and 3, as do two labels whose rebreak at those scales keeps the complete height
+and widest line. Set `RESINA_LABEL_CAPTURE_DIR` to a fresh output directory
 to save each tested frame as a PPM for visual review. These are static typography
 conformance probes, not interactive controls. Component accessibility and native
 event delivery remain separate work.
@@ -154,8 +193,7 @@ advance box does not crop a centered DejaVu Sans “j” at 60 logical px. It
 compares the adapter's exact resolved label rectangle with a wider diagnostic
 rectangle at an identical glyph position, at device scales 1, 1.25, 2 and 3.
 Every corresponding pixel must match, with visible ink outside the resolved
-box on each scale. The current pin passes this check without widening the
-production wrapping constraint. This establishes overhang for the tested
+box on each scale. The production label box is unchanged. This establishes overhang for the tested
 upright glyph and unclipped render node, not arbitrary fonts, transforms or
 surrounding clip contours. Optional PPM captures use exclusive creation and
 never replace an existing frame.
@@ -189,9 +227,7 @@ stale snapshots after state/layout changes, and checks current activation when
 an action is delivered.
 
 Required Linux GPU tests compose actual text over authored Light/Dark material
-paint. The scene-derived label profile explicitly selects `type.tracking.normal`
-because pinned GUIdo rejects nonzero tracking; it does not silently alter the
-public default typography. Tests include the existing six-label expansion/script
+paint with the authored Label profile, including its wide tracking. Tests include the existing six-label expansion/script
 matrix at three text scales and four device scales, all four command phases
 across Cast, opaque Frost fallback and Elastomer in both schemes, and four sampled
 Elastomer motion times, plus unfocused replacement: 188 first composite frames.
@@ -235,9 +271,7 @@ delivery or complete interactive Toggle.
 Required Linux GPU tests cover 396 first compositions: actual Light/Dark themes,
 Cast/opaque Frost fallback/Elastomer, off/on selection, rest/hover/pressed/disabled
 and unfocused replacement, both directions and scales 1, 1.25 and 2. Wrapped Latin
-and Arabic labels use 200% text scaling. The fixture explicitly chooses zero
-tracking because GUIdo cannot represent the authored nonzero tracking profile;
-that capability limit remains an explicit error in production. The external
+and Arabic labels use 200% text scaling with the authored Label tracking. The external
 label uses a distinct, validated semantic foreground. Each part's raw image is
 checked against the canonical CPU renderer on the placed sampling grid; opaque
 GPU pixels must agree within one byte. Separate label masks identify real glyph
@@ -294,9 +328,8 @@ foreground and origin, and is measured again with the supplied native font.
 Replace the complete command array only after preparation succeeds.
 
 Label, track and thumb failures identify the failed part and preserve their
-underlying error. Nonzero letter spacing remains an explicit unsupported error
-at the unchanged GUIdo pin; this path does not alter authored typography or
-silently substitute measurements. Native input, pointer routing, clocks and
+underlying error. This path does not alter authored typography or silently
+substitute measurements. Native input, pointer routing, clocks and
 assistive technology publication remain component-owner responsibilities.
 
 Required GPU tests cover 192 complete opaque frames: Cast, Frost and Elastomer,
@@ -304,8 +337,9 @@ both axes and directions, rest/focused/disabled/read-only/pointer-preview states
 scales 1/1.25/2, and wrapped English/Arabic labels at textScale 2. Every part's
 placed sampling grid is checked against the canonical CPU paint, opaque native
 pixels against the prepared image, and actual glyph coverage against the
-reserved label slot and checked backdrop. Unsupported spacing, approximate
-measurements and invalid raster inputs fail before command publication.
+reserved label slot and checked backdrop. Labels use nonzero tracking.
+Unrepresentable spacing, approximate measurements and invalid raster inputs fail
+before command publication.
 `RESINA_SLIDER_CAPTURE_DIR` saves the tested PPM frames.
 
 These shared conformance fixtures deliberately use structural geometry and a

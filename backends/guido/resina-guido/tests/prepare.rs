@@ -134,8 +134,12 @@ fn surface_bounds_include_extrusion_and_reject_invalid_preparation() {
         Err(PrepareError::Raster(RasterError::InvalidSampling))
     ));
     assert!(matches!(
-        prepare_surface(&ir, 1000.0, 4),
+        prepare_surface(&ir, 300.0, 4),
         Err(PrepareError::Raster(RasterError::ResourceLimit))
+    ));
+    assert!(matches!(
+        prepare_surface(&ir, 1000.0, 4),
+        Err(PrepareError::TextureLimit { width, .. }) if width > 8192
     ));
     assert!(matches!(
         prepare_surface(&ir, f32::MAX, 4),

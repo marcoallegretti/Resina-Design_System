@@ -28,12 +28,16 @@ use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintIr};
 use std::fmt;
 
 const MAX_COORDINATE_ERROR: f64 = 1.0 / 1024.0;
+/// GUIdo requests `wgpu::Limits::default()` for its device and silently resamples
+/// a larger image to fit, which would replace the prepared device-grid paint.
+pub const MAX_TEXTURE_DIMENSION: u32 = 8192;
 
 #[derive(Debug)]
 pub enum PrepareError {
     InvalidScale,
     UnrepresentableBounds,
     CoordinatePrecision(f64),
+    TextureLimit { width: u32, height: u32 },
     Raster(RasterError),
 }
 
@@ -47,6 +51,10 @@ impl fmt::Display for PrepareError {
             Self::CoordinatePrecision(value) => write!(
                 formatter,
                 "GUIdo coordinate {value} exceeds the 1/1024 logical px binary32 rounding budget"
+            ),
+            Self::TextureLimit { width, height } => write!(
+                formatter,
+                "prepared paint {width}x{height} exceeds GUIdo's {MAX_TEXTURE_DIMENSION} px texture dimension"
             ),
             Self::Raster(error) => write!(formatter, "paint preparation failed: {error}"),
         }
@@ -192,7 +200,14 @@ fn prepare_at(
     let size = Size::new(coordinate(bounds.width)?, coordinate(bounds.height)?);
     check_coordinate(far_corner.x, origin.0 + size.width)?;
     check_coordinate(far_corner.y, origin.1 + size.height)?;
-    let image = render(prepared.viewport()).map_err(PrepareError::Raster)?;
+    let viewport = prepared.viewport();
+    if viewport.width > MAX_TEXTURE_DIMENSION || viewport.height > MAX_TEXTURE_DIMENSION {
+        return Err(PrepareError::TextureLimit {
+            width: viewport.width,
+            height: viewport.height,
+        });
+    }
+    let image = render(viewport).map_err(PrepareError::Raster)?;
     let source = ImageSource::Rgba {
         width: image.width(),
         height: image.height(),
@@ -246,6 +261,36 @@ mod tests {
                 ));
             }
         }
+    }
+
+    #[test]
+    fn images_beyond_the_device_texture_dimension_fail_before_rasterizing() {
+        for (width, height) in [(8193.0, 400.0), (400.0, 8193.0)] {
+            let bounds = PhysicalBounds {
+                x: 0.0,
+                y: 0.0,
+                width,
+                height,
+            };
+            assert!(matches!(
+                prepare(bounds, 1.0, |_| panic!("oversized paint must fail before rasterization")),
+                Err(PrepareError::TextureLimit { width, height })
+                    if width.max(height) == 8193 && width.min(height) == 400
+            ));
+        }
+        let bounds = PhysicalBounds {
+            x: 0.0,
+            y: 0.0,
+            width: 8192.0,
+            height: 1.0,
+        };
+        assert!(matches!(
+            prepare(bounds, 1.0, |viewport| {
+                assert_eq!(viewport.width, 8192);
+                Err(RasterError::InvalidSampling)
+            }),
+            Err(PrepareError::Raster(RasterError::InvalidSampling))
+        ));
     }
 
     #[test]

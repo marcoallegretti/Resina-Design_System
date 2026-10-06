@@ -66,6 +66,7 @@ fn label(
     text: &str,
     rect: Rect,
     foreground: ColorRole,
+    scale: f32,
 ) -> Result<DrawCommand> {
     let style = &theme.typography()[&role];
     if style.family_role() != FontFamilyRole::Sans {
@@ -108,6 +109,7 @@ fn label(
             x: f64::from(rect.x),
             y: f64::from(rect.y),
         },
+        scale,
     )?;
     let DrawCommand::Text { align, .. } = &mut command else {
         unreachable!()
@@ -248,6 +250,7 @@ pub(crate) fn prepare(
         "Resina / Material Board",
         Rect::new(36.0, 28.0, WIDTH - 72.0, title_height),
         ColorRole::ContentPrimary,
+        scale,
     )?);
     commands.push(label(
         light,
@@ -256,6 +259,7 @@ pub(crate) fn prepare(
         "Tier 0 / opaque paint / rest and focus",
         Rect::new(36.0, 40.0 + title_height, WIDTH - 72.0, intro_height),
         ColorRole::ContentSecondary,
+        scale,
     )?);
     for (column, theme_name) in ["light", "dark"].into_iter().enumerate() {
         let theme = &specimens[&format!("{theme_name}-cast-paint-rest")].theme;
@@ -275,6 +279,7 @@ pub(crate) fn prepare(
             },
             Rect::new(x + 24.0, top + 24.0, COLUMN_WIDTH - 48.0, heading_height),
             ColorRole::ContentPrimary,
+            scale,
         )?);
         for (row, material) in ["Cast", "Frost", "Elastomer", "Gel"]
             .into_iter()
@@ -288,6 +293,7 @@ pub(crate) fn prepare(
                 material,
                 Rect::new(x + 24.0, y, COLUMN_WIDTH - 48.0, heading_height),
                 ColorRole::ContentPrimary,
+                scale,
             )?);
             for (slot, state) in ["rest", "focused"].into_iter().enumerate() {
                 let sx = x + 24.0 + slot as f32 * 216.0;
@@ -298,6 +304,7 @@ pub(crate) fn prepare(
                     if state == "rest" { "Rest" } else { "Focus" },
                     Rect::new(sx, y + heading_height + 8.0, 180.0, caption_height),
                     ColorRole::ContentSecondary,
+                    scale,
                 )?);
                 let scene =
                     &specimens[&format!("{theme_name}-{}-paint-{state}", material.to_lowercase())];

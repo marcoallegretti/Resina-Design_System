@@ -6,11 +6,11 @@ mod readback;
 use fixture::{Fixture, FixtureConfig, size};
 use guido::{
     renderer::{
-        DrawCommand, FlattenScratch, GpuContext, RenderNode, RenderTarget, Renderer,
+        DrawCommand, FlattenScratch, GpuContext, LineFit, RenderNode, RenderTarget, Renderer,
         flatten_root_into,
     },
     transform::Transform,
-    widgets::{Color, ContentFit, font::FontFamily},
+    widgets::{Color, ContentFit, TextOverflow, font::FontFamily},
 };
 use resina_environment::LayoutDirection;
 use resina_guido::{
@@ -26,6 +26,12 @@ use resina_resolver::{
 use serde_json::json;
 use std::{convert::Infallible, path::Path, rc::Rc};
 
+const UNWRAPPED: LineFit = LineFit {
+    width: None,
+    max_lines: None,
+    overflow: TextOverflow::Clip,
+    wrap: false,
+};
 fn load_font() -> FontFamily {
     guido::load_font(
         std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
@@ -42,7 +48,7 @@ fn config() -> FixtureConfig<'static> {
         focused: true,
         read_only: false,
         preview: false,
-        tracking: 0.0,
+        tracking: 0.15,
         text_scale: 1.0,
         text: "Volume",
         label_maximum_size: size(180.0, 240.0),
@@ -147,7 +153,7 @@ fn unsupported_labels_and_invalid_raster_inputs_fail_before_publication() {
         Err(SliderContentPrepareError::Track(PrepareError::Raster(_)))
     ));
     let mut options = config();
-    options.tracking = 0.25;
+    options.tracking = 1.0e10 + 0.5;
     let f = Fixture::resolve(options, |input| {
         Ok::<_, Infallible>(size(
             80.0,
@@ -161,7 +167,7 @@ fn unsupported_labels_and_invalid_raster_inputs_fail_before_publication() {
     assert!(matches!(
         error,
         SliderContentPrepareError::Label(LabelPrepareError::Measurement(
-            LabelMeasureError::LetterSpacing
+            LabelMeasureError::Precision("letter spacing")
         ))
     ));
     let mut options = config();
@@ -332,7 +338,11 @@ fn check_commands(
         panic!("complete measured label required")
     };
     assert_eq!(text, f.label.text());
-    assert!(fit.is_none());
+    let lines = (f.label.label_bounds().height
+        / (f.label.typography().font_size() * f.label.typography().line_height()))
+    .round();
+    let paragraphs = f.label.text().split('\n').count() as f64;
+    assert_eq!(*fit, (lines == paragraphs).then_some(UNWRAPPED));
     let label = f.label.label_bounds();
     assert!((f64::from(rect.x) - origin.x - label.x).abs() <= 1.0 / 1024.0);
     assert!((f64::from(rect.y) - origin.y - label.y).abs() <= 1.0 / 1024.0);

@@ -55,13 +55,6 @@ pub fn prepare_slider_content(
 ) -> Result<[DrawCommand; 3], SliderContentPrepareError> {
     let foreground = snapshot.label_foreground();
     let [r, g, b] = foreground.components().map(|value| value as f32);
-    let text = prepare_command_label_at(
-        snapshot.label(),
-        family,
-        Color::rgba(r, g, b, foreground.alpha() as f32),
-        snapshot.label_origin(),
-    )
-    .map_err(SliderContentPrepareError::Label)?;
     let track = snapshot.layout().track_bounds();
     let track = prepare_surface_paint_at(
         snapshot.track().paint(),
@@ -84,5 +77,13 @@ pub fn prepare_slider_content(
         samples_per_axis,
     )
     .map_err(SliderContentPrepareError::Thumb)?;
+    let text = prepare_command_label_at(
+        snapshot.label(),
+        family,
+        Color::rgba(r, g, b, foreground.alpha() as f32),
+        snapshot.label_origin(),
+        device_scale,
+    )
+    .map_err(SliderContentPrepareError::Label)?;
     Ok([image(track), image(thumb), text])
 }

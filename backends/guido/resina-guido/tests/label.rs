@@ -91,10 +91,29 @@ fn actual_font_shapes_complete_scaled_and_expanded_labels() {
             LabelMeasureError::Precision("wrap width")
         );
     }
+    for scale in [1.0, 2.0] {
+        let natural = |tracking| {
+            measure_command_label(
+                family,
+                LabelMeasureInput {
+                    text: "Save",
+                    typography: &style(scale, tracking, 400.0, 1.4),
+                    maximum_width: None,
+                },
+            )
+            .unwrap()
+            .width
+        };
+        let unspaced = natural(0.0);
+        for tracking in [-0.4, 0.15, 1.0] {
+            let expected = unspaced + 4.0 * tracking * scale;
+            assert!((natural(tracking) - expected).abs() <= 1.0e-4);
+        }
+    }
     for (typography, expected) in [
         (
-            style(1.0, 0.25, 400.0, 1.4),
-            LabelMeasureError::LetterSpacing,
+            style(1.0, 1.0e10 + 0.5, 400.0, 1.4),
+            LabelMeasureError::Precision("letter spacing"),
         ),
         (style(1.0, 0.0, 400.5, 1.4), LabelMeasureError::FontWeight),
         (

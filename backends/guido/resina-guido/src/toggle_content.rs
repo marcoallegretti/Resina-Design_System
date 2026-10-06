@@ -86,13 +86,6 @@ fn prepare_content_at(
 ) -> Result<[DrawCommand; 3], ToggleContentPrepareError> {
     let foreground = snapshot.label_foreground();
     let [r, g, b] = foreground.components().map(|value| value as f32);
-    let text = prepare_command_label_at(
-        snapshot.label(),
-        family,
-        Color::rgba(r, g, b, foreground.alpha() as f32),
-        snapshot.label_origin(),
-    )
-    .map_err(ToggleContentPrepareError::Label)?;
     let track = prepare_surface_paint_at(
         snapshot.track().paint(),
         PhysicalVector { x: 0.0, y: 0.0 },
@@ -110,5 +103,13 @@ fn prepare_content_at(
         samples_per_axis,
     )
     .map_err(ToggleContentPrepareError::Thumb)?;
+    let text = prepare_command_label_at(
+        snapshot.label(),
+        family,
+        Color::rgba(r, g, b, foreground.alpha() as f32),
+        snapshot.label_origin(),
+        device_scale,
+    )
+    .map_err(ToggleContentPrepareError::Label)?;
     Ok([image(track), image(thumb), text])
 }

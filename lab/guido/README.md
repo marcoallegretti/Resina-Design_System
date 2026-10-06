@@ -25,9 +25,8 @@ The output is a native RGBA PNG tagged as sRGB. An existing output is never
 overwritten. Invalid catalogs, inconsistent names/themes/backdrops, unsupported
 capabilities, font or typography failures, resource limits and missing GPU
 adapters produce explicit errors. No substitute specimen or approximate text
-measurement is drawn. The public Heading, Body and Caption roles have supported
-zero spacing; authored Label/Display tracking is not rewritten to hide GUIdo's
-current letter-spacing limitation.
+measurement is drawn. Board text uses the authored Heading, Body and Caption
+typography unchanged.
 
 The tool requires all 16 complete paint scenes, verifies their material and
 focus identity, and uses their actual theme canvas. Every renderer capability

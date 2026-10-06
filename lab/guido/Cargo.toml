@@ -7,7 +7,7 @@ description = "Native Resina material inspection captures"
 [workspace]
 
 [dependencies]
-guido = { git = "https://github.com/MalpenZibo/guido", rev = "e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb", default-features = false, features = ["testing"] }
+guido = { git = "https://github.com/MalpenZibo/guido", rev = "ae29dc97a869434b51b768ad39b974e76db9a4dc", default-features = false, features = ["testing"] }
 resina-guido = { path = "../../backends/guido/resina-guido" }
 resina-model = { path = "../../reference/rust/resina-model" }
 resina-environment = { path = "../../reference/rust/resina-environment" }

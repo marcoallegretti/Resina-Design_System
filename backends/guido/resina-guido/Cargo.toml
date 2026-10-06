@@ -10,7 +10,7 @@ description = "Prepared Resina surface and focus paint for GUIdo"
 testing = ["guido/testing"]
 
 [dependencies]
-guido = { git = "https://github.com/MalpenZibo/guido", rev = "e04cc6bc36f8bf3760d2a6fd2bf626f91cb3ccdb", default-features = false }
+guido = { git = "https://github.com/MalpenZibo/guido", rev = "ae29dc97a869434b51b768ad39b974e76db9a4dc", default-features = false }
 resina-model = { path = "../../../reference/rust/resina-model" }
 resina-resolver = { path = "../../../reference/rust/resina-resolver" }
 resina-raster = { path = "../../cpu/resina-raster", default-features = false }

@@ -2,21 +2,23 @@
 
 #[path = "common/cases.rs"]
 mod label_cases;
+#[path = "common/label.rs"]
+mod label_style;
 #[path = "common/readback.rs"]
 mod readback;
 
 use guido::{
     renderer::{
-        DrawCommand, FlattenScratch, GpuContext, RenderNode, RenderTarget, Renderer,
+        DrawCommand, FlattenScratch, GpuContext, LineFit, RenderNode, RenderTarget, Renderer,
         flatten_root_into,
     },
     transform::Transform,
-    widgets::{Color, ContentFit, font::FontFamily},
+    widgets::{Color, ContentFit, TextOverflow, font::FontFamily},
 };
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{
-    CommandContentPrepareError, LabelPrepareError, PrepareError, measure_command_label,
-    prepare_command_content,
+    CommandContentPrepareError, LabelMeasureError, LabelPrepareError, PrepareError,
+    measure_command_label, prepare_command_content,
 };
 use resina_model::{
     ActivationState, ContourSegment, PhysicalBounds, PhysicalVector, PressHold, SurfaceSize,
@@ -32,6 +34,13 @@ use resina_resolver::{
 use serde_json::{Value, json};
 use std::{collections::HashSet, rc::Rc};
 
+const UNWRAPPED: LineFit = LineFit {
+    width: None,
+    max_lines: None,
+    overflow: TextOverflow::Clip,
+    wrap: false,
+};
+
 fn command_request(scene: &Value, phase: &str, scale: f64, direction: LayoutDirection) -> Value {
     let mut surface = scene["request"].clone();
     let body = &mut surface["body"];
@@ -39,8 +48,6 @@ fn command_request(scene: &Value, phase: &str, scale: f64, direction: LayoutDire
         serde_json::from_str(body["theme"]["themeSource"].as_str().unwrap()).unwrap();
     theme["materialAssignments"]["control"]["interactive"] =
         scene["expectedMaterialFamily"].clone();
-    theme["typographyAssignments"]["roles"]["label"]["letterSpacing"] =
-        json!("type.tracking.normal");
     body["theme"]["themeSource"] = json!(theme.to_string());
     body["theme"]["environment"]["textScale"] = json!(scale);
     body["theme"]["environment"]["layoutDirection"] = serde_json::to_value(direction).unwrap();
@@ -310,13 +317,23 @@ fn check_frame(
     );
     let image_origin = ((16.0 + rect.x) * scale, (16.0 + rect.y) * scale);
     let DrawCommand::Text {
-        text, color, fit, ..
+        text,
+        color,
+        fit,
+        letter_spacing,
+        ..
     } = &commands[1]
     else {
         panic!("complete text must follow material");
     };
     assert_eq!(text, label.text());
-    assert!(fit.is_none());
+    assert_ne!(label.typography().letter_spacing(), 0.0);
+    assert_eq!(*letter_spacing, label.typography().letter_spacing() as f32);
+    let lines = (label.label_bounds().height
+        / (label.typography().font_size() * label.typography().line_height()))
+    .round();
+    let paragraphs = label.text().split('\n').count() as f64;
+    assert_eq!(*fit, (lines == paragraphs).then_some(UNWRAPPED));
     assert_eq!(
         [color.r, color.g, color.b],
         paint
@@ -609,19 +626,11 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
             CommandContentError::OutsideContent
         ))
     ));
-    let theme = &mut request["surface"]["body"]["theme"];
-    let mut source: Value = serde_json::from_str(theme["themeSource"].as_str().unwrap()).unwrap();
-    source["typographyAssignments"]["roles"]["label"]["letterSpacing"] =
-        json!("type.tracking.wide");
-    theme["themeSource"] = json!(source.to_string());
-    let unsupported = resolve_theme_request_source(&theme.to_string())
-        .unwrap()
-        .typography()[&TypographyRole::Label]
-        .clone();
+    let unrepresentable = label_style::style(1.0, 1.0e10 + 0.5, 400.0, 1.4);
     let label = resolve_command_label(
         CommandLabelInput {
             text: "Save",
-            typography: &unsupported,
+            typography: &unrepresentable,
             minimum_size: unsafe_label.size(),
             maximum_size: unsafe_label.size(),
             padding: SafeArea {
@@ -648,7 +657,7 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
             4
         ),
         Err(CommandContentPrepareError::Label(
-            LabelPrepareError::Measurement(_)
+            LabelPrepareError::Measurement(LabelMeasureError::Precision("letter spacing"))
         ))
     ));
 }
