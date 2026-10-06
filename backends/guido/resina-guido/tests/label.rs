@@ -122,7 +122,43 @@ fn actual_font_shapes_complete_scaled_and_expanded_labels() {
             "{text:?}"
         );
     }
+    let digits = "1234 5678 1234 5678 1234 5678";
+    let nested = |text: &str| {
+        measure_command_label(
+            family,
+            LabelMeasureInput {
+                text,
+                typography: &typography,
+                maximum_width: Some(40.0),
+            },
+        )
+    };
+    for text in [
+        // The highest resolved level, 122: 60 left-to-right embeddings over digits.
+        format!(
+            "{}\u{661}\u{662}\u{663}\u{664} \u{665}\u{666}\u{667}\u{668} \u{661}\u{662}\u{663}\u{664}",
+            "\u{202a}".repeat(60)
+        ),
+        format!(
+            "{}{digits}\n{}{digits}",
+            "\u{202b}".repeat(40),
+            "\u{2067}".repeat(40)
+        ),
+    ] {
+        assert!(nested(&text).is_ok());
+    }
+    for text in [
+        format!("{}{digits}", "\u{202b}".repeat(61)),
+        format!("{}{digits}", "\u{2067}\u{202c}".repeat(63)),
+    ] {
+        assert_eq!(
+            nested(&text).unwrap_err(),
+            LabelMeasureError::BidiInitiators
+        );
+    }
+    let deep = format!("{}{digits}", "\u{2067}\u{202c}".repeat(63));
     for (text, expected) in [
+        (deep.as_str(), LabelMeasureError::BidiInitiators),
         (
             "Save\u{2028}Now",
             LabelMeasureError::UnsupportedLineBreak('\u{2028}'),

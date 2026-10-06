@@ -15,6 +15,7 @@ pub enum LabelMeasureError {
     Extent,
     UnsupportedLineBreak(char),
     UnsupportedParagraphSeparator(char),
+    BidiInitiators,
 }
 impl fmt::Display for LabelMeasureError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -31,6 +32,10 @@ impl fmt::Display for LabelMeasureError {
                 f,
                 "GUIdo text cannot separate bidirectional paragraphs at U+{:04X}",
                 u32::from(*separator)
+            ),
+            Self::BidiInitiators => write!(
+                f,
+                "GUIdo text has more than {MAX_BIDI_INITIATORS} bidirectional embedding or isolate initiators between line breaks"
             ),
         }
     }
@@ -73,8 +78,27 @@ fn supported_separators(text: &str) -> Result<(), LabelMeasureError> {
     if let Some(separator) = text.chars().find(|c| ('\u{1c}'..='\u{1e}').contains(c)) {
         return Err(LabelMeasureError::UnsupportedParagraphSeparator(separator));
     }
+    let initiator = |c: &char| {
+        matches!(
+            c,
+            '\u{202a}' | '\u{202b}' | '\u{202d}' | '\u{202e}' | '\u{2066}'..='\u{2068}'
+        )
+    };
+    if hard_lines(text, false)
+        .iter()
+        .any(|line| line.chars().filter(initiator).count() > MAX_BIDI_INITIATORS)
+    {
+        return Err(LabelMeasureError::BidiInitiators);
+    }
     Ok(())
 }
+/// Text with n initiators resolves to level 2n + 2 at most: each raises the explicit
+/// level by at most two from a paragraph level of 0 or 1, and implicit resolution
+/// adds two to an even level or one to an odd level. The pinned shaper panics when a
+/// wrapped line resolves to 126, above 125, the highest right-to-left level. This
+/// limit keeps the maximum at 122. Counting initiators, not nesting, also covers
+/// terminators the bidirectional algorithm ignores.
+const MAX_BIDI_INITIATORS: usize = 60;
 fn scalar(value: f64, name: &'static str) -> Result<f32, LabelMeasureError> {
     let native = value as f32;
     if !native.is_finite()

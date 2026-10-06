@@ -43,6 +43,7 @@ limits prevent claiming complete native command conformance:
 | Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L956-L960) and [repeat](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L969-L972) emit `KeyDown` with distinct `repeat` values. | No conforming native activation adapter consumes that flag yet. Do not infer repeat from the semantic hold: an independent invocation can clear that hold while the physical key remains down. |
 | Mandatory line breaks | The pinned shaper's [line iterator](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/line_ending.rs#L51-L72) ends lines only at LF, CR and CRLF, and consumes an LF followed by CR as one ending unless that LF completes a CRLF; [Unicode line breaking](https://www.unicode.org/reports/tr14/tr14-57.html#LB5) keeps only CR LF together. | Label measurement and preparation reject VT, FF, NEL, U+2028, U+2029 and any CR/LF sequence whose lines differ from Unicode line breaking with `UnsupportedLineBreak`. |
 | Bidirectional paragraph separators | U+001C–U+001E separate bidirectional paragraphs without breaking lines. The pinned shaper [asserts](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/shape.rs#L1357-L1359) that every paragraph in one line has the same direction and panics otherwise. | Label measurement and preparation reject them with `UnsupportedParagraphSeparator` before shaping. |
+| Deep bidirectional embedding | When a wrapped line resolves to level 126, the pinned shaper [requests](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/shape.rs#L1537) a right-to-left level above 125, the highest one, and panics. Text with n embedding or isolate initiators resolves to level 2n + 2 at most. | More than 60 initiators between line breaks fail with `BidiInitiators`, keeping every resolved level at 122 or below even when the bidirectional algorithm ignores terminators. |
 | Native assistive technology delivery | This package resolves/consumes portable [command semantics](../../../spec/47-command-accessibility.md) but supplies no native semantic-tree publication. | Headless accessibility checks and rendered pixels do not establish native screen-reader discovery or action delivery. |
 
 The repeat flag also reaches the
@@ -182,8 +183,12 @@ Hebrew/Latin pair draw one inked line per nonempty paragraph at device scales 1,
 1.5 and 3, as do CR, CRLF, consecutive CRLF and LF before CRLF. VT, FF, NEL, U+2028,
 U+2029 and CR/LF sequences GUIdo splits into different lines fail measurement,
 and preparation rejects them in IR from another producer. U+001C–U+001E fail
-measurement, including the mixed-direction texts that would otherwise panic. Character counts classify the ASCII test strings only; all widths come
-from actual font shaping. Spacing evidence measures “Save” four spacings wider
+measurement, including the mixed-direction texts that would otherwise panic.
+Sixty left-to-right embeddings over Arabic-Indic digits, the level-122 worst case,
+measure in a wrapped line; 61 initiators, or 63 isolates each followed by an
+ignored terminator, fail measurement and preparation with `BidiInitiators`.
+Character counts classify the ASCII test strings only; all widths come from
+actual font shaping. Spacing evidence measures “Save” four spacings wider
 than unspaced text, and its drawn ink span changes by the three interior
 spacings at device scales 1 and 2. A wrapped fixture whose lines exactly fill
 their box agrees at device scale 2 and fails with `ScaledLineMismatch` at 1.5
