@@ -80,3 +80,39 @@ The Rust reference exposes resolve_slider_position over typed checked input.
 The [case schema](../schemas/slider-position-cases.schema.json) describes test
 fixtures, not a source/command protocol. The existing
 result schema remains authoritative; no duplicate output IR is introduced.
+
+## Public source boundary
+
+The [request schema](../schemas/slider-position-request.schema.json) requires
+`schemaVersion` `0.1.0`, `desiredOrigin`, `enabled`, `readOnly` and `layout`.
+`layout` is a complete spec61 source request, including its own version and
+spec58 authored bounded value. Current checked geometry is rebuilt before every
+mapping; caller-supplied resolved geometry or progress is rejected. This is a
+source representation of the existing checked-layout input, not a second layout
+or value contract.
+
+Desired origins and geometry use finite binary64 coordinates, as in spec61.
+Nested numeric value literals retain spec58's exact integer-source policy.
+Unknown, missing, wrongly typed or duplicate members, invalid shapes, unsupported
+versions and failed value, layout or position validation publish no result.
+The outer request and its nested requests must be objects, including when live
+permission is denied. JSON member escapes are accepted; duplicate names are
+compared after decoding.
+
+`resina-slider-position <path|->` reads strict UTF-8 JSON up to 1 MiB. Success
+exits 0 with complete SliderAdjustmentIr and no diagnostic. Invalid input exits
+1 with a diagnostic and no output; usage exits 2. The size guard is a reference
+transport limit, not a Resina coordinate limit. The Rust reference exposes
+`resolve_slider_position_source` over the same boundary.
+
+[Protocol vectors](../conformance/interaction/slider-position-protocol-cases.json)
+preserve the typed cases and add malformed source, nested validation and exact
+integer rejection. The [external checker](../tools/check_slider_position_backend.py)
+uses independent rational geometry and value mapping on represented fixture
+numbers, preserving stationary values, endpoint saturation and live permission.
+Authored bounds, resulting values and flags are exact in these vectors; interior
+value progress permits spec58's four binary64 ULPs. Raw-source checks cover
+duplicates, nonfinite numbers and escaped names. Deterministic results and
+failure without partial output are checked on Linux and Windows. This evidence
+does not certify native capture, gestures, rendered Slider paint or accessibility
+delivery.

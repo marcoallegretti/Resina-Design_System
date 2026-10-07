@@ -170,7 +170,10 @@ component obligations.
 [Slider position mapping](spec/62-slider-position.md) maps an explicit thumb
 origin through current allocation and numeric bounds with live adjustment
 permission. Stationary origins preserve exact values; unrepresentable movement
-fails diagnostically. Native coordinate conversion and capture remain required.
+fails diagnostically. Run `resina-slider-position <path|->` and
+`python tools/check_slider_position_backend.py -- <backend-command> -` to check
+the portable source boundary. It rebuilds current geometry from an authored
+layout request before mapping. Native coordinate conversion and capture remain required.
 
 [Cancellable Slider edits](spec/63-slider-edit.md) retain a complete visible
 preview separately from committed value. Completion checks live permission and
