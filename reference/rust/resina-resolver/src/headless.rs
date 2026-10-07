@@ -106,6 +106,7 @@ impl fmt::Display for HeadlessBindingError {
 pub enum HeadlessResolutionError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
+    InvalidRequestShape,
     UnsupportedVersion,
     InvalidThemeSource,
     Tokens(Vec<DocumentError>),
@@ -118,6 +119,9 @@ impl fmt::Display for HeadlessResolutionError {
         match self {
             Self::Parse(error) => write!(formatter, "headless source parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid headless request: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("headless request must be a JSON object")
+            }
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.3.0"),
             Self::InvalidThemeSource => {
                 formatter.write_str("headless theme source construction failed")
@@ -153,6 +157,9 @@ pub fn resolve_headless_source(
 pub(crate) fn resolve_headless_document(
     document: Value,
 ) -> Result<HeadlessResolution, HeadlessResolutionError> {
+    if !document.is_object() {
+        return Err(HeadlessResolutionError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)

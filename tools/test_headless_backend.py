@@ -3,10 +3,47 @@ import unittest
 
 from check_headless_backend import mismatch
 from check_schemas import replace_at_pointer
-from check_schemas import ROOT, load_json
+from check_schemas import ROOT, load_json, validator_for
 
 
 class HeadlessBackendCheckerTests(unittest.TestCase):
+    def test_non_object_envelopes_fail_the_request_schema(self):
+        cases = load_json(ROOT / "conformance/headless/backend-cases.json")
+        invalid = [case for case in cases if case["name"].startswith("non-object headless request ")]
+        self.assertEqual(len(invalid), 7)
+        case_validator = validator_for("schemas/headless-conformance-case.schema.json")
+        request_validator = validator_for("schemas/headless-resolution.schema.json")
+        for case in invalid:
+            with self.subTest(name=case["name"]):
+                self.assertTrue(case_validator.is_valid(case))
+                self.assertFalse(request_validator.is_valid(json.loads(case["sourceText"])))
+                self.assertEqual(case["outcome"], "invalid")
+
+    def test_positional_sources_preserve_complete_fixture_fields(self):
+        baseline = load_json(ROOT / "conformance/headless/valid-request.json")
+        fields = ["schemaVersion", "tokens", "materialAssignments", "frostPigment",
+                  "colorAssignments", "opaqueColorAssignments", "spatialAssignments",
+                  "typographyAssignments", "environment"]
+        cases = load_json(ROOT / "conformance/headless/backend-cases.json")
+        positional = [case for case in cases if case["name"].startswith("non-object headless request positional ")]
+        self.assertEqual(len(positional), 2)
+        versions = set()
+        for case in positional:
+            values = json.loads(case["sourceText"])
+            self.assertEqual(len(values), len(fields))
+            versions.add(values[0])
+            self.assertEqual(values[1:], [baseline[field] for field in fields[1:]])
+        self.assertEqual(versions, {"0.3.0", "0.2.0"})
+        cases = load_json(ROOT / "conformance/surfaces/scenario-cases.json")
+        embedded = [case for case in cases if case["name"].startswith("non-object embedded headless request ")]
+        self.assertEqual(len(embedded), 1)
+        scenario = json.loads(embedded[0]["sourceText"])
+        self.assertFalse(validator_for("schemas/surface-scenario.schema.json").is_valid(scenario))
+        self.assertEqual(scenario["resolution"][0], "0.2.0")
+        self.assertEqual(scenario["resolution"][1:], [baseline[field] for field in fields[1:]])
+        scenario["resolution"] = baseline
+        self.assertTrue(validator_for("schemas/surface-scenario.schema.json").is_valid(scenario))
+
     def test_json_pointer_escapes_and_array_indices(self):
         document = {"a/b": [{"m~n": 1}, 2]}
         replace_at_pointer(document, "/a~1b/0/m~0n", 3)

@@ -7,6 +7,45 @@ use std::{
 const RESOLUTION: &str = include_str!("../../../../conformance/headless/valid-request.json");
 const VECTORS: &str = include_str!("../../../../conformance/surfaces/binding-vectors.json");
 
+#[test]
+fn embedded_non_object_resolution_envelopes_fail_before_binding() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/headless/backend-cases.json"
+    ))
+    .unwrap();
+    let invalid: Vec<_> = cases
+        .iter()
+        .filter(|case| {
+            case["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("non-object headless request ")
+        })
+        .collect();
+    assert_eq!(invalid.len(), 7);
+    for case in invalid {
+        let mut request = scenario();
+        request["resolution"] = serde_json::from_str(case["sourceText"].as_str().unwrap()).unwrap();
+        let source = request.to_string();
+        assert!(matches!(
+            resina_resolver::resolve_surface_scenario_source(&source),
+            Err(resina_resolver::SurfaceScenarioError::Resolution(
+                resina_resolver::HeadlessResolutionError::InvalidRequestShape
+            ))
+        ));
+        let output = run_stdin(&source);
+        assert_eq!(output.status.code(), Some(1), "{}", case["name"]);
+        assert!(output.stdout.is_empty(), "{}", case["name"]);
+        assert!(
+            String::from_utf8(output.stderr)
+                .unwrap()
+                .contains("headless request must be a JSON object"),
+            "{}",
+            case["name"]
+        );
+    }
+}
+
 fn run_stdin(source: &str) -> Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_resina-surface-bind"))
         .arg("-")
