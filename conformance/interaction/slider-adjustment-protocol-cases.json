@@ -1,0 +1,1977 @@
+[
+  {
+    "name": "setValue",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 12.0,
+        "progress": 0.55
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "setValue permission False False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "setValue permission True True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "setValue permission False True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "increase",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 5.0,
+        "progress": 0.375
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "increase permission False False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "increase permission True True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "increase permission False True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "decrease",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -5.0,
+        "progress": 0.125
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "decrease permission False False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "decrease permission True True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "decrease permission False True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 5.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "minimum permission False False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "minimum permission True True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "minimum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "minimum permission False True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "minimum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "maximum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "maximum permission False False",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "maximum permission True True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "maximum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "maximum permission False True",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": true,
+      "adjustment": {
+        "kind": "maximum"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "unchanged absolute",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 0.5
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "increase endpoint no-op",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 1.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 1.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "increase overshoot",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 1e+308
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 1.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "increase zero amount unavailable",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 0.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "finite and positive"
+  },
+  {
+    "name": "increase negative amount",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": -1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "finite and positive"
+  },
+  {
+    "name": "increase swallowed amount",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "value": 1.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 5e-324
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable arithmetic"
+  },
+  {
+    "name": "increase rounded remaining distance",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "value": -5.551115123125783e-17
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable arithmetic"
+  },
+  {
+    "name": "increase exact endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "value": 1.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "decrease endpoint no-op",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "decrease overshoot",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 1e+308
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "decrease zero amount unavailable",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 0.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "finite and positive"
+  },
+  {
+    "name": "decrease negative amount",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": -1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "finite and positive"
+  },
+  {
+    "name": "decrease swallowed amount",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "value": 1.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 5e-324
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable arithmetic"
+  },
+  {
+    "name": "decrease rounded remaining distance",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "value": 5.551115123125783e-17
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable arithmetic"
+  },
+  {
+    "name": "decrease exact endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 1.0
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "value": -1.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "out of bounds absolute unavailable",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "value": 0.5
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 2.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "within minimum and maximum"
+  },
+  {
+    "name": "increase extreme cancellation",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": -1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 1.7976931348623157e+308
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "decrease extreme cancellation",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 1.7976931348623157e+308
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 1.7976931348623157e+308
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "increase sum overflow",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.7976931348623157e+308,
+        "value": 8.988465674311579e+307
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 1.7976931348623157e+308
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.7976931348623157e+308,
+        "value": 1.7976931348623157e+308,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "decrease sum overflow",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 0.0,
+        "value": -8.988465674311579e+307
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 1.7976931348623157e+308
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 0.0,
+        "value": -1.7976931348623157e+308,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "increase subnormal exact endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 5e-324
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 1e-323,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "decrease subnormal exact endpoint",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 5e-324
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 5e-324
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1e-323,
+        "value": 0.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "candidate progress underflow",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0.0,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 5e-324
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable arithmetic"
+  },
+  {
+    "name": "missing schemaVersion",
+    "request": {
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "missing current",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "missing enabled",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "missing readOnly",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "missing adjustment",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "unknown request member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      },
+      "backend": "guido"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "unsupported request version",
+    "request": {
+      "schemaVersion": "0.2.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "unknown current member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "wrong enabled type",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": 1,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "wrong readOnly type",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": null,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "unknown intent",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "unknown"
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "missing amount",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase"
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "wrong amount type",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": true
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "null absolute value",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": null
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "extra endpoint amount",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "minimum",
+        "amount": 1
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "extra endpoint value",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "maximum",
+        "value": 1
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "mixed intent payload",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 10,
+        "amount": 1
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "request"
+  },
+  {
+    "name": "invalid current range while unavailable",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 0,
+        "maximum": 0,
+        "value": 0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "minimum must be less"
+  },
+  {
+    "name": "increase imprecise integer 9007199254740993",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 9007199254740993
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "increase imprecise integer 18446744073709551617",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": 18446744073709551617
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "increase imprecise integer -18446744073709551617",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "increase",
+        "amount": -18446744073709551617
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "decrease imprecise integer 9007199254740993",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 9007199254740993
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "decrease imprecise integer 18446744073709551617",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": 18446744073709551617
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "decrease imprecise integer -18446744073709551617",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "decrease",
+        "amount": -18446744073709551617
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "setValue imprecise integer 9007199254740993",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 9007199254740993
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "setValue imprecise integer 18446744073709551617",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 18446744073709551617
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "setValue imprecise integer -18446744073709551617",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": false,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": -18446744073709551617
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "imprecise current minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": 9007199254740993,
+        "maximum": 1e+30,
+        "value": 0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "imprecise current maximum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 9007199254740993,
+        "value": 0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "imprecise current value",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 1e+30,
+        "value": 9007199254740993
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "exact large absolute integer 9007199254740994",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 1e+30,
+        "value": 0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 9007199254740994
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 1e+30,
+        "value": 9007199254740994,
+        "progress": 0.5000000000000046
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "exact large absolute integer 18446744073709551616",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 1e+30,
+        "value": 0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 18446744073709551616
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 1e+30,
+        "value": 18446744073709551616,
+        "progress": 0.5000000000092234
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "exact large absolute integer -18446744073709551616",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 1e+30,
+        "value": 0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": -18446744073709551616
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+30,
+        "maximum": 1e+30,
+        "value": -18446744073709551616,
+        "progress": 0.49999999999077666
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "positional outer adjustment request",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      true,
+      false,
+      {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON"
+  },
+  {
+    "name": "positional current 0.1.0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": [
+        "0.1.0",
+        -10.0,
+        30.0,
+        0.0
+      ],
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": {
+        "kind": "setValue",
+        "value": 12.0
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON"
+  },
+  {
+    "name": "positional adjustment minimum",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": [
+        "minimum"
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON"
+  },
+  {
+    "name": "positional adjustment increase",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "current": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0
+      },
+      "enabled": true,
+      "readOnly": false,
+      "adjustment": [
+        "increase",
+        10
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON"
+  }
+]

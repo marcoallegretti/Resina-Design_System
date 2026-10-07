@@ -173,6 +173,8 @@ jobs:
       - run: python tools/check_focus_traversal_backend.py -- target/debug/resina-focus-traversal${{ matrix.executableSuffix }} -
       - run: python tools/check_activation_backend.py -- target/debug/resina-activation${{ matrix.executableSuffix }} -
       - run: python tools/check_slider_value_backend.py -- target/debug/resina-slider-value${{ matrix.executableSuffix }} -
+      - run: python tools/check_slider_adjustment_backend.py -- target/debug/resina-slider-adjustment${{ matrix.executableSuffix }} -
+      - run: python tools/check_slider_layout_backend.py -- target/debug/resina-slider-layout${{ matrix.executableSuffix }} -
       - run: python tools/check_toggle_activation_backend.py -- target/debug/resina-toggle-activation${{ matrix.executableSuffix }} -
       - run: python tools/check_command_states_backend.py -- target/debug/resina-command-states${{ matrix.executableSuffix }} -
       - run: python tools/check_toggle_states_backend.py -- target/debug/resina-toggle-states${{ matrix.executableSuffix }} -

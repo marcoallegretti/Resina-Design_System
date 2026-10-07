@@ -19,6 +19,7 @@ def check_failure(command, source, timeout, name):
 
 
 def check_success(command, source, expected, result_validator, timeout, name, compare=mismatch):
+    previous = None
     for attempt in range(2):
         completed = run_backend(command, source, timeout)
         if completed.returncode != 0 or completed.stderr:
@@ -33,11 +34,14 @@ def check_success(command, source, expected, result_validator, timeout, name, co
         differing = compare(actual, expected)
         if differing:
             raise AssertionError(f"{name}: output differs at {differing}")
+        if attempt and actual != previous:
+            raise AssertionError(f"{name}: repeated request produced different results")
+        previous = actual
 
 
 def check_backend(
     label, case_schema, request_schema, result_schema, vectors,
-    extra_failures=(), compare=mismatch,
+    extra_failures=(), compare=mismatch, extra_successes=(), compare_request=None,
 ):
     parser = argparse.ArgumentParser(
         description=f"Check a Resina {label} backend through the public command protocol."
@@ -71,9 +75,11 @@ def check_backend(
                 raise ValueError(f"{name}: request schema: {detail}")
             source = json.dumps(case["request"], ensure_ascii=False, allow_nan=False)
             if "expected" in case:
+                comparison = compare if compare_request is None else (
+                    lambda actual, expected: compare_request(actual, expected, case["request"]))
                 check_success(
                     command, source, case["expected"], result_validator,
-                    arguments.timeout, name, compare,
+                    arguments.timeout, name, comparison,
                 )
             else:
                 check_failure(command, source, arguments.timeout, name)
@@ -88,8 +94,11 @@ def check_backend(
         )
         for name, source in extra_failures:
             check_failure(command, source, arguments.timeout, name)
+        for name, source, expected in extra_successes:
+            check_success(command, source, expected, result_validator,
+                          arguments.timeout, name, compare)
     except (AssertionError, OSError, ValueError) as error:
         print(f"FAIL {error}", file=sys.stderr)
         return 1
-    print(f"{label.capitalize()} backend passed {len(cases) + 1 + len(extra_failures)} conformance cases")
+    print(f"{label.capitalize()} backend passed {len(cases) + 1 + len(extra_failures) + len(extra_successes)} conformance cases")
     return 0

@@ -148,7 +148,10 @@ accessibility publication remain separate component obligations.
 
 [Slider adjustment](spec/59-slider-adjustment.md) applies explicit numeric intents
 to the current bounded value with live enabled/read-only permission, bounded
-increment/decrement and distinct accepted/changed results. Native delivery,
+increment/decrement and distinct accepted/changed results. Run
+`resina-slider-adjustment <path|->` and
+`python tools/check_slider_adjustment_backend.py -- <backend-command> -` to
+verify its strict portable source boundary. Native delivery,
 discrete steps and complete Slider components remain separate requirements.
 
 [Slider accessibility](spec/60-slider-accessibility.md) preserves complete localized
@@ -158,7 +161,9 @@ assistive-technology delivery and complete Slider interaction remain required.
 
 [Slider part allocation](spec/61-slider-layout.md) places independently sized
 track and thumb within an explicit outer allocation for both axes, RTL and
-explicit numeric endpoint placement. Geometry uses checked bounded value progress
+explicit numeric endpoint placement. Run `resina-slider-layout <path|->` and
+`python tools/check_slider_layout_backend.py -- <backend-command> -` for its
+strict portable protocol. Geometry uses checked bounded value progress
 and exact containment; material paint, targets and full gestures remain separate
 component obligations.
 
