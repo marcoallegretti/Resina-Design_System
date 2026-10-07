@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-layout-request:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "allocationSize",
+    "thumbSize",
+    "trackThickness",
+    "insets",
+    "layoutDirection",
+    "orientation",
+    "minimumPosition",
+    "value"
+  ],
+  "properties": {
+    "allocationSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      }
+    },
+    "thumbSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      }
+    },
+    "trackThickness": {
+      "type": "number"
+    },
+    "insets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "top",
+        "bottom"
+      ],
+      "properties": {
+        "start": {
+          "type": "number"
+        },
+        "end": {
+          "type": "number"
+        },
+        "top": {
+          "type": "number"
+        },
+        "bottom": {
+          "type": "number"
+        }
+      }
+    },
+    "layoutDirection": {
+      "enum": [
+        "ltr",
+        "rtl"
+      ]
+    },
+    "orientation": {
+      "enum": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    "minimumPosition": {
+      "enum": [
+        "start",
+        "end"
+      ]
+    },
+    "value": {
+      "$ref": "urn:resina:schema:slider-value-request:0.1.0"
+    },
+    "schemaVersion": {
+      "const": "0.1.0"
+    }
+  }
+}

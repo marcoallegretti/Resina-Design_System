@@ -88,5 +88,39 @@ The [case schema](../schemas/slider-layout-cases.schema.json) describes typed te
 records, including invalid numeric parameters; it is not a production request
 protocol. The Rust reference exposes resolve_slider_layout over checked typed
 input. Shared SliderOrientation is owned by the portable model and re-exported
-by the resolver for both semantics and layout. No standalone source/command API
-or backend dependency is introduced.
+by the resolver for both semantics and layout. The public source boundary below
+resolves that same typed contract without backend dependencies.
+
+## Public source boundary
+
+The [request schema](../schemas/slider-layout-request.schema.json) requires
+`schemaVersion` `0.1.0` and every authored input above. `value` is a complete
+spec58 bounded value request, resolved before layout; supplied progress is
+rejected. Its numeric literals retain spec58's exact integer-source policy.
+Geometry numbers are interpreted as finite binary64 values by the reference,
+as in the existing geometry operations. No direction, inset or size default is
+inferred. Unknown, missing, duplicate or wrongly typed members, unsupported
+versions, nonfinite values and failed value/geometry validation publish no result.
+Requests, sizes, insets and values must be JSON objects; axis, direction and
+minimum position must be strings. Positional arrays and object-form enum values
+are invalid source representations.
+
+`resina-slider-layout <path|->` reads strict UTF-8 JSON up to 1 MiB. Success exits
+0 with complete layout IR and no diagnostic; invalid input exits 1 with a
+diagnostic and no output; usage exits 2. The executable size guard does not
+define a semantic geometry limit. `resolve_slider_layout_source` exposes the
+same strict boundary in the reference library.
+
+[Protocol cases](../conformance/geometry/slider-layout-protocol-cases.json)
+preserve the typed vectors and cover source shapes and numeric precision. The
+[external checker](../tools/check_slider_layout_backend.py) reconstructs all
+successful rectangles from exact rational arithmetic on represented inputs.
+It compares geometry with the shared absolute or relative `1e-12` tolerance;
+retained allocation, thumb sizes and track thickness, numeric values and endpoint
+selection are exact. Part bounds must remain inside the authored inset interior
+under exact containment, and endpoint centers must remain distinguishable.
+Interior progress uses spec58's four binary64 ULPs, and interior thumb placement
+must remain strictly between its actual endpoints. Nested duplicates,
+nonfinite geometry and values, deterministic publication and failure without
+partial output are checked on Linux and Windows. This boundary adds no renderer
+dependency and does not certify rendered paint, hit coverage or native input.

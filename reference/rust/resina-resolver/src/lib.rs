@@ -54,6 +54,9 @@ pub use slider_layout::{
     resolve_slider_layout,
 };
 
+mod slider_layout_source;
+pub use slider_layout_source::{SliderLayoutSourceError, resolve_slider_layout_source};
+
 mod slider_accessibility;
 pub use slider_accessibility::{
     SliderAccessibilityAction, SliderAccessibilityError, SliderAccessibilityInput,

@@ -161,7 +161,9 @@ assistive-technology delivery and complete Slider interaction remain required.
 
 [Slider part allocation](spec/61-slider-layout.md) places independently sized
 track and thumb within an explicit outer allocation for both axes, RTL and
-explicit numeric endpoint placement. Geometry uses checked bounded value progress
+explicit numeric endpoint placement. Run `resina-slider-layout <path|->` and
+`python tools/check_slider_layout_backend.py -- <backend-command> -` for its
+strict portable protocol. Geometry uses checked bounded value progress
 and exact containment; material paint, targets and full gestures remain separate
 component obligations.
 
