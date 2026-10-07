@@ -1,0 +1,58 @@
+name: Maintenance
+description: Report one present, independently provable simplicity or structural debt problem.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues for the same underlying problem before filing.
+        Maintenance preserves normative behavior, public contracts and architectural ownership.
+        Use the architectural proposal form if resolving the problem requires changing those boundaries.
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed
+      description: Describe one concrete source of accidental complexity or structural debt. Name who or what is affected today.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: Describe the intended simpler structure and the behavior, contracts and ownership that must be preserved.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Provide revision and file/line references demonstrating current duplication, coupling, confused responsibility, obsolete paths, or another concrete cost.
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Affected layer or boundary
+      description: Identify the owner and relevant normative, reference, backend, validation, or contributor-facing paths. Explain why this can be resolved without an architectural decision.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Why it matters now
+      description: Describe the observable present cost. Generic cleanup wishes, stylistic preferences and speculative abstractions do not meet the issue threshold.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criterion
+      description: State one independently verifiable outcome. One coherent maintenance problem maps to one isolated branch/worktree and one PR.
+    validations:
+      required: true
+  - type: textarea
+    id: proof
+    attributes:
+      label: Expected proof
+      description: Identify the tests, vectors, public checkers or measurements that demonstrate the problem is resolved and semantics are preserved. Explain any intrinsic verification limitation.
+    validations:
+      required: true

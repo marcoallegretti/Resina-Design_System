@@ -1,0 +1,64 @@
+name: Defect or contribution
+description: Describe a concrete defect or an ordinary change with verifiable acceptance criteria.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use a title that states the defect or the behavior that should hold.
+        Search existing issues first. Distinguish implemented contracts from blueprint proposals.
+        Use the architectural proposal form if the change introduces public semantics,
+        changes ownership, or needs a new cross-cutting mechanism.
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed
+      description: What happens now? Identify the affected caller, contributor, contract, backend, or user-visible result.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should be true instead? Cite the implemented contract, or identify a proposed extension explicitly.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Include repository revision, file/line references, reproduction steps and actual output. For platform or rendering failures, include relevant environment, capabilities, scale and state.
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Affected layer or boundary
+      description: Identify the owning layer and relevant paths in spec/, definitions/, schemas/, tokens/, conformance/, reference/, backends/, tools/, or documentation. Explain any boundary crossed.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Why it matters now
+      description: Describe the concrete current impact. A hypothetical future need or stylistic preference alone does not justify maintenance work.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criterion
+      description: State the independently checkable condition that resolves this issue. Keep unrelated opportunities outside this scope.
+    validations:
+      required: true
+  - type: textarea
+    id: proof
+    attributes:
+      label: Expected proof
+      description: Name the failing test, conformance vector, schema acceptance/rejection case, public checker, deterministic scenario, or repeatable measurement. If automation is intrinsically unavailable, explain the limitation and manual verification.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and related work
+      description: Link related issues or accepted scope and identify relevant exclusions. Do not treat a blueprint proposal as an implemented feature.
