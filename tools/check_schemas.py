@@ -223,6 +223,8 @@ def main():
         "schemas/slider-accessibility-case.schema.json",
         "schemas/slider-layout-ir.schema.json",
         "schemas/slider-layout-cases.schema.json",
+        "schemas/slider-track-segments-ir.schema.json",
+        "schemas/slider-track-segments-cases.schema.json",
         "schemas/slider-position-cases.schema.json",
         "schemas/slider-edit-session.schema.json",
         "schemas/slider-value-policy.schema.json",
@@ -2053,6 +2055,38 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
+    segment_cases = load_json(ROOT / "conformance/geometry/slider-track-segments-cases.json")
+    check_case(validator_for("schemas/slider-track-segments-cases.schema.json"),
+               "slider track segment matrix", segment_cases, True)
+    segment_names = [case["name"] for case in segment_cases["cases"]]
+    if len(segment_names) != len(set(segment_names)):
+        raise ValueError("duplicate slider track segment case")
+    checked += 1 + len(segment_names)
+    segment_validator = validator_for("schemas/slider-track-segments-ir.schema.json")
+    two_segments = next(case["expected"] for case in segment_cases["cases"]
+                        if "expected" in case and case["expected"]["active"]
+                        and case["expected"]["inactive"])
+    for name, changes in [
+        ("slider segments wrong version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+        ("slider segments negative clearance", [{"path": "/clearance", "value": -1}]),
+        ("slider segments empty active", [{"path": "/active/width", "value": 0}]),
+        ("slider segments empty inactive", [{"path": "/inactive/height", "value": 0}]),
+    ]:
+        check_case(segment_validator, name, apply_changes(two_segments, changes), False)
+        checked += 1
+    check_case(segment_validator, "slider segments unknown member",
+               {**two_segments, "track": None}, False)
+    checked += 1
+    for field in two_segments:
+        incomplete = copy.deepcopy(two_segments)
+        incomplete.pop(field)
+        check_case(segment_validator, f"missing slider segments {field}", incomplete, False)
+        checked += 1
+    both = copy.deepcopy(segment_cases)
+    both["cases"][0]["error"] = "InvalidClearance"
+    check_case(validator_for("schemas/slider-track-segments-cases.schema.json"),
+               "slider segment record with result and error", both, False)
+    checked += 1
     slider_layout = load_json(ROOT / "conformance/geometry/slider-layout-cases.json")
     check_case(validator_for("schemas/slider-layout-cases.schema.json"),
                "slider layout matrix", slider_layout, True)
