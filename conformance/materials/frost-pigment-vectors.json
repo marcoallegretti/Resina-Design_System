@@ -6,5 +6,11 @@
   {"name":"out of range tint fails","document":{"schemaVersion":"0.1.0","tintStrength":1.1},"error":"tintStrength must be finite and between 0 and 1"},
   {"name":"missing tint fails","document":{"schemaVersion":"0.1.0"},"error":"missing field"},
   {"name":"unknown field fails","document":{"schemaVersion":"0.1.0","tintStrength":0.55,"renderer":"example"},"error":"unknown field"},
-  {"name":"unsupported version fails","document":{"schemaVersion":"0.2.0","tintStrength":0.55},"error":"schemaVersion must be 0.1.0"}
+  {"name":"unsupported version fails","document":{"schemaVersion":"0.2.0","tintStrength":0.55},"error":"schemaVersion must be 0.1.0"},
+  {"name":"non-object Frost pigment positional record","document":["0.1.0",0.55],"error":"Frost pigment object"},
+  {"name":"non-object Frost pigment empty array","document":[],"error":"Frost pigment object"},
+  {"name":"non-object Frost pigment null","document":null,"error":"Frost pigment object"},
+  {"name":"non-object Frost pigment boolean","document":true,"error":"Frost pigment object"},
+  {"name":"non-object Frost pigment string","document":"0.1.0","error":"Frost pigment object"},
+  {"name":"non-object Frost pigment number","document":0.55,"error":"Frost pigment object"}
 ]

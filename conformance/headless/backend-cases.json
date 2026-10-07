@@ -199,5 +199,11 @@
     "name": "non-object headless request number",
     "outcome": "invalid",
     "sourceText": "1"
-  }
+  },
+  {"name":"non-object Frost pigment positional record","outcome":"invalid","requestChanges":[{"path":"/frostPigment","value":["0.1.0",0.55]}]},
+  {"name":"non-object Frost pigment empty array","outcome":"invalid","requestChanges":[{"path":"/frostPigment","value":[]}]},
+  {"name":"non-object Frost pigment null","outcome":"invalid","requestChanges":[{"path":"/frostPigment","value":null}]},
+  {"name":"non-object Frost pigment boolean","outcome":"invalid","requestChanges":[{"path":"/frostPigment","value":true}]},
+  {"name":"non-object Frost pigment string","outcome":"invalid","requestChanges":[{"path":"/frostPigment","value":"0.1.0"}]},
+  {"name":"non-object Frost pigment number","outcome":"invalid","requestChanges":[{"path":"/frostPigment","value":0.55}]}
 ]

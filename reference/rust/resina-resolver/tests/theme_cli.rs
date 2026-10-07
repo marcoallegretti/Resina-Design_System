@@ -9,6 +9,50 @@ const THEME: &str = include_str!("../../../../conformance/themes/valid-source.js
 const HEADLESS: &str = include_str!("../../../../conformance/headless/valid-request.json");
 const EXPECTED: &str = include_str!("../../../../conformance/headless/expected-resolution.json");
 
+#[test]
+fn non_object_frost_pigment_fails_compilation_without_publishing() {
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/materials/frost-pigment-vectors.json"
+    ))
+    .unwrap();
+    let invalid: Vec<_> = vectors
+        .iter()
+        .filter(|vector| {
+            vector["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("non-object Frost pigment ")
+        })
+        .collect();
+    assert_eq!(invalid.len(), 6);
+    for vector in invalid {
+        let mut theme: Value = serde_json::from_str(THEME).unwrap();
+        theme["frostPigment"] = vector["document"].clone();
+        let source = theme.to_string();
+        assert!(matches!(
+            resina_resolver::compile_theme_source(&source),
+            Err(resina_resolver::ThemeCompilationError::Source(_))
+        ));
+        let mut input: Value = serde_json::from_str(&request()).unwrap();
+        input["themeSource"] = json!(source);
+        let input = input.to_string();
+        assert!(matches!(
+            resina_resolver::resolve_theme_request_source(&input),
+            Err(resina_resolver::ThemeResolutionError::Compile(
+                resina_resolver::ThemeCompilationError::Source(_)
+            ))
+        ));
+        let output = run_stdin(&input);
+        assert_eq!(output.status.code(), Some(1), "{}", vector["name"]);
+        assert!(output.stdout.is_empty());
+        assert!(
+            String::from_utf8(output.stderr)
+                .unwrap()
+                .contains("Frost pigment object")
+        );
+    }
+}
+
 fn request() -> String {
     let headless: Value = serde_json::from_str(HEADLESS).unwrap();
     json!({

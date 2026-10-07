@@ -72,5 +72,13 @@
     "outcome":"invalid",
     "requestSchemaValid":true,
     "requestChanges":[{"path":"/environment/textScale","value":1e308}]
-  }
+  },
+  {"name":"non-object Frost pigment positional record","outcome":"invalid","sourceChanges":[{"path":"/frostPigment","value":["0.1.0",0.55]}],"requestSchemaValid":true},
+  {"name":"non-object Frost pigment empty array","outcome":"invalid","sourceChanges":[{"path":"/frostPigment","value":[]}],"requestSchemaValid":true},
+  {"name":"non-object Frost pigment null","outcome":"invalid","sourceChanges":[{"path":"/frostPigment","value":null}],"requestSchemaValid":true},
+  {"name":"non-object Frost pigment boolean","outcome":"invalid","sourceChanges":[{"path":"/frostPigment","value":true}],"requestSchemaValid":true},
+  {"name":"non-object Frost pigment string","outcome":"invalid","sourceChanges":[{"path":"/frostPigment","value":"0.1.0"}],"requestSchemaValid":true},
+  {"name":"non-object Frost pigment number","outcome":"invalid","sourceChanges":[{"path":"/frostPigment","value":0.55}],"requestSchemaValid":true},
+  {"name":"non-object Frost pigment positional record resolverBackedInline","outcome":"invalid","requestSchemaValid":true,"sourceVariant":"resolverBackedInline","sourceChanges":[{"path":"/frostPigment","value":["0.1.0",0.55]}]},
+  {"name":"non-object Frost pigment positional record foundationResolver","outcome":"invalid","requestSchemaValid":true,"sourceVariant":"foundationResolver","sourceChanges":[{"path":"/frostPigment","value":["0.1.0",0.55]}]}
 ]
