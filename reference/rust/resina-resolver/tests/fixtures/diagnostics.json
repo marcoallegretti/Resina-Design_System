@@ -49,6 +49,11 @@
     "unsupported color space is diagnostic": "surroundingColor must use sRGB"
   },
   "focus_traversal": {
+    "invalid JSON shape positional root": "must be a JSON",
+    "invalid JSON shape positional target": "must be a JSON",
+    "invalid JSON shape mixed positional target": "must be a JSON",
+    "invalid JSON shape object forward direction": "must be a JSON",
+    "invalid JSON shape object backward direction": "must be a JSON",
     "unknown current": "is not in targets",
     "duplicate ineligible identifiers": "duplicate focus target",
     "empty target identifier": "must not be empty",

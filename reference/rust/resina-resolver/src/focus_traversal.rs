@@ -40,6 +40,7 @@ pub enum FocusTraversalError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidShape(&'static str, &'static str),
     InvalidCurrent,
     EmptyId(usize),
     DuplicateId(String),
@@ -52,6 +53,10 @@ impl fmt::Display for FocusTraversalError {
             Self::Parse(error) => write!(formatter, "focus traversal parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid focus traversal request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::InvalidShape(field, shape) => write!(
+                formatter,
+                "invalid focus traversal request: {field} must be a JSON {shape}"
+            ),
             Self::InvalidCurrent => {
                 formatter.write_str("current must be a target identifier or null")
             }
@@ -147,6 +152,20 @@ pub fn resolve_focus_traversal_source(
     source: &str,
 ) -> Result<FocusTraversalResult, FocusTraversalError> {
     let value = parse_token_document(source).map_err(FocusTraversalError::Parse)?;
+    if !value.is_object() {
+        return Err(FocusTraversalError::InvalidShape("root", "object"));
+    }
+    if let Some(targets) = value["targets"].as_array()
+        && targets.iter().any(|target| !target.is_object())
+    {
+        return Err(FocusTraversalError::InvalidShape("targets[]", "object"));
+    }
+    if value
+        .get("direction")
+        .is_some_and(|direction| !direction.is_string())
+    {
+        return Err(FocusTraversalError::InvalidShape("direction", "string"));
+    }
     let request: Request = serde_json::from_value(value).map_err(FocusTraversalError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(FocusTraversalError::UnsupportedVersion);

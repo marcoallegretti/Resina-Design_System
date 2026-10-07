@@ -146,6 +146,44 @@ fn invalid_targets_fail_even_after_an_eligible_candidate() {
 }
 
 #[test]
+fn schema_invalid_json_shapes_fail_before_source_and_cli_publication() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/focus-traversal-cases.json"
+    ))
+    .unwrap();
+    let binary = env!("CARGO_BIN_EXE_resina-focus-traversal");
+    for case in cases.iter().filter(|case| {
+        case["name"]
+            .as_str()
+            .unwrap()
+            .starts_with("invalid JSON shape")
+    }) {
+        let source = case["request"].to_string();
+        assert!(matches!(
+            resolve_focus_traversal_source(&source),
+            Err(FocusTraversalError::InvalidShape(_, _))
+        ));
+        let mut child = Command::new(binary)
+            .arg("-")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        child
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(source.as_bytes())
+            .unwrap();
+        let output = child.wait_with_output().unwrap();
+        assert_eq!(output.status.code(), Some(1), "{}", case["name"]);
+        assert!(output.stdout.is_empty(), "{}", case["name"]);
+        assert!(!output.stderr.is_empty(), "{}", case["name"]);
+    }
+}
+
+#[test]
 fn cli_rejects_duplicate_input_invalid_utf8_and_usage() {
     let binary = env!("CARGO_BIN_EXE_resina-focus-traversal");
     let request = br#"{"schemaVersion":"0.1.0","targets":[{"id":"first","eligible":true,"eligible":false}],"current":null,"direction":"forward","wrap":false}"#;
