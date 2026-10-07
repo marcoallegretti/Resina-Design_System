@@ -1088,6 +1088,7 @@ def main():
         ("schemas/surface-binding.schema.json", "conformance/surfaces/binding-vectors.json"),
         ("schemas/treatment-stack.schema.json", "conformance/materials/treatment-stack-vectors.json"),
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
+        ("schemas/theme-resolution-request.schema.json", "conformance/themes/request-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
 

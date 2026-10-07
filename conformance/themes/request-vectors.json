@@ -1,0 +1,135 @@
+[
+  {
+    "name": "positional current-version theme request",
+    "document": [
+      "0.1.0",
+      "{\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\": {\n    \"palette\": {\n      \"$type\": \"color\",\n      \"base\": {\n        \"$value\": {\n          \"colorSpace\": \"srgb\",\n          \"components\": [\n            0.15,\n            0.2,\n            0.3\n          ]\n        }\n      },\n      \"opaque\": {\n        \"$value\": {\n          \"colorSpace\": \"srgb\",\n          \"components\": [\n            0.15,\n            0.2,\n            0.3\n          ]\n        }\n      },\n      \"opaqueAlt\": {\n        \"$value\": {\n          \"colorSpace\": \"srgb\",\n          \"components\": [\n            0.8,\n            0.7,\n            0.6\n          ]\n        }\n      },\n      \"translucent\": {\n        \"$value\": {\n          \"colorSpace\": \"display-p3\",\n          \"components\": [\n            0.25,\n            0.5,\n            0.75\n          ],\n          \"hex\": \"#336699\",\n          \"alpha\": 0.35\n        }\n      }\n    },\n    \"space\": {\n      \"$type\": \"dimension\",\n      \"base\": {\n        \"$value\": {\n          \"value\": 16,\n          \"unit\": \"px\"\n        }\n      }\n    },\n    \"type\": {\n      \"size\": {\n        \"$type\": \"dimension\",\n        \"$value\": {\n          \"value\": 20,\n          \"unit\": \"px\"\n        }\n      },\n      \"weight\": {\n        \"$type\": \"fontWeight\",\n        \"$value\": \"semi-bold\"\n      },\n      \"line\": {\n        \"$type\": \"number\",\n        \"$value\": 1.4\n      },\n      \"tracking\": {\n        \"$type\": \"dimension\",\n        \"$value\": {\n          \"value\": 0.25,\n          \"unit\": \"px\"\n        }\n      }\n    }\n  },\n  \"materialAssignments\": {\n    \"schemaVersion\": \"0.2.0\",\n    \"surface\": {\n      \"base\": \"cast\",\n      \"content\": \"cast\",\n      \"chrome\": \"frost\",\n      \"raised\": \"cast\",\n      \"transient\": \"gel\"\n    },\n    \"control\": {\n      \"passive\": \"cast\",\n      \"interactive\": \"elastomer\",\n      \"primary\": \"elastomer\"\n    },\n    \"feedback\": {\n      \"focus\": \"elastomer\",\n      \"selection\": \"gel\",\n      \"drag\": \"gel\"\n    }\n  },\n  \"frostPigment\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"tintStrength\": 0.55\n  },\n  \"colorAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"accent.primary\": \"palette.base\",\n      \"accent.secondary\": \"palette.base\",\n      \"accent.tertiary\": \"palette.base\",\n      \"surface.base\": \"palette.base\",\n      \"surface.low\": \"palette.base\",\n      \"surface.high\": \"palette.base\",\n      \"surface.chrome\": \"palette.base\",\n      \"content.primary\": \"palette.base\",\n      \"content.secondary\": \"palette.base\",\n      \"content.muted\": \"palette.base\",\n      \"content.inverse\": \"palette.base\",\n      \"outline\": \"palette.base\",\n      \"outline.strong\": \"palette.base\",\n      \"status.error\": \"palette.base\",\n      \"status.warning\": \"palette.base\",\n      \"status.success\": \"palette.base\",\n      \"status.info\": \"palette.base\",\n      \"focus\": \"palette.base\",\n      \"selection\": \"palette.base\"\n    }\n  },\n  \"opaqueColorAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"accent.primary\": \"palette.opaque\",\n      \"accent.secondary\": \"palette.opaque\",\n      \"accent.tertiary\": \"palette.opaque\",\n      \"surface.base\": \"palette.opaque\",\n      \"surface.low\": \"palette.opaque\",\n      \"surface.high\": \"palette.opaque\",\n      \"surface.chrome\": \"palette.opaque\",\n      \"content.primary\": \"palette.opaque\",\n      \"content.secondary\": \"palette.opaque\",\n      \"content.muted\": \"palette.opaque\",\n      \"content.inverse\": \"palette.opaque\",\n      \"outline\": \"palette.opaque\",\n      \"outline.strong\": \"palette.opaque\",\n      \"status.error\": \"palette.opaque\",\n      \"status.warning\": \"palette.opaque\",\n      \"status.success\": \"palette.opaque\",\n      \"status.info\": \"palette.opaque\",\n      \"focus\": \"palette.opaque\",\n      \"selection\": \"palette.opaque\"\n    }\n  },\n  \"spatialAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"space.control.inline\": \"space.base\",\n      \"space.control.block\": \"space.base\",\n      \"space.container.inner\": \"space.base\",\n      \"space.container.outer\": \"space.base\",\n      \"space.group\": \"space.base\",\n      \"space.section\": \"space.base\",\n      \"space.page\": \"space.base\"\n    }\n  },\n  \"typographyAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"display\": {\n        \"familyRole\": \"display\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"titleLarge\": {\n        \"familyRole\": \"display\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"title\": {\n        \"familyRole\": \"display\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"heading\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"bodyLarge\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"body\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"label\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"caption\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.25\n      },\n      \"numeric\": {\n        \"familyRole\": \"numeric\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"code\": {\n        \"familyRole\": \"monospace\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      }\n    }\n  }\n}\n",
+      {},
+      {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 1280,
+          "height": 800,
+          "safeArea": {
+            "start": 0,
+            "end": 0,
+            "top": 0,
+            "bottom": 0
+          }
+        },
+        "scale": 1.5,
+        "textScale": 2,
+        "inputCapabilities": [
+          "directTouch",
+          "keyboard"
+        ],
+        "viewingProfile": "desk",
+        "densityPreference": "comfortable",
+        "accessibilityPreferences": {
+          "reducedMotion": true,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en-US",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": true,
+          "translucentSurfaces": true,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": false,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "economy"
+      }
+    ],
+    "error": "theme request must be a JSON object"
+  },
+  {
+    "name": "positional unsupported-version theme request",
+    "document": [
+      "0.2.0",
+      "{\n  \"schemaVersion\": \"0.1.0\",\n  \"tokens\": {\n    \"palette\": {\n      \"$type\": \"color\",\n      \"base\": {\n        \"$value\": {\n          \"colorSpace\": \"srgb\",\n          \"components\": [\n            0.15,\n            0.2,\n            0.3\n          ]\n        }\n      },\n      \"opaque\": {\n        \"$value\": {\n          \"colorSpace\": \"srgb\",\n          \"components\": [\n            0.15,\n            0.2,\n            0.3\n          ]\n        }\n      },\n      \"opaqueAlt\": {\n        \"$value\": {\n          \"colorSpace\": \"srgb\",\n          \"components\": [\n            0.8,\n            0.7,\n            0.6\n          ]\n        }\n      },\n      \"translucent\": {\n        \"$value\": {\n          \"colorSpace\": \"display-p3\",\n          \"components\": [\n            0.25,\n            0.5,\n            0.75\n          ],\n          \"hex\": \"#336699\",\n          \"alpha\": 0.35\n        }\n      }\n    },\n    \"space\": {\n      \"$type\": \"dimension\",\n      \"base\": {\n        \"$value\": {\n          \"value\": 16,\n          \"unit\": \"px\"\n        }\n      }\n    },\n    \"type\": {\n      \"size\": {\n        \"$type\": \"dimension\",\n        \"$value\": {\n          \"value\": 20,\n          \"unit\": \"px\"\n        }\n      },\n      \"weight\": {\n        \"$type\": \"fontWeight\",\n        \"$value\": \"semi-bold\"\n      },\n      \"line\": {\n        \"$type\": \"number\",\n        \"$value\": 1.4\n      },\n      \"tracking\": {\n        \"$type\": \"dimension\",\n        \"$value\": {\n          \"value\": 0.25,\n          \"unit\": \"px\"\n        }\n      }\n    }\n  },\n  \"materialAssignments\": {\n    \"schemaVersion\": \"0.2.0\",\n    \"surface\": {\n      \"base\": \"cast\",\n      \"content\": \"cast\",\n      \"chrome\": \"frost\",\n      \"raised\": \"cast\",\n      \"transient\": \"gel\"\n    },\n    \"control\": {\n      \"passive\": \"cast\",\n      \"interactive\": \"elastomer\",\n      \"primary\": \"elastomer\"\n    },\n    \"feedback\": {\n      \"focus\": \"elastomer\",\n      \"selection\": \"gel\",\n      \"drag\": \"gel\"\n    }\n  },\n  \"frostPigment\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"tintStrength\": 0.55\n  },\n  \"colorAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"accent.primary\": \"palette.base\",\n      \"accent.secondary\": \"palette.base\",\n      \"accent.tertiary\": \"palette.base\",\n      \"surface.base\": \"palette.base\",\n      \"surface.low\": \"palette.base\",\n      \"surface.high\": \"palette.base\",\n      \"surface.chrome\": \"palette.base\",\n      \"content.primary\": \"palette.base\",\n      \"content.secondary\": \"palette.base\",\n      \"content.muted\": \"palette.base\",\n      \"content.inverse\": \"palette.base\",\n      \"outline\": \"palette.base\",\n      \"outline.strong\": \"palette.base\",\n      \"status.error\": \"palette.base\",\n      \"status.warning\": \"palette.base\",\n      \"status.success\": \"palette.base\",\n      \"status.info\": \"palette.base\",\n      \"focus\": \"palette.base\",\n      \"selection\": \"palette.base\"\n    }\n  },\n  \"opaqueColorAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"accent.primary\": \"palette.opaque\",\n      \"accent.secondary\": \"palette.opaque\",\n      \"accent.tertiary\": \"palette.opaque\",\n      \"surface.base\": \"palette.opaque\",\n      \"surface.low\": \"palette.opaque\",\n      \"surface.high\": \"palette.opaque\",\n      \"surface.chrome\": \"palette.opaque\",\n      \"content.primary\": \"palette.opaque\",\n      \"content.secondary\": \"palette.opaque\",\n      \"content.muted\": \"palette.opaque\",\n      \"content.inverse\": \"palette.opaque\",\n      \"outline\": \"palette.opaque\",\n      \"outline.strong\": \"palette.opaque\",\n      \"status.error\": \"palette.opaque\",\n      \"status.warning\": \"palette.opaque\",\n      \"status.success\": \"palette.opaque\",\n      \"status.info\": \"palette.opaque\",\n      \"focus\": \"palette.opaque\",\n      \"selection\": \"palette.opaque\"\n    }\n  },\n  \"spatialAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"space.control.inline\": \"space.base\",\n      \"space.control.block\": \"space.base\",\n      \"space.container.inner\": \"space.base\",\n      \"space.container.outer\": \"space.base\",\n      \"space.group\": \"space.base\",\n      \"space.section\": \"space.base\",\n      \"space.page\": \"space.base\"\n    }\n  },\n  \"typographyAssignments\": {\n    \"schemaVersion\": \"0.1.0\",\n    \"roles\": {\n      \"display\": {\n        \"familyRole\": \"display\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"titleLarge\": {\n        \"familyRole\": \"display\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"title\": {\n        \"familyRole\": \"display\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"heading\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"bodyLarge\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"body\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"label\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"caption\": {\n        \"familyRole\": \"sans\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.25\n      },\n      \"numeric\": {\n        \"familyRole\": \"numeric\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      },\n      \"code\": {\n        \"familyRole\": \"monospace\",\n        \"fontSize\": \"type.size\",\n        \"fontWeight\": \"type.weight\",\n        \"lineHeight\": \"type.line\",\n        \"letterSpacing\": \"type.tracking\",\n        \"minimumTextScale\": 1.0\n      }\n    }\n  }\n}\n",
+      {},
+      {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 1280,
+          "height": 800,
+          "safeArea": {
+            "start": 0,
+            "end": 0,
+            "top": 0,
+            "bottom": 0
+          }
+        },
+        "scale": 1.5,
+        "textScale": 2,
+        "inputCapabilities": [
+          "directTouch",
+          "keyboard"
+        ],
+        "viewingProfile": "desk",
+        "densityPreference": "comfortable",
+        "accessibilityPreferences": {
+          "reducedMotion": true,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en-US",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": true,
+          "translucentSurfaces": true,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": false,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "economy"
+      }
+    ],
+    "error": "theme request must be a JSON object"
+  },
+  {
+    "name": "empty array theme request",
+    "document": [],
+    "error": "theme request must be a JSON object"
+  },
+  {
+    "name": "null theme request",
+    "document": null,
+    "error": "theme request must be a JSON object"
+  },
+  {
+    "name": "boolean theme request",
+    "document": true,
+    "error": "theme request must be a JSON object"
+  },
+  {
+    "name": "string theme request",
+    "document": "theme",
+    "error": "theme request must be a JSON object"
+  },
+  {
+    "name": "number theme request",
+    "document": 1,
+    "error": "theme request must be a JSON object"
+  }
+]
