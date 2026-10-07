@@ -598,11 +598,10 @@ mod tests {
         }
         assert_eq!(split_endpoints, 4);
         assert!(
-            serde_json::to_value(contour)
+            !serde_json::to_value(contour)
                 .unwrap()
                 .to_string()
-                .find("null")
-                .is_none()
+                .contains("null")
         );
     }
 
