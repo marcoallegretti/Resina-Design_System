@@ -15,10 +15,15 @@ def baseline():
 
 def cases():
     base = baseline()
-    return [
-        {**case, "request": apply_changes(base, case["requestChanges"])}
-        for case in load_json(ROOT / "conformance/interaction/hit-region-cases.json")
-    ]
+    public = load_json(ROOT / "conformance/interaction/hit-region-cases.json")
+    for vector in load_json(ROOT / "conformance/environment/source-shape-vectors.json"):
+        public.append({
+            "name": f"invalid environment shape: {vector['name']}",
+            "requestChanges": [{"path": "/environment" + vector["path"], "value": vector["value"]}],
+            "requestSchemaValid": False,
+            "failure": True,
+        })
+    return [{**case, "request": apply_changes(base, case["requestChanges"])} for case in public]
 
 
 def hit_region_mismatch(actual, expected):

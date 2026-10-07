@@ -272,6 +272,7 @@ def main():
         "schemas/color-assignments.schema.json",
         "schemas/corner-radius-case.schema.json",
         "schemas/environment.schema.json",
+        "schemas/environment-source-shape-case.schema.json",
         "schemas/frost-pigment.schema.json",
         "schemas/frost-legibility-request.schema.json",
         "schemas/frost-legibility-result.schema.json",
@@ -1626,6 +1627,19 @@ def main():
     ):
         path = ROOT / "conformance" / "environment" / filename
         check_case(environment, str(path.relative_to(ROOT)), load_json(path), valid)
+        checked += 1
+
+    shape_validator = validator_for("schemas/environment-source-shape-case.schema.json")
+    shape_names = set()
+    shape_base = load_json(ROOT / "conformance/environment/valid-mixed-input.json")
+    for vector in load_json(ROOT / "conformance/environment/source-shape-vectors.json"):
+        check_case(shape_validator, vector["name"], vector, True)
+        if vector["name"] in shape_names:
+            raise ValueError(f"duplicate environment shape case: {vector['name']}")
+        shape_names.add(vector["name"])
+        document = (apply_changes(shape_base, [vector]) if vector["path"]
+                    else vector["value"])
+        check_case(environment, vector["name"], document, False)
         checked += 1
 
     oversized = ROOT / "conformance/environment/invalid-nonfinite-number.json"
