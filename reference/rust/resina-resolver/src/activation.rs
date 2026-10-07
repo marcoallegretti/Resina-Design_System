@@ -8,6 +8,7 @@ pub enum ActivationError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidRequestShape,
     InvalidEvent(&'static str),
 }
 
@@ -17,6 +18,7 @@ impl fmt::Display for ActivationError {
             Self::Parse(error) => write!(f, "activation parse failed: {error}"),
             Self::Request(error) => write!(f, "invalid activation request: {error}"),
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
+            Self::InvalidRequestShape => f.write_str("activation request must be a JSON object"),
             Self::InvalidEvent(error) => write!(f, "invalid activation event: {error}"),
         }
     }
@@ -151,6 +153,9 @@ struct Request {
 
 pub fn resolve_activation_source(source: &str) -> Result<ActivationResult, ActivationError> {
     let value = parse_token_document(source).map_err(ActivationError::Parse)?;
+    if !value.is_object() {
+        return Err(ActivationError::InvalidRequestShape);
+    }
     let request: Request = serde_json::from_value(value).map_err(ActivationError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(ActivationError::UnsupportedVersion);

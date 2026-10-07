@@ -2049,5 +2049,229 @@
     },
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional request",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": false
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional state",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": [
+        "0.1.0",
+        true,
+        true,
+        null
+      ],
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": false
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object keyDown key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": {
+          "enter": null
+        },
+        "repeat": false
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object keyUp key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": {
+          "space": null
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object held enter key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": {
+            "enter": null
+          }
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": "enter"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object held space key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": {
+            "space": null
+          }
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": "space"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional held key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": [
+          "key",
+          "space"
+        ]
+      },
+      "event": {
+        "kind": "cancel"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional held pointer",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": [
+          "pointer",
+          "p",
+          true
+        ]
+      },
+      "event": {
+        "kind": "cancel"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional keyDown event",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": [
+        "keyDown",
+        "enter",
+        false
+      ]
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional pointerDown event",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": [
+        "pointerDown",
+        "p",
+        true
+      ]
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional invoke event",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": [
+        "invoke"
+      ]
+    },
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]
