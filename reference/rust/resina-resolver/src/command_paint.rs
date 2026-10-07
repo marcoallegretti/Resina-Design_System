@@ -94,15 +94,19 @@ pub fn resolve_command_paint(
     environment: &EnvironmentSnapshot,
     input: CommandPaintInput<'_>,
 ) -> Result<CommandPaintIr, CommandPaintError> {
-    resolve_command_paint_with_response(theme, environment, input, |_, response| Ok(response))
+    resolve_command_paint_with_response(theme, environment, input, |_, response| Ok((response, ())))
+        .map(|(paint, ())| paint)
 }
 
-pub(crate) fn resolve_command_paint_with_response(
+pub(crate) fn resolve_command_paint_with_response<T>(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
     input: CommandPaintInput<'_>,
-    sample: impl FnOnce(MaterialFamily, CommandResponse) -> Result<CommandResponse, CommandPaintError>,
-) -> Result<CommandPaintIr, CommandPaintError> {
+    sample: impl FnOnce(
+        MaterialFamily,
+        CommandResponse,
+    ) -> Result<(CommandResponse, T), CommandPaintError>,
+) -> Result<(CommandPaintIr, T), CommandPaintError> {
     let surface = input.surface.body.surface;
     if !matches!(
         surface.material_role(),
@@ -134,7 +138,7 @@ pub(crate) fn resolve_command_paint_with_response(
         .command_appearance
         .response_for(binding.material_family(), phase)
         .map_err(CommandPaintError::Scope)?;
-    let response = sample(binding.material_family(), response)?;
+    let (response, sampled) = sample(binding.material_family(), response)?;
     let paint = crate::control_paint::resolve_control_paint(
         theme,
         environment,
@@ -144,10 +148,13 @@ pub(crate) fn resolve_command_paint_with_response(
         response,
         true,
     )?;
-    Ok(CommandPaintIr {
-        schema_version: "0.1.0",
-        phase,
-        response,
-        paint,
-    })
+    Ok((
+        CommandPaintIr {
+            schema_version: "0.1.0",
+            phase,
+            response,
+            paint,
+        },
+        sampled,
+    ))
 }

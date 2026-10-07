@@ -92,18 +92,21 @@ pub fn resolve_toggle_part_paint(
     environment: &EnvironmentSnapshot,
     input: TogglePartPaintInput<'_>,
 ) -> Result<TogglePartPaintIr, TogglePartPaintError> {
-    resolve_toggle_part_paint_with_response(theme, environment, input, |_, response| Ok(response))
+    resolve_toggle_part_paint_with_response(theme, environment, input, |_, response| {
+        Ok((response, ()))
+    })
+    .map(|(paint, ())| paint)
 }
 
-pub(crate) fn resolve_toggle_part_paint_with_response(
+pub(crate) fn resolve_toggle_part_paint_with_response<T>(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
     input: TogglePartPaintInput<'_>,
     sample: impl FnOnce(
         MaterialFamily,
         CommandResponse,
-    ) -> Result<CommandResponse, TogglePartPaintError>,
-) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    ) -> Result<(CommandResponse, T), TogglePartPaintError>,
+) -> Result<(TogglePartPaintIr, T), TogglePartPaintError> {
     let original = input.surface.body.surface;
     if !matches!(
         original.material_role(),
@@ -165,7 +168,7 @@ pub(crate) fn resolve_toggle_part_paint_with_response(
         .interaction_appearance
         .response_for(binding.material_family(), phase)
         .map_err(TogglePartPaintError::Scope)?;
-    let response = sample(binding.material_family(), response)?;
+    let (response, sampled) = sample(binding.material_family(), response)?;
     let b = input.surface.body;
     let paint = crate::control_paint::resolve_control_paint(
         theme,
@@ -188,14 +191,17 @@ pub(crate) fn resolve_toggle_part_paint_with_response(
         response,
         input.part == TogglePart::Track,
     )?;
-    Ok(TogglePartPaintIr {
-        schema_version: "0.1.0",
-        part: input.part,
-        checked,
-        phase,
-        response,
-        paint,
-    })
+    Ok((
+        TogglePartPaintIr {
+            schema_version: "0.1.0",
+            part: input.part,
+            checked,
+            phase,
+            response,
+            paint,
+        },
+        sampled,
+    ))
 }
 
 #[derive(Deserialize)]

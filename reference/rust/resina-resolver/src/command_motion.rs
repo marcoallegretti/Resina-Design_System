@@ -78,8 +78,7 @@ pub fn resolve_command_motion(
     environment: &EnvironmentSnapshot,
     input: CommandMotionInput<'_>,
 ) -> Result<CommandMotionIr, CommandPaintError> {
-    let mut sampled = None;
-    let command = resolve_command_paint_with_response(
+    let (command, (sample, target)) = resolve_command_paint_with_response(
         theme,
         environment,
         input.command,
@@ -92,12 +91,9 @@ pub fn resolve_command_motion(
                 input.time,
             )
             .map_err(CommandPaintError::Motion)?;
-            let response = sample.response;
-            sampled = Some((sample, target));
-            Ok(response)
+            Ok((sample.response, (sample, target)))
         },
     )?;
-    let (sample, target) = sampled.expect("successful paint samples both channels");
     Ok(CommandMotionIr {
         schema_version: "0.1.0",
         policy: sample.policy,
