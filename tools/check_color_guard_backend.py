@@ -37,7 +37,7 @@ def check_success(command, source, expected, result_validator, timeout, name, co
 
 def check_backend(
     label, case_schema, request_schema, result_schema, vectors,
-    extra_failures=(), compare=mismatch,
+    extra_failures=(), compare=mismatch, extra_successes=(),
 ):
     parser = argparse.ArgumentParser(
         description=f"Check a Resina {label} backend through the public command protocol."
@@ -88,8 +88,11 @@ def check_backend(
         )
         for name, source in extra_failures:
             check_failure(command, source, arguments.timeout, name)
+        for name, source, expected in extra_successes:
+            check_success(command, source, expected, result_validator,
+                          arguments.timeout, name, compare)
     except (AssertionError, OSError, ValueError) as error:
         print(f"FAIL {error}", file=sys.stderr)
         return 1
-    print(f"{label.capitalize()} backend passed {len(cases) + 1 + len(extra_failures)} conformance cases")
+    print(f"{label.capitalize()} backend passed {len(cases) + 1 + len(extra_failures) + len(extra_successes)} conformance cases")
     return 0

@@ -74,9 +74,40 @@ Boundary regression tests exercise both directions when subtracting the current
 value from the endpoint would round the remaining distance down. The reference
 uses magnitude-ordered FastTwoSum only for finite endpoint candidates, following
 [Algorithm 2.5, Rump, Ogita and Oishi](https://www.tuhh.de/ti3/paper/rump/RuOgOi07I.pdf).
-No standalone source/command protocol is provided for this operation. A future
-adapter must preserve source precision and validate its complete input boundary;
-the typed operation does not certify a permissive JSON adapter.
+
+## Public source boundary
+
+The [request schema](../schemas/slider-adjustment-request.schema.json) requires
+`schemaVersion` `0.1.0`, a complete current bounded value request, explicit
+`enabled` and `readOnly`, and one tagged `adjustment`. Its `kind` is `setValue`
+with only `value`, `increase` or `decrease` with only `amount`, or `minimum` or
+`maximum` without a payload. Unknown, missing, duplicate and wrongly typed
+members, nonfinite numbers and unsupported versions fail before publication.
+Requests and intents must be JSON objects; positional arrays are invalid.
+JSON member escapes preserve decoded names, and duplicate checks compare those
+decoded names before numeric conversion.
+The current value is resolved through spec58; supplied progress is forbidden
+rather than trusted. Intent numeric literals follow spec58's binary64 source
+precision policy, including rejection of integer-form values that lose bits
+even above the 64-bit integer range. Representable large integers remain valid.
+Unavailable permission does not bypass source or intent validation.
+
+`resina-slider-adjustment <path|->` reads strict UTF-8 JSON up to 1 MiB. Success
+exits 0 with the complete adjustment IR and no diagnostic; invalid input exits 1
+with a diagnostic and no output; usage exits 2. The size guard is an executable
+resource limit, not a semantic value limit. The Rust API exposes
+`resolve_slider_adjustment_source` for the same strict boundary.
+
+[Protocol cases](../conformance/interaction/slider-adjustment-protocol-cases.json)
+retain the typed operation's results and add complete input-shape, integer
+precision and unavailable-delivery failures. The
+[external checker](../tools/check_slider_adjustment_backend.py) independently
+derives successful values and progress using exact rational arithmetic on the
+represented inputs, preserves exact values and flags, and allows spec58's four
+binary64 ULPs only for interior progress. It checks deterministic results,
+nested duplicates, nonfinite numbers and absence of partial output on Linux
+and Windows. This protocol does not dispatch native actions or certify a
+complete Slider component.
 
 Full semantic snapshots, discrete steps, key/controller adapters, pointer/touch
 lifecycle, visual/material feedback and native accessibility remain component

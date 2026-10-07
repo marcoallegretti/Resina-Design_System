@@ -148,7 +148,10 @@ accessibility publication remain separate component obligations.
 
 [Slider adjustment](spec/59-slider-adjustment.md) applies explicit numeric intents
 to the current bounded value with live enabled/read-only permission, bounded
-increment/decrement and distinct accepted/changed results. Native delivery,
+increment/decrement and distinct accepted/changed results. Run
+`resina-slider-adjustment <path|->` and
+`python tools/check_slider_adjustment_backend.py -- <backend-command> -` to
+verify its strict portable source boundary. Native delivery,
 discrete steps and complete Slider components remain separate requirements.
 
 [Slider accessibility](spec/60-slider-accessibility.md) preserves complete localized

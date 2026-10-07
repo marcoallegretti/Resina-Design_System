@@ -66,6 +66,9 @@ pub use slider_adjustment::{
     resolve_slider_adjustment,
 };
 
+mod slider_adjustment_source;
+pub use slider_adjustment_source::{SliderAdjustmentSourceError, resolve_slider_adjustment_source};
+
 mod slider_value;
 pub use slider_value::{
     SliderValueError, SliderValueIr, resolve_slider_value, resolve_slider_value_source,
