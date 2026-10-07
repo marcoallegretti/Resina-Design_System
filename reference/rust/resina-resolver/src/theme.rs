@@ -100,6 +100,11 @@ fn compile_theme_document(
     document: Value,
     external_sources: &BTreeMap<String, String>,
 ) -> Result<CompiledTheme, ThemeCompilationError> {
+    if !document.is_object() {
+        return Err(ThemeCompilationError::Source(serde::de::Error::custom(
+            "theme source must be a JSON object",
+        )));
+    }
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)
