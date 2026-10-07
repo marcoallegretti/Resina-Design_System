@@ -8,6 +8,43 @@ const RESOLUTION: &str = include_str!("../../../../conformance/headless/valid-re
 const VECTORS: &str = include_str!("../../../../conformance/surfaces/binding-vectors.json");
 
 #[test]
+fn non_object_frost_pigment_fails_before_surface_binding() {
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/materials/frost-pigment-vectors.json"
+    ))
+    .unwrap();
+    let invalid: Vec<_> = vectors
+        .iter()
+        .filter(|vector| {
+            vector["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("non-object Frost pigment ")
+        })
+        .collect();
+    assert_eq!(invalid.len(), 6);
+    for vector in invalid {
+        let mut request = scenario();
+        request["resolution"]["frostPigment"] = vector["document"].clone();
+        let source = request.to_string();
+        assert!(matches!(
+            resina_resolver::resolve_surface_scenario_source(&source),
+            Err(resina_resolver::SurfaceScenarioError::Resolution(
+                resina_resolver::HeadlessResolutionError::Request(_)
+            ))
+        ));
+        let output = run_stdin(&source);
+        assert_eq!(output.status.code(), Some(1), "{}", vector["name"]);
+        assert!(output.stdout.is_empty());
+        assert!(
+            String::from_utf8(output.stderr)
+                .unwrap()
+                .contains("Frost pigment object")
+        );
+    }
+}
+
+#[test]
 fn embedded_non_object_resolution_envelopes_fail_before_binding() {
     let cases: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../conformance/headless/backend-cases.json"

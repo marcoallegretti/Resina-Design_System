@@ -8,6 +8,41 @@ const SOURCE: &str = include_str!("../../../../conformance/headless/valid-reques
 const EXPECTED: &str = include_str!("../../../../conformance/headless/expected-resolution.json");
 
 #[test]
+fn non_object_frost_pigment_fails_without_publishing() {
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/materials/frost-pigment-vectors.json"
+    ))
+    .unwrap();
+    let invalid: Vec<_> = vectors
+        .iter()
+        .filter(|vector| {
+            vector["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("non-object Frost pigment ")
+        })
+        .collect();
+    assert_eq!(invalid.len(), 6);
+    for vector in invalid {
+        let mut request: Value = serde_json::from_str(SOURCE).unwrap();
+        request["frostPigment"] = vector["document"].clone();
+        let source = request.to_string();
+        assert!(matches!(
+            resina_resolver::resolve_headless_source(&source),
+            Err(resina_resolver::HeadlessResolutionError::Request(_))
+        ));
+        let output = run_stdin(&source);
+        assert_eq!(output.status.code(), Some(1), "{}", vector["name"]);
+        assert!(output.stdout.is_empty());
+        assert!(
+            String::from_utf8(output.stderr)
+                .unwrap()
+                .contains("Frost pigment object")
+        );
+    }
+}
+
+#[test]
 fn non_object_envelopes_fail_without_panicking_or_publishing() {
     let cases: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../conformance/headless/backend-cases.json"
