@@ -32,7 +32,7 @@
     "changes": [],
     "omitBackdrop": true,
     "requestSchemaValid": true,
-    "errorContains": "Frost requires postTreatmentBackdrop"
+    "failure": true
   },
   {
     "name": "Elastomer uses authored opaque body and foreground",
@@ -59,7 +59,7 @@
       {"path": "/foregroundRole", "value": "content.secondary"}
     ],
     "requestSchemaValid": true,
-    "errorContains": "surface content contrast is insufficient"
+    "failure": true
   },
   {
     "name": "Opaque fallback is used instead of source color",
@@ -68,7 +68,7 @@
       {"path": "/scenario/resolution/opaqueColorAssignments/roles/content.primary", "value": "palette.opaque"}
     ],
     "requestSchemaValid": true,
-    "errorContains": "surface content contrast is insufficient"
+    "failure": true
   },
   {
     "name": "Opaque content passes but edge fails",
@@ -78,7 +78,7 @@
       {"path": "/scenario/resolution/opaqueColorAssignments/roles/outline.strong", "value": "palette.opaque"}
     ],
     "requestSchemaValid": true,
-    "errorContains": "edge contrast is insufficient"
+    "failure": true
   },
   {
     "name": "Frost content remains unreadable",
@@ -87,7 +87,7 @@
       {"path": "/minimumContentContrast", "value": 10}
     ],
     "requestSchemaValid": true,
-    "errorContains": "Frost contrast is insufficient"
+    "failure": true
   },
   {
     "name": "Focused navigation preserves Frost body readability",
@@ -99,43 +99,43 @@
     "name": "Unresolved lens treatment",
     "changes": [{"path": "/scenario/surface/treatmentStack/treatments", "value": ["lens"]}],
     "requestSchemaValid": true,
-    "errorContains": "bound surface treatment must be none"
+    "failure": true
   },
   {
     "name": "Unknown foreground role",
     "changes": [{"path": "/foregroundRole", "value": "ink"}],
     "requestSchemaValid": false,
-    "errorContains": "unknown variant"
+    "failure": true
   },
   {
     "name": "Translucent backdrop",
     "changes": [{"path": "/postTreatmentBackdrop/alpha", "value": 0.5}],
     "requestSchemaValid": false,
-    "errorContains": "postTreatmentBackdrop must be opaque"
+    "failure": true
   },
   {
     "name": "Null backdrop is invalid",
     "changes": [{"path": "/postTreatmentBackdrop", "value": null}],
     "requestSchemaValid": false,
-    "errorContains": "invalid surface readability request"
+    "failure": true
   },
   {
     "name": "Invalid content threshold",
     "changes": [{"path": "/minimumContentContrast", "value": 22}],
     "requestSchemaValid": false,
-    "errorContains": "minimumContentContrast must be finite"
+    "failure": true
   },
   {
     "name": "Invalid edge threshold",
     "changes": [{"path": "/minimumEdgeContrast", "value": 22}],
     "requestSchemaValid": false,
-    "errorContains": "minimumContrast must be finite"
+    "failure": true
   },
   {
     "name": "Unsupported version",
     "changes": [{"path": "/schemaVersion", "value": "0.2.0"}],
     "requestSchemaValid": false,
-    "errorContains": "schemaVersion must be 0.1.0"
+    "failure": true
   },
   {
     "name": "frost body preserves navigation focused",
@@ -330,7 +330,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+hover",
@@ -344,7 +344,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state pressed",
@@ -357,7 +357,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+pressed",
@@ -371,7 +371,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state active",
@@ -384,7 +384,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+active",
@@ -398,7 +398,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state selected",
@@ -411,7 +411,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+selected",
@@ -425,7 +425,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state checked",
@@ -438,7 +438,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+checked",
@@ -452,7 +452,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state disabled",
@@ -465,7 +465,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+disabled",
@@ -479,7 +479,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state busy",
@@ -492,7 +492,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+busy",
@@ -506,7 +506,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state dragging",
@@ -519,7 +519,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+dragging",
@@ -533,7 +533,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state error",
@@ -546,7 +546,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+error",
@@ -560,7 +560,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state warning",
@@ -573,7 +573,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+warning",
@@ -587,7 +587,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state success",
@@ -600,7 +600,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   },
   {
     "name": "Unresolved body state focused+success",
@@ -614,6 +614,6 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "supports only rest and focused"
+    "failure": true
   }
 ]

@@ -6,7 +6,6 @@ from fractions import Fraction
 
 from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_failure, check_success
-from check_headless_backend import run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, validator_for
 
 
@@ -88,9 +87,7 @@ def main():
             if "expected" in case:
                 check_success(command, source, case["expected"], result_validator, arguments.timeout, name, hit_region_mismatch)
             else:
-                completed = run_backend(command, source, arguments.timeout)
-                if completed.returncode != 1 or completed.stdout or case["errorContains"] not in completed.stderr:
-                    raise AssertionError(f"{name}: expected diagnostic failure: {completed.returncode}, {completed.stderr[:200]!r}")
+                check_failure(command, source, arguments.timeout, name)
         check_failure(command, duplicate_member_source(base, "/schemaVersion"), arguments.timeout, "duplicate root version")
         for name, source in failures:
             check_failure(command, source, arguments.timeout, name)

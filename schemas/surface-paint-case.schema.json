@@ -10,10 +10,10 @@
     "requestSchemaValid": {"type": "boolean"},
     "omitSurroundingColor": {"type": "boolean"},
     "expectedFocus": {"type": "boolean"},
-    "errorContains": {"type": "string", "minLength": 1}
+    "failure": {"const": true}
   },
   "oneOf": [
-    {"required": ["expectedFocus"], "not": {"required": ["errorContains"]}, "properties": {"requestSchemaValid": {"const": true}}},
-    {"required": ["errorContains"], "not": {"required": ["expectedFocus"]}}
+    {"required": ["expectedFocus"], "not": {"required": ["failure"]}, "properties": {"requestSchemaValid": {"const": true}}},
+    {"required": ["failure"], "not": {"required": ["expectedFocus"]}}
   ]
 }

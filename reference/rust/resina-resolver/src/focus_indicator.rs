@@ -293,9 +293,10 @@ mod tests {
             } else {
                 let error = result.unwrap_err();
                 assert!(
-                    error
-                        .to_string()
-                        .contains(case["errorContains"].as_str().unwrap()),
+                    error.to_string().contains(&crate::diagnostics::expected(
+                        "focus_indicator",
+                        &case["name"]
+                    )),
                     "{}: {error}",
                     case["name"]
                 );

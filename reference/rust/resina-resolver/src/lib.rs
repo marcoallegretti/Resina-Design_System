@@ -497,3 +497,7 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "../tests/support/diagnostics.rs"]
+mod diagnostics;

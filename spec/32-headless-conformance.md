@@ -11,3 +11,27 @@ Run `python tools/check_headless_backend.py -- <backend-command> -` to check an 
 The [surface binding vectors](../conformance/surfaces/binding-vectors.json) and [scenario cases](../conformance/surfaces/scenario-cases.json) have an external command check. `python tools/check_surface_backend.py -- <backend-command> -` wraps each binding vector's intent in the public [surface scenario](21-surface-scenarios.md) with the headless request fixture. Scenario cases then change that baseline using the same case schema and JSON Pointer rules. They exercise capability and accessibility decisions through binding, preservation of source color and both portable and opaque fallbacks, Frost portable body selection, strict source parsing, and failure without partial output. The command follows the same input, output, diagnostic, determinism, and timeout rules above; successful output must match the [bound-surface result schema](../schemas/surface-binding-result.schema.json) and the expected surface. This covers the scenario-to-binding boundary; it does not grant the bound surface render-ready IR status.
 
 Tier 0 geometry has a separate external check: `python tools/check_shape_fallback_backend.py -- <backend-command> -` uses the public [shape request and result](09-geometry.md), authored assignments and foundation tokens, and the shape fallback vectors. It tests all five intents, bounded normalization, custom assignments, strict failures, and repeated deterministic output without importing the Rust resolver.
+
+## Failure diagnostics
+
+Public backend command checks MUST enforce invalid-input rejection with exit
+status 1, empty standard output, and a diagnostic on standard error containing
+at least one non-whitespace character. This applies to semantic validation,
+source parsing, and duplicate-member rejection. A diagnostic MUST explain the
+failure; its wording and language are implementation-specific. Conformance
+checks MUST NOT require reference implementation phrases or parser messages.
+Successful results and their determinism requirements are unchanged.
+
+The activation, focus traversal, hit region, focus indicator, Frost surface
+readability, surface readability, surface paint, command paint, and Toggle part
+paint case schemas represent a required rejection with `failure: true` instead
+of `errorContains`. A case MUST select exactly one success or failure outcome.
+`requestSchemaValid` still distinguishes schema rejection from semantic
+rejection; schema-valid input is not necessarily resolvable. Consumers of these
+candidate case formats must migrate to the explicit failure outcome. This
+changes case metadata, not backend request or result formats.
+
+Reference diagnostic wording assertions belong in reference-only tests and
+fixtures. They do not define the public rejection contract. Other case formats
+may retain historical diagnostic hints, but those hints MUST NOT constrain
+public backend conformance.

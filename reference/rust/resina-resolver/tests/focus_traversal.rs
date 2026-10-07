@@ -1,3 +1,6 @@
+#[path = "support/diagnostics.rs"]
+mod diagnostics;
+
 use resina_resolver::{
     FocusDirection, FocusTarget, FocusTraversalError, FocusTraversalInput, resolve_focus_traversal,
     resolve_focus_traversal_source,
@@ -28,7 +31,7 @@ fn public_cases_match_exact_results_and_diagnostics() {
                 result
                     .unwrap_err()
                     .to_string()
-                    .contains(case["errorContains"].as_str().unwrap()),
+                    .contains(&diagnostics::expected("focus_traversal", &case["name"])),
                 "{}",
                 case["name"]
             );

@@ -9,7 +9,7 @@ from check_color_guard_backend import check_failure, check_success
 from check_focus_ir_backend import focus_ir_mismatch
 from check_extruded_contour_backend import contour_mismatch
 from check_opaque_surface_backend import opaque_surface_mismatch
-from check_headless_backend import mismatch, run_backend
+from check_headless_backend import mismatch
 from check_schemas import ROOT, apply_changes, check_case, load_json, validator_for
 
 
@@ -89,10 +89,8 @@ def main():
             request = case_request(base, case)
             check_case(request_validator, name, request, case["requestSchemaValid"])
             source = json.dumps(request, ensure_ascii=False, allow_nan=False)
-            if "errorContains" in case:
-                completed = run_backend(command, source, arguments.timeout)
-                if completed.returncode != 1 or completed.stdout or case["errorContains"] not in completed.stderr:
-                    raise AssertionError(f"{name}: expected diagnostic failure: {completed.returncode}, {completed.stderr[:200]!r}")
+            if "failure" in case:
+                check_failure(command, source, arguments.timeout, name)
             else:
                 result = expected_result(request)
                 if ("focus" in result) != case["expectedFocus"]:

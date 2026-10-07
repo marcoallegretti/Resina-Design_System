@@ -101,3 +101,5 @@ pointer capture, assistive technology delivery or a complete Button.
 positive finite rectangle using exact endpoint residuals. Right/bottom boundaries
 are included for complete body coverage; point membership remains half-open for
 shared-edge ownership. Invalid or unrepresentable input bounds fail diagnostically.
+
+Failure diagnostics follow the [public backend diagnostic policy](32-headless-conformance.md#failure-diagnostics). Negative public cases use `failure: true`; diagnostic wording is not a conformance requirement.

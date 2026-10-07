@@ -4,6 +4,7 @@ import json
 import math
 import sys
 
+from check_color_guard_backend import check_failure
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, load_json, parse_json, validator_for
 
@@ -94,17 +95,10 @@ def main():
             if "expected" in case and not valid:
                 raise ValueError(f"successful request violates schema: {name}")
             source = json.dumps(request, ensure_ascii=False, allow_nan=False)
-            completed = run_backend(command, source, arguments.timeout)
-            if "errorContains" in case:
-                if (
-                    completed.returncode != 1
-                    or completed.stdout
-                    or case["errorContains"] not in completed.stderr
-                ):
-                    raise AssertionError(
-                        f"{name}: expected diagnostic failure; got {completed.returncode}, {completed.stderr[:200]!r}"
-                    )
+            if "failure" in case:
+                check_failure(command, source, arguments.timeout, name)
                 continue
+            completed = run_backend(command, source, arguments.timeout)
             if completed.returncode != 0 or completed.stderr:
                 raise AssertionError(
                     f"{name}: expected clean success; got {completed.returncode}, {completed.stderr[:200]!r}"
@@ -127,13 +121,7 @@ def main():
             raise ValueError("baseline surrounding color is not unique")
         duplicate_member = ' {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1}, '
         duplicate = base_source.replace(member, member + duplicate_member + member, 1)
-        completed = run_backend(command, duplicate, arguments.timeout)
-        if (
-            completed.returncode != 1
-            or completed.stdout
-            or "duplicate JSON member" not in completed.stderr
-        ):
-            raise AssertionError("duplicate request member was accepted")
+        check_failure(command, duplicate, arguments.timeout, "duplicate request member")
     except (AssertionError, OSError, ValueError) as error:
         print(f"FAIL {error}", file=sys.stderr)
         return 1
