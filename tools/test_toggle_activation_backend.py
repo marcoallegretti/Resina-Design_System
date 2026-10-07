@@ -13,6 +13,18 @@ class ToggleActivationProtocolTests(unittest.TestCase):
         self.cases = load_json(ROOT / "conformance/interaction/toggle-activation-cases.json")
         self.result_validator = validator_for("schemas/toggle-activation-result.schema.json")
 
+    def test_non_object_requests_fail_the_request_schema(self):
+        invalid = [case for case in self.cases if case["name"].startswith("invalid request root ")]
+        self.assertEqual(len(invalid), 8)
+        case_validator = validator_for("schemas/toggle-activation-case.schema.json")
+        request_validator = validator_for("schemas/toggle-activation-request.schema.json")
+        for case in invalid:
+            with self.subTest(name=case["name"]):
+                self.assertTrue(case_validator.is_valid(case))
+                self.assertFalse(request_validator.is_valid(case["request"]))
+                self.assertFalse(case["requestSchemaValid"])
+                self.assertIn("errorContains", case)
+
     def test_result_requires_binary_checked_and_complete_activation(self):
         baseline = self.cases[0]["expected"]
         self.assertTrue(self.result_validator.is_valid(baseline))
