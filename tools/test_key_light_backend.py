@@ -3,9 +3,22 @@ import math
 import unittest
 
 from check_key_light_backend import key_light_mismatch
+from check_schemas import ROOT, load_json, validator_for
 
 
 class KeyLightComparisonTests(unittest.TestCase):
+    def test_request_schema_rejects_positional_source_records(self):
+        request_validator = validator_for("schemas/key-light-request.schema.json")
+        case_validator = validator_for("schemas/key-light-case.schema.json")
+        cases = [case for case in load_json(ROOT / "conformance/lighting/key-light-vectors.json")
+                 if case["name"].startswith("invalid JSON shape")]
+        self.assertEqual(len(cases), 5)
+        for case in cases:
+            with self.subTest(name=case["name"]):
+                self.assertTrue(case_validator.is_valid(case))
+                self.assertFalse(request_validator.is_valid(case["request"]))
+                self.assertFalse(case["requestSchemaValid"])
+
     def setUp(self):
         self.expected = {
             "sideOffset": {"x": 1e300, "y": 0},

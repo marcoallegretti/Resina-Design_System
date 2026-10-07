@@ -4,6 +4,10 @@ Blueprint §§27–28 require a stable dimensional direction shared by surfaces 
 
 The [request](../schemas/key-light-request.schema.json) contains the key light, a finite nonnegative side-plane `depth` in logical `px`, and an explicit array of physical outward `normals`. Each normal MUST be finite and nonzero. Normal magnitudes do not encode strength; they are normalized. An empty array is valid and still resolves the straight-edge weights. All fields and version `0.1.0` are required. Missing or unknown fields, unsupported versions, invalid depth, and invalid directions or normals MUST fail without a partial result. A semantic normal validation failure identifies its zero-based array index; source parsing and member/type validation may fail before that stage.
 
+The source request, key-light definition, direction and each normal must be JSON
+objects. Positional arrays are invalid at those locations; `normals` itself is
+the explicitly ordered array of vector objects.
+
 For any direction `(x, y)`, let `m = max(abs(x), abs(y))`, `a = x/m`, `b = y/m`, and `s = sqrt(a² + b²)`. Its normalized direction is `(a/s, b/s)`. This scaled formula MUST preserve valid subnormal and maximum finite directions without overflowing the length or underflowing it to zero. Implementations MAY use an equivalent algorithm within the conformance tolerance. The reference uses a correctly rounded square root rather than a platform-dependent hypotenuse routine.
 
 Let the unit key direction be `l = (lx, ly)`. The resolved physical side-plane offset is `(-lx × depth, -ly × depth)`, away from the light. Zero depth preserves the light and highlight weights and produces zero offset. This is a portable dimensional convention, not a shadow displacement, physical light position, or a change to surface layout. It does not choose the contour extrusion or paint order.
