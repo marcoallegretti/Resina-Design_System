@@ -7,6 +7,41 @@ use std::{
 const SOURCE: &str = include_str!("../../../../conformance/headless/valid-request.json");
 const EXPECTED: &str = include_str!("../../../../conformance/headless/expected-resolution.json");
 
+#[test]
+fn non_object_envelopes_fail_without_panicking_or_publishing() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/headless/backend-cases.json"
+    ))
+    .unwrap();
+    let invalid: Vec<_> = cases
+        .iter()
+        .filter(|case| {
+            case["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("non-object headless request ")
+        })
+        .collect();
+    assert_eq!(invalid.len(), 7);
+    for case in invalid {
+        let source = case["sourceText"].as_str().unwrap();
+        assert!(matches!(
+            resina_resolver::resolve_headless_source(source),
+            Err(resina_resolver::HeadlessResolutionError::InvalidRequestShape)
+        ));
+        let output = run_stdin(source);
+        assert_eq!(output.status.code(), Some(1), "{}", case["name"]);
+        assert!(output.stdout.is_empty(), "{}", case["name"]);
+        assert!(
+            String::from_utf8(output.stderr)
+                .unwrap()
+                .contains("headless request must be a JSON object"),
+            "{}",
+            case["name"]
+        );
+    }
+}
+
 fn run_stdin(source: &str) -> Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_resina-headless"))
         .arg("-")
