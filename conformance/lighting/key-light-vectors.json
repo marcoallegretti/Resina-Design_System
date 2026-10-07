@@ -400,5 +400,167 @@
       "edgeHighlightWeights": {"top": 0.8, "right": 0, "bottom": 0, "left": 0.6},
       "normalHighlightWeights": [0.9899494936611664, 0.9899494936611664, 0]
     }
+  },
+  {
+    "name": "invalid JSON shape positional request",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": 0,
+          "y": -4
+        }
+      },
+      5,
+      [
+        {
+          "x": 0,
+          "y": -1
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        }
+      ]
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "invalid JSON shape positional key light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": [
+        "0.1.0",
+        {
+          "x": 0,
+          "y": -4
+        }
+      ],
+      "depth": 5,
+      "normals": [
+        {
+          "x": 0,
+          "y": -1
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "invalid JSON shape positional direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": [
+          0,
+          -4
+        ]
+      },
+      "depth": 5,
+      "normals": [
+        {
+          "x": 0,
+          "y": -1
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": -1,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "invalid JSON shape positional normals",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": 0,
+          "y": -4
+        }
+      },
+      "depth": 5,
+      "normals": [
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "invalid JSON shape mixed positional normal",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": 0,
+          "y": -4
+        }
+      },
+      "depth": 5,
+      "normals": [
+        {
+          "x": 0,
+          "y": -1
+        },
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
   }
 ]
