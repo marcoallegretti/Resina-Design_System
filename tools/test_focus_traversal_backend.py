@@ -6,6 +6,16 @@ from check_schemas import validator_for
 
 
 class FocusTraversalConformanceTests(unittest.TestCase):
+    def test_request_schema_rejects_alternate_json_shapes(self):
+        validator = validator_for("schemas/focus-traversal-request.schema.json")
+        invalid = [case for case in cases() if case["name"].startswith("invalid JSON shape")]
+        self.assertEqual(len(invalid), 5)
+        for case in invalid:
+            with self.subTest(name=case["name"]):
+                self.assertFalse(validator.is_valid(case["request"]))
+                self.assertFalse(case["requestSchemaValid"])
+                self.assertTrue(case["failure"])
+
     def test_no_target_is_explicit_and_schema_strict(self):
         validator = validator_for("schemas/focus-traversal-result.schema.json")
         expected = {"schemaVersion": "0.1.0", "targetId": None}
