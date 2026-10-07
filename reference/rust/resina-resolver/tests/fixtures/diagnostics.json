@@ -110,7 +110,12 @@
     "null neighbors": "invalid hit region request",
     "rounded endpoint hides clipping": "clips",
     "rounded endpoint hides right overlap": "occupiedRegions[0]",
-    "rounded endpoint hides left overlap": "occupiedRegions[0]"
+    "rounded endpoint hides left overlap": "occupiedRegions[0]",
+    "positional visual bounds": "must be a JSON object",
+    "positional available bounds": "must be a JSON object",
+    "positional component minimum": "must be a JSON object",
+    "positional occupied bounds": "must be a JSON object",
+    "later positional occupied bounds": "must be a JSON object"
   },
   "surface_paint": {
     "missing focused surrounding color": "requires surroundingColor",

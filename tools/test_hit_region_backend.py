@@ -1,7 +1,7 @@
 import copy
 import unittest
 
-from check_hit_region_backend import cases, hit_region_mismatch, validate_membership_vectors
+from check_hit_region_backend import baseline, cases, hit_region_mismatch, validate_membership_vectors
 from check_schemas import ROOT, load_json, validator_for
 
 
@@ -18,6 +18,23 @@ class HitRegionConformanceTests(unittest.TestCase):
         first = cases()
         first[0]["request"]["visualBounds"]["width"] = 100
         self.assertEqual(cases()[0]["request"]["visualBounds"]["width"], 20)
+
+    def test_positional_geometry_records_fail_the_production_schema(self):
+        shapes = [case for case in cases()
+                  if case["name"].startswith(("positional ", "later positional "))]
+        self.assertEqual(len(shapes), 5)
+        request_validator = validator_for("schemas/hit-region-request.schema.json")
+        for case in shapes:
+            with self.subTest(name=case["name"]):
+                self.assertFalse(request_validator.is_valid(case["request"]))
+                self.assertFalse(case["requestSchemaValid"])
+                self.assertTrue(case["failure"])
+        base = baseline()
+        root = [base[field] for field in (
+            "schemaVersion", "environment", "visualBounds", "availableBounds",
+            "componentMinimum", "occupiedRegions",
+        )]
+        self.assertFalse(request_validator.is_valid(root))
 
     def test_invalid_environment_shapes_reach_schema_and_backend_evidence(self):
         vectors = load_json(ROOT / "conformance/environment/source-shape-vectors.json")

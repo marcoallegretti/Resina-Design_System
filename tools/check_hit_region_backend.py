@@ -73,6 +73,10 @@ def main():
         ("nonfinite extent", nonfinite_member_source(base, "/visualBounds/width")),
         ("missing neighbors", json.dumps(missing)),
         ("unknown root", json.dumps({**base, "unexpected": True})),
+        ("positional root", json.dumps([base[field] for field in (
+            "schemaVersion", "environment", "visualBounds", "availableBounds",
+            "componentMinimum", "occupiedRegions",
+        )])),
     )
     case_validator = validator_for("schemas/hit-region-case.schema.json")
     request_validator = validator_for("schemas/hit-region-request.schema.json")
