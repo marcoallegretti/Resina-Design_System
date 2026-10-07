@@ -1,11 +1,16 @@
+use serde::de::{
+    MapAccess, Visitor,
+    value::{MapAccessDeserializer, StringDeserializer},
+};
 use serde::{Deserialize, Deserializer, Serialize};
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt, marker::PhantomData};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Geometry {
     pub width: f64,
     pub height: f64,
+    #[serde(deserialize_with = "deserialize_object")]
     pub safe_area: SafeArea,
 }
 
@@ -145,25 +150,74 @@ pub struct EnvironmentSnapshot {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EnvironmentSnapshotInput {
     pub schema_version: String,
+    #[serde(deserialize_with = "deserialize_object")]
     pub geometry: Geometry,
     pub scale: f64,
     pub text_scale: f64,
+    #[serde(deserialize_with = "deserialize_input_capabilities")]
     pub input_capabilities: Vec<InputCapability>,
+    #[serde(deserialize_with = "deserialize_string_enum")]
     pub viewing_profile: ViewingProfile,
+    #[serde(deserialize_with = "deserialize_string_enum")]
     pub density_preference: DensityPreference,
+    #[serde(deserialize_with = "deserialize_object")]
     pub accessibility_preferences: AccessibilityPreferences,
     pub locale: String,
+    #[serde(deserialize_with = "deserialize_string_enum")]
     pub layout_direction: LayoutDirection,
+    #[serde(deserialize_with = "deserialize_object")]
     pub renderer_capabilities: RendererCapabilities,
+    #[serde(deserialize_with = "deserialize_string_enum")]
     pub quality_policy: QualityPolicy,
 }
 
 impl<'de> Deserialize<'de> for EnvironmentSnapshot {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        EnvironmentSnapshotInput::deserialize(deserializer)?
+        deserialize_object::<D, EnvironmentSnapshotInput>(deserializer)?
             .try_into()
             .map_err(serde::de::Error::custom)
     }
+}
+
+fn deserialize_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    struct Object<T>(PhantomData<T>);
+
+    impl<'de, T: Deserialize<'de>> Visitor<'de> for Object<T> {
+        type Value = T;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("an object")
+        }
+
+        fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<T, A::Error> {
+            T::deserialize(MapAccessDeserializer::new(map))
+        }
+    }
+
+    deserializer.deserialize_map(Object(PhantomData))
+}
+
+fn deserialize_string_enum<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    let value = String::deserialize(deserializer)?;
+    T::deserialize(StringDeserializer::<D::Error>::new(value))
+}
+
+fn deserialize_input_capabilities<'de, D>(deserializer: D) -> Result<Vec<InputCapability>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Vec::<String>::deserialize(deserializer)?
+        .into_iter()
+        .map(|value| InputCapability::deserialize(StringDeserializer::<D::Error>::new(value)))
+        .collect()
 }
 
 impl TryFrom<EnvironmentSnapshotInput> for EnvironmentSnapshot {
@@ -573,6 +627,60 @@ mod tests {
             },
             "expected `ltr` or `rtl`",
         );
+    }
+
+    #[test]
+    fn source_shapes_match_the_object_and_string_contract() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/environment/source-shape-vectors.json"
+        ))
+        .unwrap();
+        assert_eq!(vectors.len(), 11);
+        for vector in vectors {
+            let mut value = valid();
+            *value.pointer_mut(vector["path"].as_str().unwrap()).unwrap() = vector["value"].clone();
+            let source = value.to_string();
+            assert!(
+                serde_json::from_str::<EnvironmentSnapshot>(&source).is_err(),
+                "{}",
+                vector["name"]
+            );
+            assert!(
+                serde_json::from_value::<EnvironmentSnapshot>(value).is_err(),
+                "{}",
+                vector["name"]
+            );
+        }
+    }
+
+    #[test]
+    fn escaped_members_and_duplicate_aliases_preserve_source_validation() {
+        let source = valid().to_string();
+        let snapshot: EnvironmentSnapshot = serde_json::from_str(&source).unwrap();
+        for (member, escaped) in [
+            ("geometry", "\\u0067eometry"),
+            ("safeArea", "\\u0073afeArea"),
+            ("inputCapabilities", "\\u0069nputCapabilities"),
+            ("qualityPolicy", "\\u0071ualityPolicy"),
+        ] {
+            let escaped = source.replace(&format!("\"{member}\""), &format!("\"{escaped}\""));
+            assert_eq!(
+                serde_json::from_str::<EnvironmentSnapshot>(&escaped).unwrap(),
+                snapshot
+            );
+        }
+        for (member, value, alias) in [
+            ("scale", "1.5", "\\u0073cale"),
+            ("width", "1280", "\\u0077idth"),
+            ("reducedMotion", "true", "\\u0072educedMotion"),
+            ("gradients", "true", "\\u0067radients"),
+        ] {
+            let needle = format!("\"{member}\":{value}");
+            assert!(source.contains(&needle));
+            let duplicate = source.replacen(&needle, &format!("{needle},\"{alias}\":{value}"), 1);
+            let error = serde_json::from_str::<EnvironmentSnapshot>(&duplicate).unwrap_err();
+            assert!(error.to_string().contains("duplicate field"), "{error}");
+        }
     }
 
     #[test]

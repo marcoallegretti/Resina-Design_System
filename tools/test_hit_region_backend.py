@@ -2,7 +2,7 @@ import copy
 import unittest
 
 from check_hit_region_backend import cases, hit_region_mismatch, validate_membership_vectors
-from check_schemas import ROOT, load_json
+from check_schemas import ROOT, load_json, validator_for
 
 
 class HitRegionConformanceTests(unittest.TestCase):
@@ -18,6 +18,21 @@ class HitRegionConformanceTests(unittest.TestCase):
         first = cases()
         first[0]["request"]["visualBounds"]["width"] = 100
         self.assertEqual(cases()[0]["request"]["visualBounds"]["width"], 20)
+
+    def test_invalid_environment_shapes_reach_schema_and_backend_evidence(self):
+        vectors = load_json(ROOT / "conformance/environment/source-shape-vectors.json")
+        self.assertEqual(len(vectors), 11)
+        shapes = [case for case in cases() if case["name"].startswith("invalid environment shape:")]
+        self.assertEqual(len(shapes), len(vectors))
+        request_validator = validator_for("schemas/hit-region-request.schema.json")
+        case_validator = validator_for("schemas/hit-region-case.schema.json")
+        for case in shapes:
+            with self.subTest(name=case["name"]):
+                self.assertTrue(case_validator.is_valid({key: value for key, value in case.items()
+                                                        if key != "request"}))
+                self.assertFalse(request_validator.is_valid(case["request"]))
+                self.assertFalse(case["requestSchemaValid"])
+                self.assertTrue(case["failure"])
 
     def test_membership_expectations_use_exact_not_rounded_endpoints(self):
         vectors = load_json(ROOT / "conformance/interaction/hit-membership-vectors.json")
