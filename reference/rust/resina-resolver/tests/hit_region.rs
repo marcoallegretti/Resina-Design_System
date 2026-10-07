@@ -275,3 +275,82 @@ fn cli_rejects_invalid_utf8_and_distinguishes_usage_errors() {
     assert!(output.stdout.is_empty());
     assert!(!output.stderr.is_empty());
 }
+
+#[test]
+fn positional_source_records_fail_before_geometry_publication() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/hit-region-cases.json"
+    ))
+    .unwrap();
+    let mut requests = Vec::new();
+    for case in cases.iter().filter(|case| {
+        let name = case["name"].as_str().unwrap();
+        name.starts_with("positional ") || name.starts_with("later positional ")
+    }) {
+        let mut input = request();
+        for change in case["requestChanges"].as_array().unwrap() {
+            *input.pointer_mut(change["path"].as_str().unwrap()).unwrap() = change["value"].clone();
+        }
+        requests.push(input);
+    }
+    assert_eq!(requests.len(), 5);
+    let base = request();
+    requests.push(Value::Array(
+        [
+            "schemaVersion",
+            "environment",
+            "visualBounds",
+            "availableBounds",
+            "componentMinimum",
+            "occupiedRegions",
+        ]
+        .map(|field| base[field].clone())
+        .into(),
+    ));
+    for input in requests {
+        let source = input.to_string();
+        assert!(matches!(
+            resolve_hit_region_source(&source),
+            Err(HitRegionError::InvalidShape(_))
+        ));
+        let mut child = Command::new(env!("CARGO_BIN_EXE_resina-hit-region"))
+            .arg("-")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        child
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(source.as_bytes())
+            .unwrap();
+        let output = child.wait_with_output().unwrap();
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        assert!(!output.stderr.is_empty());
+    }
+}
+
+#[test]
+fn escaped_geometry_members_preserve_resolution_and_duplicate_rejection() {
+    let source = request().to_string();
+    let expected = resolve_hit_region_source(&source).unwrap();
+    for (field, escaped) in [
+        ("visualBounds", "\\u0076isualBounds"),
+        ("availableBounds", "\\u0061vailableBounds"),
+        ("componentMinimum", "\\u0063omponentMinimum"),
+        ("occupiedRegions", "\\u006fccupiedRegions"),
+    ] {
+        let escaped = source.replace(&format!("\"{field}\""), &format!("\"{escaped}\""));
+        assert_eq!(resolve_hit_region_source(&escaped).unwrap(), expected);
+    }
+    let duplicate = source.replacen("\"x\":0", "\"x\":0,\"\\u0078\":0", 1);
+    assert!(
+        resolve_hit_region_source(&duplicate)
+            .unwrap_err()
+            .to_string()
+            .contains("duplicate JSON member")
+    );
+}

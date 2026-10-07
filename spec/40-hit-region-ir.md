@@ -17,6 +17,11 @@ footprint. Supply the actual available rectangle after ancestor clipping and
 safe areas, and the actual neighboring hit rectangles. An empty neighbor array
 is explicit; the resolver MUST NOT infer missing placement, clipping or neighbors.
 
+The source request, `visualBounds`, `availableBounds`, `componentMinimum` and
+individual occupied bounds MUST be JSON objects. Positional records are invalid;
+`occupiedRegions` itself remains the explicit ordered array of bounds objects.
+All records must be validated before publishing a result.
+
 Resolve the existing environment minimum (24 units, or 48 for coarse pointer or
 direct touch). Each axis minimum is the larger of that floor and the corresponding
 component minimum. Each hit dimension is the larger of that minimum and the
