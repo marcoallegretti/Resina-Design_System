@@ -236,3 +236,73 @@ fn cli_rejects_duplicate_members_invalid_utf8_and_bad_usage() {
         Some(2)
     );
 }
+
+#[test]
+fn alternate_source_shapes_fail_before_activation_publication() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/activation-cases.json"
+    ))
+    .unwrap();
+    let cases: Vec<_> = cases
+        .iter()
+        .filter(|case| {
+            case["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("invalid JSON shape")
+        })
+        .collect();
+    assert_eq!(cases.len(), 11);
+    for case in cases {
+        let source = case["request"].to_string();
+        assert!(
+            resolve_activation_source(&source).is_err(),
+            "{}",
+            case["name"]
+        );
+        let mut child = Command::new(env!("CARGO_BIN_EXE_resina-activation"))
+            .arg("-")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        child
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(source.as_bytes())
+            .unwrap();
+        let output = child.wait_with_output().unwrap();
+        assert_eq!(output.status.code(), Some(1), "{}", case["name"]);
+        assert!(output.stdout.is_empty(), "{}", case["name"]);
+        assert!(!output.stderr.is_empty(), "{}", case["name"]);
+    }
+}
+
+#[test]
+fn escaped_request_members_preserve_activation_and_duplicate_rejection() {
+    let source = r#"{"schemaVersion":"0.1.0","state":{"schemaVersion":"0.1.0","enabled":true,"focused":true,"hold":null},"event":{"kind":"keyDown","key":"enter","repeat":false}}"#;
+    let expected = serde_json::to_value(resolve_activation_source(source).unwrap()).unwrap();
+    for (field, alias) in [
+        ("state", "\\u0073tate"),
+        ("event", "\\u0065vent"),
+        ("key", "\\u006bey"),
+    ] {
+        let escaped = source.replace(&format!("\"{field}\""), &format!("\"{alias}\""));
+        assert_eq!(
+            serde_json::to_value(resolve_activation_source(&escaped).unwrap()).unwrap(),
+            expected
+        );
+    }
+    let duplicate = source.replace(
+        "\"key\":\"enter\"",
+        "\"key\":\"enter\",\"\\u006bey\":\"enter\"",
+    );
+    assert!(
+        resolve_activation_source(&duplicate)
+            .unwrap_err()
+            .to_string()
+            .contains("duplicate JSON member")
+    );
+}

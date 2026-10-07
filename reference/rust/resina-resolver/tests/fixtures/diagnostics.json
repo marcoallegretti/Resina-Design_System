@@ -19,7 +19,18 @@
     "unsupported request version": "schemaVersion must be 0.1.0",
     "repeat required": "missing field",
     "unknown member on invoke": "unknown field",
-    "unknown member on cancel": "unknown field"
+    "unknown member on cancel": "unknown field",
+    "invalid JSON shape positional request": "must be a JSON object",
+    "invalid JSON shape positional state": "expected an object",
+    "invalid JSON shape object keyDown key": "expected `space` or `enter`",
+    "invalid JSON shape object keyUp key": "expected `space` or `enter`",
+    "invalid JSON shape object held enter key": "expected `space` or `enter`",
+    "invalid JSON shape object held space key": "expected `space` or `enter`",
+    "invalid JSON shape positional held key": "expected an object",
+    "invalid JSON shape positional held pointer": "expected an object",
+    "invalid JSON shape positional keyDown event": "expected an object",
+    "invalid JSON shape positional pointerDown event": "expected an object",
+    "invalid JSON shape positional invoke event": "expected an object"
   },
   "command_paint": {
     "unsupported active": "command paint supports only",
