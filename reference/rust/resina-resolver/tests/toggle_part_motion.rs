@@ -120,6 +120,32 @@ fn strict_source_rejects_duplicate_missing_and_nonfinite_motion_inputs() {
 }
 
 #[test]
+fn scope_sampling_and_paint_failures_keep_their_order() {
+    use resina_resolver::TogglePartPaintError;
+
+    let mut input = request();
+    input["time"] = json!(-1);
+    input["surface"]["body"]["minimumContentContrast"] = json!(21);
+    input["surface"]["body"]["surface"]["materialRole"] = json!("surface.base");
+    assert!(matches!(
+        resolve_toggle_part_motion_source(&input.to_string()),
+        Err(TogglePartPaintError::Scope(_))
+    ));
+    input["surface"]["body"]["surface"]["materialRole"] = json!("control.interactive");
+    assert!(matches!(
+        resolve_toggle_part_motion_source(&input.to_string()),
+        Err(TogglePartPaintError::Motion(
+            resina_motion::SpringError::InvalidTime
+        ))
+    ));
+    input["time"] = json!(0.25);
+    assert!(matches!(
+        resolve_toggle_part_motion_source(&input.to_string()),
+        Err(TogglePartPaintError::Paint(_))
+    ));
+}
+
+#[test]
 fn motion_cli_has_atomic_utf8_and_bounded_protocol() {
     use std::{
         io::Write,
