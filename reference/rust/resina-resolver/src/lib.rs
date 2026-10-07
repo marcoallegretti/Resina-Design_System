@@ -47,6 +47,8 @@ pub use slider_edit::{
 
 mod slider_position;
 pub use slider_position::{SliderPositionError, SliderPositionInput, resolve_slider_position};
+mod slider_position_source;
+pub use slider_position_source::{SliderPositionSourceError, resolve_slider_position_source};
 
 mod slider_layout;
 pub use slider_layout::{

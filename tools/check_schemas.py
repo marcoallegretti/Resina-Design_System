@@ -227,6 +227,8 @@ def main():
         "schemas/slider-layout-request.schema.json",
         "schemas/slider-layout-case.schema.json",
         "schemas/slider-position-cases.schema.json",
+        "schemas/slider-position-request.schema.json",
+        "schemas/slider-position-case.schema.json",
         "schemas/slider-edit-session.schema.json",
         "schemas/slider-value-policy.schema.json",
         "schemas/slider-value-policy-fixture.schema.json",
@@ -1815,6 +1817,17 @@ def main():
         checked += 2
         if "expected" in case:
             check_case(validator_for("schemas/slider-layout-ir.schema.json"), name,
+                       case["expected"], True)
+            checked += 1
+
+    for case in load_json(ROOT / "conformance/interaction/slider-position-protocol-cases.json"):
+        name = case["name"]
+        check_case(validator_for("schemas/slider-position-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/slider-position-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 2
+        if "expected" in case:
+            check_case(validator_for("schemas/slider-adjustment-ir.schema.json"), name,
                        case["expected"], True)
             checked += 1
 
