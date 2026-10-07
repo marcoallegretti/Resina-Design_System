@@ -86,3 +86,5 @@ decisions. These sources do not establish full component conformance.
 `resina-activation <path|->` reads strict UTF-8 JSON up to 1 MiB. Success exits 0
 with complete JSON; invalid input exits 1 with a diagnostic and no result; usage
 errors exit 2. Public cases define both successful transitions and failures.
+
+Failure diagnostics follow the [public backend diagnostic policy](32-headless-conformance.md#failure-diagnostics). Negative public cases use `failure: true`; diagnostic wording is not a conformance requirement.

@@ -1,3 +1,6 @@
+#[path = "support/diagnostics.rs"]
+mod diagnostics;
+
 use resina_model::{PhysicalBounds, PhysicalVector, SurfaceSize};
 use resina_resolver::{
     HitRegionError, HitRegionInput, resolve_hit_region, resolve_hit_region_source,
@@ -50,7 +53,7 @@ fn public_placements_and_failures_match_exactly() {
                 result
                     .unwrap_err()
                     .to_string()
-                    .contains(case["errorContains"].as_str().unwrap()),
+                    .contains(&diagnostics::expected("hit_region", &case["name"])),
                 "{}",
                 case["name"]
             );

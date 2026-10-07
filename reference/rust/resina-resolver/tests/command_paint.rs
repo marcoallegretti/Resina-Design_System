@@ -1,3 +1,6 @@
+#[path = "support/diagnostics.rs"]
+mod diagnostics;
+
 use resina_resolver::{
     opaque_contrast_ratio, resolve_command_paint_source, resolve_surface_paint_source,
 };
@@ -34,7 +37,7 @@ fn public_command_cases_keep_failures_diagnostic() {
         } else {
             let error = result.unwrap_err().to_string();
             assert!(
-                error.contains(case["errorContains"].as_str().unwrap()),
+                error.contains(&diagnostics::expected("command_paint", &case["name"])),
                 "{}: {error}",
                 case["name"]
             );

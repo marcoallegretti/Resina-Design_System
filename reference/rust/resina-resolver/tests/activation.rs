@@ -1,3 +1,6 @@
+#[path = "support/diagnostics.rs"]
+mod diagnostics;
+
 use resina_model::{ActivationEvent as E, ActivationKey as K, ActivationState, PressHold as H};
 use resina_resolver::{CaptureChange, resolve_activation, resolve_activation_source};
 use serde_json::Value;
@@ -26,7 +29,7 @@ fn public_cases_match_exact_results_and_diagnostics() {
                 result
                     .unwrap_err()
                     .to_string()
-                    .contains(case["errorContains"].as_str().unwrap()),
+                    .contains(&diagnostics::expected("activation", &case["name"])),
                 "{}",
                 case["name"]
             );

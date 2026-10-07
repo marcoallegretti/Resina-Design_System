@@ -10,7 +10,7 @@
     "request": {},
     "requestSchemaValid": {"type": "boolean"},
     "expected": {"$ref": "urn:resina:schema:focus-traversal-result:0.1.0"},
-    "errorContains": {"type": "string", "minLength": 1}
+    "failure": {"const": true}
   },
-  "oneOf": [{"required": ["expected"]}, {"required": ["errorContains"]}]
+  "oneOf": [{"required": ["expected"]}, {"required": ["failure"]}]
 }
