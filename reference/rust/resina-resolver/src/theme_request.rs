@@ -20,6 +20,7 @@ struct ThemeResolutionRequest {
 pub enum ThemeResolutionError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
+    InvalidRequestShape,
     UnsupportedVersion,
     Compile(ThemeCompilationError),
     Resolve(Vec<TypographyResolutionError>),
@@ -30,6 +31,7 @@ impl fmt::Display for ThemeResolutionError {
         match self {
             Self::Parse(error) => write!(formatter, "theme request parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid theme request: {error}"),
+            Self::InvalidRequestShape => formatter.write_str("theme request must be a JSON object"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Compile(error) => write!(formatter, "theme compilation failed: {error}"),
             Self::Resolve(errors) => {
@@ -58,6 +60,9 @@ pub fn resolve_theme_request_source(
 pub(crate) fn compile_theme_request_document(
     document: serde_json::Value,
 ) -> Result<(CompiledTheme, EnvironmentSnapshot), ThemeResolutionError> {
+    if !document.is_object() {
+        return Err(ThemeResolutionError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(serde_json::Value::as_str)

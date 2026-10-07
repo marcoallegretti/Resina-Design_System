@@ -85,6 +85,23 @@ def cases():
         yield case["name"], json.dumps(request, ensure_ascii=False, allow_nan=False), (
             wanted if case["outcome"] == "valid" else None
         )
+    for vector in load_json(ROOT / "conformance/themes/request-vectors.json"):
+        if (
+            set(vector) != {"name", "document", "error"}
+            or not isinstance(vector["name"], str)
+            or not vector["name"].strip()
+            or not isinstance(vector["error"], str)
+            or not vector["error"].strip()
+        ):
+            raise ValueError("invalid theme request rejection vector")
+        if vector["name"] in names:
+            raise ValueError(f"duplicate theme resolution case name: {vector['name']}")
+        names.add(vector["name"])
+        if request_validator.is_valid(vector["document"]):
+            raise ValueError(f"{vector['name']}: rejection vector is schema-valid")
+        yield vector["name"], json.dumps(
+            vector["document"], ensure_ascii=False, allow_nan=False
+        ), None
 
 
 def check_case(command, name, source, expected, result_validator, timeout):
