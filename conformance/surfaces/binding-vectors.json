@@ -649,5 +649,63 @@
       }
     },
     "error": "a string"
+  },
+  {
+    "name": "treatment stack source positional",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      "treatmentStack": [
+        "0.1.0",
+        [
+          "none",
+          "lens"
+        ]
+      ]
+    },
+    "error": "treatment stack object"
+  },
+  {
+    "name": "treatment stack source tagged item",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          {
+            "none": null
+          },
+          "lens"
+        ]
+      }
+    },
+    "error": "a string"
   }
 ]

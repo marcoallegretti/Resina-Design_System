@@ -385,11 +385,47 @@ pub struct TreatmentStack {
     treatments: Vec<OpticalTreatment>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TreatmentStackInput {
     pub schema_version: String,
     pub treatments: Vec<OpticalTreatment>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct TreatmentStackMembers {
+    schema_version: String,
+    #[serde(deserialize_with = "deserialize_treatment_names")]
+    treatments: Vec<OpticalTreatment>,
+}
+
+impl<'de> Deserialize<'de> for TreatmentStackInput {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct TreatmentStackVisitor;
+        impl<'de> Visitor<'de> for TreatmentStackVisitor {
+            type Value = TreatmentStackInput;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("an optical treatment stack object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = TreatmentStackMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(TreatmentStackInput {
+                    schema_version: input.schema_version,
+                    treatments: input.treatments,
+                })
+            }
+        }
+        deserializer.deserialize_map(TreatmentStackVisitor)
+    }
+}
+
+fn deserialize_treatment_names<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<OpticalTreatment>, D::Error> {
+    Vec::<String>::deserialize(deserializer)?
+        .into_iter()
+        .map(|name| OpticalTreatment::deserialize(StringDeserializer::<D::Error>::new(name)))
+        .collect()
 }
 
 impl TryFrom<TreatmentStackInput> for TreatmentStack {

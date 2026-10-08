@@ -269,6 +269,8 @@
     "surface form source positional": "surface form object",
     "surface form source tagged elevation": "a string",
     "state set source positional": "state set object",
-    "state set source tagged item": "a string"
+    "state set source tagged item": "a string",
+    "treatment stack source positional": "treatment stack object",
+    "treatment stack source tagged item": "a string"
   }
 }

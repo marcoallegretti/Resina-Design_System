@@ -1435,5 +1435,36 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "treatment stack source positional",
+    "requestChanges": [
+      {
+        "path": "/body/surface/treatmentStack",
+        "value": [
+          "0.1.0",
+          [
+            "none"
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "treatment stack source tagged item",
+    "requestChanges": [
+      {
+        "path": "/body/surface/treatmentStack/treatments",
+        "value": [
+          {
+            "none": null
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]
