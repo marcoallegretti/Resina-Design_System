@@ -300,6 +300,17 @@ Set `RESINA_TOGGLE_CAPTURE_DIR` to save the tested PPM frames for visual review.
 These fixtures verify composition transport and typography, not complete
 component styling, every script/font, motion or native accessibility conformance.
 
+The composition test adds 512 frames using the authored Toggle anatomy and both
+unmodified themes. They cover four phases, independent focus, off/on selection,
+both directions, text scales 1 and 2, and device scales 1, 1.25, 2 and 3. The
+track and thumb retain their authored material, selected color, content and form
+bindings; the external label uses its own authored color role. Each frame passes
+the same complete snapshot, placed CPU/GPU comparison, native label containment
+and 4.5:1 pixel-contrast checks. Part edges require 3:1 against their actual
+adjacent colors. Dimensions, insets and label padding remain explicit fixtures,
+not calibrated component defaults. Native input and assistive technology delivery
+remain separate obligations.
+
 ## Checked thumb travel
 
 Resolve `resolve_toggle_travel` from a current complete snapshot, explicit scalar
