@@ -7,13 +7,17 @@
   "required": ["name", "request", "requestSchemaValid"],
   "properties": {
     "name": {"type": "string", "minLength": 1},
-    "request": {"type": "object"},
+    "request": {},
     "requestSchemaValid": {"type": "boolean"},
     "expected": {"$ref": "urn:resina:schema:elevation-depth-result:0.1.0"},
     "errorContains": {"type": "string", "minLength": 1}
   },
   "oneOf": [
-    {"required": ["expected"], "not": {"required": ["errorContains"]}},
+    {
+      "required": ["expected"],
+      "not": {"required": ["errorContains"]},
+      "properties": {"requestSchemaValid": {"const": true}}
+    },
     {"required": ["errorContains"], "not": {"required": ["expected"]}}
   ]
 }
