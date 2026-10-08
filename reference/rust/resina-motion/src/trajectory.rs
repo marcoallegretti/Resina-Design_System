@@ -58,6 +58,9 @@ pub fn resolve_spring_trajectory_source(
     source: &str,
 ) -> Result<SpringTrajectorySample, SpringError> {
     let document = resina_tokens::parse_token_document(source).map_err(SpringError::Parse)?;
+    if !document.is_object() {
+        return Err(SpringError::InvalidRequestShape);
+    }
     let request: Request = serde_json::from_value(document).map_err(SpringError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(SpringError::UnsupportedVersion);

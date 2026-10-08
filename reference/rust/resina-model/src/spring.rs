@@ -1,7 +1,29 @@
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{Error, MapAccess, Visitor, value::MapAccessDeserializer},
+};
+use std::{fmt, marker::PhantomData};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "SpringInput")]
+fn deserialize_spring_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    struct Object<T>(PhantomData<T>);
+    impl<'de, T: Deserialize<'de>> Visitor<'de> for Object<T> {
+        type Value = T;
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("a spring object")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<T, A::Error> {
+            T::deserialize(MapAccessDeserializer::new(map))
+        }
+    }
+    deserializer.deserialize_map(Object(PhantomData))
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SpringParameters {
     schema_version: String,
     mass: f64,
@@ -23,6 +45,14 @@ struct SpringInput {
     initial_velocity: f64,
     position_threshold: f64,
     velocity_threshold: f64,
+}
+
+impl<'de> Deserialize<'de> for SpringParameters {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        deserialize_spring_object::<D, SpringInput>(deserializer)?
+            .try_into()
+            .map_err(D::Error::custom)
+    }
 }
 
 impl TryFrom<SpringInput> for SpringParameters {
@@ -99,10 +129,9 @@ impl SpringParameters {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "DynamicsInput")]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SpringDynamics {
-    #[serde(skip_deserializing)]
     schema_version: &'static str,
     mass: f64,
     stiffness: f64,
@@ -120,6 +149,13 @@ struct DynamicsInput {
     damping: f64,
     position_threshold: f64,
     velocity_threshold: f64,
+}
+impl<'de> Deserialize<'de> for SpringDynamics {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        deserialize_spring_object::<D, DynamicsInput>(deserializer)?
+            .try_into()
+            .map_err(D::Error::custom)
+    }
 }
 impl TryFrom<DynamicsInput> for SpringDynamics {
     type Error = &'static str;
@@ -188,8 +224,8 @@ impl SpringDynamics {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "StateInput")]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SpringState {
     position: f64,
     velocity: f64,
@@ -199,6 +235,13 @@ pub struct SpringState {
 struct StateInput {
     position: f64,
     velocity: f64,
+}
+impl<'de> Deserialize<'de> for SpringState {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        deserialize_spring_object::<D, StateInput>(deserializer)?
+            .try_into()
+            .map_err(D::Error::custom)
+    }
 }
 impl TryFrom<StateInput> for SpringState {
     type Error = &'static str;

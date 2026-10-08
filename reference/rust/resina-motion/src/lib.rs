@@ -42,6 +42,7 @@ pub enum SpringError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidRequestShape,
     InvalidTime,
     InvalidTarget,
     NumericRange(&'static str),
@@ -52,6 +53,9 @@ impl fmt::Display for SpringError {
             Self::Parse(e) => write!(formatter, "spring request parse failed: {e}"),
             Self::Request(e) => write!(formatter, "invalid spring request: {e}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("spring request must be a JSON object")
+            }
             Self::InvalidTime => formatter.write_str("time must be finite and nonnegative"),
             Self::InvalidTarget => formatter.write_str("target must be finite"),
             Self::NumericRange(field) => {
@@ -73,6 +77,9 @@ struct Request {
 
 pub fn resolve_spring_source(source: &str) -> Result<SpringSample, SpringError> {
     let document = resina_tokens::parse_token_document(source).map_err(SpringError::Parse)?;
+    if !document.is_object() {
+        return Err(SpringError::InvalidRequestShape);
+    }
     let request: Request = serde_json::from_value(document).map_err(SpringError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(SpringError::UnsupportedVersion);

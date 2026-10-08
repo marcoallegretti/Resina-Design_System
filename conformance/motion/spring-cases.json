@@ -453,5 +453,51 @@
     ],
     "requestSchemaValid": true,
     "errorContains": "normalized velocity"
+  },
+  {
+    "name": "positional spring parameters ordinary motion",
+    "requestChanges": [
+      {
+        "path": "/spring",
+        "value": [
+          "0.1.0",
+          1,
+          1,
+          2,
+          0,
+          0.001,
+          0.001
+        ]
+      },
+      {
+        "path": "/reducedMotion",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
+    "name": "positional spring parameters reduced motion",
+    "requestChanges": [
+      {
+        "path": "/spring",
+        "value": [
+          "0.1.0",
+          1,
+          1,
+          2,
+          0,
+          0.001,
+          0.001
+        ]
+      },
+      {
+        "path": "/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
   }
 ]

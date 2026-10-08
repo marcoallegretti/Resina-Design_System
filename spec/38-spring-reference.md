@@ -10,6 +10,9 @@ Time is elapsed seconds from the initial condition and MUST be finite and nonneg
 
 The [request schema](../schemas/spring-request.schema.json) requires `schemaVersion`, `spring`, `time` and `reducedMotion`. Reduced motion MUST come from the effective accessibility preference. Objects MUST reject unknown fields, missing fields, unsupported versions, and duplicate JSON members. Inputs MUST be validated before applying the fallback.
 
+The request and its spring parameters MUST be JSON objects. Positional arrays
+are invalid, including when reduced motion selects the immediate fallback.
+
 ## Equation and initial conditions
 
 For ordinary motion, the response MUST solve
