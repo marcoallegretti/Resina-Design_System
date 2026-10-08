@@ -5,6 +5,7 @@ import math
 import sys
 
 from backend_source import duplicate_member_source, nonfinite_member_source
+from opaque_request_source import opaque_request_failures
 from check_color_guard_backend import check_failure, check_success
 from check_focus_ir_backend import focus_ir_mismatch
 from check_extruded_contour_backend import contour_mismatch
@@ -108,7 +109,7 @@ def main():
             ("duplicate body state version", duplicate_member_source(base, "/body/surface/states/schemaVersion")),
             ("nonfinite body size", nonfinite_member_source(base, "/body/size/width")),
             ("unknown root member", json.dumps({**base, "unexpected": True})),
-        )
+        ) + opaque_request_failures(base, "/body")
         for name, source in failures:
             check_failure(command, source, arguments.timeout, name)
     except (AssertionError, OSError, ValueError) as error:

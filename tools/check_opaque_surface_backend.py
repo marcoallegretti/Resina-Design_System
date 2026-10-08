@@ -1,4 +1,5 @@
 from backend_source import duplicate_member_source, nonfinite_member_source
+from opaque_request_source import opaque_request_failures
 from check_delta_backend import check_delta_backend
 from check_extruded_contour_backend import contour_mismatch
 from check_headless_backend import mismatch
@@ -26,7 +27,7 @@ if __name__ == "__main__":
         "schemas/opaque-surface-request.schema.json", "schemas/opaque-surface-ir.schema.json",
         "conformance/ir/opaque-surface-request.json", "conformance/ir/opaque-surface-expected.json",
         "conformance/ir/opaque-surface-cases.json",
-        extra_failures=(
+        extra_failures=opaque_request_failures(baseline, "") + (
             ("duplicate root version", duplicate_member_source(baseline, "/schemaVersion")),
             ("duplicate nested band", duplicate_member_source(baseline, "/appearance/bands/cast/edgeWidth")),
             ("nonfinite surface dimension", nonfinite_member_source(baseline, "/size/width")),

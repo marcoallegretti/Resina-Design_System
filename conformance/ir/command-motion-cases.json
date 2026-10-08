@@ -1282,5 +1282,18 @@
     ],
     "requestSchemaValid": true,
     "expectedPolicy": "spring"
+  },
+  {
+    "name": "opaque request source tagged foreground role",
+    "requestChanges": [
+      {
+        "path": "/surface/body/foregroundRole",
+        "value": {
+          "content.primary": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
   }
 ]

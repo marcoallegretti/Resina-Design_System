@@ -13,7 +13,10 @@ use resina_model::{
     PhysicalVector, StateSet, SurfaceForm, SurfaceIntent, SurfaceSize,
 };
 use resina_tokens::parse_token_document;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer, value::StringDeserializer},
+};
 use serde_json::Value;
 use std::fmt;
 
@@ -28,8 +31,6 @@ pub struct OpaqueSurfaceInput<'a> {
     pub minimum_edge_contrast: f64,
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub(crate) struct OpaqueSurfaceRequest {
     pub(crate) schema_version: String,
     pub(crate) theme: Value,
@@ -37,11 +38,62 @@ pub(crate) struct OpaqueSurfaceRequest {
     pub(crate) size: SurfaceSize,
     pub(crate) appearance: OpaqueSurfaceAppearance,
     pub(crate) foreground_role: ColorRole,
-    #[serde(default, deserialize_with = "present_backdrop")]
     pub(crate) post_treatment_backdrop: Option<SrgbInput>,
     pub(crate) adjacent_color: SrgbInput,
     pub(crate) minimum_content_contrast: f64,
     pub(crate) minimum_edge_contrast: f64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OpaqueSurfaceRequestMembers {
+    schema_version: String,
+    theme: Value,
+    surface: SurfaceIntent,
+    size: SurfaceSize,
+    appearance: OpaqueSurfaceAppearance,
+    #[serde(deserialize_with = "foreground_role_name")]
+    foreground_role: ColorRole,
+    #[serde(default, deserialize_with = "present_backdrop")]
+    post_treatment_backdrop: Option<SrgbInput>,
+    adjacent_color: SrgbInput,
+    minimum_content_contrast: f64,
+    minimum_edge_contrast: f64,
+}
+
+impl<'de> Deserialize<'de> for OpaqueSurfaceRequest {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct RequestVisitor;
+        impl<'de> Visitor<'de> for RequestVisitor {
+            type Value = OpaqueSurfaceRequest;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("an opaque surface request object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input =
+                    OpaqueSurfaceRequestMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(OpaqueSurfaceRequest {
+                    schema_version: input.schema_version,
+                    theme: input.theme,
+                    surface: input.surface,
+                    size: input.size,
+                    appearance: input.appearance,
+                    foreground_role: input.foreground_role,
+                    post_treatment_backdrop: input.post_treatment_backdrop,
+                    adjacent_color: input.adjacent_color,
+                    minimum_content_contrast: input.minimum_content_contrast,
+                    minimum_edge_contrast: input.minimum_edge_contrast,
+                })
+            }
+        }
+        deserializer.deserialize_map(RequestVisitor)
+    }
+}
+
+fn foreground_role_name<'de, D: Deserializer<'de>>(deserializer: D) -> Result<ColorRole, D::Error> {
+    ColorRole::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
+        deserializer,
+    )?))
 }
 
 fn present_backdrop<'de, D: Deserializer<'de>>(
@@ -372,4 +424,82 @@ pub(crate) fn resolve_opaque_body_geometry(
         content_contrast_ratio: readable.content_contrast_ratio(),
         content_fallback_applied: readable.content_fallback_applied(),
     })
+}
+
+#[cfg(test)]
+mod request_tests {
+    use super::*;
+    use serde_json::json;
+
+    fn baseline() -> Value {
+        serde_json::from_str(include_str!(
+            "../../../../conformance/ir/opaque-surface-request.json"
+        ))
+        .unwrap()
+    }
+
+    #[test]
+    fn every_foreground_role_decodes_only_from_a_string() {
+        let schema: Value = serde_json::from_str(include_str!(
+            "../../../../schemas/surface-binding.schema.json"
+        ))
+        .unwrap();
+        for role in schema["properties"]["colorRole"]["enum"]
+            .as_array()
+            .unwrap()
+        {
+            let mut document = baseline();
+            document["foregroundRole"] = role.clone();
+            let expected: ColorRole = serde_json::from_value(role.clone()).unwrap();
+            let name = role.as_str().unwrap();
+            let source = document.to_string().replace(
+                &format!("\"foregroundRole\":\"{name}\""),
+                &format!(
+                    "\"\\u0066oregroundRole\":\"\\u{:04x}{}\"",
+                    name.as_bytes()[0],
+                    &name[1..]
+                ),
+            );
+            assert_eq!(
+                serde_json::from_value::<OpaqueSurfaceRequest>(document.clone())
+                    .unwrap()
+                    .foreground_role,
+                expected
+            );
+            assert_eq!(
+                serde_json::from_str::<OpaqueSurfaceRequest>(&source)
+                    .unwrap()
+                    .foreground_role,
+                expected
+            );
+            document["foregroundRole"] = json!({name:null});
+            assert!(serde_json::from_value::<OpaqueSurfaceRequest>(document.clone()).is_err());
+            assert!(serde_json::from_str::<OpaqueSurfaceRequest>(&document.to_string()).is_err());
+        }
+    }
+
+    #[test]
+    fn required_members_and_present_backdrop_keep_their_contract() {
+        let baseline = baseline();
+        for member in baseline.as_object().unwrap().keys() {
+            let mut missing = baseline.clone();
+            missing.as_object_mut().unwrap().remove(member);
+            let decoded = serde_json::from_value::<OpaqueSurfaceRequest>(missing);
+            if member == "postTreatmentBackdrop" {
+                assert!(decoded.unwrap().post_treatment_backdrop.is_none());
+            } else {
+                assert!(decoded.is_err(), "{member}");
+            }
+        }
+        for member in ["foregroundRole", "postTreatmentBackdrop"] {
+            for value in [Value::Null, json!(true), json!(1), json!([])] {
+                let mut invalid = baseline.clone();
+                invalid[member] = value;
+                assert!(serde_json::from_value::<OpaqueSurfaceRequest>(invalid).is_err());
+            }
+        }
+        let mut unknown = baseline;
+        unknown["unexpected"] = json!(true);
+        assert!(serde_json::from_value::<OpaqueSurfaceRequest>(unknown).is_err());
+    }
 }
