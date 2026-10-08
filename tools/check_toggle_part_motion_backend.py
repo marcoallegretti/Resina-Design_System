@@ -5,6 +5,7 @@ import math
 import sys
 
 from backend_source import duplicate_member_source, nonfinite_member_source
+from opaque_request_source import opaque_request_failures
 from check_color_guard_backend import check_failure
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
@@ -96,16 +97,17 @@ def main():
                         difference = toggle_motion_mismatch(actual, request)
                         if difference:
                             raise AssertionError(f"{family} {part}: output differs at {difference}")
-        for name, source in (
+        failures = (
             ("duplicate channel position", duplicate_member_source(base, "/channels/bodyMix/initial/position")),
             ("duplicate root version", duplicate_member_source(base, "/schemaVersion")),
             ("nonfinite time", nonfinite_member_source(base, "/time")),
-        ):
+        ) + opaque_request_failures(base, "/surface/body")
+        for name, source in failures:
             check_failure(command, source, args.timeout, name)
     except (AssertionError, OSError, ValueError, KeyError) as error:
         print(f"FAIL toggle part motion: {error}", file=sys.stderr)
         return 1
-    print(f"Toggle part motion backend passed {len(cases) + 24 + 3} conformance cases")
+    print(f"Toggle part motion backend passed {len(cases) + 24 + len(failures)} conformance cases")
     return 0
 
 

@@ -3716,5 +3716,18 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "opaque request source tagged foreground role",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": {
+          "content.primary": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
   }
 ]

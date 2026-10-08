@@ -49,7 +49,8 @@
     "unknown response member": "unknown field",
     "unknown family": "unknown field",
     "null optional color": "invalid type",
-    "unsupported version": "schemaVersion must be 0.1.0"
+    "unsupported version": "schemaVersion must be 0.1.0",
+    "opaque request source tagged foreground role": "a string"
   },
   "focus_indicator": {
     "both low contrast colors fail explicitly": "contrast is insufficient",
@@ -271,6 +272,7 @@
     "state set source positional": "state set object",
     "state set source tagged item": "a string",
     "treatment stack source positional": "treatment stack object",
-    "treatment stack source tagged item": "a string"
+    "treatment stack source tagged item": "a string",
+    "opaque request source tagged foreground role": "a string"
   }
 }

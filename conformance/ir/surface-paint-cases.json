@@ -1466,5 +1466,18 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "opaque request source tagged foreground role",
+    "requestChanges": [
+      {
+        "path": "/body/foregroundRole",
+        "value": {
+          "content.primary": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

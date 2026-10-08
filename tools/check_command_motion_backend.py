@@ -4,6 +4,7 @@ import math
 import sys
 
 from backend_source import duplicate_member_source, nonfinite_member_source
+from opaque_request_source import opaque_request_failures
 from check_color_guard_backend import check_failure
 from check_command_paint_backend import command_mismatch
 from check_headless_backend import mismatch, run_backend
@@ -110,16 +111,17 @@ def main():
                     outputs.append(actual)
                 if outputs[0] != outputs[1]:
                     raise AssertionError(f"{case['name']}: nondeterministic output")
-        for name, source in (
+        failures = (
             ("duplicate channel position", duplicate_member_source(base, "/channels/bodyMix/initial/position")),
             ("duplicate root version", duplicate_member_source(base, "/schemaVersion")),
             ("nonfinite time", nonfinite_member_source(base, "/time")),
-        ):
+        ) + opaque_request_failures(base, "/surface/body")
+        for name, source in failures:
             check_failure(command, source, args.timeout, name)
     except (AssertionError, OSError, ValueError, KeyError) as error:
         print(f"FAIL command motion: {error}", file=sys.stderr)
         return 1
-    print(f"Command motion backend passed {len(cases) + 3} conformance cases")
+    print(f"Command motion backend passed {len(cases) + len(failures)} conformance cases")
     return 0
 
 
