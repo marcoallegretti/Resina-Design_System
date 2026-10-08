@@ -2,7 +2,42 @@ use crate::{
     ColorRole, ElevationRole, MaterialRole, ShapeIntent, StateSet, SurfaceForm, SurfaceIntent,
     TypographyRole,
 };
-use serde::Deserialize;
+use serde::{
+    Deserialize, Deserializer,
+    de::{
+        MapAccess, Visitor,
+        value::{MapAccessDeserializer, StringDeserializer},
+    },
+};
+use std::{fmt, marker::PhantomData};
+
+fn deserialize_anatomy_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    T::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
+        deserializer,
+    )?))
+}
+
+fn deserialize_anatomy_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    struct Object<T>(PhantomData<T>);
+    impl<'de, T: Deserialize<'de>> Visitor<'de> for Object<T> {
+        type Value = T;
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("a component anatomy object")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<T, A::Error> {
+            T::deserialize(MapAccessDeserializer::new(map))
+        }
+    }
+    deserializer.deserialize_map(Object(PhantomData))
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
 enum ControlRole {
@@ -36,13 +71,33 @@ enum ToggleComponent {
     Toggle,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CommandAnatomy {
-    #[serde(deserialize_with = "crate::deserialize_version")]
     schema_version: String,
     component: CommandComponent,
     variants: CommandVariants,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CommandAnatomyInput {
+    #[serde(deserialize_with = "crate::deserialize_version")]
+    schema_version: String,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    component: CommandComponent,
+    #[serde(deserialize_with = "deserialize_anatomy_object")]
+    variants: CommandVariants,
+}
+
+impl<'de> Deserialize<'de> for CommandAnatomy {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_anatomy_object::<D, CommandAnatomyInput>(deserializer)?;
+        Ok(Self {
+            schema_version: input.schema_version,
+            component: input.component,
+            variants: input.variants,
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -67,11 +122,28 @@ impl CommandAnatomy {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CommandVariant {
     body: CommandBody,
     label: EmbeddedLabel,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CommandVariantInput {
+    body: CommandBody,
+    #[serde(deserialize_with = "deserialize_anatomy_object")]
+    label: EmbeddedLabel,
+}
+
+impl<'de> Deserialize<'de> for CommandVariant {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_anatomy_object::<D, CommandVariantInput>(deserializer)?;
+        Ok(Self {
+            body: input.body,
+            label: input.label,
+        })
+    }
 }
 
 impl CommandVariant {
@@ -83,14 +155,41 @@ impl CommandVariant {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CommandBody {
     material_role: ControlRole,
     color_role: ColorRole,
     shape: ShapeIntent,
     elevation: ElevationRole,
     content_role: ColorRole,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CommandBodyInput {
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    material_role: ControlRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    color_role: ColorRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    shape: ShapeIntent,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    elevation: ElevationRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    content_role: ColorRole,
+}
+
+impl<'de> Deserialize<'de> for CommandBody {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_anatomy_object::<D, CommandBodyInput>(deserializer)?;
+        Ok(Self {
+            material_role: input.material_role,
+            color_role: input.color_role,
+            shape: input.shape,
+            elevation: input.elevation,
+            content_role: input.content_role,
+        })
+    }
 }
 
 impl CommandBody {
@@ -110,18 +209,43 @@ impl CommandBody {
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct EmbeddedLabel {
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
     typography_role: TypographyRole,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ToggleAnatomy {
-    #[serde(deserialize_with = "crate::deserialize_version")]
     schema_version: String,
     component: ToggleComponent,
     track: SelectablePart,
     thumb: SelectablePart,
     label: ExternalLabel,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ToggleAnatomyInput {
+    #[serde(deserialize_with = "crate::deserialize_version")]
+    schema_version: String,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    component: ToggleComponent,
+    track: SelectablePart,
+    thumb: SelectablePart,
+    #[serde(deserialize_with = "deserialize_anatomy_object")]
+    label: ExternalLabel,
+}
+
+impl<'de> Deserialize<'de> for ToggleAnatomy {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_anatomy_object::<D, ToggleAnatomyInput>(deserializer)?;
+        Ok(Self {
+            schema_version: input.schema_version,
+            component: input.component,
+            track: input.track,
+            thumb: input.thumb,
+            label: input.label,
+        })
+    }
 }
 
 impl ToggleAnatomy {
@@ -139,8 +263,7 @@ impl ToggleAnatomy {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SelectablePart {
     material_role: ControlRole,
     color_role: ColorRole,
@@ -148,6 +271,37 @@ pub struct SelectablePart {
     shape: ShapeIntent,
     elevation: ElevationRole,
     content_role: ColorRole,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct SelectablePartInput {
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    material_role: ControlRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    color_role: ColorRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    checked_color_role: ColorRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    shape: ShapeIntent,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    elevation: ElevationRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    content_role: ColorRole,
+}
+
+impl<'de> Deserialize<'de> for SelectablePart {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_anatomy_object::<D, SelectablePartInput>(deserializer)?;
+        Ok(Self {
+            material_role: input.material_role,
+            color_role: input.color_role,
+            checked_color_role: input.checked_color_role,
+            shape: input.shape,
+            elevation: input.elevation,
+            content_role: input.content_role,
+        })
+    }
 }
 
 impl SelectablePart {
@@ -172,7 +326,9 @@ impl SelectablePart {
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct ExternalLabel {
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
     typography_role: TypographyRole,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
     color_role: ColorRole,
 }
 
