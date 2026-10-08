@@ -9,7 +9,10 @@ use crate::{
 use resina_environment::EnvironmentSnapshot;
 use resina_model::InteractionState;
 use resina_tokens::parse_token_document;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
 use std::fmt;
 
 pub struct SurfacePaintInput<'a> {
@@ -82,14 +85,43 @@ impl std::error::Error for SurfacePaintResolutionError {
     }
 }
 
+pub(crate) struct SurfacePaintRequest {
+    schema_version: String,
+    body: OpaqueSurfaceRequest,
+    surrounding_color: Option<SrgbInput>,
+}
+
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub(crate) struct SurfacePaintRequest {
+struct SurfacePaintRequestMembers {
     schema_version: String,
     body: OpaqueSurfaceRequest,
     #[serde(default, deserialize_with = "present_surrounding")]
     surrounding_color: Option<SrgbInput>,
 }
+
+impl<'de> Deserialize<'de> for SurfacePaintRequest {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct RequestVisitor;
+        impl<'de> Visitor<'de> for RequestVisitor {
+            type Value = SurfacePaintRequest;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a surface paint request object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input =
+                    SurfacePaintRequestMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(SurfacePaintRequest {
+                    schema_version: input.schema_version,
+                    body: input.body,
+                    surrounding_color: input.surrounding_color,
+                })
+            }
+        }
+        deserializer.deserialize_map(RequestVisitor)
+    }
+}
+
 fn present_surrounding<'de, D: Deserializer<'de>>(
     deserializer: D,
 ) -> Result<Option<SrgbInput>, D::Error> {
