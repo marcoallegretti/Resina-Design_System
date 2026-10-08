@@ -69,16 +69,16 @@ pub fn resolve_elevation_depth_source(
     source: &str,
 ) -> Result<ElevationDepthResult, ElevationDepthError> {
     let document = parse_token_document(source).map_err(ElevationDepthError::Parse)?;
-    if document
-        .get("schemaVersion")
-        .and_then(Value::as_str)
-        .is_some_and(|version| version != "0.1.0")
-    {
-        return Err(ElevationDepthError::UnsupportedVersion);
+    if !document.is_object() {
+        return Err(ElevationDepthError::Request(serde::de::Error::custom(
+            "elevation depth request must be a JSON object",
+        )));
     }
     let request: ElevationDepthRequest =
         serde_json::from_value(document).map_err(ElevationDepthError::Request)?;
-    debug_assert_eq!(request.schema_version, "0.1.0");
+    if request.schema_version != "0.1.0" {
+        return Err(ElevationDepthError::UnsupportedVersion);
+    }
     let tokens = resolve_token_document(&request.tokens).map_err(ElevationDepthError::Tokens)?;
     let roles = resolve_elevation_depth(&request.assignments, &tokens)
         .map_err(ElevationDepthError::Bindings)?;
