@@ -1,3 +1,5 @@
+import json
+
 from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
 from check_headless_backend import mismatch
@@ -25,6 +27,8 @@ if __name__ == "__main__":
         "schemas/spring-trajectory-request.schema.json", "schemas/spring-trajectory-result.schema.json",
         "conformance/motion/spring-trajectory-cases.json",
         extra_failures=(
+            ("positional root", json.dumps([baseline[k] for k in ("schemaVersion", "dynamics", "initial", "target", "time", "reducedMotion")])),
+            ("positional reduced-motion root", json.dumps([baseline[k] for k in ("schemaVersion", "dynamics", "initial", "target", "time")] + [True])),
             ("duplicate state position", duplicate_member_source(baseline, "/initial/position")),
             ("duplicate dynamics version", duplicate_member_source(baseline, "/dynamics/schemaVersion")),
             ("nonfinite target", nonfinite_member_source(baseline, "/target")),

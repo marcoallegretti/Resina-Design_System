@@ -1526,5 +1526,97 @@
     },
     "requestSchemaValid": false,
     "errorContains": "missing field"
+  },
+  {
+    "name": "positional dynamics ordinary motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": [
+        "0.1.0",
+        1,
+        4,
+        4,
+        1e-06,
+        1e-06
+      ],
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
+    "name": "positional dynamics reduced motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": [
+        "0.1.0",
+        1,
+        4,
+        4,
+        1e-06,
+        1e-06
+      ],
+      "initial": {
+        "position": 3,
+        "velocity": -2
+      },
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
+    "name": "positional initial ordinary motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": [
+        3,
+        -2
+      ],
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
+    "name": "positional initial reduced motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 4,
+        "damping": 4,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": [
+        3,
+        -2
+      ],
+      "target": -1,
+      "time": 0.7,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
   }
 ]

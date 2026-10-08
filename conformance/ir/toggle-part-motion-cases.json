@@ -483,6 +483,86 @@
     "errorContains": "a string"
   },
   {
+    "name": "positional channels/bodyMix/dynamics ordinary motion",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/dynamics",
+        "value": [
+          "0.1.0",
+          1,
+          4,
+          4,
+          1e-06,
+          1e-06
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
+    "name": "positional channels/bodyMix/dynamics reduced motion",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix/dynamics",
+        "value": [
+          "0.1.0",
+          1,
+          4,
+          4,
+          1e-06,
+          1e-06
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
+    "name": "positional channels/depthScale/initial ordinary motion",
+    "requestChanges": [
+      {
+        "path": "/channels/depthScale/initial",
+        "value": [
+          1,
+          0
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
+    "name": "positional channels/depthScale/initial reduced motion",
+    "requestChanges": [
+      {
+        "path": "/channels/depthScale/initial",
+        "value": [
+          1,
+          0
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "spring object"
+  },
+  {
     "name": "toggle request source tagged part",
     "requestChanges": [
       {
