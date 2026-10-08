@@ -262,6 +262,9 @@
     "surface size form height boolean": "invalid type",
     "surface size form height string": "invalid type",
     "surface size form height array": "invalid type",
-    "surface size form height object": "invalid type"
+    "surface size form height object": "invalid type",
+    "surface intent form positional": "surface intent object",
+    "surface intent form tagged material role": "a string",
+    "surface intent form tagged color role": "a string"
   }
 }
