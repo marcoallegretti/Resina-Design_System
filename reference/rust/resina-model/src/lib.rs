@@ -376,17 +376,17 @@ pub struct MaterialAssignments {
 struct MaterialAssignmentsInput {
     #[serde(deserialize_with = "deserialize_material_version")]
     schema_version: String,
-    #[serde(deserialize_with = "deserialize_material_object")]
+    #[serde(deserialize_with = "deserialize_assignment_object")]
     surface: SurfaceAssignments,
-    #[serde(deserialize_with = "deserialize_material_object")]
+    #[serde(deserialize_with = "deserialize_assignment_object")]
     control: ControlAssignments,
-    #[serde(deserialize_with = "deserialize_material_object")]
+    #[serde(deserialize_with = "deserialize_assignment_object")]
     feedback: FeedbackAssignments,
 }
 
 impl<'de> Deserialize<'de> for MaterialAssignments {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let input = deserialize_material_object::<D, MaterialAssignmentsInput>(deserializer)?;
+        let input = deserialize_assignment_object::<D, MaterialAssignmentsInput>(deserializer)?;
         Ok(Self {
             schema_version: input.schema_version,
             surface: input.surface,
@@ -396,7 +396,7 @@ impl<'de> Deserialize<'de> for MaterialAssignments {
     }
 }
 
-fn deserialize_material_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+fn deserialize_assignment_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
 where
     D: Deserializer<'de>,
     T: Deserialize<'de>,
@@ -405,7 +405,7 @@ where
     impl<'de, T: Deserialize<'de>> Visitor<'de> for Object<T> {
         type Value = T;
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("a material assignment object")
+            formatter.write_str("an assignment object")
         }
         fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<T, A::Error> {
             T::deserialize(MapAccessDeserializer::new(map))
