@@ -1,0 +1,3204 @@
+[
+  {
+    "name": "shape request valid authored structural",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "radii": {
+        "topStart": {
+          "x": 12.0,
+          "y": 12.0
+        },
+        "topEnd": {
+          "x": 12.0,
+          "y": 12.0
+        },
+        "bottomEnd": {
+          "x": 12.0,
+          "y": 12.0
+        },
+        "bottomStart": {
+          "x": 12.0,
+          "y": 12.0
+        }
+      }
+    }
+  },
+  {
+    "name": "shape request shape positional",
+    "request": [
+      "0.1.0",
+      {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "structural",
+      {
+        "width": 200,
+        "height": 80
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "shape fallback request must be a JSON object"
+  },
+  {
+    "name": "shape request shape unsupported positional version",
+    "request": [
+      "9",
+      {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "structural",
+      {
+        "width": 200,
+        "height": 80
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "shape fallback request must be a JSON object"
+  },
+  {
+    "name": "shape request shape null",
+    "request": null,
+    "requestSchemaValid": false,
+    "errorContains": "shape fallback request must be a JSON object"
+  },
+  {
+    "name": "shape request shape boolean",
+    "request": true,
+    "requestSchemaValid": false,
+    "errorContains": "shape fallback request must be a JSON object"
+  },
+  {
+    "name": "shape request shape number",
+    "request": 1,
+    "requestSchemaValid": false,
+    "errorContains": "shape fallback request must be a JSON object"
+  },
+  {
+    "name": "shape request shape string",
+    "request": "request",
+    "requestSchemaValid": false,
+    "errorContains": "shape fallback request must be a JSON object"
+  },
+  {
+    "name": "shape request shape empty array",
+    "request": [],
+    "requestSchemaValid": false,
+    "errorContains": "shape fallback request must be a JSON object"
+  },
+  {
+    "name": "shape request version null",
+    "request": {
+      "schemaVersion": null,
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid shape fallback request"
+  },
+  {
+    "name": "shape request version boolean",
+    "request": {
+      "schemaVersion": true,
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid shape fallback request"
+  },
+  {
+    "name": "shape request version number",
+    "request": {
+      "schemaVersion": 1,
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid shape fallback request"
+  },
+  {
+    "name": "shape request version array",
+    "request": {
+      "schemaVersion": [],
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid shape fallback request"
+  },
+  {
+    "name": "shape request version object",
+    "request": {
+      "schemaVersion": {},
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid shape fallback request"
+  },
+  {
+    "name": "shape request version empty string",
+    "request": {
+      "schemaVersion": "",
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "shape request missing schemaVersion",
+    "request": {
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "shape request missing tokens",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "shape request missing assignments",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "shape request missing shape",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "shape request missing size",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "space": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          },
+          "7": {
+            "$value": {
+              "value": 48,
+              "unit": "px"
+            }
+          },
+          "8": {
+            "$value": {
+              "value": 64,
+              "unit": "px"
+            }
+          }
+        },
+        "radius": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 12,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          },
+          "5": {
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            }
+          },
+          "6": {
+            "$value": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        },
+        "depth": {
+          "$type": "dimension",
+          "0": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "1": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "2": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "3": {
+            "$value": {
+              "value": 6,
+              "unit": "px"
+            }
+          },
+          "4": {
+            "$value": {
+              "value": 8,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "0": {
+              "$value": {
+                "value": 12,
+                "unit": "px"
+              }
+            },
+            "1": {
+              "$value": {
+                "value": 14,
+                "unit": "px"
+              }
+            },
+            "2": {
+              "$value": {
+                "value": 16,
+                "unit": "px"
+              }
+            },
+            "3": {
+              "$value": {
+                "value": 18,
+                "unit": "px"
+              }
+            },
+            "4": {
+              "$value": {
+                "value": 22,
+                "unit": "px"
+              }
+            },
+            "5": {
+              "$value": {
+                "value": 28,
+                "unit": "px"
+              }
+            },
+            "6": {
+              "$value": {
+                "value": 36,
+                "unit": "px"
+              }
+            },
+            "7": {
+              "$value": {
+                "value": 48,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "shape request version before tokens \"9\"",
+    "request": {
+      "schemaVersion": "9",
+      "tokens": null,
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "shape request version before tokens \"\"",
+    "request": {
+      "schemaVersion": "",
+      "tokens": null,
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "shape request version before tokens \"0.1.0 \"",
+    "request": {
+      "schemaVersion": "0.1.0 ",
+      "tokens": null,
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "structural": {
+            "kind": "uniform",
+            "radius": "radius.3"
+          },
+          "soft": {
+            "kind": "uniform",
+            "radius": "radius.4"
+          },
+          "rounded": {
+            "kind": "uniform",
+            "radius": "radius.5"
+          },
+          "capsule": {
+            "kind": "capsule"
+          },
+          "organic": {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.6",
+              "topEnd": "radius.4",
+              "bottomEnd": "radius.6",
+              "bottomStart": "radius.4"
+            }
+          }
+        }
+      },
+      "shape": "structural",
+      "size": {
+        "width": 200,
+        "height": 80
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion must be 0.1.0"
+  }
+]
