@@ -191,5 +191,25 @@
       "elevation": "raised"
     },
     "error": "unknown variant"
+  },
+  {
+    "name": "surface form source positional",
+    "document": [
+      "0.1.0",
+      "structural",
+      "embedded"
+    ],
+    "error": "surface form object"
+  },
+  {
+    "name": "surface form source tagged elevation",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": "structural",
+      "elevation": {
+        "embedded": null
+      }
+    },
+    "error": "a string"
   }
 ]

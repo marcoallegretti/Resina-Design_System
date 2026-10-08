@@ -533,5 +533,63 @@
       }
     },
     "error": "a string"
+  },
+  {
+    "name": "surface form source positional",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "form": [
+        "0.1.0",
+        "rounded",
+        "floating"
+      ],
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
+    },
+    "error": "surface form object"
+  },
+  {
+    "name": "surface form source tagged elevation",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": {
+          "floating": null
+        }
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
+    },
+    "error": "a string"
   }
 ]

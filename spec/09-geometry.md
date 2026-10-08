@@ -10,6 +10,8 @@ A surface form supplies one shape and one [semantic elevation](08-elevation.md) 
 
 The blueprint's shape hierarchy favors calmer large structural surfaces and softer small interactive controls without requiring universal pill shapes. The [reference foundation](../tokens/foundation.json) includes an authored raw radius scale, covered by [foundation vectors](../conformance/geometry/foundation-radius-vectors.json). Its indices are not shape intents. Exact semantic curvature and visual realization need shape assignments and conformance cases before becoming normative. The surface form is an input to resolution, not a complete Resina IR or layout instruction.
 
+A form MUST be a JSON object with canonical string shape and elevation names. Positional records and object-encoded elevations are invalid, including when decoded through the shared form type.
+
 ## Bounded corner radii
 
 After a shape's numeric radii and a surface's actual dimensions are known, a headless resolver MUST normalize overlapping corners before rendering. The input has four logical corners (`topStart`, `topEnd`, `bottomEnd`, `bottomStart`), each with nonnegative finite horizontal `x` and vertical `y` radii in the same logical pixel unit as a nonnegative finite surface `width` and `height`. A pair describes a quarter ellipse. Invalid numbers MUST be rejected with a diagnostic. A zero-sized surface is valid and can reduce all radii to zero.
