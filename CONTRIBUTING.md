@@ -43,6 +43,10 @@ python tools/check_schemas.py
 
 For public command boundaries and backend realization, run the applicable external checker in [tools/](tools/); direct Rust unit tests do not replace protocol evidence. The [README](README.md) documents commands and checkers. Rendering and visual changes also need the evidence described in the relevant backend README, [shared scenes](conformance/scenes/README.md), [raster evidence](conformance/raster/README.md) and CI workflow. Select checks according to [validation scope](AGENTS.md#19-validation).
 
+Before running the contributor toolkit checks or the complete Python test suite,
+install `tools/requirements-toolkit.txt` as shown in the
+[verification instructions](.agents/README.md#verification-and-optional-hooks).
+
 ## Submit a reviewable pull request
 
 Follow the [commit rules](AGENTS.md#21-git-rules), [independent maintenance review requirement](AGENTS.md#15-independent-review) and [PR requirements](AGENTS.md#16-pull-requests). The PR template asks for the problem, linked scope, resulting change, ownership, specific proof, actual validation, manual verification and material limitations. Explain changed expected output rather than merely accepting new snapshots.

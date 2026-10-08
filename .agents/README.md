@@ -5,6 +5,13 @@ contributions. Start with [the engineering contract](../AGENTS.md) and
 [CONTRIBUTING.md](../CONTRIBUTING.md). The contract remains authoritative; these
 files help apply it and do not grant permissions or approve architectural changes.
 
+These guides are optional. The contribution workflows apply to Contribution Mode;
+Maintenance Mode retains the contract's isolation and single-result rules.
+Primary Development can reuse domain knowledge, check selection and review
+criteria while following its maintainer-directed workflow and continuation rules
+in [AGENTS.md](../AGENTS.md#5-working-modes). Loading a guide does not switch modes,
+add approval requirements or schedule work.
+
 ## Start a contribution
 
 1. Read `AGENTS.md`, identify the accepted scope and choose the owning layer.
@@ -82,6 +89,7 @@ Claude/Codex configuration out of commits.
 From the repository root, with Python 3.12+ and the Rust toolchain installed:
 
 ```sh
+python -m pip install -r tools/requirements-toolkit.txt
 python .agents/scripts/verify.py toolkit
 python .agents/scripts/verify.py baseline
 python -m pip install -r tools/requirements-schema.txt
@@ -111,6 +119,14 @@ criteria in a role, and executable checks in scripts. Link to the existing
 contract and source of truth instead of restating policy or freezing current
 implementation status. Keep paths and commands verifiable. Toolkit checks run in
 CI; new runner behavior needs a test showing what happens when execution fails.
+
+The checker parses CommonMark links and images, including reference links,
+without interpreting literal code or HTML comments as links. Catalog entries
+must link to their actual document. Metadata must be a YAML mapping with unique
+fields, a `name` matching its path and a nonempty string `description`.
+Fragments, external URLs, raw HTML references, client-specific metadata rules
+and instruction semantics need manual review. Passing these checks does not
+certify policy consistency, native behavior or release readiness.
 
 This structure is informed by [GUIdo's contributor toolkit](https://github.com/MalpenZibo/guido/tree/main/.claude).
 Resina's contract, layers and evidence requirements determine its contents.

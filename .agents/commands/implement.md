@@ -9,6 +9,12 @@ Input: an issue or an explicit accepted task with an acceptance criterion.
 Read [AGENTS.md](../../AGENTS.md), [CONTRIBUTING.md](../../CONTRIBUTING.md) and
 the relevant [skills](../README.md#skills).
 
+The steps below apply to Contribution Mode. Maintenance adds its canonical
+isolation and lane lifecycle. For maintainer-directed Primary Development,
+reuse applicable proof and validation guidance while retaining the active
+workflow and autonomous continuation rules in [AGENTS.md](../../AGENTS.md#5-working-modes).
+This guide does not introduce a separate approval or orchestration layer.
+
 1. Verify scope from repository evidence. An issue is not architectural approval.
    Resolve missing acceptance criteria with [spec](spec.md). If a reserved
    architectural decision is unresolved, prepare the evidence and stop dependent
