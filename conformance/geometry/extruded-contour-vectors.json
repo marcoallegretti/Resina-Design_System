@@ -1875,5 +1875,654 @@
     },
     "requestSchemaValid": true,
     "errorContains": "exceed finite"
+  },
+  {
+    "name": "surface size form positional",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": [
+        10,
+        6
+      ],
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form null",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": null,
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form boolean",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": true,
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form number",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": 1,
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form string",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": "size",
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form empty array",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": [],
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form missing width",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "missing field"
+  },
+  {
+    "name": "surface size form missing height",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "missing field"
+  },
+  {
+    "name": "surface size form unknown member",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": 6,
+        "depth": 1
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "surface size form width null",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": null,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width boolean",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": true,
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width string",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": "1",
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width array",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": [],
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width object",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": {},
+        "height": 6
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height null",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": null
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height boolean",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": true
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height string",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": "1"
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height array",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": []
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height object",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 10,
+        "height": {}
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "errorContains": "invalid type"
   }
 ]

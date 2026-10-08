@@ -321,6 +321,7 @@ def main():
         "schemas/state-composition.schema.json",
         "schemas/surface-form.schema.json",
         "schemas/surface-size.schema.json",
+        "schemas/surface-size-case.schema.json",
         "schemas/surface-binding.schema.json",
         "schemas/surface-binding-result.schema.json",
         "schemas/surface-scenario.schema.json",
@@ -1129,12 +1130,18 @@ def main():
         ("schemas/spatial-assignments.schema.json", "conformance/spatial/assignment-vectors.json"),
         ("schemas/state-set.schema.json", "conformance/states/state-set-vectors.json"),
         ("schemas/surface-form.schema.json", "conformance/geometry/surface-form-vectors.json"),
+        ("schemas/surface-size.schema.json", "conformance/geometry/surface-size-vectors.json"),
         ("schemas/surface-binding.schema.json", "conformance/surfaces/binding-vectors.json"),
         ("schemas/treatment-stack.schema.json", "conformance/materials/treatment-stack-vectors.json"),
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
         ("schemas/theme-resolution-request.schema.json", "conformance/themes/request-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    size_case_schema = validator_for("schemas/surface-size-case.schema.json")
+    for case in load_json(ROOT / "conformance/geometry/surface-size-vectors.json"):
+        check_case(size_case_schema, f"surface size case: {case['name']}", case, True)
+        checked += 1
 
     corner_case_schema = validator_for("schemas/corner-radius-case.schema.json")
     corner_size_schema = validator_for("schemas/surface-size.schema.json")

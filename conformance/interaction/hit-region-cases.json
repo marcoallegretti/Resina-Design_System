@@ -877,5 +877,255 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "surface size form positional",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": [
+          1,
+          1
+        ]
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": null
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": true
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form number",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": 1
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": "size"
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form empty array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": []
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form missing width",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "height": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form missing height",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form unknown member",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 1,
+          "height": 1,
+          "depth": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": null,
+          "height": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": true,
+          "height": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": "1",
+          "height": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": [],
+          "height": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width object",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": {},
+          "height": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 1,
+          "height": null
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 1,
+          "height": true
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 1,
+          "height": "1"
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 1,
+          "height": []
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height object",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": {
+          "width": 1,
+          "height": {}
+        }
+      }
+    ],
+    "failure": true
   }
 ]

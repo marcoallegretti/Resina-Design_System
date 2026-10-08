@@ -1068,5 +1068,255 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "surface size form positional",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": [
+          20,
+          12
+        ]
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": null
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": true
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form number",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": 1
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": "size"
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form empty array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": []
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form missing width",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "height": 12
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form missing height",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": 20
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form unknown member",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": 20,
+          "height": 12,
+          "depth": 1
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": null,
+          "height": 12
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": true,
+          "height": 12
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": "1",
+          "height": 12
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": [],
+          "height": 12
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form width object",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": {},
+          "height": 12
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": 20,
+          "height": null
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": 20,
+          "height": true
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": 20,
+          "height": "1"
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": 20,
+          "height": []
+        }
+      }
+    ],
+    "failure": true
+  },
+  {
+    "name": "surface size form height object",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/body/size",
+        "value": {
+          "width": 20,
+          "height": {}
+        }
+      }
+    ],
+    "failure": true
   }
 ]

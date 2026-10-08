@@ -1,0 +1,186 @@
+[
+  {
+    "name": "named bounds",
+    "document": {
+      "width": 200.0,
+      "height": 80.0
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "zero bounds",
+    "document": {
+      "width": 0.0,
+      "height": 0.0
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "zero width",
+    "document": {
+      "width": 0.0,
+      "height": 80.0
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "zero height",
+    "document": {
+      "width": 200.0,
+      "height": 0.0
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "smallest positive bounds",
+    "document": {
+      "width": 5e-324,
+      "height": 5e-324
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "largest finite bounds",
+    "document": {
+      "width": 1.7976931348623157e+308,
+      "height": 1.7976931348623157e+308
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "surface size form positional",
+    "document": [
+      200.0,
+      80.0
+    ],
+    "error": "surface size object"
+  },
+  {
+    "name": "surface size form null",
+    "document": null,
+    "error": "surface size object"
+  },
+  {
+    "name": "surface size form boolean",
+    "document": true,
+    "error": "surface size object"
+  },
+  {
+    "name": "surface size form number",
+    "document": 1,
+    "error": "surface size object"
+  },
+  {
+    "name": "surface size form string",
+    "document": "size",
+    "error": "surface size object"
+  },
+  {
+    "name": "surface size form empty array",
+    "document": [],
+    "error": "surface size object"
+  },
+  {
+    "name": "surface size form missing width",
+    "document": {
+      "height": 80.0
+    },
+    "error": "missing field"
+  },
+  {
+    "name": "surface size form missing height",
+    "document": {
+      "width": 200.0
+    },
+    "error": "missing field"
+  },
+  {
+    "name": "surface size form unknown member",
+    "document": {
+      "width": 200.0,
+      "height": 80.0,
+      "depth": 1
+    },
+    "error": "unknown field"
+  },
+  {
+    "name": "surface size form width null",
+    "document": {
+      "width": null,
+      "height": 80.0
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form width boolean",
+    "document": {
+      "width": true,
+      "height": 80.0
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form width string",
+    "document": {
+      "width": "1",
+      "height": 80.0
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form width array",
+    "document": {
+      "width": [],
+      "height": 80.0
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form width object",
+    "document": {
+      "width": {},
+      "height": 80.0
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form height null",
+    "document": {
+      "width": 200.0,
+      "height": null
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form height boolean",
+    "document": {
+      "width": 200.0,
+      "height": true
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form height string",
+    "document": {
+      "width": 200.0,
+      "height": "1"
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form height array",
+    "document": {
+      "width": 200.0,
+      "height": []
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "surface size form height object",
+    "document": {
+      "width": 200.0,
+      "height": {}
+    },
+    "error": "invalid type"
+  }
+]

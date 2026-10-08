@@ -3318,5 +3318,255 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "unknown variant"
+  },
+  {
+    "name": "surface size form positional",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": [
+          20,
+          12
+        ]
+      }
+    ],
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": null
+      }
+    ],
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": true
+      }
+    ],
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form number",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": 1
+      }
+    ],
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": "size"
+      }
+    ],
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form empty array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": []
+      }
+    ],
+    "errorContains": "surface size object"
+  },
+  {
+    "name": "surface size form missing width",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "height": 12
+        }
+      }
+    ],
+    "errorContains": "missing field"
+  },
+  {
+    "name": "surface size form missing height",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 20
+        }
+      }
+    ],
+    "errorContains": "missing field"
+  },
+  {
+    "name": "surface size form unknown member",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 20,
+          "height": 12,
+          "depth": 1
+        }
+      }
+    ],
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "surface size form width null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": null,
+          "height": 12
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": true,
+          "height": 12
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": "1",
+          "height": 12
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": [],
+          "height": 12
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form width object",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": {},
+          "height": 12
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height null",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 20,
+          "height": null
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height boolean",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 20,
+          "height": true
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height string",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 20,
+          "height": "1"
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height array",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 20,
+          "height": []
+        }
+      }
+    ],
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "surface size form height object",
+    "requestSchemaValid": false,
+    "requestChanges": [
+      {
+        "path": "/size",
+        "value": {
+          "width": 20,
+          "height": {}
+        }
+      }
+    ],
+    "errorContains": "invalid type"
   }
 ]
