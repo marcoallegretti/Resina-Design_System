@@ -1294,5 +1294,130 @@
     },
     "requestSchemaValid": false,
     "errorContains": "checked"
+  },
+  {
+    "name": "positional-request",
+    "request": [
+      "0.1.0",
+      {
+        "width": 52,
+        "height": 28
+      },
+      {
+        "width": 20,
+        "height": 20
+      },
+      {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "ltr",
+      false
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "empty-array-request",
+    "request": [],
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "positional-insets",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": [
+        4,
+        6,
+        3,
+        5
+      ],
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "empty-array-insets",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": [],
+      "layoutDirection": "ltr",
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "object-encoded-ltr",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": {
+        "ltr": null
+      },
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "JSON string"
+  },
+  {
+    "name": "object-encoded-rtl",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "trackSize": {
+        "width": 52,
+        "height": 28
+      },
+      "thumbSize": {
+        "width": 20,
+        "height": 20
+      },
+      "insets": {
+        "start": 4,
+        "end": 6,
+        "top": 3,
+        "bottom": 5
+      },
+      "layoutDirection": {
+        "rtl": null
+      },
+      "checked": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "JSON string"
   }
 ]
