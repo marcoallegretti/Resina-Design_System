@@ -506,3 +506,150 @@ fn spatial_shapes_fail_before_any_composing_consumer_publishes() {
         }
     }
 }
+
+fn typography_vectors() -> Vec<Value> {
+    let all: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/typography/assignment-vectors.json"
+    ))
+    .unwrap();
+    let invalid: Vec<_> = all
+        .into_iter()
+        .filter(|v| {
+            v["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("typography source shape ")
+        })
+        .collect();
+    assert_eq!(invalid.len(), 82);
+    invalid
+}
+
+fn typography_shape(original: &Value, document: &Value) -> Value {
+    if document.as_array().is_some_and(|v| v.len() == 2) {
+        return json!([original["schemaVersion"], original["roles"]]);
+    }
+    if !document.is_object() {
+        return document.clone();
+    }
+    let mut changed = original.clone();
+    if !document["roles"].is_object() {
+        changed["roles"] = if document["roles"].as_array().is_some_and(|v| !v.is_empty()) {
+            Value::Array(
+                original["roles"]
+                    .as_object()
+                    .unwrap()
+                    .iter()
+                    .map(|(role, spec)| json!([role, spec]))
+                    .collect(),
+            )
+        } else {
+            document["roles"].clone()
+        };
+        return changed;
+    }
+    for (role, spec) in document["roles"].as_object().unwrap() {
+        if spec.as_array().is_some_and(|v| !v.is_empty()) {
+            changed["roles"][role] = Value::Array(
+                [
+                    "familyRole",
+                    "fontSize",
+                    "fontWeight",
+                    "lineHeight",
+                    "letterSpacing",
+                    "minimumTextScale",
+                ]
+                .into_iter()
+                .map(|field| original["roles"][role][field].clone())
+                .collect(),
+            );
+        } else if !spec.is_object() {
+            changed["roles"][role] = spec.clone();
+        } else if spec["familyRole"].is_object() {
+            changed["roles"][role]["familyRole"] =
+                json!({original["roles"][role]["familyRole"].as_str().unwrap():null});
+        }
+    }
+    changed
+}
+
+#[test]
+fn typography_shapes_fail_at_both_compilation_entries() {
+    let original: Value = serde_json::from_str(THEME).unwrap();
+    for vector in typography_vectors() {
+        let mut theme = original.clone();
+        theme["typographyAssignments"] =
+            typography_shape(&original["typographyAssignments"], &vector["document"]);
+        for result in [
+            compile_theme_source(&theme.to_string()),
+            compile_theme_source_with_sources(&theme.to_string(), &BTreeMap::new()),
+        ] {
+            let error = result
+                .err()
+                .expect("schema-invalid typography assignment must not compile");
+            assert!(matches!(
+                error,
+                resina_resolver::ThemeCompilationError::Source(_)
+            ));
+            assert!(
+                error
+                    .to_string()
+                    .contains(vector["error"].as_str().unwrap()),
+                "{}: {error}",
+                vector["name"]
+            );
+        }
+    }
+}
+
+#[test]
+fn typography_shapes_fail_before_any_composing_consumer_publishes() {
+    for (binary, baseline, pointer, embedded) in requests() {
+        let expected = resolve(binary, &baseline.to_string()).unwrap();
+        let valid = run(binary, &baseline.to_string());
+        assert_eq!(valid.status.code(), Some(0));
+        assert!(valid.stderr.is_empty());
+        assert_eq!(
+            serde_json::from_slice::<Value>(&valid.stdout).unwrap(),
+            expected
+        );
+        let owner = if embedded {
+            serde_json::from_str::<Value>(baseline.pointer(pointer).unwrap().as_str().unwrap())
+                .unwrap()
+        } else {
+            baseline
+                .pointer(pointer.strip_suffix("/materialAssignments").unwrap())
+                .unwrap()
+                .clone()
+        };
+        for vector in typography_vectors() {
+            let assignment = typography_shape(&owner["typographyAssignments"], &vector["document"]);
+            let mut request = baseline.clone();
+            if embedded {
+                let mut source = owner.clone();
+                source["typographyAssignments"] = assignment;
+                *request.pointer_mut(pointer).unwrap() = Value::String(source.to_string());
+            } else {
+                request
+                    .pointer_mut(pointer.strip_suffix("/materialAssignments").unwrap())
+                    .unwrap()["typographyAssignments"] = assignment;
+            }
+            let source = request.to_string();
+            let diagnostic = vector["error"].as_str().unwrap();
+            assert!(
+                resolve(binary, &source).unwrap_err().contains(diagnostic),
+                "{binary}: {}",
+                vector["name"]
+            );
+            let output = run(binary, &source);
+            assert_eq!(
+                output.status.code(),
+                Some(1),
+                "{binary}: {}",
+                vector["name"]
+            );
+            assert!(output.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&output.stderr).contains(diagnostic));
+        }
+    }
+}
