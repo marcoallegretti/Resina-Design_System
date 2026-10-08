@@ -41,6 +41,24 @@ def main():
     vectors = load_json(ROOT / "conformance/geometry/shape-fallback-vectors.json")
     count = 0
     try:
+        case_validator = validator_for("schemas/shape-fallback-source-case.schema.json")
+        names = set()
+        for case in load_json(ROOT / "conformance/geometry/shape-fallback-source-cases.json"):
+            name = case["name"]
+            if name in names:
+                raise ValueError(f"duplicate shape fallback source case: {name}")
+            names.add(name)
+            errors = list(case_validator.iter_errors(case))
+            if errors:
+                raise ValueError(f"{name}: invalid case: {errors[0].message}")
+            check_request(request_validator, case["request"], case["requestSchemaValid"], name)
+            source = json.dumps(case["request"], ensure_ascii=False)
+            if "expected" in case:
+                check_success(command, source, case["expected"], result_validator, arguments.timeout, name)
+            else:
+                check_failure(command, source, arguments.timeout, name)
+            count += 1
+
         for vector in vectors:
             request = {**base, "shape": vector["shape"], "size": vector["size"]}
             check_request(request_validator, request, True, vector["name"])

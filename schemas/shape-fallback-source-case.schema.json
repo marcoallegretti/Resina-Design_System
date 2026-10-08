@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:shape-fallback-source-case:0.1.0",
+  "title": "Resina Tier 0 Shape Source Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "request", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "request": {},
+    "requestSchemaValid": {"type": "boolean"},
+    "expected": {"$ref": "urn:resina:schema:shape-fallback-result:0.1.0"},
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {
+      "required": ["expected"],
+      "not": {"required": ["errorContains"]},
+      "properties": {
+        "requestSchemaValid": {"const": true},
+        "request": {"$ref": "urn:resina:schema:shape-fallback-request:0.1.0"}
+      }
+    },
+    {"required": ["errorContains"], "not": {"required": ["expected"]}}
+  ]
+}
