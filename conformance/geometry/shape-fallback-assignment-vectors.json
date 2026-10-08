@@ -160,5 +160,1546 @@
       }
     },
     "error": "unknown field"
+  },
+  {
+    "name": "shape source form root positional",
+    "document": [
+      "0.1.0",
+      {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    ],
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form root null",
+    "document": null,
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form root boolean",
+    "document": true,
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form root number",
+    "document": 1,
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form root string",
+    "document": "assignment",
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form root empty array",
+    "document": [],
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form profiles positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": [
+        {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        {
+          "kind": "capsule"
+        },
+        {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      ]
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form profiles null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": null
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form profiles boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": true
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form profiles number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": 1
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form profiles string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": "assignment"
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form profiles empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": []
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": [
+          "uniform",
+          "radius.3"
+        ],
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": null,
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": true,
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": 1,
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": "assignment",
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": [],
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": [
+          "uniform",
+          "radius.2"
+        ],
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": null,
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": true,
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": 1,
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": "assignment",
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": [],
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": [
+          "uniform",
+          "radius.5"
+        ],
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": null,
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": true,
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": 1,
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": "assignment",
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": [],
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form capsule positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": [
+          "capsule"
+        ],
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form capsule null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": null,
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form capsule boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": true,
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form capsule number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": 1,
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form capsule string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": "assignment",
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form capsule empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": [],
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": [
+          "corners",
+          {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        ]
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": null
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": true
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": 1
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": "assignment"
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": []
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic radii positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": [
+            "radius.5",
+            "radius.4",
+            "radius.6",
+            "radius.4"
+          ]
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic radii null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": null
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic radii boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": true
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic radii number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": 1
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic radii string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": "assignment"
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form organic radii empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": []
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural corners positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": [
+          "corners",
+          {
+            "topStart": "radius.3",
+            "topEnd": "radius.3",
+            "bottomEnd": "radius.3",
+            "bottomStart": "radius.3"
+          }
+        ],
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form structural radii positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "corners",
+          "radii": [
+            "radius.3",
+            "radius.3",
+            "radius.3",
+            "radius.3"
+          ]
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft corners positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": [
+          "corners",
+          {
+            "topStart": "radius.2",
+            "topEnd": "radius.2",
+            "bottomEnd": "radius.2",
+            "bottomStart": "radius.2"
+          }
+        ],
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form soft radii positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "corners",
+          "radii": [
+            "radius.2",
+            "radius.2",
+            "radius.2",
+            "radius.2"
+          ]
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded corners positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": [
+          "corners",
+          {
+            "topStart": "radius.5",
+            "topEnd": "radius.5",
+            "bottomEnd": "radius.5",
+            "bottomStart": "radius.5"
+          }
+        ],
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "shape source form rounded radii positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "corners",
+          "radii": [
+            "radius.5",
+            "radius.5",
+            "radius.5",
+            "radius.5"
+          ]
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "structural supports logical corners",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.3",
+            "topEnd": "radius.3",
+            "bottomEnd": "radius.3",
+            "bottomStart": "radius.3"
+          }
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "soft supports logical corners",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.2",
+            "topEnd": "radius.2",
+            "bottomEnd": "radius.2",
+            "bottomStart": "radius.2"
+          }
+        },
+        "rounded": {
+          "kind": "uniform",
+          "radius": "radius.5"
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "expected": "valid"
+  },
+  {
+    "name": "rounded supports logical corners",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "structural": {
+          "kind": "uniform",
+          "radius": "radius.3"
+        },
+        "soft": {
+          "kind": "uniform",
+          "radius": "radius.2"
+        },
+        "rounded": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.5",
+            "bottomEnd": "radius.5",
+            "bottomStart": "radius.5"
+          }
+        },
+        "capsule": {
+          "kind": "capsule"
+        },
+        "organic": {
+          "kind": "corners",
+          "radii": {
+            "topStart": "radius.5",
+            "topEnd": "radius.4",
+            "bottomEnd": "radius.6",
+            "bottomStart": "radius.4"
+          }
+        }
+      }
+    },
+    "expected": "valid"
   }
 ]

@@ -76,6 +76,14 @@ def main():
         )
         count += 1
 
+        for vector in load_json(ROOT / "conformance/geometry/shape-fallback-assignment-vectors.json"):
+            if "error" not in vector:
+                continue
+            request = {**base, "assignments": vector["document"]}
+            check_request(request_validator, request, False, vector["name"])
+            check_failure(command, json.dumps(request), arguments.timeout, vector["name"])
+            count += 1
+
         aliased = copy.deepcopy(base)
         aliased["tokens"]["radius"]["3"]["$value"] = "{space.3}"
         check_request(request_validator, aliased, True, "aliased radius")
