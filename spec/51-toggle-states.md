@@ -15,6 +15,9 @@ hover MUST NOT be inferred from focus, capture or the held pointer's membership.
 A producer without hover supplies false explicitly. No missing signal gets a
 default; unknown/duplicate fields and invalid activation states fail.
 
+The request MUST be a JSON object. Positional records and other non-object values
+are invalid before projection, regardless of activation, hover or checked state.
+
 ## Projection
 
 1. Project availability, hover, momentary press, body rest and actual focus by
