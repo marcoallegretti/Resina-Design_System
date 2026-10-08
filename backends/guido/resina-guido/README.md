@@ -252,6 +252,15 @@ fixtures do not establish all fonts/scripts, capability tiers or full component
 conformance. Set `RESINA_COMMAND_CAPTURE_DIR` to save PPM captures for visual
 review.
 
+The same test adds 256 complete frames from the authored Command anatomy:
+standard and primary variants in both unmodified themes, all four phases,
+independent focus, text scales 1 and 2, and device scales 1, 1.25, 2 and 3.
+It preserves each variant's material, color, content and form bindings and uses
+the anatomy's 4.5:1 content and 3:1 edge requirements. These frames pass the same
+snapshot, native ink, containment, placement and pixel-contrast checks. Their
+explicit test dimensions and padding are not calibrated component defaults;
+native interaction and assistive technology delivery remain separate work.
+
 ## Toggle content composition
 
 Call `prepare_toggle_content` with a checked `ToggleSnapshot`, the verified font
