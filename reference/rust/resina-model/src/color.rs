@@ -1,3 +1,4 @@
+use crate::deserialize_assignment_object;
 use serde::{
     Deserialize, Deserializer, Serialize,
     de::{Error as _, MapAccess, Visitor},
@@ -71,12 +72,30 @@ impl ColorRole {
     ];
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ColorAssignments {
-    #[serde(deserialize_with = "deserialize_version")]
     schema_version: String,
     roles: ColorRoleTokens,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ColorAssignmentsInput {
+    #[serde(deserialize_with = "deserialize_version")]
+    schema_version: String,
+    #[serde(deserialize_with = "deserialize_assignment_object")]
+    roles: ColorRoleTokens,
+}
+
+impl<'de> Deserialize<'de> for ColorAssignments {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_assignment_object::<D, ColorAssignmentsInput>(deserializer)?;
+        Ok(Self {
+            schema_version: input.schema_version,
+            roles: input.roles,
+        })
+    }
 }
 
 impl ColorAssignments {
@@ -105,13 +124,30 @@ impl ColorAssignments {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OpaqueColorAssignments {
+    schema_version: String,
+    roles: BTreeMap<ColorRole, TokenPath>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OpaqueColorAssignmentsInput {
     #[serde(deserialize_with = "deserialize_version")]
     schema_version: String,
     #[serde(deserialize_with = "deserialize_unique_opaque_roles")]
     roles: BTreeMap<ColorRole, TokenPath>,
+}
+
+impl<'de> Deserialize<'de> for OpaqueColorAssignments {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_assignment_object::<D, OpaqueColorAssignmentsInput>(deserializer)?;
+        Ok(Self {
+            schema_version: input.schema_version,
+            roles: input.roles,
+        })
+    }
 }
 
 impl OpaqueColorAssignments {
@@ -225,75 +261,98 @@ mod tests {
     use super::*;
     use serde_json::Value;
 
-    #[test]
-    fn role_assignment_conformance_vectors() {
-        let vectors: Vec<Value> = serde_json::from_str(include_str!(
-            "../../../../conformance/color/role-assignment-vectors.json"
-        ))
-        .unwrap();
+    fn check_vectors<T: serde::de::DeserializeOwned + Serialize>(
+        source: &str,
+        token_path_for: fn(&T, ColorRole) -> Option<&str>,
+    ) {
+        let vectors: Vec<Value> = serde_json::from_str(source).unwrap();
         for vector in vectors {
-            let result = serde_json::from_value::<ColorAssignments>(vector["document"].clone());
-            if let Some(expected) = vector.get("expected") {
-                let assignments = result.unwrap();
-                for role in ColorRole::ALL {
-                    let name = serde_json::to_value(role).unwrap();
-                    assert_eq!(
-                        assignments.token_path_for(role),
-                        expected[name.as_str().unwrap()].as_str().unwrap(),
-                        "{}: {name}",
+            for result in [
+                serde_json::from_value::<T>(vector["document"].clone()),
+                serde_json::from_str::<T>(&vector["document"].to_string()),
+            ] {
+                if let Some(expected) = vector.get("expected") {
+                    let assignments = result.unwrap();
+                    for role in ColorRole::ALL {
+                        let name = serde_json::to_value(role).unwrap();
+                        assert_eq!(
+                            token_path_for(&assignments, role),
+                            expected[name.as_str().unwrap()].as_str(),
+                            "{}: {name}",
+                            vector["name"]
+                        );
+                    }
+                    let document = serde_json::to_value(assignments).unwrap();
+                    assert_eq!(document, vector["document"], "{}", vector["name"]);
+                    assert_eq!(document["roles"], *expected, "{}", vector["name"]);
+                } else {
+                    let error = result.err().expect("invalid assignment must fail");
+                    assert!(
+                        error
+                            .to_string()
+                            .contains(vector["error"].as_str().unwrap()),
+                        "{}: {error}",
                         vector["name"]
                     );
                 }
-                assert_eq!(
-                    serde_json::to_value(&assignments).unwrap(),
-                    vector["document"]
-                );
-            } else {
-                let error = result.unwrap_err();
-                assert!(
-                    error
-                        .to_string()
-                        .contains(vector["error"].as_str().unwrap()),
-                    "{}: {error}",
-                    vector["name"]
-                );
             }
         }
     }
 
     #[test]
+    fn role_assignment_conformance_vectors() {
+        check_vectors::<ColorAssignments>(
+            include_str!("../../../../conformance/color/role-assignment-vectors.json"),
+            |assignments, role| Some(assignments.token_path_for(role)),
+        );
+    }
+
+    #[test]
     fn opaque_assignment_conformance_vectors() {
+        check_vectors::<OpaqueColorAssignments>(
+            include_str!("../../../../conformance/color/opaque-assignment-vectors.json"),
+            OpaqueColorAssignments::token_path_for,
+        );
+    }
+
+    #[test]
+    fn color_assignment_decoded_duplicates_are_rejected() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
-            "../../../../conformance/color/opaque-assignment-vectors.json"
+            "../../../../conformance/color/role-assignment-vectors.json"
         ))
         .unwrap();
-        for vector in vectors {
-            let result =
-                serde_json::from_value::<OpaqueColorAssignments>(vector["document"].clone());
-            if let Some(expected) = vector.get("expected") {
-                let assignments = result.unwrap();
-                for role in ColorRole::ALL {
-                    let name = serde_json::to_value(role).unwrap();
-                    assert_eq!(
-                        assignments.token_path_for(role),
-                        expected[name.as_str().unwrap()].as_str(),
-                        "{}: {name}",
-                        vector["name"]
-                    );
+        let document = &vectors[0]["document"];
+        let source = document.to_string();
+        let mut members: Vec<_> = document.as_object().unwrap().iter().collect();
+        members.extend(document["roles"].as_object().unwrap().iter());
+        assert_eq!(members.len(), 21);
+        for (name, value) in members {
+            let member = format!("\"{name}\":{value}");
+            assert_eq!(source.matches(&member).count(), 1);
+            let escaped = format!("\\u{:04x}{}", name.as_bytes()[0], &name[1..]);
+            let alias = format!("\"{escaped}\":{value}");
+            let valid = source.replacen(&member, &alias, 1);
+            assert_eq!(
+                serde_json::to_value(serde_json::from_str::<ColorAssignments>(&valid).unwrap())
+                    .unwrap(),
+                *document
+            );
+            assert_eq!(
+                serde_json::to_value(
+                    serde_json::from_str::<OpaqueColorAssignments>(&valid).unwrap()
+                )
+                .unwrap(),
+                *document
+            );
+            for repeated in [&member, &alias] {
+                let duplicate = source.replacen(&member, &format!("{member},{repeated}"), 1);
+                let errors = [
+                    serde_json::from_str::<ColorAssignments>(&duplicate).unwrap_err(),
+                    serde_json::from_str::<OpaqueColorAssignments>(&duplicate).unwrap_err(),
+                ];
+                for error in errors {
+                    assert!(error.to_string().contains("duplicate"), "{name}: {error}");
                 }
-                assert_eq!(
-                    serde_json::to_value(assignments).unwrap(),
-                    vector["document"]
-                );
-            } else {
-                let error = result.unwrap_err();
-                assert!(
-                    error
-                        .to_string()
-                        .contains(vector["error"].as_str().unwrap()),
-                    "{}: {error}",
-                    vector["name"]
-                );
             }
         }
     }
