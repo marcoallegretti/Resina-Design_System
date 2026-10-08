@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-size-case:0.1.0",
+  "title": "Resina Surface Size Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "document"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "document": {},
+    "expected": {"const": "valid"},
+    "error": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {
+      "required": ["expected"],
+      "not": {"required": ["error"]},
+      "properties": {
+        "document": {"$ref": "urn:resina:schema:surface-size:0.1.0"}
+      }
+    },
+    {
+      "required": ["error"],
+      "not": {"required": ["expected"]},
+      "properties": {
+        "document": {"not": {"$ref": "urn:resina:schema:surface-size:0.1.0"}}
+      }
+    }
+  ]
+}

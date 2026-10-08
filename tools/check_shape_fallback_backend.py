@@ -102,6 +102,14 @@ def main():
             check_failure(command, json.dumps(request), arguments.timeout, vector["name"])
             count += 1
 
+        for vector in load_json(ROOT / "conformance/geometry/surface-size-vectors.json"):
+            if "error" not in vector:
+                continue
+            request = {**base, "size": vector["document"]}
+            check_request(request_validator, request, False, vector["name"])
+            check_failure(command, json.dumps(request), arguments.timeout, vector["name"])
+            count += 1
+
         for vector in load_json(ROOT / "conformance/geometry/shape-fallback-assignment-vectors.json"):
             if "error" not in vector:
                 continue
