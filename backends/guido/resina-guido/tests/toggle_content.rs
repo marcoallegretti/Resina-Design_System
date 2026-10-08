@@ -18,7 +18,7 @@ use resina_guido::{
 };
 use resina_model::{
     ActivationState, ColorRole, PhysicalBounds, PhysicalVector, PressHold, SpringDynamics,
-    SpringState, SurfaceSize, TypographyRole,
+    SpringState, SurfaceSize, ToggleAnatomy, TypographyRole,
 };
 use resina_raster::{Viewport, render_surface_paint};
 use resina_resolver::{
@@ -27,7 +27,7 @@ use resina_resolver::{
     ToggleSnapshot, ToggleSnapshotInput, opaque_contrast_ratio, resolve_command_label,
     resolve_hit_region, resolve_srgb_fallback, resolve_theme_request_source, resolve_toggle_layout,
     resolve_toggle_part_motion_source, resolve_toggle_part_paint_source, resolve_toggle_snapshot,
-    resolve_toggle_travel,
+    resolve_toggle_states, resolve_toggle_travel,
 };
 use serde_json::{Value, json};
 use std::{path::Path, rc::Rc};
@@ -213,6 +213,10 @@ impl Fixture {
             },
         )
         .unwrap();
+        assert_ne!(
+            resolved.color_fallbacks()[&ColorRole::ContentSecondary].components(),
+            track.paint().body().foreground().components()
+        );
         Self {
             environment,
             track_request,
@@ -229,6 +233,58 @@ impl Fixture {
             hovered: phase == "hover",
             checked,
         }
+    }
+    fn bind_anatomy(&mut self, scene: &Value, anatomy: &ToggleAnatomy, focused: bool) {
+        assert_eq!(anatomy.label_typography(), TypographyRole::Label);
+        self.activation = ActivationState::try_new(
+            self.activation.enabled(),
+            focused,
+            self.activation.hold().cloned(),
+        )
+        .unwrap();
+        let states = resolve_toggle_states(&self.activation, self.hovered, self.checked);
+        for (request, part) in [
+            (&mut self.track_request, anatomy.track()),
+            (&mut self.thumb_request, anatomy.thumb()),
+        ] {
+            let body = &mut request["surface"]["body"];
+            body["theme"]["themeSource"] = scene["request"]["body"]["theme"]["themeSource"].clone();
+            body["surface"] = serde_json::to_value(part.intent(states.clone())).unwrap();
+            body["foregroundRole"] = serde_json::to_value(part.content_role()).unwrap();
+            body["minimumContentContrast"] = json!(1.0);
+            body["minimumEdgeContrast"] = json!(3.0);
+            request["checkedColorRole"] = serde_json::to_value(part.checked_color_role()).unwrap();
+        }
+        self.track = resolve_toggle_part_paint_source(&self.track_request.to_string()).unwrap();
+        let track_color = serde_json::to_value(self.track.paint().body().pigment().body()).unwrap();
+        self.thumb_request["surface"]["body"]["adjacentColor"] = track_color.clone();
+        self.thumb_request["surface"]["body"]["postTreatmentBackdrop"] = track_color;
+        self.thumb = resolve_toggle_part_paint_source(&self.thumb_request.to_string()).unwrap();
+        let theme = resolve_theme_request_source(
+            &self.track_request["surface"]["body"]["theme"].to_string(),
+        )
+        .unwrap();
+        self.foreground = theme.color_fallbacks()[&anatomy.label_color()].clone();
+        for (paint, part) in [
+            (&self.track, anatomy.track()),
+            (&self.thumb, anatomy.thumb()),
+        ] {
+            let intent = part.intent(states.clone());
+            assert_eq!(paint.paint().body().material_role(), intent.material_role());
+            assert_eq!(
+                paint.paint().body().color_role(),
+                if self.checked {
+                    part.checked_color_role()
+                } else {
+                    intent.color_role()
+                }
+            );
+            assert_eq!(paint.paint().body().foreground_role(), part.content_role());
+            assert_eq!(paint.paint().body().form(), intent.form());
+            assert_eq!(paint.paint().body().states(), &states);
+        }
+        assert_eq!(self.track.paint().focus().is_some(), focused);
+        assert!(self.thumb.paint().focus().is_none());
     }
     fn sample_parts(
         &mut self,
@@ -460,10 +516,6 @@ fn check_commands(
     let label = f.label.label_bounds();
     assert!((f64::from(rect.x) - f.origin.x - label.x).abs() <= 1.0 / 1024.0);
     assert!((f64::from(rect.y) - f.origin.y - label.y).abs() <= 1.0 / 1024.0);
-    assert_ne!(
-        f.foreground.components(),
-        f.track.paint().body().foreground().components()
-    );
     let expected = color(&f.foreground);
     assert_eq!(
         [foreground.r, foreground.g, foreground.b, foreground.a],
@@ -699,6 +751,53 @@ fn checked_toggle_content_preserves_placed_paint_and_complete_native_labels() {
         }
     }
     assert_eq!(count, 396);
+    let anatomy: ToggleAnatomy = serde_json::from_str(include_str!(
+        "../../../../definitions/components/toggle.json"
+    ))
+    .unwrap();
+    let mut authored_frames = 0;
+    for scheme in ["light", "dark"] {
+        let name = format!("{scheme}-elastomer-paint-focused");
+        let scene = scenes["scenarios"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|s| s["name"] == name)
+            .unwrap();
+        for phase in ["rest", "hover", "pressed", "disabled"] {
+            for focused in [false, true] {
+                for checked in [false, true] {
+                    for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+                        for text_scale in [1.0, 2.0] {
+                            let text = if direction == LayoutDirection::Ltr {
+                                "Automatic updates"
+                            } else {
+                                "التحديثات التلقائية"
+                            };
+                            let mut f = Fixture::new(
+                                scene, phase, direction, checked, family, text_scale, text,
+                            );
+                            f.bind_anatomy(scene, &anatomy, focused);
+                            for scale in [1.0, 1.25, 2.0, 3.0] {
+                                check_frame(
+                                    &mut frames,
+                                    &f,
+                                    family,
+                                    scale,
+                                    &format!(
+                                        "authored-{scheme}-{phase}-focus-{focused}-{direction:?}-{checked}-text-{text_scale}"
+                                    ),
+                                    capture.as_deref(),
+                                );
+                                authored_frames += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(authored_frames, 512);
 }
 
 fn motion_channels() -> [Value; 2] {

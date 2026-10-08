@@ -50,6 +50,11 @@ pub use slider_position::{SliderPositionError, SliderPositionInput, resolve_slid
 mod slider_position_source;
 pub use slider_position_source::{SliderPositionSourceError, resolve_slider_position_source};
 
+mod slider_track_segments;
+pub use slider_track_segments::{
+    SliderTrackSegmentsError, SliderTrackSegmentsIr, resolve_slider_track_segments,
+};
+
 mod slider_layout;
 pub use slider_layout::{
     SliderLayoutError, SliderLayoutInput, SliderLayoutIr, SliderMinimumPosition,

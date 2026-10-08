@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:component-anatomy:0.1.0",
+  "title": "Resina Component Anatomy",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/command"
+    },
+    {
+      "$ref": "#/$defs/toggle"
+    }
+  ],
+  "$defs": {
+    "controlRole": {
+      "enum": [
+        "control.passive",
+        "control.interactive",
+        "control.primary"
+      ]
+    },
+    "colorRole": {
+      "$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"
+    },
+    "shape": {
+      "$ref": "urn:resina:schema:surface-form:0.1.0#/properties/shape"
+    },
+    "elevation": {
+      "$ref": "urn:resina:schema:surface-form:0.1.0#/properties/elevation"
+    },
+    "typographyRole": {
+      "enum": [
+        "display",
+        "titleLarge",
+        "title",
+        "heading",
+        "bodyLarge",
+        "body",
+        "label",
+        "caption",
+        "numeric",
+        "code"
+      ]
+    },
+    "commandBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "materialRole",
+        "colorRole",
+        "shape",
+        "elevation",
+        "contentRole"
+      ],
+      "properties": {
+        "materialRole": {
+          "$ref": "#/$defs/controlRole"
+        },
+        "colorRole": {
+          "$ref": "#/$defs/colorRole"
+        },
+        "shape": {
+          "$ref": "#/$defs/shape"
+        },
+        "elevation": {
+          "$ref": "#/$defs/elevation"
+        },
+        "contentRole": {
+          "$ref": "#/$defs/colorRole"
+        }
+      }
+    },
+    "selectablePart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "materialRole",
+        "colorRole",
+        "checkedColorRole",
+        "shape",
+        "elevation",
+        "contentRole"
+      ],
+      "properties": {
+        "materialRole": {
+          "$ref": "#/$defs/controlRole"
+        },
+        "colorRole": {
+          "$ref": "#/$defs/colorRole"
+        },
+        "checkedColorRole": {
+          "$ref": "#/$defs/colorRole"
+        },
+        "shape": {
+          "$ref": "#/$defs/shape"
+        },
+        "elevation": {
+          "$ref": "#/$defs/elevation"
+        },
+        "contentRole": {
+          "$ref": "#/$defs/colorRole"
+        }
+      }
+    },
+    "embeddedLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "typographyRole"
+      ],
+      "properties": {
+        "typographyRole": {
+          "$ref": "#/$defs/typographyRole"
+        }
+      }
+    },
+    "externalLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "typographyRole",
+        "colorRole"
+      ],
+      "properties": {
+        "typographyRole": {
+          "$ref": "#/$defs/typographyRole"
+        },
+        "colorRole": {
+          "$ref": "#/$defs/colorRole"
+        }
+      }
+    },
+    "commandVariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "label"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/commandBody"
+        },
+        "label": {
+          "$ref": "#/$defs/embeddedLabel"
+        }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "component",
+        "variants"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "0.1.0"
+        },
+        "component": {
+          "const": "command"
+        },
+        "variants": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "standard",
+            "primary"
+          ],
+          "properties": {
+            "standard": {
+              "$ref": "#/$defs/commandVariant"
+            },
+            "primary": {
+              "$ref": "#/$defs/commandVariant"
+            }
+          }
+        }
+      }
+    },
+    "toggle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "component",
+        "track",
+        "thumb",
+        "label"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "0.1.0"
+        },
+        "component": {
+          "const": "toggle"
+        },
+        "track": {
+          "$ref": "#/$defs/selectablePart"
+        },
+        "thumb": {
+          "$ref": "#/$defs/selectablePart"
+        },
+        "label": {
+          "$ref": "#/$defs/externalLabel"
+        }
+      }
+    }
+  }
+}

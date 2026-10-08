@@ -246,3 +246,17 @@ and component boards remain required.
 [Slider interaction projection](spec/70-slider-states.md) preserves actual focus,
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.
+
+[Component anatomy](spec/78-component-anatomy.md) binds the Command and Toggle
+parts to semantic material and color roles in authored
+[definitions](definitions/components/). In the Light and Dark themes, under each
+control-family assignment and the minimal-capability environment, tests resolve
+each Command phase and focus through Command paint with 4.5:1 content and 3:1
+edge contrast, and each Toggle phase, focus and selection through part paint
+with 3:1 edges and a 4.5:1 label color.
+
+[Slider track segments](spec/79-slider-track-segments.md) divide the track into
+an active and an inactive segment that stop at an explicit clearance around the
+thumb, the geometry for a gap between thumb and track. Public cases cover both
+axes, directions and minimum positions, with bounds rounded inward and checked
+exactly.

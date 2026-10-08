@@ -21,8 +21,8 @@ use resina_guido::{
     measure_command_label, prepare_command_content,
 };
 use resina_model::{
-    ActivationState, ContourSegment, PhysicalBounds, PhysicalVector, PressHold, SurfaceSize,
-    TypographyRole,
+    ActivationState, CommandAnatomy, CommandEmphasis, ContourSegment, PhysicalBounds,
+    PhysicalVector, PressHold, StateSet, SurfaceSize, TypographyRole,
 };
 use resina_resolver::{
     CommandContentError, CommandLabelInput, CommandLabelIr, CommandMotionPolicy, CommandPaintIr,
@@ -572,6 +572,68 @@ fn native_command_content_keeps_actual_ink_on_guarded_material() {
         }
     }
     assert_eq!(count, 188);
+    let anatomy: CommandAnatomy = serde_json::from_str(include_str!(
+        "../../../../definitions/components/command.json"
+    ))
+    .unwrap();
+    let mut authored_frames = 0;
+    for scheme in ["light", "dark"] {
+        let scene = scene(&format!("{scheme}-elastomer-paint-focused"));
+        for emphasis in [CommandEmphasis::Standard, CommandEmphasis::Primary] {
+            let variant = anatomy.variant(emphasis);
+            assert_eq!(variant.label_typography(), TypographyRole::Label);
+            for phase in ["rest", "hover", "pressed", "disabled"] {
+                for focused in [false, true] {
+                    for text_scale in [1.0, 2.0] {
+                        let mut request =
+                            command_request(scene, phase, text_scale, LayoutDirection::Ltr);
+                        let body = &mut request["surface"]["body"];
+                        body["theme"]["themeSource"] =
+                            scene["request"]["body"]["theme"]["themeSource"].clone();
+                        let names: Vec<_> = [phase]
+                            .into_iter()
+                            .chain(focused.then_some("focused"))
+                            .collect();
+                        let states: StateSet = serde_json::from_value(json!({
+                            "schemaVersion": "0.1.0", "states": names
+                        }))
+                        .unwrap();
+                        let intent = variant.body().intent(states);
+                        body["surface"] = serde_json::to_value(&intent).unwrap();
+                        body["foregroundRole"] =
+                            serde_json::to_value(variant.body().content_role()).unwrap();
+                        body["minimumContentContrast"] = json!(4.5);
+                        body["minimumEdgeContrast"] = json!(3.0);
+                        let label = resolve_label(&mut request, "Save", family, 24.0);
+                        let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+                        assert_eq!(paint.paint().body().material_role(), intent.material_role());
+                        assert_eq!(paint.paint().body().color_role(), intent.color_role());
+                        assert_eq!(
+                            paint.paint().body().foreground_role(),
+                            variant.body().content_role()
+                        );
+                        assert_eq!(paint.paint().body().form(), intent.form());
+                        assert_eq!(paint.paint().focus().is_some(), focused);
+                        let snapshot = snapshot(&request, &label, &paint, phase, focused).unwrap();
+                        for scale in [1.0, 1.25, 2.0, 3.0] {
+                            check_frame(
+                                &mut frames,
+                                &snapshot,
+                                scale,
+                                &format!(
+                                    "authored-{scheme}-{emphasis:?}-{phase}-focus-{focused}-text-{text_scale}"
+                                ),
+                                captures.as_deref(),
+                                background(&request),
+                            );
+                            authored_frames += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(authored_frames, 256);
     let mut request = command_request(
         scene("light-elastomer-paint-focused"),
         "rest",

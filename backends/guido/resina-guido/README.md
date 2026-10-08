@@ -40,7 +40,7 @@ limits prevent claiming complete native command conformance:
 
 | Requirement | Verified boundary | Current behavior |
 | --- | --- | --- |
-| Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L956-L960) and [repeat](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L969-L972) emit `KeyDown` with distinct `repeat` values. | No conforming native activation adapter consumes that flag yet. Do not infer repeat from the semantic hold: an independent invocation can clear that hold while the physical key remains down. |
+| Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L956-L960) and [repeat](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L969-L972) emit `KeyDown` with distinct `repeat` values. | `activation_key_event` preserves that flag. Typed mapping tests and mounted widget delivery verify repeat suppression and release termination; physical keyboard delivery still needs compatible-compositor evidence. |
 | Mandatory line breaks | The pinned shaper's [line iterator](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/line_ending.rs#L51-L72) ends lines only at LF, CR and CRLF, and consumes an LF followed by CR as one ending unless that LF completes a CRLF; [Unicode line breaking](https://www.unicode.org/reports/tr14/tr14-57.html#LB5) keeps only CR LF together. | Label measurement and preparation reject VT, FF, NEL, U+2028, U+2029 and any CR/LF sequence whose lines differ from Unicode line breaking with `UnsupportedLineBreak`. |
 | Bidirectional paragraph separators | U+001C–U+001E separate bidirectional paragraphs without breaking lines. The pinned shaper [asserts](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/shape.rs#L1357-L1359) that every paragraph in one line has the same direction and panics otherwise. | Label measurement and preparation reject them with `UnsupportedParagraphSeparator` before shaping. |
 | Deep bidirectional embedding | When a wrapped line resolves to level 126, the pinned shaper [requests](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/shape.rs#L1537) a right-to-left level above 125, the highest one, and panics. Text with n embedding or isolate initiators resolves to level 2n + 2 at most. | More than 60 initiators between line breaks fail with `BidiInitiators`, keeping every resolved level at 122 or below even when the bidirectional algorithm ignores terminators. |
@@ -252,6 +252,48 @@ fixtures do not establish all fonts/scripts, capability tiers or full component
 conformance. Set `RESINA_COMMAND_CAPTURE_DIR` to save PPM captures for visual
 review.
 
+The same test adds 256 complete frames from the authored Command anatomy:
+standard and primary variants in both unmodified themes, all four phases,
+independent focus, text scales 1 and 2, and device scales 1, 1.25, 2 and 3.
+It preserves each variant's material, color, content and form bindings and uses
+the anatomy's 4.5:1 content and 3:1 edge requirements. These frames pass the same
+snapshot, native ink, containment, placement and pixel-contrast checks. Their
+explicit test dimensions and padding are not calibrated component defaults;
+native interaction and assistive technology delivery remain separate work.
+
+## Activation key events
+
+`activation_key_event` maps a GUIdo key event against the current committed
+activation state to an optional portable activation event. Pass that event to
+`resolve_activation` for a Command or `resolve_toggle_activation` for a Toggle,
+then commit the returned state before delivering its activation effect.
+
+Space and Enter presses are accepted without Ctrl, Alt, Shift or Logo. Caps Lock
+is a latch and does not alter these keys. The native repeat flag is preserved;
+repeat suppression and eligibility belong to the resolver. A held key's matching
+release is forwarded even after modifiers change. Other chords, keys and non-key
+events return `None` for their appropriate owners. This mapper does not consume
+an event, request focus, route pointers or install a widget handler. Owners must
+still report actual focus, availability and interruption through the activation
+contract and route held-key termination.
+
+The pinned GUIdo [input implementation](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs)
+publishes press/repeat metadata and retains the pressed key identity for release.
+Tests check both command keys over all modifier combinations, repeated delivery,
+changed-modifier releases, unrelated input and one-activation Command/Toggle
+sequences. These tests verify event translation, not compositor delivery or a
+complete native control.
+
+A required GPU-backed application test also mounts a custom event probe and
+routes queued keys through GUIdo's widget tree. It checks repeat suppression,
+Space release, immediate Enter activation, changed-modifier release, surface
+focus loss/re-entry and widget focus transfer. An owner-scoped reactive observer
+cancels holds on widget focus changes independently of painting; surface
+`FocusOut` delivery cancels them explicitly. The complete `Widget::event` stream
+supplies key releases that a key-down-only convenience callback cannot provide.
+This proves mounted widget routing with supplied native event values, not physical
+keyboard/compositor delivery or an installed production control.
+
 ## Toggle content composition
 
 Call `prepare_toggle_content` with a checked `ToggleSnapshot`, the verified font
@@ -290,6 +332,17 @@ actual backdrop. Invalid scale/sampling and approximate label measurements fail.
 Set `RESINA_TOGGLE_CAPTURE_DIR` to save the tested PPM frames for visual review.
 These fixtures verify composition transport and typography, not complete
 component styling, every script/font, motion or native accessibility conformance.
+
+The composition test adds 512 frames using the authored Toggle anatomy and both
+unmodified themes. They cover four phases, independent focus, off/on selection,
+both directions, text scales 1 and 2, and device scales 1, 1.25, 2 and 3. The
+track and thumb retain their authored material, selected color, content and form
+bindings; the external label uses its own authored color role. Each frame passes
+the same complete snapshot, placed CPU/GPU comparison, native label containment
+and 4.5:1 pixel-contrast checks. Part edges require 3:1 against their actual
+adjacent colors. Dimensions, insets and label padding remain explicit fixtures,
+not calibrated component defaults. Native input and assistive technology delivery
+remain separate obligations.
 
 ## Checked thumb travel
 

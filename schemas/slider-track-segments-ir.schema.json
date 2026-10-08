@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-track-segments-ir:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "clearance",
+    "active",
+    "inactive"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "clearance": {
+      "type": "number",
+      "minimum": 0
+    },
+    "active": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+        }
+      ]
+    },
+    "inactive": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "urn:resina:schema:hit-region-request:0.1.0#/$defs/bounds"
+        }
+      ]
+    }
+  }
+}

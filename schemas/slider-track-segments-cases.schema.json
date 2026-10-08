@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-track-segments-cases:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "layout",
+          "clearance"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "layout": {
+            "$ref": "urn:resina:schema:slider-layout-cases:0.1.0#/properties/cases/items/properties/input"
+          },
+          "clearance": {
+            "type": "number"
+          },
+          "expected": {
+            "$ref": "urn:resina:schema:slider-track-segments-ir:0.1.0"
+          },
+          "error": {
+            "enum": [
+              "InvalidClearance"
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "expected"
+            ]
+          },
+          {
+            "required": [
+              "error"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
