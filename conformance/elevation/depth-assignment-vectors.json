@@ -80,5 +80,115 @@
       }
     },
     "error": "schemaVersion"
+  },
+  {
+    "name": "elevation source shape root positional",
+    "document": [
+      "0.1.0",
+      {
+        "embedded": "depth.0",
+        "base": "depth.0",
+        "raised": "depth.1",
+        "floating": "depth.2",
+        "overlay": "depth.3",
+        "modal": "depth.4"
+      }
+    ],
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape root null",
+    "document": null,
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape root boolean",
+    "document": true,
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape root number",
+    "document": 1,
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape root string",
+    "document": "assignment",
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape root empty array",
+    "document": [],
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": [
+        "depth.0",
+        "depth.0",
+        "depth.1",
+        "depth.2",
+        "depth.3",
+        "depth.4"
+      ]
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": null
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": true
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": 1
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": "assignment"
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "roles": []
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "elevation source shape both positional",
+    "document": [
+      "0.1.0",
+      [
+        "depth.0",
+        "depth.0",
+        "depth.1",
+        "depth.2",
+        "depth.3",
+        "depth.4"
+      ]
+    ],
+    "error": "assignment object"
   }
 ]

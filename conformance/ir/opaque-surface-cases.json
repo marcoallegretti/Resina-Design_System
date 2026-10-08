@@ -2263,5 +2263,175 @@
     ],
     "requestSchemaValid": true,
     "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "elevation source shape root positional",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments",
+        "value": [
+          "0.1.0",
+          {
+            "embedded": "depth.0",
+            "base": "depth.0",
+            "raised": "depth.1",
+            "floating": "depth.2",
+            "overlay": "depth.3",
+            "modal": "depth.4"
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root null",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root boolean",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root number",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root string",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root empty array",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles positional",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments/roles",
+        "value": [
+          "depth.0",
+          "depth.0",
+          "depth.1",
+          "depth.2",
+          "depth.3",
+          "depth.4"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles null",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments/roles",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles boolean",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments/roles",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles number",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments/roles",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles string",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments/roles",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles empty array",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments/roles",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape both positional",
+    "requestChanges": [
+      {
+        "path": "/appearance/depthAssignments",
+        "value": [
+          "0.1.0",
+          [
+            "depth.0",
+            "depth.0",
+            "depth.1",
+            "depth.2",
+            "depth.3",
+            "depth.4"
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
   }
 ]

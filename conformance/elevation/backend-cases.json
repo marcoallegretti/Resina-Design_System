@@ -497,5 +497,583 @@
     },
     "requestSchemaValid": false,
     "errorContains": "missing field"
+  },
+  {
+    "name": "elevation source shape root positional",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": [
+        "0.1.0",
+        {
+          "embedded": "depth.zero",
+          "base": "depth.zero",
+          "raised": "depth.raised",
+          "floating": "depth.floating",
+          "overlay": "depth.overlay",
+          "modal": "depth.modal"
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root null",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": null
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root boolean",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": true
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root number",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": 1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root string",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": "assignment"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape root empty array",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": []
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles positional",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": [
+          "depth.zero",
+          "depth.zero",
+          "depth.raised",
+          "depth.floating",
+          "depth.overlay",
+          "depth.modal"
+        ]
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles null",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": null
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles boolean",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": true
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles number",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": 1
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles string",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": "assignment"
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape roles empty array",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": {
+        "schemaVersion": "0.1.0",
+        "roles": []
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
+  },
+  {
+    "name": "elevation source shape both positional",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "tokens": {
+        "depth": {
+          "$type": "dimension",
+          "zero": {
+            "$value": {
+              "value": 0,
+              "unit": "px"
+            }
+          },
+          "raised": {
+            "$value": {
+              "value": 2,
+              "unit": "px"
+            }
+          },
+          "floating": {
+            "$value": "{depth.raised}"
+          },
+          "overlay": {
+            "$value": {
+              "value": 4,
+              "unit": "px"
+            }
+          },
+          "modal": {
+            "$value": {
+              "value": 5,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "assignments": [
+        "0.1.0",
+        [
+          "depth.zero",
+          "depth.zero",
+          "depth.raised",
+          "depth.floating",
+          "depth.overlay",
+          "depth.modal"
+        ]
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "assignment object"
   }
 ]
