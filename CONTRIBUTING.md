@@ -2,6 +2,11 @@
 
 Start with [AGENTS.md](AGENTS.md), the canonical engineering contract for manual and AI-assisted contributions. This guide helps you find the relevant workflow and evidence; the contract defines the requirements.
 
+The [contributor toolkit](.agents/README.md) provides reusable workflows, domain
+skills, review roles and portable verification commands. Its instructions work
+with manual development, Codex, Claude Code, Cursor, Copilot and other assistants
+by loading the same files. See its setup table for client discovery differences.
+
 ## Describe a verifiable change
 
 Search [existing issues](https://github.com/marcoallegretti/Resina-Design_System/issues) before opening a [new issue](https://github.com/marcoallegretti/Resina-Design_System/issues/new/choose). Choose **Defect or contribution** for an ordinary change, **Maintenance** for a present simplicity or structural debt problem, or **Architectural proposal** for a decision about public semantics, ownership or a shared mechanism. The forms ask for observed and expected behavior, evidence, affected boundary, present impact, acceptance criteria and expected proof.
