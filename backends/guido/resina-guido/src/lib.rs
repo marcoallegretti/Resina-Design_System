@@ -1,6 +1,9 @@
 #[cfg(not(target_os = "linux"))]
 compile_error!("the GUIdo backend requires Linux");
 
+mod activation_keys;
+pub use activation_keys::activation_key_event;
+
 mod slider_content;
 pub use slider_content::{SliderContentPrepareError, prepare_slider_content};
 

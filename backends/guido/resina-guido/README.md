@@ -261,6 +261,29 @@ snapshot, native ink, containment, placement and pixel-contrast checks. Their
 explicit test dimensions and padding are not calibrated component defaults;
 native interaction and assistive technology delivery remain separate work.
 
+## Activation key events
+
+`activation_key_event` maps a GUIdo key event against the current committed
+activation state to an optional portable activation event. Pass that event to
+`resolve_activation` for a Command or `resolve_toggle_activation` for a Toggle,
+then commit the returned state before delivering its activation effect.
+
+Space and Enter presses are accepted without Ctrl, Alt, Shift or Logo. Caps Lock
+is a latch and does not alter these keys. The native repeat flag is preserved;
+repeat suppression and eligibility belong to the resolver. A held key's matching
+release is forwarded even after modifiers change. Other chords, keys and non-key
+events return `None` for their appropriate owners. This mapper does not consume
+an event, request focus, route pointers or install a widget handler. Owners must
+still report actual focus, availability and interruption through the activation
+contract and route held-key termination.
+
+The pinned GUIdo [input implementation](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs)
+publishes press/repeat metadata and retains the pressed key identity for release.
+Tests check both command keys over all modifier combinations, repeated delivery,
+changed-modifier releases, unrelated input and one-activation Command/Toggle
+sequences. These tests verify event translation, not compositor delivery or a
+complete native control.
+
 ## Toggle content composition
 
 Call `prepare_toggle_content` with a checked `ToggleSnapshot`, the verified font
