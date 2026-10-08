@@ -430,5 +430,50 @@
     },
     "requestSchemaValid": false,
     "errorContains": "pointer ID"
+  },
+  {
+    "name": "non-object-request-positional",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      false
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "non-object-request-empty-array",
+    "request": [],
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "non-object-request-null",
+    "request": null,
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "non-object-request-boolean",
+    "request": true,
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "non-object-request-number",
+    "request": 1,
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
+  },
+  {
+    "name": "non-object-request-string",
+    "request": "request",
+    "requestSchemaValid": false,
+    "errorContains": "must be a JSON object"
   }
 ]

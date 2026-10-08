@@ -31,6 +31,7 @@ pub enum CommandStatesError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidRequestShape,
 }
 impl fmt::Display for CommandStatesError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -38,6 +39,9 @@ impl fmt::Display for CommandStatesError {
             Self::Parse(error) => write!(f, "command states parse failed: {error}"),
             Self::Request(error) => write!(f, "invalid command states request: {error}"),
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
+            Self::InvalidRequestShape => {
+                f.write_str("command states request must be a JSON object")
+            }
         }
     }
 }
@@ -45,7 +49,7 @@ impl std::error::Error for CommandStatesError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Self::Parse(error) | Self::Request(error) => Some(error),
-            Self::UnsupportedVersion => None,
+            Self::UnsupportedVersion | Self::InvalidRequestShape => None,
         }
     }
 }
@@ -60,6 +64,9 @@ struct Request {
 
 pub fn resolve_command_states_source(source: &str) -> Result<StateSet, CommandStatesError> {
     let value = resina_tokens::parse_token_document(source).map_err(CommandStatesError::Parse)?;
+    if !value.is_object() {
+        return Err(CommandStatesError::InvalidRequestShape);
+    }
     let request: Request = serde_json::from_value(value).map_err(CommandStatesError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(CommandStatesError::UnsupportedVersion);

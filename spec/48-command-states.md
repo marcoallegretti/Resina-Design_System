@@ -6,6 +6,9 @@ Blueprint §§59–67 require composed interaction feedback. This operation proj
 
 The [request](../schemas/command-states-request.schema.json) requires version 0.1.0, `activation` and Boolean `hovered`. Every activation field remains required and validated, including explicit null hold. Unknown/duplicate members, unsupported versions, disabled holds, unfocused keyboard holds and empty pointer IDs fail diagnostically. No missing input acquires a default.
 
+The request MUST be a JSON object. Positional records and other non-object values
+are invalid before projection, regardless of the supplied activation or hover.
+
 The owner supplies a coherent snapshot for one command after committing the latest activation transition. Actual focus comes from native observation; a queued focus request is insufficient. Hover is an explicit current observation owned by the input producer. It MUST NOT be inferred from focus, a held key, availability, pointer capture or the held pointer's `inside` field. Those observations can differ: an outside held pointer may coexist with hover from another pointer. A producer without hover supplies false explicitly, without removing keyboard or touch feedback.
 
 ## Projection
