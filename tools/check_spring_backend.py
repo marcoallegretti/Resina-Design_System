@@ -22,13 +22,16 @@ def spring_mismatch(actual, expected):
 
 
 if __name__ == "__main__":
-    baseline = json.dumps(load_json(ROOT / "conformance/motion/spring-request.json"))
+    request = load_json(ROOT / "conformance/motion/spring-request.json")
+    baseline = json.dumps(request)
     raise SystemExit(check_delta_backend(
         "spring", "schemas/spring-case.schema.json",
         "schemas/spring-request.schema.json", "schemas/spring-result.schema.json",
         "conformance/motion/spring-request.json", "conformance/motion/spring-expected.json",
         "conformance/motion/spring-cases.json",
         extra_failures=(
+            ("positional root", json.dumps([request[k] for k in ("schemaVersion", "spring", "time", "reducedMotion")])),
+            ("positional reduced-motion root", json.dumps([request["schemaVersion"], request["spring"], request["time"], True])),
             ("duplicate root version", baseline.replace(
                 '"schemaVersion": "0.1.0"',
                 '"schemaVersion": "0.1.0", "schemaVersion": "0.1.0"', 1,

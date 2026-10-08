@@ -8,6 +8,9 @@ The [dynamics](../schemas/spring-dynamics.schema.json) require version 0.1.0, ma
 
 Choose one scalar coordinate unit L consistently. Position, target and positionThreshold use L; velocity and velocityThreshold use L/s. Elapsed time uses seconds and MUST be finite and nonnegative. Mass uses a consistent unit M, stiffness M/s² and damping M/s. These are authored response parameters, not measured material properties. Family-specific coefficients remain qualitative until calibrated; this contract invents no defaults.
 
+The request, dynamics and initial state MUST be JSON objects. Positional arrays
+are invalid before either ordinary motion or the immediate fallback is selected.
+
 ## Equation and normalization
 
 For ordinary motion solve:
