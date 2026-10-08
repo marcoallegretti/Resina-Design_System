@@ -1376,5 +1376,33 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "surface form source positional",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form",
+        "value": [
+          "0.1.0",
+          "structural",
+          "raised"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "surface form source tagged elevation",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/elevation",
+        "value": {
+          "raised": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

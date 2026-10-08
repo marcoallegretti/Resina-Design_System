@@ -265,6 +265,8 @@
     "surface size form height object": "invalid type",
     "surface intent form positional": "surface intent object",
     "surface intent form tagged material role": "a string",
-    "surface intent form tagged color role": "a string"
+    "surface intent form tagged color role": "a string",
+    "surface form source positional": "surface form object",
+    "surface form source tagged elevation": "a string"
   }
 }

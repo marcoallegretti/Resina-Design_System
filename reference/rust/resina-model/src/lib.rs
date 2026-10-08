@@ -258,13 +258,51 @@ impl ElevationRole {
     ];
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SurfaceForm {
-    #[serde(deserialize_with = "deserialize_version")]
     schema_version: String,
     shape: ShapeIntent,
     elevation: ElevationRole,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct SurfaceFormInput {
+    #[serde(deserialize_with = "deserialize_version")]
+    schema_version: String,
+    shape: ShapeIntent,
+    #[serde(deserialize_with = "deserialize_elevation_role")]
+    elevation: ElevationRole,
+}
+
+impl<'de> Deserialize<'de> for SurfaceForm {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct FormVisitor;
+        impl<'de> Visitor<'de> for FormVisitor {
+            type Value = SurfaceForm;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a surface form object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = SurfaceFormInput::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(SurfaceForm {
+                    schema_version: input.schema_version,
+                    shape: input.shape,
+                    elevation: input.elevation,
+                })
+            }
+        }
+        deserializer.deserialize_map(FormVisitor)
+    }
+}
+
+fn deserialize_elevation_role<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<ElevationRole, D::Error> {
+    ElevationRole::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
+        deserializer,
+    )?))
 }
 
 impl SurfaceForm {
