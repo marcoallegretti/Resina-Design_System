@@ -591,5 +591,63 @@
       }
     },
     "error": "a string"
+  },
+  {
+    "name": "state set source positional",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": [
+        "0.1.0",
+        [
+          "focused",
+          "rest"
+        ]
+      ],
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
+    },
+    "error": "state set object"
+  },
+  {
+    "name": "state set source tagged item",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": "surface.chrome",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          {
+            "focused": null
+          },
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
+    },
+    "error": "a string"
   }
 ]

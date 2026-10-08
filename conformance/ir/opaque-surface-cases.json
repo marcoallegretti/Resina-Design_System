@@ -3654,5 +3654,36 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "state set source positional",
+    "requestChanges": [
+      {
+        "path": "/surface/states",
+        "value": [
+          "0.1.0",
+          [
+            "rest"
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "state set object"
+  },
+  {
+    "name": "state set source tagged item",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          {
+            "rest": null
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
   }
 ]

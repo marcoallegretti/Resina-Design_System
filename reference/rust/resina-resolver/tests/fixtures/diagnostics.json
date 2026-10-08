@@ -267,6 +267,8 @@
     "surface intent form tagged material role": "a string",
     "surface intent form tagged color role": "a string",
     "surface form source positional": "surface form object",
-    "surface form source tagged elevation": "a string"
+    "surface form source tagged elevation": "a string",
+    "state set source positional": "state set object",
+    "state set source tagged item": "a string"
   }
 }

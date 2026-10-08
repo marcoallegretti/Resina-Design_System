@@ -3082,5 +3082,38 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "state set source positional",
+    "requestChanges": [
+      {
+        "path": "/surface/states",
+        "value": [
+          "0.1.0",
+          [
+            "focused",
+            "selected"
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "state set object"
+  },
+  {
+    "name": "state set source tagged item",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          {
+            "focused": null
+          },
+          "selected"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
   }
 ]
