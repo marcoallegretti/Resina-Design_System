@@ -445,5 +445,93 @@
       }
     },
     "error": "missing field"
+  },
+  {
+    "name": "surface intent form positional",
+    "document": [
+      "0.2.0",
+      "surface.chrome",
+      "surface.chrome",
+      {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
+    ],
+    "error": "surface intent object"
+  },
+  {
+    "name": "surface intent form tagged material role",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": {
+        "surface.chrome": null
+      },
+      "colorRole": "surface.chrome",
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
+    },
+    "error": "a string"
+  },
+  {
+    "name": "surface intent form tagged color role",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "materialRole": "surface.chrome",
+      "colorRole": {
+        "surface.chrome": null
+      },
+      "form": {
+        "schemaVersion": "0.1.0",
+        "shape": "rounded",
+        "elevation": "floating"
+      },
+      "states": {
+        "schemaVersion": "0.1.0",
+        "states": [
+          "focused",
+          "rest"
+        ]
+      },
+      "treatmentStack": {
+        "schemaVersion": "0.1.0",
+        "treatments": [
+          "none",
+          "lens"
+        ]
+      }
+    },
+    "error": "a string"
   }
 ]

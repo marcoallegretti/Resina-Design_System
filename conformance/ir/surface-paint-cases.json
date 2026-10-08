@@ -1318,5 +1318,63 @@
       }
     ],
     "failure": true
+  },
+  {
+    "name": "surface intent form positional",
+    "requestChanges": [
+      {
+        "path": "/body/surface",
+        "value": [
+          "0.2.0",
+          "surface.base",
+          "surface.base",
+          {
+            "schemaVersion": "0.1.0",
+            "shape": "structural",
+            "elevation": "raised"
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "states": [
+              "rest"
+            ]
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "treatments": [
+              "none"
+            ]
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "surface intent form tagged material role",
+    "requestChanges": [
+      {
+        "path": "/body/surface/materialRole",
+        "value": {
+          "surface.base": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "surface intent form tagged color role",
+    "requestChanges": [
+      {
+        "path": "/body/surface/colorRole",
+        "value": {
+          "surface.base": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

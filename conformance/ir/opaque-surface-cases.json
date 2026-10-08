@@ -3568,5 +3568,63 @@
       }
     ],
     "errorContains": "invalid type"
+  },
+  {
+    "name": "surface intent form positional",
+    "requestChanges": [
+      {
+        "path": "/surface",
+        "value": [
+          "0.2.0",
+          "surface.base",
+          "surface.base",
+          {
+            "schemaVersion": "0.1.0",
+            "shape": "structural",
+            "elevation": "raised"
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "states": [
+              "rest"
+            ]
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "treatments": [
+              "none"
+            ]
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surface intent object"
+  },
+  {
+    "name": "surface intent form tagged material role",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": {
+          "surface.base": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
+  },
+  {
+    "name": "surface intent form tagged color role",
+    "requestChanges": [
+      {
+        "path": "/surface/colorRole",
+        "value": {
+          "surface.base": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
   }
 ]
