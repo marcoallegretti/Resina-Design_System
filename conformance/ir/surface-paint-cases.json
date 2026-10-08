@@ -183,5 +183,724 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "shape source form root positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments",
+        "value": [
+          "0.1.0",
+          {
+            "structural": {
+              "kind": "uniform",
+              "radius": "radius.0"
+            },
+            "soft": {
+              "kind": "uniform",
+              "radius": "radius.0"
+            },
+            "rounded": {
+              "kind": "uniform",
+              "radius": "radius.0"
+            },
+            "capsule": {
+              "kind": "capsule"
+            },
+            "organic": {
+              "kind": "corners",
+              "radii": {
+                "topStart": "radius.0",
+                "topEnd": "radius.0",
+                "bottomEnd": "radius.0",
+                "bottomStart": "radius.0"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form root null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form root boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form root number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form root string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form root empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form profiles positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles",
+        "value": [
+          {
+            "kind": "uniform",
+            "radius": "radius.0"
+          },
+          {
+            "kind": "uniform",
+            "radius": "radius.0"
+          },
+          {
+            "kind": "uniform",
+            "radius": "radius.0"
+          },
+          {
+            "kind": "capsule"
+          },
+          {
+            "kind": "corners",
+            "radii": {
+              "topStart": "radius.0",
+              "topEnd": "radius.0",
+              "bottomEnd": "radius.0",
+              "bottomStart": "radius.0"
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form profiles null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form profiles boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form profiles number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form profiles string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form profiles empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": [
+          "uniform",
+          "radius.0"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": [
+          "uniform",
+          "radius.0"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": [
+          "uniform",
+          "radius.0"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form capsule positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/capsule",
+        "value": [
+          "capsule"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form capsule null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/capsule",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form capsule boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/capsule",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form capsule number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/capsule",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form capsule string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/capsule",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form capsule empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/capsule",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic",
+        "value": [
+          "corners",
+          {
+            "topStart": "radius.0",
+            "topEnd": "radius.0",
+            "bottomEnd": "radius.0",
+            "bottomStart": "radius.0"
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic radii positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic/radii",
+        "value": [
+          "radius.0",
+          "radius.0",
+          "radius.0",
+          "radius.0"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic radii null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic/radii",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic radii boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic/radii",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic radii number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic/radii",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic radii string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic/radii",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form organic radii empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/organic/radii",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural corners positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": [
+          "corners",
+          {
+            "topStart": "radius.0",
+            "topEnd": "radius.0",
+            "bottomEnd": "radius.0",
+            "bottomStart": "radius.0"
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form structural radii positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/structural",
+        "value": {
+          "kind": "corners",
+          "radii": [
+            "radius.0",
+            "radius.0",
+            "radius.0",
+            "radius.0"
+          ]
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft corners positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": [
+          "corners",
+          {
+            "topStart": "radius.0",
+            "topEnd": "radius.0",
+            "bottomEnd": "radius.0",
+            "bottomStart": "radius.0"
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form soft radii positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/soft",
+        "value": {
+          "kind": "corners",
+          "radii": [
+            "radius.0",
+            "radius.0",
+            "radius.0",
+            "radius.0"
+          ]
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded corners positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": [
+          "corners",
+          {
+            "topStart": "radius.0",
+            "topEnd": "radius.0",
+            "bottomEnd": "radius.0",
+            "bottomStart": "radius.0"
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape source form rounded radii positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/shapeAssignments/profiles/rounded",
+        "value": {
+          "kind": "corners",
+          "radii": [
+            "radius.0",
+            "radius.0",
+            "radius.0",
+            "radius.0"
+          ]
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]
