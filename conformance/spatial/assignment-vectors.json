@@ -102,5 +102,17 @@
       }
     },
     "error": "schemaVersion must be 0.1.0"
-  }
+  },
+  {"name":"spatial source shape root positional","document":["0.1.0",{"space.control.inline":"foundation.space.0","space.control.block":"foundation.space.1","space.container.inner":"foundation.space.2","space.container.outer":"foundation.space.3","space.group":"foundation.space.4","space.section":"foundation.space.5","space.page":"foundation.space.6"}],"error":"object"},
+  {"name":"spatial source shape root null","document":null,"error":"object"},
+  {"name":"spatial source shape root boolean","document":true,"error":"object"},
+  {"name":"spatial source shape root number","document":1,"error":"object"},
+  {"name":"spatial source shape root string","document":"assignment","error":"object"},
+  {"name":"spatial source shape root empty array","document":[],"error":"object"},
+  {"name":"spatial source shape roles positional","document":{"schemaVersion":"0.1.0","roles":[["space.control.inline","foundation.space.0"],["space.control.block","foundation.space.1"],["space.container.inner","foundation.space.2"],["space.container.outer","foundation.space.3"],["space.group","foundation.space.4"],["space.section","foundation.space.5"],["space.page","foundation.space.6"]]},"error":"mapping"},
+  {"name":"spatial source shape roles null","document":{"schemaVersion":"0.1.0","roles":null},"error":"mapping"},
+  {"name":"spatial source shape roles boolean","document":{"schemaVersion":"0.1.0","roles":true},"error":"mapping"},
+  {"name":"spatial source shape roles number","document":{"schemaVersion":"0.1.0","roles":1},"error":"mapping"},
+  {"name":"spatial source shape roles string","document":{"schemaVersion":"0.1.0","roles":"assignment"},"error":"mapping"},
+  {"name":"spatial source shape roles empty array","document":{"schemaVersion":"0.1.0","roles":[]},"error":"mapping"}
 ]

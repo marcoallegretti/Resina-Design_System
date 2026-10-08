@@ -249,5 +249,17 @@
   {"name":"color source shape opaque roles boolean","outcome":"invalid","requestChanges":[{"path":"/opaqueColorAssignments/roles","value":true}]},
   {"name":"color source shape opaque roles number","outcome":"invalid","requestChanges":[{"path":"/opaqueColorAssignments/roles","value":1}]},
   {"name":"color source shape opaque roles string","outcome":"invalid","requestChanges":[{"path":"/opaqueColorAssignments/roles","value":"assignment"}]},
-  {"name":"color source shape opaque roles empty array","outcome":"invalid","requestChanges":[{"path":"/opaqueColorAssignments/roles","value":[]}]}
+  {"name":"color source shape opaque roles empty array","outcome":"invalid","requestChanges":[{"path":"/opaqueColorAssignments/roles","value":[]}]},
+  {"name":"spatial source shape root positional","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments","value":["0.1.0",{"space.control.inline":"space.base","space.control.block":"space.base","space.container.inner":"space.base","space.container.outer":"space.base","space.group":"space.base","space.section":"space.base","space.page":"space.base"}]}]},
+  {"name":"spatial source shape root null","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments","value":null}]},
+  {"name":"spatial source shape root boolean","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments","value":true}]},
+  {"name":"spatial source shape root number","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments","value":1}]},
+  {"name":"spatial source shape root string","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments","value":"assignment"}]},
+  {"name":"spatial source shape root empty array","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments","value":[]}]},
+  {"name":"spatial source shape roles positional","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments/roles","value":[["space.control.inline","space.base"],["space.control.block","space.base"],["space.container.inner","space.base"],["space.container.outer","space.base"],["space.group","space.base"],["space.section","space.base"],["space.page","space.base"]]}]},
+  {"name":"spatial source shape roles null","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments/roles","value":null}]},
+  {"name":"spatial source shape roles boolean","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments/roles","value":true}]},
+  {"name":"spatial source shape roles number","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments/roles","value":1}]},
+  {"name":"spatial source shape roles string","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments/roles","value":"assignment"}]},
+  {"name":"spatial source shape roles empty array","outcome":"invalid","requestChanges":[{"path":"/spatialAssignments/roles","value":[]}]}
 ]
