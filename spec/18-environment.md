@@ -22,6 +22,12 @@ The JSON object has `schemaVersion` equal to `0.2.0` and these members:
 
 `geometry.width` and `geometry.height` MUST be finite and greater than zero. Their quotient `width / height` is the aspect ratio and MUST be representable as a finite, positive number. Orientation is `landscape` when width exceeds height, `portrait` when height exceeds width, and `square` when they are equal. These derived properties MUST NOT be repeated in the serialized snapshot. Each safe-area inset (`start`, `end`, `top`, `bottom`) MUST be finite and nonnegative. The sum of `start` and `end` MUST be smaller than `width`; the sum of `top` and `bottom` MUST be smaller than `height`. `start` and `end` are logical directions and therefore remain meaningful in both layout directions. `scale` and `textScale` MUST be finite and greater than zero. JSON has no infinity literal, but a numeric lexeme such as `1e999` can overflow a binary64 parser. Consumers MUST reject numeric overflow to a nonfinite value during parsing. Implementations constructing snapshots in memory MUST apply the same checks.
 
+The snapshot and its `geometry`, `safeArea`, `accessibilityPreferences` and
+`rendererCapabilities` records MUST be JSON objects. Policy values and individual
+input capabilities MUST be strings; positional records and object-encoded enum
+values are invalid. The [source-shape vectors](../conformance/environment/source-shape-vectors.json)
+exercise these requirements directly and inside the hit-region command.
+
 The allowed `inputCapabilities` values are `finePointer`, `coarsePointer`, `hover`, `directTouch`, `stylus`, `keyboard`, `directionalNavigation`, `gamepad`, and `voiceAction`. Duplicate entries are invalid. No capability implies another: a gamepad does not imply couch viewing, and a fine pointer does not imply hover.
 
 `rendererCapabilities` has mandatory boolean fields `gradients`, `translucentSurfaces`, `innerShadow`, `advancedShadow`, `sdfShapes`, `backdropEffect`, `backdropBlur`, `shapedBackdrop`, `dynamicLighting`, `deformation`, `masks`, `customShader`, `wideGamut`, and `hdr`. `translucentSurfaces` means the renderer can composite a pigmented surface over underlying content without sampling or blurring that content; it is separate from backdrop effects. Every combination is valid at this layer. A later resolver may require a combination to realize an effect and MUST select a documented lower-capability representation when it is unavailable. The tier names in the blueprint are descriptive and MUST NOT replace capability tests.

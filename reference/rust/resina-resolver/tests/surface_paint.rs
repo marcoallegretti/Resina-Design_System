@@ -1,3 +1,6 @@
+#[path = "support/diagnostics.rs"]
+mod diagnostics;
+
 use resina_resolver::{
     FocusIndicatorError, FocusIrError, SurfacePaintResolutionError, resolve_opaque_surface_source,
     resolve_surface_paint_source,
@@ -94,9 +97,10 @@ fn public_source_cases_keep_diagnostic_failures_explicit() {
             request.as_object_mut().unwrap().remove("surroundingColor");
         }
         let result = resolve_surface_paint_source(&request.to_string());
-        if let Some(message) = case["errorContains"].as_str() {
+        if case["failure"] == true {
+            let message = diagnostics::expected("surface_paint", &case["name"]);
             let error = result.unwrap_err().to_string();
-            assert!(error.contains(message), "{}: {error}", case["name"]);
+            assert!(error.contains(&message), "{}: {error}", case["name"]);
         } else {
             assert_eq!(
                 result.unwrap().focus().is_some(),

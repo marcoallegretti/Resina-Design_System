@@ -34,11 +34,19 @@ impl SpatialRole {
     ];
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "SpatialAssignmentsInput")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SpatialAssignments {
     schema_version: String,
     roles: BTreeMap<SpatialRole, TokenPath>,
+}
+
+impl<'de> Deserialize<'de> for SpatialAssignments {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input =
+            crate::deserialize_assignment_object::<D, SpatialAssignmentsInput>(deserializer)?;
+        Self::try_from(input).map_err(D::Error::custom)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -129,31 +137,35 @@ mod tests {
         ))
         .unwrap();
         for vector in vectors {
-            let result = serde_json::from_value::<SpatialAssignments>(vector["document"].clone());
-            if let Some(expected) = vector.get("expected") {
-                let assignments = result.unwrap();
-                for role in SpatialRole::ALL {
-                    let name = serde_json::to_value(role).unwrap();
+            for result in [
+                serde_json::from_str::<SpatialAssignments>(&vector["document"].to_string()),
+                serde_json::from_value::<SpatialAssignments>(vector["document"].clone()),
+            ] {
+                if let Some(expected) = vector.get("expected") {
+                    let assignments = result.unwrap();
+                    for role in SpatialRole::ALL {
+                        let name = serde_json::to_value(role).unwrap();
+                        assert_eq!(
+                            assignments.token_path_for(role),
+                            expected[name.as_str().unwrap()].as_str().unwrap(),
+                            "{}: {name}",
+                            vector["name"]
+                        );
+                    }
                     assert_eq!(
-                        assignments.token_path_for(role),
-                        expected[name.as_str().unwrap()].as_str().unwrap(),
-                        "{}: {name}",
+                        serde_json::to_value(&assignments).unwrap(),
+                        vector["document"]
+                    );
+                } else {
+                    assert!(
+                        result
+                            .unwrap_err()
+                            .to_string()
+                            .contains(vector["error"].as_str().unwrap()),
+                        "{}",
                         vector["name"]
                     );
                 }
-                assert_eq!(
-                    serde_json::to_value(&assignments).unwrap(),
-                    vector["document"]
-                );
-            } else {
-                assert!(
-                    result
-                        .unwrap_err()
-                        .to_string()
-                        .contains(vector["error"].as_str().unwrap()),
-                    "{}",
-                    vector["name"]
-                );
             }
         }
     }
@@ -166,5 +178,49 @@ mod tests {
             error.to_string().contains("duplicate spatial role"),
             "{error}"
         );
+    }
+
+    #[test]
+    fn duplicate_assignment_members_and_escaped_names_preserve_validation() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/spatial/assignment-vectors.json"
+        ))
+        .unwrap();
+        let original = &vectors[0]["document"];
+        let source = original.to_string();
+        for (object, fields) in [
+            (
+                original,
+                vec!["schemaVersion".to_owned(), "roles".to_owned()],
+            ),
+            (
+                &original["roles"],
+                SpatialRole::ALL
+                    .into_iter()
+                    .map(|role| {
+                        serde_json::to_value(role)
+                            .unwrap()
+                            .as_str()
+                            .unwrap()
+                            .to_owned()
+                    })
+                    .collect(),
+            ),
+        ] {
+            for field in fields {
+                let member = format!("\"{field}\":{}", object[&field]);
+                let escaped = format!("\\u{:04x}{}", field.as_bytes()[0], &field[1..]);
+                let escaped_member = format!("\"{escaped}\":{}", object[&field]);
+                for duplicate in [&member, &escaped_member] {
+                    let changed = source.replacen(&member, &format!("{member},{duplicate}"), 1);
+                    assert!(changed.len() > source.len());
+                    let error = serde_json::from_str::<SpatialAssignments>(&changed).unwrap_err();
+                    assert!(error.to_string().contains("duplicate"), "{field}: {error}");
+                }
+                let changed = source.replacen(&member, &escaped_member, 1);
+                let assignment: SpatialAssignments = serde_json::from_str(&changed).unwrap();
+                assert_eq!(serde_json::to_value(assignment).unwrap(), *original);
+            }
+        }
     }
 }

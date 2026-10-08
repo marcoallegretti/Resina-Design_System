@@ -100,5 +100,125 @@
       "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}
     },
     "error": "schemaVersion"
+  },
+  {
+    "name": "all material roles use cast",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "cast", "raised": "cast", "transient": "cast"}, "control": {"passive": "cast", "interactive": "cast", "primary": "cast"}, "feedback": {"focus": "cast", "selection": "cast", "drag": "cast"}},
+    "expected": {"surface.base": "cast", "surface.content": "cast", "surface.chrome": "cast", "surface.raised": "cast", "surface.transient": "cast", "control.passive": "cast", "control.interactive": "cast", "control.primary": "cast", "feedback.focus": "cast", "feedback.selection": "cast", "feedback.drag": "cast"}
+  },
+  {
+    "name": "all material roles use frost",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "frost", "content": "frost", "chrome": "frost", "raised": "frost", "transient": "frost"}, "control": {"passive": "frost", "interactive": "frost", "primary": "frost"}, "feedback": {"focus": "frost", "selection": "frost", "drag": "frost"}},
+    "expected": {"surface.base": "frost", "surface.content": "frost", "surface.chrome": "frost", "surface.raised": "frost", "surface.transient": "frost", "control.passive": "frost", "control.interactive": "frost", "control.primary": "frost", "feedback.focus": "frost", "feedback.selection": "frost", "feedback.drag": "frost"}
+  },
+  {
+    "name": "all material roles use elastomer",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "elastomer", "content": "elastomer", "chrome": "elastomer", "raised": "elastomer", "transient": "elastomer"}, "control": {"passive": "elastomer", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "elastomer", "drag": "elastomer"}},
+    "expected": {"surface.base": "elastomer", "surface.content": "elastomer", "surface.chrome": "elastomer", "surface.raised": "elastomer", "surface.transient": "elastomer", "control.passive": "elastomer", "control.interactive": "elastomer", "control.primary": "elastomer", "feedback.focus": "elastomer", "feedback.selection": "elastomer", "feedback.drag": "elastomer"}
+  },
+  {
+    "name": "gel is supported in every transient and feedback role",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "gel", "selection": "gel", "drag": "gel"}},
+    "expected": {"surface.base": "cast", "surface.content": "cast", "surface.chrome": "frost", "surface.raised": "cast", "surface.transient": "gel", "control.passive": "cast", "control.interactive": "elastomer", "control.primary": "elastomer", "feedback.focus": "gel", "feedback.selection": "gel", "feedback.drag": "gel"}
+  },
+  {
+    "name": "material source shape positional assignment",
+    "document": ["0.2.0", {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, {"focus": "elastomer", "selection": "gel", "drag": "gel"}],
+    "error": "object"
+  },
+  {
+    "name": "material source shape positional surface",
+    "document": {"schemaVersion": "0.2.0", "surface": ["cast", "cast", "frost", "cast", "gel"], "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "object"
+  },
+  {
+    "name": "material source shape positional control",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": ["cast", "elastomer", "elastomer"], "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "object"
+  },
+  {
+    "name": "material source shape positional feedback",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": ["elastomer", "gel", "gel"]},
+    "error": "object"
+  },
+  {
+    "name": "material source shape tagged surface.base",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": {"cast": null}, "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged surface.content",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": {"cast": null}, "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged surface.chrome",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": {"frost": null}, "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged surface.raised",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": {"cast": null}, "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged surface.transient",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": {"gel": null}}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged control.passive",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": {"cast": null}, "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged control.interactive",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": {"elastomer": null}, "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged control.primary",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": {"elastomer": null}}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged feedback.focus",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": {"elastomer": null}, "selection": "gel", "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged feedback.selection",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": {"gel": null}, "drag": "gel"}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape tagged feedback.drag",
+    "document": {"schemaVersion": "0.2.0", "surface": {"base": "cast", "content": "cast", "chrome": "frost", "raised": "cast", "transient": "gel"}, "control": {"passive": "cast", "interactive": "elastomer", "primary": "elastomer"}, "feedback": {"focus": "elastomer", "selection": "gel", "drag": {"gel": null}}},
+    "error": "string"
+  },
+  {
+    "name": "material source shape non-object assignment null",
+    "document": null,
+    "error": "object"
+  },
+  {
+    "name": "material source shape non-object assignment boolean",
+    "document": true,
+    "error": "object"
+  },
+  {
+    "name": "material source shape non-object assignment number",
+    "document": 1,
+    "error": "object"
+  },
+  {
+    "name": "material source shape non-object assignment string",
+    "document": "material",
+    "error": "object"
+  },
+  {
+    "name": "material source shape non-object assignment empty array",
+    "document": [],
+    "error": "object"
   }
 ]

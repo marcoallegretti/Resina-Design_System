@@ -1,6 +1,6 @@
 use serde::{
     Deserialize, Deserializer, Serialize,
-    de::{Error as _, MapAccess, Visitor},
+    de::{Error as _, MapAccess, Visitor, value::StringDeserializer},
 };
 use std::{collections::BTreeMap, fmt};
 
@@ -43,8 +43,8 @@ pub enum FontFamilyRole {
     Numeric,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "TypographyRoleSpecInput")]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TypographyRoleSpec {
     family_role: FontFamilyRole,
     font_size: TokenPath,
@@ -54,9 +54,26 @@ pub struct TypographyRoleSpec {
     minimum_text_scale: f64,
 }
 
+impl<'de> Deserialize<'de> for TypographyRoleSpec {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input =
+            crate::deserialize_assignment_object::<D, TypographyRoleSpecInput>(deserializer)?;
+        Self::try_from(input).map_err(D::Error::custom)
+    }
+}
+
+fn deserialize_family_role<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<FontFamilyRole, D::Error> {
+    FontFamilyRole::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
+        deserializer,
+    )?))
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct TypographyRoleSpecInput {
+    #[serde(deserialize_with = "deserialize_family_role")]
     family_role: FontFamilyRole,
     font_size: TokenPath,
     font_weight: TokenPath,
@@ -109,11 +126,19 @@ impl TypographyRoleSpec {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "TypographyAssignmentsInput")]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TypographyAssignments {
     schema_version: String,
     roles: BTreeMap<TypographyRole, TypographyRoleSpec>,
+}
+
+impl<'de> Deserialize<'de> for TypographyAssignments {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input =
+            crate::deserialize_assignment_object::<D, TypographyAssignmentsInput>(deserializer)?;
+        Self::try_from(input).map_err(D::Error::custom)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
@@ -204,32 +229,30 @@ mod tests {
         ))
         .unwrap();
         for vector in vectors {
-            let result =
-                serde_json::from_value::<TypographyAssignments>(vector["document"].clone());
-            if let Some(expected) = vector.get("expected") {
-                let assignments = result.unwrap();
-                for role in TypographyRole::ALL {
-                    let name = serde_json::to_value(role).unwrap();
+            for result in [
+                serde_json::from_str::<TypographyAssignments>(&vector["document"].to_string()),
+                serde_json::from_value::<TypographyAssignments>(vector["document"].clone()),
+            ] {
+                if let Some(expected) = vector.get("expected") {
+                    let assignments = result.unwrap();
+                    for role in TypographyRole::ALL {
+                        let name = serde_json::to_value(role).unwrap();
+                        assert_role(assignments.role(role), &expected[name.as_str().unwrap()]);
+                    }
                     assert_eq!(
-                        serde_json::to_value(assignments.role(role)).unwrap(),
-                        expected[name.as_str().unwrap()],
-                        "{}: {name}",
+                        serde_json::to_value(assignments).unwrap(),
+                        vector["document"]
+                    );
+                } else {
+                    let error = result.unwrap_err();
+                    assert!(
+                        error
+                            .to_string()
+                            .contains(vector["error"].as_str().unwrap()),
+                        "{}: {error}",
                         vector["name"]
                     );
                 }
-                assert_eq!(
-                    serde_json::to_value(assignments).unwrap(),
-                    vector["document"]
-                );
-            } else {
-                assert!(
-                    result
-                        .unwrap_err()
-                        .to_string()
-                        .contains(vector["error"].as_str().unwrap()),
-                    "{}",
-                    vector["name"]
-                );
             }
         }
     }
@@ -242,5 +265,145 @@ mod tests {
             error.to_string().contains("duplicate typography role"),
             "{error}"
         );
+    }
+
+    fn assert_role(spec: &TypographyRoleSpec, expected: &Value) {
+        assert_eq!(
+            serde_json::to_value(spec.family_role()).unwrap(),
+            expected["familyRole"]
+        );
+        assert_eq!(
+            spec.font_size_path(),
+            expected["fontSize"].as_str().unwrap()
+        );
+        assert_eq!(
+            spec.font_weight_path(),
+            expected["fontWeight"].as_str().unwrap()
+        );
+        assert_eq!(
+            spec.line_height_path(),
+            expected["lineHeight"].as_str().unwrap()
+        );
+        assert_eq!(
+            spec.letter_spacing_path(),
+            expected["letterSpacing"].as_str().unwrap()
+        );
+        assert_eq!(
+            spec.minimum_text_scale(),
+            expected["minimumTextScale"].as_f64().unwrap()
+        );
+        assert_eq!(serde_json::to_value(spec).unwrap(), *expected);
+    }
+
+    #[test]
+    fn standalone_roles_enforce_the_same_source_shapes() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/typography/assignment-vectors.json"
+        ))
+        .unwrap();
+        for (role, expected) in vectors[0]["document"]["roles"].as_object().unwrap() {
+            for result in [
+                serde_json::from_str::<TypographyRoleSpec>(&expected.to_string()),
+                serde_json::from_value::<TypographyRoleSpec>(expected.clone()),
+            ] {
+                assert_role(&result.unwrap(), expected);
+            }
+            for vector in &vectors {
+                let name = vector["name"].as_str().unwrap();
+                if name.starts_with(&format!("typography source shape role {role} "))
+                    || name == format!("typography source shape family {role} tagged")
+                {
+                    let document = &vector["document"]["roles"][role];
+                    for result in [
+                        serde_json::from_str::<TypographyRoleSpec>(&document.to_string()),
+                        serde_json::from_value::<TypographyRoleSpec>(document.clone()),
+                    ] {
+                        let error = result.unwrap_err();
+                        assert!(
+                            error
+                                .to_string()
+                                .contains(vector["error"].as_str().unwrap()),
+                            "{name}: {error}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn duplicate_and_escaped_assignment_members_preserve_validation() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/typography/assignment-vectors.json"
+        ))
+        .unwrap();
+        let original = &vectors[0]["document"];
+        let source = original.to_string();
+        for (object, fields) in [
+            (
+                original,
+                vec!["schemaVersion".to_owned(), "roles".to_owned()],
+            ),
+            (
+                &original["roles"],
+                TypographyRole::ALL
+                    .into_iter()
+                    .map(|role| {
+                        serde_json::to_value(role)
+                            .unwrap()
+                            .as_str()
+                            .unwrap()
+                            .to_owned()
+                    })
+                    .collect(),
+            ),
+        ] {
+            for field in fields {
+                let member = format!("\"{field}\":{}", object[&field]);
+                let escaped = format!("\\u{:04x}{}", field.as_bytes()[0], &field[1..]);
+                let escaped_member = format!("\"{escaped}\":{}", object[&field]);
+                for duplicate in [&member, &escaped_member] {
+                    let changed = source.replacen(&member, &format!("{member},{duplicate}"), 1);
+                    assert!(changed.len() > source.len());
+                    let error =
+                        serde_json::from_str::<TypographyAssignments>(&changed).unwrap_err();
+                    assert!(error.to_string().contains("duplicate"), "{field}: {error}");
+                }
+                let changed = source.replacen(&member, &escaped_member, 1);
+                let assignment: TypographyAssignments = serde_json::from_str(&changed).unwrap();
+                assert_eq!(serde_json::to_value(assignment).unwrap(), *original);
+            }
+        }
+    }
+
+    #[test]
+    fn duplicate_and_escaped_role_fields_preserve_validation() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/typography/assignment-vectors.json"
+        ))
+        .unwrap();
+        let original = &vectors[0]["document"]["roles"]["body"];
+        let source = original.to_string();
+        for field in [
+            "familyRole",
+            "fontSize",
+            "fontWeight",
+            "lineHeight",
+            "letterSpacing",
+            "minimumTextScale",
+        ] {
+            let member = format!("\"{field}\":{}", original[field]);
+            let escaped = format!("\\u{:04x}{}", field.as_bytes()[0], &field[1..]);
+            let escaped_member = format!("\"{escaped}\":{}", original[field]);
+            for duplicate in [&member, &escaped_member] {
+                let changed = source.replacen(&member, &format!("{member},{duplicate}"), 1);
+                assert!(changed.len() > source.len());
+                let error = serde_json::from_str::<TypographyRoleSpec>(&changed).unwrap_err();
+                assert!(error.to_string().contains("duplicate"), "{field}: {error}");
+            }
+            let changed = source.replacen(&member, &escaped_member, 1);
+            let spec: TypographyRoleSpec = serde_json::from_str(&changed).unwrap();
+            assert_role(&spec, original);
+        }
     }
 }

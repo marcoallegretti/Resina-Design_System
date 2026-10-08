@@ -16,6 +16,11 @@ pointer activation must remain usable on platforms that do not focus on press.
 Pointer identities MUST be compared exactly, without normalization or coercion.
 Every field is required; unknown or duplicate members and unsupported values fail.
 
+The request, state, non-null hold and event MUST be JSON objects. Activation keys
+in holds and key events MUST be the strings `space` or `enter`. Positional records
+and object-encoded key values are invalid, including when decoded through shared
+state or event types before resolution.
+
 The producer maps only primary command gestures to pointer events, and only
 unmodified command Space/Enter gestures to key events. Other keys, chords and
 secondary-button gestures belong to their appropriate owners. `inside` is the
@@ -86,3 +91,5 @@ decisions. These sources do not establish full component conformance.
 `resina-activation <path|->` reads strict UTF-8 JSON up to 1 MiB. Success exits 0
 with complete JSON; invalid input exits 1 with a diagnostic and no result; usage
 errors exit 2. Public cases define both successful transitions and failures.
+
+Failure diagnostics follow the [public backend diagnostic policy](32-headless-conformance.md#failure-diagnostics). Negative public cases use `failure: true`; diagnostic wording is not a conformance requirement.

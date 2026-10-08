@@ -45,3 +45,5 @@ command protocol, deterministic output, public body/ring expectations and
 cross-channel invariants. Existing material scenes and component-independent
 fallbacks remain authoritative. This contract does not add unsupported state
 appearance, optical effects, motion, input behavior or accessibility semantics.
+
+Failure diagnostics follow the [public backend diagnostic policy](32-headless-conformance.md#failure-diagnostics). Negative public cases use `failure: true`; diagnostic wording is not a conformance requirement.

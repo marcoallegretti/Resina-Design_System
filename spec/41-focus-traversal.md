@@ -52,3 +52,9 @@ and no result; usage errors exit 2. Unknown/duplicate members, missing inputs,
 invalid target identifiers, unsupported directions/versions, and unknown current
 identifiers fail explicitly. Public cases and the external checker define the
 portable boundary; this does not establish full component keyboard conformance.
+
+The request and each target record must be JSON objects, and direction must be
+a JSON string. Positional arrays and object-form enum representations are invalid
+source shapes; schema-invalid sources must not publish a traversal result.
+
+Failure diagnostics follow the [public backend diagnostic policy](32-headless-conformance.md#failure-diagnostics). Negative public cases use `failure: true`; diagnostic wording is not a conformance requirement.

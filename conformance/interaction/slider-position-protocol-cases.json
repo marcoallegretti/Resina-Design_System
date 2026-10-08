@@ -1,0 +1,5534 @@
+[
+  {
+    "name": "horizontal ltr minimum start position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum start position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 12.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum start position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 42.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "horizontal ltr minimum start position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum start position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 102.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum start position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 132.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum start position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum end position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum end position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 132.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum end position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 102.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "horizontal ltr minimum end position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum end position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 42.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum end position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 12.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal ltr minimum end position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum start position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 158.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum start position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 128.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum start position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 98.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "horizontal rtl minimum start position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 68.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum start position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 38.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum start position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 8.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum start position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -22.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum end position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -22.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum end position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 8.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum end position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 38.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "horizontal rtl minimum end position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 68.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum end position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 98.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum end position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 128.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "horizontal rtl minimum end position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "horizontal",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 158.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum start position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum start position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 12.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum start position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 42.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "vertical ltr minimum start position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum start position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 102.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum start position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 132.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum start position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum end position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum end position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 132.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum end position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 102.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "vertical ltr minimum end position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum end position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 42.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum end position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 12.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical ltr minimum end position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum start position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum start position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 12.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum start position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 42.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "vertical rtl minimum start position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum start position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 102.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum start position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 132.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum start position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum end position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum end position 0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 132.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum end position 1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 102.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "vertical rtl minimum end position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 10.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum end position 3/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 42.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 20.0,
+        "progress": 0.75
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum end position 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 12.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "vertical rtl minimum end position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 40.0,
+          "height": 160.0
+        },
+        "thumbSize": {
+          "width": 24.0,
+          "height": 20.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 6.0,
+          "end": 10.0,
+          "top": 12.0,
+          "bottom": 8.0
+        },
+        "layoutDirection": "rtl",
+        "orientation": "vertical",
+        "minimumPosition": "end",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "live enabled False readOnly False position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": false,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled False readOnly False position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": false,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled False readOnly False position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": false,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled True readOnly True position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled True readOnly True position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled True readOnly True position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": true,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled False readOnly True position -1/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": false,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled False readOnly True position 1/2",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": false,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "live enabled False readOnly True position 5/4",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 162.0,
+      "enabled": false,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 0.0,
+        "progress": 0.25
+      },
+      "accepted": false,
+      "changed": false
+    }
+  },
+  {
+    "name": "finite saturated origin -1.7976931348623157e+308",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -1.7976931348623157e+308,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": -10.0,
+        "progress": 0.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "finite saturated origin 1.7976931348623157e+308",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 1.7976931348623157e+308,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 30.0,
+        "progress": 1.0
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "overflowing numeric span midpoint -1e+308",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1e+308,
+          "maximum": 1e+308,
+          "value": -1e+308
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1e+308,
+        "maximum": 1e+308,
+        "value": 0.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "overflowing numeric span midpoint -1.7976931348623157e+308",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308,
+          "value": -1.7976931348623157e+308
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -1.7976931348623157e+308,
+        "maximum": 1.7976931348623157e+308,
+        "value": 0.0,
+        "progress": 0.5
+      },
+      "accepted": true,
+      "changed": true
+    }
+  },
+  {
+    "name": "stationary rounded origin preserves exact value",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 1.23456789
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 45.70370367,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "value": {
+        "schemaVersion": "0.1.0",
+        "minimum": -10.0,
+        "maximum": 30.0,
+        "value": 1.23456789,
+        "progress": 0.28086419725
+      },
+      "accepted": true,
+      "changed": false
+    }
+  },
+  {
+    "name": "interior origin would falsely become numeric endpoint enabled True readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000002,
+          "value": 1.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "interior coordinate progress underflows enabled True readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 8.98846567431158e+307,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 1.0715086071862673e+301,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 0.0,
+          "end": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 5e-324,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "movement loses numeric value change enabled True readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.00000000000001,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "interior origin would falsely become numeric endpoint enabled False readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000002,
+          "value": 1.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": false,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "interior coordinate progress underflows enabled False readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 8.98846567431158e+307,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 1.0715086071862673e+301,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 0.0,
+          "end": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 5e-324,
+      "enabled": false,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "movement loses numeric value change enabled False readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.00000000000001,
+      "enabled": false,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "interior origin would falsely become numeric endpoint enabled True readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000002,
+          "value": 1.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": true,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "interior coordinate progress underflows enabled True readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 8.98846567431158e+307,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 1.0715086071862673e+301,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 0.0,
+          "end": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 5e-324,
+      "enabled": true,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "movement loses numeric value change enabled True readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.00000000000001,
+      "enabled": true,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "interior origin would falsely become numeric endpoint enabled False readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 1.0000000000000002,
+          "value": 1.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.0,
+      "enabled": false,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "interior coordinate progress underflows enabled False readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 8.98846567431158e+307,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 1.0715086071862673e+301,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 0.0,
+          "end": 0.0,
+          "top": 0.0,
+          "bottom": 0.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 10.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 5e-324,
+      "enabled": false,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "movement loses numeric value change enabled False readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 1.0,
+          "maximum": 2.0,
+          "value": 1.5
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.00000000000001,
+      "enabled": false,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "numeric mutation would leave thumb stationary enabled True readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.5080512701502199
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.96615241802637,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "numeric mutation would leave thumb stationary enabled False readOnly False",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.5080512701502199
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.96615241802637,
+      "enabled": false,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "numeric mutation would leave thumb stationary enabled True readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.5080512701502199
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.96615241802637,
+      "enabled": true,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "numeric mutation would leave thumb stationary enabled False readOnly True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "value": 0.5080512701502199
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": 72.96615241802637,
+      "enabled": false,
+      "readOnly": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "missing layout",
+    "request": {
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing desiredOrigin",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing enabled",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing readOnly",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "missing schemaVersion",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "invalid schemaVersion 0.2.0",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.2.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "invalid schemaVersion 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": 1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "invalid enabled 1",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": 1,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "invalid readOnly false",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": "false",
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "invalid desiredOrigin 12",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": "12",
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "invalid desiredOrigin True",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": true,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "invalid desiredOrigin None",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": null,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "invalid backend guido",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0",
+      "backend": "guido"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "invalid root []",
+    "request": [],
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "invalid root ['0.1.0', {'allocationSize': {'width': 160.0, 'height': 40.0}, 'thumbSize': {'width': 20.0, 'height': 24.0}, 'trackThickness': 4.0, 'insets': {'start': 12.0, 'end': 8.0, 'top': 6.0, 'bottom': 10.0}, 'layoutDirection': 'ltr', 'orientation': 'horizontal', 'minimumPosition': 'start', 'value': {'schemaVersion': '0.1.0', 'minimum': -10.0, 'maximum': 30.0, 'value': 0.0}, 'schemaVersion': '0.1.0'}, -18.0, True, False]",
+    "request": [
+      "0.1.0",
+      {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      -18.0,
+      true,
+      false
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "invalid root None",
+    "request": null,
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "invalid root 1",
+    "request": 1,
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "missing layout allocationSize",
+    "request": {
+      "layout": {
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout thumbSize",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout trackThickness",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout insets",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout layoutDirection",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout orientation",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout minimumPosition",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout value",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "missing layout schemaVersion",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        }
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout value",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": [
+          "0.1.0",
+          -10.0,
+          30.0,
+          0.0
+        ],
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout allocationSize",
+    "request": {
+      "layout": {
+        "allocationSize": [
+          160,
+          40
+        ],
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout thumbSize",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": [
+          20,
+          24
+        ],
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout insets",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": [
+          12,
+          8,
+          6,
+          10
+        ],
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout orientation",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": {
+          "horizontal": null
+        },
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout minimumPosition",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": {
+          "start": null
+        },
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout layoutDirection",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": {
+          "ltr": null
+        },
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "invalid layout schemaVersion",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.2.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "array layout",
+    "request": {
+      "layout": [
+        {
+          "width": 160.0,
+          "height": 40.0
+        },
+        {
+          "width": 20.0,
+          "height": 24.0
+        },
+        4.0,
+        {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "ltr",
+        "horizontal",
+        "start",
+        {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "0.1.0"
+      ],
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "JSON object"
+  },
+  {
+    "name": "unknown layout allocationSize",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0,
+          "backend": "guido"
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unknown layout thumbSize",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0,
+          "backend": "guido"
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unknown layout insets",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0,
+          "backend": "guido"
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "unknown layout value",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "backend": "guido"
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "supplied value progress",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0,
+          "progress": 0.25
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "thumb cannot fit",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 160,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10.0,
+          "maximum": 30.0,
+          "value": 0.0
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "slider position layout"
+  },
+  {
+    "name": "imprecise integer 9007199254740993",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0,
+          "maximum": 1e+30,
+          "value": 9007199254740993
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  },
+  {
+    "name": "imprecise integer 18446744073709551617",
+    "request": {
+      "layout": {
+        "allocationSize": {
+          "width": 160.0,
+          "height": 40.0
+        },
+        "thumbSize": {
+          "width": 20.0,
+          "height": 24.0
+        },
+        "trackThickness": 4.0,
+        "insets": {
+          "start": 12.0,
+          "end": 8.0,
+          "top": 6.0,
+          "bottom": 10.0
+        },
+        "layoutDirection": "ltr",
+        "orientation": "horizontal",
+        "minimumPosition": "start",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0,
+          "maximum": 1e+30,
+          "value": 18446744073709551617
+        },
+        "schemaVersion": "0.1.0"
+      },
+      "desiredOrigin": -18.0,
+      "enabled": true,
+      "readOnly": false,
+      "schemaVersion": "0.1.0"
+    },
+    "requestSchemaValid": true,
+    "errorContains": "integer"
+  }
+]

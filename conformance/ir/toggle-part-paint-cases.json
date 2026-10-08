@@ -300,7 +300,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "toggle part paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported busy state",
@@ -314,7 +314,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "toggle part paint supports only"
+    "failure": true
   },
   {
     "name": "transient role",
@@ -325,7 +325,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "persistent control"
+    "failure": true
   },
   {
     "name": "translucent surround",
@@ -336,7 +336,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "surroundingColor must be opaque"
+    "failure": true
   },
   {
     "name": "invalid part",
@@ -347,7 +347,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "unknown variant"
+    "failure": true
   },
   {
     "name": "invalid checked role",
@@ -358,7 +358,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "unknown variant"
+    "failure": true
   },
   {
     "name": "wrong version",
@@ -369,7 +369,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "schemaVersion"
+    "failure": true
   },
   {
     "name": "invalid unused family",
@@ -380,6 +380,6 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "depthScale"
+    "failure": true
   }
 ]

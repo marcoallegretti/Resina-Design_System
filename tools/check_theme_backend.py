@@ -3,6 +3,7 @@ import copy
 import json
 import math
 import sys
+from itertools import chain
 
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, load_json, parse_json, validator_for
@@ -54,6 +55,33 @@ def theme_source(case, base_text, foundation_text):
     return source, sources
 
 
+def source_cases():
+    source_validator = validator_for("schemas/theme-source.schema.json")
+    environment = load_json(ROOT / "conformance/headless/valid-request.json")["environment"]
+    names = set()
+    for vector in load_json(ROOT / "conformance/themes/source-vectors.json"):
+        if (
+            set(vector) != {"name", "document", "error"}
+            or not isinstance(vector["name"], str)
+            or not vector["name"].strip()
+            or not isinstance(vector["error"], str)
+            or not vector["error"].strip()
+        ):
+            raise ValueError("invalid theme source rejection vector")
+        if vector["name"] in names:
+            raise ValueError(f"duplicate theme source case name: {vector['name']}")
+        names.add(vector["name"])
+        if source_validator.is_valid(vector["document"]):
+            raise ValueError(f"{vector['name']}: rejection vector is schema-valid")
+        request = {
+            "schemaVersion": "0.1.0",
+            "themeSource": json.dumps(vector["document"], ensure_ascii=False, allow_nan=False),
+            "externalSources": {},
+            "environment": environment,
+        }
+        yield vector["name"], json.dumps(request, ensure_ascii=False, allow_nan=False), None
+
+
 def cases():
     base_text = (ROOT / "conformance/themes/valid-source.json").read_text(encoding="utf-8")
     foundation_text = (ROOT / "tokens/foundation.json").read_text(encoding="utf-8")
@@ -85,6 +113,23 @@ def cases():
         yield case["name"], json.dumps(request, ensure_ascii=False, allow_nan=False), (
             wanted if case["outcome"] == "valid" else None
         )
+    for vector in load_json(ROOT / "conformance/themes/request-vectors.json"):
+        if (
+            set(vector) != {"name", "document", "error"}
+            or not isinstance(vector["name"], str)
+            or not vector["name"].strip()
+            or not isinstance(vector["error"], str)
+            or not vector["error"].strip()
+        ):
+            raise ValueError("invalid theme request rejection vector")
+        if vector["name"] in names:
+            raise ValueError(f"duplicate theme resolution case name: {vector['name']}")
+        names.add(vector["name"])
+        if request_validator.is_valid(vector["document"]):
+            raise ValueError(f"{vector['name']}: rejection vector is schema-valid")
+        yield vector["name"], json.dumps(
+            vector["document"], ensure_ascii=False, allow_nan=False
+        ), None
 
 
 def check_case(command, name, source, expected, result_validator, timeout):
@@ -133,8 +178,12 @@ def main():
 
     result_validator = validator_for("schemas/headless-result.schema.json")
     checked = 0
-    for name, source, expected in cases():
+    names = set()
+    for name, source, expected in chain(cases(), source_cases()):
         try:
+            if name in names:
+                raise ValueError(f"duplicate theme backend case name: {name}")
+            names.add(name)
             check_case(command, name, source, expected, result_validator, arguments.timeout)
         except (AssertionError, OSError, ValueError) as error:
             print(f"FAIL {name}: {error}", file=sys.stderr)

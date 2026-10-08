@@ -186,5 +186,17 @@
       }
     },
     "error": "invalid type"
-  }
+  },
+  {"name":"color source shape semantic root positional","document":["0.1.0",{"accent.primary":"palette.sample0","accent.secondary":"palette.sample1","accent.tertiary":"palette.sample2","surface.base":"palette.sample0","surface.low":"palette.sample1","surface.high":"palette.sample2","surface.chrome":"palette.sample0","content.primary":"palette.sample1","content.secondary":"palette.sample2","content.muted":"palette.sample0","content.inverse":"palette.sample1","outline":"palette.sample2","outline.strong":"palette.sample0","status.error":"palette.sample1","status.warning":"palette.sample2","status.success":"palette.sample0","status.info":"palette.sample1","focus":"palette.sample2","selection":"palette.sample0"}],"error":"object"},
+  {"name":"color source shape semantic root null","document":null,"error":"object"},
+  {"name":"color source shape semantic root boolean","document":true,"error":"object"},
+  {"name":"color source shape semantic root number","document":1,"error":"object"},
+  {"name":"color source shape semantic root string","document":"assignment","error":"object"},
+  {"name":"color source shape semantic root empty array","document":[],"error":"object"},
+  {"name":"color source shape semantic roles positional","document":{"schemaVersion":"0.1.0","roles":["palette.sample0","palette.sample1","palette.sample2","palette.sample0","palette.sample1","palette.sample2","palette.sample0","palette.sample1","palette.sample2","palette.sample0","palette.sample1","palette.sample2","palette.sample0","palette.sample1","palette.sample2","palette.sample0","palette.sample1","palette.sample2","palette.sample0"]},"error":"object"},
+  {"name":"color source shape semantic roles null","document":{"schemaVersion":"0.1.0","roles":null},"error":"object"},
+  {"name":"color source shape semantic roles boolean","document":{"schemaVersion":"0.1.0","roles":true},"error":"object"},
+  {"name":"color source shape semantic roles number","document":{"schemaVersion":"0.1.0","roles":1},"error":"object"},
+  {"name":"color source shape semantic roles string","document":{"schemaVersion":"0.1.0","roles":"assignment"},"error":"object"},
+  {"name":"color source shape semantic roles empty array","document":{"schemaVersion":"0.1.0","roles":[]},"error":"object"}
 ]

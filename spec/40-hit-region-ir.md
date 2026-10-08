@@ -17,6 +17,11 @@ footprint. Supply the actual available rectangle after ancestor clipping and
 safe areas, and the actual neighboring hit rectangles. An empty neighbor array
 is explicit; the resolver MUST NOT infer missing placement, clipping or neighbors.
 
+The source request, `visualBounds`, `availableBounds`, `componentMinimum` and
+individual occupied bounds MUST be JSON objects. Positional records are invalid;
+`occupiedRegions` itself remains the explicit ordered array of bounds objects.
+All records must be validated before publishing a result.
+
 Resolve the existing environment minimum (24 units, or 48 for coarse pointer or
 direct touch). Each axis minimum is the larger of that floor and the corresponding
 component minimum. Each hit dimension is the larger of that minimum and the
@@ -101,3 +106,5 @@ pointer capture, assistive technology delivery or a complete Button.
 positive finite rectangle using exact endpoint residuals. Right/bottom boundaries
 are included for complete body coverage; point membership remains half-open for
 shared-edge ownership. Invalid or unrepresentable input bounds fail diagnostically.
+
+Failure diagnostics follow the [public backend diagnostic policy](32-headless-conformance.md#failure-diagnostics). Negative public cases use `failure: true`; diagnostic wording is not a conformance requirement.

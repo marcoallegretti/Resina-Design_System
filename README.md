@@ -1,5 +1,7 @@
 # Resina Design System
 
+For contributions, start with [CONTRIBUTING.md](CONTRIBUTING.md) and the canonical [engineering contract](AGENTS.md).
+
 Resina is a material-responsive design system specification. Its normative definitions are independent of languages, renderers, toolkits, operating systems, and products. The Rust workspace is a reference implementation of those definitions.
 
 The [blueprint](RESINA_DESIGN_SYSTEM_BLUEPRINT.md) describes the intended architecture and development order. The versioned documents in `spec/`, machine-readable contracts in `schemas/`, and cases in `conformance/` define implemented behavior. A blueprint proposal is not considered implemented until these agree and the reference implementation passes its tests.
@@ -146,7 +148,10 @@ accessibility publication remain separate component obligations.
 
 [Slider adjustment](spec/59-slider-adjustment.md) applies explicit numeric intents
 to the current bounded value with live enabled/read-only permission, bounded
-increment/decrement and distinct accepted/changed results. Native delivery,
+increment/decrement and distinct accepted/changed results. Run
+`resina-slider-adjustment <path|->` and
+`python tools/check_slider_adjustment_backend.py -- <backend-command> -` to
+verify its strict portable source boundary. Native delivery,
 discrete steps and complete Slider components remain separate requirements.
 
 [Slider accessibility](spec/60-slider-accessibility.md) preserves complete localized
@@ -156,14 +161,19 @@ assistive-technology delivery and complete Slider interaction remain required.
 
 [Slider part allocation](spec/61-slider-layout.md) places independently sized
 track and thumb within an explicit outer allocation for both axes, RTL and
-explicit numeric endpoint placement. Geometry uses checked bounded value progress
+explicit numeric endpoint placement. Run `resina-slider-layout <path|->` and
+`python tools/check_slider_layout_backend.py -- <backend-command> -` for its
+strict portable protocol. Geometry uses checked bounded value progress
 and exact containment; material paint, targets and full gestures remain separate
 component obligations.
 
 [Slider position mapping](spec/62-slider-position.md) maps an explicit thumb
 origin through current allocation and numeric bounds with live adjustment
 permission. Stationary origins preserve exact values; unrepresentable movement
-fails diagnostically. Native coordinate conversion and capture remain required.
+fails diagnostically. Run `resina-slider-position <path|->` and
+`python tools/check_slider_position_backend.py -- <backend-command> -` to check
+the portable source boundary. It rebuilds current geometry from an authored
+layout request before mapping. Native coordinate conversion and capture remain required.
 
 [Cancellable Slider edits](spec/63-slider-edit.md) retain a complete visible
 preview separately from committed value. Completion checks live permission and

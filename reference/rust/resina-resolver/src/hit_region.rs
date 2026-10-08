@@ -78,6 +78,7 @@ pub enum HitRegionError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidShape(&'static str),
     UnsupportedBodyGeometry,
     InvalidBounds(&'static str),
     NumericRange(&'static str),
@@ -93,6 +94,9 @@ impl fmt::Display for HitRegionError {
             Self::Parse(error) => write!(formatter, "hit region parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid hit region request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::InvalidShape(field) => {
+                write!(formatter, "hit region {field} must be a JSON object")
+            }
             Self::UnsupportedBodyGeometry => {
                 formatter.write_str("surface body has no supported visible bounds")
             }
@@ -269,6 +273,19 @@ struct Request {
 
 pub fn resolve_hit_region_source(source: &str) -> Result<HitRegionIr, HitRegionError> {
     let value = parse_token_document(source).map_err(HitRegionError::Parse)?;
+    if !value.is_object() {
+        return Err(HitRegionError::InvalidShape("request"));
+    }
+    for field in ["visualBounds", "availableBounds", "componentMinimum"] {
+        if value.get(field).is_some_and(|record| !record.is_object()) {
+            return Err(HitRegionError::InvalidShape(field));
+        }
+    }
+    if let Some(occupied) = value["occupiedRegions"].as_array()
+        && occupied.iter().any(|bounds| !bounds.is_object())
+    {
+        return Err(HitRegionError::InvalidShape("occupiedRegions[]"));
+    }
     let request: Request = serde_json::from_value(value).map_err(HitRegionError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(HitRegionError::UnsupportedVersion);

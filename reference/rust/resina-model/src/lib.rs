@@ -17,7 +17,14 @@ pub use command_appearance::{
     CommandAppearance, CommandPhase, CommandResponse, resolve_command_phase,
 };
 
-use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{
+        Error as _, MapAccess, Visitor,
+        value::{MapAccessDeserializer, StringDeserializer},
+    },
+};
+use std::{fmt, marker::PhantomData};
 mod activation;
 pub use activation::{ActivationEvent, ActivationKey, ActivationState, PressHold};
 mod spring;
@@ -375,14 +382,64 @@ impl MaterialRole {
     ];
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MaterialAssignments {
-    #[serde(deserialize_with = "deserialize_material_version")]
     schema_version: String,
     surface: SurfaceAssignments,
     control: ControlAssignments,
     feedback: FeedbackAssignments,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct MaterialAssignmentsInput {
+    #[serde(deserialize_with = "deserialize_material_version")]
+    schema_version: String,
+    #[serde(deserialize_with = "deserialize_assignment_object")]
+    surface: SurfaceAssignments,
+    #[serde(deserialize_with = "deserialize_assignment_object")]
+    control: ControlAssignments,
+    #[serde(deserialize_with = "deserialize_assignment_object")]
+    feedback: FeedbackAssignments,
+}
+
+impl<'de> Deserialize<'de> for MaterialAssignments {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_assignment_object::<D, MaterialAssignmentsInput>(deserializer)?;
+        Ok(Self {
+            schema_version: input.schema_version,
+            surface: input.surface,
+            control: input.control,
+            feedback: input.feedback,
+        })
+    }
+}
+
+fn deserialize_assignment_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    struct Object<T>(PhantomData<T>);
+    impl<'de, T: Deserialize<'de>> Visitor<'de> for Object<T> {
+        type Value = T;
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("an assignment object")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<T, A::Error> {
+            T::deserialize(MapAccessDeserializer::new(map))
+        }
+    }
+    deserializer.deserialize_map(Object(PhantomData))
+}
+
+fn deserialize_material_family<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<MaterialFamily, D::Error> {
+    MaterialFamily::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
+        deserializer,
+    )?))
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -396,6 +453,7 @@ struct SurfaceAssignments {
     chrome: MaterialFamily,
     #[serde(deserialize_with = "deserialize_structural_material")]
     raised: MaterialFamily,
+    #[serde(deserialize_with = "deserialize_material_family")]
     transient: MaterialFamily,
 }
 
@@ -413,8 +471,11 @@ struct ControlAssignments {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct FeedbackAssignments {
+    #[serde(deserialize_with = "deserialize_material_family")]
     focus: MaterialFamily,
+    #[serde(deserialize_with = "deserialize_material_family")]
     selection: MaterialFamily,
+    #[serde(deserialize_with = "deserialize_material_family")]
     drag: MaterialFamily,
 }
 
@@ -459,7 +520,7 @@ fn deserialize_material_version<'de, D: Deserializer<'de>>(
 fn deserialize_structural_material<'de, D: Deserializer<'de>>(
     deserializer: D,
 ) -> Result<MaterialFamily, D::Error> {
-    let material = MaterialFamily::deserialize(deserializer)?;
+    let material = deserialize_material_family(deserializer)?;
     if material == MaterialFamily::Gel {
         Err(D::Error::custom(
             "gel cannot be a default structural material",
@@ -606,32 +667,71 @@ mod tests {
         ))
         .unwrap();
         for vector in vectors {
-            let result = serde_json::from_value::<MaterialAssignments>(vector["document"].clone());
-            if let Some(expected) = vector.get("expected") {
-                let assignments = result.unwrap();
-                for (role, family) in expected.as_object().unwrap() {
-                    let role: MaterialRole = serde_json::from_value(json!(role)).unwrap();
+            for result in [
+                serde_json::from_value::<MaterialAssignments>(vector["document"].clone()),
+                serde_json::from_str::<MaterialAssignments>(&vector["document"].to_string()),
+            ] {
+                if let Some(expected) = vector.get("expected") {
+                    let assignments = result.unwrap();
+                    for (role, family) in expected.as_object().unwrap() {
+                        let role: MaterialRole = serde_json::from_value(json!(role)).unwrap();
+                        assert_eq!(
+                            serde_json::to_value(assignments.material_for(role)).unwrap(),
+                            *family,
+                            "{}: {role:?}",
+                            vector["name"]
+                        );
+                    }
                     assert_eq!(
-                        serde_json::to_value(assignments.material_for(role)).unwrap(),
-                        *family,
-                        "{}: {role:?}",
+                        serde_json::to_value(&assignments).unwrap(),
+                        vector["document"],
+                        "{}",
+                        vector["name"]
+                    );
+                } else {
+                    let error = result.unwrap_err();
+                    assert!(
+                        error
+                            .to_string()
+                            .contains(vector["error"].as_str().unwrap()),
+                        "{}: {error}",
                         vector["name"]
                     );
                 }
-                assert_eq!(
-                    serde_json::to_value(&assignments).unwrap(),
-                    vector["document"],
-                    "{}",
-                    vector["name"]
-                );
-            } else {
-                let error = result.unwrap_err();
+            }
+        }
+    }
+
+    #[test]
+    fn material_assignment_duplicate_members_are_rejected() {
+        let vectors: Vec<Value> = serde_json::from_str(include_str!(
+            "../../../../conformance/materials/role-assignment-vectors.json"
+        ))
+        .unwrap();
+        let document = &vectors[0]["document"];
+        let source = document.to_string();
+        let mut members: Vec<_> = document.as_object().unwrap().iter().collect();
+        for group in ["surface", "control", "feedback"] {
+            members.extend(document[group].as_object().unwrap().iter());
+        }
+        assert_eq!(members.len(), 15);
+        for (name, value) in members {
+            let member = format!("\"{name}\":{value}");
+            assert_eq!(source.matches(&member).count(), 1);
+            let escaped = format!("\\u{:04x}{}", name.as_bytes()[0], &name[1..]);
+            let alias = format!("\"{escaped}\":{value}");
+            let valid = source.replacen(&member, &alias, 1);
+            assert_eq!(
+                serde_json::to_value(serde_json::from_str::<MaterialAssignments>(&valid).unwrap())
+                    .unwrap(),
+                *document
+            );
+            for repeated in [&member, &alias] {
+                let duplicate = source.replacen(&member, &format!("{member},{repeated}"), 1);
+                let error = serde_json::from_str::<MaterialAssignments>(&duplicate).unwrap_err();
                 assert!(
-                    error
-                        .to_string()
-                        .contains(vector["error"].as_str().unwrap()),
-                    "{}: {error}",
-                    vector["name"]
+                    error.to_string().contains("duplicate field"),
+                    "{name}: {error}"
                 );
             }
         }

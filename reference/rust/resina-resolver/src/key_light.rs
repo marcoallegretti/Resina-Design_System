@@ -50,6 +50,7 @@ pub enum KeyLightError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidShape(&'static str),
     InvalidDepth,
     InvalidNormal(usize),
 }
@@ -60,6 +61,9 @@ impl fmt::Display for KeyLightError {
             Self::Parse(error) => write!(formatter, "key light parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid key light request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
+            Self::InvalidShape(field) => {
+                write!(formatter, "key light {field} must be a JSON object")
+            }
             Self::InvalidDepth => formatter.write_str("depth must be finite and nonnegative"),
             Self::InvalidNormal(index) => {
                 write!(formatter, "normal {index} must be finite and nonzero")
@@ -72,6 +76,25 @@ impl std::error::Error for KeyLightError {}
 
 pub fn resolve_key_light_source(source: &str) -> Result<KeyLightResult, KeyLightError> {
     let document = parse_token_document(source).map_err(KeyLightError::Parse)?;
+    if !document.is_object() {
+        return Err(KeyLightError::InvalidShape("request"));
+    }
+    for (pointer, field) in [
+        ("/keyLight", "keyLight"),
+        ("/keyLight/direction", "direction"),
+    ] {
+        if document
+            .pointer(pointer)
+            .is_some_and(|value| !value.is_object())
+        {
+            return Err(KeyLightError::InvalidShape(field));
+        }
+    }
+    if let Some(normals) = document["normals"].as_array()
+        && normals.iter().any(|normal| !normal.is_object())
+    {
+        return Err(KeyLightError::InvalidShape("normals[]"));
+    }
     let request: KeyLightRequest =
         serde_json::from_value(document).map_err(KeyLightError::Request)?;
     if request.schema_version != "0.1.0" {

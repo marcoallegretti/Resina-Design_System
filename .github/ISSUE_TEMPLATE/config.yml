@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contribution guide
+    url: https://github.com/marcoallegretti/Resina-Design_System/blob/master/CONTRIBUTING.md
+    about: Read the contribution workflow, source-of-truth boundaries and validation guidance before opening an issue or PR.

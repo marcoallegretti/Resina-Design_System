@@ -394,9 +394,10 @@ mod tests {
             } else {
                 let error = result.unwrap_err();
                 assert!(
-                    error
-                        .to_string()
-                        .contains(case["errorContains"].as_str().unwrap()),
+                    error.to_string().contains(&crate::diagnostics::expected(
+                        "frost_surface_readability",
+                        &case["name"]
+                    )),
                     "{}: {error}",
                     case["name"]
                 );

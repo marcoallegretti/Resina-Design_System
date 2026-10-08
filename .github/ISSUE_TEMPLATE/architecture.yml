@@ -1,0 +1,72 @@
+name: Architectural proposal
+description: Request a maintainer decision about public semantics, ownership, or a shared mechanism.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form requests a decision before implementation; opening it does not approve a design.
+        Resina's specification, reference implementation, rendering backends, platform integrations
+        and consuming products have separate ownership. Search existing proposals first.
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed
+      description: Describe the current problem and the concrete affected party or contract.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: Describe the architectural intent and desired outcome, distinguishing blueprint intent from implemented normative behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Cite revision and relevant specification, definitions, schemas, tokens, conformance cases and implementation. Include verified upstream evidence or prior art where material.
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Affected layer or boundary
+      description: Identify the public semantics, IR, capability resolution, ownership or dependency direction affected. Assess impact on normative artifacts, reference behavior, conformance and backends, including applicable accessibility and lower-capability fallback.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Why it matters now
+      description: Describe present impact and why an ordinary implementation change cannot resolve it within existing contracts.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and trade-offs
+      description: Describe viable evidence-backed options and their costs, including preserving the current design where viable. Do not assume a toolkit or renderer convenience defines Resina semantics.
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: Maintainer decision requested
+      description: State the specific architectural decision required before implementation. Link any existing decision; keep durable decisions in the appropriate public Resina artifact.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criterion
+      description: State the independently evaluable outcome an accepted design must satisfy and the scope it must cover.
+    validations:
+      required: true
+  - type: textarea
+    id: proof
+    attributes:
+      label: Expected proof
+      description: Identify the normative contract, positive/negative schema cases, deterministic conformance vectors, public checkers and backend evidence needed to establish coherence. Explain any intrinsic verification limitation.
+    validations:
+      required: true

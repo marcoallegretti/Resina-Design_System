@@ -36,5 +36,18 @@
     "name": "unknown member fails",
     "document": {"schemaVersion": "0.1.0", "roles": {}, "renderer": "example"},
     "error": "unknown field"
-  }
+  },
+  {"name":"complete authored opaque role map","document":{"schemaVersion":"0.1.0","roles":{"accent.primary":"palette.sample0","accent.secondary":"palette.sample1","accent.tertiary":"palette.sample2","surface.base":"palette.sample0","surface.low":"palette.sample1","surface.high":"palette.sample2","surface.chrome":"palette.sample0","content.primary":"palette.sample1","content.secondary":"palette.sample2","content.muted":"palette.sample0","content.inverse":"palette.sample1","outline":"palette.sample2","outline.strong":"palette.sample0","status.error":"palette.sample1","status.warning":"palette.sample2","status.success":"palette.sample0","status.info":"palette.sample1","focus":"palette.sample2","selection":"palette.sample0"}},"expected":{"accent.primary":"palette.sample0","accent.secondary":"palette.sample1","accent.tertiary":"palette.sample2","surface.base":"palette.sample0","surface.low":"palette.sample1","surface.high":"palette.sample2","surface.chrome":"palette.sample0","content.primary":"palette.sample1","content.secondary":"palette.sample2","content.muted":"palette.sample0","content.inverse":"palette.sample1","outline":"palette.sample2","outline.strong":"palette.sample0","status.error":"palette.sample1","status.warning":"palette.sample2","status.success":"palette.sample0","status.info":"palette.sample1","focus":"palette.sample2","selection":"palette.sample0"}},
+  {"name":"color source shape opaque root positional","document":["0.1.0",{"surface.chrome":"palette.chromeOpaque","focus":"palette.focusOpaque"}],"error":"object"},
+  {"name":"color source shape opaque root null","document":null,"error":"object"},
+  {"name":"color source shape opaque root boolean","document":true,"error":"object"},
+  {"name":"color source shape opaque root number","document":1,"error":"object"},
+  {"name":"color source shape opaque root string","document":"assignment","error":"object"},
+  {"name":"color source shape opaque root empty array","document":[],"error":"object"},
+  {"name":"color source shape opaque roles positional","document":{"schemaVersion":"0.1.0","roles":[["surface.chrome","palette.chromeOpaque"],["focus","palette.focusOpaque"]]},"error":"mapping"},
+  {"name":"color source shape opaque roles null","document":{"schemaVersion":"0.1.0","roles":null},"error":"mapping"},
+  {"name":"color source shape opaque roles boolean","document":{"schemaVersion":"0.1.0","roles":true},"error":"mapping"},
+  {"name":"color source shape opaque roles number","document":{"schemaVersion":"0.1.0","roles":1},"error":"mapping"},
+  {"name":"color source shape opaque roles string","document":{"schemaVersion":"0.1.0","roles":"assignment"},"error":"mapping"},
+  {"name":"color source shape opaque roles empty array","document":{"schemaVersion":"0.1.0","roles":[]},"error":"mapping"}
 ]

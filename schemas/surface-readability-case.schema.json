@@ -36,10 +36,10 @@
         }
       ]
     },
-    "errorContains": {"type": "string", "minLength": 1}
+    "failure": {"const": true}
   },
   "oneOf": [
-    {"required": ["expected"], "not": {"required": ["errorContains"]}},
-    {"required": ["errorContains"], "not": {"required": ["expected"]}}
+    {"required": ["expected"], "not": {"required": ["failure"]}},
+    {"required": ["failure"], "not": {"required": ["expected"]}}
   ]
 }

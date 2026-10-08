@@ -53,8 +53,7 @@ pub fn resolve_toggle_part_motion(
     environment: &EnvironmentSnapshot,
     input: TogglePartMotionInput<'_>,
 ) -> Result<TogglePartMotionIr, TogglePartPaintError> {
-    let mut sampled = None;
-    let part_paint = resolve_toggle_part_paint_with_response(
+    let (part_paint, (sample, target)) = resolve_toggle_part_paint_with_response(
         theme,
         environment,
         input.part,
@@ -67,12 +66,9 @@ pub fn resolve_toggle_part_motion(
                 input.time,
             )
             .map_err(TogglePartPaintError::Motion)?;
-            let response = sample.response;
-            sampled = Some((sample, target));
-            Ok(response)
+            Ok((sample.response, (sample, target)))
         },
     )?;
-    let (sample, target) = sampled.expect("successful paint samples both channels");
     Ok(TogglePartMotionIr {
         schema_version: "0.1.0",
         policy: sample.policy,

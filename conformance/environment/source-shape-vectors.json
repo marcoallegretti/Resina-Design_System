@@ -1,0 +1,153 @@
+[
+  {
+    "name": "positional snapshot",
+    "path": "",
+    "value": [
+      "0.2.0",
+      {
+        "width": 1280,
+        "height": 800,
+        "safeArea": {
+          "start": 0,
+          "end": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      },
+      1.5,
+      1.25,
+      [
+        "finePointer",
+        "hover",
+        "directTouch",
+        "keyboard"
+      ],
+      "desk",
+      "comfortable",
+      {
+        "reducedMotion": true,
+        "reducedTransparency": false,
+        "highContrast": false
+      },
+      "en-US",
+      "ltr",
+      {
+        "gradients": true,
+        "translucentSurfaces": true,
+        "innerShadow": false,
+        "advancedShadow": false,
+        "sdfShapes": false,
+        "backdropEffect": false,
+        "backdropBlur": false,
+        "shapedBackdrop": false,
+        "dynamicLighting": false,
+        "deformation": false,
+        "masks": false,
+        "customShader": false,
+        "wideGamut": false,
+        "hdr": false
+      },
+      "economy"
+    ]
+  },
+  {
+    "name": "positional geometry",
+    "path": "/geometry",
+    "value": [
+      1280,
+      800,
+      {
+        "start": 0,
+        "end": 0,
+        "top": 0,
+        "bottom": 0
+      }
+    ]
+  },
+  {
+    "name": "positional geometry/safeArea",
+    "path": "/geometry/safeArea",
+    "value": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "positional accessibilityPreferences",
+    "path": "/accessibilityPreferences",
+    "value": [
+      true,
+      false,
+      false
+    ]
+  },
+  {
+    "name": "positional rendererCapabilities",
+    "path": "/rendererCapabilities",
+    "value": [
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  {
+    "name": "object enum viewingProfile",
+    "path": "/viewingProfile",
+    "value": {
+      "desk": null
+    }
+  },
+  {
+    "name": "object enum densityPreference",
+    "path": "/densityPreference",
+    "value": {
+      "comfortable": null
+    }
+  },
+  {
+    "name": "object enum layoutDirection",
+    "path": "/layoutDirection",
+    "value": {
+      "ltr": null
+    }
+  },
+  {
+    "name": "object enum qualityPolicy",
+    "path": "/qualityPolicy",
+    "value": {
+      "economy": null
+    }
+  },
+  {
+    "name": "object enum input capability",
+    "path": "/inputCapabilities",
+    "value": [
+      {
+        "keyboard": null
+      }
+    ]
+  },
+  {
+    "name": "later object enum input capability",
+    "path": "/inputCapabilities",
+    "value": [
+      "directTouch",
+      {
+        "keyboard": null
+      }
+    ]
+  }
+]

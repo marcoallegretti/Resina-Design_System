@@ -6,7 +6,6 @@ from fractions import Fraction
 
 from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_failure, check_success
-from check_headless_backend import run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, validator_for
 
 
@@ -16,10 +15,15 @@ def baseline():
 
 def cases():
     base = baseline()
-    return [
-        {**case, "request": apply_changes(base, case["requestChanges"])}
-        for case in load_json(ROOT / "conformance/interaction/hit-region-cases.json")
-    ]
+    public = load_json(ROOT / "conformance/interaction/hit-region-cases.json")
+    for vector in load_json(ROOT / "conformance/environment/source-shape-vectors.json"):
+        public.append({
+            "name": f"invalid environment shape: {vector['name']}",
+            "requestChanges": [{"path": "/environment" + vector["path"], "value": vector["value"]}],
+            "requestSchemaValid": False,
+            "failure": True,
+        })
+    return [{**case, "request": apply_changes(base, case["requestChanges"])} for case in public]
 
 
 def hit_region_mismatch(actual, expected):
@@ -69,6 +73,10 @@ def main():
         ("nonfinite extent", nonfinite_member_source(base, "/visualBounds/width")),
         ("missing neighbors", json.dumps(missing)),
         ("unknown root", json.dumps({**base, "unexpected": True})),
+        ("positional root", json.dumps([base[field] for field in (
+            "schemaVersion", "environment", "visualBounds", "availableBounds",
+            "componentMinimum", "occupiedRegions",
+        )])),
     )
     case_validator = validator_for("schemas/hit-region-case.schema.json")
     request_validator = validator_for("schemas/hit-region-request.schema.json")
@@ -88,9 +96,7 @@ def main():
             if "expected" in case:
                 check_success(command, source, case["expected"], result_validator, arguments.timeout, name, hit_region_mismatch)
             else:
-                completed = run_backend(command, source, arguments.timeout)
-                if completed.returncode != 1 or completed.stdout or case["errorContains"] not in completed.stderr:
-                    raise AssertionError(f"{name}: expected diagnostic failure: {completed.returncode}, {completed.stderr[:200]!r}")
+                check_failure(command, source, arguments.timeout, name)
         check_failure(command, duplicate_member_source(base, "/schemaVersion"), arguments.timeout, "duplicate root version")
         for name, source in failures:
             check_failure(command, source, arguments.timeout, name)

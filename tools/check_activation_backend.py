@@ -5,7 +5,6 @@ import sys
 
 from backend_source import duplicate_member_source
 from check_color_guard_backend import check_failure, check_success
-from check_headless_backend import run_backend
 from check_schemas import ROOT, check_case, load_json, validator_for
 
 
@@ -46,9 +45,7 @@ def main():
             if "expected" in case:
                 check_success(command, source, case["expected"], result_validator, arguments.timeout, name, activation_mismatch)
             else:
-                completed = run_backend(command, source, arguments.timeout)
-                if completed.returncode != 1 or completed.stdout or case["errorContains"] not in completed.stderr:
-                    raise AssertionError(f"{name}: expected diagnostic failure: {completed.returncode}, {completed.stderr[:200]!r}")
+                check_failure(command, source, arguments.timeout, name)
         base = public_cases[0]["request"]
         held = {**base, "state": public_cases[0]["expected"]["state"]}
         failures = (

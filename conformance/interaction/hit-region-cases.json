@@ -347,7 +347,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "occupiedRegions[0]"
+    "failure": true
   },
   {
     "name": "clipped left",
@@ -358,7 +358,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "clips"
+    "failure": true
   },
   {
     "name": "clipped right",
@@ -369,7 +369,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "clips"
+    "failure": true
   },
   {
     "name": "clipped top",
@@ -380,7 +380,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "clips"
+    "failure": true
   },
   {
     "name": "clipped bottom",
@@ -391,7 +391,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "clips"
+    "failure": true
   },
   {
     "name": "vertical touching neighbor",
@@ -445,7 +445,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "occupiedRegions[1]"
+    "failure": true
   },
   {
     "name": "zero component minimum",
@@ -456,7 +456,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "componentMinimum"
+    "failure": true
   },
   {
     "name": "unsupported version",
@@ -467,7 +467,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "schemaVersion"
+    "failure": true
   },
   {
     "name": "unknown bounds member",
@@ -484,7 +484,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "collapsed origin",
@@ -495,7 +495,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "unrepresentable extents"
+    "failure": true
   },
   {
     "name": "overflowing available extent",
@@ -511,7 +511,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "unrepresentable extents"
+    "failure": true
   },
   {
     "name": "invalid distant neighbor",
@@ -529,7 +529,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "occupiedRegions"
+    "failure": true
   },
   {
     "name": "null neighbors",
@@ -540,7 +540,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "invalid hit region request"
+    "failure": true
   },
   {
     "name": "decimal component minimum",
@@ -656,7 +656,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "clips"
+    "failure": true
   },
   {
     "name": "rounded endpoint hides right overlap",
@@ -683,7 +683,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "occupiedRegions[0]"
+    "failure": true
   },
   {
     "name": "rounded endpoint hides left overlap",
@@ -710,7 +710,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "occupiedRegions[0]"
+    "failure": true
   },
   {
     "name": "decimal right neighbor gap",
@@ -789,5 +789,93 @@
         "height": 24
       }
     }
+  },
+  {
+    "name": "positional visual bounds",
+    "requestChanges": [
+      {
+        "path": "/visualBounds",
+        "value": [
+          0,
+          0,
+          20,
+          20
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "positional available bounds",
+    "requestChanges": [
+      {
+        "path": "/availableBounds",
+        "value": [
+          -32,
+          -32,
+          100,
+          100
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "positional component minimum",
+    "requestChanges": [
+      {
+        "path": "/componentMinimum",
+        "value": [
+          1,
+          1
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "positional occupied bounds",
+    "requestChanges": [
+      {
+        "path": "/occupiedRegions",
+        "value": [
+          [
+            -32,
+            -32,
+            24,
+            24
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "later positional occupied bounds",
+    "requestChanges": [
+      {
+        "path": "/occupiedRegions",
+        "value": [
+          {
+            "x": -32,
+            "y": -32,
+            "width": 24,
+            "height": 24
+          },
+          [
+            32,
+            32,
+            24,
+            24
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

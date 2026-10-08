@@ -100,10 +100,8 @@ def main():
             check_case(validator_for("schemas/toggle-part-paint-case.schema.json"), name, case, True)
             request = apply_changes(base, case["requestChanges"])
             check_case(validator_for("schemas/toggle-part-paint-request.schema.json"), name, request, case["requestSchemaValid"])
-            if "errorContains" in case:
-                completed = run_backend(command, json.dumps(request), arguments.timeout)
-                if completed.returncode != 1 or completed.stdout or case["errorContains"] not in completed.stderr:
-                    raise AssertionError(f"{name}: failure lacks expected diagnostic")
+            if "failure" in case:
+                check_failure(command, json.dumps(request), arguments.timeout, name)
             else:
                 states = request["surface"]["body"]["surface"]["states"]["states"]
                 phase = next((state for state in ("disabled", "pressed", "hover") if state in states), "rest")

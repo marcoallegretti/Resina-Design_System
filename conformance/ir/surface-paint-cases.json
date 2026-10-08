@@ -4,14 +4,184 @@
   {"name": "focused-only body and ring", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused"]}], "requestSchemaValid": true, "expectedFocus": true},
   {"name": "rest and focused coexist", "requestChanges": [{"path": "/body/surface/states/states", "value": ["rest", "focused"]}], "requestSchemaValid": true, "expectedFocus": true},
   {"name": "reordered focused state set", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused", "rest"]}], "requestSchemaValid": true, "expectedFocus": true},
-  {"name": "missing focused surrounding color", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused"]}], "omitSurroundingColor": true, "requestSchemaValid": false, "errorContains": "requires surroundingColor"},
-  {"name": "null surrounding color", "requestChanges": [{"path": "/surroundingColor", "value": null}], "requestSchemaValid": false, "errorContains": "invalid surface paint request"},
-  {"name": "translucent surrounding color even when unfocused", "requestChanges": [{"path": "/surroundingColor/alpha", "value": 0.5}], "requestSchemaValid": false, "errorContains": "must be opaque"},
-  {"name": "null body request", "requestChanges": [{"path": "/body", "value": null}], "requestSchemaValid": false, "errorContains": "invalid surface paint request"},
-  {"name": "unsupported envelope version", "requestChanges": [{"path": "/schemaVersion", "value": "9"}], "requestSchemaValid": false, "errorContains": "schemaVersion must be 0.1.0"},
-  {"name": "unsupported body version", "requestChanges": [{"path": "/body/schemaVersion", "value": "9"}], "requestSchemaValid": false, "errorContains": "schemaVersion must be 0.1.0"},
-  {"name": "unsupported pressed body with focus", "requestChanges": [{"path": "/body/surface/states/states", "value": ["pressed", "focused"]}], "requestSchemaValid": true, "errorContains": "supports only rest and focused"},
-  {"name": "body content contrast fails without a partial ring", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused"]}, {"path": "/body/minimumContentContrast", "value": 22}], "requestSchemaValid": false, "errorContains": "minimumContentContrast"},
-  {"name": "empty body content fails without a partial ring", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused"]}, {"path": "/body/size/width", "value": 1}], "requestSchemaValid": true, "errorContains": "inset"},
-  {"name": "unresolved optical treatment", "requestChanges": [{"path": "/body/surface/treatmentStack/treatments", "value": ["lens"]}], "requestSchemaValid": true, "errorContains": "treatment must be none"}
+  {"name": "missing focused surrounding color", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused"]}], "omitSurroundingColor": true, "requestSchemaValid": false, "failure": true},
+  {"name": "null surrounding color", "requestChanges": [{"path": "/surroundingColor", "value": null}], "requestSchemaValid": false, "failure": true},
+  {"name": "translucent surrounding color even when unfocused", "requestChanges": [{"path": "/surroundingColor/alpha", "value": 0.5}], "requestSchemaValid": false, "failure": true},
+  {"name": "null body request", "requestChanges": [{"path": "/body", "value": null}], "requestSchemaValid": false, "failure": true},
+  {"name": "unsupported envelope version", "requestChanges": [{"path": "/schemaVersion", "value": "9"}], "requestSchemaValid": false, "failure": true},
+  {"name": "unsupported body version", "requestChanges": [{"path": "/body/schemaVersion", "value": "9"}], "requestSchemaValid": false, "failure": true},
+  {"name": "unsupported pressed body with focus", "requestChanges": [{"path": "/body/surface/states/states", "value": ["pressed", "focused"]}], "requestSchemaValid": true, "failure": true},
+  {"name": "body content contrast fails without a partial ring", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused"]}, {"path": "/body/minimumContentContrast", "value": 22}], "requestSchemaValid": false, "failure": true},
+  {"name": "empty body content fails without a partial ring", "requestChanges": [{"path": "/body/surface/states/states", "value": ["focused"]}, {"path": "/body/size/width", "value": 1}], "requestSchemaValid": true, "failure": true},
+  {"name": "unresolved optical treatment", "requestChanges": [{"path": "/body/surface/treatmentStack/treatments", "value": ["lens"]}], "requestSchemaValid": true, "failure": true},
+  {
+    "name": "elevation source shape root positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments",
+        "value": [
+          "0.1.0",
+          {
+            "embedded": "depth.0",
+            "base": "depth.0",
+            "raised": "depth.1",
+            "floating": "depth.2",
+            "overlay": "depth.3",
+            "modal": "depth.4"
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape root null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape root boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape root number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape root string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape root empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape roles positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments/roles",
+        "value": [
+          "depth.0",
+          "depth.0",
+          "depth.1",
+          "depth.2",
+          "depth.3",
+          "depth.4"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape roles null",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments/roles",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape roles boolean",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments/roles",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape roles number",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments/roles",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape roles string",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments/roles",
+        "value": "assignment"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape roles empty array",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments/roles",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "elevation source shape both positional",
+    "requestChanges": [
+      {
+        "path": "/body/appearance/depthAssignments",
+        "value": [
+          "0.1.0",
+          [
+            "depth.0",
+            "depth.0",
+            "depth.1",
+            "depth.2",
+            "depth.3",
+            "depth.4"
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  }
 ]

@@ -1,10 +1,13 @@
 use resina_model::{ActivationEvent as E, ActivationKey as K, ActivationState};
-use resina_resolver::{CaptureChange, resolve_toggle_activation, resolve_toggle_activation_source};
+use resina_resolver::{
+    CaptureChange, ToggleActivationError, resolve_toggle_activation,
+    resolve_toggle_activation_source,
+};
 use serde_json::Value;
 use std::{
     error::Error,
     io::Write,
-    process::{Command, Stdio},
+    process::{Command, Output, Stdio},
 };
 
 #[test]
@@ -178,18 +181,92 @@ fn invalid_event_retains_its_cause_even_when_disabled() {
 }
 
 #[test]
+fn non_object_requests_fail_before_activation_and_publish_no_result() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/toggle-activation-cases.json"
+    ))
+    .unwrap();
+    let invalid: Vec<_> = cases
+        .iter()
+        .filter(|case| {
+            case["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("invalid request root ")
+        })
+        .collect();
+    assert_eq!(invalid.len(), 8);
+    for case in invalid {
+        let source = case["request"].to_string();
+        let error = resolve_toggle_activation_source(&source).unwrap_err();
+        assert!(matches!(error, ToggleActivationError::InvalidRequestShape));
+        assert!(error.source().is_none());
+        assert_eq!(
+            error.to_string(),
+            "toggle activation request must be a JSON object"
+        );
+        let output = run_cli(source.as_bytes());
+        assert_eq!(output.status.code(), Some(1), "{}", case["name"]);
+        assert!(output.stdout.is_empty(), "{}", case["name"]);
+        assert!(
+            String::from_utf8(output.stderr)
+                .unwrap()
+                .contains(&error.to_string()),
+            "{}",
+            case["name"]
+        );
+    }
+}
+
+#[test]
+fn object_requests_preserve_escaped_members_and_duplicate_detection() {
+    let source = r#"{"event":{"kind":"invoke"},"che\u0063ked":true,"state":{"hold":null,"focused":true,"enabled":true,"schemaVersion":"0.1.0"},"schemaVersion":"0.1.0"}"#;
+    let result = resolve_toggle_activation_source(source).unwrap();
+    assert!(result.activation().activate());
+    assert!(!result.checked());
+    let output = run_cli(source.as_bytes());
+    assert_eq!(output.status.code(), Some(0));
+    assert!(output.stderr.is_empty());
+    assert_eq!(
+        serde_json::from_slice::<Value>(&output.stdout).unwrap(),
+        serde_json::to_value(result).unwrap()
+    );
+    let duplicate = source.replace(
+        "\"che\\u0063ked\":true",
+        "\"checked\":false,\"che\\u0063ked\":true",
+    );
+    let error = resolve_toggle_activation_source(&duplicate).unwrap_err();
+    assert!(matches!(error, ToggleActivationError::Parse(_)));
+    assert!(
+        error
+            .source()
+            .unwrap()
+            .to_string()
+            .contains("duplicate JSON member at #/checked")
+    );
+    let output = run_cli(duplicate.as_bytes());
+    assert_eq!(output.status.code(), Some(1));
+    assert!(output.stdout.is_empty());
+    assert!(!output.stderr.is_empty());
+}
+
+fn run_cli(source: &[u8]) -> Output {
+    let mut child = Command::new(env!("CARGO_BIN_EXE_resina-toggle-activation"))
+        .arg("-")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    child.stdin.take().unwrap().write_all(source).unwrap();
+    child.wait_with_output().unwrap()
+}
+
+#[test]
 fn cli_rejects_duplicate_checked_invalid_utf8_and_bad_usage() {
     let binary = env!("CARGO_BIN_EXE_resina-toggle-activation");
     for source in [b"{\"checked\":true,\"checked\":false}".as_slice(), &[0xff]] {
-        let mut child = Command::new(binary)
-            .arg("-")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .unwrap();
-        child.stdin.take().unwrap().write_all(source).unwrap();
-        let output = child.wait_with_output().unwrap();
+        let output = run_cli(source);
         assert_eq!(output.status.code(), Some(1));
         assert!(output.stdout.is_empty());
         assert!(!output.stderr.is_empty());

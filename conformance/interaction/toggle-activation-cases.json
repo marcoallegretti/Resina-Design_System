@@ -1419,5 +1419,89 @@
     },
     "requestSchemaValid": false,
     "errorContains": "unknown field `selected`"
+  },
+  {
+    "name": "invalid request root positional off",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      false,
+      {
+        "kind": "invoke"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
+  },
+  {
+    "name": "invalid request root positional on",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      true,
+      {
+        "kind": "invoke"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
+  },
+  {
+    "name": "invalid request root positional disabled",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      true,
+      {
+        "kind": "invoke"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
+  },
+  {
+    "name": "invalid request root empty array",
+    "request": [],
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
+  },
+  {
+    "name": "invalid request root null",
+    "request": null,
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
+  },
+  {
+    "name": "invalid request root boolean",
+    "request": true,
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
+  },
+  {
+    "name": "invalid request root string",
+    "request": "request",
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
+  },
+  {
+    "name": "invalid request root number",
+    "request": 1,
+    "requestSchemaValid": false,
+    "errorContains": "toggle activation request must be a JSON object"
   }
 ]

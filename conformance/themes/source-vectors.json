@@ -1,0 +1,1081 @@
+[
+  {
+    "name": "positional embedded theme source version 0.1.0",
+    "document": [
+      "0.1.0",
+      {
+        "palette": {
+          "$type": "color",
+          "base": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.15,
+                0.2,
+                0.3
+              ]
+            }
+          },
+          "opaque": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.15,
+                0.2,
+                0.3
+              ]
+            }
+          },
+          "opaqueAlt": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8,
+                0.7,
+                0.6
+              ]
+            }
+          },
+          "translucent": {
+            "$value": {
+              "colorSpace": "display-p3",
+              "components": [
+                0.25,
+                0.5,
+                0.75
+              ],
+              "hex": "#336699",
+              "alpha": 0.35
+            }
+          }
+        },
+        "space": {
+          "$type": "dimension",
+          "base": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "$value": {
+              "value": 20,
+              "unit": "px"
+            }
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "semi-bold"
+          },
+          "line": {
+            "$type": "number",
+            "$value": 1.4
+          },
+          "tracking": {
+            "$type": "dimension",
+            "$value": {
+              "value": 0.25,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      null,
+      null,
+      {
+        "schemaVersion": "0.2.0",
+        "surface": {
+          "base": "cast",
+          "content": "cast",
+          "chrome": "frost",
+          "raised": "cast",
+          "transient": "gel"
+        },
+        "control": {
+          "passive": "cast",
+          "interactive": "elastomer",
+          "primary": "elastomer"
+        },
+        "feedback": {
+          "focus": "elastomer",
+          "selection": "gel",
+          "drag": "gel"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "tintStrength": 0.55
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.base",
+          "accent.secondary": "palette.base",
+          "accent.tertiary": "palette.base",
+          "surface.base": "palette.base",
+          "surface.low": "palette.base",
+          "surface.high": "palette.base",
+          "surface.chrome": "palette.base",
+          "content.primary": "palette.base",
+          "content.secondary": "palette.base",
+          "content.muted": "palette.base",
+          "content.inverse": "palette.base",
+          "outline": "palette.base",
+          "outline.strong": "palette.base",
+          "status.error": "palette.base",
+          "status.warning": "palette.base",
+          "status.success": "palette.base",
+          "status.info": "palette.base",
+          "focus": "palette.base",
+          "selection": "palette.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.opaque",
+          "accent.secondary": "palette.opaque",
+          "accent.tertiary": "palette.opaque",
+          "surface.base": "palette.opaque",
+          "surface.low": "palette.opaque",
+          "surface.high": "palette.opaque",
+          "surface.chrome": "palette.opaque",
+          "content.primary": "palette.opaque",
+          "content.secondary": "palette.opaque",
+          "content.muted": "palette.opaque",
+          "content.inverse": "palette.opaque",
+          "outline": "palette.opaque",
+          "outline.strong": "palette.opaque",
+          "status.error": "palette.opaque",
+          "status.warning": "palette.opaque",
+          "status.success": "palette.opaque",
+          "status.info": "palette.opaque",
+          "focus": "palette.opaque",
+          "selection": "palette.opaque"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "space.control.inline": "space.base",
+          "space.control.block": "space.base",
+          "space.container.inner": "space.base",
+          "space.container.outer": "space.base",
+          "space.group": "space.base",
+          "space.section": "space.base",
+          "space.page": "space.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "display": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "titleLarge": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "title": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "heading": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "bodyLarge": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "body": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "label": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "caption": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.25
+          },
+          "numeric": {
+            "familyRole": "numeric",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "code": {
+            "familyRole": "monospace",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          }
+        }
+      }
+    ],
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "positional embedded theme source version 0.2.0",
+    "document": [
+      "0.2.0",
+      {
+        "palette": {
+          "$type": "color",
+          "base": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.15,
+                0.2,
+                0.3
+              ]
+            }
+          },
+          "opaque": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.15,
+                0.2,
+                0.3
+              ]
+            }
+          },
+          "opaqueAlt": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8,
+                0.7,
+                0.6
+              ]
+            }
+          },
+          "translucent": {
+            "$value": {
+              "colorSpace": "display-p3",
+              "components": [
+                0.25,
+                0.5,
+                0.75
+              ],
+              "hex": "#336699",
+              "alpha": 0.35
+            }
+          }
+        },
+        "space": {
+          "$type": "dimension",
+          "base": {
+            "$value": {
+              "value": 16,
+              "unit": "px"
+            }
+          }
+        },
+        "type": {
+          "size": {
+            "$type": "dimension",
+            "$value": {
+              "value": 20,
+              "unit": "px"
+            }
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "semi-bold"
+          },
+          "line": {
+            "$type": "number",
+            "$value": 1.4
+          },
+          "tracking": {
+            "$type": "dimension",
+            "$value": {
+              "value": 0.25,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      null,
+      null,
+      {
+        "schemaVersion": "0.2.0",
+        "surface": {
+          "base": "cast",
+          "content": "cast",
+          "chrome": "frost",
+          "raised": "cast",
+          "transient": "gel"
+        },
+        "control": {
+          "passive": "cast",
+          "interactive": "elastomer",
+          "primary": "elastomer"
+        },
+        "feedback": {
+          "focus": "elastomer",
+          "selection": "gel",
+          "drag": "gel"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "tintStrength": 0.55
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.base",
+          "accent.secondary": "palette.base",
+          "accent.tertiary": "palette.base",
+          "surface.base": "palette.base",
+          "surface.low": "palette.base",
+          "surface.high": "palette.base",
+          "surface.chrome": "palette.base",
+          "content.primary": "palette.base",
+          "content.secondary": "palette.base",
+          "content.muted": "palette.base",
+          "content.inverse": "palette.base",
+          "outline": "palette.base",
+          "outline.strong": "palette.base",
+          "status.error": "palette.base",
+          "status.warning": "palette.base",
+          "status.success": "palette.base",
+          "status.info": "palette.base",
+          "focus": "palette.base",
+          "selection": "palette.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.opaque",
+          "accent.secondary": "palette.opaque",
+          "accent.tertiary": "palette.opaque",
+          "surface.base": "palette.opaque",
+          "surface.low": "palette.opaque",
+          "surface.high": "palette.opaque",
+          "surface.chrome": "palette.opaque",
+          "content.primary": "palette.opaque",
+          "content.secondary": "palette.opaque",
+          "content.muted": "palette.opaque",
+          "content.inverse": "palette.opaque",
+          "outline": "palette.opaque",
+          "outline.strong": "palette.opaque",
+          "status.error": "palette.opaque",
+          "status.warning": "palette.opaque",
+          "status.success": "palette.opaque",
+          "status.info": "palette.opaque",
+          "focus": "palette.opaque",
+          "selection": "palette.opaque"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "space.control.inline": "space.base",
+          "space.control.block": "space.base",
+          "space.container.inner": "space.base",
+          "space.container.outer": "space.base",
+          "space.group": "space.base",
+          "space.section": "space.base",
+          "space.page": "space.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "display": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "titleLarge": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "title": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "heading": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "bodyLarge": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "body": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "label": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "caption": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.25
+          },
+          "numeric": {
+            "familyRole": "numeric",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "code": {
+            "familyRole": "monospace",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          }
+        }
+      }
+    ],
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "positional resolver-backed theme source version 0.1.0",
+    "document": [
+      "0.1.0",
+      null,
+      {
+        "version": "2025.10",
+        "resolutionOrder": [
+          {
+            "type": "set",
+            "name": "theme",
+            "sources": [
+              {
+                "palette": {
+                  "$type": "color",
+                  "base": {
+                    "$value": {
+                      "colorSpace": "srgb",
+                      "components": [
+                        0.15,
+                        0.2,
+                        0.3
+                      ]
+                    }
+                  },
+                  "opaque": {
+                    "$value": {
+                      "colorSpace": "srgb",
+                      "components": [
+                        0.15,
+                        0.2,
+                        0.3
+                      ]
+                    }
+                  },
+                  "opaqueAlt": {
+                    "$value": {
+                      "colorSpace": "srgb",
+                      "components": [
+                        0.8,
+                        0.7,
+                        0.6
+                      ]
+                    }
+                  },
+                  "translucent": {
+                    "$value": {
+                      "colorSpace": "display-p3",
+                      "components": [
+                        0.25,
+                        0.5,
+                        0.75
+                      ],
+                      "hex": "#336699",
+                      "alpha": 0.35
+                    }
+                  }
+                },
+                "space": {
+                  "$type": "dimension",
+                  "base": {
+                    "$value": {
+                      "value": 16,
+                      "unit": "px"
+                    }
+                  }
+                },
+                "type": {
+                  "size": {
+                    "$type": "dimension",
+                    "$value": {
+                      "value": 20,
+                      "unit": "px"
+                    }
+                  },
+                  "weight": {
+                    "$type": "fontWeight",
+                    "$value": "semi-bold"
+                  },
+                  "line": {
+                    "$type": "number",
+                    "$value": 1.4
+                  },
+                  "tracking": {
+                    "$type": "dimension",
+                    "$value": {
+                      "value": 0.25,
+                      "unit": "px"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {},
+      {
+        "schemaVersion": "0.2.0",
+        "surface": {
+          "base": "cast",
+          "content": "cast",
+          "chrome": "frost",
+          "raised": "cast",
+          "transient": "gel"
+        },
+        "control": {
+          "passive": "cast",
+          "interactive": "elastomer",
+          "primary": "elastomer"
+        },
+        "feedback": {
+          "focus": "elastomer",
+          "selection": "gel",
+          "drag": "gel"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "tintStrength": 0.55
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.base",
+          "accent.secondary": "palette.base",
+          "accent.tertiary": "palette.base",
+          "surface.base": "palette.base",
+          "surface.low": "palette.base",
+          "surface.high": "palette.base",
+          "surface.chrome": "palette.base",
+          "content.primary": "palette.base",
+          "content.secondary": "palette.base",
+          "content.muted": "palette.base",
+          "content.inverse": "palette.base",
+          "outline": "palette.base",
+          "outline.strong": "palette.base",
+          "status.error": "palette.base",
+          "status.warning": "palette.base",
+          "status.success": "palette.base",
+          "status.info": "palette.base",
+          "focus": "palette.base",
+          "selection": "palette.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.opaque",
+          "accent.secondary": "palette.opaque",
+          "accent.tertiary": "palette.opaque",
+          "surface.base": "palette.opaque",
+          "surface.low": "palette.opaque",
+          "surface.high": "palette.opaque",
+          "surface.chrome": "palette.opaque",
+          "content.primary": "palette.opaque",
+          "content.secondary": "palette.opaque",
+          "content.muted": "palette.opaque",
+          "content.inverse": "palette.opaque",
+          "outline": "palette.opaque",
+          "outline.strong": "palette.opaque",
+          "status.error": "palette.opaque",
+          "status.warning": "palette.opaque",
+          "status.success": "palette.opaque",
+          "status.info": "palette.opaque",
+          "focus": "palette.opaque",
+          "selection": "palette.opaque"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "space.control.inline": "space.base",
+          "space.control.block": "space.base",
+          "space.container.inner": "space.base",
+          "space.container.outer": "space.base",
+          "space.group": "space.base",
+          "space.section": "space.base",
+          "space.page": "space.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "display": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "titleLarge": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "title": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "heading": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "bodyLarge": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "body": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "label": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "caption": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.25
+          },
+          "numeric": {
+            "familyRole": "numeric",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "code": {
+            "familyRole": "monospace",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          }
+        }
+      }
+    ],
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "positional resolver-backed theme source version 0.2.0",
+    "document": [
+      "0.2.0",
+      null,
+      {
+        "version": "2025.10",
+        "resolutionOrder": [
+          {
+            "type": "set",
+            "name": "theme",
+            "sources": [
+              {
+                "palette": {
+                  "$type": "color",
+                  "base": {
+                    "$value": {
+                      "colorSpace": "srgb",
+                      "components": [
+                        0.15,
+                        0.2,
+                        0.3
+                      ]
+                    }
+                  },
+                  "opaque": {
+                    "$value": {
+                      "colorSpace": "srgb",
+                      "components": [
+                        0.15,
+                        0.2,
+                        0.3
+                      ]
+                    }
+                  },
+                  "opaqueAlt": {
+                    "$value": {
+                      "colorSpace": "srgb",
+                      "components": [
+                        0.8,
+                        0.7,
+                        0.6
+                      ]
+                    }
+                  },
+                  "translucent": {
+                    "$value": {
+                      "colorSpace": "display-p3",
+                      "components": [
+                        0.25,
+                        0.5,
+                        0.75
+                      ],
+                      "hex": "#336699",
+                      "alpha": 0.35
+                    }
+                  }
+                },
+                "space": {
+                  "$type": "dimension",
+                  "base": {
+                    "$value": {
+                      "value": 16,
+                      "unit": "px"
+                    }
+                  }
+                },
+                "type": {
+                  "size": {
+                    "$type": "dimension",
+                    "$value": {
+                      "value": 20,
+                      "unit": "px"
+                    }
+                  },
+                  "weight": {
+                    "$type": "fontWeight",
+                    "$value": "semi-bold"
+                  },
+                  "line": {
+                    "$type": "number",
+                    "$value": 1.4
+                  },
+                  "tracking": {
+                    "$type": "dimension",
+                    "$value": {
+                      "value": 0.25,
+                      "unit": "px"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {},
+      {
+        "schemaVersion": "0.2.0",
+        "surface": {
+          "base": "cast",
+          "content": "cast",
+          "chrome": "frost",
+          "raised": "cast",
+          "transient": "gel"
+        },
+        "control": {
+          "passive": "cast",
+          "interactive": "elastomer",
+          "primary": "elastomer"
+        },
+        "feedback": {
+          "focus": "elastomer",
+          "selection": "gel",
+          "drag": "gel"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "tintStrength": 0.55
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.base",
+          "accent.secondary": "palette.base",
+          "accent.tertiary": "palette.base",
+          "surface.base": "palette.base",
+          "surface.low": "palette.base",
+          "surface.high": "palette.base",
+          "surface.chrome": "palette.base",
+          "content.primary": "palette.base",
+          "content.secondary": "palette.base",
+          "content.muted": "palette.base",
+          "content.inverse": "palette.base",
+          "outline": "palette.base",
+          "outline.strong": "palette.base",
+          "status.error": "palette.base",
+          "status.warning": "palette.base",
+          "status.success": "palette.base",
+          "status.info": "palette.base",
+          "focus": "palette.base",
+          "selection": "palette.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "accent.primary": "palette.opaque",
+          "accent.secondary": "palette.opaque",
+          "accent.tertiary": "palette.opaque",
+          "surface.base": "palette.opaque",
+          "surface.low": "palette.opaque",
+          "surface.high": "palette.opaque",
+          "surface.chrome": "palette.opaque",
+          "content.primary": "palette.opaque",
+          "content.secondary": "palette.opaque",
+          "content.muted": "palette.opaque",
+          "content.inverse": "palette.opaque",
+          "outline": "palette.opaque",
+          "outline.strong": "palette.opaque",
+          "status.error": "palette.opaque",
+          "status.warning": "palette.opaque",
+          "status.success": "palette.opaque",
+          "status.info": "palette.opaque",
+          "focus": "palette.opaque",
+          "selection": "palette.opaque"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "space.control.inline": "space.base",
+          "space.control.block": "space.base",
+          "space.container.inner": "space.base",
+          "space.container.outer": "space.base",
+          "space.group": "space.base",
+          "space.section": "space.base",
+          "space.page": "space.base"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "roles": {
+          "display": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "titleLarge": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "title": {
+            "familyRole": "display",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "heading": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "bodyLarge": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "body": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "label": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "caption": {
+            "familyRole": "sans",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.25
+          },
+          "numeric": {
+            "familyRole": "numeric",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          },
+          "code": {
+            "familyRole": "monospace",
+            "fontSize": "type.size",
+            "fontWeight": "type.weight",
+            "lineHeight": "type.line",
+            "letterSpacing": "type.tracking",
+            "minimumTextScale": 1.0
+          }
+        }
+      }
+    ],
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "empty array theme source",
+    "document": [],
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "null theme source",
+    "document": null,
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "boolean theme source",
+    "document": true,
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "string theme source",
+    "document": "theme",
+    "error": "theme source must be a JSON object"
+  },
+  {
+    "name": "number theme source",
+    "document": 1,
+    "error": "theme source must be a JSON object"
+  }
+]

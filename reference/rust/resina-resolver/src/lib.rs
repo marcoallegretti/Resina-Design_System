@@ -47,6 +47,8 @@ pub use slider_edit::{
 
 mod slider_position;
 pub use slider_position::{SliderPositionError, SliderPositionInput, resolve_slider_position};
+mod slider_position_source;
+pub use slider_position_source::{SliderPositionSourceError, resolve_slider_position_source};
 
 mod slider_track_segments;
 pub use slider_track_segments::{
@@ -59,6 +61,9 @@ pub use slider_layout::{
     resolve_slider_layout,
 };
 
+mod slider_layout_source;
+pub use slider_layout_source::{SliderLayoutSourceError, resolve_slider_layout_source};
+
 mod slider_accessibility;
 pub use slider_accessibility::{
     SliderAccessibilityAction, SliderAccessibilityError, SliderAccessibilityInput,
@@ -70,6 +75,9 @@ pub use slider_adjustment::{
     SliderAdjustment, SliderAdjustmentError, SliderAdjustmentInput, SliderAdjustmentIr,
     resolve_slider_adjustment,
 };
+
+mod slider_adjustment_source;
+pub use slider_adjustment_source::{SliderAdjustmentSourceError, resolve_slider_adjustment_source};
 
 mod slider_value;
 pub use slider_value::{
@@ -502,3 +510,7 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "../tests/support/diagnostics.rs"]
+mod diagnostics;

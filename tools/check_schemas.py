@@ -219,13 +219,19 @@ def main():
         "schemas/slider-value-case.schema.json",
         "schemas/slider-adjustment-ir.schema.json",
         "schemas/slider-adjustment-cases.schema.json",
+        "schemas/slider-adjustment-request.schema.json",
+        "schemas/slider-adjustment-case.schema.json",
         "schemas/slider-accessibility-ir.schema.json",
         "schemas/slider-accessibility-case.schema.json",
         "schemas/slider-layout-ir.schema.json",
         "schemas/slider-layout-cases.schema.json",
         "schemas/slider-track-segments-ir.schema.json",
         "schemas/slider-track-segments-cases.schema.json",
+        "schemas/slider-layout-request.schema.json",
+        "schemas/slider-layout-case.schema.json",
         "schemas/slider-position-cases.schema.json",
+        "schemas/slider-position-request.schema.json",
+        "schemas/slider-position-case.schema.json",
         "schemas/slider-edit-session.schema.json",
         "schemas/slider-value-policy.schema.json",
         "schemas/slider-value-policy-fixture.schema.json",
@@ -269,6 +275,7 @@ def main():
         "schemas/color-assignments.schema.json",
         "schemas/corner-radius-case.schema.json",
         "schemas/environment.schema.json",
+        "schemas/environment-source-shape-case.schema.json",
         "schemas/frost-pigment.schema.json",
         "schemas/frost-legibility-request.schema.json",
         "schemas/frost-legibility-result.schema.json",
@@ -1112,6 +1119,7 @@ def main():
         + 2
     )
     for schema, vectors in (
+        ("schemas/theme-source.schema.json", "conformance/themes/source-vectors.json"),
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/opaque-color-assignments.schema.json", "conformance/color/opaque-assignment-vectors.json"),
         ("schemas/material-assignments.schema.json", "conformance/materials/role-assignment-vectors.json"),
@@ -1123,6 +1131,7 @@ def main():
         ("schemas/surface-binding.schema.json", "conformance/surfaces/binding-vectors.json"),
         ("schemas/treatment-stack.schema.json", "conformance/materials/treatment-stack-vectors.json"),
         ("schemas/typography-assignments.schema.json", "conformance/typography/assignment-vectors.json"),
+        ("schemas/theme-resolution-request.schema.json", "conformance/themes/request-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
 
@@ -1664,6 +1673,19 @@ def main():
         check_case(environment, str(path.relative_to(ROOT)), load_json(path), valid)
         checked += 1
 
+    shape_validator = validator_for("schemas/environment-source-shape-case.schema.json")
+    shape_names = set()
+    shape_base = load_json(ROOT / "conformance/environment/valid-mixed-input.json")
+    for vector in load_json(ROOT / "conformance/environment/source-shape-vectors.json"):
+        check_case(shape_validator, vector["name"], vector, True)
+        if vector["name"] in shape_names:
+            raise ValueError(f"duplicate environment shape case: {vector['name']}")
+        shape_names.add(vector["name"])
+        document = (apply_changes(shape_base, [vector]) if vector["path"]
+                    else vector["value"])
+        check_case(environment, vector["name"], document, False)
+        checked += 1
+
     oversized = ROOT / "conformance/environment/invalid-nonfinite-number.json"
     try:
         load_json(oversized)
@@ -1831,6 +1853,39 @@ def main():
         checked += 2
         if "expected" in case:
             check_case(validator_for("schemas/slider-value-ir.schema.json"), name,
+                       case["expected"], True)
+            checked += 1
+
+    for case in load_json(ROOT / "conformance/interaction/slider-adjustment-protocol-cases.json"):
+        name = case["name"]
+        check_case(validator_for("schemas/slider-adjustment-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/slider-adjustment-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 2
+        if "expected" in case:
+            check_case(validator_for("schemas/slider-adjustment-ir.schema.json"), name,
+                       case["expected"], True)
+            checked += 1
+
+    for case in load_json(ROOT / "conformance/geometry/slider-layout-protocol-cases.json"):
+        name = case["name"]
+        check_case(validator_for("schemas/slider-layout-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/slider-layout-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 2
+        if "expected" in case:
+            check_case(validator_for("schemas/slider-layout-ir.schema.json"), name,
+                       case["expected"], True)
+            checked += 1
+
+    for case in load_json(ROOT / "conformance/interaction/slider-position-protocol-cases.json"):
+        name = case["name"]
+        check_case(validator_for("schemas/slider-position-case.schema.json"), name, case, True)
+        check_case(validator_for("schemas/slider-position-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 2
+        if "expected" in case:
+            check_case(validator_for("schemas/slider-adjustment-ir.schema.json"), name,
                        case["expected"], True)
             checked += 1
 

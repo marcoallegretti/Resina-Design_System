@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:environment-source-shape-case:0.1.0",
+  "title": "Resina Invalid Environment Source Shape Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "path",
+    "value"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path": {
+      "type": "string",
+      "pattern": "^(/|$)"
+    },
+    "value": {}
+  }
+}

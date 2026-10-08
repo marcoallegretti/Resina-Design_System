@@ -497,7 +497,7 @@
       "wrap": false
     },
     "requestSchemaValid": true,
-    "errorContains": "is not in targets"
+    "failure": true
   },
   {
     "name": "duplicate ineligible identifiers",
@@ -518,7 +518,7 @@
       "wrap": false
     },
     "requestSchemaValid": true,
-    "errorContains": "duplicate focus target"
+    "failure": true
   },
   {
     "name": "empty target identifier",
@@ -535,7 +535,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "must not be empty"
+    "failure": true
   },
   {
     "name": "unsupported version",
@@ -560,7 +560,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "schemaVersion"
+    "failure": true
   },
   {
     "name": "unsupported direction",
@@ -585,7 +585,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "unknown variant"
+    "failure": true
   },
   {
     "name": "invalid current type",
@@ -610,7 +610,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "current must be"
+    "failure": true
   },
   {
     "name": "empty current identifier",
@@ -635,7 +635,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "is not in targets"
+    "failure": true
   },
   {
     "name": "invalid eligibility type",
@@ -652,7 +652,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "boolean"
+    "failure": true
   },
   {
     "name": "unknown target field",
@@ -670,7 +670,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "missing current",
@@ -694,7 +694,7 @@
       "wrap": false
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing wrap",
@@ -718,6 +718,123 @@
       "direction": "forward"
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional root",
+    "request": [
+      "0.1.0",
+      [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      null,
+      "forward",
+      false
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional target",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        [
+          "first",
+          true
+        ]
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape mixed positional target",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        [
+          "other",
+          false
+        ]
+      ],
+      "current": null,
+      "direction": "forward",
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object forward direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": {
+        "forward": null
+      },
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object backward direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "targets": [
+        {
+          "id": "first",
+          "eligible": true
+        },
+        {
+          "id": "middle",
+          "eligible": false
+        },
+        {
+          "id": "last",
+          "eligible": true
+        }
+      ],
+      "current": null,
+      "direction": {
+        "backward": null
+      },
+      "wrap": false
+    },
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

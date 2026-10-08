@@ -80,3 +80,5 @@ diagnostic and no output; usage exits 2. The
 checks selected-role arithmetic, full states, contrast, depth, navigation and
 repeated output. `resina-toggle-part-raster` consumes this request and writes
 actual CPU RGBA8 PNG output with the existing bounded viewport protocol.
+
+Failure diagnostics follow the [public backend diagnostic policy](32-headless-conformance.md#failure-diagnostics). Negative public cases use `failure: true`; diagnostic wording is not a conformance requirement.

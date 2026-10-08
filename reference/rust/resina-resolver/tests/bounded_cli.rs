@@ -99,6 +99,21 @@ const COMMANDS: &[(&str, &str, usize)] = &[
         MIB,
     ),
     (
+        "resina-slider-adjustment",
+        env!("CARGO_BIN_EXE_resina-slider-adjustment"),
+        MIB,
+    ),
+    (
+        "resina-slider-layout",
+        env!("CARGO_BIN_EXE_resina-slider-layout"),
+        MIB,
+    ),
+    (
+        "resina-slider-position",
+        env!("CARGO_BIN_EXE_resina-slider-position"),
+        MIB,
+    ),
+    (
         "resina-slider-value",
         env!("CARGO_BIN_EXE_resina-slider-value"),
         MIB,
@@ -258,6 +273,71 @@ fn every_bounded_command_preserves_its_exact_byte_limit() {
 
 #[test]
 fn valid_requests_preserve_file_stdin_and_pretty_json_publication() {
+    let position = env!("CARGO_BIN_EXE_resina-slider-position");
+    let cases: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/slider-position-protocol-cases.json"
+    ))
+    .unwrap();
+    let source = serde_json::to_vec(&cases[0]["request"]).unwrap();
+    let file = RequestFile::new(&source);
+    for output in [
+        stdin(position, &source),
+        Command::new(position).arg(file.path()).output().unwrap(),
+    ] {
+        assert!(output.status.success(), "{output:?}");
+        assert!(output.stderr.is_empty());
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
+            cases[0]["expected"]
+        );
+        assert!(output.stdout.ends_with(b"\n"));
+    }
+
+    let layout = env!("CARGO_BIN_EXE_resina-slider-layout");
+    let cases: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../conformance/geometry/slider-layout-cases.json"
+    ))
+    .unwrap();
+    let mut source = cases["cases"][0]["input"].clone();
+    source["schemaVersion"] = serde_json::json!("0.1.0");
+    let source = serde_json::to_vec(&source).unwrap();
+    let file = RequestFile::new(&source);
+    for output in [
+        stdin(layout, &source),
+        Command::new(layout).arg(file.path()).output().unwrap(),
+    ] {
+        assert!(output.status.success(), "{output:?}");
+        assert!(output.stderr.is_empty());
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
+            cases["cases"][0]["expected"]
+        );
+        assert!(output.stdout.ends_with(b"\n"));
+    }
+
+    let adjustment = env!("CARGO_BIN_EXE_resina-slider-adjustment");
+    let adjustment_source = br#"{"schemaVersion":"0.1.0","current":{"schemaVersion":"0.1.0","minimum":0,"maximum":100,"value":25},"enabled":true,"readOnly":false,"adjustment":{"kind":"increase","amount":10}}"#;
+    let file = RequestFile::new(adjustment_source);
+    let expected = serde_json::to_value(
+        resina_resolver::resolve_slider_adjustment_source(
+            std::str::from_utf8(adjustment_source).unwrap(),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    for output in [
+        stdin(adjustment, adjustment_source),
+        Command::new(adjustment).arg(file.path()).output().unwrap(),
+    ] {
+        assert!(output.status.success(), "{output:?}");
+        assert!(output.stderr.is_empty());
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
+            expected
+        );
+        assert!(output.stdout.ends_with(b"\n"));
+    }
+
     let slider = env!("CARGO_BIN_EXE_resina-slider-value");
     let source = br#"{"schemaVersion":"0.1.0","minimum":0,"maximum":1,"value":0.5}"#;
     let expected =

@@ -1683,7 +1683,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing state schemaVersion",
@@ -1701,7 +1701,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing state enabled",
@@ -1719,7 +1719,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing state focused",
@@ -1737,7 +1737,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing state hold",
@@ -1755,7 +1755,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing event inside",
@@ -1773,7 +1773,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing event id",
@@ -1791,7 +1791,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "missing event kind",
@@ -1809,7 +1809,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "unknown request",
@@ -1829,7 +1829,7 @@
       "unknown": true
     },
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "unknown state",
@@ -1849,7 +1849,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "unknown event",
@@ -1869,7 +1869,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "unfocused keyboard hold",
@@ -1891,7 +1891,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "keyboard hold requires actual focus"
+    "failure": true
   },
   {
     "name": "disabled existing hold",
@@ -1914,7 +1914,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "disabled state must not hold a press"
+    "failure": true
   },
   {
     "name": "empty event pointer",
@@ -1933,7 +1933,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "pointer ID must not be empty"
+    "failure": true
   },
   {
     "name": "disabled still validates event",
@@ -1952,7 +1952,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "pointer ID must not be empty"
+    "failure": true
   },
   {
     "name": "empty held pointer",
@@ -1975,7 +1975,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "pointer ID must not be empty"
+    "failure": true
   },
   {
     "name": "unsupported request version",
@@ -1994,7 +1994,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "schemaVersion must be 0.1.0"
+    "failure": true
   },
   {
     "name": "repeat required",
@@ -2012,7 +2012,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "missing field"
+    "failure": true
   },
   {
     "name": "unknown member on invoke",
@@ -2030,7 +2030,7 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "unknown member on cancel",
@@ -2048,6 +2048,230 @@
       }
     },
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional request",
+    "request": [
+      "0.1.0",
+      {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": false
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional state",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": [
+        "0.1.0",
+        true,
+        true,
+        null
+      ],
+      "event": {
+        "kind": "keyDown",
+        "key": "enter",
+        "repeat": false
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object keyDown key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": {
+        "kind": "keyDown",
+        "key": {
+          "enter": null
+        },
+        "repeat": false
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object keyUp key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": {
+          "space": null
+        }
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object held enter key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": {
+            "enter": null
+          }
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": "enter"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape object held space key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": {
+            "space": null
+          }
+        }
+      },
+      "event": {
+        "kind": "keyUp",
+        "key": "space"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional held key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": [
+          "key",
+          "space"
+        ]
+      },
+      "event": {
+        "kind": "cancel"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional held pointer",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": [
+          "pointer",
+          "p",
+          true
+        ]
+      },
+      "event": {
+        "kind": "cancel"
+      }
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional keyDown event",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": [
+        "keyDown",
+        "enter",
+        false
+      ]
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional pointerDown event",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": [
+        "pointerDown",
+        "p",
+        true
+      ]
+    },
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "invalid JSON shape positional invoke event",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "event": [
+        "invoke"
+      ]
+    },
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

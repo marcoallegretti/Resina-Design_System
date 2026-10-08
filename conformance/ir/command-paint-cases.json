@@ -137,7 +137,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported selected",
@@ -150,7 +150,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported checked",
@@ -163,7 +163,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported busy",
@@ -176,7 +176,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported dragging",
@@ -189,7 +189,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported error",
@@ -202,7 +202,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported warning",
@@ -215,7 +215,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "unsupported success",
@@ -228,7 +228,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "command paint supports only"
+    "failure": true
   },
   {
     "name": "structural role",
@@ -239,7 +239,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "control material role"
+    "failure": true
   },
   {
     "name": "translucent surrounding",
@@ -250,7 +250,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "surroundingColor must be opaque"
+    "failure": true
   },
   {
     "name": "insufficient state contrast",
@@ -267,7 +267,7 @@
       }
     ],
     "requestSchemaValid": true,
-    "errorContains": "contrast is insufficient"
+    "failure": true
   },
   {
     "name": "nonfinite-scale domain",
@@ -278,7 +278,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "depthScale"
+    "failure": true
   },
   {
     "name": "invalid unselected family",
@@ -289,7 +289,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "bodyMix"
+    "failure": true
   },
   {
     "name": "unknown response member",
@@ -304,7 +304,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "unknown family",
@@ -372,7 +372,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "unknown field"
+    "failure": true
   },
   {
     "name": "null optional color",
@@ -383,7 +383,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "invalid type"
+    "failure": true
   },
   {
     "name": "unsupported version",
@@ -394,7 +394,7 @@
       }
     ],
     "requestSchemaValid": false,
-    "errorContains": "schemaVersion must be 0.1.0"
+    "failure": true
   },
   {
     "name": "complete compression retains independent focus",
