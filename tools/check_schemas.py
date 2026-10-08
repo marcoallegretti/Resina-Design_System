@@ -312,6 +312,7 @@ def main():
         "schemas/shape-fallback-case.schema.json",
         "schemas/shape-fallback-request.schema.json",
         "schemas/shape-fallback-result.schema.json",
+        "schemas/shape-fallback-source-case.schema.json",
         "schemas/resolver-module-case.schema.json",
         "schemas/resolver-module-request.schema.json",
         "schemas/spatial-assignments.schema.json",
@@ -1205,6 +1206,18 @@ def main():
         checked += 1
     shape_request_schema = validator_for("schemas/shape-fallback-request.schema.json")
     shape_result_schema = validator_for("schemas/shape-fallback-result.schema.json")
+    shape_source_case_schema = validator_for("schemas/shape-fallback-source-case.schema.json")
+    shape_source_names = set()
+    for case in load_json(ROOT / "conformance/geometry/shape-fallback-source-cases.json"):
+        name = case["name"]
+        if name in shape_source_names:
+            raise ValueError(f"duplicate shape fallback source case: {name}")
+        shape_source_names.add(name)
+        check_case(shape_source_case_schema, f"shape source case: {name}", case, True)
+        check_case(shape_request_schema, f"shape source request: {name}", case["request"], case["requestSchemaValid"])
+        if "expected" in case:
+            check_case(shape_result_schema, f"shape source result: {name}", case["expected"], True)
+        checked += 1
     shape_request = {
         "schemaVersion": "0.1.0",
         "tokens": load_json(ROOT / "tokens/foundation.json"),

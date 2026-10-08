@@ -61,16 +61,16 @@ pub fn resolve_shape_fallback_source(
     source: &str,
 ) -> Result<ShapeFallbackResult, ShapeFallbackSourceError> {
     let document = parse_token_document(source).map_err(ShapeFallbackSourceError::Parse)?;
-    if document
-        .get("schemaVersion")
-        .and_then(Value::as_str)
-        .is_some_and(|version| version != "0.1.0")
-    {
-        return Err(ShapeFallbackSourceError::UnsupportedVersion);
+    if !document.is_object() {
+        return Err(ShapeFallbackSourceError::Request(serde::de::Error::custom(
+            "shape fallback request must be a JSON object",
+        )));
     }
     let request: ShapeFallbackRequest =
         serde_json::from_value(document).map_err(ShapeFallbackSourceError::Request)?;
-    debug_assert_eq!(request.schema_version, "0.1.0");
+    if request.schema_version != "0.1.0" {
+        return Err(ShapeFallbackSourceError::UnsupportedVersion);
+    }
     let tokens =
         resolve_token_document(&request.tokens).map_err(ShapeFallbackSourceError::Tokens)?;
     let radii = resolve_shape_fallback(request.shape, request.size, &request.assignments, &tokens)
