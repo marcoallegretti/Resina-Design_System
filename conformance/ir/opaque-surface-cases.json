@@ -3685,5 +3685,36 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "treatment stack source positional",
+    "requestChanges": [
+      {
+        "path": "/surface/treatmentStack",
+        "value": [
+          "0.1.0",
+          [
+            "none"
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "treatment stack object"
+  },
+  {
+    "name": "treatment stack source tagged item",
+    "requestChanges": [
+      {
+        "path": "/surface/treatmentStack/treatments",
+        "value": [
+          {
+            "none": null
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
   }
 ]

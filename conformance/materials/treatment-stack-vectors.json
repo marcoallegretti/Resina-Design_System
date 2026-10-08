@@ -43,5 +43,63 @@
     "name": "unsupported version is invalid",
     "document": {"schemaVersion": "0.2.0", "treatments": ["none"]},
     "error": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "treatment stack source positional",
+    "document": [
+      "0.1.0",
+      [
+        "none"
+      ]
+    ],
+    "error": "treatment stack object"
+  },
+  {
+    "name": "treatment stack source tagged none",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "treatments": [
+        {
+          "none": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "treatment stack source tagged lens",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "treatments": [
+        {
+          "lens": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "treatment stack source tagged focusLens",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "treatments": [
+        {
+          "focusLens": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "treatment stack source tagged highlightLens",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "treatments": [
+        {
+          "highlightLens": null
+        }
+      ]
+    },
+    "error": "a string"
   }
 ]
