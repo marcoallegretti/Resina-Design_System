@@ -18,6 +18,9 @@ Unknown, duplicate, missing, nonfinite and unsupported-version input fails.
 
 The request MUST be a JSON object. Its `part` and `checkedColorRole` MUST be string names from their respective schemas, as in static part paint. Positional requests and object-encoded names are invalid.
 
+The channels container and each channel MUST be JSON objects. Positional arrays
+are invalid before selecting any motion policy, including immediate policies.
+
 Bind the actual selected or unchecked color role and material in the current
 complete theme/environment. Preserve checked, hover, pressed, disabled and focused
 independently. Disabled, pressed, hover, rest precedence chooses the authored

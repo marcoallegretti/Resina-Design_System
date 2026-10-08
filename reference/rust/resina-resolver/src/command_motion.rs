@@ -9,18 +9,65 @@ use serde::{
     Deserialize, Deserializer, Serialize,
     de::{MapAccess, Visitor, value::MapAccessDeserializer},
 };
+use std::{fmt, marker::PhantomData};
 
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+fn deserialize_motion_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    struct Object<T>(PhantomData<T>);
+    impl<'de, T: Deserialize<'de>> Visitor<'de> for Object<T> {
+        type Value = T;
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("a motion object")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<T, A::Error> {
+            T::deserialize(MapAccessDeserializer::new(map))
+        }
+    }
+    deserializer.deserialize_map(Object(PhantomData))
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct CommandMotionChannel {
     pub dynamics: SpringDynamics,
     pub initial: SpringState,
 }
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct CommandMotionChannels {
     pub body_mix: CommandMotionChannel,
     pub depth_scale: CommandMotionChannel,
+}
+impl<'de> Deserialize<'de> for CommandMotionChannel {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase", deny_unknown_fields)]
+        struct Members {
+            dynamics: SpringDynamics,
+            initial: SpringState,
+        }
+        let members: Members = deserialize_motion_object(deserializer)?;
+        Ok(Self {
+            dynamics: members.dynamics,
+            initial: members.initial,
+        })
+    }
+}
+impl<'de> Deserialize<'de> for CommandMotionChannels {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase", deny_unknown_fields)]
+        struct Members {
+            body_mix: CommandMotionChannel,
+            depth_scale: CommandMotionChannel,
+        }
+        let members: Members = deserialize_motion_object(deserializer)?;
+        Ok(Self {
+            body_mix: members.body_mix,
+            depth_scale: members.depth_scale,
+        })
+    }
 }
 pub struct CommandMotionInput<'a> {
     pub command: CommandPaintInput<'a>,

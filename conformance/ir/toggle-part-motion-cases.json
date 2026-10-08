@@ -587,5 +587,193 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "positional channels",
+    "requestChanges": [
+      {
+        "path": "/channels",
+        "value": [
+          {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 4,
+              "damping": 4,
+              "positionThreshold": 1e-06,
+              "velocityThreshold": 1e-06
+            },
+            "initial": {
+              "position": 0,
+              "velocity": 0
+            }
+          },
+          {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 4,
+              "damping": 4,
+              "positionThreshold": 1e-06,
+              "velocityThreshold": 1e-06
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "motion object"
+  },
+  {
+    "name": "positional channels/bodyMix",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix",
+        "value": [
+          {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 4,
+            "damping": 4,
+            "positionThreshold": 1e-06,
+            "velocityThreshold": 1e-06
+          },
+          {
+            "position": 0,
+            "velocity": 0
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "motion object"
+  },
+  {
+    "name": "positional channels/depthScale",
+    "requestChanges": [
+      {
+        "path": "/channels/depthScale",
+        "value": [
+          {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 4,
+            "damping": 4,
+            "positionThreshold": 1e-06,
+            "velocityThreshold": 1e-06
+          },
+          {
+            "position": 1,
+            "velocity": 0
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "motion object"
+  },
+  {
+    "name": "positional channels with reduced motion",
+    "requestChanges": [
+      {
+        "path": "/channels",
+        "value": [
+          {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 4,
+              "damping": 4,
+              "positionThreshold": 1e-06,
+              "velocityThreshold": 1e-06
+            },
+            "initial": {
+              "position": 0,
+              "velocity": 0
+            }
+          },
+          {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 4,
+              "damping": 4,
+              "positionThreshold": 1e-06,
+              "velocityThreshold": 1e-06
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            }
+          }
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "motion object"
+  },
+  {
+    "name": "positional channels/bodyMix with reduced motion",
+    "requestChanges": [
+      {
+        "path": "/channels/bodyMix",
+        "value": [
+          {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 4,
+            "damping": 4,
+            "positionThreshold": 1e-06,
+            "velocityThreshold": 1e-06
+          },
+          {
+            "position": 0,
+            "velocity": 0
+          }
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "motion object"
+  },
+  {
+    "name": "positional channels/depthScale with reduced motion",
+    "requestChanges": [
+      {
+        "path": "/channels/depthScale",
+        "value": [
+          {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 4,
+            "damping": 4,
+            "positionThreshold": 1e-06,
+            "velocityThreshold": 1e-06
+          },
+          {
+            "position": 1,
+            "velocity": 0
+          }
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "motion object"
   }
 ]
