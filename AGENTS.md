@@ -7,8 +7,8 @@ It applies regardless of agent or model vendor.
 `AGENTS.md` is the canonical agent policy for this repository. Agent-specific files may point here but must not duplicate, weaken, or reinterpret these rules.
 
 Reusable contribution workflows, domain skills, review roles and portable checks
-live in [`.agents/`](.agents/README.md). Load the relevant files for the task;
-they support this contract rather than define a separate policy.
+live in [`.agents/`](.agents/README.md) as optional guidance. They support this
+contract rather than define a separate policy or change the active working mode.
 
 ---
 

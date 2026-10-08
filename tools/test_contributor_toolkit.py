@@ -63,6 +63,162 @@ class ToolkitLinks(unittest.TestCase):
         self.catalog.write_text("# Empty catalog\n", encoding="utf-8")
         self.assertTrue(any("absent from toolkit catalog" in error for error in check(self.root)))
 
+    def test_literal_examples_do_not_create_links(self):
+        source = self.skill.read_text(encoding="utf-8")
+        examples = [
+            '`[Example](missing.md)`',
+            '``Use `[Example](missing.md)` here``',
+            '```md\n[Example](missing.md)\n```',
+            '~~~md\n[Example](missing.md)\n~~~',
+            '````md\n```\n[Example](missing.md)\n`````',
+            '<!-- [Example](missing.md) -->',
+            '[Example]`code`(missing.md)',
+            r'\[Example](missing.md)',
+        ]
+        for example in examples:
+            with self.subTest(example=example):
+                self.skill.write_text(source + example + "\n", encoding="utf-8")
+                self.assertEqual(check(self.root), [])
+
+    def test_escaped_ticks_and_invalid_fences_do_not_hide_real_links(self):
+        source = self.skill.read_text(encoding="utf-8")
+        for example in [
+            r'\`[Example](missing.md)\`',
+            '```invalid`info\n[Example](missing.md)\n```',
+        ]:
+            with self.subTest(example=example):
+                self.skill.write_text(source + example + "\n", encoding="utf-8")
+                self.assertTrue(any("broken local link" in error for error in check(self.root)))
+
+    def test_titled_and_angle_links_check_actual_targets(self):
+        source = self.skill.read_text(encoding="utf-8")
+        for template in [
+            '[`Contract`]({path})',
+            '[Contract]({path} "Title")',
+            "[Contract]({path} 'Title')",
+            '[Contract]({path} (Title))',
+            '[Contract](<{path}> "Title")',
+        ]:
+            with self.subTest(template=template):
+                self.skill.write_text(source + template.format(path="../../../AGENTS.md") + "\n",
+                                      encoding="utf-8")
+                self.assertEqual(check(self.root), [])
+                self.skill.write_text(source + template.format(path="missing.md") + "\n",
+                                      encoding="utf-8")
+                self.assertTrue(any("broken local link" in error for error in check(self.root)))
+
+    def test_empty_destinations_do_not_crash_or_catalog_a_document(self):
+        source = self.skill.read_text(encoding="utf-8")
+        for link in ['[Empty](<>)', '[Empty](<> "Title")', '[Empty]()', '![](<>)']:
+            with self.subTest(link=link):
+                self.skill.write_text(source + link + "\n", encoding="utf-8")
+                self.assertEqual(check(self.root), [])
+                self.catalog.write_text(link + "\n", encoding="utf-8")
+                self.assertTrue(any("absent from toolkit catalog" in error for error in check(self.root)))
+                self.catalog.write_text('[Example](skills/example/SKILL.md)\n', encoding="utf-8")
+
+    def test_empty_text_images_and_links_check_actual_targets(self):
+        source = self.skill.read_text(encoding="utf-8")
+        for template in ['![]({path})', '![](<{path}> "Title")', '[]({path})']:
+            with self.subTest(template=template):
+                self.skill.write_text(source + template.format(path="../../../AGENTS.md") + "\n",
+                                      encoding="utf-8")
+                self.assertEqual(check(self.root), [])
+                self.skill.write_text(source + template.format(path="missing.png") + "\n",
+                                      encoding="utf-8")
+                self.assertTrue(any("broken local link" in error for error in check(self.root)))
+
+    def test_comment_and_title_delimiters_do_not_hide_real_links(self):
+        source = self.skill.read_text(encoding="utf-8")
+        for example in [
+            '<!-- ` -->\n[Missing](missing.md)\n`',
+            '<!--\n```\n-->\n[Missing](missing.md)',
+            '[Missing](missing.md "`Title")\n`',
+            '`<!--`\n[Missing](missing.md)\n-->',
+            '```text\n<!--\n```\n[Missing](missing.md)\n-->',
+            '[Missing](missing.md "<!--")\n-->',
+        ]:
+            with self.subTest(example=example):
+                self.skill.write_text(source + example + "\n", encoding="utf-8")
+                self.assertTrue(any("broken local link" in error for error in check(self.root)))
+
+    def test_reference_links_resolve_in_each_document(self):
+        source = self.skill.read_text(encoding="utf-8")
+        self.catalog.write_text('[Example][skill]\n\n[skill]: skills/example/SKILL.md\n', encoding="utf-8")
+        self.skill.write_text(source + '[Contract][doc]\n\n[doc]: ../../../AGENTS.md\n', encoding="utf-8")
+        self.assertEqual(check(self.root), [])
+        self.skill.write_text(source + '[Missing][doc]\n\n[doc]: missing.md\n', encoding="utf-8")
+        self.assertTrue(any("broken local link" in error for error in check(self.root)))
+
+    def test_catalog_requires_a_visible_link(self):
+        for entry in [
+            'skills/example/SKILL.md',
+            '![Example](skills/example/SKILL.md)',
+            '<!-- [Example](skills/example/SKILL.md) -->',
+            '`[Example](skills/example/SKILL.md)`',
+            '```md\n[Example](skills/example/SKILL.md)\n```',
+        ]:
+            with self.subTest(entry=entry):
+                self.catalog.write_text(entry + "\n", encoding="utf-8")
+                self.assertTrue(any("absent from toolkit catalog" in error for error in check(self.root)))
+
+    def test_catalog_links_can_have_titles_fragments_and_normalized_paths(self):
+        for entry in [
+            '[Example](skills/example/SKILL.md "Example")',
+            '[![Example](../AGENTS.md)](skills/example/SKILL.md)',
+            '[Example](<skills/example/SKILL.md>)',
+            '[Example](skills/../skills/example/SKILL.md#example)',
+        ]:
+            with self.subTest(entry=entry):
+                self.catalog.write_text(entry + "\n", encoding="utf-8")
+                self.assertEqual(check(self.root), [])
+
+    def test_invalid_metadata_values_and_duplicate_fields_are_rejected(self):
+        for fields in [
+            'name: example\ndescription:\nlicense: MIT',
+            'name: example\ndescription: ""',
+            "name: example\ndescription: ''",
+            'name: example\ndescription: "  "',
+            'name: example\ndescription: # A comment',
+            'name: example\ndescription: [unterminated',
+            'name: example\ndescription: "unterminated',
+            'name: example\ndescription: null',
+            'name: example\ndescription: true',
+            'name: example\ndescription: 42',
+            'name: wrong\nname: example\ndescription: Example skill.',
+            'name: example\ndescription: First\ndescription: Second',
+            'name: " example "\ndescription: Example',
+            'name: example\ndescription: {text: Example}',
+            'name: example\ndescription: [Example]',
+            'name: example\ndescription: 0x42',
+            'name: example\ndescription: !!int 42',
+        ]:
+            with self.subTest(fields=fields):
+                self.skill.write_text("---\n" + fields + "\n---\n", encoding="utf-8")
+                self.assertTrue(any("name must match path" in error for error in check(self.root)))
+
+    def test_single_line_quoted_metadata_is_accepted(self):
+        for fields in [
+            'name: "example"\ndescription: "Example skill."',
+            "name: 'example'\ndescription: 'Contributor''s skill.'",
+            'name: example\ndescription: "Use \\"quoted\\" names."',
+            'name: example\ndescription: Example skill. # A comment',
+        ]:
+            with self.subTest(fields=fields):
+                self.skill.write_text("---\n" + fields + "\n---\n", encoding="utf-8")
+                self.assertEqual(check(self.root), [])
+
+    def test_yaml_block_and_tagged_strings_are_accepted(self):
+        for description in [
+            '|\n  Example skill.\n  Load for documentation.',
+            '>\n  Example skill.\n  Load for documentation.',
+            '!!str true',
+        ]:
+            with self.subTest(description=description):
+                self.skill.write_text('---\nname: example\ndescription: ' + description + '\n---\n',
+                                      encoding="utf-8")
+                self.assertEqual(check(self.root), [])
+
 
 class VerificationRunner(unittest.TestCase):
     def test_dry_run_from_another_directory_never_executes(self):
