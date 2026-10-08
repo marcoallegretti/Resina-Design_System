@@ -200,7 +200,7 @@ pub enum MaterialFamily {
     Gel,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum ShapeIntent {
     Structural,
@@ -208,6 +208,32 @@ pub enum ShapeIntent {
     Rounded,
     Capsule,
     Organic,
+}
+
+impl<'de> Deserialize<'de> for ShapeIntent {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ShapeVisitor;
+        impl Visitor<'_> for ShapeVisitor {
+            type Value = ShapeIntent;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a shape intent string")
+            }
+            fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
+                match value {
+                    "structural" => Ok(ShapeIntent::Structural),
+                    "soft" => Ok(ShapeIntent::Soft),
+                    "rounded" => Ok(ShapeIntent::Rounded),
+                    "capsule" => Ok(ShapeIntent::Capsule),
+                    "organic" => Ok(ShapeIntent::Organic),
+                    _ => Err(E::unknown_variant(
+                        value,
+                        &["structural", "soft", "rounded", "capsule", "organic"],
+                    )),
+                }
+            }
+        }
+        deserializer.deserialize_str(ShapeVisitor)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]

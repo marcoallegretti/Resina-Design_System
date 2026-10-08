@@ -53,5 +53,143 @@
     "name": "unsupported version is invalid",
     "document": {"schemaVersion": "0.2.0", "shape": "soft", "elevation": "raised"},
     "error": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "shape intent form tagged structural",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": {
+        "structural": null
+      },
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form tagged soft",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": {
+        "soft": null
+      },
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form tagged rounded",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": {
+        "rounded": null
+      },
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form tagged capsule",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": {
+        "capsule": null
+      },
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form tagged organic",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": {
+        "organic": null
+      },
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form null",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": null,
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form boolean",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": true,
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form number",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": 1,
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form empty array",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": [],
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form empty object",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": {},
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form positional",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": [
+        "structural"
+      ],
+      "elevation": "raised"
+    },
+    "error": "shape intent string"
+  },
+  {
+    "name": "shape intent form empty string",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": "",
+      "elevation": "raised"
+    },
+    "error": "unknown variant"
+  },
+  {
+    "name": "shape intent form uppercase",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": "Structural",
+      "elevation": "raised"
+    },
+    "error": "unknown variant"
+  },
+  {
+    "name": "shape intent form trailing whitespace",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "shape": "structural ",
+      "elevation": "raised"
+    },
+    "error": "unknown variant"
   }
 ]
