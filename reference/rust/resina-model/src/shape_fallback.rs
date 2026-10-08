@@ -1,8 +1,8 @@
 use crate::ShapeIntent;
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "ShapeFallbackAssignmentsInput")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ShapeFallbackAssignments {
     schema_version: String,
     profiles: ShapeFallbackProfiles,
@@ -12,7 +12,16 @@ pub struct ShapeFallbackAssignments {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct ShapeFallbackAssignmentsInput {
     schema_version: String,
+    #[serde(deserialize_with = "crate::deserialize_assignment_object")]
     profiles: ShapeFallbackProfiles,
+}
+
+impl<'de> Deserialize<'de> for ShapeFallbackAssignments {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input =
+            crate::deserialize_assignment_object::<D, ShapeFallbackAssignmentsInput>(deserializer)?;
+        Self::try_from(input).map_err(D::Error::custom)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -25,12 +34,8 @@ struct ShapeFallbackProfiles {
     organic: ShapeFallbackProfile,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(
-    tag = "kind",
-    rename_all = "camelCase",
-    from = "ShapeFallbackProfileInput"
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(tag = "kind", rename_all = "camelCase")]
 pub enum ShapeFallbackProfile {
     Uniform { radius: String },
     Corners { radii: CornerTokenPaths },
@@ -51,6 +56,13 @@ enum ShapeFallbackProfileInput {
     Capsule {},
 }
 
+impl<'de> Deserialize<'de> for ShapeFallbackProfile {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        crate::deserialize_assignment_object::<D, ShapeFallbackProfileInput>(deserializer)
+            .map(Self::from)
+    }
+}
+
 impl From<ShapeFallbackProfileInput> for ShapeFallbackProfile {
     fn from(input: ShapeFallbackProfileInput) -> Self {
         match input {
@@ -61,17 +73,38 @@ impl From<ShapeFallbackProfileInput> for ShapeFallbackProfile {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CornerTokenPaths {
-    #[serde(deserialize_with = "deserialize_token_path")]
     pub top_start: String,
-    #[serde(deserialize_with = "deserialize_token_path")]
     pub top_end: String,
-    #[serde(deserialize_with = "deserialize_token_path")]
     pub bottom_end: String,
-    #[serde(deserialize_with = "deserialize_token_path")]
     pub bottom_start: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CornerTokenPathsInput {
+    #[serde(deserialize_with = "deserialize_token_path")]
+    top_start: String,
+    #[serde(deserialize_with = "deserialize_token_path")]
+    top_end: String,
+    #[serde(deserialize_with = "deserialize_token_path")]
+    bottom_end: String,
+    #[serde(deserialize_with = "deserialize_token_path")]
+    bottom_start: String,
+}
+
+impl<'de> Deserialize<'de> for CornerTokenPaths {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = crate::deserialize_assignment_object::<D, CornerTokenPathsInput>(deserializer)?;
+        Ok(Self {
+            top_start: input.top_start,
+            top_end: input.top_end,
+            bottom_end: input.bottom_end,
+            bottom_start: input.bottom_start,
+        })
+    }
 }
 
 impl ShapeFallbackAssignments {
@@ -171,25 +204,41 @@ mod tests {
         ))
         .unwrap();
         for vector in vectors {
-            let result =
-                serde_json::from_value::<ShapeFallbackAssignments>(vector["document"].clone());
-            if vector.get("expected").is_some() {
-                let assignments = result.unwrap();
-                assert_eq!(
-                    serde_json::to_value(assignments).unwrap(),
-                    vector["document"],
-                    "{}",
-                    vector["name"]
-                );
-            } else {
-                let error = result.unwrap_err();
-                assert!(
-                    error
-                        .to_string()
-                        .contains(vector["error"].as_str().unwrap()),
-                    "{}: {error}",
-                    vector["name"]
-                );
+            for result in [
+                serde_json::from_str::<ShapeFallbackAssignments>(&vector["document"].to_string()),
+                serde_json::from_value::<ShapeFallbackAssignments>(vector["document"].clone()),
+            ] {
+                if vector.get("expected").is_some() {
+                    let assignments = result.unwrap();
+                    for shape in [
+                        ShapeIntent::Structural,
+                        ShapeIntent::Soft,
+                        ShapeIntent::Rounded,
+                        ShapeIntent::Capsule,
+                        ShapeIntent::Organic,
+                    ] {
+                        let name = serde_json::to_value(shape).unwrap();
+                        assert_eq!(
+                            serde_json::to_value(assignments.profile_for(shape)).unwrap(),
+                            vector["document"]["profiles"][name.as_str().unwrap()]
+                        );
+                    }
+                    assert_eq!(
+                        serde_json::to_value(assignments).unwrap(),
+                        vector["document"],
+                        "{}",
+                        vector["name"]
+                    );
+                } else {
+                    let error = result.unwrap_err();
+                    assert!(
+                        error
+                            .to_string()
+                            .contains(vector["error"].as_str().unwrap()),
+                        "{}: {error}",
+                        vector["name"]
+                    );
+                }
             }
         }
     }
