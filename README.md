@@ -2,6 +2,10 @@
 
 For contributions, start with [CONTRIBUTING.md](CONTRIBUTING.md) and the canonical [engineering contract](AGENTS.md).
 
+The [contributor toolkit](.agents/README.md) supplies shared skills, workflows,
+review roles and verification commands for manual and AI-assisted development
+across contributor tools.
+
 Resina is a material-responsive design system specification. Its normative definitions are independent of languages, renderers, toolkits, operating systems, and products. The Rust workspace is a reference implementation of those definitions.
 
 The [blueprint](RESINA_DESIGN_SYSTEM_BLUEPRINT.md) describes the intended architecture and development order. The versioned documents in `spec/`, machine-readable contracts in `schemas/`, and cases in `conformance/` define implemented behavior. A blueprint proposal is not considered implemented until these agree and the reference implementation passes its tests.
