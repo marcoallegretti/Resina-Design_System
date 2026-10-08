@@ -210,6 +210,20 @@
     "shape source form soft corners positional": "assignment object",
     "shape source form soft radii positional": "assignment object",
     "shape source form rounded corners positional": "assignment object",
-    "shape source form rounded radii positional": "assignment object"
+    "shape source form rounded radii positional": "assignment object",
+    "shape intent form tagged structural": "shape intent string",
+    "shape intent form tagged soft": "shape intent string",
+    "shape intent form tagged rounded": "shape intent string",
+    "shape intent form tagged capsule": "shape intent string",
+    "shape intent form tagged organic": "shape intent string",
+    "shape intent form null": "shape intent string",
+    "shape intent form boolean": "shape intent string",
+    "shape intent form number": "shape intent string",
+    "shape intent form empty array": "shape intent string",
+    "shape intent form empty object": "shape intent string",
+    "shape intent form positional": "shape intent string",
+    "shape intent form empty string": "unknown variant",
+    "shape intent form uppercase": "unknown variant",
+    "shape intent form trailing whitespace": "unknown variant"
   }
 }

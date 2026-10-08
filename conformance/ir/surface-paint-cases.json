@@ -902,5 +902,171 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "shape intent form tagged structural",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": {
+          "structural": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form tagged soft",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": {
+          "soft": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form tagged rounded",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": {
+          "rounded": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form tagged capsule",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": {
+          "capsule": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form tagged organic",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": {
+          "organic": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form null",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form boolean",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form number",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form empty array",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form empty object",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": {}
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form positional",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": [
+          "structural"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form empty string",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": ""
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form uppercase",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": "Structural"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "shape intent form trailing whitespace",
+    "requestChanges": [
+      {
+        "path": "/body/surface/form/shape",
+        "value": "structural "
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]
