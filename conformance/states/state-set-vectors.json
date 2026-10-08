@@ -43,5 +43,171 @@
     "name": "unsupported version is invalid",
     "document": {"schemaVersion": "0.2.0", "states": ["rest"]},
     "error": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "state set source positional",
+    "document": [
+      "0.1.0",
+      [
+        "rest"
+      ]
+    ],
+    "error": "state set object"
+  },
+  {
+    "name": "state set source tagged rest",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "rest": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged hover",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "hover": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged focused",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "focused": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged pressed",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "pressed": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged active",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "active": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged selected",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "selected": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged checked",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "checked": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged disabled",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "disabled": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged busy",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "busy": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged dragging",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "dragging": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged error",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "error": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged warning",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "warning": null
+        }
+      ]
+    },
+    "error": "a string"
+  },
+  {
+    "name": "state set source tagged success",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "states": [
+        {
+          "success": null
+        }
+      ]
+    },
+    "error": "a string"
   }
 ]

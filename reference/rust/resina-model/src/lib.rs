@@ -84,11 +84,47 @@ pub struct StateSet {
     states: Vec<InteractionState>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StateSetInput {
     pub schema_version: String,
     pub states: Vec<InteractionState>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct StateSetMembers {
+    schema_version: String,
+    #[serde(deserialize_with = "deserialize_state_names")]
+    states: Vec<InteractionState>,
+}
+
+impl<'de> Deserialize<'de> for StateSetInput {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct StateSetVisitor;
+        impl<'de> Visitor<'de> for StateSetVisitor {
+            type Value = StateSetInput;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a state set object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = StateSetMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(StateSetInput {
+                    schema_version: input.schema_version,
+                    states: input.states,
+                })
+            }
+        }
+        deserializer.deserialize_map(StateSetVisitor)
+    }
+}
+
+fn deserialize_state_names<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<InteractionState>, D::Error> {
+    Vec::<String>::deserialize(deserializer)?
+        .into_iter()
+        .map(|name| InteractionState::deserialize(StringDeserializer::<D::Error>::new(name)))
+        .collect()
 }
 
 impl TryFrom<StateSetInput> for StateSet {

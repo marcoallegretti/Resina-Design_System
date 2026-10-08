@@ -1404,5 +1404,36 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "state set source positional",
+    "requestChanges": [
+      {
+        "path": "/body/surface/states",
+        "value": [
+          "0.1.0",
+          [
+            "rest"
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "state set source tagged item",
+    "requestChanges": [
+      {
+        "path": "/body/surface/states/states",
+        "value": [
+          {
+            "rest": null
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]
