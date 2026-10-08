@@ -284,6 +284,16 @@ changed-modifier releases, unrelated input and one-activation Command/Toggle
 sequences. These tests verify event translation, not compositor delivery or a
 complete native control.
 
+A required GPU-backed application test also mounts a custom event probe and
+routes queued keys through GUIdo's widget tree. It checks repeat suppression,
+Space release, immediate Enter activation, changed-modifier release, surface
+focus loss/re-entry and widget focus transfer. An owner-scoped reactive observer
+cancels holds on widget focus changes independently of painting; surface
+`FocusOut` delivery cancels them explicitly. The complete `Widget::event` stream
+supplies key releases that a key-down-only convenience callback cannot provide.
+This proves mounted widget routing with supplied native event values, not physical
+keyboard/compositor delivery or an installed production control.
+
 ## Toggle content composition
 
 Call `prepare_toggle_content` with a checked `ToggleSnapshot`, the verified font
