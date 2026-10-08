@@ -14,6 +14,9 @@ Sizes MUST be finite and positive. Dimensions are authored/resolved inputs;
 this operation neither invents token defaults nor shrinks an oversized thumb.
 Missing, duplicate, unknown and unsupported fields fail.
 
+The request root, sizes and insets MUST be JSON objects. Positional arrays are
+invalid. layoutDirection MUST be the JSON string `ltr` or `rtl`.
+
 ## Allocation
 
 Track bounds have origin (0,0) and the supplied size. Subtract start then end

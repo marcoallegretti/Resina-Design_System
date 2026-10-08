@@ -47,6 +47,7 @@ impl ToggleLayoutIr {
 pub enum ToggleLayoutError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
+    InvalidShape(&'static str, &'static str),
     UnsupportedVersion,
     InvalidSize,
     InvalidInsets,
@@ -59,6 +60,9 @@ impl fmt::Display for ToggleLayoutError {
         match self {
             Self::Parse(error) => write!(f, "toggle layout parse failed: {error}"),
             Self::Request(error) => write!(f, "invalid toggle layout request: {error}"),
+            Self::InvalidShape(field, shape) => {
+                write!(f, "toggle layout request {field} must be a JSON {shape}")
+            }
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
             Self::InvalidSize => f.write_str("track and thumb sizes must be finite and positive"),
             Self::InvalidInsets => f.write_str("insets must be finite and nonnegative"),
@@ -175,6 +179,21 @@ struct Request {
 }
 pub fn resolve_toggle_layout_source(source: &str) -> Result<ToggleLayoutIr, ToggleLayoutError> {
     let document = resina_tokens::parse_token_document(source).map_err(ToggleLayoutError::Parse)?;
+    if !document.is_object() {
+        return Err(ToggleLayoutError::InvalidShape("root", "object"));
+    }
+    if document
+        .get("insets")
+        .is_some_and(|value| !value.is_object())
+    {
+        return Err(ToggleLayoutError::InvalidShape("insets", "object"));
+    }
+    if document
+        .get("layoutDirection")
+        .is_some_and(|value| !value.is_string())
+    {
+        return Err(ToggleLayoutError::InvalidShape("layoutDirection", "string"));
+    }
     let request: Request = serde_json::from_value(document).map_err(ToggleLayoutError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(ToggleLayoutError::UnsupportedVersion);
