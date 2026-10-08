@@ -7,7 +7,10 @@ use resina_model::{
     ColorRole, CommandAppearance, CommandPhase, CommandResponse, InteractionState, MaterialFamily,
     MaterialRole,
 };
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer, value::StringDeserializer},
+};
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -204,8 +207,6 @@ pub(crate) fn resolve_toggle_part_paint_with_response<T>(
     ))
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Request {
     schema_version: String,
     part: TogglePart,
@@ -213,6 +214,58 @@ struct Request {
     checked_color_role: ColorRole,
     interaction_appearance: CommandAppearance,
 }
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct RequestMembers {
+    schema_version: String,
+    #[serde(deserialize_with = "toggle_part_name")]
+    part: TogglePart,
+    surface: crate::surface_paint::SurfacePaintRequest,
+    #[serde(deserialize_with = "checked_color_role_name")]
+    checked_color_role: ColorRole,
+    interaction_appearance: CommandAppearance,
+}
+
+impl<'de> Deserialize<'de> for Request {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct RequestVisitor;
+        impl<'de> Visitor<'de> for RequestVisitor {
+            type Value = Request;
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a toggle part paint request object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = RequestMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Request {
+                    schema_version: input.schema_version,
+                    part: input.part,
+                    surface: input.surface,
+                    checked_color_role: input.checked_color_role,
+                    interaction_appearance: input.interaction_appearance,
+                })
+            }
+        }
+        deserializer.deserialize_map(RequestVisitor)
+    }
+}
+
+pub(crate) fn toggle_part_name<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<TogglePart, D::Error> {
+    TogglePart::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
+        deserializer,
+    )?))
+}
+
+pub(crate) fn checked_color_role_name<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<ColorRole, D::Error> {
+    ColorRole::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
+        deserializer,
+    )?))
+}
+
 pub fn resolve_toggle_part_paint_source(
     source: &str,
 ) -> Result<TogglePartPaintIr, TogglePartPaintError> {
@@ -235,4 +288,93 @@ pub fn resolve_toggle_part_paint_source(
             interaction_appearance: &request.interaction_appearance,
         },
     )
+}
+
+#[cfg(test)]
+mod request_tests {
+    use super::*;
+    use serde_json::{Value, json};
+
+    fn baseline() -> Value {
+        serde_json::from_str(include_str!(
+            "../../../../conformance/ir/toggle-part-paint-request.json"
+        ))
+        .unwrap()
+    }
+
+    #[test]
+    fn known_toggle_names_decode_from_canonical_and_escaped_strings() {
+        let schema: Value = serde_json::from_str(include_str!(
+            "../../../../schemas/surface-binding.schema.json"
+        ))
+        .unwrap();
+        for role in schema["properties"]["colorRole"]["enum"]
+            .as_array()
+            .unwrap()
+        {
+            let mut request = baseline();
+            request["checkedColorRole"] = role.clone();
+            let expected: ColorRole = serde_json::from_value(role.clone()).unwrap();
+            assert_eq!(
+                serde_json::from_value::<Request>(request.clone())
+                    .unwrap()
+                    .checked_color_role,
+                expected
+            );
+            let name = role.as_str().unwrap();
+            let source = request.to_string().replace(
+                &format!("\"checkedColorRole\":{role}"),
+                &format!(
+                    "\"\\u0063heckedColorRole\":\"\\u{:04x}{}\"",
+                    name.as_bytes()[0],
+                    &name[1..]
+                ),
+            );
+            assert_eq!(
+                serde_json::from_str::<Request>(&source)
+                    .unwrap()
+                    .checked_color_role,
+                expected
+            );
+            request["checkedColorRole"] = json!({name:null});
+            assert!(serde_json::from_value::<Request>(request).is_err());
+        }
+        for (name, expected) in [("track", TogglePart::Track), ("thumb", TogglePart::Thumb)] {
+            let mut request = baseline();
+            request["part"] = json!(name);
+            assert_eq!(
+                serde_json::from_value::<Request>(request.clone())
+                    .unwrap()
+                    .part,
+                expected
+            );
+            let source = request.to_string().replace(
+                &format!("\"part\":\"{name}\""),
+                &format!(
+                    "\"\\u0070art\":\"\\u{:04x}{}\"",
+                    name.as_bytes()[0],
+                    &name[1..]
+                ),
+            );
+            assert_eq!(
+                serde_json::from_str::<Request>(&source).unwrap().part,
+                expected
+            );
+            request["part"] = json!({name:null});
+            assert!(serde_json::from_value::<Request>(request).is_err());
+        }
+        for member in ["part", "checkedColorRole"] {
+            for invalid in [
+                Value::Null,
+                json!(true),
+                json!(1),
+                json!([]),
+                json!("unknown"),
+            ] {
+                let mut request = baseline();
+                request[member] = invalid;
+                assert!(serde_json::from_value::<Request>(request).is_err());
+            }
+        }
+    }
 }

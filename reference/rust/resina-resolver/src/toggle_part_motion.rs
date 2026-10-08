@@ -6,7 +6,10 @@ use crate::{
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{CommandAppearance, CommandResponse};
 use resina_motion::SpringTrajectorySample;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
 
 pub struct TogglePartMotionInput<'a> {
     pub part: TogglePartPaintInput<'a>,
@@ -80,8 +83,6 @@ pub fn resolve_toggle_part_motion(
         part_paint,
     })
 }
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Request {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
@@ -90,6 +91,45 @@ struct Request {
     checked_color_role: resina_model::ColorRole,
     channels: CommandMotionChannels,
     time: f64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct RequestMembers {
+    schema_version: String,
+    surface: crate::surface_paint::SurfacePaintRequest,
+    interaction_appearance: CommandAppearance,
+    #[serde(deserialize_with = "crate::toggle_part_paint::toggle_part_name")]
+    part: crate::TogglePart,
+    #[serde(deserialize_with = "crate::toggle_part_paint::checked_color_role_name")]
+    checked_color_role: resina_model::ColorRole,
+    channels: CommandMotionChannels,
+    time: f64,
+}
+
+impl<'de> Deserialize<'de> for Request {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct RequestVisitor;
+        impl<'de> Visitor<'de> for RequestVisitor {
+            type Value = Request;
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a toggle part motion request object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = RequestMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Request {
+                    schema_version: input.schema_version,
+                    surface: input.surface,
+                    interaction_appearance: input.interaction_appearance,
+                    part: input.part,
+                    checked_color_role: input.checked_color_role,
+                    channels: input.channels,
+                    time: input.time,
+                })
+            }
+        }
+        deserializer.deserialize_map(RequestVisitor)
+    }
 }
 pub fn resolve_toggle_part_motion_source(
     source: &str,

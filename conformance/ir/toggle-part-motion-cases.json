@@ -481,5 +481,31 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "toggle request source tagged part",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": {
+          "track": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
+  },
+  {
+    "name": "toggle request source tagged checked color role",
+    "requestChanges": [
+      {
+        "path": "/checkedColorRole",
+        "value": {
+          "selection": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "a string"
   }
 ]

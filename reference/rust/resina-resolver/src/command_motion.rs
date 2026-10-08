@@ -5,7 +5,10 @@ use crate::{
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{CommandAppearance, CommandResponse, SpringDynamics, SpringState};
 use resina_motion::SpringTrajectorySample;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -105,14 +108,45 @@ pub fn resolve_command_motion(
         command,
     })
 }
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Request {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
     command_appearance: CommandAppearance,
     channels: CommandMotionChannels,
     time: f64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct RequestMembers {
+    schema_version: String,
+    surface: crate::surface_paint::SurfacePaintRequest,
+    command_appearance: CommandAppearance,
+    channels: CommandMotionChannels,
+    time: f64,
+}
+
+impl<'de> Deserialize<'de> for Request {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct RequestVisitor;
+        impl<'de> Visitor<'de> for RequestVisitor {
+            type Value = Request;
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a command motion request object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = RequestMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Request {
+                    schema_version: input.schema_version,
+                    surface: input.surface,
+                    command_appearance: input.command_appearance,
+                    channels: input.channels,
+                    time: input.time,
+                })
+            }
+        }
+        deserializer.deserialize_map(RequestVisitor)
+    }
 }
 pub fn resolve_command_motion_source(source: &str) -> Result<CommandMotionIr, CommandPaintError> {
     let document = resina_tokens::parse_token_document(source).map_err(CommandPaintError::Parse)?;

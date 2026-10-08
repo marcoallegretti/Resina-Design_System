@@ -15,6 +15,8 @@ checkedColorRole and interactionAppearance. The latter uses the existing
 for Cast/Frost/Elastomer hover, pressed and disabled channels. These are shared
 body-response coefficients, not an ordinary-command state policy.
 
+The request MUST be a JSON object. `part` and `checkedColorRole` MUST be string names from their respective schemas. Positional requests and object-encoded names are invalid.
+
 The original surface's color role is its unchecked role. When its full state set
 contains checked, bind checkedColorRole through the actual theme instead. Both
 source and opaque fallback assignments belong to that role. Keep material role,
