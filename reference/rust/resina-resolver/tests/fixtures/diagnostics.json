@@ -143,6 +143,19 @@
     "unsupported pressed body with focus": "supports only rest and focused",
     "body content contrast fails without a partial ring": "minimumContentContrast",
     "empty body content fails without a partial ring": "inset",
-    "unresolved optical treatment": "treatment must be none"
+    "unresolved optical treatment": "treatment must be none",
+    "elevation source shape root positional": "assignment object",
+    "elevation source shape root null": "assignment object",
+    "elevation source shape root boolean": "assignment object",
+    "elevation source shape root number": "assignment object",
+    "elevation source shape root string": "assignment object",
+    "elevation source shape root empty array": "assignment object",
+    "elevation source shape roles positional": "assignment object",
+    "elevation source shape roles null": "assignment object",
+    "elevation source shape roles boolean": "assignment object",
+    "elevation source shape roles number": "assignment object",
+    "elevation source shape roles string": "assignment object",
+    "elevation source shape roles empty array": "assignment object",
+    "elevation source shape both positional": "assignment object"
   }
 }
