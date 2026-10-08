@@ -5,6 +5,7 @@ import sys
 
 from backend_source import duplicate_member_source, nonfinite_member_source
 from opaque_request_source import opaque_request_failures
+from surface_paint_source import positional_paint_request
 from check_color_guard_backend import check_failure
 from check_command_paint_backend import command_mismatch
 from check_headless_backend import mismatch, run_backend
@@ -115,7 +116,9 @@ def main():
             ("duplicate channel position", duplicate_member_source(base, "/channels/bodyMix/initial/position")),
             ("duplicate root version", duplicate_member_source(base, "/schemaVersion")),
             ("nonfinite time", nonfinite_member_source(base, "/time")),
-        ) + opaque_request_failures(base, "/surface/body")
+        ) + opaque_request_failures(base, "/surface/body") + (
+            ("positional surface paint request", positional_paint_request(base, "/surface")),
+        )
         for name, source in failures:
             check_failure(command, source, args.timeout, name)
     except (AssertionError, OSError, ValueError, KeyError) as error:

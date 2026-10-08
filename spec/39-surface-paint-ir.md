@@ -9,6 +9,9 @@ include `focused`. A supplied color MUST be valid and opaque even when unfocused
 null is invalid. Unknown members, duplicate JSON members, unsupported versions
 and invalid nested inputs MUST fail diagnostically.
 
+The surface paint request MUST be a JSON object wherever it is supplied,
+including as a nested surface request. Positional records are invalid.
+
 Compile the body's theme once and resolve one semantic snapshot against its
 supplied environment. Resolve the body with its existing readability, shape,
 depth, pigment, band and optical guards. Only `rest`, `focused`, or both are

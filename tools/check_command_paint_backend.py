@@ -6,6 +6,7 @@ import sys
 
 from backend_source import duplicate_member_source, nonfinite_member_source
 from opaque_request_source import opaque_request_failures
+from surface_paint_source import positional_paint_request
 from check_color_guard_backend import check_failure
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
@@ -110,7 +111,9 @@ def main():
             ("duplicate response", duplicate_member_source(base, "/commandAppearance/profiles/cast/hover/bodyMix")),
             ("nonfinite response", nonfinite_member_source(base, "/commandAppearance/profiles/frost/pressed/depthScale")),
             ("unknown root", json.dumps({**base, "unexpected": True})),
-        ) + opaque_request_failures(base, "/surface/body")
+        ) + opaque_request_failures(base, "/surface/body") + (
+            ("positional surface paint request", positional_paint_request(base, "/surface")),
+        )
         for name, source in failures:
             check_failure(command, source, arguments.timeout, name)
     except (AssertionError, KeyError, TypeError, OSError, ValueError) as error:
