@@ -6,19 +6,21 @@ This package has its own Cargo workspace and lockfile so GUIdo's Linux runtime
 dependencies do not enter the portable reference workspace.
 
 GUIdo is pinned to upstream main revision
-`ae29dc97a869434b51b768ad39b974e76db9a4dc`. It includes the merged
+`f7cb5b59c8d848b57efe2b73fb861eac12105925`. It includes the merged
 [image-cache correction](https://github.com/MalpenZibo/guido/pull/607),
 [letter spacing](https://github.com/MalpenZibo/guido/pull/619) and
 [key-repeat metadata](https://github.com/MalpenZibo/guido/pull/616), with
 [text placement in the laid-out width](https://github.com/MalpenZibo/guido/pull/627)
-and [image downsampling to the device texture limit](https://github.com/MalpenZibo/guido/pull/612).
+and [image downsampling to the device texture limit](https://github.com/MalpenZibo/guido/pull/612),
+[press routing through button chords](https://github.com/MalpenZibo/guido/pull/628)
+and [container key-release callbacks](https://github.com/MalpenZibo/guido/pull/635).
 Required renderer tests cover image identity, first-frame readiness, replacement
-and spaced text at that pin.
+and spaced text, alongside mounted key and pointer routing at that pin.
 
 ## Live Linux runtime
 
 The pinned GUIdo runtime creates Wayland layer-shell surfaces. Its
-[connection setup](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/wayland.rs#L296-L317)
+[connection setup](https://github.com/MalpenZibo/guido/blob/f7cb5b59c8d848b57efe2b73fb861eac12105925/src/platform/wayland.rs#L296-L317)
 requires `wl_compositor` and `zwlr_layer_shell_v1`; an `xdg_wm_base` global alone
 is insufficient. Check the actual session registry with `wayland-info` before
 launching a live GUIdo product. A missing layer-shell global produces
@@ -40,15 +42,17 @@ limits prevent claiming complete native command conformance:
 
 | Requirement | Verified boundary | Current behavior |
 | --- | --- | --- |
-| Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L956-L960) and [repeat](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs#L969-L972) emit `KeyDown` with distinct `repeat` values. | `activation_key_event` preserves that flag. Typed mapping tests and mounted widget delivery verify repeat suppression and release termination; physical keyboard delivery still needs compatible-compositor evidence. |
+| Initial key press versus repeat | The pinned [initial press](https://github.com/MalpenZibo/guido/blob/f7cb5b59c8d848b57efe2b73fb861eac12105925/src/platform/input.rs#L956-L960) and [repeat](https://github.com/MalpenZibo/guido/blob/f7cb5b59c8d848b57efe2b73fb861eac12105925/src/platform/input.rs#L969-L972) emit `KeyDown` with distinct `repeat` values. | `activation_key_event` preserves that flag. Typed mapping tests and mounted widget delivery verify repeat suppression and release termination; physical keyboard delivery still needs compatible-compositor evidence. |
 | Mandatory line breaks | The pinned shaper's [line iterator](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/line_ending.rs#L51-L72) ends lines only at LF, CR and CRLF, and consumes an LF followed by CR as one ending unless that LF completes a CRLF; [Unicode line breaking](https://www.unicode.org/reports/tr14/tr14-57.html#LB5) keeps only CR LF together. | Label measurement and preparation reject VT, FF, NEL, U+2028, U+2029 and any CR/LF sequence whose lines differ from Unicode line breaking with `UnsupportedLineBreak`. |
 | Bidirectional paragraph separators | U+001C–U+001E separate bidirectional paragraphs without breaking lines. The pinned shaper [asserts](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/shape.rs#L1357-L1359) that every paragraph in one line has the same direction and panics otherwise. | Label measurement and preparation reject them with `UnsupportedParagraphSeparator` before shaping. |
 | Deep bidirectional embedding | When a wrapped line resolves to level 126, the pinned shaper [requests](https://github.com/pop-os/cosmic-text/blob/0.19.0/src/shape.rs#L1537) a right-to-left level above 125, the highest one, and panics. Text with n embedding or isolate initiators resolves to level 2n + 2 at most. | More than 60 initiators between line breaks fail with `BidiInitiators`, keeping every resolved level at 122 or below even when the bidirectional algorithm ignores terminators. |
 | Native assistive technology delivery | This package resolves/consumes portable [command semantics](../../../spec/47-command-accessibility.md) but supplies no native semantic-tree publication. | Headless accessibility checks and rendered pixels do not establish native screen-reader discovery or action delivery. |
 
 The repeat flag also reaches the
-[`Container::on_key_down` repeat argument](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/widgets/container/mod.rs#L1111-L1124).
-Its availability does not establish input routing or live keyboard conformance.
+[`Container::on_key_down` repeat argument](https://github.com/MalpenZibo/guido/blob/f7cb5b59c8d848b57efe2b73fb861eac12105925/src/widgets/container/mod.rs#L1118-L1129).
+[`Container::on_key_up`](https://github.com/MalpenZibo/guido/blob/f7cb5b59c8d848b57efe2b73fb861eac12105925/src/widgets/container/mod.rs#L1131-L1141)
+provides release callbacks. Their availability does not establish input routing
+or live keyboard conformance.
 
 The accessibility boundary describes this package's implemented scope; it does
 not certify or diagnose every upstream integration. Keep the authored Resina
@@ -277,7 +281,7 @@ an event, request focus, route pointers or install a widget handler. Owners must
 still report actual focus, availability and interruption through the activation
 contract and route held-key termination.
 
-The pinned GUIdo [input implementation](https://github.com/MalpenZibo/guido/blob/ae29dc97a869434b51b768ad39b974e76db9a4dc/src/platform/input.rs)
+The pinned GUIdo [input implementation](https://github.com/MalpenZibo/guido/blob/f7cb5b59c8d848b57efe2b73fb861eac12105925/src/platform/input.rs)
 publishes press/repeat metadata and retains the pressed key identity for release.
 Tests check both command keys over all modifier combinations, repeated delivery,
 changed-modifier releases, unrelated input and one-activation Command/Toggle
@@ -293,6 +297,14 @@ cancels holds on widget focus changes independently of painting; surface
 supplies key releases that a key-down-only convenience callback cannot provide.
 This proves mounted widget routing with supplied native event values, not physical
 keyboard/compositor delivery or an installed production control.
+
+A required mounted pointer test checks a row of five event probes. The first
+press retains delivery when a secondary Right or Middle press lands several
+siblings away, through either release order. Both releases and intervening moves
+reach the press owner, and a new press after the final release is hit-tested
+again. The final release can also reach widgets at the pointer position. This
+proves continued widget-tree delivery for a retained owner; it does not execute
+Resina capture effects or certify physical pointer/compositor delivery.
 
 ## Toggle content composition
 
