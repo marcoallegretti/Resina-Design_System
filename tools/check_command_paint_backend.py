@@ -7,6 +7,7 @@ import sys
 from backend_source import duplicate_member_source, nonfinite_member_source
 from opaque_request_source import opaque_request_failures
 from surface_paint_source import positional_paint_request
+from control_paint_source import positional_control_request
 from check_color_guard_backend import check_failure
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
@@ -113,6 +114,7 @@ def main():
             ("unknown root", json.dumps({**base, "unexpected": True})),
         ) + opaque_request_failures(base, "/surface/body") + (
             ("positional surface paint request", positional_paint_request(base, "/surface")),
+            ("positional command-paint request", positional_control_request(base, ("schemaVersion", "surface", "commandAppearance"))),
         )
         for name, source in failures:
             check_failure(command, source, arguments.timeout, name)

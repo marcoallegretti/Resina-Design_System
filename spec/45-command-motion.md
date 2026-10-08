@@ -4,7 +4,7 @@ This contract connects [scalar trajectories](44-spring-trajectories.md) to [opaq
 
 ## Ownership and inputs
 
-The [request](../schemas/command-motion-request.schema.json) requires version 0.1.0, the complete surface request, commandAppearance, channels and elapsed time. Each channel (`bodyMix`, `depthScale`) requires validated dynamics and an explicit initial position/velocity. Coefficients have no defaults. Time is seconds; both channels are dimensionless and their velocities use inverse seconds. Unknown, duplicate, missing, nonfinite and unsupported-version inputs MUST fail. Unbounded finite initial state is permitted, including when continuing an overshooting trajectory.
+The [request](../schemas/command-motion-request.schema.json) requires version 0.1.0, the complete surface request, commandAppearance, channels and elapsed time. The request MUST be a JSON object; positional request records are invalid. Each channel (`bodyMix`, `depthScale`) requires validated dynamics and an explicit initial position/velocity. Coefficients have no defaults. Time is seconds; both channels are dimensionless and their velocities use inverse seconds. Unknown, duplicate, missing, nonfinite and unsupported-version inputs MUST fail. Unbounded finite initial state is permitted, including when continuing an overshooting trajectory.
 
 Resolve the actual theme/environment once and bind the actual material family and current state set. The existing command phase rule chooses the authored target response; focus remains independent. Never derive enablement or invocation from paint. Select policy in this order:
 

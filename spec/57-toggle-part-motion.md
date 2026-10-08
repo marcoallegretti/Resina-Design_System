@@ -16,6 +16,8 @@ inverse seconds. They use the same response vocabulary and bounds as
 restrictions. No spring coefficients, previous state or elapsed time have defaults.
 Unknown, duplicate, missing, nonfinite and unsupported-version input fails.
 
+The request MUST be a JSON object. Its `part` and `checkedColorRole` MUST be string names from their respective schemas, as in static part paint. Positional requests and object-encoded names are invalid.
+
 Bind the actual selected or unchecked color role and material in the current
 complete theme/environment. Preserve checked, hover, pressed, disabled and focused
 independently. Disabled, pressed, hover, rest precedence chooses the authored

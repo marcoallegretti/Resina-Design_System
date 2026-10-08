@@ -7,7 +7,10 @@ use resina_model::{
     CommandAppearance, CommandPhase, CommandResponse, MaterialFamily, MaterialRole,
     resolve_command_phase,
 };
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
 use std::fmt;
 
 pub struct CommandPaintInput<'a> {
@@ -63,12 +66,39 @@ impl From<SurfacePaintResolutionError> for CommandPaintError {
     }
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Request {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
     command_appearance: CommandAppearance,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct RequestMembers {
+    schema_version: String,
+    surface: crate::surface_paint::SurfacePaintRequest,
+    command_appearance: CommandAppearance,
+}
+
+impl<'de> Deserialize<'de> for Request {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct RequestVisitor;
+        impl<'de> Visitor<'de> for RequestVisitor {
+            type Value = Request;
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a command paint request object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = RequestMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Request {
+                    schema_version: input.schema_version,
+                    surface: input.surface,
+                    command_appearance: input.command_appearance,
+                })
+            }
+        }
+        deserializer.deserialize_map(RequestVisitor)
+    }
 }
 
 pub fn resolve_command_paint_source(source: &str) -> Result<CommandPaintIr, CommandPaintError> {

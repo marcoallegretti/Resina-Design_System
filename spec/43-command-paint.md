@@ -26,7 +26,7 @@ Resolve shape, final depth, key light, body contours and family pigment using th
 
 ## Wire contract and conformance
 
-The [request](../schemas/command-paint-request.schema.json) wraps a complete surface request and explicit command appearance. The [result](../schemas/command-paint-ir.schema.json) contains `phase`, `response`, and complete `paint`. Its [body schema](../schemas/command-body-ir.schema.json) reuses the static geometry and pigment constraints with the command state domain. The existing base-state surface operation and its schema remain restricted to rest/focused.
+The [request](../schemas/command-paint-request.schema.json) wraps a complete surface request and explicit command appearance. The request MUST be a JSON object; positional request records are invalid. The [result](../schemas/command-paint-ir.schema.json) contains `phase`, `response`, and complete `paint`. Its [body schema](../schemas/command-body-ir.schema.json) reuses the static geometry and pigment constraints with the command state domain. The existing base-state surface operation and its schema remain restricted to rest/focused.
 
 The Rust reference exposes typed and strict source operations; `resina-command-paint <path|->` reads one UTF-8 request, with a 1 MiB limit, writes one result on success, exits 1 with a diagnostic and no output on failure, and exits 2 for invalid usage. Duplicate and unknown JSON members MUST fail. [Public cases](../conformance/ir/command-paint-cases.json) and the independent backend checker cover precedence, state preservation, authored response arithmetic, contrast, matching focus geometry and strict failure paths. Existing CPU and GUIdo paint consumers accept the resolved complete paint directly; they do not implement command state rules.
 
