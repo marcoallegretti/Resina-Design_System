@@ -4052,5 +4052,22 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "surface band profile object"
+  },
+  {
+    "name": "positional key light record",
+    "requestChanges": [
+      {
+        "path": "/appearance/keyLight",
+        "value": [
+          "0.1.0",
+          {
+            "x": 0,
+            "y": -1
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "key light object"
   }
 ]

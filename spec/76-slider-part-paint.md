@@ -37,11 +37,47 @@ can supply a conservative whole-surface cover but do not prove adjacency.
 Content, edge, opacity, geometry or focus failure publishes no part result.
 Do not resolve against one sampled color and repair the published edge afterward.
 
+## Public records
+
+The [request](../schemas/slider-part-paint-request.schema.json) is an object with
+`schemaVersion: "0.1.0"`, `part` (`track` or `thumb`), boolean `readOnly`, a complete
+[theme request](../schemas/theme-resolution-request.schema.json), `surface`,
+`size`, `appearance`, `interactionAppearance`, `foregroundRole`, `adjacentRanges`,
+`minimumContentContrast` and `minimumEdgeContrast`. `postTreatmentBackdrop` and
+`surroundingRanges` are optional actual inputs. Omission is distinct from `null`;
+supplied values must validate even when the selected part does not use them.
+
+Each range is a named `lower`/`upper` object containing complete opaque sRGB
+colors. Every lower component must be at most its upper component. The thresholds
+are finite numbers from 1 through 21. Named records do not accept positional
+arrays, and part and foreground role names do not accept object alternatives.
+Unknown members, decoded duplicate members, unsupported versions, invalid colors,
+incoherent states and incomplete appearance profiles are errors. Validate the
+complete authored profiles, including responses outside the selected part,
+family or phase. Reuse the existing theme, environment, surface, appearance and
+[common contrast](73-common-background-contrast.md) contracts; no backend identity is an input.
+
+The [result](../schemas/slider-part-paint-ir.schema.json) retains
+`schemaVersion: "0.1.0"`, `part`, `readOnly`, actual `layoutDirection`, selected
+`phase`, selected `response` and `paint`. Paint retains its own version, the
+complete [Slider body IR](../schemas/slider-part-body-ir.schema.json), and focus
+IR exactly when the thumb is focused. The full body state set includes dragging;
+phase precedence and read-only coherence follow [Slider appearance](71-slider-appearance.md).
+Rest has the identity response (`bodyMix: 0`, `depthScale: 1`).
+
+The body publishes the final opaque pigment, readability decisions, physical
+lighting and complete region geometry. Navigation retains the original surface
+binding and uses the final response-adjusted silhouette. In a Frost legibility
+fallback, the body's final representation supersedes the preliminary Frost
+representation in that navigation binding for body painting. Do not reconstruct
+body paint from the navigation binding.
+
 ## Reference and evidence
 
 The typed Rust result retains part, readOnly, actual layoutDirection, selected
-phase and response plus the complete body/focus paint IR. Rust is the reference, not this contract's
-normative definition. No new source parser or renderer dependency is introduced.
+phase and response plus the complete body/focus paint IR. Rust is the reference,
+not this contract's normative definition. `resolve_slider_part_paint_source`
+admits the public records and delegates to the existing typed resolver.
 The shared private paint core accepts genuine scalar or ranged backgrounds;
 geometry helpers accept only their actual geometry inputs. Existing Command,
 Toggle and base-surface behavior remains compatible.
@@ -51,6 +87,22 @@ persistent families, checking complete states, response body arithmetic, scaled
 extrusion and thumb-only navigation matching the body silhouette. Negative
 tests cover incompatible mixed backgrounds, missing/empty ranges and invalid
 materials. Existing Command/Toggle/base/focus tests guard shared regressions.
+
+`resina-slider-part-paint <path|->` reads one UTF-8 request from a file or stdin,
+bounded to 1 MiB. Success exits 0 with one strict JSON result and no diagnostic;
+failure exits 1 with no result and a diagnostic; usage errors exit 2.
+The [portable checker](../tools/check_slider_part_paint_backend.py) runs the
+[authored cases](../conformance/ir/slider-part-paint-cases.json) and public phase
+matrix through that protocol, repeating successes deterministically. It checks
+full IR against independent sRGB contrast, response, pigment and contour
+arithmetic for the explicit rectangular, upward-lighting fixture. These cases
+cover both directions and parts, all persistent families, Tier 0, common range
+fallbacks, zero compressed depth, all three advanced Frost representations and
+their legibility/preference fallbacks. They do not certify arbitrary shape
+calibration or a complete component. Source tests additionally prove complete
+typed/source parity, decoded-name handling, strict rejection and transport limits.
+Nonzero advanced Frost responses over a nonblack backdrop verify that mixing
+precedes composition, with thresholds separating the two arithmetic orders.
 
 Part-local paint does not assemble the control. A complete Slider must still
 place both parts consistently with current value/presentation, prove real

@@ -1,0 +1,2418 @@
+[
+  {
+    "name": "track rest",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "thumb rest",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "track hover",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "thumb hover",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "track pressed",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "thumb pressed",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "track dragging",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "dragging"
+  },
+  {
+    "name": "thumb dragging",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "dragging"
+  },
+  {
+    "name": "track disabled",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "disabled",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "thumb disabled",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "disabled",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "readOnly",
+    "requestChanges": [
+      {
+        "path": "/readOnly",
+        "value": true
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "readOnly"
+  },
+  {
+    "name": "readOnlyHover",
+    "requestChanges": [
+      {
+        "path": "/readOnly",
+        "value": true
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "readOnlyHover"
+  },
+  {
+    "name": "disabled",
+    "requestChanges": [
+      {
+        "path": "/readOnly",
+        "value": true
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "disabled",
+          "focused"
+        ]
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "unsupported version",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "9.9.9"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "unknown part",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "knob"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "object part",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": {
+          "track": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "object role",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": {
+          "content.primary": null
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "empty adjacent",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "empty surrounding",
+    "requestChanges": [
+      {
+        "path": "/surroundingRanges",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "null surrounding",
+    "requestChanges": [
+      {
+        "path": "/surroundingRanges",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "null backdrop",
+    "requestChanges": [
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "inverted range",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0/upper/components",
+        "value": [
+          0.8,
+          0.8,
+          0.8
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "transparent range",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0/lower/alpha",
+        "value": 0.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "unknown range member",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "extra": 1
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "positional range",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0",
+        "value": [
+          {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "noncontrol role",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "surface.base"
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "unsupported state",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "drag without press",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "dragging"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "stale rest",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "disabled press",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "disabled",
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "out of range response",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/thumb/elastomer/dragging/depthScale",
+        "value": 2
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "response-adjusted content failure",
+    "requestChanges": [
+      {
+        "path": "/minimumContentContrast",
+        "value": 4.5
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "positional key light",
+    "requestChanges": [
+      {
+        "path": "/appearance/keyLight",
+        "value": [
+          "0.1.0",
+          {
+            "x": 0,
+            "y": -1
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "read only press",
+    "requestChanges": [
+      {
+        "path": "/readOnly",
+        "value": true
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "incompatible adjacent ranges",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            }
+          },
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "incompatible focus ranges",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/surroundingRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "boolean threshold",
+    "requestChanges": [
+      {
+        "path": "/minimumContentContrast",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "numeric readOnly",
+    "requestChanges": [
+      {
+        "path": "/readOnly",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "missing range alpha",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0/lower",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "non-sRGB range",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0/lower/colorSpace",
+        "value": "display-p3"
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "out of range channel",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0/lower/components",
+        "value": [
+          1.1,
+          1,
+          1
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "positional response",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/track/cast/hover",
+        "value": [
+          -0.425,
+          0.025
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "nondegenerate multiple backgrounds",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.7,
+                0.8,
+                0.9
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            }
+          },
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/surroundingRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.7,
+                0.8,
+                0.9
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "common edge and focus fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"cast\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.base\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "zero compressed depth",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      },
+      {
+        "path": "/interactionAppearance/thumb/cast/dragging/depthScale",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "dragging"
+  },
+  {
+    "name": "translucentPigmented legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 4.5
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "translucentPigmented unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "translucentPigmented hover legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 6.0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "translucentPigmented track hover unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.15
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "translucentPigmented dragging legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 6.0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "dragging"
+  },
+  {
+    "name": "translucentPigmented track dragging unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.45
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "translucentPigmented reducedTransparency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "translucentPigmented highContrast",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "regularBackdrop legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 4.5
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "regularBackdrop unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "regularBackdrop hover legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 6.0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "regularBackdrop track hover unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.15
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "regularBackdrop dragging legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 6.0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "dragging"
+  },
+  {
+    "name": "regularBackdrop track dragging unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.45
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "regularBackdrop reducedTransparency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "regularBackdrop highContrast",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "shapedBackdrop legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 4.5
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "shapedBackdrop unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "shapedBackdrop hover legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 6.0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "shapedBackdrop track hover unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.15
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "shapedBackdrop dragging legibility fallback",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 6.0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "dragging"
+  },
+  {
+    "name": "shapedBackdrop track dragging unresolved translucency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "pressed",
+          "dragging",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "alpha": 1
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.45
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "shapedBackdrop reducedTransparency",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "shapedBackdrop highContrast",
+    "requestChanges": [
+      {
+        "path": "/theme/themeSource",
+        "value": "{\"schemaVersion\":\"0.1.0\",\"tokens\":{\"palette\":{\"$type\":\"color\",\"base\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaque\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[1,1,1],\"alpha\":1}},\"opaqueAlt\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0.8,0.7,0.6]}},\"translucent\":{\"$value\":{\"colorSpace\":\"display-p3\",\"components\":[0.25,0.5,0.75],\"hex\":\"#336699\",\"alpha\":0.35}},\"black\":{\"$value\":{\"colorSpace\":\"srgb\",\"components\":[0,0,0],\"alpha\":1}}},\"space\":{\"$type\":\"dimension\",\"base\":{\"$value\":{\"value\":16,\"unit\":\"px\"}}},\"type\":{\"size\":{\"$type\":\"dimension\",\"$value\":{\"value\":20,\"unit\":\"px\"}},\"weight\":{\"$type\":\"fontWeight\",\"$value\":\"semi-bold\"},\"line\":{\"$type\":\"number\",\"$value\":1.4},\"tracking\":{\"$type\":\"dimension\",\"$value\":{\"value\":0.25,\"unit\":\"px\"}}},\"depth\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":2,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":6,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":8,\"unit\":\"px\"}}},\"radius\":{\"$type\":\"dimension\",\"0\":{\"$value\":{\"value\":0,\"unit\":\"px\"}},\"1\":{\"$value\":{\"value\":4,\"unit\":\"px\"}},\"2\":{\"$value\":{\"value\":8,\"unit\":\"px\"}},\"3\":{\"$value\":{\"value\":12,\"unit\":\"px\"}},\"4\":{\"$value\":{\"value\":16,\"unit\":\"px\"}},\"5\":{\"$value\":{\"value\":24,\"unit\":\"px\"}},\"6\":{\"$value\":{\"value\":32,\"unit\":\"px\"}}}},\"materialAssignments\":{\"schemaVersion\":\"0.2.0\",\"surface\":{\"base\":\"cast\",\"content\":\"cast\",\"chrome\":\"frost\",\"raised\":\"cast\",\"transient\":\"gel\"},\"control\":{\"passive\":\"cast\",\"interactive\":\"frost\",\"primary\":\"elastomer\"},\"feedback\":{\"focus\":\"elastomer\",\"selection\":\"gel\",\"drag\":\"gel\"}},\"frostPigment\":{\"schemaVersion\":\"0.1.0\",\"tintStrength\":0.55},\"colorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.base\",\"selection\":\"palette.base\"}},\"opaqueColorAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"accent.primary\":\"palette.base\",\"accent.secondary\":\"palette.base\",\"accent.tertiary\":\"palette.base\",\"surface.base\":\"palette.opaqueAlt\",\"surface.low\":\"palette.base\",\"surface.high\":\"palette.base\",\"surface.chrome\":\"palette.base\",\"content.primary\":\"palette.black\",\"content.secondary\":\"palette.black\",\"content.muted\":\"palette.black\",\"content.inverse\":\"palette.black\",\"outline\":\"palette.black\",\"outline.strong\":\"palette.black\",\"status.error\":\"palette.base\",\"status.warning\":\"palette.base\",\"status.success\":\"palette.base\",\"status.info\":\"palette.base\",\"focus\":\"palette.black\",\"selection\":\"palette.base\"}},\"spatialAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"space.control.inline\":\"space.base\",\"space.control.block\":\"space.base\",\"space.container.inner\":\"space.base\",\"space.container.outer\":\"space.base\",\"space.group\":\"space.base\",\"space.section\":\"space.base\",\"space.page\":\"space.base\"}},\"typographyAssignments\":{\"schemaVersion\":\"0.1.0\",\"roles\":{\"display\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"titleLarge\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"title\":{\"familyRole\":\"display\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"heading\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"bodyLarge\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"body\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"label\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"caption\":{\"familyRole\":\"sans\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.25},\"numeric\":{\"familyRole\":\"numeric\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0},\"code\":{\"familyRole\":\"monospace\",\"fontSize\":\"type.size\",\"fontWeight\":\"type.weight\",\"lineHeight\":\"type.line\",\"letterSpacing\":\"type.tracking\",\"minimumTextScale\":1.0}}}}"
+      },
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "full"
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": true
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": true
+      },
+      {
+        "path": "/part",
+        "value": "thumb"
+      },
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/postTreatmentBackdrop",
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  }
+]

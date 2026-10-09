@@ -236,6 +236,9 @@ IR. It accounts for reference arithmetic; spatial adjacency remains explicit.
 [Slider part paint](spec/76-slider-part-paint.md) applies actual part responses
 before readability and geometry, retains dragging/read-only states, and places
 navigation paint on the thumb against all supplied surrounding ranges.
+Run `resina-slider-part-paint <path|->` and
+`python tools/check_slider_part_paint_backend.py -- <backend-command> -` for the
+portable part-paint request, complete IR and independent conformance cases.
 
 [Coherent Slider snapshots](spec/77-slider-snapshot.md) join actual visible value,
 interaction, part allocation, paint, semantics and reserved target coverage.
