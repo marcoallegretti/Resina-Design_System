@@ -1,0 +1,858 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-snapshot-ir:0.1.0",
+  "title": "Resina Coherent Slider Snapshot IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "presentation",
+    "layout",
+    "track",
+    "thumb",
+    "label",
+    "labelOrigin",
+    "labelForeground",
+    "labelBackground",
+    "labelContrastRatio",
+    "trackContrastRatio",
+    "thumbContrastRatio",
+    "hitRegion",
+    "accessibility",
+    "reducedMotion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "presentation": {
+      "$ref": "urn:resina:schema:slider-presentation:0.1.0"
+    },
+    "layout": {
+      "$ref": "urn:resina:schema:slider-layout-ir:0.1.0"
+    },
+    "track": {
+      "$ref": "urn:resina:schema:slider-part-paint-ir:0.1.0",
+      "properties": {
+        "part": {
+          "const": "track"
+        }
+      }
+    },
+    "thumb": {
+      "$ref": "urn:resina:schema:slider-part-paint-ir:0.1.0",
+      "properties": {
+        "part": {
+          "const": "thumb"
+        }
+      }
+    },
+    "label": {
+      "$ref": "urn:resina:schema:command-label-ir:0.1.0"
+    },
+    "labelOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      }
+    },
+    "labelForeground": {
+      "$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"
+    },
+    "labelBackground": {
+      "$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"
+    },
+    "labelContrastRatio": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 21
+    },
+    "trackContrastRatio": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 21
+    },
+    "thumbContrastRatio": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 21
+    },
+    "hitRegion": {
+      "$ref": "urn:resina:schema:hit-region-ir:0.1.0"
+    },
+    "accessibility": {
+      "$ref": "urn:resina:schema:slider-accessibility-ir:0.1.0"
+    },
+    "reducedMotion": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "layoutDirection": {
+                "const": "ltr"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "properties": {
+              "layoutDirection": {
+                "const": "ltr"
+              }
+            }
+          },
+          "thumb": {
+            "properties": {
+              "layoutDirection": {
+                "const": "ltr"
+              }
+            }
+          },
+          "label": {
+            "properties": {
+              "layoutDirection": {
+                "const": "ltr"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "layoutDirection": {
+                "const": "rtl"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "properties": {
+              "layoutDirection": {
+                "const": "rtl"
+              }
+            }
+          },
+          "thumb": {
+            "properties": {
+              "layoutDirection": {
+                "const": "rtl"
+              }
+            }
+          },
+          "label": {
+            "properties": {
+              "layoutDirection": {
+                "const": "rtl"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "orientation": {
+                "const": "horizontal"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "orientation": {
+                "const": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "orientation": {
+                "const": "vertical"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "orientation": {
+                "const": "vertical"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "properties": {
+              "phase": {
+                "const": "rest"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "properties": {
+              "phase": {
+                "const": "rest"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "properties": {
+              "phase": {
+                "const": "hover"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "properties": {
+              "phase": {
+                "const": "hover"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "properties": {
+              "phase": {
+                "const": "pressed"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "properties": {
+              "phase": {
+                "const": "pressed"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "properties": {
+              "phase": {
+                "const": "dragging"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "properties": {
+              "phase": {
+                "const": "dragging"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "properties": {
+              "phase": {
+                "const": "disabled"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "properties": {
+              "phase": {
+                "const": "disabled"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "properties": {
+              "phase": {
+                "const": "readOnly"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "properties": {
+              "phase": {
+                "const": "readOnly"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "properties": {
+              "phase": {
+                "const": "readOnlyHover"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "properties": {
+              "phase": {
+                "const": "readOnlyHover"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/rest"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "$ref": "#/$defs/rest"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/rest"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/hover"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "$ref": "#/$defs/hover"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/hover"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/focused"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "$ref": "#/$defs/focused"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/focused"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/pressed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "$ref": "#/$defs/pressed"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/pressed"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/disabled"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "$ref": "#/$defs/disabled"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/disabled"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/dragging"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "thumb": {
+            "$ref": "#/$defs/dragging"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/dragging"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "readOnly": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "properties": {
+              "readOnly": {
+                "const": true
+              }
+            }
+          },
+          "thumb": {
+            "properties": {
+              "readOnly": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "enabled": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "not": {
+              "$ref": "#/$defs/disabled"
+            }
+          },
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/disabled"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "focused": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/focused"
+          },
+          "thumb": {
+            "$ref": "#/$defs/focused"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "readOnly": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "properties": {
+              "readOnly": {
+                "const": false
+              }
+            }
+          },
+          "thumb": {
+            "properties": {
+              "readOnly": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "enabled": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "$ref": "#/$defs/disabled"
+          },
+          "thumb": {
+            "$ref": "#/$defs/disabled"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "focused": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "track": {
+            "not": {
+              "$ref": "#/$defs/focused"
+            }
+          },
+          "thumb": {
+            "not": {
+              "$ref": "#/$defs/focused"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "rest": {
+      "properties": {
+        "paint": {
+          "properties": {
+            "body": {
+              "properties": {
+                "states": {
+                  "properties": {
+                    "states": {
+                      "contains": {
+                        "const": "rest"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hover": {
+      "properties": {
+        "paint": {
+          "properties": {
+            "body": {
+              "properties": {
+                "states": {
+                  "properties": {
+                    "states": {
+                      "contains": {
+                        "const": "hover"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "focused": {
+      "properties": {
+        "paint": {
+          "properties": {
+            "body": {
+              "properties": {
+                "states": {
+                  "properties": {
+                    "states": {
+                      "contains": {
+                        "const": "focused"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "pressed": {
+      "properties": {
+        "paint": {
+          "properties": {
+            "body": {
+              "properties": {
+                "states": {
+                  "properties": {
+                    "states": {
+                      "contains": {
+                        "const": "pressed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "disabled": {
+      "properties": {
+        "paint": {
+          "properties": {
+            "body": {
+              "properties": {
+                "states": {
+                  "properties": {
+                    "states": {
+                      "contains": {
+                        "const": "disabled"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dragging": {
+      "properties": {
+        "paint": {
+          "properties": {
+            "body": {
+              "properties": {
+                "states": {
+                  "properties": {
+                    "states": {
+                      "contains": {
+                        "const": "dragging"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
