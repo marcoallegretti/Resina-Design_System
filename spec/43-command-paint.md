@@ -10,7 +10,7 @@ The body phase is `disabled` when disabled is present, otherwise `pressed` when 
 
 ## Authored responses
 
-The [appearance schema](../schemas/command-appearance.schema.json) requires explicit hover, pressed and disabled responses for each of Cast, Frost and Elastomer. Every profile MUST be validated, including families and phases not selected by this request. There are no backend defaults. Rest is the identity response: `bodyMix = 0` and `depthScale = 1`.
+The appearance document, its material-family collection, each family's phase collection, and every response MUST be JSON objects with named members. Positional arrays are invalid. The [appearance schema](../schemas/command-appearance.schema.json) requires explicit hover, pressed and disabled responses for each of Cast, Frost and Elastomer. Every profile MUST be validated, including families and phases not selected by this request. There are no backend defaults. Rest is the identity response: `bodyMix = 0` and `depthScale = 1`.
 
 `bodyMix` MUST be finite and in [-1, 1]. For an encoded sRGB body channel `c`, a negative mix `m` resolves to `c * (1 + m)`; a nonnegative mix resolves to `c + (1 - c) * m`. Alpha is preserved. This uses the same encoded sRGB shade/lift convention as the existing opaque pigment contract. The response applies to both the opaque fallback body and Frost's actual portable body before legibility selection. Foreground and semantic color role remain unchanged. Final content contrast MUST be calculated against the actual resolved body, never the unmodified rest body. Insufficient contrast MUST fail; the operation MUST NOT silently reduce the authored response.
 

@@ -50,7 +50,21 @@
     "unknown family": "unknown field",
     "null optional color": "invalid type",
     "unsupported version": "schemaVersion must be 0.1.0",
-    "opaque request source tagged foreground role": "a string"
+    "opaque request source tagged foreground role": "a string",
+    "reject positional command appearance": "command appearance object",
+    "reject positional command family collection": "command material family object",
+    "reject positional cast phase collection": "command phase collection object",
+    "reject positional cast hover response": "command response object",
+    "reject positional cast pressed response": "command response object",
+    "reject positional cast disabled response": "command response object",
+    "reject positional frost phase collection": "command phase collection object",
+    "reject positional frost hover response": "command response object",
+    "reject positional frost pressed response": "command response object",
+    "reject positional frost disabled response": "command response object",
+    "reject positional elastomer phase collection": "command phase collection object",
+    "reject positional elastomer hover response": "command response object",
+    "reject positional elastomer pressed response": "command response object",
+    "reject positional elastomer disabled response": "command response object"
   },
   "focus_indicator": {
     "both low contrast colors fail explicitly": "contrast is insufficient",

@@ -430,5 +430,314 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "reject positional command appearance",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance",
+        "value": [
+          "0.1.0",
+          {
+            "cast": {
+              "hover": {
+                "bodyMix": -0.035,
+                "depthScale": 1
+              },
+              "pressed": {
+                "bodyMix": -0.05,
+                "depthScale": 0.9
+              },
+              "disabled": {
+                "bodyMix": -0.16,
+                "depthScale": 0.7
+              }
+            },
+            "frost": {
+              "hover": {
+                "bodyMix": -0.05,
+                "depthScale": 1
+              },
+              "pressed": {
+                "bodyMix": -0.06,
+                "depthScale": 0.85
+              },
+              "disabled": {
+                "bodyMix": -0.14,
+                "depthScale": 0.7
+              }
+            },
+            "elastomer": {
+              "hover": {
+                "bodyMix": 0.06,
+                "depthScale": 1
+              },
+              "pressed": {
+                "bodyMix": -0.09,
+                "depthScale": 0.25
+              },
+              "disabled": {
+                "bodyMix": 0.16,
+                "depthScale": 0.7
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional command family collection",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles",
+        "value": [
+          {
+            "hover": {
+              "bodyMix": -0.035,
+              "depthScale": 1
+            },
+            "pressed": {
+              "bodyMix": -0.05,
+              "depthScale": 0.9
+            },
+            "disabled": {
+              "bodyMix": -0.16,
+              "depthScale": 0.7
+            }
+          },
+          {
+            "hover": {
+              "bodyMix": -0.05,
+              "depthScale": 1
+            },
+            "pressed": {
+              "bodyMix": -0.06,
+              "depthScale": 0.85
+            },
+            "disabled": {
+              "bodyMix": -0.14,
+              "depthScale": 0.7
+            }
+          },
+          {
+            "hover": {
+              "bodyMix": 0.06,
+              "depthScale": 1
+            },
+            "pressed": {
+              "bodyMix": -0.09,
+              "depthScale": 0.25
+            },
+            "disabled": {
+              "bodyMix": 0.16,
+              "depthScale": 0.7
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional cast phase collection",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/cast",
+        "value": [
+          {
+            "bodyMix": -0.035,
+            "depthScale": 1
+          },
+          {
+            "bodyMix": -0.05,
+            "depthScale": 0.9
+          },
+          {
+            "bodyMix": -0.16,
+            "depthScale": 0.7
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional cast hover response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/cast/hover",
+        "value": [
+          -0.035,
+          1
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional cast pressed response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/cast/pressed",
+        "value": [
+          -0.05,
+          0.9
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional cast disabled response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/cast/disabled",
+        "value": [
+          -0.16,
+          0.7
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional frost phase collection",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/frost",
+        "value": [
+          {
+            "bodyMix": -0.05,
+            "depthScale": 1
+          },
+          {
+            "bodyMix": -0.06,
+            "depthScale": 0.85
+          },
+          {
+            "bodyMix": -0.14,
+            "depthScale": 0.7
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional frost hover response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/frost/hover",
+        "value": [
+          -0.05,
+          1
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional frost pressed response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/frost/pressed",
+        "value": [
+          -0.06,
+          0.85
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional frost disabled response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/frost/disabled",
+        "value": [
+          -0.14,
+          0.7
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional elastomer phase collection",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer",
+        "value": [
+          {
+            "bodyMix": 0.06,
+            "depthScale": 1
+          },
+          {
+            "bodyMix": -0.09,
+            "depthScale": 0.25
+          },
+          {
+            "bodyMix": 0.16,
+            "depthScale": 0.7
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional elastomer hover response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": [
+          0.06,
+          1
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional elastomer pressed response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/pressed",
+        "value": [
+          -0.09,
+          0.25
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "reject positional elastomer disabled response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/disabled",
+        "value": [
+          0.16,
+          0.7
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]
