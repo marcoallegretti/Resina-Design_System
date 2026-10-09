@@ -49,6 +49,7 @@ impl EdgeContrastResult {
 #[derive(Debug)]
 pub enum EdgeContrastError {
     Parse(serde_json::Error),
+    InvalidRequestShape,
     Request(serde_json::Error),
     UnsupportedVersion,
     InvalidColorSpace(&'static str),
@@ -65,6 +66,9 @@ impl fmt::Display for EdgeContrastError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Parse(error) => write!(formatter, "edge request parse failed: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("edge contrast request must be a JSON object")
+            }
             Self::Request(error) => write!(formatter, "invalid edge request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::InvalidColorSpace(field) => write!(formatter, "{field} must use sRGB"),
@@ -95,6 +99,9 @@ fn parse_color(field: &'static str, input: SrgbInput) -> Result<SrgbFallback, Ed
 
 pub fn resolve_edge_contrast_source(source: &str) -> Result<EdgeContrastResult, EdgeContrastError> {
     let document = parse_token_document(source).map_err(EdgeContrastError::Parse)?;
+    if !document.is_object() {
+        return Err(EdgeContrastError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(serde_json::Value::as_str)

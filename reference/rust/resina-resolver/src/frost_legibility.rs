@@ -56,6 +56,7 @@ impl FrostLegibilityResult {
 #[derive(Debug)]
 pub enum FrostLegibilityError {
     Parse(serde_json::Error),
+    InvalidRequestShape,
     Request(serde_json::Error),
     UnsupportedVersion,
     InvalidColorSpace(&'static str),
@@ -72,6 +73,9 @@ impl fmt::Display for FrostLegibilityError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Parse(error) => write!(formatter, "legibility request parse failed: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("Frost legibility request must be a JSON object")
+            }
             Self::Request(error) => write!(formatter, "invalid legibility request: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::InvalidColorSpace(field) => write!(formatter, "{field} must use sRGB"),
@@ -111,6 +115,9 @@ pub fn resolve_frost_legibility_source(
     source: &str,
 ) -> Result<FrostLegibilityResult, FrostLegibilityError> {
     let document = parse_token_document(source).map_err(FrostLegibilityError::Parse)?;
+    if !document.is_object() {
+        return Err(FrostLegibilityError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(serde_json::Value::as_str)
