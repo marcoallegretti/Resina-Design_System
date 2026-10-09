@@ -1,4 +1,8 @@
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
+use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", try_from = "SliderValueInput")]
@@ -10,9 +14,16 @@ pub struct SliderValue {
     value: f64,
 }
 
+struct SliderValueInput {
+    schema_version: String,
+    minimum: f64,
+    maximum: f64,
+    value: f64,
+}
+
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct SliderValueInput {
+struct SliderValueMembers {
     #[serde(deserialize_with = "crate::deserialize_version")]
     schema_version: String,
     #[serde(deserialize_with = "deserialize_number")]
@@ -21,6 +32,28 @@ struct SliderValueInput {
     maximum: f64,
     #[serde(deserialize_with = "deserialize_number")]
     value: f64,
+}
+
+impl<'de> Deserialize<'de> for SliderValueInput {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ValueVisitor;
+        impl<'de> Visitor<'de> for ValueVisitor {
+            type Value = SliderValueInput;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a slider value object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = SliderValueMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(SliderValueInput {
+                    schema_version: input.schema_version,
+                    minimum: input.minimum,
+                    maximum: input.maximum,
+                    value: input.value,
+                })
+            }
+        }
+        deserializer.deserialize_map(ValueVisitor)
+    }
 }
 
 fn deserialize_number<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<f64, D::Error> {

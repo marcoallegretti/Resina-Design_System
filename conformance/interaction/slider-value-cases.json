@@ -526,5 +526,16 @@
     },
     "requestSchemaValid": true,
     "errorContains": "exact binary64"
+  },
+  {
+    "name": "positional value record",
+    "request": [
+      "0.1.0",
+      0.0,
+      100.0,
+      50.0
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "object"
   }
 ]
