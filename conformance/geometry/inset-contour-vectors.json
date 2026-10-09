@@ -1019,5 +1019,160 @@
       "inset": 2
     },
     "errorContains": "invalid type"
+  },
+  {
+    "name": "logical radii positional record",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 80,
+        "height": 60
+      },
+      "radii": [
+        {
+          "x": 3,
+          "y": 4
+        },
+        {
+          "x": 5,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 8
+        },
+        {
+          "x": 9,
+          "y": 10
+        }
+      ],
+      "inset": 2
+    },
+    "errorContains": "logical corner radii object"
+  },
+  {
+    "name": "topStart positional corner",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 80,
+        "height": 60
+      },
+      "radii": {
+        "topStart": [
+          3,
+          4
+        ],
+        "topEnd": {
+          "x": 5,
+          "y": 6
+        },
+        "bottomEnd": {
+          "x": 7,
+          "y": 8
+        },
+        "bottomStart": {
+          "x": 9,
+          "y": 10
+        }
+      },
+      "inset": 2
+    },
+    "errorContains": "corner radius object"
+  },
+  {
+    "name": "topEnd positional corner",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 80,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 3,
+          "y": 4
+        },
+        "topEnd": [
+          5,
+          6
+        ],
+        "bottomEnd": {
+          "x": 7,
+          "y": 8
+        },
+        "bottomStart": {
+          "x": 9,
+          "y": 10
+        }
+      },
+      "inset": 2
+    },
+    "errorContains": "corner radius object"
+  },
+  {
+    "name": "bottomEnd positional corner",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 80,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 3,
+          "y": 4
+        },
+        "topEnd": {
+          "x": 5,
+          "y": 6
+        },
+        "bottomEnd": [
+          7,
+          8
+        ],
+        "bottomStart": {
+          "x": 9,
+          "y": 10
+        }
+      },
+      "inset": 2
+    },
+    "errorContains": "corner radius object"
+  },
+  {
+    "name": "bottomStart positional corner",
+    "requestSchemaValid": false,
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 80,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 3,
+          "y": 4
+        },
+        "topEnd": {
+          "x": 5,
+          "y": 6
+        },
+        "bottomEnd": {
+          "x": 7,
+          "y": 8
+        },
+        "bottomStart": [
+          9,
+          10
+        ]
+      },
+      "inset": 2
+    },
+    "errorContains": "corner radius object"
   }
 ]
