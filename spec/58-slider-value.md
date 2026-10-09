@@ -12,7 +12,10 @@ The [request](../schemas/slider-value-request.schema.json) requires `schemaVersi
 `0.1.0` and explicit numeric minimum, maximum and value. All three must be finite;
 minimum must be strictly less than maximum; value must lie in the inclusive
 interval. Unknown, missing, duplicate or wrongly typed members and unsupported
-versions fail. The Rust reference reads floating JSON numbers as binary64 and
+versions fail. The request MUST be an object with these named members; positional
+arrays MUST NOT be interpreted as value records. Member order is immaterial,
+and duplicate decoded names fail even when written with different JSON escapes.
+The Rust reference reads floating JSON numbers as binary64 and
 rejects integer-form numbers that would lose significant bits during conversion,
 including literals larger than 64 bits. The duplicate-safe source gate precedes
 raw-literal precision checks; no rounded value is published.
