@@ -1121,6 +1121,7 @@ def main():
         + 2
     )
     for schema, vectors in (
+        ("schemas/slider-appearance.schema.json", "conformance/appearance/slider-appearance-vectors.json"),
         ("schemas/theme-source.schema.json", "conformance/themes/source-vectors.json"),
         ("schemas/color-assignments.schema.json", "conformance/color/role-assignment-vectors.json"),
         ("schemas/opaque-color-assignments.schema.json", "conformance/color/opaque-assignment-vectors.json"),

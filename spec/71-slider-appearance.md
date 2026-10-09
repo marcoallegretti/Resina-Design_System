@@ -15,6 +15,12 @@ coefficient MUST be validated, including unselected parts, families and phases.
 No profile is inferred from another part, family or phase. Rest is the defined
 identity response: bodyMix zero and depthScale one.
 
+The document, each part's family collection and each family's phase collection
+MUST be objects with their required named members. Positional arrays MUST NOT be
+interpreted as these records. Unknown, missing and duplicate decoded member names
+fail; object member order is immaterial. Each response follows the same object
+requirement in the command appearance contract.
+
 Responses use the checked bodyMix and depthScale domains and mathematics of
 [command appearance](43-command-paint.md#authored-responses). Sharing those
 coefficient laws does not share command state precedence. Depth compression is
@@ -58,6 +64,10 @@ fallbacks. Static endpoints remain available when motion is reduced.
 The [public appearance fixture](../conformance/appearance/slider-appearance.json)
 uses distinct arithmetic coefficients to detect incorrect part/family/phase
 selection. It is not a production theme or visual calibration. The
+[record vectors](../conformance/appearance/slider-appearance-vectors.json) pair a
+complete named document with complete positional substitutions at every document,
+part and family boundary. Their negative outcomes require rejection without
+depending on implementation-specific diagnostic wording. The
 [phase cases](../conformance/interaction/slider-phase-cases.json) cover every
 nonempty combination of supported signals for writable and read-only controls,
 plus unsupported-state diagnostics. Their
