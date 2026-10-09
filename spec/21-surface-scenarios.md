@@ -1,5 +1,8 @@
 # Headless surface scenarios (candidate, 0.4.0)
 
+A scenario MUST be a JSON object, including when embedded in another headless
+request. Positional array records are invalid.
+
 A [surface scenario](../schemas/surface-scenario.schema.json) contains one complete [headless resolution request](19-headless-resolution.md) under `resolution` and one [surface binding intent](20-surface-binding.md) under `surface`. Its own `schemaVersion` is `0.4.0`; the nested binding remains 0.2.0 and requires a treatment stack. All three members are required; unknown members and unsupported versions are invalid. The entire source is parsed as strict JSON, including rejection of duplicate object members and nonfinite numbers before resolution. The [0.3.0](../schemas/versions/surface-scenario-0.3.0.schema.json), [0.2.0](../schemas/versions/surface-scenario-0.2.0.schema.json), and [0.1.0](../schemas/versions/surface-scenario-0.1.0.schema.json) scenario schemas remain available for migration tooling.
 
 The operation resolves the semantic request first, then binds the surface against that complete result. It publishes exactly one [bound surface](../schemas/surface-binding-result.schema.json) only if both steps succeed. Errors name the failed stage, and no partial result is published. `resina-surface-bind <path|->` performs this operation from a UTF-8 file or standard input. This scenario is headless conformance input; its output retains the limitations of the bound-surface contract and is not render-ready Resina IR.
