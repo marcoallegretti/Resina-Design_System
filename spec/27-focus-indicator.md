@@ -1,5 +1,7 @@
 # Focus indicator on a bound surface (candidate, 0.1.0)
 
+The request MUST be a JSON object. Positional arrays and other non-object roots are invalid.
+
 A focused [surface intent](20-surface-binding.md) requires a visible navigation cue independent of its body, edge, material, and other active states. The [focus indicator request](../schemas/focus-indicator-request.schema.json) combines one [surface scenario](21-surface-scenarios.md) with the final opaque sRGB `surroundingColor` behind the indicator. The bound state set MUST include `focused`; it MAY simultaneously include selection, validation, activity, availability, interaction, and base states. No state is removed or given visual precedence by this operation.
 
 The [result](../schemas/focus-indicator-result.schema.json) retains the complete bound surface and describes a separate outer stroke following its semantic shape. The stroke is 2 logical pixels wide, with a 2 logical pixel gap from the bound surface's outer edge. It MUST remain visible with blur, transparency, and advanced effects disabled. The ring MUST NOT replace the surface edge, content, or another state channel. A backend must reserve enough paint space to prevent clipping and scale the logical dimensions with its output scale. Shape realization remains governed by [surface shape and form](09-geometry.md); this contract does not prescribe a path primitive.

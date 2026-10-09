@@ -122,10 +122,19 @@ def main():
         duplicate_member = ' {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1}, '
         duplicate = base_source.replace(member, member + duplicate_member + member, 1)
         check_failure(command, duplicate, arguments.timeout, "duplicate request member")
+        fields = ("schemaVersion", "scenario", "surroundingColor")
+        positional = [base[field] for field in fields]
+        unsupported = ["9.9.9", *positional[1:]]
+        for index, request in enumerate((
+            positional, unsupported, ["0.1.0"], [*positional, False], [], None, True, 1, "request"
+        )):
+            if not list(request_validator.iter_errors(request)):
+                raise ValueError("non-object request unexpectedly satisfies the schema")
+            check_failure(command, json.dumps(request), arguments.timeout, f"non-object request {index}")
     except (AssertionError, OSError, ValueError) as error:
         print(f"FAIL {error}", file=sys.stderr)
         return 1
-    print(f"Focus indicator backend passed {len(cases) + 1} conformance cases")
+    print(f"Focus indicator backend passed {len(cases) + 10} conformance cases")
     return 0
 
 

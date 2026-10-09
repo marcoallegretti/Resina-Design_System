@@ -2,6 +2,7 @@ import contextlib
 import copy
 import importlib
 import io
+import json
 import subprocess
 import unittest
 from unittest.mock import patch
@@ -39,7 +40,10 @@ class BackendDiagnosticTests(unittest.TestCase):
             stack.enter_context(contextlib.redirect_stderr(io.StringIO()))
             if hasattr(module, "run_backend"):
                 stack.enter_context(patch.object(module, "run_backend", return_value=response))
-            stack.enter_context(patch("check_color_guard_backend.run_backend", return_value=response))
+            if callable(response):
+                stack.enter_context(patch("check_color_guard_backend.run_backend", side_effect=response))
+            else:
+                stack.enter_context(patch("check_color_guard_backend.run_backend", return_value=response))
             # Successful results have their own operation-specific tests. Here the
             # real case schemas, requests, and every rejection path remain active.
             stack.enter_context(patch.object(module, "check_success"))
@@ -67,6 +71,20 @@ class BackendDiagnosticTests(unittest.TestCase):
                 with self.subTest(operation=operation, response=(status, stdout, stderr)):
                     response = subprocess.CompletedProcess([], status, stdout, stderr)
                     self.assertEqual(self.run_failures(operation, fixture, response), 1)
+
+    def test_focus_and_readability_checkers_reject_positional_success(self):
+        for operation, fixture, _ in OPERATIONS:
+            if operation not in ("focus_indicator", "frost_surface_readability", "surface_readability"):
+                continue
+            for version in ("0.1.0", "9.9.9"):
+                with self.subTest(operation=operation, version=version):
+                    def respond(_command, source, _timeout):
+                        request = json.loads(source)
+                        if isinstance(request, list) and request and request[0] == version:
+                            return subprocess.CompletedProcess([], 0, "{}", "")
+                        return subprocess.CompletedProcess([], 1, "", "Invalid request")
+
+                    self.assertEqual(self.run_failures(operation, fixture, respond), 1)
 
     def test_negative_case_schema_requires_explicit_failure(self):
         from check_schemas import ROOT

@@ -81,6 +81,7 @@ impl SurfaceReadabilityResult {
 pub enum SurfaceReadabilityError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
+    InvalidRequestShape,
     UnsupportedVersion,
     Scenario(SurfaceScenarioError),
     Binding(SurfaceBindingError),
@@ -104,6 +105,9 @@ impl fmt::Display for SurfaceReadabilityError {
             Self::Parse(error) => write!(formatter, "surface readability parse failed: {error}"),
             Self::Request(error) => {
                 write!(formatter, "invalid surface readability request: {error}")
+            }
+            Self::InvalidRequestShape => {
+                formatter.write_str("surface readability request must be a JSON object")
             }
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Scenario(error) => write!(formatter, "surface readability scenario: {error}"),
@@ -169,6 +173,9 @@ pub fn resolve_surface_readability_source(
     source: &str,
 ) -> Result<SurfaceReadabilityResult, SurfaceReadabilityError> {
     let document = parse_token_document(source).map_err(SurfaceReadabilityError::Parse)?;
+    if !document.is_object() {
+        return Err(SurfaceReadabilityError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)

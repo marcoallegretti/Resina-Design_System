@@ -62,6 +62,7 @@ impl FrostSurfaceReadabilityResult {
 pub enum FrostSurfaceReadabilityError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
+    InvalidRequestShape,
     UnsupportedVersion,
     Scenario(SurfaceScenarioError),
     Binding(SurfaceBindingError),
@@ -84,6 +85,9 @@ impl fmt::Display for FrostSurfaceReadabilityError {
         match self {
             Self::Parse(error) => write!(formatter, "readability request parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid readability request: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("Frost surface readability request must be a JSON object")
+            }
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Scenario(error) => write!(formatter, "readability scenario: {error}"),
             Self::Binding(error) => write!(formatter, "readability binding: {error}"),
@@ -142,6 +146,9 @@ pub fn resolve_frost_surface_readability_source(
     source: &str,
 ) -> Result<FrostSurfaceReadabilityResult, FrostSurfaceReadabilityError> {
     let document = parse_token_document(source).map_err(FrostSurfaceReadabilityError::Parse)?;
+    if !document.is_object() {
+        return Err(FrostSurfaceReadabilityError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)
