@@ -1,5 +1,9 @@
 use crate::PhysicalVector;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", try_from = "KeyLightInput")]
@@ -8,12 +12,39 @@ pub struct KeyLight {
     direction: PhysicalVector,
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct KeyLightInput {
-    #[serde(deserialize_with = "crate::deserialize_version")]
     schema_version: String,
     direction: PhysicalVector,
+}
+
+impl<'de> Deserialize<'de> for KeyLightInput {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase", deny_unknown_fields)]
+        struct Members {
+            #[serde(deserialize_with = "crate::deserialize_version")]
+            schema_version: String,
+            direction: PhysicalVector,
+        }
+
+        struct LightVisitor;
+        impl<'de> Visitor<'de> for LightVisitor {
+            type Value = KeyLightInput;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a key light object")
+            }
+
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let members = Members::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(KeyLightInput {
+                    schema_version: members.schema_version,
+                    direction: members.direction,
+                })
+            }
+        }
+        deserializer.deserialize_map(LightVisitor)
+    }
 }
 
 impl TryFrom<KeyLightInput> for KeyLight {

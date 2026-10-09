@@ -151,6 +151,10 @@ def check_label_expansion(expansion):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/slider-part-body-ir.schema.json",
+        "schemas/slider-part-paint-ir.schema.json",
+        "schemas/slider-part-paint-request.schema.json",
+        "schemas/slider-part-paint-case.schema.json",
         "schemas/command-label-expansion.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-accessibility-ir.schema.json",
@@ -2592,6 +2596,20 @@ def main():
         check_case(validator_for("schemas/toggle-part-paint-case.schema.json"), name, case, True)
         check_case(validator_for("schemas/toggle-part-paint-request.schema.json"), name, apply_changes(toggle_part_request, case["requestChanges"]), case["requestSchemaValid"])
         checked += 1
+    slider_part_request = load_json(ROOT / "conformance/ir/slider-part-paint-request.json")
+    slider_request_validator = validator_for("schemas/slider-part-paint-request.schema.json")
+    slider_case_validator = validator_for("schemas/slider-part-paint-case.schema.json")
+    check_case(slider_request_validator, "slider part baseline", slider_part_request, True)
+    checked += 1
+    names = set()
+    for case in load_json(ROOT / "conformance/ir/slider-part-paint-cases.json"):
+        name = case["name"]
+        if name in names:
+            raise ValueError(f"duplicate slider part paint case: {name}")
+        names.add(name)
+        check_case(slider_case_validator, name, case, True)
+        check_case(slider_request_validator, name, apply_changes(slider_part_request, case["requestChanges"]), case["requestSchemaValid"])
+        checked += 2
     print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
 
 

@@ -233,9 +233,11 @@ pub use surface_readability::{
 };
 mod opaque_paint;
 mod slider_part_paint;
+mod slider_part_paint_source;
 pub use slider_part_paint::{
     SliderPartPaintError, SliderPartPaintInput, SliderPartPaintIr, resolve_slider_part_paint,
 };
+pub use slider_part_paint_source::{SliderPartPaintSourceError, resolve_slider_part_paint_source};
 mod opaque_pigment;
 mod opaque_surface;
 mod surface_paint;
