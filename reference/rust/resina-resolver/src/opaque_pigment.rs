@@ -61,6 +61,7 @@ impl OpaquePigmentResult {
 #[derive(Debug)]
 pub enum OpaquePigmentError {
     Parse(serde_json::Error),
+    InvalidRequestShape,
     Request(serde_json::Error),
     InvalidColorSpace,
     Body(ColorFallbackError),
@@ -71,6 +72,9 @@ impl fmt::Display for OpaquePigmentError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Parse(error) => write!(formatter, "opaque pigment parse failed: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("opaque pigment request must be a JSON object")
+            }
             Self::Request(error) => write!(formatter, "invalid opaque pigment request: {error}"),
             Self::InvalidColorSpace => formatter.write_str("opaque pigment body must use sRGB"),
             Self::Body(error) => write!(formatter, "invalid opaque pigment body: {error}"),
@@ -85,6 +89,9 @@ pub fn resolve_opaque_pigment_source(
     source: &str,
 ) -> Result<OpaquePigmentResult, OpaquePigmentError> {
     let document = parse_token_document(source).map_err(OpaquePigmentError::Parse)?;
+    if !document.is_object() {
+        return Err(OpaquePigmentError::InvalidRequestShape);
+    }
     let request: OpaquePigmentRequest =
         serde_json::from_value(document).map_err(OpaquePigmentError::Request)?;
     debug_assert_eq!(request.schema_version, "0.1.0");
