@@ -644,5 +644,169 @@
         }
       }
     }
+  },
+  {
+    "name": "tagged cast material family",
+    "requestSchemaValid": false,
+    "errorContains": "material family string",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": {
+        "cast": null
+      },
+      "body": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2,
+          0.4,
+          0.8
+        ],
+        "alpha": 1
+      },
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "frost": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "elastomer": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "gel": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "tagged frost material family",
+    "requestSchemaValid": false,
+    "errorContains": "material family string",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": {
+        "frost": null
+      },
+      "body": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2,
+          0.4,
+          0.8
+        ],
+        "alpha": 1
+      },
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "frost": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "elastomer": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "gel": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "tagged elastomer material family",
+    "requestSchemaValid": false,
+    "errorContains": "material family string",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": {
+        "elastomer": null
+      },
+      "body": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2,
+          0.4,
+          0.8
+        ],
+        "alpha": 1
+      },
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "frost": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "elastomer": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "gel": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "tagged gel material family",
+    "requestSchemaValid": false,
+    "errorContains": "material family string",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": {
+        "gel": null
+      },
+      "body": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2,
+          0.4,
+          0.8
+        ],
+        "alpha": 1
+      },
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "frost": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "elastomer": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "gel": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          }
+        }
+      }
+    }
   }
 ]
