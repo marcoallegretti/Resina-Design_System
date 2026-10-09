@@ -2,6 +2,10 @@
 
 Before a semantic color is used by a lower capability renderer, it needs an sRGB representation. This contract converts one validated [DTCG 2025.10 color value](https://www.designtokens.org/TR/2025.10/color/) into a [fallback value](../schemas/srgb-fallback.schema.json) with `colorSpace: "srgb"`, three numeric components in `[0, 1]`, and an explicit alpha in `[0, 1]`. It does not choose a renderer representation, composite transparency, derive material pigment, or guarantee contrast.
 
+Resolved fallback records supplied to headless operations MUST be JSON objects
+with explicit `colorSpace`, `components` and `alpha` members. Positional records
+are invalid; the three numeric components remain a JSON array.
+
 The source MUST first pass DTCG color-value validation. When `colorSpace` is `srgb` and all three components are numeric, the resolver MUST preserve those component values. Otherwise, if a six-digit `hex` fallback is present, the resolver MUST use it, decoding each byte to an sRGB component by dividing by 255. The source alpha MUST be preserved; absent alpha resolves to 1. The six-digit `hex` value does not encode alpha.
 
 If `hex` is absent and `colorSpace` is `oklab` or `oklch` with three numeric components, the resolver MUST use the [color conversions](04-color-conversion.md) to encoded extended sRGB. Oklch first converts to Oklab. Each resulting sRGB channel MUST be in `[0, 1]`, allowing only a `10^-12` numerical tolerance outside the interval; a channel outside the interval but within that tolerance MUST be set to the nearest boundary. A result farther outside the interval is out of gamut and MUST fail rather than be gamut mapped or clipped. A nonfinite conversion result MUST fail. If any Oklab or Oklch component is `none`, resolution requires authored `hex`. An authored `hex` remains authoritative for non-sRGB colors, including Oklab and Oklch.
