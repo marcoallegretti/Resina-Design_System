@@ -227,13 +227,38 @@ impl StateComposition {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum MaterialFamily {
     Cast,
     Frost,
     Elastomer,
     Gel,
+}
+
+impl<'de> Deserialize<'de> for MaterialFamily {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct FamilyVisitor;
+        impl Visitor<'_> for FamilyVisitor {
+            type Value = MaterialFamily;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a material family string")
+            }
+            fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
+                match value {
+                    "cast" => Ok(MaterialFamily::Cast),
+                    "frost" => Ok(MaterialFamily::Frost),
+                    "elastomer" => Ok(MaterialFamily::Elastomer),
+                    "gel" => Ok(MaterialFamily::Gel),
+                    _ => Err(E::unknown_variant(
+                        value,
+                        &["cast", "frost", "elastomer", "gel"],
+                    )),
+                }
+            }
+        }
+        deserializer.deserialize_str(FamilyVisitor)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]

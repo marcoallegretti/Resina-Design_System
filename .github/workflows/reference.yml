@@ -70,6 +70,8 @@ jobs:
       - run: cargo test --release -p resina-model --lib opaque_pigment::tests --locked
       - run: cargo test --release -p resina-model --test command_appearance_records --locked
       - run: cargo test --release -p resina-model --lib command_appearance::tests --locked
+      - run: cargo test --release -p resina-model --test material_family_strings --locked
+      - run: cargo test --release -p resina-model --lib material_assignment --locked
       - run: cargo test --release -p resina-resolver --lib contour::tests --locked
       - run: cargo test --release -p resina-color --test contrast_range --locked
       - run: cargo test --release -p resina-resolver --test common_contrast --locked

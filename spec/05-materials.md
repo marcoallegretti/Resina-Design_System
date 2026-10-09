@@ -1,6 +1,6 @@
 # Material families and role assignments (candidate, schema 0.2.0)
 
-Resina defines four material families: `cast`, `frost`, `elastomer`, and `gel`. These are design intent, not renderer primitives. Cast is structurally stable, Frost is pigmented and diffusive, Elastomer is tactile and compressible, and Gel is viscous and transient. A backend may realize a family with different techniques according to its capabilities, but it MUST preserve the family's semantic role. Treatment, elevation, pigment, and interaction state are separate concerns.
+Resina defines four material families: `cast`, `frost`, `elastomer`, and `gel`. Material-family values MUST be exact JSON strings; tagged objects and other non-string values are invalid. These are design intent, not renderer primitives. Cast is structurally stable, Frost is pigmented and diffusive, Elastomer is tactile and compressible, and Gel is viscous and transient. A backend may realize a family with different techniques according to its capabilities, but it MUST preserve the family's semantic role. Treatment, elevation, pigment, and interaction state are separate concerns.
 
 Components request material roles. A selected theme supplies a [material assignment](../schemas/material-assignments.schema.json) for one resolution context. This document specifies the role mapping contract; it does not define theme packaging or require one universal mapping. The assignment has `schemaVersion` `0.2.0` and MUST name every role:
 
