@@ -85,10 +85,50 @@ Every subsequent pose must retain and revalidate the same reservation.
 
 ## Publication and evidence
 
-Only complete success yields a typed snapshot containing the current presentation,
+Only complete success yields a snapshot containing the current presentation,
 layout, unchanged part paint, label placement/colors, verified contrast bounds,
-target, intrinsic Slider semantics and actual reducedMotion preference. No source
-protocol, renderer dependency, native tree or default control skin is added.
+target, intrinsic Slider semantics and actual reducedMotion preference.
+
+The portable [snapshot IR schema](../schemas/slider-snapshot-ir.schema.json)
+defines one complete versioned output object. Its required members are
+`schemaVersion`, `presentation`, `layout`, `track`, `thumb`, `label`,
+`labelOrigin`, `labelForeground`, `labelBackground`, `labelContrastRatio`,
+`trackContrastRatio`, `thumbContrastRatio`, `hitRegion`, `accessibility` and
+`reducedMotion`. Version 0.1.0 retains the existing public representations of
+each channel. Coordinates use component-local logical px with physical x/y axes;
+part contours remain local to their layout origins. `labelOrigin` places the
+complete label layout box. The three root contrast ratios are the verified
+common bounds; the original part reports remain unchanged inside their paint.
+The thumb owns navigation, including independent disabled focus discovery.
+No renderer, native tree, routing handle or product identity enters this output.
+
+The reference serializes only checked snapshots and retains owned observations
+such as colors, semantic text and reducedMotion after resolution. Serialization
+does not re-resolve against live context or imply an unchecked import operation.
+No snapshot source protocol or default control skin is added.
+
+Schema validation checks shape, versions, part slots, direction, orientation,
+phase, state membership and permission agreement. It cannot establish arbitrary
+numeric equality across fields. The independent
+[record checker](../tools/check_slider_snapshot_ir.py) also checks published
+value/domain/progress agreement under spec58's strict endpoint/four-ULP law,
+fixed-size linear thumb travel and allocation, complete nonblank semantic text,
+accessible name/value, full navigation states, label contrast, conservative original reports,
+label placement and declared paint/target coverage. A schema-valid incoherent
+record is not valid snapshot IR.
+
+Original theme/environment, pointer ownership, canvas coverage, authored contrast
+thresholds, reserved-target neighbors and source measurements are not repeated
+in this output. A record checker cannot reconstruct or certify them from the
+output alone. Generic record checks use declared contour bounds rather than
+certifying arbitrary contour segments or rendered pixels. Producers MUST still
+establish all coherence, background and target obligations before publication.
+Successful record checking does not replace checked source resolution.
+
+Run `python tools/check_slider_snapshot_ir.py <snapshot.json>` to check one
+record. The [authored complete record](../conformance/ir/slider-snapshot-ir.json)
+and [positive/negative mutations](../conformance/ir/slider-snapshot-ir-cases.json)
+separate malformed shape from representable cross-channel incoherence.
 
 Tests compose all persistent families, LTR/RTL, both axes, focus, enabled and
 readOnly states. Actual pointer acquisition and preview drive layout, dragging
@@ -96,6 +136,14 @@ paint and visible-value semantics without product commit. Negative evidence
 checks stale states/value/direction/part slots, target changes, geometry sizes,
 background coverage, contrast reports, label overlap and intrinsic focusability.
 Fixture text advances are arithmetic test inputs, not native font evidence.
+The reference export tests capture complete records across all persistent
+families, directions, axes, idle/focused/disabled/readOnly/preview poses and
+explicit text scales 1 and 2. CI checks those actual exports against independent
+layout, pigment, response, contour, navigation, text, target and semantic
+arithmetic. `RESINA_SLIDER_SNAPSHOT_CAPTURE` selects a new test output file;
+`python tools/check_slider_snapshot_ir.py --capture <capture.json>` requires the
+entire unique matrix and compares every channel. This capture envelope describes
+test evidence, not a production request or a second snapshot IR format.
 
 This is a composed portable snapshot, not component-complete certification.
 Native pointer/keyboard/assistive delivery, real typography, calibrated motion,

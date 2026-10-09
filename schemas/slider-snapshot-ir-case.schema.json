@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:slider-snapshot-ir-case:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "changes",
+    "schemaValid",
+    "coherent"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "value"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^/"
+          },
+          "value": {}
+        }
+      }
+    },
+    "schemaValid": {
+      "type": "boolean"
+    },
+    "coherent": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schemaValid": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "coherent": {
+            "const": false
+          }
+        }
+      }
+    }
+  ]
+}

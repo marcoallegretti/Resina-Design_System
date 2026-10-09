@@ -151,6 +151,8 @@ def check_label_expansion(expansion):
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/slider-snapshot-ir.schema.json",
+        "schemas/slider-snapshot-ir-case.schema.json",
         "schemas/slider-part-body-ir.schema.json",
         "schemas/slider-part-paint-ir.schema.json",
         "schemas/slider-part-paint-request.schema.json",
@@ -2006,6 +2008,18 @@ def main():
         check_case(validator_for("schemas/command-motion-case.schema.json"), case["name"], case, True)
         check_case(validator_for("schemas/command-motion-request.schema.json"), case["name"],
                    apply_changes(motion_base, case["requestChanges"]), case["requestSchemaValid"])
+        checked += 2
+    snapshot = load_json(ROOT / "conformance/ir/slider-snapshot-ir.json")
+    snapshot_validator = validator_for("schemas/slider-snapshot-ir.schema.json")
+    check_case(snapshot_validator, "complete Slider snapshot", snapshot, True)
+    checked += 1
+    snapshot_names = set()
+    for case in load_json(ROOT / "conformance/ir/slider-snapshot-ir-cases.json"):
+        if case["name"] in snapshot_names:
+            raise ValueError("duplicate Slider snapshot case: " + case["name"])
+        snapshot_names.add(case["name"])
+        check_case(validator_for("schemas/slider-snapshot-ir-case.schema.json"), case["name"], case, True)
+        check_case(snapshot_validator, case["name"], apply_changes(snapshot, case["changes"]), case["schemaValid"])
         checked += 2
     label = load_json(ROOT / "conformance/ir/command-label-ir.json")
     label_validator = validator_for("schemas/command-label-ir.schema.json")

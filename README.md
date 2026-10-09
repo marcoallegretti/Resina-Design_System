@@ -243,6 +243,11 @@ portable part-paint request, complete IR and independent conformance cases.
 [Coherent Slider snapshots](spec/77-slider-snapshot.md) join actual visible value,
 interaction, part allocation, paint, semantics and reserved target coverage.
 Thumb contrast includes the track's continuous paint and the actual canvas.
+The [portable complete output](schemas/slider-snapshot-ir.schema.json) retains
+every checked channel. `python tools/check_slider_snapshot_ir.py <snapshot.json>`
+checks record coherence; CI also compares actual Rust exports against independent
+complete arithmetic. Source coverage, native delivery and visual certification
+remain separate obligations.
 
 The [native Material Board](lab/guido/README.md) captures the public Tier 0
 catalog through GUIdo, comparing all four materials across Light/Dark and

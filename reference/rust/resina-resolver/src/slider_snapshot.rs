@@ -8,6 +8,7 @@ use crate::{
 use resina_color::{ContrastError, OpaqueSrgbRange};
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{PhysicalBounds, PhysicalVector, SliderPart, SurfaceSize};
+use serde::Serialize;
 use std::fmt;
 
 const CONTRAST_REPORT_TOLERANCE: f64 = 1e-12;
@@ -35,8 +36,10 @@ pub struct SliderSnapshotInput<'a, 'context> {
     pub occupied_regions: &'context [PhysicalBounds],
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SliderSnapshot<'a> {
+    schema_version: &'static str,
     presentation: &'a SliderPresentation,
     layout: &'a SliderLayoutIr,
     track: &'a SliderPartPaintIr,
@@ -475,6 +478,7 @@ pub fn resolve_slider_snapshot<'a>(
     })
     .map_err(SliderSnapshotError::Accessibility)?;
     Ok(SliderSnapshot {
+        schema_version: "0.1.0",
         presentation,
         layout: input.layout,
         track: input.track,

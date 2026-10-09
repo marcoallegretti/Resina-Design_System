@@ -62,6 +62,8 @@ jobs:
           components: clippy, rustfmt
       - run: cargo fmt --all -- --check
       - run: cargo test --workspace --locked
+        env:
+          RESINA_SLIDER_SNAPSHOT_CAPTURE: ${{ runner.temp }}/slider-snapshot-ir.json
       - run: cargo test --release -p resina-model --test slider_appearance --locked
       - run: cargo test --release -p resina-model --test slider_appearance_records --locked
       - run: cargo test --release -p resina-model --test slider_value_records --locked
@@ -84,7 +86,7 @@ jobs:
       - run: cargo test --release -p resina-resolver --test standalone_color_request_source --locked
       - run: cargo test --release -p resina-resolver --test contour_request_source --locked
       - run: cargo test --release -p resina-resolver --test opaque_paint_ranges --locked
-      - run: cargo test --release -p resina-resolver --test slider_part_paint --test slider_snapshot --locked
+      - run: cargo test --release -p resina-resolver --test slider_part_paint --test slider_snapshot --test slider_snapshot_ir --locked
       - run: cargo test --release -p resina-resolver --test slider_part_paint_source --locked
       - run: cargo test --release -p resina-resolver --test hit_region --test slider_value --test slider_adjustment --test slider_layout --test slider_track_segments --test slider_position --test slider_edit --test slider_anchor --test slider_pointer --test slider_stops --test slider_key --test slider_presentation --test slider_accessibility --test slider_states --locked
       - run: cargo test -p resina-raster --no-default-features --locked
@@ -98,6 +100,7 @@ jobs:
       - run: python -m pip install -r tools/requirements-toolkit.txt
       - run: python tools/check_contributor_toolkit.py
       - run: python -m unittest discover -s tools -p 'test_*.py'
+      - run: python tools/check_slider_snapshot_ir.py --capture "${{ runner.temp }}/slider-snapshot-ir.json"
       - run: cargo build -p resina-resolver --bins --locked
       - name: Install Slint build and test font dependencies
         if: runner.os == 'Linux'
