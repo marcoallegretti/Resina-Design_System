@@ -3729,5 +3729,328 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "reject positional appearance root",
+    "requestChanges": [
+      {
+        "path": "/appearance",
+        "value": [
+          "0.1.0",
+          {
+            "schemaVersion": "0.1.0",
+            "profiles": {
+              "structural": {
+                "kind": "uniform",
+                "radius": "radius.0"
+              },
+              "soft": {
+                "kind": "uniform",
+                "radius": "radius.0"
+              },
+              "rounded": {
+                "kind": "uniform",
+                "radius": "radius.0"
+              },
+              "capsule": {
+                "kind": "capsule"
+              },
+              "organic": {
+                "kind": "corners",
+                "radii": {
+                  "topStart": "radius.0",
+                  "topEnd": "radius.0",
+                  "bottomEnd": "radius.0",
+                  "bottomStart": "radius.0"
+                }
+              }
+            }
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "roles": {
+              "embedded": "depth.0",
+              "base": "depth.0",
+              "raised": "depth.1",
+              "floating": "depth.2",
+              "overlay": "depth.3",
+              "modal": "depth.4"
+            }
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "profiles": {
+              "cast": {
+                "sideShade": 0.1,
+                "highlightLift": 0.08
+              },
+              "frost": {
+                "sideShade": 0.14,
+                "highlightLift": 0.18
+              },
+              "elastomer": {
+                "sideShade": 0.25,
+                "highlightLift": 0.14
+              },
+              "gel": {
+                "sideShade": 0.18,
+                "highlightLift": 0.2
+              }
+            }
+          },
+          {
+            "elastomer": {
+              "edgeWidth": 1.5,
+              "highlightWidth": 0.75
+            },
+            "frost": {
+              "edgeWidth": 1.25,
+              "highlightWidth": 0.5
+            },
+            "cast": {
+              "edgeWidth": 0.75,
+              "highlightWidth": 0.25
+            },
+            "gel": {
+              "edgeWidth": 2.0,
+              "highlightWidth": 1.0
+            }
+          },
+          {
+            "schemaVersion": "0.1.0",
+            "direction": {
+              "x": 0,
+              "y": -1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "opaque surface appearance object"
+  },
+  {
+    "name": "reject positional family bands",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast",
+        "value": {
+          "edgeWidth": 0.75,
+          "highlightWidth": 0.25
+        }
+      },
+      {
+        "path": "/appearance/bands/frost",
+        "value": {
+          "edgeWidth": 1.25,
+          "highlightWidth": 0.5
+        }
+      },
+      {
+        "path": "/appearance/bands/elastomer",
+        "value": {
+          "edgeWidth": 1.5,
+          "highlightWidth": 0.75
+        }
+      },
+      {
+        "path": "/appearance/bands/gel",
+        "value": {
+          "edgeWidth": 2.0,
+          "highlightWidth": 1.0
+        }
+      },
+      {
+        "path": "/appearance/bands",
+        "value": [
+          {
+            "edgeWidth": 0.75,
+            "highlightWidth": 0.25
+          },
+          {
+            "edgeWidth": 1.25,
+            "highlightWidth": 0.5
+          },
+          {
+            "edgeWidth": 1.5,
+            "highlightWidth": 0.75
+          },
+          {
+            "edgeWidth": 2.0,
+            "highlightWidth": 1.0
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "material family band object"
+  },
+  {
+    "name": "reject positional cast band",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast",
+        "value": {
+          "edgeWidth": 0.75,
+          "highlightWidth": 0.25
+        }
+      },
+      {
+        "path": "/appearance/bands/frost",
+        "value": {
+          "edgeWidth": 1.25,
+          "highlightWidth": 0.5
+        }
+      },
+      {
+        "path": "/appearance/bands/elastomer",
+        "value": {
+          "edgeWidth": 1.5,
+          "highlightWidth": 0.75
+        }
+      },
+      {
+        "path": "/appearance/bands/gel",
+        "value": {
+          "edgeWidth": 2.0,
+          "highlightWidth": 1.0
+        }
+      },
+      {
+        "path": "/appearance/bands/cast",
+        "value": [
+          0.75,
+          0.25
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surface band profile object"
+  },
+  {
+    "name": "reject positional frost band",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast",
+        "value": {
+          "edgeWidth": 0.75,
+          "highlightWidth": 0.25
+        }
+      },
+      {
+        "path": "/appearance/bands/frost",
+        "value": {
+          "edgeWidth": 1.25,
+          "highlightWidth": 0.5
+        }
+      },
+      {
+        "path": "/appearance/bands/elastomer",
+        "value": {
+          "edgeWidth": 1.5,
+          "highlightWidth": 0.75
+        }
+      },
+      {
+        "path": "/appearance/bands/gel",
+        "value": {
+          "edgeWidth": 2.0,
+          "highlightWidth": 1.0
+        }
+      },
+      {
+        "path": "/appearance/bands/frost",
+        "value": [
+          1.25,
+          0.5
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surface band profile object"
+  },
+  {
+    "name": "reject positional elastomer band",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast",
+        "value": {
+          "edgeWidth": 0.75,
+          "highlightWidth": 0.25
+        }
+      },
+      {
+        "path": "/appearance/bands/frost",
+        "value": {
+          "edgeWidth": 1.25,
+          "highlightWidth": 0.5
+        }
+      },
+      {
+        "path": "/appearance/bands/elastomer",
+        "value": {
+          "edgeWidth": 1.5,
+          "highlightWidth": 0.75
+        }
+      },
+      {
+        "path": "/appearance/bands/gel",
+        "value": {
+          "edgeWidth": 2.0,
+          "highlightWidth": 1.0
+        }
+      },
+      {
+        "path": "/appearance/bands/elastomer",
+        "value": [
+          1.5,
+          0.75
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surface band profile object"
+  },
+  {
+    "name": "reject positional gel band",
+    "requestChanges": [
+      {
+        "path": "/appearance/bands/cast",
+        "value": {
+          "edgeWidth": 0.75,
+          "highlightWidth": 0.25
+        }
+      },
+      {
+        "path": "/appearance/bands/frost",
+        "value": {
+          "edgeWidth": 1.25,
+          "highlightWidth": 0.5
+        }
+      },
+      {
+        "path": "/appearance/bands/elastomer",
+        "value": {
+          "edgeWidth": 1.5,
+          "highlightWidth": 0.75
+        }
+      },
+      {
+        "path": "/appearance/bands/gel",
+        "value": {
+          "edgeWidth": 2.0,
+          "highlightWidth": 1.0
+        }
+      },
+      {
+        "path": "/appearance/bands/gel",
+        "value": [
+          2.0,
+          1.0
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "surface band profile object"
   }
 ]

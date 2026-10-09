@@ -2,7 +2,11 @@ use crate::{
     ElevationDepthAssignments, KeyLight, MaterialFamily, OpaquePigmentProfiles,
     ShapeFallbackAssignments,
 };
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
+use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", try_from = "SurfaceBandProfileInput")]
@@ -11,11 +15,37 @@ pub struct SurfaceBandProfile {
     highlight_width: f64,
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct SurfaceBandProfileInput {
     edge_width: f64,
     highlight_width: f64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct SurfaceBandProfileMembers {
+    edge_width: f64,
+    highlight_width: f64,
+}
+
+impl<'de> Deserialize<'de> for SurfaceBandProfileInput {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct BandVisitor;
+        impl<'de> Visitor<'de> for BandVisitor {
+            type Value = SurfaceBandProfileInput;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a surface band profile object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input =
+                    SurfaceBandProfileMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(SurfaceBandProfileInput {
+                    edge_width: input.edge_width,
+                    highlight_width: input.highlight_width,
+                })
+            }
+        }
+        deserializer.deserialize_map(BandVisitor)
+    }
 }
 
 impl TryFrom<SurfaceBandProfileInput> for SurfaceBandProfile {
@@ -43,8 +73,7 @@ impl SurfaceBandProfile {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 struct FamilyBands {
     cast: SurfaceBandProfile,
     frost: SurfaceBandProfile,
@@ -52,9 +81,51 @@ struct FamilyBands {
     gel: SurfaceBandProfile,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FamilyBandsMembers {
+    cast: SurfaceBandProfile,
+    frost: SurfaceBandProfile,
+    elastomer: SurfaceBandProfile,
+    gel: SurfaceBandProfile,
+}
+
+impl<'de> Deserialize<'de> for FamilyBands {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct BandsVisitor;
+        impl<'de> Visitor<'de> for BandsVisitor {
+            type Value = FamilyBands;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a material family band object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = FamilyBandsMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(FamilyBands {
+                    cast: input.cast,
+                    frost: input.frost,
+                    elastomer: input.elastomer,
+                    gel: input.gel,
+                })
+            }
+        }
+        deserializer.deserialize_map(BandsVisitor)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OpaqueSurfaceAppearance {
+    schema_version: String,
+    shape_assignments: ShapeFallbackAssignments,
+    depth_assignments: ElevationDepthAssignments,
+    pigment_profiles: OpaquePigmentProfiles,
+    bands: FamilyBands,
+    key_light: KeyLight,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OpaqueSurfaceAppearanceMembers {
     #[serde(deserialize_with = "crate::deserialize_version")]
     schema_version: String,
     shape_assignments: ShapeFallbackAssignments,
@@ -62,6 +133,31 @@ pub struct OpaqueSurfaceAppearance {
     pigment_profiles: OpaquePigmentProfiles,
     bands: FamilyBands,
     key_light: KeyLight,
+}
+
+impl<'de> Deserialize<'de> for OpaqueSurfaceAppearance {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct AppearanceVisitor;
+        impl<'de> Visitor<'de> for AppearanceVisitor {
+            type Value = OpaqueSurfaceAppearance;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("an opaque surface appearance object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input =
+                    OpaqueSurfaceAppearanceMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(OpaqueSurfaceAppearance {
+                    schema_version: input.schema_version,
+                    shape_assignments: input.shape_assignments,
+                    depth_assignments: input.depth_assignments,
+                    pigment_profiles: input.pigment_profiles,
+                    bands: input.bands,
+                    key_light: input.key_light,
+                })
+            }
+        }
+        deserializer.deserialize_map(AppearanceVisitor)
+    }
 }
 
 impl OpaqueSurfaceAppearance {
