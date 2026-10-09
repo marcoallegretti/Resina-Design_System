@@ -21,6 +21,7 @@ pub enum SurfaceScenarioError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
     UnsupportedVersion,
+    InvalidRequestShape,
     Resolution(HeadlessResolutionError),
     Intent(serde_json::Error),
     Binding(SurfaceBindingError),
@@ -32,6 +33,9 @@ impl fmt::Display for SurfaceScenarioError {
             Self::Parse(error) => write!(formatter, "surface scenario parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid surface scenario: {error}"),
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.4.0"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("surface scenario must be a JSON object")
+            }
             Self::Resolution(error) => write!(formatter, "surface scenario resolution: {error}"),
             Self::Intent(error) => write!(formatter, "surface scenario binding intent: {error}"),
             Self::Binding(error) => write!(formatter, "surface scenario binding: {error}"),
@@ -49,6 +53,9 @@ pub fn resolve_surface_scenario_source(source: &str) -> Result<BoundSurface, Sur
 pub(crate) fn resolve_surface_scenario_document(
     document: Value,
 ) -> Result<(HeadlessResolution, BoundSurface), SurfaceScenarioError> {
+    if !document.is_object() {
+        return Err(SurfaceScenarioError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)
