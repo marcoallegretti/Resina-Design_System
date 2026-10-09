@@ -56,6 +56,7 @@ impl ExtrudedContourResult {
 #[derive(Debug)]
 pub enum ExtrudedContourError {
     Parse(serde_json::Error),
+    InvalidRequestShape,
     Request(serde_json::Error),
     UnsupportedVersion,
     Geometry(CornerGeometryError),
@@ -68,6 +69,9 @@ impl fmt::Display for ExtrudedContourError {
         match self {
             Self::Parse(error) => write!(formatter, "extruded contour parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid extruded contour request: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("extruded contour request must be a JSON object")
+            }
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Geometry(error) => write!(formatter, "invalid extrusion geometry: {error}"),
             Self::InvalidOffset => formatter.write_str("offset must be finite"),
@@ -84,6 +88,9 @@ pub fn resolve_extruded_contour_source(
     source: &str,
 ) -> Result<ExtrudedContourResult, ExtrudedContourError> {
     let document = parse_token_document(source).map_err(ExtrudedContourError::Parse)?;
+    if !document.is_object() {
+        return Err(ExtrudedContourError::InvalidRequestShape);
+    }
     let request: ExtrudedContourRequest =
         serde_json::from_value(document).map_err(ExtrudedContourError::Request)?;
     if request.schema_version != "0.1.0" {

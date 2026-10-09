@@ -1,3 +1,4 @@
+import json
 import math
 
 from backend_source import duplicate_member_source, nonfinite_member_source
@@ -37,6 +38,8 @@ def contour_mismatch(actual, expected, path=""):
 
 if __name__ == "__main__":
     baseline = load_json(ROOT / "conformance/geometry/extruded-contour-vectors.json")[0]["request"]
+    fields = ("schemaVersion", "size", "radii", "layoutDirection", "offset")
+    positional = [baseline[field] for field in fields]
     raise SystemExit(
         check_backend(
             "extruded contour",
@@ -45,6 +48,11 @@ if __name__ == "__main__":
             "schemas/extruded-contour-result.schema.json",
             "conformance/geometry/extruded-contour-vectors.json",
             extra_failures=(
+                ("positional request", json.dumps(positional, allow_nan=False)),
+                (
+                    "unsupported positional request",
+                    json.dumps(["9.9.9", *positional[1:]], allow_nan=False),
+                ),
                 ("duplicate offset component", duplicate_member_source(baseline, "/offset/x")),
                 ("overflow offset component", nonfinite_member_source(baseline, "/offset/x")),
             ),

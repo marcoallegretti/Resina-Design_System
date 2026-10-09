@@ -41,6 +41,7 @@ impl InsetContourResult {
 #[derive(Debug)]
 pub enum InsetContourError {
     Parse(serde_json::Error),
+    InvalidRequestShape,
     Request(serde_json::Error),
     UnsupportedVersion,
     Geometry(CornerGeometryError),
@@ -53,6 +54,9 @@ impl fmt::Display for InsetContourError {
         match self {
             Self::Parse(error) => write!(formatter, "inset contour parse failed: {error}"),
             Self::Request(error) => write!(formatter, "invalid inset contour request: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("inset contour request must be a JSON object")
+            }
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Geometry(error) => write!(formatter, "invalid contour geometry: {error}"),
             Self::InvalidInset => formatter.write_str("inset must be finite and nonnegative"),
@@ -67,6 +71,9 @@ impl std::error::Error for InsetContourError {}
 
 pub fn resolve_inset_contour_source(source: &str) -> Result<InsetContourResult, InsetContourError> {
     let document = parse_token_document(source).map_err(InsetContourError::Parse)?;
+    if !document.is_object() {
+        return Err(InsetContourError::InvalidRequestShape);
+    }
     let request: InsetContourRequest =
         serde_json::from_value(document).map_err(InsetContourError::Request)?;
     if request.schema_version != "0.1.0" {
