@@ -66,6 +66,7 @@ jobs:
       - run: cargo test --release -p resina-color --test contrast_range --locked
       - run: cargo test --release -p resina-resolver --test common_contrast --locked
       - run: cargo test --release -p resina-resolver --test readability_ranges --locked
+      - run: cargo test --release -p resina-resolver --test focus_readability_request_source --locked
       - run: cargo test --release -p resina-resolver --test opaque_paint_ranges --locked
       - run: cargo test --release -p resina-resolver --test slider_part_paint --test slider_snapshot --locked
       - run: cargo test --release -p resina-resolver --test hit_region --test slider_value --test slider_adjustment --test slider_layout --test slider_track_segments --test slider_position --test slider_edit --test slider_anchor --test slider_pointer --test slider_stops --test slider_key --test slider_presentation --test slider_accessibility --test slider_states --locked

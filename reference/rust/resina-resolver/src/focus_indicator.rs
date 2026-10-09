@@ -69,6 +69,7 @@ impl FocusIndicatorResult {
 pub enum FocusIndicatorError {
     Parse(serde_json::Error),
     Request(serde_json::Error),
+    InvalidRequestShape,
     UnsupportedVersion,
     Scenario(SurfaceScenarioError),
     Binding(SurfaceBindingError),
@@ -88,6 +89,9 @@ impl fmt::Display for FocusIndicatorError {
                 write!(formatter, "focus indicator request parse failed: {error}")
             }
             Self::Request(error) => write!(formatter, "invalid focus indicator request: {error}"),
+            Self::InvalidRequestShape => {
+                formatter.write_str("focus indicator request must be a JSON object")
+            }
             Self::UnsupportedVersion => formatter.write_str("schemaVersion must be 0.1.0"),
             Self::Scenario(error) => write!(formatter, "focus indicator scenario: {error}"),
             Self::Binding(error) => write!(formatter, "focus indicator binding: {error}"),
@@ -116,6 +120,9 @@ pub fn resolve_focus_indicator_source(
     source: &str,
 ) -> Result<FocusIndicatorResult, FocusIndicatorError> {
     let document = parse_token_document(source).map_err(FocusIndicatorError::Parse)?;
+    if !document.is_object() {
+        return Err(FocusIndicatorError::InvalidRequestShape);
+    }
     if document
         .get("schemaVersion")
         .and_then(Value::as_str)
