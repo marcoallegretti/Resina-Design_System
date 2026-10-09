@@ -574,5 +574,75 @@
     },
     "requestSchemaValid": false,
     "errorContains": "schemaVersion must be 0.1.0"
+  },
+  {
+    "name": "positional sRGB body record",
+    "requestSchemaValid": false,
+    "errorContains": "sRGB color object",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": [
+        "srgb",
+        [
+          0.2,
+          0.4,
+          0.8
+        ],
+        1
+      ],
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "frost": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "elastomer": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "gel": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "empty-array sRGB body record",
+    "requestSchemaValid": false,
+    "errorContains": "sRGB color object",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "materialFamily": "cast",
+      "body": [],
+      "profiles": {
+        "schemaVersion": "0.1.0",
+        "profiles": {
+          "cast": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "frost": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "elastomer": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "gel": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          }
+        }
+      }
+    }
   }
 ]

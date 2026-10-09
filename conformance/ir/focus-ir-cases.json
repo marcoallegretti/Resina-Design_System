@@ -3146,5 +3146,35 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "a string"
+  },
+  {
+    "name": "positional sRGB surround record",
+    "requestSchemaValid": false,
+    "errorContains": "sRGB color object",
+    "requestChanges": [
+      {
+        "path": "/surroundingColor",
+        "value": [
+          "srgb",
+          [
+            0,
+            0,
+            0
+          ],
+          1
+        ]
+      }
+    ]
+  },
+  {
+    "name": "empty-array sRGB surround record",
+    "requestSchemaValid": false,
+    "errorContains": "sRGB color object",
+    "requestChanges": [
+      {
+        "path": "/surroundingColor",
+        "value": []
+      }
+    ]
   }
 ]
