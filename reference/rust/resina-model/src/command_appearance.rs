@@ -1,5 +1,9 @@
 use crate::{InteractionState, MaterialFamily, StateSet};
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
+use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -17,11 +21,36 @@ pub struct CommandResponse {
     depth_scale: f64,
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct ResponseInput {
     body_mix: f64,
     depth_scale: f64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ResponseMembers {
+    body_mix: f64,
+    depth_scale: f64,
+}
+
+impl<'de> Deserialize<'de> for ResponseInput {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ResponseVisitor;
+        impl<'de> Visitor<'de> for ResponseVisitor {
+            type Value = ResponseInput;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a command response object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = ResponseMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(ResponseInput {
+                    body_mix: input.body_mix,
+                    depth_scale: input.depth_scale,
+                })
+            }
+        }
+        deserializer.deserialize_map(ResponseVisitor)
+    }
 }
 impl TryFrom<ResponseInput> for CommandResponse {
     type Error = &'static str;
@@ -50,27 +79,113 @@ impl CommandResponse {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CommandAppearance {
+    schema_version: String,
+    profiles: Profiles,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CommandAppearanceMembers {
     #[serde(deserialize_with = "crate::deserialize_version")]
     schema_version: String,
     profiles: Profiles,
 }
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+
+impl<'de> Deserialize<'de> for CommandAppearance {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct AppearanceVisitor;
+        impl<'de> Visitor<'de> for AppearanceVisitor {
+            type Value = CommandAppearance;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a command appearance object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = CommandAppearanceMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(CommandAppearance {
+                    schema_version: input.schema_version,
+                    profiles: input.profiles,
+                })
+            }
+        }
+        deserializer.deserialize_map(AppearanceVisitor)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
 struct Profiles {
     cast: Phases,
     frost: Phases,
     elastomer: Phases,
 }
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
+struct ProfilesMembers {
+    cast: Phases,
+    frost: Phases,
+    elastomer: Phases,
+}
+
+impl<'de> Deserialize<'de> for Profiles {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ProfilesVisitor;
+        impl<'de> Visitor<'de> for ProfilesVisitor {
+            type Value = Profiles;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a command material family object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = ProfilesMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Profiles {
+                    cast: input.cast,
+                    frost: input.frost,
+                    elastomer: input.elastomer,
+                })
+            }
+        }
+        deserializer.deserialize_map(ProfilesVisitor)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
 struct Phases {
     hover: CommandResponse,
     pressed: CommandResponse,
     disabled: CommandResponse,
 }
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PhasesMembers {
+    hover: CommandResponse,
+    pressed: CommandResponse,
+    disabled: CommandResponse,
+}
+
+impl<'de> Deserialize<'de> for Phases {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct PhasesVisitor;
+        impl<'de> Visitor<'de> for PhasesVisitor {
+            type Value = Phases;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a command phase collection object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = PhasesMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Phases {
+                    hover: input.hover,
+                    pressed: input.pressed,
+                    disabled: input.disabled,
+                })
+            }
+        }
+        deserializer.deserialize_map(PhasesVisitor)
+    }
+}
+
 impl CommandAppearance {
     pub fn response_for(
         &self,
