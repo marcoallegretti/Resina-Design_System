@@ -1,5 +1,9 @@
 use crate::MaterialFamily;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{MapAccess, Visitor, value::MapAccessDeserializer},
+};
+use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", try_from = "OpaquePigmentProfileInput")]
@@ -8,11 +12,37 @@ pub struct OpaquePigmentProfile {
     highlight_lift: f64,
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct OpaquePigmentProfileInput {
     side_shade: f64,
     highlight_lift: f64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OpaquePigmentProfileMembers {
+    side_shade: f64,
+    highlight_lift: f64,
+}
+
+impl<'de> Deserialize<'de> for OpaquePigmentProfileInput {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ProfileVisitor;
+        impl<'de> Visitor<'de> for ProfileVisitor {
+            type Value = OpaquePigmentProfileInput;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("an opaque pigment profile object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input =
+                    OpaquePigmentProfileMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(OpaquePigmentProfileInput {
+                    side_shade: input.side_shade,
+                    highlight_lift: input.highlight_lift,
+                })
+            }
+        }
+        deserializer.deserialize_map(ProfileVisitor)
+    }
 }
 
 impl TryFrom<OpaquePigmentProfileInput> for OpaquePigmentProfile {
@@ -42,21 +72,79 @@ impl OpaquePigmentProfile {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OpaquePigmentProfiles {
+    schema_version: String,
+    profiles: FamilyProfiles,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OpaquePigmentProfilesMembers {
     #[serde(deserialize_with = "crate::deserialize_version")]
     schema_version: String,
     profiles: FamilyProfiles,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+impl<'de> Deserialize<'de> for OpaquePigmentProfiles {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ProfilesVisitor;
+        impl<'de> Visitor<'de> for ProfilesVisitor {
+            type Value = OpaquePigmentProfiles;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("an opaque pigment profiles object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input =
+                    OpaquePigmentProfilesMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(OpaquePigmentProfiles {
+                    schema_version: input.schema_version,
+                    profiles: input.profiles,
+                })
+            }
+        }
+        deserializer.deserialize_map(ProfilesVisitor)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
 struct FamilyProfiles {
     cast: OpaquePigmentProfile,
     frost: OpaquePigmentProfile,
     elastomer: OpaquePigmentProfile,
     gel: OpaquePigmentProfile,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FamilyProfilesMembers {
+    cast: OpaquePigmentProfile,
+    frost: OpaquePigmentProfile,
+    elastomer: OpaquePigmentProfile,
+    gel: OpaquePigmentProfile,
+}
+
+impl<'de> Deserialize<'de> for FamilyProfiles {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct FamiliesVisitor;
+        impl<'de> Visitor<'de> for FamiliesVisitor {
+            type Value = FamilyProfiles;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a material family pigment object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let input = FamilyProfilesMembers::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(FamilyProfiles {
+                    cast: input.cast,
+                    frost: input.frost,
+                    elastomer: input.elastomer,
+                    gel: input.gel,
+                })
+            }
+        }
+        deserializer.deserialize_map(FamiliesVisitor)
+    }
 }
 
 impl OpaquePigmentProfiles {

@@ -154,5 +154,155 @@
       }
     },
     "valid": false
+  },
+  {
+    "name": "reject positional pigment document",
+    "document": [
+      "0.1.0",
+      {
+        "cast": {
+          "sideShade": 0.0625,
+          "highlightLift": 0.03125
+        },
+        "frost": {
+          "sideShade": 0.125,
+          "highlightLift": 0.0625
+        },
+        "elastomer": {
+          "sideShade": 0.1875,
+          "highlightLift": 0.09375
+        },
+        "gel": {
+          "sideShade": 0.25,
+          "highlightLift": 0.125
+        }
+      }
+    ],
+    "valid": false
+  },
+  {
+    "name": "reject positional family pigments",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": [
+        {
+          "sideShade": 0.0625,
+          "highlightLift": 0.03125
+        },
+        {
+          "sideShade": 0.125,
+          "highlightLift": 0.0625
+        },
+        {
+          "sideShade": 0.1875,
+          "highlightLift": 0.09375
+        },
+        {
+          "sideShade": 0.25,
+          "highlightLift": 0.125
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "reject positional cast pigment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": [
+          0.0625,
+          0.03125
+        ],
+        "frost": {
+          "sideShade": 0.125,
+          "highlightLift": 0.0625
+        },
+        "elastomer": {
+          "sideShade": 0.1875,
+          "highlightLift": 0.09375
+        },
+        "gel": {
+          "sideShade": 0.25,
+          "highlightLift": 0.125
+        }
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "reject positional frost pigment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {
+          "sideShade": 0.0625,
+          "highlightLift": 0.03125
+        },
+        "frost": [
+          0.125,
+          0.0625
+        ],
+        "elastomer": {
+          "sideShade": 0.1875,
+          "highlightLift": 0.09375
+        },
+        "gel": {
+          "sideShade": 0.25,
+          "highlightLift": 0.125
+        }
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "reject positional elastomer pigment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {
+          "sideShade": 0.0625,
+          "highlightLift": 0.03125
+        },
+        "frost": {
+          "sideShade": 0.125,
+          "highlightLift": 0.0625
+        },
+        "elastomer": [
+          0.1875,
+          0.09375
+        ],
+        "gel": {
+          "sideShade": 0.25,
+          "highlightLift": 0.125
+        }
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "reject positional gel pigment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "profiles": {
+        "cast": {
+          "sideShade": 0.0625,
+          "highlightLift": 0.03125
+        },
+        "frost": {
+          "sideShade": 0.125,
+          "highlightLift": 0.0625
+        },
+        "elastomer": {
+          "sideShade": 0.1875,
+          "highlightLift": 0.09375
+        },
+        "gel": [
+          0.25,
+          0.125
+        ]
+      }
+    },
+    "valid": false
   }
 ]
