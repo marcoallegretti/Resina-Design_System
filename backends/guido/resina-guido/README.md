@@ -58,6 +58,36 @@ The accessibility boundary describes this package's implemented scope; it does
 not certify or diagnose every upstream integration. Keep the authored Resina
 contracts intact while addressing the remaining native integration work.
 
+## Native accessibility ownership
+
+The [native accessibility decision](https://github.com/marcoallegretti/Resina-Design_System/issues/94)
+assigns application/surface accessibility-tree ownership to the GUIdo runtime.
+The runtime integration must own native node registration, identity, removal,
+actual surface/widget focus publication and delivery of platform actions onto
+the UI thread. Resina's GUIdo components map their checked portable semantics
+and handle delivered actions through their existing interaction contracts.
+
+For an ordinary Command, the component must publish one semantic button with
+the complete localized name and optional description, and coherent availability,
+actual focus and focusability from the same current snapshot. On invocation it
+must recheck current availability, commit the next activation state before the
+product callback, and prevent a later release of a superseded gesture from
+activating again, as required by [command accessibility](../../../spec/47-command-accessibility.md).
+The runtime must reject actions for removed or replaced native identities.
+
+This ownership applies to Command, Toggle and Slider; their distinct roles,
+values and action rules remain in their portable contracts. Native identifiers,
+accessibility-library objects, surfaces and thread scheduling remain outside
+Resina's normative layers, portable IR and headless reference implementation.
+Reduced graphics capabilities must preserve component semantics.
+
+This is the integration boundary for completing the native components, not an
+installed runtime API. The pinned dependency and this adapter still provide no
+native semantic-tree publication. A future dependency update must verify the
+upstream implementation and actual platform action delivery before claiming
+native accessibility conformance. Supplied widget events and offscreen pixels
+remain insufficient evidence; see [live runtime requirements](#live-linux-runtime).
+
 ## Integration
 
 Call `prepare_surface`, `prepare_focus` or `prepare_surface_paint` with validated resolved IR, the actual
