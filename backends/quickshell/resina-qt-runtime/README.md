@@ -172,6 +172,71 @@ body/focus raster and native transfer checks, not complete component glyph,
 native gesture, motion or accessibility qualification. Hardware graphics,
 Wayland and the integrated command graphics-renderer matrix remain unverified.
 
+## Coherent native command view
+
+[`ResinaCommandView.qml`](../resina-qml/qml/ResinaCommandView.qml) composes the
+checked snapshot, body/focus image and complete native glyph drawing. Call
+`prepare(requestJson, optionsJson)` on the GUI thread using the same requests
+as `resolvePaintedSnapshot`. The view must already belong to its actual window.
+Register and retain the explicit font before preparation.
+
+Its read-only `snapshot` string publishes the existing four checked channels
+only after body and glyph preparation succeeds. `paintReady` and default visibility
+become true together with that publication; `paintError` retains failures.
+Replacement withdraws the old publication and hides/retires old native paint
+before preparing another request. The native local PNG can finish loading after
+`prepare` returns, so observe readiness/error rather than treating the return
+as a completed publication. Image errors or a five-second native preparation
+timeout withdraw the pending request. Recursive preparation during pending work,
+publication or withdrawal is diagnostic and preserves the outer operation.
+`invalidate()` cancels pending work and withdraws a published result; a valid
+later preparation can recover. An owner replacing a pending request after a
+controller/content change must invalidate it before preparing the new request.
+External visibility, opacity and ancestor occlusion remain consumer-owned.
+
+The view owns its command-front implicit size. Its local glyph box comes directly
+from checked label IR and uses the body's checked foreground. Set its position
+before preparation, then compute the actual scene origin with
+`view.mapToItem(null, 0, 0)` and use `view.nativeDeviceScale` for `deviceScale`.
+These options describe the sampling context, not a second placement transform.
+Do not force a different front width/height or add scale/rotation. Native
+translation is checked within the existing 1/1024 logical-pixel precision budget;
+nonidentity basis transforms are rejected. Keep ancestor clipping/occlusion and
+actual surrounding/backdrop colors consistent with the supplied paint context.
+
+Own position, size, parent, window and pixel-density changes withdraw readiness.
+Before scene-graph synchronization, a GUI-thread
+[`afterAnimating` check](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquickwindow.cpp)
+also rejects changed ancestor coordinate contexts. Call `invalidate()` before
+external layout/transform mutations, especially from other late frame callbacks,
+and prepare again after layout settles. The view never silently resamples its
+stored raster after a context change. Queued completion observes only the current
+pending request, and native child destruction remains Qt-owned.
+
+This is a decorative static view, with no input target or native accessible node.
+The published semantic member is data for a future native control owner; it does
+not implement AT publication or authorize an action. The existing controller
+still owns current activation and consumers own product effects. Complete
+Button, motion, native gesture routing and accessibility qualification remain
+separate dependencies.
+
+Acceptance is coherent publication and actual combined body/glyph drawing, with
+no stale visible channels after failure or cancellation. The compiled view
+checker executed authored Light/Dark styles, asymmetric LTR/RTL padding,
+Latin, expanded German, Arabic/mixed and blank paragraphs at 100.06%, 150% and
+200% text scale. Static hover, pointer-held, disabled and focused fixtures also
+reach native drawing. Captures at DPR 1, 1.25, 2 and 1.3 compare against separately
+assembled native body/label primitives with the existing one-byte image bound.
+This establishes composition; independent font shaping/drawing and public raster
+agreement retain their separate earlier evidence. Publication observers see
+complete readiness, the snapshot is read-only, recursive publication/withdrawal
+is rejected, pending context changes cancel, ancestor translation/distortion
+withdraws visible paint before rendering, and valid preparation recovers.
+Actual pending QObject destruction and native PNG decode-error reporting were
+also executed. These are synthetic state and rendering/lifetime fixtures, not
+native gesture or AT evidence. Hardware/graphics-renderer and Wayland composition,
+all font/fallback policies, motion and complete control qualification remain open.
+
 ## Build and verification
 
 Install the tested Qt 6.11.2 development SDK with its Core/Qml tools and a C++17
@@ -196,6 +261,9 @@ python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtim
 QT_SCALE_FACTOR=1.25 python tools/check_qt_command_paint_runtime.py \
   --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
   --raster target/debug/resina-command-raster --output-dir target/qt-command-paint-1.25
+QT_SCALE_FACTOR=1.25 python tools/check_qt_command_view_runtime.py \
+  --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/qt-command-view-1.25
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py --report-only
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py
 ```
@@ -306,6 +374,8 @@ Slider. The [native label pair](../resina-qml/README.md#native-label-measurement
 separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication, native
 keyboard/pointer delivery, screen-reader operation, coherent complete component
-label/body publication, motion and native runtime CI remain unverified. The next
-dependency is a native owner preparing body and complete glyph drawing together,
-then connecting coherent publication to lifecycle, motion and real input.
+input/accessibility publication, motion and native runtime CI remain unverified.
+The decorative view now prepares body and complete glyph drawing together. The
+next dependency is a native control owner connecting this view to current
+lifecycle, stable input geometry and native gestures, then guarded motion and
+AT publication.

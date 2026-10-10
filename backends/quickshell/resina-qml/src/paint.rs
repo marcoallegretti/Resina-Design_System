@@ -107,6 +107,7 @@ Item {{
     activeFocusOnTab: false
     Accessible.ignored: true
     readonly property bool paintReady: paint.status === Image.Ready
+    readonly property string paintError: paint.status === Image.Error ? "Qt Quick prepared paint image failed to load" : ""
     Image {{
         id: paint
         Accessible.ignored: true

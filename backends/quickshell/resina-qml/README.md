@@ -4,7 +4,19 @@ This Shell backend realizes validated [focus indicator IR](../../../spec/37-focu
 
 The separately locked [Qt runtime adapter](../resina-qt-runtime/README.md) supplies
 a Rust-owned command lifecycle QObject and native invocation evidence. Complete
-component composition and Quickshell hosting remain separate requirements.
+native component input/accessibility integration and Quickshell hosting remain
+separate requirements.
+
+## Coherent command drawing
+
+[`ResinaCommandView.qml`](qml/ResinaCommandView.qml) prepares Rust-checked body,
+complete label, target and semantic data as one native drawing publication. It
+uses the compiled [Qt runtime](../resina-qt-runtime/README.md#coherent-native-command-view),
+waits for local image readiness, prepares complete glyphs with the checked body
+foreground, and withdraws all visible channels on replacement/failure/context
+loss. Its API, coordinate/lifetime requirements and executed capture matrix are
+specified in that runtime README. It is decorative, ignored by accessibility and
+has no native gesture handler. It does not implement a Button or animation.
 
 ## Native label measurement
 
@@ -187,7 +199,7 @@ unverified.
 
 The result is standalone QML with one synchronous `Image` containing a percent-encoded sRGB RGBA8 PNG. It requires neither an external image file nor a JavaScript sampler. The CPU backend's pixel/sample limits and the Qt coordinate precision guard apply before output. PNG encoding also completes before publication; invalid scale, placement, sampling, bounds or resource use produces an error and no component.
 
-`paintOriginX` and `paintOriginY` already include the supplied parent placement, rounded outward to the device grid. Place the item at those coordinates without adding placement a second time. Its implicit dimensions reserve the complete pixel footprint, including negative focus origins and less than one pixel of transparent padding. Changing the root item's dimensions does not scale the image. Keep ancestors from clipping it, preserve its scale and translation, and publish it only when `paintReady` is true. The paint is decorative and owns no input or accessible semantics.
+`paintOriginX` and `paintOriginY` already include the supplied parent placement, rounded outward to the device grid. Place the item at those coordinates without adding placement a second time. Its implicit dimensions reserve the complete pixel footprint, including negative focus origins and less than one pixel of transparent padding. Changing the root item's dimensions does not scale the image. Keep ancestors from clipping it, preserve its scale and translation, and publish it only when `paintReady` is true. `paintError` reports native PNG decoding failure; a pending image is not ready paint. The paint is decorative and owns no input or accessible semantics.
 
 Preparation requires the actual destination device scale, available through Qt Quick's attached `Screen.devicePixelRatio` once the item is associated with its display. `preparedDeviceScale` records that value. Prepare a complete replacement when placement, device scale or resolved paint changes; changing the display scale cannot regenerate an exported static image. Schedule CPU preparation outside the interactive frame loop and reuse the result. This path does not claim animated, live monitor-transfer or component-state integration.
 
