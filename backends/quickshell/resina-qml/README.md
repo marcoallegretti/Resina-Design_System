@@ -177,6 +177,63 @@ python tools/check_quickshell_paint_runtime.py \
 
 Generate the catalog using the existing [material scene tooling](../../../tools/material_scenarios.py), install the pinned render-test requirements below, and use a fresh output directory. On local Quickshell 0.3.1 / Qt 6.11.2, all 16 Light/Dark, Cast/Frost/Elastomer/Gel and resting/focused scenes passed software/offscreen captures at scales 1.25 and 2, and graphics/offscreen captures at scales 0.5, 1.25 and 2 using OpenGL on Mesa software graphics (`--scene-graph rhi`). Software `grabToImage` at scale 0.5 clipped the capture and fails the checker; live presentation at that scale remains unverified. The checker retains that failure when explicitly requested. Software/Wayland captures on WSLg also passed all 16 scenes at scales 1, 1.25 and 2 (`--platform wayland`). Hardware GPU, compositor diversity and runtime CI remain unverified.
 
+## Native command accessibility prerequisite
+
+The [Qt availability fixture](../../../conformance/quickshell/availability-probe.qml)
+and [native checker](../../../tools/check_qt_native_availability.py) measure the
+actual Linux AT-SPI tree and invoke its advertised Press actions. The diagnostic
+host uses pinned Qt 6.11.2 through PySide6; it does not run Quickshell. Install the
+native X11 or Wayland platform libraries and AT-SPI services, then run on a live
+display (Xvfb is sufficient for this tree/action probe):
+
+```sh
+python -m pip install -r tools/requirements-qt-native.txt
+python -m pip install -r tools/requirements-schema.txt
+cargo build -p resina-resolver --bin resina-activation --locked
+python tools/check_activation_backend.py -- target/debug/resina-activation -
+python tools/check_qt_native_availability.py --report-only
+python tools/check_qt_native_availability.py
+```
+
+The checker owns a fresh D-Bus session, bounds execution and rejects missing or
+duplicate nodes/actions, invalid state replies, failed action delivery and
+incorrect callback records. `--report-only` permits measured semantic mismatches;
+execution failures still exit nonzero. The strict command retains the existing
+discoverable-disabled expectation and currently fails it.
+
+Executed on Qt 6.11.2 with the native X11 platform, software scene graph and Xvfb:
+enabled commands publish enabled/sensitive/focusable; disabled commands publish
+neither enabled nor sensitive. Both disabled policies publish non-focusable,
+including the fixture that requests discoverable focus. Qt explicitly
+[clears focusability when the item is disabled](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/accessible/qaccessiblequickitem.cpp#L451-L460).
+The excluded-disabled policy matches; the discoverable-disabled policy remains
+unsupported. Resina semantics have not been changed to accommodate this limit.
+
+Native AT-SPI Press is delivered even to disabled items. The diagnostic host
+routes each callback through the existing `resina-activation` public protocol,
+validates its result schema and commits next state before counting its activation
+intent. The fixture's explicit product behavior revokes availability after the
+first activation through that same lifecycle. Disabled invocations produce no
+activation, the enabled invocation activates once, and a subsequent invocation
+produces no additional activation. The checker verifies the complete transition
+results, committed state, intent count and native availability after revocation.
+Set `RESINA_ACTIVATION_BACKEND` to the absolute path of another built reference
+executable if using a different target directory. This subprocess-backed host
+is a conformance diagnostic, not an interactive production binding. The fixture
+uses Qt's `accessiblePressAction()` method dispatch rather than an attached
+`onPressAction` signal, because Qt's Button role already advertises Press and the
+attached signal produces a duplicate. These behaviors follow the pinned
+[action implementation](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/accessible/qaccessiblequickitem.cpp#L515-L574).
+
+This evidence establishes native AT-SPI invocation through the canonical
+activation protocol and a live-availability guard requirement. It does not
+establish an interactive production binding, complete component conformance,
+keyboard/pointer input, screen-reader operation, Wayland behavior,
+Quickshell hosting or runtime CI. The fixture is diagnostic and supplies no
+production control or Resina appearance. Complete controls must map existing
+normative snapshots and operations, compose verified paint/text/focus, and obtain
+their own native integration evidence.
+
 ## Native focus contours
 
 `resina_qml::render_focus(&FocusIndicatorIr)` emits standalone QML using native `PathMove`, `PathLine`, and `PathArc` objects in one `ShapePath`. Both boundaries use the resolved physical side footprint. A closed compound fill with `OddEvenFill` preserves the hole; there is no toolkit stroke, image embedding, SVG intermediary, mask, blur, or source-text injection. The resolved sRGB pigment is passed to `Qt.rgba` without premature byte quantization. Only constants and validated numerical values are emitted.
