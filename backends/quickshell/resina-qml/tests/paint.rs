@@ -53,7 +53,7 @@ fn image(qml: &str) -> (u32, u32, Vec<u8>) {
 fn complete_paint_reserves_focus_and_samples_after_fractional_placement() {
     for focused in [false, true] {
         let ir = resolve_surface_paint_source(&request(focused)).unwrap();
-        for scale in [0.5, 1.0, 1.25, 2.0] {
+        for scale in [0.5, 1.0, 1.25, 1.3, 2.0, 3.0] {
             let placement = PhysicalVector { x: 13.3, y: 17.1 };
             let qml = render_surface_paint(&ir, placement, scale, 4).unwrap();
             let number = |name: &str| {
@@ -83,6 +83,41 @@ fn complete_paint_reserves_focus_and_samples_after_fractional_placement() {
             )
             .unwrap();
             assert_eq!(pixels, expected.rgba());
+            // Image-node local geometry must be integral before Qt rounds dirty
+            // bounds. Its explicit transform then restores the original sampled
+            // extent, without resampling the PNG or changing portable geometry.
+            let image_source = qml.split("    Image {").nth(1).unwrap();
+            let extent = |axis: &str| {
+                image_source
+                    .lines()
+                    .find_map(|line| line.trim().strip_prefix(&format!("{axis}: ")))
+                    .unwrap()
+                    .parse::<u32>()
+                    .unwrap()
+            };
+            assert_eq!((extent("width"), extent("height")), (width, height));
+            let transform = image_source
+                .lines()
+                .find(|line| line.contains("transform: Scale"))
+                .unwrap();
+            let inverse = transform
+                .split("xScale: ")
+                .nth(1)
+                .unwrap()
+                .split(';')
+                .next()
+                .unwrap()
+                .parse::<f64>()
+                .unwrap();
+            assert_eq!(inverse, 1.0 / scale);
+            assert!(
+                (f64::from((width as f32) * (inverse as f32)) - f64::from(width) / scale).abs()
+                    <= 1.0 / 1024.0
+            );
+            assert!(
+                (f64::from((height as f32) * (inverse as f32)) - f64::from(height) / scale).abs()
+                    <= 1.0 / 1024.0
+            );
             let bounds = if focused {
                 ir.focus()
                     .unwrap()

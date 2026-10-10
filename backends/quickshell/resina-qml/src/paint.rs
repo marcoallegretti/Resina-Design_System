@@ -38,6 +38,46 @@ impl Error for PaintQmlError {
     }
 }
 
+// Keep the native image node's local rectangle in integer pixel coordinates.
+// Qt's software image-node dirty bounds round that rectangle before applying
+// its transform; a fractional logical rectangle can therefore lose sampled
+// edge pixels. The inverse-density transform preserves the prepared pixel grid.
+fn image_transform(prepared: PreparedViewport, device_scale: f64) -> Result<f64, PaintQmlError> {
+    let inverse = 1.0 / device_scale;
+    let native_inverse = inverse as f32;
+    if !native_inverse.is_finite() || native_inverse <= 0.0 {
+        return Err(PaintQmlError::Coordinates(QmlError::CoordinatePrecision(
+            inverse,
+        )));
+    }
+    for (pixels, logical, origin, far) in [
+        (
+            prepared.viewport().width,
+            prepared.bounds().width,
+            prepared.bounds().x,
+            prepared.far_corner().x,
+        ),
+        (
+            prepared.viewport().height,
+            prepared.bounds().height,
+            prepared.bounds().y,
+            prepared.far_corner().y,
+        ),
+    ] {
+        let native_extent = (pixels as f32) * native_inverse;
+        if !native_extent.is_finite()
+            || native_extent <= 0.0
+            || (f64::from(native_extent) - logical).abs() > crate::MAX_COORDINATE_ERROR
+            || (f64::from(origin as f32 + native_extent) - far).abs() > crate::MAX_COORDINATE_ERROR
+        {
+            return Err(PaintQmlError::Coordinates(QmlError::CoordinatePrecision(
+                logical,
+            )));
+        }
+    }
+    Ok(inverse)
+}
+
 /// Check native placement and the renderer's sampling/resource guards without sampling pixels.
 pub fn prepare_surface_paint(
     ir: &SurfacePaintIr,
@@ -88,6 +128,7 @@ pub fn prepare_surface_paint(
             )));
         }
     }
+    image_transform(prepared, device_scale)?;
     validate_viewport(prepared.viewport(), samples_per_axis).map_err(PaintQmlError::Raster)?;
     Ok(prepared)
 }
@@ -105,6 +146,9 @@ pub fn render_surface_paint(
     let origin_y = bounds.y;
     let logical_width = bounds.width;
     let logical_height = bounds.height;
+    let image_width = prepared.viewport().width;
+    let image_height = prepared.viewport().height;
+    let inverse_scale = image_transform(prepared, device_scale)?;
     let image = resina_raster::render_surface_paint(ir, prepared.viewport(), samples_per_axis)
         .map_err(PaintQmlError::Raster)?;
     let mut png = Vec::new();
@@ -128,8 +172,9 @@ Item {{
     Image {{
         id: paint
         Accessible.ignored: true
-        width: parent.implicitWidth
-        height: parent.implicitHeight
+        width: {image_width}
+        height: {image_height}
+        transform: Scale {{ xScale: {inverse_scale}; yScale: {inverse_scale} }}
         fillMode: Image.Stretch
         smooth: false
         mipmap: false
