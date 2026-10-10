@@ -23,7 +23,18 @@ mod ffi {
         type NativeLabelMeasure = crate::label::ffi::NativeLabelMeasure;
     }
     extern "Rust" {
+        fn compose_request(
+            request: &QString,
+            activation: &QString,
+            hovered: bool,
+            focusable: bool,
+        ) -> QString;
         fn resolve_snapshot(request: &QString, producer: &NativeLabelMeasure) -> QString;
+        fn qualify_snapshot(
+            request: &QString,
+            producer: &NativeLabelMeasure,
+            options: &QString,
+        ) -> QString;
         fn resolve_painted_snapshot(
             request: &QString,
             producer: &NativeLabelMeasure,
@@ -102,7 +113,7 @@ struct RenderOptions {
 fn prepare(
     source: &str,
     producer: &ffi::NativeLabelMeasure,
-    rendering: Option<RenderOptions>,
+    rendering: Option<(RenderOptions, bool)>,
 ) -> Result<Value, String> {
     if source.len() > 8 * 1024 * 1024 {
         return Err("Qt command snapshot request exceeds 8 MiB".to_owned());
@@ -195,18 +206,31 @@ fn prepare(
     .map_err(|error| error.to_string())?;
     let mut result = json!({"snapshot": {"label": snapshot.label(), "paint": snapshot.paint(),
         "hitRegion": snapshot.hit_region(), "accessibility": snapshot.accessibility()}});
-    if let Some(options) = rendering {
-        let source = resina_qml::render_surface_paint(
+    if let Some((options, render)) = rendering {
+        let placement = resina_model::PhysicalVector {
+            x: options.x,
+            y: options.y,
+        };
+        resina_qml::prepare_surface_paint(
             snapshot.paint().paint(),
-            resina_model::PhysicalVector {
-                x: options.x,
-                y: options.y,
-            },
+            placement,
             options.device_scale,
             options.samples_per_axis,
         )
         .map_err(|error| error.to_string())?;
-        result["paintSource"] = Value::String(source);
+        if render {
+            let source = resina_qml::render_surface_paint(
+                snapshot.paint().paint(),
+                resina_model::PhysicalVector {
+                    x: options.x,
+                    y: options.y,
+                },
+                options.device_scale,
+                options.samples_per_axis,
+            )
+            .map_err(|error| error.to_string())?;
+            result["paintSource"] = Value::String(source);
+        }
     }
     Ok(result)
 }
@@ -219,10 +243,27 @@ fn resolve_snapshot(request: &QString, producer: &ffi::NativeLabelMeasure) -> QS
     )
 }
 
+fn qualify_snapshot(
+    request: &QString,
+    producer: &ffi::NativeLabelMeasure,
+    options: &QString,
+) -> QString {
+    resolve_with_options(request, producer, options, false)
+}
+
 fn resolve_painted_snapshot(
     request: &QString,
     producer: &ffi::NativeLabelMeasure,
     options: &QString,
+) -> QString {
+    resolve_with_options(request, producer, options, true)
+}
+
+fn resolve_with_options(
+    request: &QString,
+    producer: &ffi::NativeLabelMeasure,
+    options: &QString,
+    render: bool,
 ) -> QString {
     let result = (|| {
         let options = options.to_string();
@@ -234,11 +275,56 @@ fn resolve_painted_snapshot(
             return Err("Qt command rendering options must be an object".to_owned());
         }
         let rendering = serde_json::from_value(document).map_err(|error| error.to_string())?;
-        prepare(&request.to_string(), producer, Some(rendering))
+        prepare(&request.to_string(), producer, Some((rendering, render)))
     })();
     QString::from(
         result
             .unwrap_or_else(|error| json!({"error": error}))
             .to_string(),
+    )
+}
+
+fn compose_source(
+    source: &str,
+    activation: &str,
+    hovered: bool,
+    focusable: bool,
+) -> Result<String, String> {
+    if source.len() > 8 * 1024 * 1024 || activation.len() > 64 * 1024 {
+        return Err("Qt command composition input exceeds its source bound".to_owned());
+    }
+    let mut document = parse_token_document(source).map_err(|error| error.to_string())?;
+    if !document.is_object() {
+        return Err("Qt command template must be an object".to_owned());
+    }
+    // Validate the complete original shape before replacing native-owned channels.
+    // In particular, never round-trip untrusted source through QML JSON.parse.
+    let _: Request = serde_json::from_value(document.clone()).map_err(|error| error.to_string())?;
+    let state = parse_token_document(activation).map_err(|error| error.to_string())?;
+    let _: ActivationState =
+        serde_json::from_value(state.clone()).map_err(|error| error.to_string())?;
+    document["activation"] = state;
+    document["hovered"] = Value::Bool(hovered);
+    document["focusable"] = Value::Bool(focusable);
+    Ok(document.to_string())
+}
+
+fn compose_request(
+    request: &QString,
+    activation: &QString,
+    hovered: bool,
+    focusable: bool,
+) -> QString {
+    QString::from(
+        match compose_source(
+            &request.to_string(),
+            &activation.to_string(),
+            hovered,
+            focusable,
+        ) {
+            Ok(request) => json!({"request": request}),
+            Err(error) => json!({"error": error}),
+        }
+        .to_string(),
     )
 }

@@ -27,13 +27,23 @@ public:
 
 class CommandSnapshotResolver : public QObject {
     Q_OBJECT
+    Q_PROPERTY(QString publication READ publication NOTIFY publicationChanged)
     QML_ELEMENT
 
 public:
     using QObject::QObject;
+    QString publication() const { return publication_; }
+    // The composing owner commits only an already validated native view snapshot.
+    Q_INVOKABLE void publishSnapshot(const QString& publication);
     Q_INVOKABLE QString resolveSnapshot(const QString& request, QObject* producer) const;
     Q_INVOKABLE QString resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const;
+    Q_INVOKABLE QString qualifySnapshot(const QString& request, QObject* producer, const QString& options) const;
+    Q_INVOKABLE QString composeRequest(const QString& request, const QString& activation, bool hovered, bool focusable) const;
     Q_INVOKABLE bool matchesNativeContext(QObject* item, double x, double y, double deviceScale) const;
+signals:
+    void publicationChanged();
+private:
+    QString publication_;
 };
 }
 #endif

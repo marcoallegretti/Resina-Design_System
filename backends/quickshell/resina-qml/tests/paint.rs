@@ -218,3 +218,35 @@ fn command_publishes_only_a_complete_valid_component() {
     assert_eq!(usage.status.code(), Some(2));
     assert!(usage.stdout.is_empty());
 }
+
+#[test]
+fn endpoint_preflight_uses_the_renderer_coordinate_sampling_and_resource_guards() {
+    let ir = resolve_surface_paint_source(&request(true)).unwrap();
+    let origin = PhysicalVector { x: 13.3, y: 17.1 };
+    let prepared = resina_qml::prepare_surface_paint(&ir, origin, 1.3, 4).unwrap();
+    let (width, height, _) = image(&render_surface_paint(&ir, origin, 1.3, 4).unwrap());
+    assert_eq!(
+        (prepared.viewport().width, prepared.viewport().height),
+        (width, height)
+    );
+    for (placement, scale, samples) in [
+        (origin, 0.0, 4),
+        (origin, 1.0, 0),
+        (origin, 1.0, 9),
+        (origin, 10_000.0, 4),
+        (PhysicalVector { x: 1e20, y: 0.0 }, 1.0, 4),
+        (
+            PhysicalVector {
+                x: f64::NAN,
+                y: 0.0,
+            },
+            1.0,
+            4,
+        ),
+    ] {
+        let preflight =
+            resina_qml::prepare_surface_paint(&ir, placement, scale, samples).unwrap_err();
+        let rendering = render_surface_paint(&ir, placement, scale, samples).unwrap_err();
+        assert_eq!(preflight.to_string(), rendering.to_string());
+    }
+}

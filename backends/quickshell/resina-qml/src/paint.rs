@@ -1,6 +1,6 @@
 use crate::{QmlError, check_coordinates};
 use resina_model::PhysicalVector;
-use resina_raster::{RasterError, prepare_viewport};
+use resina_raster::{PreparedViewport, RasterError, prepare_viewport, validate_viewport};
 use resina_resolver::SurfacePaintIr;
 use std::{error::Error, fmt, fmt::Write};
 
@@ -38,13 +38,13 @@ impl Error for PaintQmlError {
     }
 }
 
-/// Samples after parent placement; emitted paint origins already include that placement.
-pub fn render_surface_paint(
+/// Check native placement and the renderer's sampling/resource guards without sampling pixels.
+pub fn prepare_surface_paint(
     ir: &SurfacePaintIr,
     placement: PhysicalVector,
     device_scale: f64,
     samples_per_axis: u8,
-) -> Result<String, PaintQmlError> {
+) -> Result<PreparedViewport, PaintQmlError> {
     if !device_scale.is_finite() || device_scale <= 0.0 {
         return Err(PaintQmlError::InvalidScale);
     }
@@ -88,6 +88,23 @@ pub fn render_surface_paint(
             )));
         }
     }
+    validate_viewport(prepared.viewport(), samples_per_axis).map_err(PaintQmlError::Raster)?;
+    Ok(prepared)
+}
+
+/// Samples after parent placement; emitted paint origins already include that placement.
+pub fn render_surface_paint(
+    ir: &SurfacePaintIr,
+    placement: PhysicalVector,
+    device_scale: f64,
+    samples_per_axis: u8,
+) -> Result<String, PaintQmlError> {
+    let prepared = prepare_surface_paint(ir, placement, device_scale, samples_per_axis)?;
+    let bounds = prepared.bounds();
+    let origin_x = bounds.x;
+    let origin_y = bounds.y;
+    let logical_width = bounds.width;
+    let logical_height = bounds.height;
     let image = resina_raster::render_surface_paint(ir, prepared.viewport(), samples_per_axis)
         .map_err(PaintQmlError::Raster)?;
     let mut png = Vec::new();

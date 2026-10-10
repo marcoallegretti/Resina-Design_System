@@ -106,6 +106,10 @@ bool CommandPointerItem::hovered() const {
     return hovered_ && contextValid() && isVisible() && window()->isVisible();
 }
 
+void CommandPointerItem::setAcceptsNewGestures(bool value) {
+    if (acceptsNewGestures_ != value) { acceptsNewGestures_ = value; emit acceptsNewGesturesChanged(); }
+}
+
 void CommandPointerItem::clearHover() {
     for (const auto& observation : hoverObservations_) disconnect(observation.destroyed);
     hoverObservations_.clear();
@@ -320,7 +324,7 @@ void CommandPointerItem::captureRequested(QString id, bool acquire) {
 
 void CommandPointerItem::mousePressEvent(QMouseEvent* event) {
     event->ignore();
-    if (event->button() != Qt::LeftButton || event->modifiers() != Qt::NoModifier
+    if (!acceptsNewGestures_ || event->button() != Qt::LeftButton || event->modifiers() != Qt::NoModifier
         || !window() || !window()->isActive() || !contains(event->position())) return;
     const auto previous = QJsonDocument::fromJson(controller_->property("publication").toString().toUtf8())
         .object().value("state").toObject().value("hold");

@@ -30,6 +30,16 @@ QString CommandLabelResolver::resolveLabel(const QString& request, QObject* prod
     return resolve_label(request, measurement);
 }
 
+void CommandSnapshotResolver::publishSnapshot(const QString& publication) {
+    const auto* application = QCoreApplication::instance();
+    if (!application || QThread::currentThread() != application->thread()
+        || thread() != application->thread()) return;
+    if (publication_ != publication) {
+        publication_ = publication;
+        emit publicationChanged();
+    }
+}
+
 QString CommandSnapshotResolver::resolveSnapshot(const QString& request, QObject* producer) const {
     const NativeLabelMeasure measurement(producer);
     return resolve_snapshot(request, measurement);
@@ -38,6 +48,15 @@ QString CommandSnapshotResolver::resolveSnapshot(const QString& request, QObject
 QString CommandSnapshotResolver::resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const {
     const NativeLabelMeasure measurement(producer);
     return resolve_painted_snapshot(request, measurement, options);
+}
+
+QString CommandSnapshotResolver::qualifySnapshot(const QString& request, QObject* producer, const QString& options) const {
+    const NativeLabelMeasure measurement(producer);
+    return qualify_snapshot(request, measurement, options);
+}
+
+QString CommandSnapshotResolver::composeRequest(const QString& request, const QString& activation, bool hovered, bool focusable) const {
+    return compose_request(request, activation, hovered, focusable);
 }
 
 bool CommandSnapshotResolver::matchesNativeContext(QObject* object, double x, double y, double deviceScale) const {

@@ -7,6 +7,7 @@ Item {
     readonly property string publication: lifecycle.publication
     readonly property string routingError: nativeState.error
     readonly property var nativeWindow: Window.window
+    property bool acceptsNewGestures: true
     enabled: JSON.parse(publication).state.enabled
     activeFocusOnTab: true
     Accessible.ignored: true
@@ -62,6 +63,8 @@ Item {
         if (!key || !hasNativeFocus())
             return;
         const held = JSON.parse(publication).state.hold;
+        if (!acceptsNewGestures && !(held && held.kind === "key" && held.key === key))
+            return;
         const terminating = !down && held && held.kind === "key" && held.key === key;
         const unmodified = (event.modifiers & ~Qt.KeypadModifier) === 0;
         if (!unmodified && !terminating)
@@ -83,7 +86,11 @@ Item {
     Keys.onPressed: (event) => route(event, true)
     Keys.onReleased: (event) => route(event, false)
     Keys.onShortcutOverride: (event) => {
+        const held = JSON.parse(publication).state.hold;
+        const key = event.key === Qt.Key_Space ? "space"
+            : (event.key === Qt.Key_Return || event.key === Qt.Key_Enter ? "enter" : null);
         event.accepted = hasNativeFocus()
+            && (acceptsNewGestures || (held && held.kind === "key" && held.key === key))
             && (event.modifiers & ~Qt.KeypadModifier) === 0
             && (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter);
     }

@@ -17,6 +17,7 @@ class CommandPointerItem : public QQuickItem {
     Q_PROPERTY(QQuickItem* coordinateFrame READ coordinateFrame WRITE setCoordinateFrame NOTIFY coordinateFrameChanged)
     Q_PROPERTY(QString targetPublication READ targetPublication NOTIFY targetPublicationChanged)
     Q_PROPERTY(bool hovered READ hovered NOTIFY hoveredChanged)
+    Q_PROPERTY(bool acceptsNewGestures READ acceptsNewGestures WRITE setAcceptsNewGestures NOTIFY acceptsNewGesturesChanged)
     Q_PROPERTY(QString lastError READ lastError NOTIFY lastErrorChanged)
 public:
     explicit CommandPointerItem(QQuickItem* parent = nullptr);
@@ -27,6 +28,8 @@ public:
     void setCoordinateFrame(QQuickItem* frame);
     QString targetPublication() const;
     bool hovered() const;
+    bool acceptsNewGestures() const { return acceptsNewGestures_; }
+    void setAcceptsNewGestures(bool value);
     QString lastError() const { return error_; }
     Q_INVOKABLE bool prepareTarget(const QString& request);
     Q_INVOKABLE void invalidate();
@@ -37,6 +40,7 @@ signals:
     void targetPublicationChanged();
     void lastErrorChanged();
     void hoveredChanged();
+    void acceptsNewGesturesChanged();
 protected:
     bool eventFilter(QObject* watched, QEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
@@ -62,6 +66,7 @@ private:
     QPointer<QQuickWindow> observedWindow_;
     std::optional<QPointF> enteringPosition_;
     bool hovered_ = false;
+    bool acceptsNewGestures_ = true;
     void clearHover();
     void refreshHover();
     void observeHover(const QPointingDevice* device, const QPointF& scenePosition);

@@ -17,6 +17,7 @@ ResinaCommandKeyboard {
         id: pointer
         anchors.fill: parent
         controller: root.controller
+        acceptsNewGestures: root.acceptsNewGestures
         Accessible.ignored: true
     }
 }

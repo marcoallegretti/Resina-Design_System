@@ -601,11 +601,144 @@ This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication,
-physical-device/screen-reader operation, coherent complete component
-input/accessibility publication and motion remain unverified. The native runtime
+physical-device/screen-reader operation and calibrated motion remain unverified.
+The integrated static profile below now verifies composed command input and
+native accessibility in the standalone host. The native runtime
 CI job is defined; a hosted run remains unverified.
 The decorative view now prepares body and complete glyph drawing together. The
 input owner connects actual focus/key routing and native mouse capture to current
-Rust activation and stable target mapping. The next dependency is coherent
-complete control publication, including native hover, guarded motion and AT
-publication.
+Rust activation and stable target mapping. The integrated static control below connects native hover and complete
+publication to AT actions; guarded motion remains the next dependency.
+
+### Integrated static command control
+
+`ResinaCommandControl.qml` composes the native input owner and decorative view
+into one reusable static command profile. Rust continues to resolve the existing
+portable contracts; Qt owns focus, primary mouse capture, native text, UI-thread
+lifetime and accessibility publication. The consumer owns `activated` effects.
+No portable schema, state rule, checker threshold or native event semantics are
+changed by this composition.
+
+Required properties are `configuration` (the complete JSON snapshot request
+accepted by `CommandSnapshotResolver`), `disabledFocusable` (explicitly `false`
+for this profile) and `samplesPerAxis` (the existing raster sampling policy).
+Register the specified font before providing configuration. Author the neutral
+rest body template, environment, content, available and occupied bounds,
+component minimum, contrast guards and description explicitly. The placeholder
+activation, hover and focusability members must themselves have valid transport
+shapes; native observations replace them after strict Rust parsing. QML never
+normalizes untrusted JSON before duplicate-member rejection.
+
+```qml
+Content.ResinaCommandControl {
+    configuration: validatedAuthoredTemplate
+    disabledFocusable: false
+    samplesPerAxis: 4
+    onActivated: application.reconnect()
+}
+```
+
+`configuration` is a source string, not an assertion of prior qualification.
+Before arming input the component resolves every enabled/disabled, actual-focus,
+hover and pressed static endpoint supported by the profile and verifies that all
+retain the same stable target. Endpoint preflight applies the renderer's existing
+placement, coordinate precision, sampling and resource guards without allocating
+or sampling an unused frame. Actual publication still samples and encodes the
+complete current body/navigation paint and waits for native decoding. The first
+complete native drawing must be ready.
+Carrier implicit size reserves the whole target, including rest extrusion and
+minimum hit space; the decorative front is offset within that carrier. Native
+translation, density, clipping and full target fit must satisfy the existing
+pointer and paint context guards. Nontranslation transforms fail closed.
+
+Readonly `snapshot` aliases a native read-only QString publication, avoiding
+recursive QML string bindings when a consumer changes availability/configuration
+from its publication callback. The owner commits only a validated complete view
+snapshot and checks the current preparation revision after observer delivery.
+`snapshot` is the coherent four-channel publication; `ready` additionally
+requires native paint and target readiness. `preparationError` reports failure.
+`invoke()` routes the semantic action only through an armed available lifecycle;
+its Boolean describes accepted delivery, not a product outcome. `activated` is
+emitted from the committed Rust activation transition. `reconfigure()` cancels
+held input and requalifies the current source after externally repairing native
+context. Authored-property, visibility, native-window, placement and density
+changes automatically retire the publication and schedule requalification.
+Unsupported contexts stay diagnostically withdrawn until repaired.
+
+A feedback update withdraws old paint and semantics while preparing the latest
+complete snapshot. It retains its already qualified native target and armed
+input owner: image decoding is not authorization for a new gesture. This allows
+rapid hover/down/up to reach the lifecycle without waiting for an event-loop
+turn between events. Multiple feedback events can coalesce before a frame; no
+stale snapshot is retained as current. Existing pointer/key releases remain
+routable if the new-gesture gate closes. A configuration/context failure
+withdraws input as well, cancels held gestures, publishes no partial channels
+and requires successful requalification before arming again.
+
+The explicit excluding-disabled policy follows
+[specification 47](../../../spec/47-command-accessibility.md). Availability loss
+relinquishes actual Qt focus before publishing unfocused disabled semantics;
+Resina does not simulate focus loss. Discoverable disabled focusability remains
+unsupported by this Qt profile and is rejected, including when currently enabled.
+The original native availability checker and fixture remain unchanged. Ordinary
+momentary press is not published as toggle/checked state.
+
+The native accessible node belongs to the input carrier, with the exact snapshot
+name and description, Button role and explicit focusability. Decorative children
+are ignored. Qt 6.11.2's existing role-based `accessiblePressAction()` route
+calls `invoke()`; a simultaneous attached `onPressAction` handler would duplicate
+the native Press action in this toolkit and is deliberately not installed.
+There is no custom accessibility tree or private Qt bootstrap.
+
+Independent acceptance for this increment is a prepared actual Qt instance
+connecting complete guarded drawing, stable native targeting, observed hover and
+focus, keyboard/mouse activation, a singular AT-SPI Button and a real Press
+through Rust into exactly one product effect, with configuration/context failure
+and stale actions producing none. Run:
+
+```sh
+python tools/check_qt_command_control_runtime.py \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/qt-control-captures
+python tools/check_qt_command_control_accessibility.py \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+```
+
+The input checker verifies rapid delivery, captured outside/reentry, Space/Enter,
+semantic supersession, committed product revocation, configuration replacement
+while held, reentrant availability revocation during snapshot delivery,
+malformed/duplicate source, impossible contrast, invalid sampling, strict policy
+rejection, transform/visibility withdrawal and repaired placement, plus authored
+light/dark and German/Arabic paragraph content. Captures verify actual native
+body/glyph drawing and changed pressed feedback. It uses injected Qt events;
+optional `--parent-x11-display` and `--parent-x11-window` traverse an explicitly
+named nested Weston output into spontaneous Wayland pointer/key delivery with
+native scan codes and exact-once effects. Parent injection requires DPR 1 and
+calibrates placement from observed native coordinates, without assuming Wayland
+global window positions. It is still injected input, not physical qualification.
+
+Executed local evidence uses Qt 6.11.2 software rendering: complete-control
+checks passed offscreen at DPR 1, 1.3 and 2, and nested Wayland at DPR 1 and 1.25.
+The DPR 1 Wayland run also traversed parent XTest into native pointer/key events.
+Actual AT-SPI publication and Press passed in both X11/Xvfb and nested Wayland.
+Native captures were inspected for body, glyph and pressed feedback; the existing
+paint oracle also matched software readback after the shared preflight extraction.
+The original strict availability probe still rejects exactly its documented
+Qt discoverable-disabled focusability mismatch.
+
+The separate AT-SPI checker runs on an isolated bus in a standalone Qt 6.11.2
+host. It requires exactly one Button with complete content and no decorative
+children, verifies actual enabled/sensitive/focusable/focused state and one Press
+entry, executes native `DoAction`, observes product revocation and proves a stale
+Press produces no second effect. It qualifies only this explicitly excluding
+static profile; the older discoverable-disabled report retains its mismatch.
+
+This integrated path does not qualify calibrated motion, physical devices,
+multi-seat hardware identity, screen-reader operation, hardware GPU rendering,
+released Quickshell accessibility or a complete Command/Button epic. The next
+justified dependency is guarded native motion integrated with these same
+publication and cancellation boundaries; the upstream Quickshell host repair
+remains necessary for Shell qualification. CI now exercises this path, but a
+hosted CI execution remains separate from local evidence.
