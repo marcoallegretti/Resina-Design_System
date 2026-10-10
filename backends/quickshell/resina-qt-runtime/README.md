@@ -45,7 +45,62 @@ Supply actual focus observations and current availability through their events.
 Mutation must stay on the QObject's owning thread. Use deferred Qt destruction
 and cancel active gestures before removing their owner. This controller does not
 acquire focus, perform pointer capture, measure text, render paint or provide a
-Button. Complete component composition remains the next dependency.
+Button. Complete component input/accessibility integration remains separate.
+
+## Native command keyboard owner
+
+[`ResinaCommandKeyboard.qml`](../resina-qml/qml/ResinaCommandKeyboard.qml) is a
+nonvisual Qt focus item owning one `CommandController` for the same lifetime.
+Its read-only `controller` and immutable `publication` string expose that existing
+Rust lifecycle. Supply availability through `controller.dispatch`; the item
+starts disabled. Preserve its `enabled` binding to committed availability.
+Consumers receive product intents through `controller.activated`, after commit.
+Place the decorative command view inside it, using the same current activation
+for preparation; invalidate pending/published drawing whenever that state changes.
+This owner does not prepare paint automatically.
+
+Only an eligible, visible item with actual Qt active focus in a visible active
+window handles command keys. Native focus observations feed Rust; a focus request
+alone never sets the reference state. Hiding the item or its window clears its
+native item focus; consumers restore focus through native navigation or a
+successful native request. Eligibility does not replace the separate focus
+observation. Unmodified Space starts on press and
+activates on actual release; Return and keypad Enter activate on press. Keypad
+metadata does not modify Enter. Other keys and new modified gestures propagate.
+Held releases still terminate after modifiers change. Native repeat presses reach
+Rust with their repeat flag; repeat releases do not terminate or activate.
+Shortcut override reserves these focused command keys without executing an
+additional product shortcut. No synthesized click is delivered.
+
+Focus loss cancels keyboard holds. Effective item hiding/disabling, parent/window
+replacement, window hiding/deactivation and destruction cancel interruption
+through Rust. Brief focus loss is retained across publication callbacks, even
+when focus returns before the callback ends. Synchronization deferred during
+publication reads current native state, and routing checks eligibility again
+after callbacks. `routingError` exposes rejected delivery; interrupted delivery
+is cancelled rather than replayed. Cancel before deferred removal or external
+opacity/occlusion changes that Qt visibility cannot describe. Native thread and
+deferred destruction requirements remain those of the controller.
+
+This is keyboard/focus integration, not a Button, pointer owner, animation or
+accessible control. It is ignored by accessibility. Explicit semantics/native AT
+publication and the existing toolkit focusability discrepancy remain separate.
+Layout still owns the complete stable pointer reservation; this item does not
+derive or claim a target from its width/height.
+
+Acceptance connects actual focus and key routing to Rust activation and a
+checked pressed/focused body/glyph snapshot, including cancellation without
+stale release activation. The checker executed on Qt 6.11.2 with offscreen,
+X11/Xvfb and nested Wayland/Weston 14.0.2 (X11 backend, Pixman renderer).
+Adversarial publication callbacks, modified termination, repeat releases,
+hidden item/window recovery, product revocation and actual armed QObject
+destruction were exercised. Direct `QKeyEvent` cases are injected Qt delivery.
+An additional parent XTest run traversed Weston and `wl_keyboard` into
+spontaneous Qt events with nonzero native scan codes and real platform repeat
+metadata. It verified Space repeat/release, modified held release, Enter timing,
+modified new-gesture exclusion and shortcut exclusion. This establishes the
+tested compositor/toolkit path, not physical-device or screen-reader qualification.
+Run focus-dependent GUI checks serially on a shared display.
 
 ## CommandLabelResolver and native content
 
@@ -234,8 +289,11 @@ is rejected, pending context changes cancel, ancestor translation/distortion
 withdraws visible paint before rendering, and valid preparation recovers.
 Actual pending QObject destruction and native PNG decode-error reporting were
 also executed. These are synthetic state and rendering/lifetime fixtures, not
-native gesture or AT evidence. Hardware/graphics-renderer and Wayland composition,
-all font/fallback policies, motion and complete control qualification remain open.
+native gesture or AT evidence. The same composition/lifetime matrix also passed
+at DPR 1 and 1.25 as a native Wayland client under nested Weston 14.0.2/Pixman, using Qt
+software client readback. This is not compositor-output or physical-screen capture.
+Hardware/graphics-renderer composition, all font/fallback policies, motion and
+complete control qualification remain open.
 
 ## Build and verification
 
@@ -258,6 +316,7 @@ python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-
 python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
 python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 QT_SCALE_FACTOR=1.25 python tools/check_qt_command_paint_runtime.py \
   --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
   --raster target/debug/resina-command-raster --output-dir target/qt-command-paint-1.25
@@ -268,11 +327,43 @@ RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_n
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py
 ```
 
+For a locally nested Wayland run, launch Weston 14.0.2 on an available X11 display
+in a private runtime directory, then select that socket explicitly:
+
+```sh
+mkdir -p target/wayland-runtime
+chmod 700 target/wayland-runtime
+DISPLAY=:0 XDG_RUNTIME_DIR="$PWD/target/wayland-runtime" weston \
+  --backend=x11 --renderer=pixman --shell=desktop --no-config --idle-time=0 \
+  --socket=resina-wayland --log="$PWD/target/weston.log"
+# In another terminal, using the same native runtime module and font:
+export XDG_RUNTIME_DIR="$PWD/target/wayland-runtime"
+export WAYLAND_DISPLAY=resina-wayland
+export QT_QPA_PLATFORM=wayland
+python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+```
+
+For compositor-delivered input, set `resina_weston_window` to the actual X11 output
+window ID reported in that Weston log. Parent injection also requires the
+X11/XTest runtime libraries:
+
+```sh
+python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --parent-x11-display :0 --parent-x11-window "$resina_weston_window"
+```
+
+The checker rejects that mode on a non-Wayland Qt platform and requires
+spontaneous native arrival, scan codes and observed repeat metadata. Standalone
+Wayland AT-SPI invocation was also executed with the existing probe and retained
+the same `conformant: false` disabled-focusability observation.
+
 The [`qt-runtime` CI job](../../../.github/workflows/reference.yml) installs
 the pinned Qt 6.11.2 base/declarative SDK and its bundled ICU through aqtinstall
 3.3.0, together with the pinned Python host. It builds, tests and lints this
-separate workspace and executes the compiled controller, content and snapshot
-checks. Software paint/composition checks run
+separate workspace and executes the compiled controller, content, snapshot and
+keyboard checks. Software paint/composition checks run
 at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure. This
 job's AT-SPI step measures real invocation and availability under Xvfb using
 `--report-only`. Malformed/missing native observations and incorrect action
@@ -386,10 +477,10 @@ This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication, native
-keyboard/pointer delivery, screen-reader operation, coherent complete component
+pointer delivery, physical-device/screen-reader operation, coherent complete component
 input/accessibility publication and motion remain unverified. The native runtime
 CI job is defined; a hosted run remains unverified.
 The decorative view now prepares body and complete glyph drawing together. The
-next dependency is a native control owner connecting this view to current
-lifecycle, stable input geometry and native gestures, then guarded motion and
-AT publication.
+keyboard owner connects actual focus/key routing to current Rust activation.
+The next dependency is pointer ownership and stable native target mapping, then
+coherent complete control publication, guarded motion and AT publication.

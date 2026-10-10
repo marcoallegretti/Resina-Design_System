@@ -18,6 +18,13 @@ loss. Its API, coordinate/lifetime requirements and executed capture matrix are
 specified in that runtime README. It is decorative, ignored by accessibility and
 has no native gesture handler. It does not implement a Button or animation.
 
+[`ResinaCommandKeyboard.qml`](qml/ResinaCommandKeyboard.qml) owns a native focus
+item and the Rust command lifecycle for keyboard delivery. Its
+[runtime contract and evidence](../resina-qt-runtime/README.md#native-command-keyboard-owner)
+cover repeat filtering, modified termination, interruption and lifetime.
+Pointer targeting, complete component composition and AT publication remain
+separate requirements.
+
 ## Native label measurement
 
 `ResinaCommandLabel.qml` connects the native pair to Rust-owned complete content

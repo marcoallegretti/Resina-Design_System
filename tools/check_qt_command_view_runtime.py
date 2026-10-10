@@ -277,7 +277,7 @@ Window {
     except Exception as error:
         print("FAIL Qt command view runtime: " + str(error), file=sys.stderr)
         return 1
-    print(f"Coherent Qt body/glyph publication matched native reference captures at DPR {dpr}; rejection, replacement, reentrancy and placement recovery passed")
+    print(f"Coherent Qt body/glyph publication matched native reference captures on {app.platformName()} at DPR {dpr}; rejection, replacement, reentrancy and placement recovery passed")
     return 0
 
 
