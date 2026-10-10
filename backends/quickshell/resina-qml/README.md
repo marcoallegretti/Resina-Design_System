@@ -2,6 +2,10 @@
 
 This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. It does not implement a complete control, interaction, animation, or a complete Shell conformance claim.
 
+The separately locked [Qt runtime adapter](../resina-qt-runtime/README.md) supplies
+a Rust-owned command lifecycle QObject and native invocation evidence. Complete
+component composition and Quickshell hosting remain separate requirements.
+
 ## Native label measurement
 
 Import [ResinaLabelMeasure.qml](qml/ResinaLabelMeasure.qml) into the application's
@@ -182,8 +186,11 @@ Generate the catalog using the existing [material scene tooling](../../../tools/
 The [Qt availability fixture](../../../conformance/quickshell/availability-probe.qml)
 and [native checker](../../../tools/check_qt_native_availability.py) measure the
 actual Linux AT-SPI tree and invoke its advertised Press actions. The diagnostic
-host uses pinned Qt 6.11.2 through PySide6; it does not run Quickshell. Install the
-native X11 or Wayland platform libraries and AT-SPI services, then run on a live
+host uses pinned Qt 6.11.2 through PySide6; it does not run Quickshell. Reports
+identify the default `reference-protocol` binding. Setting
+`RESINA_QT_RUNTIME_MODULE` to the packaged runtime import root instead runs the
+compiled Rust controller, reported as `rust-qt-runtime`; see its README above.
+Install the native X11 or Wayland platform libraries and AT-SPI services, then run on a live
 display (Xvfb is sufficient for this tree/action probe):
 
 ```sh

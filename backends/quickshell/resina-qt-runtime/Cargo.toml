@@ -1,0 +1,21 @@
+[package]
+name = "resina-qt-runtime"
+version = "0.1.0"
+edition = "2024"
+description = "Rust-owned Resina command lifecycle for native Qt integration"
+
+[workspace]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+cxx = "1"
+cxx-qt = "=0.8.1"
+cxx-qt-lib = "=0.8.1"
+serde_json = { version = "1", features = ["float_roundtrip", "raw_value"] }
+resina-model = { path = "../../../reference/rust/resina-model" }
+resina-resolver = { path = "../../../reference/rust/resina-resolver" }
+
+[build-dependencies]
+cxx-qt-build = "=0.8.1"

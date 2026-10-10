@@ -77,6 +77,7 @@ class QtNativeAvailabilityTests(unittest.TestCase):
             lambda r: r.update(conformant=True),
             lambda r: r.update(issues=[]),
             lambda r: r.update(actions=None),
+            lambda r: r.update(binding="unknown"),
             lambda r: r["actions"]["Enabled command"].append("Press"),
             lambda r: r["callbacks"].pop(),
             lambda r: r["callbacks"][0].update(activations=1),

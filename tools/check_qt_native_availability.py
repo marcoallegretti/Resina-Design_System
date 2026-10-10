@@ -60,7 +60,9 @@ def callback_records(log):
             for line in log.read().splitlines() if "RESINA_QT_ACTION " in line]
 
 
-def report(observed, actions, callbacks, after):
+def report(observed, actions, callbacks, after, binding="reference-protocol"):
+    if binding not in ("reference-protocol", "rust-qt-runtime"):
+        raise ValueError("unknown Qt binding evidence")
     if not isinstance(observed, dict) or not isinstance(actions, dict):
         raise ValueError("invalid native observations")
     if any(not isinstance(state, dict) or set(state) != {"enabled", "sensitive", "focusable"}
@@ -95,7 +97,7 @@ def report(observed, actions, callbacks, after):
         {"enabled": False, "sensitive": False, "focusable": False}, sort_keys=True
     ):
         raise ValueError("native state did not reflect availability revoked by the first action")
-    return dict(result, actions=actions, callbacks=callbacks, after=after)
+    return dict(result, actions=actions, callbacks=callbacks, after=after, binding=binding)
 
 
 def parse_report(output):
@@ -104,10 +106,10 @@ def parse_report(output):
         raise ValueError("native session must produce exactly one report")
     result = json.loads(records[0])
     if not isinstance(result, dict) or set(result) != {
-        "conformant", "observed", "issues", "actions", "callbacks", "after"
+        "conformant", "observed", "issues", "actions", "callbacks", "after", "binding"
     }:
         raise ValueError("invalid native Qt report")
-    measured = report(result["observed"], result["actions"], result["callbacks"], result["after"])
+    measured = report(result["observed"], result["actions"], result["callbacks"], result["after"], result["binding"])
     if json.dumps(result, sort_keys=True) != json.dumps(measured, sort_keys=True):
         raise ValueError("native Qt report contradicts its observations")
     return result
@@ -152,7 +154,8 @@ def session_probe():
                     log.seek(0)
                     raise ValueError("missing or duplicate native callback: " + log.read()[-2000:])
             after = state_flags(call(*nodes["Enabled command"], ACCESSIBLE + ".GetState", address=address))
-            return report(observed, actions, callback_records(log), after)
+            binding = "rust-qt-runtime" if os.environ.get("RESINA_QT_RUNTIME_MODULE") else "reference-protocol"
+            return report(observed, actions, callback_records(log), after, binding)
         finally:
             if process.poll() is None:
                 process.terminate()

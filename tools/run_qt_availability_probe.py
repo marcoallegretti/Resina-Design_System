@@ -68,9 +68,14 @@ def main():
 
     app = QGuiApplication(sys.argv)
     engine = QQmlApplicationEngine()
-    lifecycle = NativeLifecycle()
-    engine.rootContext().setContextProperty("resinaLifecycle", lifecycle)
-    source = ROOT / "conformance/quickshell/availability-probe.qml"
+    module = os.environ.get("RESINA_QT_RUNTIME_MODULE")
+    if module:
+        engine.addImportPath(str(Path(module).resolve(strict=True)))
+        source = ROOT / "conformance/quickshell/command-runtime-probe.qml"
+    else:
+        lifecycle = NativeLifecycle()
+        engine.rootContext().setContextProperty("resinaLifecycle", lifecycle)
+        source = ROOT / "conformance/quickshell/availability-probe.qml"
     engine.load(QUrl.fromLocalFile(str(source)))
     if not engine.rootObjects():
         return 1
