@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 import sys
 
+from command_label_arithmetic import layout
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -15,15 +17,11 @@ def verify_layout(label, calls, request):
     natural, fitted = (call["result"] for call in calls)
     if any(result.get("kind") != "extent" for result in (natural, fitted)):
         raise ValueError("native measurement failed")
-    padding = request["padding"]
-    width = min(max(natural["width"] + padding["start"] + padding["end"],
-                    request["minimumSize"]["width"]), request["maximumSize"]["width"])
-    offered = width - padding["start"] - padding["end"]
-    height = max(fitted["height"] + padding["top"] + padding["bottom"],
-                 request["minimumSize"]["height"])
-    expected_bounds = {"x": padding["start"] if label["layoutDirection"] == "ltr" else padding["end"],
-                       "y": padding["top"] + (height - padding["top"] - padding["bottom"] - fitted["height"]) / 2,
-                       "width": offered, "height": fitted["height"]}
+    expected = layout({**request, "natural": natural, "fitted": fitted,
+                       "direction": label["layoutDirection"]})
+    width, height = expected["size"]["width"], expected["size"]["height"]
+    expected_bounds = expected["labelBounds"]
+    offered = expected_bounds["width"]
     if label["text"] != request["text"] or label["size"] != {"width": width, "height": height} \
             or label["labelBounds"] != expected_bounds or calls[1]["request"]["maximumWidth"] != offered \
             or fitted["width"] > offered:
