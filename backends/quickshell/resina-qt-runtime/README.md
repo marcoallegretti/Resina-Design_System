@@ -268,6 +268,19 @@ RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_n
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py
 ```
 
+The [`qt-runtime` CI job](../../../.github/workflows/reference.yml) installs
+the pinned Qt 6.11.2 base/declarative SDK and its bundled ICU through aqtinstall
+3.3.0, together with the pinned Python host. It builds, tests and lints this
+separate workspace and executes the compiled controller, content and snapshot
+checks. Software paint/composition checks run
+at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure. This
+job's AT-SPI step measures real invocation and availability under Xvfb using
+`--report-only`. Malformed/missing native observations and incorrect action
+delivery still fail; the known disabled-focusability discrepancy is recorded as
+`conformant: false` rather than certified as passing accessibility. The strict
+command above remains the qualification gate. A local reproduction does not
+prove that the hosted workflow has executed.
+
 Use a fresh import output directory. The packager verifies generated metadata
 and uses Qt's expected plugin filename. Add this import root to the engine or
 `QML_IMPORT_PATH`. Actually loading this layout was verified. Consumers need
@@ -374,7 +387,8 @@ Slider. The [native label pair](../resina-qml/README.md#native-label-measurement
 separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication, native
 keyboard/pointer delivery, screen-reader operation, coherent complete component
-input/accessibility publication, motion and native runtime CI remain unverified.
+input/accessibility publication and motion remain unverified. The native runtime
+CI job is defined; a hosted run remains unverified.
 The decorative view now prepares body and complete glyph drawing together. The
 next dependency is a native control owner connecting this view to current
 lifecycle, stable input geometry and native gestures, then guarded motion and
