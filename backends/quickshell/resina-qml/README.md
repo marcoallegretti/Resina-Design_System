@@ -25,6 +25,13 @@ cover repeat filtering, modified termination, interruption and lifetime.
 Pointer targeting, complete component composition and AT publication remain
 separate requirements.
 
+[`ResinaCommandInput.qml`](qml/ResinaCommandInput.qml) combines that keyboard
+owner with native primary mouse targeting/capture through the same Rust
+activation lifecycle. Its [native input contract](../resina-qt-runtime/README.md#native-command-pointer-owner)
+defines explicit stable reservations, coordinate mapping, capture cancellation
+and executed Wayland evidence. It does not automatically prepare paint or
+publish an accessible Button.
+
 ## Native label measurement
 
 `ResinaCommandLabel.qml` connects the native pair to Rust-owned complete content

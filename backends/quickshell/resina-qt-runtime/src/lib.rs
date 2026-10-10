@@ -7,6 +7,7 @@ use resina_resolver::{
 use std::pin::Pin;
 
 mod label;
+mod pointer;
 mod snapshot;
 
 const MAX_EVENT_BYTES: usize = 64 * 1024;

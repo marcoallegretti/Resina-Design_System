@@ -73,6 +73,7 @@ def main():
     from PySide6.QtCore import QObject, QUrl, Slot, qVersion
     from PySide6.QtGui import QGuiApplication
     from PySide6.QtQml import QQmlApplicationEngine
+    from PySide6 import QtQuick  # Load the pinned host's native plugin dependency.
 
     if sys.argv[1:] == ["--version"]:
         print("Qt Quick " + qVersion())

@@ -97,6 +97,7 @@ def main():
         from PySide6.QtCore import QPluginLoader, QUrl, qVersion
         from PySide6.QtGui import QFontDatabase, QGuiApplication
         from PySide6.QtQml import QQmlComponent, QQmlEngine
+        from PySide6 import QtQuick  # Load the pinned host's native plugin dependency.
         if qVersion() != "6.11.2":
             raise ValueError("requires Qt 6.11.2")
         application = QGuiApplication([])

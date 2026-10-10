@@ -40,6 +40,7 @@ jobs:
           python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu
       - name: Build and check the separate Qt workspace
         run: |
+          export LD_LIBRARY_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           cargo fmt --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml -- --check
           cargo test --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
           cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
@@ -52,6 +53,7 @@ jobs:
           python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
       - name: Check actual Qt paint and command composition at native scales
         run: |
           for scale in 1 1.25 2 1.3; do

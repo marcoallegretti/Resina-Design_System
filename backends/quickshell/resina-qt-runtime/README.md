@@ -102,6 +102,74 @@ modified new-gesture exclusion and shortcut exclusion. This establishes the
 tested compositor/toolkit path, not physical-device or screen-reader qualification.
 Run focus-dependent GUI checks serially on a shared display.
 
+## Native command pointer owner
+
+[`ResinaCommandInput.qml`](../resina-qml/qml/ResinaCommandInput.qml) extends the
+keyboard owner with one compiled `CommandPointerItem`, using the same
+`CommandController`. Qt Quick/GUI dependencies remain inside this separate
+native workspace. The helper is nonvisual and ignored by accessibility.
+Native test executables must load this SDK's runtime libraries. Python verification
+hosts explicitly load their pinned Qt Quick module before the compiled plugin,
+so a system Qt installation cannot supply a mismatched Quick dependency.
+Consumers still own layout, paint preparation, semantic publication and product
+effects. This is primary mouse and keyboard integration, not a complete Button.
+
+Set its `coordinateFrame` to the native item whose local coordinates represent
+the body/hit-region frame, normally the decorative command view. Size the input
+owner to the actual carrier rectangle reserved by layout, independently of the
+paint contour. Call `prepareTarget(requestJson)` with the existing complete
+[hit-region request](../../../spec/40-hit-region-ir.md), including the actual
+environment, complete visual footprint, available bounds, component minimum
+and neighboring occupied regions. Use one stable reservation over the supported
+feedback domain, and validate actual body coverage through the command snapshot.
+Preparation never infers neighboring reservations or changes target policy.
+Disabled availability retains the reservation.
+
+Rust strictly resolves that request and preserves exact endpoint predicates for
+membership. Qt maps each delivered point into `coordinateFrame` once; no rounded
+JavaScript endpoint comparison decides membership. The full target must fit the
+native carrier, client window and every clipping ancestor. Unsupported scale,
+rotation or distorted clipping fails explicitly. Reparenting, carrier size,
+window size, coordinate-frame placement or clipping changes withdraw publication
+and cancel a held mouse gesture, observed before delivery and during the GUI
+frame phase. Call `invalidateTarget()` before external occlusion/opacity or late
+layout changes outside those observations, then reserve and prepare again.
+The read-only `targetPublication` is complete hit IR or empty after withdrawal;
+`pointerError` exposes preparation/delivery failure. Recursive target preparation
+during publication fails, and changed context cannot publish a successful target.
+
+Only an unmodified primary mouse press inside the complete target starts a
+gesture. Pointer activation does not request or require keyboard focus. Rust
+commits before the adapter acquires Qt's actual exclusive grab for the delivered
+event point. Native device-object identity plus event-point identity form the
+opaque pointer ID for that live device; different devices cannot release each
+other's holds. The first held keyboard or pointer gesture remains the owner.
+Motion/release continues outside the target and client while captured. Release
+membership is freshly computed, including after modifiers change. No synthesized
+click or composed double-click action is dispatched. Native grab loss, device
+removal, disabling/hiding, deactivation, target withdrawal and owner destruction
+route cancellation through Rust. Semantic invocation releases the native grab;
+the subsequent raw release cannot activate again. Deferred controller replacement
+keeps its old connection until interrupted publication can finish cancellation.
+Keep controller/frame mutation and deferred destruction on the UI thread, and
+cancel before removing a live owner. One pointer owner supplies raw mouse events
+for each controller; other consumers use the semantic invocation path.
+
+Acceptance connects the stable target, native exclusive capture, Rust activation
+and checked pressed body/glyph drawing. The Rust bridge exercises all shared
+exact membership vectors. Qt fixtures independently check mapped membership,
+actual grab state per delivered device, outside/re-entry/release, focus
+independence, competing keyboard/device gestures, modified termination, native
+ancestor clipping, mapping invalidation, hide/disable, product revocation,
+semantic supersession, capture loss and actual armed QObject destruction.
+Direct `QMouseEvent` and second-device fixtures are injected Qt evidence. The
+nested Weston 14.0.2/Pixman run additionally observed spontaneous Qt events
+through `wl_pointer`, including motion/release outside the client, invocation
+and capture-loss cancellation. Parent XTest injection establishes that tested
+compositor/toolkit path, not physical mouse, touch, pen or device-hotplug
+qualification. Native hover, motion and complete accessibility publication remain
+separate integration requirements.
+
 ## CommandLabelResolver and native content
 
 `CommandLabelResolver.resolveLabel(requestJson, producer)` synchronously runs
@@ -310,13 +378,15 @@ python tools/prepare_qt_runtime_module.py \
   --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime \
   --output-dir target/qt-runtime-import
 CARGO_TARGET_DIR="$PWD/target" cargo build -p resina-raster --bin resina-command-raster --locked
-cargo test --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
+LD_LIBRARY_PATH="$(dirname "$QMAKE")/../lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+  cargo test --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
 cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
 python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-schema.txt -r tools/requirements-render.txt
 python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
 python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 QT_SCALE_FACTOR=1.25 python tools/check_qt_command_paint_runtime.py \
   --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
   --raster target/debug/resina-command-raster --output-dir target/qt-command-paint-1.25
@@ -352,18 +422,23 @@ X11/XTest runtime libraries:
 python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import \
   --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
   --parent-x11-display :0 --parent-x11-window "$resina_weston_window"
+python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --parent-x11-display :0 --parent-x11-window "$resina_weston_window"
 ```
 
-The checker rejects that mode on a non-Wayland Qt platform and requires
-spontaneous native arrival, scan codes and observed repeat metadata. Standalone
+The keyboard checker rejects that mode on a non-Wayland Qt platform and requires
+spontaneous native arrival, scan codes and observed repeat metadata. The pointer
+checker requires DPR 1, spontaneous native pointer arrival, and exclusive grabs
+for the actual event's device. Standalone
 Wayland AT-SPI invocation was also executed with the existing probe and retained
 the same `conformant: false` disabled-focusability observation.
 
 The [`qt-runtime` CI job](../../../.github/workflows/reference.yml) installs
 the pinned Qt 6.11.2 base/declarative SDK and its bundled ICU through aqtinstall
 3.3.0, together with the pinned Python host. It builds, tests and lints this
-separate workspace and executes the compiled controller, content, snapshot and
-keyboard checks. Software paint/composition checks run
+separate workspace and executes the compiled controller, content, snapshot,
+keyboard and pointer checks. Software paint/composition checks run
 at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure. This
 job's AT-SPI step measures real invocation and availability under Xvfb using
 `--report-only`. Malformed/missing native observations and incorrect action
@@ -476,11 +551,12 @@ Resina does not own a process-wide private bootstrap as a semantic fallback.
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
-measurement and drawing. Released Quickshell native publication, native
-pointer delivery, physical-device/screen-reader operation, coherent complete component
+measurement and drawing. Released Quickshell native publication,
+physical-device/screen-reader operation, coherent complete component
 input/accessibility publication and motion remain unverified. The native runtime
 CI job is defined; a hosted run remains unverified.
 The decorative view now prepares body and complete glyph drawing together. The
-keyboard owner connects actual focus/key routing to current Rust activation.
-The next dependency is pointer ownership and stable native target mapping, then
-coherent complete control publication, guarded motion and AT publication.
+input owner connects actual focus/key routing and native mouse capture to current
+Rust activation and stable target mapping. The next dependency is coherent
+complete control publication, including native hover, guarded motion and AT
+publication.
