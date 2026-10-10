@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--module-path", required=True, type=Path)
     parser.add_argument("--font", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument("--motion", action="store_true", help="Exercise explicit arithmetic spring channels in the same native control")
     parser.add_argument("--parent-x11-display", help="XTest injection through a named nested Weston output")
     parser.add_argument("--parent-x11-window", type=lambda value:int(value,0))
     args = parser.parse_args()
@@ -71,6 +72,10 @@ def main():
             return json.loads(window.observation())
 
         source = request_for("light", "Reconnect")
+        if args.motion:
+            source["content"]["environment"]["accessibilityPreferences"]["reducedMotion"] = False
+            channels = json.loads((ROOT / "conformance/ir/command-motion-request.json").read_text())["channels"]
+            window.setProperty("motionChannels", json.dumps(channels))
 
         def prepare(request):
             window.setProperty("configuration", json.dumps(request) if isinstance(request, dict) else request)
@@ -102,7 +107,8 @@ def main():
             actual = json.loads(result["snapshot"])["paint"]["paint"]["body"]["states"]
             if actual != expected:
                 raise ValueError(f"body signals disagree: expected {expected}, actual {actual}, state {result['state']}")
-            verify_snapshot(json.loads(result["snapshot"]), current, expected)
+            motion = json.loads(result["motion"])["motion"] if args.motion else None
+            verify_snapshot(json.loads(result["snapshot"]), current, expected, motion)
             if json.loads(result["target"]) != json.loads(result["snapshot"])["hitRegion"]:
                 raise ValueError("native input and visible command reservations differ")
             return result
@@ -153,6 +159,9 @@ def main():
         if not held or not held["inside"]:
             raise ValueError("integrated input did not hold a native pointer")
         check()
+        if args.motion:
+            start = json.loads(observe()["motion"])["time"]
+            wait(app, lambda: observe()["ready"] and json.loads(observe()["motion"])["time"] > start + .4, "visible sampled pressed feedback")
         if capture("pressed.png") == hover_image:
             raise ValueError("native pressed feedback did not change the drawing")
         mouse(QEvent.MouseMove, 480, 380)
@@ -263,6 +272,8 @@ def main():
         for theme, text in (("dark", "Verbindung mit gespeicherten Einstellungen wiederherstellen"),
                             ("light", "اتصل Reconnect")):
             source = request_for(theme, text)
+            if args.motion:
+                source["content"]["environment"]["accessibilityPreferences"]["reducedMotion"] = False
             prepare(source)
             check()
             capture("localized-" + theme + ".png")
@@ -276,7 +287,8 @@ def main():
             from qt_nested_input import exercise
             exercise(app,window,args.parent_x11_display,args.parent_x11_window,wait,observe,check)
         window.close()
-        print("integrated static Qt command: coherent paint/label/target/semantics, native-window pointer/key routing, exact-once effects and fail-closed recovery passed (injected input)")
+        profile = "sampled" if args.motion else "static"
+        print(f"integrated {profile} Qt command: coherent paint/label/target/semantics, native-window pointer/key routing, exact-once effects and fail-closed recovery passed (injected input)")
         return 0
     except (ImportError, OSError, RuntimeError, ValueError, TypeError, AttributeError) as error:
         print("Qt command control check failed: " + str(error), file=sys.stderr)

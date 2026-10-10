@@ -1,6 +1,6 @@
 # Quickshell paint and measurement (0.1.0)
 
-This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement and drawing for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. The integrated static command profile below connects these foundations to native interaction and accessibility. Calibrated motion and complete Shell conformance remain unqualified.
+This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement and drawing for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. The integrated command profiles below connect these foundations to native interaction and accessibility. Calibrated motion and complete Shell conformance remain unqualified.
 
 The separately locked [Qt runtime adapter](../resina-qt-runtime/README.md) supplies
 a Rust-owned command lifecycle QObject and native invocation evidence. The integrated profile now supplies native command input/accessibility in a standalone Qt host. Released Quickshell hosting remains a separate requirement.
@@ -40,8 +40,11 @@ accessible Button. Supply a complete snapshot request template, an explicit
 registered. Consumers connect `activated` to product effects. The
 [runtime API and evidence](../resina-qt-runtime/README.md#integrated-static-command-control)
 define coherent readiness, cancellation, feedback publication and native
-AT-SPI verification. This profile realizes static feedback endpoints; calibrated
-motion and released Quickshell hosting remain separate qualification dependencies.
+AT-SPI verification. The default profile realizes static feedback endpoints. Explicit `motionChannels`
+selects the [sampled native profile](../resina-qt-runtime/README.md#integrated-sampled-command-frames),
+with Qt scheduling and Rust-owned trajectory/paint guards. Fixture motion is
+verified separately; calibrated motion and released Quickshell hosting remain
+qualification dependencies.
 `disabledFocusable: true` is rejected with a diagnostic, preserving the existing
 strict discoverable-disabled fixture and its known Qt mismatch.
 

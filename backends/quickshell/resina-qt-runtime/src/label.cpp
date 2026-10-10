@@ -3,6 +3,8 @@
 #include "resina-qt-runtime/src/label.cxx.h"
 #include "resina-qt-runtime/src/snapshot.cxx.h"
 #include <QCoreApplication>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMetaObject>
 #include <QThread>
 #include <QQuickWindow>
@@ -31,14 +33,38 @@ QString CommandLabelResolver::resolveLabel(const QString& request, QObject* prod
 }
 
 void CommandSnapshotResolver::publishSnapshot(const QString& publication) {
+    publishFrame(publication, QString(), nullptr);
+}
+
+void CommandSnapshotResolver::publishFrame(const QString& publication, const QString& motion, QObject* frame) {
     const auto* application = QCoreApplication::instance();
     if (!application || QThread::currentThread() != application->thread()
         || thread() != application->thread()) return;
-    if (publication_ != publication) {
-        publication_ = publication;
-        emit publicationChanged();
-    }
+    const bool changed = publication_ != publication;
+    const bool motionChangedValue = motion_ != motion;
+    if (frame && frame->thread() != application->thread()) return;
+    const bool frameChangedValue = frame_ != frame;
+    const QPointer<QObject> requestedFrame(frame);
+    const QString requestedMotion = motion;
+    const QPointer<CommandSnapshotResolver> owner(this);
+    disconnect(frameDestroyed_);
+    publication_ = publication;
+    motion_ = motion;
+    frame_ = frame;
+    if (frame) frameDestroyed_ = connect(frame, &QObject::destroyed, this, [this] { publishSnapshot(QString()); });
+    if (frameChangedValue) emit frameChanged();
+    if (owner && changed && frame_ == requestedFrame && publication_ == publication) emit publicationChanged();
+    // An observer may retire/reconfigure or destroy this native owner.
+    if (owner && motionChangedValue && frame_ == requestedFrame && motion_ == requestedMotion) emit motionChanged();
 }
+
+QString CommandSnapshotResolver::resolveMotionSnapshot(const QString& request, QObject* producer, const QString& options, const QString& motion, bool render) const {
+    const NativeLabelMeasure measurement(producer);
+    return resolve_motion_snapshot(request, measurement, options, motion, render);
+}
+
+QString CommandSnapshotResolver::retargetMotion(const QString& source) const { return retarget_motion(source); }
+QString CommandSnapshotResolver::validateMotionChannels(const QString& source) const { return validate_motion_channels(source); }
 
 QString CommandSnapshotResolver::resolveSnapshot(const QString& request, QObject* producer) const {
     const NativeLabelMeasure measurement(producer);
@@ -73,4 +99,29 @@ bool CommandSnapshotResolver::matchesNativeContext(QObject* object, double x, do
         && qAbs(transform.dy() - y) <= 1.0 / 1024
         && item->window()->devicePixelRatio() == deviceScale;
 }
+
+bool CommandClock::onUiThread() const {
+    const auto* application = QCoreApplication::instance();
+    return application && QThread::currentThread() == application->thread() && thread() == application->thread();
+}
+
+QString CommandClock::sample() const {
+    if (!onUiThread() || !clock_.isValid() || !QElapsedTimer::isMonotonic())
+        return QStringLiteral("{\"error\":\"Qt command clock requires a started monotonic UI-thread clock\"}");
+    const double time = double(clock_.nsecsElapsed()) / 1e9;
+    return QString::fromUtf8(QJsonDocument(QJsonObject{{"time",time}}).toJson(QJsonDocument::Compact));
+}
+
+QString CommandClock::restart() {
+    if (!onUiThread() || !QElapsedTimer::isMonotonic())
+        return QStringLiteral("{\"error\":\"Qt command clock requires the monotonic UI thread\"}");
+    QElapsedTimer next;
+    next.start();
+    const double previous = clock_.isValid() ? double(clock_.durationTo(next).count()) / 1e9 : 0.0;
+    clock_ = next;
+    return QString::fromUtf8(QJsonDocument(QJsonObject{{"previousTime",previous}}).toJson(QJsonDocument::Compact));
+}
+
+void CommandClock::invalidate() { if (onUiThread()) clock_.invalidate(); }
+
 }

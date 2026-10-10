@@ -5,11 +5,13 @@ Window {
     id: window
     width: 500; height: 400; visible: true
     property string configuration: ""
+    property string motionChannels: ""
     property bool disabledFocusable: false
     property int effects: 0
     property int readinessViolations: 0
     property bool revoke: false
     property bool revokeOnReady: false
+    property var publicationRevocation: null
     property bool logEvents: false
     Item {
         id: carrier
@@ -19,6 +21,7 @@ Window {
             objectName: "commandControl"
             x: 50; y: 50
             configuration: window.configuration
+            motionChannels: window.motionChannels
             disabledFocusable: window.disabledFocusable
             samplesPerAxis: 4
             onReadyChanged: {
@@ -27,7 +30,7 @@ Window {
             onSnapshotChanged: {
                 if (window.revokeOnReady && snapshot.length) {
                     window.revokeOnReady = false;
-                    availability(false);
+                    window.publicationRevocation = availability(false);
                 }
             }
             onActivated: {
@@ -51,9 +54,11 @@ Window {
     function renew() { command.reconfigure(); }
     function observation() {
         return JSON.stringify({ready:command.ready,error:command.preparationError,snapshot:command.snapshot,
+            motion:command.motion,
             target:command.targetPublication,state:JSON.parse(command.publication).state,
             hovered:command.hovered,effects:effects,focused:command.activeFocus,
             readinessViolations:readinessViolations,
+            publicationRevocation:publicationRevocation,
             width:command.width,height:command.height});
     }
 }

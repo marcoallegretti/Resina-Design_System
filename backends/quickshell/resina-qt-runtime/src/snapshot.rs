@@ -5,8 +5,9 @@ use resina_model::{
     SurfaceIntent, SurfaceSize,
 };
 use resina_resolver::{
-    CommandPaintInput, CommandSnapshotInput, OpaqueSurfaceInput, SrgbFallback,
-    SurfaceHitRegionInput, SurfacePaintInput, resolve_command_paint, resolve_command_snapshot,
+    CommandMotionChannels, CommandMotionInput, CommandPaintInput, CommandSnapshotInput,
+    OpaqueSurfaceInput, SrgbFallback, SurfaceHitRegionInput, SurfacePaintInput,
+    resolve_command_motion, resolve_command_paint, resolve_command_snapshot,
     resolve_command_states, resolve_srgb_fallback, resolve_surface_hit_region,
 };
 use resina_tokens::parse_token_document;
@@ -35,6 +36,15 @@ mod ffi {
             producer: &NativeLabelMeasure,
             options: &QString,
         ) -> QString;
+        fn resolve_motion_snapshot(
+            request: &QString,
+            producer: &NativeLabelMeasure,
+            options: &QString,
+            motion: &QString,
+            render: bool,
+        ) -> QString;
+        fn retarget_motion(source: &QString) -> QString;
+        fn validate_motion_channels(source: &QString) -> QString;
         fn resolve_painted_snapshot(
             request: &QString,
             producer: &NativeLabelMeasure,
@@ -114,6 +124,7 @@ fn prepare(
     source: &str,
     producer: &ffi::NativeLabelMeasure,
     rendering: Option<(RenderOptions, bool)>,
+    motion: Option<&MotionRequest>,
 ) -> Result<Value, String> {
     if source.len() > 8 * 1024 * 1024 {
         return Err("Qt command snapshot request exceeds 8 MiB".to_owned());
@@ -188,8 +199,25 @@ fn prepare(
         .surface
         .clone()
         .with_states(resolve_command_states(&request.activation, request.hovered));
-    let paint = resolve_command_paint(&content.theme, &content.environment, paint_input(&surface))
+    let sampled = motion
+        .map(|motion| {
+            resolve_command_motion(
+                &content.theme,
+                &content.environment,
+                CommandMotionInput {
+                    command: paint_input(&surface),
+                    channels: &motion.channels,
+                    time: motion.time,
+                },
+            )
+        })
+        .transpose()
         .map_err(|error| error.to_string())?;
+    let paint = match &sampled {
+        Some(sample) => sample.command().clone(),
+        None => resolve_command_paint(&content.theme, &content.environment, paint_input(&surface))
+            .map_err(|error| error.to_string())?,
+    };
     let snapshot = resolve_command_snapshot(CommandSnapshotInput {
         label: &content.label,
         paint: &paint,
@@ -206,6 +234,9 @@ fn prepare(
     .map_err(|error| error.to_string())?;
     let mut result = json!({"snapshot": {"label": snapshot.label(), "paint": snapshot.paint(),
         "hitRegion": snapshot.hit_region(), "accessibility": snapshot.accessibility()}});
+    if let Some(sample) = sampled {
+        result["motion"] = serde_json::to_value(sample).map_err(|error| error.to_string())?;
+    }
     if let Some((options, render)) = rendering {
         let placement = resina_model::PhysicalVector {
             x: options.x,
@@ -237,7 +268,7 @@ fn prepare(
 
 fn resolve_snapshot(request: &QString, producer: &ffi::NativeLabelMeasure) -> QString {
     QString::from(
-        prepare(&request.to_string(), producer, None)
+        prepare(&request.to_string(), producer, None, None)
             .unwrap_or_else(|error| json!({"error": error}))
             .to_string(),
     )
@@ -275,7 +306,12 @@ fn resolve_with_options(
             return Err("Qt command rendering options must be an object".to_owned());
         }
         let rendering = serde_json::from_value(document).map_err(|error| error.to_string())?;
-        prepare(&request.to_string(), producer, Some((rendering, render)))
+        prepare(
+            &request.to_string(),
+            producer,
+            Some((rendering, render)),
+            None,
+        )
     })();
     QString::from(
         result
@@ -326,5 +362,113 @@ fn compose_request(
             Err(error) => json!({"error": error}),
         }
         .to_string(),
+    )
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct MotionRequest {
+    schema_version: String,
+    channels: CommandMotionChannels,
+    time: f64,
+}
+
+fn parse_motion_source<T: serde::de::DeserializeOwned>(source: &str) -> Result<T, String> {
+    if source.len() > 64 * 1024 {
+        return Err("Qt motion input exceeds 64 KiB".to_owned());
+    }
+    let document = parse_token_document(source).map_err(|error| error.to_string())?;
+    if !document.is_object() {
+        return Err("Qt motion input must be an object".to_owned());
+    }
+    serde_json::from_value(document).map_err(|error| error.to_string())
+}
+
+fn resolve_motion_snapshot(
+    request: &QString,
+    producer: &ffi::NativeLabelMeasure,
+    options: &QString,
+    motion: &QString,
+    render: bool,
+) -> QString {
+    let result = (|| {
+        let motion: MotionRequest = parse_motion_source(&motion.to_string())?;
+        if motion.schema_version != "0.1.0" {
+            return Err("Qt motion schemaVersion must be 0.1.0".to_owned());
+        }
+        let rendering: RenderOptions = parse_motion_source(&options.to_string())?;
+        prepare(
+            &request.to_string(),
+            producer,
+            Some((rendering, render)),
+            Some(&motion),
+        )
+    })();
+    QString::from(
+        result
+            .unwrap_or_else(|error| json!({"error":error}))
+            .to_string(),
+    )
+}
+
+fn serialized_channels(channels: &CommandMotionChannels) -> Value {
+    json!({"bodyMix":{"dynamics":channels.body_mix.dynamics,"initial":channels.body_mix.initial},
+        "depthScale":{"dynamics":channels.depth_scale.dynamics,"initial":channels.depth_scale.initial}})
+}
+
+fn validate_motion_channels(source: &QString) -> QString {
+    let result = parse_motion_source::<CommandMotionChannels>(&source.to_string())
+        .map(|channels| json!({"channels":serialized_channels(&channels)}))
+        .unwrap_or_else(|error| json!({"error":error}));
+    QString::from(result.to_string())
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+enum PreviousPolicy {
+    Spring,
+    CastImmediate,
+    ReducedMotion,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct RetargetRequest {
+    channels: CommandMotionChannels,
+    target: resina_model::CommandResponse,
+    policy: PreviousPolicy,
+    time: f64,
+}
+
+fn retarget_motion(source: &QString) -> QString {
+    let result = (|| {
+        let mut request: RetargetRequest = parse_motion_source(&source.to_string())?;
+        let immediate = !matches!(request.policy, PreviousPolicy::Spring);
+        let body = resina_motion::sample_spring_trajectory(
+            &request.channels.body_mix.dynamics,
+            request.channels.body_mix.initial,
+            request.target.body_mix(),
+            request.time,
+            immediate,
+        )
+        .map_err(|error| error.to_string())?;
+        let depth = resina_motion::sample_spring_trajectory(
+            &request.channels.depth_scale.dynamics,
+            request.channels.depth_scale.initial,
+            request.target.depth_scale(),
+            request.time,
+            immediate,
+        )
+        .map_err(|error| error.to_string())?;
+        request.channels.body_mix.initial = body.state();
+        request.channels.depth_scale.initial = depth.state();
+        Ok(
+            json!({"channels":serialized_channels(&request.channels),"previous":{"bodyMix":body,"depthScale":depth}}),
+        )
+    })();
+    QString::from(
+        result
+            .unwrap_or_else(|error: String| json!({"error":error}))
+            .to_string(),
     )
 }

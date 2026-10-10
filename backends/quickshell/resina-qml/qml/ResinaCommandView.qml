@@ -4,6 +4,7 @@ import Resina.Runtime 0.1
 Item {
     id: root
     readonly property string snapshot: state.publication
+    readonly property string motion: state.motionPublication
     readonly property bool paintReady: snapshot.length > 0 && state.body !== null
         && state.body.paintReady && label.paintReady
     readonly property string paintError: state.error
@@ -26,6 +27,7 @@ Item {
             state.pending = null;
             state.context = null;
             state.publication = "";
+            state.motionPublication = "";
             if (state.body) {
                 state.body.visible = false;
                 state.body.destroy();
@@ -51,7 +53,7 @@ Item {
             throw new Error("Qt command view requires matching native translation and pixel density");
     }
 
-    function prepare(source, optionsSource) {
+    function prepare(source, optionsSource, motionSource) {
         if (state.preparing || state.executing)
             throw new Error("Qt command view preparation is in progress");
         state.preparing = true;
@@ -61,7 +63,9 @@ Item {
         state.error = "";
         let candidate = null;
         try {
-            const result = JSON.parse(resolver.resolvePaintedSnapshot(source, measurement, optionsSource));
+            const result = JSON.parse(motionSource === undefined
+                ? resolver.resolvePaintedSnapshot(source, measurement, optionsSource)
+                : resolver.resolveMotionSnapshot(source, measurement, optionsSource, motionSource, true));
             if (result.error)
                 throw new Error(result.error);
             const options = JSON.parse(optionsSource);
@@ -88,7 +92,9 @@ Item {
             state.body = candidate;
             candidate = null;
             state.body.z = -1;
-            state.pending = {complete:complete, options:options};
+            state.pending = {complete:complete, options:options,
+                motion:motionSource === undefined ? "" : JSON.stringify({
+                    time:JSON.parse(motionSource).time,channels:JSON.parse(motionSource).channels,motion:result.motion})};
             if (state.cancelled)
                 throw new Error("Qt command view preparation was invalidated");
             timeout.start();
@@ -129,6 +135,7 @@ Item {
                 throw new Error("Qt command view layout changed during preparation");
             state.body.visible = true;
             state.context = pending.options;
+            state.motionPublication = pending.motion;
             state.publication = JSON.stringify(pending.complete);
             if (state.cancelled || !paintReady)
                 throw new Error("Qt command view publication was invalidated");
@@ -179,6 +186,7 @@ Item {
     QtObject {
         id: state
         property string publication: ""
+        property string motionPublication: ""
         property string error: ""
         property var body: null
         property var size: null

@@ -747,11 +747,111 @@ static profile; the older discoverable-disabled report retains its mismatch.
 
 This integrated path does not qualify calibrated motion, physical devices,
 multi-seat hardware identity, screen-reader operation, hardware GPU rendering,
-released Quickshell accessibility or a complete Command/Button epic. The next
-justified dependency is guarded native motion integrated with these same
-publication and cancellation boundaries; the upstream Quickshell host repair
-remains necessary for Shell qualification. CI now exercises this path, but a
-hosted CI execution remains separate from local evidence.
+released Quickshell accessibility or a complete Command/Button epic. The optional
+sampled profile below integrates guarded native motion with these same
+publication and cancellation boundaries. Material calibration and the upstream
+Quickshell host repair remain necessary for qualification. CI now exercises this
+path,
+but a hosted CI execution remains separate from local evidence.
+
+### Integrated sampled command frames
+
+The same control optionally accepts `motionChannels`, a JSON string containing
+exactly the existing `bodyMix` and `depthScale` channels from
+[specification 45](../../../spec/45-command-motion.md). Each requires explicit
+validated dynamics and initial position/velocity. An empty string selects the
+static profile. There are no material coefficients or synthesized initial states
+in the component. Products must supply calibrated profiles and valid paths
+before exposing animation; the arithmetic channels used by verification are
+fixtures, not calibrated material definitions.
+
+Rust resolves policy, targets, scalar trajectories, paint projection and every
+actual sample's contrast/geometry guards. Qt `FrameAnimation` requests frames;
+`CommandClock` supplies monotonic elapsed seconds from public `QElapsedTimer`.
+Both channels share one clock origin. Retargeting samples the previous trajectory
+at the new clock origin and retains unprojected position and velocity. Native
+context requalification retains raw state when the explicit channel profile is
+unchanged; replacing that profile uses its new explicit initial state. Scheduling
+stops only after both channels settle. Reduced motion and Cast resolve immediately
+through the existing reference policy, without toolkit-specific semantics.
+
+Two complete decorative views alternate for motion. While decoding another
+sample of the same state/source/context, the last complete frame remains visible
+and accessible. A state, configuration or native-context replacement withdraws
+old channels before preparing the current state, preserving the qualified target
+across ordinary feedback. The input coordinate frame stays fixed; swapping paint
+does not change capture or target membership. Sample guard/decode failures retire
+paint, semantics and input together with a diagnostic. Focus and semantics describe
+the current activation state and never wait for body motion to settle.
+
+The native read-only `snapshot`, `motion` and `currentFrame` aliases expose a
+coherent selected frame. `motion` is backend observation metadata containing
+elapsed `time`, retained `channels` and the complete existing motion IR; it is
+not a new portable IR or action authorization. `CommandSnapshotResolver` commits
+these fields together before notification and clears them when the selected
+QObject is destroyed. Component publication is deferred beyond the controller's
+publication guard, including when a cached image decodes synchronously, so a
+consumer may revoke availability from a snapshot callback without recursively
+entering the controller commit. There is one native accessible Button throughout
+same-state frame replacement; decorative buffers remain ignored.
+
+The lower-level `resolveMotionSnapshot(request, producer, options, motion, render)`
+accepts `{schemaVersion:"0.1.0", channels, time}` as its motion JSON. Success
+returns the complete `snapshot` plus existing motion IR; `render: true` also
+returns checked `paintSource`. Failure returns only `error`. Motion, rendering
+options and retarget source have a 64 KiB adapter limit and preserve strict
+object, duplicate, unknown, nonfinite and version rejection. `retargetMotion`
+accepts `{channels, target, policy, time}` from the previous resolution and returns
+both raw retained channels and previous scalar samples; it does not select
+policy. Calls involving native measurement/context stay on the Qt UI thread.
+
+Acceptance requires independently checked scalar equations and projections,
+coherent actual native drawing, raw overshoot/velocity retention, both-channel
+settling, immediate preference/material policy, intermediate guard failure with
+no partial publication, recovery, and the existing input/AT action path during
+motion. Run after preparing the compiled module:
+
+```sh
+python tools/check_qt_command_motion_runtime.py \
+  --raster target/qt-runtime-build/debug/resina-command-motion-raster \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/qt-motion-captures
+python tools/check_qt_command_control_runtime.py --motion \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/qt-moving-control-captures
+python tools/check_qt_command_control_accessibility.py --motion \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+```
+
+The equation checker compares one frozen actual sampled frame against the
+public CPU motion-raster output outside the separately verified native label
+bounds, using the existing pixel tolerance. It also exercises strict native
+input rejection, clock start/
+restart/invalidation, paired-cache reentrancy and selected-frame destruction.
+The input checker retains its existing cancellation, localization, placement,
+rapid-event and exact-once assertions. Optional parent XTest arguments traverse
+Weston into spontaneous Wayland input; this remains injected input. The AT checker
+requires an unsettled spring publication, stable native node identity across
+frames, actual Press through Rust into one product effect and no stale effect.
+These checks qualify the supplied fixtures and tested software host, not material
+calibration, physical devices, screen-reader operation, frame-rate performance,
+hardware GPU realization or released Quickshell accessibility.
+
+Executed local evidence uses Qt 6.11.2 software rendering: the sampled equation,
+publication, projection, guard/recovery and frozen readback checker passed
+offscreen at DPR 1, 1.3 and 2, and on nested Wayland at DPR 1. The full sampled
+input checker passed through parent XTest/Weston into spontaneous Wayland events,
+including German wrapping and Arabic paragraph content. Actual AT-SPI Press and
+state publication passed on X11/Xvfb and nested Wayland during unsettled motion;
+the default static AT profile also passed again. Captures of successive pressed
+samples were inspected. These are local executed checks; the updated hosted CI
+job has not been run here. The next component dependency is native Toggle
+composition over its existing activation/layout/paint/snapshot contracts;
+material calibration and the upstream Shell host repair remain qualification
+requirements for Command/Button.
 
 ## Compiled destructive-observer regressions
 
