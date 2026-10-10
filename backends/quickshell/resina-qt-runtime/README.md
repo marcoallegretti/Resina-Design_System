@@ -656,7 +656,10 @@ recursive QML string bindings when a consumer changes availability/configuration
 from its publication callback. The owner commits only a validated complete view
 snapshot and checks the current preparation revision after observer delivery.
 `snapshot` is the coherent four-channel publication; `ready` additionally
-requires native paint and target readiness. `preparationError` reports failure.
+requires native paint, target and armed input readiness. The decorative view and
+accessible node become visible only with that complete readiness, including
+first publication and requalification. Snapshot existence alone is not action
+authorization. `preparationError` reports failure.
 `invoke()` routes the semantic action only through an armed available lifecycle;
 its Boolean describes accepted delivery, not a product outcome. `activated` is
 emitted from the committed Rust activation transition. `reconfigure()` cancels

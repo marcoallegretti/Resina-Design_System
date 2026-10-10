@@ -53,6 +53,16 @@ def main():
         snapshot_property = control.metaObject().property(control.metaObject().indexOfProperty("snapshot"))
         if snapshot_property.isWritable():
             raise ValueError("native command snapshot became writable through its QML alias")
+        views = [child for child in control.childItems()
+                 if child.metaObject().indexOfProperty("nativeDeviceScale") >= 0
+                 and child.metaObject().indexOfProperty("paintReady") >= 0]
+        if len(views) != 1:
+            raise ValueError("integrated command must own one complete decorative view")
+        premature_paint = []
+        def observe_visibility():
+            if views[0].isVisible() and not json.loads(window.observation())["ready"]:
+                premature_paint.append(True)
+        views[0].visibleChanged.connect(observe_visibility)
         window.requestActivate()
         wait(app, lambda: window.isActive() and window.isExposed(), "exposed active native window")
         args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -69,6 +79,8 @@ def main():
         def check():
             wait(app, lambda: observe()["ready"] or bool(observe()["error"]), "coherent publication")
             result = observe()
+            if result["readinessViolations"] or premature_paint:
+                raise ValueError("command advertised readiness before arming native input")
             if result["error"] or not result["ready"]:
                 raise ValueError(result["error"] or "missing command publication")
             current = copy.deepcopy(source)

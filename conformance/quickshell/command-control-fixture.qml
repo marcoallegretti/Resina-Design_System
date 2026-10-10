@@ -7,6 +7,7 @@ Window {
     property string configuration: ""
     property bool disabledFocusable: false
     property int effects: 0
+    property int readinessViolations: 0
     property bool revoke: false
     property bool revokeOnReady: false
     property bool logEvents: false
@@ -20,6 +21,9 @@ Window {
             configuration: window.configuration
             disabledFocusable: window.disabledFocusable
             samplesPerAxis: 4
+            onReadyChanged: {
+                if (ready && (!acceptsNewGestures || !pointerOwner.acceptsNewGestures)) ++window.readinessViolations;
+            }
             onSnapshotChanged: {
                 if (window.revokeOnReady && snapshot.length) {
                     window.revokeOnReady = false;
@@ -49,6 +53,7 @@ Window {
         return JSON.stringify({ready:command.ready,error:command.preparationError,snapshot:command.snapshot,
             target:command.targetPublication,state:JSON.parse(command.publication).state,
             hovered:command.hovered,effects:effects,focused:command.activeFocus,
+            readinessViolations:readinessViolations,
             width:command.width,height:command.height});
     }
 }

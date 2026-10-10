@@ -9,9 +9,8 @@ ResinaCommandInput {
     // Alias the native read-only property: a consumer can reenter publication
     // without recursively mutating a QML string binding.
     property alias snapshot: resolver.publication
-    readonly property bool ready: visible && nativeWindow && nativeWindow.visible
+    readonly property bool ready: acceptsNewGestures && pointerOwner && pointerOwner.acceptsNewGestures
         && snapshot.length > 0 && view.paintReady
-        && targetPublication.length > 0
     readonly property string preparationError: state.error
     signal activated()
 
@@ -235,7 +234,7 @@ ResinaCommandInput {
         }
         function onNativeDeviceScaleChanged() { root.reconfigure(); }
     }
-    ResinaCommandView { id: view }
+    ResinaCommandView { id: view; visible: root.ready && paintReady }
     ResinaLabelMeasure { id: measurement }
     CommandSnapshotResolver { id: resolver }
     QtObject {
