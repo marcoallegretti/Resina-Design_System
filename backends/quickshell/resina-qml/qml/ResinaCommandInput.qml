@@ -5,6 +5,8 @@ ResinaCommandKeyboard {
     id: root
     property alias coordinateFrame: pointer.coordinateFrame
     readonly property CommandPointerItem pointerOwner: pointer
+    // The native property is read-only; aliasing avoids a reentrant Boolean binding.
+    property alias hovered: pointer.hovered
     readonly property string targetPublication: pointer ? pointer.targetPublication : ""
     readonly property string pointerError: pointer ? pointer.lastError : "native pointer owner was removed"
 

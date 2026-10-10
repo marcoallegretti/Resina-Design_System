@@ -3,6 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMouseEvent>
+#include <QEnterEvent>
 #include <QQuickWindow>
 #include <QScopedValueRollback>
 #include <QThread>
@@ -52,6 +53,8 @@ CommandPointerItem::CommandPointerItem(QQuickItem* parent) : QQuickItem(parent) 
 }
 
 CommandPointerItem::~CommandPointerItem() {
+    if (observedWindow_) observedWindow_->removeEventFilter(this);
+    clearHover();
     cancel();
     // QQuickItem teardown emits signals after derived members are destroyed.
     disconnect(this, nullptr, this, nullptr);
@@ -106,15 +109,92 @@ void CommandPointerItem::setCoordinateFrame(QQuickItem* frame) {
     emit coordinateFrameChanged();
 }
 
+bool CommandPointerItem::hovered() const {
+    return hovered_ && contextValid() && isVisible() && window()->isVisible();
+}
+
+void CommandPointerItem::clearHover() {
+    for (const auto& observation : hoverObservations_) disconnect(observation.destroyed);
+    hoverObservations_.clear();
+    enteringPosition_.reset();
+    refreshHover();
+}
+
+void CommandPointerItem::refreshHover() {
+    bool current = false;
+    if (contextValid() && isVisible() && window()->isVisible()) {
+        if (enteringPosition_) {
+            const auto local = frame_->mapFromScene(*enteringPosition_);
+            try { current = target_contains(*target_->region, local.x(), local.y()); }
+            catch (const std::exception&) { current = false; }
+        }
+        for (const auto& observation : hoverObservations_) {
+            if (current) break;
+            // A fresh native position is independent of activation/capture/availability.
+            const auto local = frame_->mapFromScene(observation.scenePosition);
+            try { current = target_contains(*target_->region, local.x(), local.y()); }
+            catch (const std::exception&) { current = false; }
+            if (current) break;
+        }
+    }
+    if (current != hovered_) { hovered_ = current; emit hoveredChanged(); }
+}
+
+void CommandPointerItem::observeHover(const QPointingDevice* device, const QPointF& scenePosition) {
+    if (!device || device->type() != QInputDevice::DeviceType::Mouse
+        || !window() || !isVisible() || !window()->isVisible()) return;
+    enteringPosition_.reset();
+    if (!hoverObservations_.contains(device)) {
+        const auto destroyed = connect(device, &QObject::destroyed, this, [this, device] {
+            hoverObservations_.remove(device);
+            refreshHover();
+        });
+        hoverObservations_.insert(device, {scenePosition, destroyed});
+    } else hoverObservations_[device].scenePosition = scenePosition;
+    refreshHover();
+}
+
+bool CommandPointerItem::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == observedWindow_) {
+        switch (event->type()) {
+        case QEvent::MouseMove:
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick: {
+            const auto mouse = static_cast<QMouseEvent*>(event);
+            if (mouse->source() == Qt::MouseEventNotSynthesized)
+                observeHover(mouse->pointingDevice(), mouse->scenePosition());
+            break;
+        }
+        case QEvent::Enter: {
+            const auto enter = static_cast<QEnterEvent*>(event);
+            // Qt's Wayland enter path supplies no device identity. Keep its position
+            // provisional until a mouse event supplies the actual device; never invent
+            // a second device from QEnterEvent's default primary-pointing-device value.
+            enteringPosition_ = enter->scenePosition();
+            refreshHover();
+            break;
+        }
+        case QEvent::Leave: clearHover(); break;
+        default: break;
+        }
+    }
+    return QQuickItem::eventFilter(watched, event);
+}
+
 void CommandPointerItem::observeWindow() {
+    if (observedWindow_) observedWindow_->removeEventFilter(this);
+    clearHover();
+    observedWindow_ = window();
+    if (observedWindow_) observedWindow_->installEventFilter(this);
     for (const auto& connection : windowConnections_) disconnect(connection);
     windowConnections_.clear();
     if (!window()) return;
     windowConnections_.append(connect(window(), &QWindow::activeChanged, this, [this] {
-        if (!window()->isActive()) cancel();
+        if (!window()->isActive()) { clearHover(); cancel(); }
     }));
     windowConnections_.append(connect(window(), &QWindow::visibleChanged, this, [this] {
-        if (!window()->isVisible()) cancel();
+        if (!window()->isVisible()) { clearHover(); cancel(); }
     }));
     windowConnections_.append(connect(window(), &QQuickWindow::afterAnimating, this, [this] {
         if (target_ && !contextValid()) invalidate();
@@ -168,6 +248,7 @@ bool CommandPointerItem::prepareTarget(const QString& request) {
         target_ = std::make_unique<Target>(Target{std::move(region), mapToScene(QPointF(0, 0)),
             frame_->mapToScene(QPointF(0, 0)), QSizeF(width(), height()), window(), window()->size(), ancestors});
         setError(QString());
+        refreshHover();
         emit targetPublicationChanged();
         if (!contextValid()) {
             invalidate();
@@ -222,6 +303,7 @@ void CommandPointerItem::cancel() {
 void CommandPointerItem::invalidate() {
     const bool hadTarget = bool(target_);
     target_.reset();
+    refreshHover();
     cancel();
     if (hadTarget) emit targetPublicationChanged();
 }
@@ -278,6 +360,7 @@ void CommandPointerItem::mouseUngrabEvent() { if (!releasing_) cancel(); }
 
 void CommandPointerItem::itemChange(ItemChange change, const ItemChangeData& data) {
     QQuickItem::itemChange(change, data);
+    if (change == ItemVisibleHasChanged && !isVisible()) clearHover();
     if ((change == ItemEnabledHasChanged && !isEnabled())
         || (change == ItemVisibleHasChanged && !isVisible())) cancel();
 }

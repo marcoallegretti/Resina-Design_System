@@ -28,9 +28,10 @@ separate requirements.
 [`ResinaCommandInput.qml`](qml/ResinaCommandInput.qml) combines that keyboard
 owner with native primary mouse targeting/capture through the same Rust
 activation lifecycle. Its [native input contract](../resina-qt-runtime/README.md#native-command-pointer-owner)
-defines explicit stable reservations, coordinate mapping, capture cancellation
-and executed Wayland evidence. It does not automatically prepare paint or
-publish an accessible Button.
+defines explicit stable reservations, coordinate mapping, capture cancellation,
+read-only native hover observations and executed Wayland evidence. Supply its
+current hover and committed activation together when preparing command drawing.
+It does not automatically prepare paint or publish an accessible Button.
 
 ## Native label measurement
 

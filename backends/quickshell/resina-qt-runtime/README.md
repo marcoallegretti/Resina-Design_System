@@ -138,6 +138,39 @@ The read-only `targetPublication` is complete hit IR or empty after withdrawal;
 `pointerError` exposes preparation/delivery failure. Recursive target preparation
 during publication fails, and changed context cannot publish a successful target.
 
+The read-only `hovered` observation on the input helper and compiled owner comes
+from native window enter and unsynthesized mouse positions, without consuming
+those events. Each identified mouse retains its own latest observed position;
+hover is true when any observed mouse lies inside the current Rust target. Qt
+maps window positions directly into the coordinate frame once and uses the same
+exact membership predicate. Window-enter positions are provisional: Qt's Wayland
+[enter path](https://github.com/qt/qtbase/blob/v6.11.2/src/plugins/platforms/wayland/qwaylandwindow.cpp#L1243)
+supplies no seat device identity, so the next identified mouse event
+supersedes that position rather than creating a fictitious second mouse.
+Qt device-object identity is not hardware identity: the pinned Wayland backend
+reports mice through a seat's primary pointing device. Window leave also supplies
+no device identity and withdraws all retained observations. Separate-device
+fixtures use injected Qt objects; native multi-seat and hardware qualification
+remain open.
+Captured movement still updates hover even though Qt Quick suppresses ordinary
+item hover delivery during an exclusive grab. A second mouse may hover while the
+held mouse is outside. Focus, availability, hold membership and capture effects
+never manufacture or suppress that independent observation. Disabled hover
+therefore remains representable through the existing command-state projection.
+Touch-synthesized mouse positions and non-mouse devices do not supply hover.
+
+Target withdrawal makes hover false. Re-preparation checks retained native
+window positions against the new valid target, including a stationary mouse.
+Window leave, hiding/deactivation, effective owner hiding, window replacement
+and destruction discard observations; device destruction removes that device's
+observation. Recovery uses fresh native observations rather than guessed global
+cursor coordinates. As for targeting, consumers must invalidate before external
+occlusion/opacity changes that this reserved-layout owner cannot observe.
+Prepare command drawing with both current `controller.publication.state` and
+`hovered`; invalidate pending/published drawing on either notification. The
+read-only QML alias avoids reentrant binding evaluation when a notification
+callback withdraws the target. Paint preparation remains consumer-owned.
+
 Only an unmodified primary mouse press inside the complete target starts a
 gesture. Pointer activation does not request or require keyboard focus. Rust
 commits before the adapter acquires Qt's actual exclusive grab for the delivered
@@ -156,18 +189,22 @@ cancel before removing a live owner. One pointer owner supplies raw mouse events
 for each controller; other consumers use the semantic invocation path.
 
 Acceptance connects the stable target, native exclusive capture, Rust activation
-and checked pressed body/glyph drawing. The Rust bridge exercises all shared
-exact membership vectors. Qt fixtures independently check mapped membership,
+and checked hover/pressed/disabled body and glyph drawing. The Rust bridge
+exercises all shared exact membership vectors. Qt fixtures independently check mapped membership,
 actual grab state per delivered device, outside/re-entry/release, focus
 independence, competing keyboard/device gestures, modified termination, native
 ancestor clipping, mapping invalidation, hide/disable, product revocation,
-semantic supersession, capture loss and actual armed QObject destruction.
+semantic supersession, capture loss and actual armed QObject destruction. Hover
+checks include independent devices, provisional enter identity, disabled motion,
+stationary target replacement, device retirement and callback-time withdrawal.
+The helper's hover property remains read-only and agrees with the native owner.
 Direct `QMouseEvent` and second-device fixtures are injected Qt evidence. The
 nested Weston 14.0.2/Pixman run additionally observed spontaneous Qt events
 through `wl_pointer`, including motion/release outside the client, invocation
 and capture-loss cancellation. Parent XTest injection establishes that tested
 compositor/toolkit path, not physical mouse, touch, pen or device-hotplug
-qualification. Native hover, motion and complete accessibility publication remain
+qualification. The native Wayland run additionally verifies hover on captured
+outside/re-entry movement. Motion and complete accessibility publication remain
 separate integration requirements.
 
 ## CommandLabelResolver and native content
