@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-label-arithmetic:0.1.0",
+  "title": "Supplied command label arithmetic cases",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "minimumSize",
+          "maximumSize",
+          "padding",
+          "natural",
+          "fitted",
+          "direction"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minimumSize": {
+            "$ref": "#/$defs/size"
+          },
+          "maximumSize": {
+            "$ref": "#/$defs/size"
+          },
+          "padding": {
+            "$ref": "#/$defs/padding"
+          },
+          "natural": {
+            "$ref": "#/$defs/size"
+          },
+          "fitted": {
+            "$ref": "#/$defs/size"
+          },
+          "direction": {
+            "enum": [
+              "ltr",
+              "rtl"
+            ]
+          },
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "size",
+              "labelBounds"
+            ],
+            "properties": {
+              "size": {
+                "$ref": "#/$defs/size"
+              },
+              "labelBounds": {
+                "$ref": "#/$defs/bounds"
+              }
+            }
+          },
+          "error": {
+            "const": true
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "expected"
+            ],
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          },
+          {
+            "required": [
+              "error"
+            ],
+            "not": {
+              "required": [
+                "expected"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "padding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "top",
+        "bottom"
+      ],
+      "properties": {
+        "start": {
+          "type": "number",
+          "minimum": 0
+        },
+        "end": {
+          "type": "number",
+          "minimum": 0
+        },
+        "top": {
+          "type": "number",
+          "minimum": 0
+        },
+        "bottom": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  }
+}

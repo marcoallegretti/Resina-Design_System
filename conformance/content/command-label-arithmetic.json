@@ -1,0 +1,368 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "native-fractional-complete-height",
+      "minimumSize": {
+        "width": 160,
+        "height": 80
+      },
+      "maximumSize": {
+        "width": 240,
+        "height": 600
+      },
+      "padding": {
+        "start": 32,
+        "end": 32,
+        "top": 26,
+        "bottom": 26
+      },
+      "natural": {
+        "width": 259.79109613037105,
+        "height": 18.771255999999997
+      },
+      "fitted": {
+        "width": 143.76308601074217,
+        "height": 37.542511999999995
+      },
+      "direction": "ltr",
+      "expected": {
+        "size": {
+          "width": 240,
+          "height": 89.542512
+        },
+        "labelBounds": {
+          "x": 32,
+          "y": 26.000000000000004,
+          "width": 176.0,
+          "height": 37.542511999999995
+        }
+      }
+    },
+    {
+      "name": "outward-preferred-width",
+      "minimumSize": {
+        "width": 0.1,
+        "height": 0.1
+      },
+      "maximumSize": {
+        "width": 2,
+        "height": 10
+      },
+      "padding": {
+        "start": 0.1,
+        "end": 0.1,
+        "top": 0,
+        "bottom": 0
+      },
+      "natural": {
+        "width": 1.1,
+        "height": 1.1
+      },
+      "fitted": {
+        "width": 1.1,
+        "height": 1.1
+      },
+      "direction": "ltr",
+      "expected": {
+        "size": {
+          "width": 1.3000000000000003,
+          "height": 1.1
+        },
+        "labelBounds": {
+          "x": 0.1,
+          "y": 0.0,
+          "width": 1.1,
+          "height": 1.1
+        }
+      }
+    },
+    {
+      "name": "inward-wrapping-offer",
+      "minimumSize": {
+        "width": 1.1,
+        "height": 1
+      },
+      "maximumSize": {
+        "width": 1.1,
+        "height": 2
+      },
+      "padding": {
+        "start": 0.1,
+        "end": 0.1,
+        "top": 0,
+        "bottom": 0
+      },
+      "natural": {
+        "width": 2,
+        "height": 1
+      },
+      "fitted": {
+        "width": 0.9,
+        "height": 1
+      },
+      "direction": "ltr",
+      "expected": {
+        "size": {
+          "width": 1.1,
+          "height": 1.0
+        },
+        "labelBounds": {
+          "x": 0.1,
+          "y": 0.0,
+          "width": 0.9,
+          "height": 1
+        }
+      }
+    },
+    {
+      "name": "outward-padding-and-height",
+      "minimumSize": {
+        "width": 0.1,
+        "height": 0.1
+      },
+      "maximumSize": {
+        "width": 10,
+        "height": 10
+      },
+      "padding": {
+        "start": 0,
+        "end": 0,
+        "top": 1.1,
+        "bottom": 0.2
+      },
+      "natural": {
+        "width": 1,
+        "height": 0.9
+      },
+      "fitted": {
+        "width": 1,
+        "height": 0.9
+      },
+      "direction": "ltr",
+      "expected": {
+        "size": {
+          "width": 1.0,
+          "height": 2.2000000000000006
+        },
+        "labelBounds": {
+          "x": 0,
+          "y": 1.1000000000000003,
+          "width": 1.0,
+          "height": 0.9
+        }
+      }
+    },
+    {
+      "name": "zero-padding-subnormal",
+      "minimumSize": {
+        "width": 5e-324,
+        "height": 5e-324
+      },
+      "maximumSize": {
+        "width": 1,
+        "height": 1
+      },
+      "padding": {
+        "start": 0,
+        "end": 0,
+        "top": 0,
+        "bottom": 0
+      },
+      "natural": {
+        "width": 5e-324,
+        "height": 5e-324
+      },
+      "fitted": {
+        "width": 5e-324,
+        "height": 5e-324
+      },
+      "direction": "ltr",
+      "expected": {
+        "size": {
+          "width": 5e-324,
+          "height": 5e-324
+        },
+        "labelBounds": {
+          "x": 0,
+          "y": 0.0,
+          "width": 5e-324,
+          "height": 5e-324
+        }
+      }
+    },
+    {
+      "name": "lost-horizontal-padding",
+      "minimumSize": {
+        "width": 1,
+        "height": 1
+      },
+      "maximumSize": {
+        "width": 1e+101,
+        "height": 10
+      },
+      "padding": {
+        "start": 1e+100,
+        "end": 1,
+        "top": 0,
+        "bottom": 0
+      },
+      "natural": {
+        "width": 1,
+        "height": 1
+      },
+      "fitted": {
+        "width": 1,
+        "height": 1
+      },
+      "direction": "ltr",
+      "error": true
+    },
+    {
+      "name": "lost-positive-content-height",
+      "minimumSize": {
+        "width": 1,
+        "height": 1
+      },
+      "maximumSize": {
+        "width": 10,
+        "height": 1e+101
+      },
+      "padding": {
+        "start": 0,
+        "end": 0,
+        "top": 1e+100,
+        "bottom": 0
+      },
+      "natural": {
+        "width": 1,
+        "height": 1
+      },
+      "fitted": {
+        "width": 1,
+        "height": 1
+      },
+      "direction": "ltr",
+      "error": true
+    },
+    {
+      "name": "overflowing-content-height",
+      "minimumSize": {
+        "width": 1,
+        "height": 1
+      },
+      "maximumSize": {
+        "width": 10,
+        "height": 1.7976931348623157e+308
+      },
+      "padding": {
+        "start": 0,
+        "end": 0,
+        "top": 1e+308,
+        "bottom": 0
+      },
+      "natural": {
+        "width": 1,
+        "height": 1
+      },
+      "fitted": {
+        "width": 1,
+        "height": 1e+308
+      },
+      "direction": "ltr",
+      "error": true
+    },
+    {
+      "name": "outward-height-exceeds-maximum",
+      "minimumSize": {
+        "width": 160,
+        "height": 80
+      },
+      "maximumSize": {
+        "width": 240,
+        "height": 89.54251199999999
+      },
+      "padding": {
+        "start": 32,
+        "end": 32,
+        "top": 26,
+        "bottom": 26
+      },
+      "natural": {
+        "width": 259.79109613037105,
+        "height": 18.771255999999997
+      },
+      "fitted": {
+        "width": 143.76308601074217,
+        "height": 37.542511999999995
+      },
+      "direction": "ltr",
+      "error": true
+    },
+    {
+      "name": "nearest-offer-would-widen",
+      "minimumSize": {
+        "width": 1.1,
+        "height": 1
+      },
+      "maximumSize": {
+        "width": 1.1,
+        "height": 2
+      },
+      "padding": {
+        "start": 0.1,
+        "end": 0.1,
+        "top": 0,
+        "bottom": 0
+      },
+      "natural": {
+        "width": 2,
+        "height": 1
+      },
+      "fitted": {
+        "width": 0.9000000000000001,
+        "height": 1
+      },
+      "direction": "ltr",
+      "error": true
+    },
+    {
+      "name": "rtl-fractional-slack",
+      "minimumSize": {
+        "width": 0.1,
+        "height": 4
+      },
+      "maximumSize": {
+        "width": 10,
+        "height": 10
+      },
+      "padding": {
+        "start": 0.1,
+        "end": 0.2,
+        "top": 1.1,
+        "bottom": 0.2
+      },
+      "natural": {
+        "width": 1,
+        "height": 0.9
+      },
+      "fitted": {
+        "width": 1,
+        "height": 0.9
+      },
+      "direction": "rtl",
+      "expected": {
+        "size": {
+          "width": 1.3,
+          "height": 4
+        },
+        "labelBounds": {
+          "x": 0.2,
+          "y": 2.0,
+          "width": 1.0,
+          "height": 0.9
+        }
+      }
+    }
+  ]
+}
