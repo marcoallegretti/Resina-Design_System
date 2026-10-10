@@ -24,5 +24,14 @@ public:
     using QObject::QObject;
     Q_INVOKABLE QString resolveLabel(const QString& request, QObject* producer) const;
 };
+
+class CommandSnapshotResolver : public QObject {
+    Q_OBJECT
+    QML_ELEMENT
+
+public:
+    using QObject::QObject;
+    Q_INVOKABLE QString resolveSnapshot(const QString& request, QObject* producer) const;
+};
 }
 #endif

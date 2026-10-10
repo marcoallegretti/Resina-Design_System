@@ -93,6 +93,47 @@ content contour and supply its guarded foreground, retain common provenance,
 publish coherent paint/target/semantics, and own native gestures and actions.
 The label helper does not provide any of those channels or a Button.
 
+## CommandSnapshotResolver
+
+`CommandSnapshotResolver.resolveSnapshot(requestJson, producer)` prepares existing
+command content, paint, stable target and accessibility together. It shares the
+label resolver's actual native producer, strict parsing and 8 MiB request limit.
+This is a backend request/result, not a new portable snapshot wire contract.
+
+Supply every field explicitly:
+
+- `content`: the complete `CommandLabelResolver` request above. Its single
+  compiled theme/environment owns typography, paint and target resolution.
+- `body`: `surface`, `appearance`, `commandAppearance`, `foregroundRole`,
+  `adjacentColor`, `postTreatmentBackdrop`, `surroundingColor`,
+  `minimumContentContrast` and `minimumEdgeContrast`. These are existing authored
+  surface/appearance inputs and color records. Both nullable backdrop fields
+  are required. Color conversion uses the existing sRGB fallback resolver.
+  The surface template must have exactly the neutral rest state; current states
+  come exclusively from the canonical activation/hover projection.
+- `activation`, `hovered`, nullable `description`, and `focusable`: existing
+  command state and semantic inputs. The native owner must supply actual focus
+  observations and its chosen availability policy.
+- `availableBounds`, `componentMinimum`, `occupiedRegions`: explicit existing
+  target inputs. Bounds are named `{x, y, width, height}` objects. Coordinates
+  share the command-front origin; consumers account for scene placement.
+
+Rust resolves complete content first, uses its front size for the neutral and
+current body, reserves the target against the neutral maximum extrusion, then
+runs the existing snapshot validator. This checks state/direction coherence,
+complete label-box containment in the uniform body contour, current silhouette
+coverage, available/occupied target bounds and complete accessibility semantics.
+Contrast, surrounding colors and unsupported geometry retain their diagnostics.
+No padding or contrast threshold is invented to repair an invalid request.
+
+Success returns `{snapshot: {label, paint, hitRegion, accessibility}}`, with each
+member in its existing IR format. Any failure returns only `{error}`. The
+operation retains no partial state and subsequent valid requests can recover.
+This endpoint prepares static state endpoints; it does not publish an AT tree,
+render a body, interpolate motion, capture input, or implement a Button.
+A composing native owner must prepare every visual channel before coherently
+publishing the result and retain the common font/environment context.
+
 ## Build and verification
 
 Install the tested Qt 6.11.2 development SDK with its Core/Qml tools and a C++17
@@ -112,6 +153,7 @@ cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --
 python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-schema.txt
 python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
 python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py --report-only
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py
 ```
@@ -149,8 +191,22 @@ members, positional records, missing fonts, impossible complete height and
 missing/malformed producers. This is native measurement and drawing preparation,
 not a capture of a complete painted component or native input evidence. The
 separate label-pair captures establish drawing for their tested font/renderer
-matrix; complete content/background containment remains the composing owner's
-next dependency.
+matrix; complete content/background containment is checked by the snapshot preparation
+endpoint described above.
+
+Snapshot acceptance is actual native text reaching coherent guarded paint,
+reserved target and complete semantics through Rust's existing snapshot validator.
+The compiled checker executed both authored themes, Latin, expanded German and
+mixed Arabic paragraphs at 100.06% text scaling across every positive public
+command-state case. It independently checks each IR schema, projected signals,
+phase precedence, all semantic dimensions, focus-channel ownership and target
+stability across feedback. Layout is checked with the portable exact-rational
+arithmetic oracle. The native fractional German height that previously failed
+now succeeds at the original 80 px minimum height under conservative rounding.
+Invalid containment, clipped/occupied targets, conflicting template states,
+impossible contrast and malformed requests produce no partial snapshot and
+recover. These state fixtures are synthetic inputs, not native focus, gesture,
+rendering or accessibility publication evidence.
 
 The native checker requires Linux, a display and AT-SPI services. Executed on Qt
 6.11.2 with X11/Xvfb, real Press actions reached the loaded Rust plugin: disabled
@@ -207,7 +263,7 @@ This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication, native
-keyboard/pointer delivery, screen-reader operation, label/body containment integration,
-coherent complete component snapshot/paint
-publication and native runtime CI remain unverified. The next dependency is a
-Command owner preparing its existing content, paint, target and semantics together.
+keyboard/pointer delivery, screen-reader operation, coherent complete component
+paint/publication, motion and native runtime CI remain unverified. The next
+dependency is native rendering/publication of the checked snapshot, followed by
+a Command owner connecting its lifecycle and real input.

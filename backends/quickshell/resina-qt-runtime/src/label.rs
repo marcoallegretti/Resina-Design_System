@@ -2,7 +2,8 @@ use cxx_qt_lib::QString;
 use resina_environment::{EnvironmentSnapshot, SafeArea};
 use resina_model::{FontFamilyRole, SurfaceSize, TypographyRole};
 use resina_resolver::{
-    CommandLabelInput, compile_theme_source_with_sources, resolve_command_label,
+    CommandLabelInput, CommandLabelIr, CompiledTheme, compile_theme_source_with_sources,
+    resolve_command_label,
 };
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
@@ -13,7 +14,7 @@ const MAX_REQUEST_BYTES: usize = 8 * 1024 * 1024;
 const MAX_MEASUREMENT_BYTES: usize = 64 * 1024;
 
 #[cxx::bridge(namespace = "resina::qt")]
-mod ffi {
+pub(crate) mod ffi {
     unsafe extern "C++" {
         include!("cxx-qt-lib/qstring.h");
         #[namespace = ""]
@@ -29,7 +30,7 @@ mod ffi {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct LabelRequest {
+pub(crate) struct LabelRequest {
     theme_source: String,
     external_sources: BTreeMap<String, String>,
     environment: EnvironmentSnapshot,
@@ -54,11 +55,13 @@ enum Measurement {
     Error { message: String },
 }
 
-fn prepare(request: &str, producer: &ffi::NativeLabelMeasure) -> Result<serde_json::Value, String> {
-    if request.len() > MAX_REQUEST_BYTES {
-        return Err("Qt label request exceeds 8 MiB".to_owned());
-    }
-    let document = parse_token_document(request).map_err(|error| error.to_string())?;
+pub(crate) struct PreparedContent {
+    pub label: CommandLabelIr,
+    pub theme: CompiledTheme,
+    pub environment: EnvironmentSnapshot,
+}
+
+pub(crate) fn parse_label_request(document: serde_json::Value) -> Result<LabelRequest, String> {
     if !document.is_object() {
         return Err("Qt label request must be an object".to_owned());
     }
@@ -70,8 +73,13 @@ fn prepare(request: &str, producer: &ffi::NativeLabelMeasure) -> Result<serde_js
             return Err(format!("Qt label {field} must be an object"));
         }
     }
-    let request: LabelRequest =
-        serde_json::from_value(document).map_err(|error| error.to_string())?;
+    serde_json::from_value(document).map_err(|error| error.to_string())
+}
+
+pub(crate) fn prepare_content(
+    request: LabelRequest,
+    producer: &ffi::NativeLabelMeasure,
+) -> Result<PreparedContent, String> {
     let theme = compile_theme_source_with_sources(&request.theme_source, &request.external_sources)
         .map_err(|error| error.to_string())?;
     let resolved = theme.resolve(&request.environment).map_err(|errors| {
@@ -119,7 +127,20 @@ fn prepare(request: &str, producer: &ffi::NativeLabelMeasure) -> Result<serde_js
             }
         },
     ).map_err(|error| error.to_string())?;
-    Ok(json!({"label": label}))
+    Ok(PreparedContent {
+        label,
+        theme,
+        environment: request.environment,
+    })
+}
+
+fn prepare(request: &str, producer: &ffi::NativeLabelMeasure) -> Result<serde_json::Value, String> {
+    if request.len() > MAX_REQUEST_BYTES {
+        return Err("Qt label request exceeds 8 MiB".to_owned());
+    }
+    let document = parse_token_document(request).map_err(|error| error.to_string())?;
+    let content = prepare_content(parse_label_request(document)?, producer)?;
+    Ok(json!({"label": content.label}))
 }
 
 fn resolve_label(request: &QString, producer: &ffi::NativeLabelMeasure) -> QString {

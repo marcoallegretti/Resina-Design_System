@@ -6,7 +6,7 @@ fn main() {
             .version(0, 1)
             .plugin_type(PluginType::Dynamic),
     )
-    .files(["src/lib.rs", "src/label.rs"])
+    .files(["src/lib.rs", "src/label.rs", "src/snapshot.rs"])
     .cpp_file("src/label.h")
     .cpp_file("src/label.cpp");
     // Rust cdylib export filtering hides C++ symbols, including Qt's plugin entry.
