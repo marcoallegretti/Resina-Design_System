@@ -48,6 +48,17 @@ qualification dependencies.
 `disabledFocusable: true` is rejected with a diagnostic, preserving the existing
 strict discoverable-disabled fixture and its known Qt mismatch.
 
+## Native paint image mapping
+
+Complete paint images use integer local pixel dimensions and an explicit inverse
+device-density `Scale`. Qt 6.11.2's software image-node dirty bounds round the
+local rectangle before transformation; a fractional logical rectangle can lose
+the final sampled edge column. Integer image geometry preserves those pixels
+without changing PNG sampling or portable bounds. Native float32 transformed
+extents must retain the existing 1/1024 logical-pixel precision budget or fail.
+Actual Command and moving Toggle readback at fractional density verifies this
+mapping against the unchanged public CPU raster oracle.
+
 ## Native label measurement
 
 `ResinaCommandLabel.qml` connects the native pair to Rust-owned complete content
@@ -365,3 +376,11 @@ publishes CheckBox and fails the strict test. An isolated, unmodified Qt 6.11.2
 build against AT-SPI 2.62 headers demonstrated Switch and actual native Toggle
 action through the Rust adapter. This does not qualify released Quickshell's
 separate accessibility-bootstrap defect or make Resina own a toolkit distribution.
+
+The Toggle's optional explicit `motionChannels` profile connects checked travel
+and independent track/thumb interaction response to the same complete native
+component. Its [sampled frame contract](../resina-qt-runtime/README.md#integrated-sampled-toggle-frames)
+defines all required raw channels, public native scheduling, retargeting,
+coherent buffered publication, per-sample guards and native verification. The
+static profile remains the default. Checked semantics and selected roles are
+current throughout travel; fixture dynamics do not establish material calibration.

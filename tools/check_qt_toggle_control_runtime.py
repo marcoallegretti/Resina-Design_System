@@ -40,7 +40,7 @@ def request_for(theme="light", text="Automatic updates", direction="ltr"):
     return result
 
 
-def verify_paint(window, control, source, snapshot, path, raster):
+def verify_paint(window, control, source, snapshot, path, raster, motion=None):
     from PIL import Image, ImageDraw
     from PySide6.QtCore import QPointF
     frame=control.property("currentFrame")
@@ -68,7 +68,8 @@ def verify_paint(window, control, source, snapshot, path, raster):
         request={"schemaVersion":"0.1.0","surface":{"schemaVersion":"0.1.0","body":body,"surroundingColor":source["background"] if part=="track" else None},
             "part":part,"checkedColorRole":config["checkedColorRole"],"interactionAppearance":config["interactionAppearance"]}
         if part=="thumb":request["surface"].pop("surroundingColor")
-        placement={"x":0,"y":0} if part=="track" else snapshot["layout"]["thumbBounds"]
+        if motion is not None:request.update(channels=motion["channels"][part],time=motion["time"])
+        placement={"x":0,"y":0} if part=="track" else (snapshot["layout"]["thumbBounds"] if motion is None else motion["motion"]["travel"]["thumbBounds"])
         png=read_backend_output([str(raster.resolve()),"-",str(image.width()),str(image.height()),
             str(-origin.x()-placement["x"]),str(-origin.y()-placement["y"]),str(dpr),"4"],json.dumps(request).encode())
         with Image.open(io.BytesIO(png)) as paint:expected.alpha_composite(paint.convert("RGBA"))
@@ -80,7 +81,22 @@ def verify_paint(window, control, source, snapshot, path, raster):
             math.ceil((origin.x()+offset["x"]+label["x"]+label["width"])*dpr)+1,
             math.ceil((origin.y()+offset["y"]+label["y"]+label["height"])*dpr)+1)
         ImageDraw.Draw(expected).rectangle(rectangle,fill="white");ImageDraw.Draw(actual).rectangle(rectangle,fill="white")
-        compare_images(expected,actual)
+        try:compare_images(expected,actual)
+        except ValueError:
+            expected.save(path.with_suffix('.expected.png'))
+            from urllib.parse import unquote_to_bytes
+            details={'origin':{'x':origin.x(),'y':origin.y()},'dpr':dpr,'snapshot':snapshot,'motion':motion,'parts':[]}
+            for child in frame.childItems():
+                if child.metaObject().indexOfProperty('preparedDeviceScale')<0:continue
+                placed=child.mapToScene(QPointF(0,0))
+                details['parts'].append({'x':child.x(),'y':child.y(),'width':child.width(),'height':child.height(),
+                    'sceneX':placed.x(),'sceneY':placed.y(),'scale':child.property('preparedDeviceScale')})
+                images=[image for image in child.childItems() if image.metaObject().indexOfProperty('source')>=0]
+                for image in images:
+                    encoded=image.property('source').toString().partition(',')[2]
+                    path.with_suffix('.part-'+str(len(details['parts']))+'.png').write_bytes(unquote_to_bytes(encoded))
+            path.with_suffix('.frame.json').write_text(json.dumps(details,indent=2))
+            raise
 
 
 def main():
@@ -89,6 +105,7 @@ def main():
     parser.add_argument("--raster",required=True,type=Path)
     parser.add_argument("--font",required=True,type=Path)
     parser.add_argument("--output-dir",required=True,type=Path)
+    parser.add_argument("--motion",action="store_true")
     parser.add_argument("--parent-x11-display")
     parser.add_argument("--parent-x11-window",type=lambda value:int(value,0))
     args=parser.parse_args()
@@ -117,6 +134,7 @@ def main():
         args.output_dir.mkdir(parents=True,exist_ok=True)
         window.requestActivate()
         wait(app,lambda:window.isActive() and window.isExposed(),"exposed native Toggle window")
+        current_source=[None]
         def observe():return json.loads(window.observation())
         def check():
             wait(app,lambda:observe()["ready"] or bool(observe()["error"]),"complete Toggle publication")
@@ -125,7 +143,12 @@ def main():
             snapshot=json.loads(result["snapshot"])
             for member,schema in (("label","command-label-ir"),("layout","toggle-layout-ir"),("track","toggle-part-paint-ir"),
                                   ("thumb","toggle-part-paint-ir"),("hitRegion","hit-region-ir"),("accessibility","toggle-accessibility-ir")):
-                validator_for(f"schemas/{schema}.schema.json").validate(snapshot[member])
+                if args.motion and member in ("track","thumb"):
+                    motion=json.loads(result["motion"])["motion"][member]
+                    validator_for("schemas/toggle-part-motion-ir.schema.json").validate(motion)
+                    if motion["partPaint"] != snapshot[member]:raise ValueError("sampled paint differs from complete snapshot")
+                else:
+                    validator_for(f"schemas/{schema}.schema.json").validate(snapshot[member])
             checked=result["checked"]
             if snapshot["layout"]["checked"] != checked or snapshot["accessibility"]["state"]["checked"] != checked:
                 raise ValueError("layout/semantics disagree with checked owner")
@@ -148,10 +171,18 @@ def main():
             if snapshot["accessibility"]["role"] != "switch" or json.loads(result["target"]) != snapshot["hitRegion"]:
                 raise ValueError("complete target/role incoherence")
             if result["readinessViolations"]:raise ValueError("premature readiness")
+            if args.motion:
+                from check_qt_toggle_motion_runtime import verify_motion
+                verify_motion(snapshot,json.loads(result["motion"]),current_source[0])
             return result
         def prepare(request):
+            if args.motion:request["content"]["environment"]["accessibilityPreferences"]["reducedMotion"]=False
+            current_source[0]=request
             window.setProperty("configuration",json.dumps(request))
             return check()
+        if args.motion:
+            from check_qt_toggle_motion_runtime import fixture_channels
+            window.setProperty("motionChannels",json.dumps(fixture_channels()))
         window.availability(True)
         for theme in ("light","dark"):
             for direction in ("ltr","rtl"):
@@ -162,8 +193,14 @@ def main():
                     if not window.setChecked(checked):raise ValueError("checked replacement rejected")
                     result=check()
                     if result["checked"] != checked or result["effects"] != before:raise ValueError("external replacement produced activation")
+                    drivers=[child for child in control.findChildren(QObject) if "FrameAnimation" in child.metaObject().className()]
+                    running=drivers[0].property("running") if args.motion else False
+                    if args.motion:drivers[0].setProperty("running",False)
+                    result=check()
                     verify_paint(window,control,source,json.loads(result["snapshot"]),
-                        args.output_dir/f"{theme}-{direction}-{checked}.png",args.raster)
+                        args.output_dir/f"{theme}-{direction}-{checked}.png",args.raster,
+                        json.loads(result["motion"]) if args.motion else None)
+                    if args.motion:drivers[0].setProperty("running",running)
         prepare(request_for())
         window.focusCommand();wait(app,lambda:observe()["state"]["focused"],"native focus")
         before=observe()["effects"]
@@ -228,7 +265,7 @@ def main():
         window.close()
     except (OSError,ValueError,RuntimeError,ImportError) as error:
         print("Qt complete Toggle check failed: "+str(error),file=sys.stderr);return 1
-    print("PASS complete static Toggle: light/dark RTL/LTR, complete native capture, live checked replacement, injected key/pointer capture, exactly-once revocation, contrast rejection")
+    print("PASS complete " + ("sampled" if args.motion else "static") + " Toggle: light/dark RTL/LTR, complete native capture, live checked replacement, injected key/pointer capture, exactly-once revocation, contrast rejection")
     return 0
 
 if __name__ == "__main__":raise SystemExit(main())

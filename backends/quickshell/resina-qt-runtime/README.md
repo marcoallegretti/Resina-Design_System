@@ -982,6 +982,125 @@ snapshot, sampled control and motion/readback regressions. CI is configured for
 controller and complete-control checks; no hosted run or standard-SDK native
 Switch success is claimed.
 
+## Integrated sampled Toggle frames
+
+The same `ResinaToggleControl` accepts an optional explicit `motionChannels`
+string. Empty selects the existing static profile. Nonempty requires exactly
+`{track, thumb, travel}`: `track` and `thumb` each contain required `bodyMix` and
+`depthScale` channels; `travel` is one channel. Every channel requires its authored
+`dynamics` and complete raw `initial` state. No coefficient, state, velocity or
+material preset has a default. These descriptors belong to the Qt adapter;
+existing portable sampled part IR and typed travel operations retain ownership
+of semantics, policy, equations, projection, geometry and contrast.
+
+Each actual frame resolves the current sampled track first, then the sampled
+thumb against that track's actual pigment, assembles the complete snapshot and
+validates the sampled travel placement against it. Checked roles, semantics and
+actual focus become current immediately. Travel changes only placement; part
+motion changes only the existing interaction response. Native drawing uses the
+checked travel bounds rather than a QML interpolation. Translucent Frost is
+rejected by the opaque profile; the runtime never changes transparency
+preferences or capabilities to force success. A separately authored scene that
+requests reduced transparency uses the existing opaque Frost fallback.
+
+The public monotonic `CommandClock` is shared native clock machinery, used here
+for all five channels with one elapsed-time origin. On any target/policy change,
+the previous trajectories are sampled at the exact new clock origin and retain
+raw position and velocity. Projection never feeds back into state. The same
+explicit profile retains current raw state across native context requalification;
+a new profile starts from its new explicit initial state. Physical continuity
+requires unchanged endpoint allocation; changed layout/direction/density is
+reconciled by complete requalification, not a claim of unchanged physical motion.
+
+Two complete decorative views buffer same-state samples while native images
+decode. State, source or context replacements withdraw old channels before
+preparing current content. The fixed native capture owner and stable target stay
+independent of decorative frame replacement. `FrameAnimation` requests another
+frame until **every** track/ thumb response channel and travel channel settles;
+bounded projection does not stop scheduling. An actual sampled guard failure
+retires paint, semantics and native targeting together. The read-only `snapshot`,
+`motion` and `currentFrame` aliases refer to the same selected complete frame.
+
+`ToggleSnapshotResolver.resolveMotionSnapshot(request, producer, options,
+motion, render)` uses `{channels, time}` with the explicit profile above.
+Success returns `snapshot` and `motion`; rendering additionally returns complete
+`trackSource` and `thumbSource`. Motion observation contains complete existing
+`track` and `thumb` sampled part IR and typed travel data (`policy`, binary
+`target`, full `trajectory`, `projection`, checked `thumbBounds`). It preserves
+the snapshot's current selected endpoint rather than rewriting logical layout.
+The component's native `motion` alias pairs that result with elapsed `time` and
+retained `channels`; this is backend observation, not new portable IR.
+
+`validateMotionChannels` validates the explicit descriptor. `retargetMotion`
+accepts `{channels, targets, time}`; `targets.track` and `.thumb` contain existing
+`target` response and `policy`, and `.travel` contains binary endpoint `target`
+and `policy` from the previous resolution. It samples those previous trajectories
+through the reference and returns raw retained channels. Motion/retarget sources
+have a 64 KiB limit and reject unknown/duplicate/positional/nonfinite input and
+invalid dynamics before policy selection, including immediate policies. Native
+measurement/context/publication remain on the Qt UI thread.
+
+Acceptance adds independent trajectory equations and exact projection/placement
+from returned raw state, complete native pixels matching the public sampled part
+rasterizer, raw retargeting/overshoot, all-channel settling, immediate policies,
+intermediate guard rejection, scaled/wrapped labels and unchanged native input
+and AT behavior during actual unsettled motion. Run:
+
+```sh
+cargo build -p resina-raster --bin resina-toggle-part-motion-raster --locked
+python tools/check_qt_toggle_motion_runtime.py \
+  --raster target/debug/resina-toggle-part-motion-raster \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/qt-toggle-motion-captures
+python tools/check_qt_toggle_control_runtime.py --motion \
+  --raster target/debug/resina-toggle-part-motion-raster \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/qt-toggle-moving-input
+python tools/check_qt_toggle_control_accessibility.py --motion \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --action Toggle
+# Repeat --action Press in a host with the qualified native Switch mapping.
+```
+
+The pixel oracle freezes the actual native frame driver for one selected-frame
+readback and compares the public CPU raster result outside separately prepared
+complete label bounds, preserving the existing pixel tolerance. Scalar equations
+use the existing conformance tolerance; projection and physical placement are
+checked exactly from the verified returned raw state. Fixtures use explicit
+arithmetic dynamics, not calibrated production defaults. Nested Wayland parent
+XTest remains injected input; actual AT-SPI invocation is a separate executed
+boundary. Native Switch qualification still requires the toolkit build described
+above, and released Quickshell still requires its approved upstream host repair.
+Physical devices, screen-reader operation, hardware GPU realization, production
+frame-rate performance and material/style qualification are not certified by
+these checks.
+
+Executed on Linux with Qt 6.11.2 software rendering and explicitly registered
+DejaVu Sans: the complete moving-frame matrix passed at actual device scales
+1, 1.25, 1.3 and 2. It covered Light/Dark LTR/RTL, authored Cast/Frost/Elastomer,
+explicit opaque Frost fallback and rejection of translucent Frost, doubled
+wrapped German/Arabic paragraph labels, actual focused press feedback, raw
+overshoot/retargeting, independent settling, reduced motion, intermediate
+contrast rejection and malformed-source withdrawal/recovery. Image review
+confirmed complete paragraphs, unclipped focus and native track/thumb edges;
+these arithmetic scenes are structural evidence, not accepted material styling.
+The fractional-scale image mapping repair also passed native Command paint at
+those four scales and Command motion/readback plus static Toggle regression.
+The backdrop oracle's half-pixel boundaries were independently verified using
+native `QPainter.fillRect(QRectF)`; pixel thresholds were unchanged.
+
+Parent XTest traversed nested Weston into spontaneous Wayland key/pointer
+delivery on the final build, preserving exactly-once effects and revocation
+during sampled motion. The isolated unmodified Qt build described above passed
+actual AT-SPI Toggle and Press separately during unsettled motion with stable
+Switch identity. Root locked workspace tests, PNG-disabled raster tests,
+native Qt tests/clippy, QML/raster clippy, formatting, Python and contributor
+toolkit checks passed. New checker usage and missing-plugin failures returned
+their expected nonzero statuses. CI is configured for the sampled matrix;
+no hosted run or broader platform qualification is claimed.
+
 ## Compiled destructive-observer regressions
 
 `python tools/check_qt_controller_lifetime.py --module-path <prepared-module>`

@@ -71,6 +71,9 @@ class ToggleSnapshotResolver : public SnapshotPublication {
     QML_ELEMENT
 public:
     using SnapshotPublication::SnapshotPublication;
+    Q_INVOKABLE QString resolveMotionSnapshot(const QString& request, QObject* producer, const QString& options, const QString& motion, bool render) const;
+    Q_INVOKABLE QString validateMotionChannels(const QString& source) const;
+    Q_INVOKABLE QString retargetMotion(const QString& source) const;
     Q_INVOKABLE QString resolveToggleSnapshot(const QString& request, QObject* producer, const QString& options, bool render) const;
     Q_INVOKABLE QString composeToggleRequest(const QString& request, const QString& activation, bool hovered, bool checked, bool focusable) const;
 };

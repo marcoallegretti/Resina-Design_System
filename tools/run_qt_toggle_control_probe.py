@@ -10,6 +10,7 @@ def main():
     parser = argparse.ArgumentParser(description="Host the integrated Qt Toggle for real AT-SPI probing.")
     parser.add_argument("--module-path", required=True, type=Path)
     parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--motion",action="store_true")
     args = parser.parse_args()
     from PySide6.QtCore import QPluginLoader, QTimer, QUrl, qVersion
     from PySide6.QtGui import QFontDatabase, QGuiApplication
@@ -30,6 +31,10 @@ def main():
     if window is None:
         raise ValueError("; ".join(error.toString() for error in component.errors()))
     source = request_for("light", "Reconnect")
+    if args.motion:
+        from check_qt_toggle_motion_runtime import fixture_channels
+        source["content"]["environment"]["accessibilityPreferences"]["reducedMotion"]=False
+        window.setProperty("motionChannels",json.dumps(fixture_channels()))
     window.setProperty("configuration", json.dumps(source))
     window.setProperty("revoke", True)
     window.setProperty("logEvents", True)
@@ -53,7 +58,7 @@ def main():
                 snapshot = json.loads(result["snapshot"])
                 print("RESINA_CONTROL_READY " + json.dumps({"state":result["state"],
                     "accessibility":snapshot["accessibility"],"effects":result["effects"],
-                    "checked":result["checked"]}), flush=True)
+                    "checked":result["checked"],"motion":json.loads(result["motion"]) if result["motion"] else None}), flush=True)
     timer = QTimer()
     timer.timeout.connect(observe)
     timer.start(20)

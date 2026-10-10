@@ -3,6 +3,7 @@ import Resina.Runtime 0.1
 
 Item {
     id: root
+    readonly property string motion: state.motionPublication
     readonly property string snapshot: state.publication
     readonly property bool paintReady: snapshot.length > 0 && state.body !== null
         && state.body.paintReady && state.thumb !== null && state.thumb.paintReady && label.paintReady
@@ -26,6 +27,7 @@ Item {
             state.pending = null;
             state.context = null;
             state.publication = "";
+            state.motionPublication = "";
             state.complete = null;
 
             if (state.body) {
@@ -58,7 +60,7 @@ Item {
             throw new Error("Qt toggle view requires matching native translation and pixel density");
     }
 
-    function prepare(source, optionsSource) {
+    function prepare(source, optionsSource, motionSource) {
         if (state.preparing || state.executing)
             throw new Error("Qt toggle view preparation is in progress");
         state.preparing = true;
@@ -69,7 +71,8 @@ Item {
         let candidate = null;
         let thumb = null;
         try {
-            const result = JSON.parse(resolver.resolveToggleSnapshot(source, measurement, optionsSource, true));
+            const result = JSON.parse(motionSource === undefined ? resolver.resolveToggleSnapshot(source, measurement, optionsSource, true)
+                : resolver.resolveMotionSnapshot(source, measurement, optionsSource, motionSource, true));
             if (result.error)
                 throw new Error(result.error);
             const options = JSON.parse(optionsSource);
@@ -105,7 +108,9 @@ Item {
             state.thumb = thumb;
             thumb = null;
             state.thumb.z = 1;
-            state.pending = {complete:complete, options:options};
+            state.pending = {complete:complete, options:options,
+                motion:motionSource === undefined ? "" : JSON.stringify({
+                    time:JSON.parse(motionSource).time,channels:JSON.parse(motionSource).channels,motion:result.motion})};
             if (state.cancelled)
                 throw new Error("Qt toggle view preparation was invalidated");
             timeout.start();
@@ -149,6 +154,7 @@ Item {
             state.thumb.visible = true;
             state.context = pending.options;
 
+            state.motionPublication = pending.motion;
             state.complete = pending.complete;
             state.publication = JSON.stringify(pending.complete);
             if (state.cancelled || !paintReady)
@@ -209,6 +215,7 @@ Item {
     QtObject {
         id: state
         property string publication: ""
+        property string motionPublication: ""
         property string error: ""
         property var body: null
         property var thumb: null

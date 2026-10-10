@@ -51,7 +51,7 @@ def session(args):
         call("org.a11y.Bus", "/org/a11y/bus", PROPERTIES + ".Set", "string:org.a11y.Status", "string:" + name, "variant:boolean:true")
     with tempfile.TemporaryFile(mode="w+") as log:
         process = subprocess.Popen([sys.executable, str(ROOT / "tools/run_qt_toggle_control_probe.py"),
-            "--module-path", str(args.module_path.resolve()), "--font", str(args.font.resolve())], stdout=log, stderr=log)
+            "--module-path", str(args.module_path.resolve()), "--font", str(args.font.resolve()), *(["--motion"] if args.motion else [])], stdout=log, stderr=log)
         try:
             def until(predicate, description):
                 deadline = time.monotonic() + 10
@@ -83,6 +83,13 @@ def session(args):
                     raise ValueError("native Switch checked/checkable/pressed dimensions disagree")
                 return {**flags,"focused":focused,"checked":checked,"checkable":checkable}
             before = check_state(True)
+            if args.motion:
+                sample=records(log,"RESINA_CONTROL_READY ")[0]["motion"]["motion"]["travel"]
+                if sample["policy"] != "spring" or sample["trajectory"]["settled"]:
+                    raise ValueError("AT fixture never exposed actual unsettled travel")
+                time.sleep(.15)
+                if inspect(address,applications[0]) != node:raise ValueError("same-state motion replaced native Switch identity")
+                check_state(True)
             action_reply = call(*node, ACTION + ".GetActions", address=address)
             try:
                 actions = action_names(action_reply)
@@ -114,7 +121,7 @@ def session(args):
                     "actions":[{"kind":"invoke","available":enabled}],"relationships":[]}
                 if record["accessibility"] != expected or record["effects"] != (0 if enabled else 1):
                     raise ValueError("native publication differs from complete portable semantics")
-            return {"profile":"static-toggle-excluding-disabled","host":"qt-quick-6.11.2",
+            return {"profile":"sampled-toggle-excluding-disabled" if args.motion else "static-toggle-excluding-disabled","host":"qt-quick-6.11.2",
                 "binding":"rust-qt-runtime","before":before,"after":after,"actions":actions,
                 "effects":1,"nativeAction":args.action,"staleActionEffects":0,"conformant":True}
         finally:
@@ -130,6 +137,7 @@ def main():
     parser = argparse.ArgumentParser(description="Verify real AT-SPI publication/action for the integrated Qt excluding-disabled static Toggle profile.")
     parser.add_argument("--module-path", required=True, type=Path)
     parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--motion",action="store_true")
     parser.add_argument("--action", choices=("Toggle","Press"),default="Toggle")
     parser.add_argument("--session", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
@@ -152,7 +160,7 @@ def main():
                     QT_QPA_PLATFORM="wayland" if environment.get("WAYLAND_DISPLAY") else "xcb",
                     QT_QUICK_BACKEND="software",QT_LINUX_ACCESSIBILITY_ALWAYS_ON="1")
                 process = subprocess.Popen(["dbus-run-session", "--", sys.executable, str(Path(__file__).resolve()),
-                    "--module-path", str(args.module_path.resolve()), "--font", str(args.font.resolve()), "--session", "--action", args.action],
+                    "--module-path", str(args.module_path.resolve()), "--font", str(args.font.resolve()), "--session", "--action", args.action, *(["--motion"] if args.motion else [])],
                     env=environment,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True)
                 try:
                     output, diagnostics = process.communicate(timeout=35)

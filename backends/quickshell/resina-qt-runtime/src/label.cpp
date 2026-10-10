@@ -86,6 +86,13 @@ QString CommandSnapshotResolver::composeRequest(const QString& request, const QS
     return compose_request(request, activation, hovered, focusable);
 }
 
+QString ToggleSnapshotResolver::resolveMotionSnapshot(const QString& request, QObject* producer, const QString& options, const QString& motion, bool render) const {
+    const NativeLabelMeasure measurement(producer);
+    return prepare_toggle_motion_snapshot(request,measurement,options,motion,render);
+}
+QString ToggleSnapshotResolver::validateMotionChannels(const QString& source) const { return validate_toggle_motion(source); }
+QString ToggleSnapshotResolver::retargetMotion(const QString& source) const { return retarget_toggle_motion(source); }
+
 QString ToggleSnapshotResolver::resolveToggleSnapshot(const QString& request, QObject* producer, const QString& options, bool render) const {
     const NativeLabelMeasure measurement(producer);
     return prepare_toggle_snapshot(request, measurement, options, render);

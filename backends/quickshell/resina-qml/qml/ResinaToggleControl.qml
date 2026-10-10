@@ -6,6 +6,8 @@ ResinaToggleInput {
     required property string configuration
     required property bool disabledFocusable
     required property int samplesPerAxis
+    property string motionChannels: ""
+    property alias motion: resolver.motion
     property alias currentFrame: resolver.frame
     // Alias the native read-only property: a consumer can reenter publication
     // without recursively mutating a QML string binding.
@@ -42,7 +44,44 @@ ResinaToggleInput {
         return controller.dispatch('{"kind":"invoke"}');
     }
 
-    function retireViews() { view.invalidate(); }
+    function retireViews() {
+        view.invalidate();
+        if (state.alternate) state.alternate.invalidate();
+        state.pendingView = null;
+    }
+
+    function clockValue(source) {
+        const value = JSON.parse(source);
+        if (value.error) throw new Error(value.error);
+        return value;
+    }
+
+    function captureMotion() {
+        if (!state.channels || !state.motionTarget) return null;
+        const time = clockValue(clock.sample()).time;
+        return clockValue(resolver.retargetMotion(JSON.stringify({channels:state.channels,
+            targets:state.motionTarget,time:time}))).channels;
+    }
+
+    function motionSource(request, options) {
+        // Resolve policy/target through Rust; no material policy is implemented in QML.
+        const retained = state.motionTarget ? captureMotion() : state.channels;
+        const probe = clockValue(resolver.resolveMotionSnapshot(request,measurement,options,
+            JSON.stringify({channels:retained,time:0}),false)).motion;
+        const targets = {track:{target:probe.track.target,policy:probe.track.policy},
+            thumb:{target:probe.thumb.target,policy:probe.thumb.policy},
+            travel:{target:probe.travel.target,policy:probe.travel.policy}};
+        if (!state.motionTarget) {
+            clockValue(clock.restart());
+        } else if (canonical(targets) !== canonical(state.motionTarget)) {
+            const previousTime = clockValue(clock.restart()).previousTime;
+            const previous = clockValue(resolver.retargetMotion(JSON.stringify({channels:state.channels,
+                targets:state.motionTarget,time:previousTime})));
+            state.channels = previous.channels;
+        }
+        state.motionTarget = targets;
+        return JSON.stringify({channels:state.channels,time:clockValue(clock.sample()).time});
+    }
 
     function fail(cause) {
         state.revision = {};
@@ -52,6 +91,10 @@ ResinaToggleInput {
         state.semantics = null;
         state.pending = "";
         state.error = cause;
+        state.motionActive = false;
+        state.channels = null;
+        state.motionTarget = null;
+        clock.invalidate();
         root.focus = false;
         const running = state.running;
         state.running = true;
@@ -104,19 +147,39 @@ ResinaToggleInput {
             const prepared = JSON.parse(resolver.resolveToggleSnapshot(source,measurement,options,false));
             if (prepared.error) throw new Error(prepared.error);
         }
+        if (motionChannels.length) {
+            const channels = clockValue(resolver.validateMotionChannels(motionChannels)).channels;
+            const profile = canonical(channels);
+            state.channels = state.resumeChannels && profile === state.profile ? state.resumeChannels : channels;
+            state.profile = profile;
+            state.resumeChannels = null;
+            state.motionTarget = null;
+            if (!state.alternate) {
+                const component = Qt.createComponent("ResinaToggleView.qml");
+                if (component.status !== Component.Ready) throw new Error(component.errorString());
+                const candidate = component.createObject(root);
+                if (!candidate) throw new Error("Qt motion frame view could not be created");
+                state.alternate = candidate;
+                candidate.visible = Qt.binding(() => root.ready && root.currentFrame === candidate && candidate.paintReady);
+            }
+            state.alternate.x = view.x;
+            state.alternate.y = view.y;
+        }
         state.qualified = true;
     }
 
-    function refresh() {
+    function refresh(frameOnly) {
         if (!state.started) return;
         if (state.running) { state.dirty = true; return; }
         state.running = true;
         state.revision = {};
         state.dirty = false;
         try {
-            resolver.publishSnapshot("");
-            state.semantics = null;
-            retireViews();
+            if (frameOnly !== true || !motionChannels.length) {
+                resolver.publishSnapshot("");
+                state.semantics = null;
+                retireViews();
+            }
             if (disabledFocusable)
                 throw new Error("Qt toggle control does not support discoverable disabled focus; choose an explicit excluding policy");
             if (!state.qualified) qualify();
@@ -143,10 +206,15 @@ ResinaToggleInput {
             const origin = view.mapToItem(null,0,0);
             const options = JSON.stringify({x:origin.x,y:origin.y,
                 deviceScale:view.nativeDeviceScale,samplesPerAxis:samplesPerAxis});
-            state.pendingView = view;
-            view.invalidate();
-            view.prepare(state.pending,options);
-            view.completePreparation();
+            const candidate = motionChannels.length && root.currentFrame === view ? state.alternate : view;
+            state.pendingView = candidate;
+            candidate.invalidate();
+            if (motionChannels.length)
+                candidate.prepare(state.pending,options,motionSource(state.pending,options));
+            else
+                candidate.prepare(state.pending,options);
+            // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
+            candidate.completePreparation();
             state.error = "";
         } catch (error) {
             fail(error.message);
@@ -184,7 +252,13 @@ ResinaToggleInput {
         state.pendingView = null;
         state.semantics = JSON.parse(candidate.snapshot).accessibility;
         if (state.revision !== revision) return;
-        resolver.publishFrame(candidate.snapshot,"",candidate);
+        resolver.publishFrame(candidate.snapshot,candidate.motion,candidate);
+        if (state.revision !== revision) return;
+        if (candidate.motion.length) {
+            const sample = JSON.parse(candidate.motion).motion;
+            state.motionActive = !(sample.track.bodyMix.settled && sample.track.depthScale.settled
+                && sample.thumb.bodyMix.settled && sample.thumb.depthScale.settled && sample.travel.trajectory.settled);
+        } else state.motionActive = false;
         if (state.revision !== revision) return;
         state.armed = true;
         if (state.revision !== revision) return;
@@ -197,6 +271,11 @@ ResinaToggleInput {
         const running = state.running;
         state.running = true;
         try {
+            const next = motionChannels.length ? JSON.parse(resolver.validateMotionChannels(motionChannels)) : null;
+            state.resumeChannels = next && !next.error && canonical(next.channels) === state.profile ? captureMotion() : null;
+            state.motionActive = false;
+            state.motionTarget = null;
+            clock.invalidate();
             state.qualified = false;
             state.armed = false;
             resolver.publishSnapshot("");
@@ -212,6 +291,7 @@ ResinaToggleInput {
     }
 
     onConfigurationChanged: reconfigure()
+    onMotionChannelsChanged: reconfigure()
     onDisabledFocusableChanged: reconfigure()
     onSamplesPerAxisChanged: reconfigure()
     onXChanged: reconfigure()
@@ -259,13 +339,25 @@ ResinaToggleInput {
         target: view
         function onNativeDeviceScaleChanged() { root.reconfigure(); }
     }
+    FrameAnimation {
+        running: state.motionActive && motionChannels.length > 0 && !state.pending.length
+            && root.visible && root.nativeWindow && root.nativeWindow.visible && !state.error.length
+        onTriggered: root.refresh(true)
+    }
     ResinaToggleView { id: view; visible: root.ready && root.currentFrame === view && paintReady }
+    CommandClock { id: clock }
     ResinaLabelMeasure { id: measurement }
     ToggleSnapshotResolver { id: resolver }
     QtObject {
         id: state
         property var revision: ({})
         property var pendingView: null
+        property var alternate: null
+        property var channels: null
+        property var resumeChannels: null
+        property var motionTarget: null
+        property string profile: ""
+        property bool motionActive: false
         property bool started: false
         property bool qualified: false
         property bool armed: false
