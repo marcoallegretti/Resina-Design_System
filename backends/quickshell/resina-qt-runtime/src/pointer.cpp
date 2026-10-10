@@ -1,4 +1,5 @@
 #include "pointer.h"
+#include "context.h"
 #include "resina-qt-runtime/src/pointer.cxx.h"
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -7,7 +8,6 @@
 #include <QQuickWindow>
 #include <QScopedValueRollback>
 #include <QThread>
-#include <QTransform>
 #include <stdexcept>
 
 namespace resina::qt {
@@ -15,13 +15,6 @@ namespace {
 QString pointerId(const QMouseEvent* event) {
     return QStringLiteral("qt-mouse-%1-%2")
         .arg(reinterpret_cast<quintptr>(event->pointingDevice()), 0, 16).arg(event->points().first().id());
-}
-bool identity(const QQuickItem* item) {
-    bool valid = false;
-    const auto transform = item->itemTransform(nullptr, &valid);
-    return valid && transform.isAffine() && transform.m11() == 1 && transform.m22() == 1
-        && transform.m12() == 0 && transform.m21() == 0
-        && qIsFinite(transform.dx()) && qIsFinite(transform.dy());
 }
 QString pointerEvent(const char* kind, const QString& id, bool inside) {
     return QString::fromUtf8(QJsonDocument(QJsonObject{{"kind", kind},
@@ -203,14 +196,14 @@ void CommandPointerItem::observeWindow() {
 
 bool CommandPointerItem::contextValid() const {
     if (!(target_ && frame_ && controller_ && window() && frame_->window() == window()
-        && target_->window == window() && identity(this) && identity(frame_)
+        && target_->window == window() && translationOnly(this) && translationOnly(frame_)
         && target_->ownerOrigin == mapToScene(QPointF(0, 0))
         && target_->frameOrigin == frame_->mapToScene(QPointF(0, 0))
         && target_->size == QSizeF(width(), height()) && target_->windowSize == window()->size())) return false;
     auto ancestor = parentItem();
     for (const auto& recorded : target_->ancestors) {
         if (recorded.item != ancestor || !ancestor || recorded.clipped != ancestor->clip()) return false;
-        if (recorded.clipped && (!identity(ancestor)
+        if (recorded.clipped && (!translationOnly(ancestor)
             || recorded.origin != ancestor->mapToScene(QPointF(0, 0))
             || recorded.size != QSizeF(ancestor->width(), ancestor->height()))) return false;
         ancestor = ancestor->parentItem();
@@ -228,7 +221,7 @@ bool CommandPointerItem::prepareTarget(const QString& request) {
     invalidate();
     try {
         if (QThread::currentThread() != thread() || !controller_ || !frame_ || !window()
-            || frame_->window() != window() || !identity(this) || !identity(frame_))
+            || frame_->window() != window() || !translationOnly(this) || !translationOnly(frame_))
             throw std::runtime_error("target requires a live UI-thread controller and identity-mapped native frame");
         const auto origin = frame_->mapFromItem(this, QPointF(0, 0));
         auto region = prepare_target(request, origin.x(), origin.y(), width(), height());
@@ -240,7 +233,7 @@ bool CommandPointerItem::prepareTarget(const QString& request) {
             ancestors.append({ancestor, ancestor->clip(), ancestorOrigin,
                 QSizeF(ancestor->width(), ancestor->height())});
             if (ancestor->clip()) {
-                if (!identity(ancestor)) throw std::runtime_error("native target clipping must be axis-aligned without scale");
+                if (!translationOnly(ancestor)) throw std::runtime_error("native target clipping must be axis-aligned without scale");
                 const auto local = frame_->mapFromItem(ancestor, QPointF(0, 0));
                 prepare_target(request, local.x(), local.y(), ancestor->width(), ancestor->height());
             }

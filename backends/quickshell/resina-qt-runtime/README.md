@@ -361,7 +361,16 @@ before preparation, then compute the actual scene origin with
 These options describe the sampling context, not a second placement transform.
 Do not force a different front width/height or add scale/rotation. Native
 translation is checked within the existing 1/1024 logical-pixel precision budget;
-nonidentity basis transforms are rejected. Keep ancestor clipping/occlusion and
+the compiled `CommandSnapshotResolver.matchesNativeContext(item, x, y,
+deviceScale)` checks the complete native scene transform. It requires a live
+UI-thread `QQuickItem` in a native window, finite placement, matching actual
+window pixel density and an affine translation with an exact identity linear
+part. Missing/non-item/foreign-thread contexts and invalid numeric inputs return
+false. It retains no native object. The same translation predicate guards native
+pointer targeting. Sampling the origin and unit basis alone is insufficient:
+a projective matrix can preserve all three samples while distorting the body
+elsewhere. Scale, rotation, shear and projective transforms are rejected before
+publication and on the GUI frame check. Keep ancestor clipping/occlusion and
 actual surrounding/backdrop colors consistent with the supplied paint context.
 
 Own position, size, parent, window and pixel-density changes withdraw readiness.
@@ -391,7 +400,10 @@ This establishes composition; independent font shaping/drawing and public raster
 agreement retain their separate earlier evidence. Publication observers see
 complete readiness, the snapshot is read-only, recursive publication/withdrawal
 is rejected, pending context changes cancel, ancestor translation/distortion
-withdraws visible paint before rendering, and valid preparation recovers.
+withdraws visible paint before rendering, and valid preparation recovers. The
+pinned Qt regression also verifies a projective matrix whose origin/unit samples
+appear to be a translation, rejects preparation and live publication under that
+matrix, checks withdrawn pixels and recovers after restoring identity.
 Actual pending QObject destruction and native PNG decode-error reporting were
 also executed. These are synthetic state and rendering/lifetime fixtures, not
 native gesture or AT evidence. The same composition/lifetime matrix also passed

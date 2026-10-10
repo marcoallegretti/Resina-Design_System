@@ -33,6 +33,7 @@ public:
     using QObject::QObject;
     Q_INVOKABLE QString resolveSnapshot(const QString& request, QObject* producer) const;
     Q_INVOKABLE QString resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const;
+    Q_INVOKABLE bool matchesNativeContext(QObject* item, double x, double y, double deviceScale) const;
 };
 }
 #endif

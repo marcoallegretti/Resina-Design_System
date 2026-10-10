@@ -1,6 +1,7 @@
 use cxx_qt_build::{CxxQtBuilder, PluginType, QmlModule};
 
 fn main() {
+    println!("cargo:rerun-if-changed=src/context.h");
     let builder = CxxQtBuilder::new_qml_module(
         QmlModule::new("Resina.Runtime")
             .version(0, 1)

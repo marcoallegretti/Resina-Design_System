@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import threading
 import time
 
 from PIL import Image
@@ -73,7 +74,10 @@ Window {
     Item {
         id: host
         transform: Scale { id: distortion; xScale: 1; yScale: 1 }
-        Content.ResinaCommandView { id: view; objectName: "commandView"; x:44.3; y:26.1; opacity: oracle ? 0 : 1 }
+        Content.ResinaCommandView {
+            id: view; objectName: "commandView"; x:44.3; y:26.1; opacity: oracle ? 0 : 1
+            transform: Matrix4x4 { id: projection; matrix: Qt.matrix4x4() }
+        }
     }
     Connections {
         target: view
@@ -96,7 +100,7 @@ Window {
         property var body: null
         Content.ResinaLabel { id: glyphs }
     }
-    CommandSnapshotResolver { id: resolver }
+    CommandSnapshotResolver { id: resolver; objectName:"snapshotResolver" }
     Content.ResinaLabelMeasure { id: measurement }
     Item { Component.onCompleted: renderer = GraphicsInfo.api }
     function prepare(source, options) {
@@ -147,6 +151,24 @@ Window {
     function move(value) { view.x = value; }
     function moveParent(value) { host.x = value; }
     function distort(value) { distortion.xScale = value; }
+    function projective(value) {
+        projection.matrix = value ? Qt.matrix4x4(2,0,0,0, 0,2,0,0, 0,0,1,0, 1,1,0,1) : Qt.matrix4x4();
+    }
+    function contextProbes() {
+        const scale=view.nativeDeviceScale;
+        return JSON.stringify([
+            resolver.matchesNativeContext(view,44.3,26.1,scale),
+            resolver.matchesNativeContext(view,44.3+1/2048,26.1,scale),
+            resolver.matchesNativeContext(view,44.3+1/512,26.1,scale),
+            resolver.matchesNativeContext(view,44.3,26.1,scale+1),
+            resolver.matchesNativeContext(null,44.3,26.1,scale),
+            resolver.matchesNativeContext(resolver,44.3,26.1,scale),
+            resolver.matchesNativeContext(view,NaN,26.1,scale),
+            resolver.matchesNativeContext(view,44.3,Infinity,scale),
+            resolver.matchesNativeContext(view,44.3,26.1,0)]);
+    }
+    function mappedBasis() { return JSON.stringify([view.mapToItem(null,0,0),view.mapToItem(null,1,0),
+        view.mapToItem(null,0,1),view.mapToItem(null,50,50)]); }
 }
 ''').replace("@@VIEW_SOURCE@@", json.dumps((ROOT / "backends/quickshell/resina-qml/qml/ResinaCommandView.qml").as_uri())).encode(), QUrl())
         window = component.create()
@@ -155,6 +177,32 @@ Window {
         args.output_dir.mkdir(parents=True, exist_ok=False)
         dpr = window.devicePixelRatio()
         options = json.dumps({"x":44.3, "y":26.1, "deviceScale":dpr, "samplesPerAxis":4})
+        window.projective(True)
+        origin,horizontal,vertical,distant=json.loads(window.mappedBasis())
+        if ((horizontal["x"]-origin["x"],horizontal["y"]-origin["y"],
+             vertical["x"]-origin["x"],vertical["y"]-origin["y"]) != (1,0,0,1)
+            or (distant["x"]-origin["x"],distant["y"]-origin["y"]) == (50,50)):
+            raise ValueError("projective fixture does not disguise its nontranslation as a unit basis")
+        rejected=prepare(window,app,json.dumps(request_for("light","Reconnect")),options)
+        if "matching native translation" not in rejected.get("error", ""):
+            raise ValueError("projective native view did not reject its deceptively valid unit basis diagnostically")
+        observation=json.loads(window.observations())
+        if observation["ready"] or observation["snapshot"] or observation["visible"] or not observation["error"]:
+            raise ValueError("projective rejection retained native publication")
+        window.projective(False)
+        if json.loads(window.contextProbes()) != [True,True,False,False,False,False,False,False,False]:
+            raise ValueError("native context guard lost placement precision, type, density or finite-input checks")
+        native_resolver=window.findChild(QObject,"snapshotResolver")
+        native_view=window.findChild(QObject,"commandView")
+        if not native_resolver.matchesNativeContext(native_view,44.3,26.1,dpr):
+            raise ValueError("valid UI-thread context unexpectedly rejected")
+        thread_results=[]
+        worker=threading.Thread(target=lambda:thread_results.append(
+            native_resolver.matchesNativeContext(native_view,44.3,26.1,dpr)),daemon=True)
+        worker.start()
+        worker.join(5)
+        if worker.is_alive() or thread_results != [False]:
+            raise ValueError("foreign calling thread inspected or accepted a native command context")
         count = 0
         scenarios = []
         for theme in ("light", "dark"):
@@ -231,7 +279,8 @@ Window {
         if node is None or node.metaObject().property(node.metaObject().indexOfProperty("snapshot")).isWritable():
             raise ValueError("native snapshot publication is not read-only")
         for index, (change, restore) in enumerate(((lambda: window.moveParent(1), lambda: window.moveParent(0)),
-                                (lambda: window.distort(1.0005), lambda: window.distort(1)))):
+                                (lambda: window.distort(1.0005), lambda: window.distort(1)),
+                                (lambda: window.projective(True), lambda: window.projective(False)))):
             change()
             present(app)
             observation = json.loads(window.observations())

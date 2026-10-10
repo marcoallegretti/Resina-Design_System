@@ -1,9 +1,11 @@
 #include "label.h"
+#include "context.h"
 #include "resina-qt-runtime/src/label.cxx.h"
 #include "resina-qt-runtime/src/snapshot.cxx.h"
 #include <QCoreApplication>
 #include <QMetaObject>
 #include <QThread>
+#include <QQuickWindow>
 #include <QVariant>
 #include <stdexcept>
 
@@ -36,5 +38,20 @@ QString CommandSnapshotResolver::resolveSnapshot(const QString& request, QObject
 QString CommandSnapshotResolver::resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const {
     const NativeLabelMeasure measurement(producer);
     return resolve_painted_snapshot(request, measurement, options);
+}
+
+bool CommandSnapshotResolver::matchesNativeContext(QObject* object, double x, double y, double deviceScale) const {
+    const auto* application = QCoreApplication::instance();
+    // Reject before inspecting item state unless the call is on the owning UI thread.
+    if (!application || QThread::currentThread() != application->thread()
+        || thread() != application->thread() || !object || object->thread() != application->thread()
+        || !qIsFinite(x) || !qIsFinite(y) || !qIsFinite(deviceScale) || deviceScale <= 0) return false;
+    const auto* item = qobject_cast<QQuickItem*>(object);
+    if (!item || !item->window() || item->window()->thread() != application->thread()) return false;
+    QTransform transform;
+    return translationOnly(item, &transform)
+        && qAbs(transform.dx() - x) <= 1.0 / 1024
+        && qAbs(transform.dy() - y) <= 1.0 / 1024
+        && item->window()->devicePixelRatio() == deviceScale;
 }
 }

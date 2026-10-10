@@ -46,16 +46,8 @@ Item {
     }
 
     function checkContext(options) {
-        const origin = mapToItem(null, 0, 0);
-        const horizontal = mapToItem(null, 1, 0);
-        const vertical = mapToItem(null, 0, 1);
         if (!nativeWindow || options.deviceScale !== nativeDeviceScale
-            || Math.abs(origin.x - options.x) > 1 / 1024
-            || Math.abs(origin.y - options.y) > 1 / 1024
-            || horizontal.x - origin.x !== 1
-            || horizontal.y - origin.y !== 0
-            || vertical.x - origin.x !== 0
-            || vertical.y - origin.y !== 1)
+            || !resolver.matchesNativeContext(root, options.x, options.y, options.deviceScale))
             throw new Error("Qt command view requires matching native translation and pixel density");
     }
 
