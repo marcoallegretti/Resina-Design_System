@@ -8,6 +8,17 @@ Item {
     activeFocusOnTab: false
     Accessible.ignored: true
 
+    function measureJson(source) {
+        try {
+            const request = JSON.parse(source);
+            const result = measure(request.text, request.family, request.pixelSize, request.weight,
+                request.spacing, request.lineHeight, request.maximumWidth);
+            return JSON.stringify({kind:"extent", width:result.width, height:result.height});
+        } catch (error) {
+            return JSON.stringify({kind:"error", message:error.message});
+        }
+    }
+
     function fontMapping(pixelSize, spacing) {
         if (!Number.isFinite(pixelSize) || pixelSize <= 0 || pixelSize > 2147483647)
             throw new Error("Qt Quick label pixel size must be finite, positive and representable");

@@ -2,7 +2,7 @@
 name = "resina-qt-runtime"
 version = "0.1.0"
 edition = "2024"
-description = "Rust-owned Resina command lifecycle for native Qt integration"
+description = "Rust-owned Resina command lifecycle and content for native Qt integration"
 
 [workspace]
 
@@ -14,6 +14,9 @@ cxx = "1"
 cxx-qt = "=0.8.1"
 cxx-qt-lib = "=0.8.1"
 serde_json = { version = "1", features = ["float_roundtrip", "raw_value"] }
+serde = { version = "1", features = ["derive"] }
+resina-environment = { path = "../../../reference/rust/resina-environment" }
+resina-tokens = { path = "../../../reference/rust/resina-tokens" }
 resina-model = { path = "../../../reference/rust/resina-model" }
 resina-resolver = { path = "../../../reference/rust/resina-resolver" }
 

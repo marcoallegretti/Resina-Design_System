@@ -6,6 +6,8 @@ use resina_resolver::{
 };
 use std::pin::Pin;
 
+mod label;
+
 const MAX_EVENT_BYTES: usize = 64 * 1024;
 
 unsafe extern "C" {

@@ -412,8 +412,11 @@ dependencies = [
  "cxx-qt",
  "cxx-qt-build",
  "cxx-qt-lib",
+ "resina-environment",
  "resina-model",
  "resina-resolver",
+ "resina-tokens",
+ "serde",
  "serde_json",
 ]
 

@@ -1,12 +1,20 @@
 # Quickshell paint and measurement (0.1.0)
 
-This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. It does not implement a complete control, interaction, animation, or a complete Shell conformance claim.
+This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement and drawing for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. It does not implement a complete control, interaction, animation, or a complete Shell conformance claim.
 
 The separately locked [Qt runtime adapter](../resina-qt-runtime/README.md) supplies
 a Rust-owned command lifecycle QObject and native invocation evidence. Complete
 component composition and Quickshell hosting remain separate requirements.
 
 ## Native label measurement
+
+`ResinaCommandLabel.qml` connects the native pair to Rust-owned complete content
+layout through the [Qt runtime](../resina-qt-runtime/README.md#commandlabelresolver-and-native-content).
+It resolves authored Label typography, measures natural and fitted text in Qt,
+and prepares the resulting complete label box for drawing. It requires the
+compiled `Resina.Runtime` plugin and an explicit registered font mapping.
+Its color must come from guarded body paint after the composing owner validates
+content containment; it does not create input or accessibility semantics.
 
 Import [ResinaLabelMeasure.qml](qml/ResinaLabelMeasure.qml) into the application's
 QML module, or load it through a runtime `Loader`. Register the application's

@@ -1,4 +1,4 @@
-# Qt command lifecycle runtime (0.1.0)
+# Qt command runtime (0.1.0)
 
 This separately locked native workspace implements the Resina-owned
 Rust/QML runtime boundary. CXX-Qt 0.8.1 exposes Rust-owned command activation
@@ -6,6 +6,10 @@ through a real Qt `QObject` in the `Resina.Runtime` QML plugin. The portable
 reference owns semantics, Qt owns object lifetime and native publication, and
 consumers own product effects. Qt and binding dependencies stay outside the
 portable workspace and normative artifacts.
+
+The native content path additionally resolves authored label typography and the
+existing complete command-label policy in Rust, using actual Qt measurement
+for both natural and fitted extents.
 
 ## CommandController
 
@@ -43,6 +47,52 @@ and cancel active gestures before removing their owner. This controller does not
 acquire focus, perform pointer capture, measure text, render paint or provide a
 Button. Complete component composition remains the next dependency.
 
+## CommandLabelResolver and native content
+
+`CommandLabelResolver.resolveLabel(requestJson, producer)` synchronously runs
+[complete label layout](../../../spec/46-command-label-layout.md). Its backend
+request has exactly these fields:
+
+- `themeSource` and `externalSources`: authored theme JSON and explicit source
+  strings, using the existing theme compiler. No file access or ambient theme.
+- `environment`: the existing validated environment snapshot. Its text scale
+  reaches semantic typography once; its direction maps logical padding.
+- `text`, `minimumSize`, `maximumSize`, `padding`: the existing layout inputs.
+- `fontFamily`: `{role, name}`, an explicit registered native family mapping for
+  the resolved Label family role. A mismatching role is diagnostic.
+
+The request source is bounded to 8 MiB and rejects duplicate members, unknown
+fields and positional record representations. These are backend transport
+limits, not changes to portable label semantics. Success returns `{label}`
+containing existing `CommandLabelIr`; failure returns `{error}` and no label.
+There is no new portable snapshot or typography wire contract.
+
+Supply the actual `ResinaLabelMeasure` QML instance as `producer`. The native
+bridge calls its `measureJson` method directly on the Qt application thread.
+It retains only a `QPointer` during that synchronous call and rejects a missing,
+destroyed, foreign-thread or malformed producer. It does not enter an event loop,
+retain native pointers in Rust, or approximate glyph widths. Native failures
+propagate through the existing Rust measurement-error channel. Producer responses
+are bounded to 64 KiB and strictly parsed, including duplicate rejection.
+Keep the producer and its registered font alive for the whole operation; use
+deferred Qt destruction and the same font context for later drawing.
+
+[`ResinaCommandLabel.qml`](../resina-qml/qml/ResinaCommandLabel.qml) composes this
+resolver with the native measurement/drawing pair. Call
+`prepare(requestJson, guardedSrgbColor)` on the UI thread. Its read-only `layout`
+contains the resolved label IR after drawing preparation succeeds; `paintReady`
+reports prepared native content. Failure clears layout and hides prior content,
+with `paintError` preserving the cause. Replacement first withdraws readiness;
+recursive preparation during publication fails without changing the outer
+operation. The item reserves the complete command
+front size and positions the label at its Rust-resolved box. It is decorative,
+has no input target and is ignored by accessibility.
+
+The composing owner still must validate the label against the body's uniform
+content contour and supply its guarded foreground, retain common provenance,
+publish coherent paint/target/semantics, and own native gestures and actions.
+The label helper does not provide any of those channels or a Button.
+
 ## Build and verification
 
 Install the tested Qt 6.11.2 development SDK with its Core/Qml tools and a C++17
@@ -61,6 +111,7 @@ cargo test --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --lo
 cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
 python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-schema.txt
 python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
+python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py --report-only
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py
 ```
@@ -85,6 +136,21 @@ The compiled checker instantiates actual Qt objects and prepares shared case
 states through legal lifecycle operations. It checks full publication, read-only
 properties, capture effects, intent ordering/counts, rejection and recovery.
 These are **synthetic event deliveries**, not native keyboard/pointer evidence.
+
+Content acceptance is actual native natural/fitted measurement reaching Rust's
+complete label equations and the same resolved IR reaching native drawing
+preparation, with rejection clearing stale content and later recovery. The
+content checker executed both authored themes, LTR/RTL padding, Latin, expanded
+German, Arabic and independent/blank paragraphs at 100%, 100.06%, 150% and 200%
+text scaling. It independently checks the authored 14 px / 500 / 1.34 / 0.15 px
+Label values and the layout equations; matching producer and IR values alone
+would not detect applying text scale twice. It also rejects duplicate/unknown
+members, positional records, missing fonts, impossible complete height and
+missing/malformed producers. This is native measurement and drawing preparation,
+not a capture of a complete painted component or native input evidence. The
+separate label-pair captures establish drawing for their tested font/renderer
+matrix; complete content/background containment remains the composing owner's
+next dependency.
 
 The native checker requires Linux, a display and AT-SPI services. Executed on Qt
 6.11.2 with X11/Xvfb, real Press actions reached the loaded Rust plugin: disabled
@@ -141,7 +207,7 @@ This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication, native
-keyboard/pointer delivery, screen-reader operation, complete label integration,
+keyboard/pointer delivery, screen-reader operation, label/body containment integration,
 coherent complete component snapshot/paint
 publication and native runtime CI remain unverified. The next dependency is a
 Command owner preparing its existing content, paint, target and semantics together.
