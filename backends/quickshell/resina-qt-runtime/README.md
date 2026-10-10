@@ -138,7 +138,10 @@ restore its own native publication before Quickshell controls can be qualified.
 Resina does not own a process-wide private bootstrap as a semantic fallback.
 
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
-Slider. Released Quickshell native publication, native keyboard/pointer delivery, screen-reader
-operation, continuous text scaling, coherent complete component snapshot/paint
+Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
+separately verifies fractional sizing and authored tracking through native
+measurement and drawing. Released Quickshell native publication, native
+keyboard/pointer delivery, screen-reader operation, complete label integration,
+coherent complete component snapshot/paint
 publication and native runtime CI remain unverified. The next dependency is a
 Command owner preparing its existing content, paint, target and semantics together.

@@ -15,7 +15,8 @@ The component is invisible, has no input target and is ignored by accessibility.
 Call its synchronous `measure(text, family, pixelSize, weight, spacing,
 lineHeight, maximumWidth)` method on the Qt UI thread for each natural/fitted
 request from the [portable label policy](../../../spec/46-command-label-layout.md).
-It returns `{width, height, nativeText, paragraphs}` or throws a diagnostic error;
+It returns `{width, height, nativeText, paragraphs, fontMapping,
+nativeLineHeight, nativeWrappingWidth}` or throws a diagnostic error;
 an error publishes no extent. `maximumWidth` is explicitly `null` for natural
 measurement or a finite positive logical wrapping constraint.
 Both dimensions are logical pixels. CRLF, CR, VT, FF and NEL hard breaks are
@@ -45,8 +46,8 @@ limit. `implicitHeight` preserves trailing blank lines that `contentHeight`
 omits on Qt 6.11.2. Natural width is the native implicit width; fitted width is
 the complete content width, checked against the unchanged offered constraint.
 
-The selected primary family, pixel size and reported weight must match the
-request for every nonempty paragraph. [Qt's empty-layout path](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L430-L455)
+The selected primary family, mapped native pixel size and reported weight must
+match for every nonempty paragraph. [Qt's empty-layout path](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L430-L455)
 uses current native font metrics without refreshing `fontInfo`; blank entries
 retain those metrics, while nonempty entries validate the actual selected face.
 Qt's native font selection/synthesis supplies the weight; per-glyph
@@ -58,15 +59,24 @@ matching the helper's explicit font traits and layout metrics.
 This helper measures layout; accessibility and a Rust/QML product binding
 require their own evidence. The drawing counterpart is described below.
 
-Native limits are explicit. [Qt's pixel-size property is integer-valued](https://doc.qt.io/qt-6.11/qml-qtquick-text.html#font.pixelSize-prop),
-so fractional resolved font sizes fail rather than rounding or shrinking.
-Using points does not provide arbitrary precision: [Qt 6.11.2 rounds the Text
-font to half-point steps](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L1630-L1634).
-Continuous text-scale conformance remains open for this backend. Native letter
-spacing conversion must retain the requested value within 1/1024 logical px.
-Values outside [Qt's signed 26.6 fixed-point range](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/painting/qfixed_p.h)
-fail before native assignment; quantization is checked through the native
-readout. U+009C fails because [Qt interprets it as a multi-length separator and
+Native limits are explicit. [Qt's pixel-size property is integer-valued](https://doc.qt.io/qt-6.11/qml-qtquick-text.html#font.pixelSize-prop).
+Integer sizes with representable spacing retain direct native layout. Otherwise
+the pair uses an integer native size of `max(1024, ceil(pixelSize * 8))` and a
+uniform inverse transform of `pixelSize / nativeSize`. Spacing, line height and
+wrapping width reach native layout in those same units; complete advances and
+heights return to logical units. Drawing uses exactly that mapping and transform.
+This is a native representation of requested typography, not font shrinking to
+fit content or another application of environment text scaling. It uses public
+Qt Quick `Text` and item transforms, with no private text API or point-size
+rounding.
+
+The effective font-size transform and native spacing readout must preserve
+requested values within the existing **1/1024 logical px** budget. Integer font
+and [signed 26.6 spacing ranges](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/painting/qfixed_p.h)
+are checked before assignment. Transformed wrapping widths round downward to
+the native fixed-point grid within that same budget; they never widen the
+offered width. The portable label box retains its full offered width. Excessive
+or collapsed conversions fail diagnostically. U+009C fails because [Qt interprets it as a multi-length separator and
 discards the suffix](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L224-L229),
 even with plain text and no ellipsis. The paragraph owner avoids Qt's ignored
 plain-text U+2029 break by using independent native layouts, consistent with
@@ -78,8 +88,9 @@ python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/
 python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --platform wayland
 ```
 
-The native probe checks 27 labels, three text scales and three signed spacing
+The native probe checks 27 labels, four text scales and four signed spacing
 values on each of five actual device scales (0.5, 1, 1.25, 2 and 1.3). It includes
+100.06% text scaling and the authored 0.15 px wide tracking, alongside
 Latin, expanded German, Arabic, 100/150/200% string-length fixtures, literal
 markup, LF/CRLF/CR, VT/FF/NEL, line separators and leading/trailing/consecutive
 blank lines and mixed-script/blank paragraphs. A separate native Text oracle
@@ -88,9 +99,10 @@ each fitted paragraph also matches its isolated native measurement. The probe
 checks complete line heights, contiguous paragraph offsets, wide-word reflow,
 spacing effects, weights with blank paragraphs, fractional line heights and
 13 invalid/unsupported inputs, including failure after a valid paragraph and
-recovery afterward. All 1215 measurement and 65 diagnostic cases passed locally
-on both software/offscreen and software/Wayland with Quickshell 0.3.1 /
-Qt 6.11.2 on WSLg. Runtime CI and other
+recovery afterward. The extended matrix passed software/offscreen with unmodified
+Quickshell 0.3.1 and Qt 6.11.2. Earlier integer-size evidence passed on
+software/Wayland with WSLg; the extended matrix has not been rerun there.
+Runtime CI and other
 fonts/compositors remain unverified. The checker itself is covered by portable
 CI tests that reject incomplete, duplicate, failed and wrong-scale evidence.
 
@@ -133,24 +145,32 @@ python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/tr
 python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --scene-graph rhi --scales 0.5 1 1.25 2 1.3 --output-dir target/qt-label-rhi
 ```
 
-Use fresh output directories. The probe compares 25 actual drawing/reference
+Use fresh output directories. The probe compares 36 actual drawing/reference
 capture pairs per device scale, including glyph overhang, three text scales,
 expanded German, Arabic, independent mixed-script paragraphs, literal markup,
-string-length expansion and blank paragraphs. It also checks request mutation,
+string-length expansion and blank paragraphs. Additional Latin, German, Arabic
+and mixed-paragraph captures use 12.3, 16.01, 20.5 and 20.012 px sizing with
+0.15 px tracking, including overhang from a 60.012 px `j`. It also checks request mutation,
 nine rejected requests and recovery. References use independent native Text
-items at the same physical position; this avoids GPU rounding differences from
+items at the same physical position and validate their selected font. The font
+asset has an unambiguous identifier rather than shadowing `Text.font`; a
+reference that falls back to the ambient family is rejected. This avoids GPU rounding differences from
 translating the reference across the viewport. Captures use logical item size:
 [Qt applies the window's device scale itself](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquickitemgrabresult.cpp#L244-L280).
 The checker rejects missing, stale, translucent, incorrectly sized or differing
 captures and requires visible ink outside the `j` advance box. Portable tests
 cover both image inputs and the one-byte channel comparison tolerance.
 
-On local Quickshell 0.3.1 / Qt 6.11.2, software/offscreen and software/Wayland
-passed scales 1, 1.25, 2 and 1.3; OpenGL RHI on Mesa software graphics passed
-0.5, 1, 1.25, 2 and 1.3 on both surfaces. Software `grabToImage` at 0.5 produces
+The extended captures passed software/offscreen and OpenGL RHI on Mesa software
+graphics on unmodified Quickshell 0.3.1 / Qt 6.11.2 at scales 1, 1.25, 2 and 1.3.
+The probe asserts the actual `GraphicsInfo.api`, rejecting renderer substitution.
+Prior integer-size captures passed
+software/Wayland and OpenGL RHI on Mesa software graphics; those prior captures
+did not assert the reference's selected font, so their font-mapping evidence is
+limited. Software `grabToImage` at 0.5 produces
 an invalid partially black capture and fails the checker when requested.
-Live software presentation at 0.5, hardware GPUs, runtime CI, continuous text
-scaling, other fonts and complete component/accessibility conformance remain
+Live software presentation at 0.5, hardware GPUs, runtime CI, arbitrary font
+mapping, other fonts and complete component/accessibility conformance remain
 unverified.
 
 ## Complete opaque paint
