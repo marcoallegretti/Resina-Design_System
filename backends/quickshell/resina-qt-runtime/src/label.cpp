@@ -2,6 +2,7 @@
 #include "context.h"
 #include "resina-qt-runtime/src/label.cxx.h"
 #include "resina-qt-runtime/src/snapshot.cxx.h"
+#include "resina-qt-runtime/src/toggle_snapshot.cxx.h"
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -32,11 +33,11 @@ QString CommandLabelResolver::resolveLabel(const QString& request, QObject* prod
     return resolve_label(request, measurement);
 }
 
-void CommandSnapshotResolver::publishSnapshot(const QString& publication) {
+void SnapshotPublication::publishSnapshot(const QString& publication) {
     publishFrame(publication, QString(), nullptr);
 }
 
-void CommandSnapshotResolver::publishFrame(const QString& publication, const QString& motion, QObject* frame) {
+void SnapshotPublication::publishFrame(const QString& publication, const QString& motion, QObject* frame) {
     const auto* application = QCoreApplication::instance();
     if (!application || QThread::currentThread() != application->thread()
         || thread() != application->thread()) return;
@@ -46,7 +47,7 @@ void CommandSnapshotResolver::publishFrame(const QString& publication, const QSt
     const bool frameChangedValue = frame_ != frame;
     const QPointer<QObject> requestedFrame(frame);
     const QString requestedMotion = motion;
-    const QPointer<CommandSnapshotResolver> owner(this);
+    const QPointer<SnapshotPublication> owner(this);
     disconnect(frameDestroyed_);
     publication_ = publication;
     motion_ = motion;
@@ -85,7 +86,16 @@ QString CommandSnapshotResolver::composeRequest(const QString& request, const QS
     return compose_request(request, activation, hovered, focusable);
 }
 
-bool CommandSnapshotResolver::matchesNativeContext(QObject* object, double x, double y, double deviceScale) const {
+QString ToggleSnapshotResolver::resolveToggleSnapshot(const QString& request, QObject* producer, const QString& options, bool render) const {
+    const NativeLabelMeasure measurement(producer);
+    return prepare_toggle_snapshot(request, measurement, options, render);
+}
+
+QString ToggleSnapshotResolver::composeToggleRequest(const QString& request, const QString& activation, bool hovered, bool checked, bool focusable) const {
+    return compose_toggle_request(request, activation, hovered, checked, focusable);
+}
+
+bool SnapshotPublication::matchesNativeContext(QObject* object, double x, double y, double deviceScale) const {
     const auto* application = QCoreApplication::instance();
     // Reject before inspecting item state unless the call is on the owning UI thread.
     if (!application || QThread::currentThread() != application->thread()

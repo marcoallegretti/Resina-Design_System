@@ -26,12 +26,11 @@ public:
     Q_INVOKABLE QString resolveLabel(const QString& request, QObject* producer) const;
 };
 
-class CommandSnapshotResolver : public QObject {
+class SnapshotPublication : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString publication READ publication NOTIFY publicationChanged)
     Q_PROPERTY(QString motion READ motion NOTIFY motionChanged)
     Q_PROPERTY(QObject* frame READ frame NOTIFY frameChanged)
-    QML_ELEMENT
 
 public:
     using QObject::QObject;
@@ -41,13 +40,6 @@ public:
     // The composing owner commits only an already validated native view snapshot.
     Q_INVOKABLE void publishSnapshot(const QString& publication);
     Q_INVOKABLE void publishFrame(const QString& publication, const QString& motion, QObject* frame);
-    Q_INVOKABLE QString resolveMotionSnapshot(const QString& request, QObject* producer, const QString& options, const QString& motion, bool render) const;
-    Q_INVOKABLE QString retargetMotion(const QString& source) const;
-    Q_INVOKABLE QString validateMotionChannels(const QString& source) const;
-    Q_INVOKABLE QString resolveSnapshot(const QString& request, QObject* producer) const;
-    Q_INVOKABLE QString resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const;
-    Q_INVOKABLE QString qualifySnapshot(const QString& request, QObject* producer, const QString& options) const;
-    Q_INVOKABLE QString composeRequest(const QString& request, const QString& activation, bool hovered, bool focusable) const;
     Q_INVOKABLE bool matchesNativeContext(QObject* item, double x, double y, double deviceScale) const;
 signals:
     void publicationChanged();
@@ -58,6 +50,29 @@ private:
     QString motion_;
     QPointer<QObject> frame_;
     QMetaObject::Connection frameDestroyed_;
+};
+
+class CommandSnapshotResolver : public SnapshotPublication {
+    Q_OBJECT
+    QML_ELEMENT
+public:
+    using SnapshotPublication::SnapshotPublication;
+    Q_INVOKABLE QString resolveMotionSnapshot(const QString& request, QObject* producer, const QString& options, const QString& motion, bool render) const;
+    Q_INVOKABLE QString retargetMotion(const QString& source) const;
+    Q_INVOKABLE QString validateMotionChannels(const QString& source) const;
+    Q_INVOKABLE QString resolveSnapshot(const QString& request, QObject* producer) const;
+    Q_INVOKABLE QString resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const;
+    Q_INVOKABLE QString qualifySnapshot(const QString& request, QObject* producer, const QString& options) const;
+    Q_INVOKABLE QString composeRequest(const QString& request, const QString& activation, bool hovered, bool focusable) const;
+};
+
+class ToggleSnapshotResolver : public SnapshotPublication {
+    Q_OBJECT
+    QML_ELEMENT
+public:
+    using SnapshotPublication::SnapshotPublication;
+    Q_INVOKABLE QString resolveToggleSnapshot(const QString& request, QObject* producer, const QString& options, bool render) const;
+    Q_INVOKABLE QString composeToggleRequest(const QString& request, const QString& activation, bool hovered, bool checked, bool focusable) const;
 };
 
 class CommandClock : public QObject {

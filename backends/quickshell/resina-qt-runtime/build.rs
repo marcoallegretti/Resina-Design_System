@@ -9,6 +9,8 @@ fn main() {
     )
     .files([
         "src/lib.rs",
+        "src/toggle.rs",
+        "src/toggle_snapshot.rs",
         "src/label.rs",
         "src/snapshot.rs",
         "src/pointer.rs",
