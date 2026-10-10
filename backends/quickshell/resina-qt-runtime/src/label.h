@@ -32,6 +32,7 @@ class CommandSnapshotResolver : public QObject {
 public:
     using QObject::QObject;
     Q_INVOKABLE QString resolveSnapshot(const QString& request, QObject* producer) const;
+    Q_INVOKABLE QString resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const;
 };
 }
 #endif

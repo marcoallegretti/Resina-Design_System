@@ -134,6 +134,44 @@ render a body, interpolate motion, capture input, or implement a Button.
 A composing native owner must prepare every visual channel before coherently
 publishing the result and retain the common font/environment context.
 
+## Checked native paint
+
+`CommandSnapshotResolver.resolvePaintedSnapshot(requestJson, producer, optionsJson)`
+runs the same complete snapshot preparation and then renders that exact checked
+paint through the existing `resina-qml`/bounded CPU raster path. Options require
+named `x`, `y`, `deviceScale` and `samplesPerAxis` fields. They specify actual
+scene placement, native pixel density and explicit sampling (1 through 8).
+Duplicate/unknown members, positional records and options sources exceeding
+64 KiB are diagnostic. Existing raster size/work limits and native coordinate
+precision guards still apply.
+
+Success returns `{snapshot, paintSource}`. `paintSource` is the existing
+decorative QML Item with a prepared sRGB PNG and complete body/focus paint.
+A rendering failure returns only `{error}`, even if snapshot resolution succeeded.
+Create the source in the owning Qt engine and place the returned item at its
+`paintOriginX`/`paintOriginY`; these already include the requested scene placement.
+Wait for its `paintReady` before publishing or showing a composite. Do not apply
+placement again or let ambient Image scaling resample the prepared profile.
+Keep the native pixel density aligned and prepare again after placement/scale
+changes. Retire prior native objects through Qt's owning-thread lifecycle.
+
+The returned label remains existing complete layout IR. Prepare its drawing with
+the same registered font mapping and its checked body foreground; this endpoint
+renders the body/focus channels, not label glyphs. It provides no input or AT node,
+and does not define motion or a complete Button. The composing owner remains
+responsible for coherent readiness/publication of all channels.
+
+Native paint acceptance compares actual Qt software window readback against both
+the returned prepared PNG and an independently invoked public
+`resina-command-raster` request built from the original authored inputs, native
+label size and projected states. Executed Light/Dark rest, hover, pointer-held,
+disabled and focused frames at DPR 1, 1.25 and 2 preserve the existing one-byte
+pigment/alpha comparison bound. Fractional scene placement is included; complete
+focus and extrusion are captured. The state inputs are synthetic. These are
+body/focus raster and native transfer checks, not complete component glyph,
+native gesture, motion or accessibility qualification. Hardware graphics,
+Wayland and the integrated command graphics-renderer matrix remain unverified.
+
 ## Build and verification
 
 Install the tested Qt 6.11.2 development SDK with its Core/Qml tools and a C++17
@@ -148,12 +186,16 @@ python tools/prepare_qt_runtime_module.py \
   --library target/qt-runtime/debug/libresina_qt_runtime.so \
   --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime \
   --output-dir target/qt-runtime-import
+CARGO_TARGET_DIR="$PWD/target" cargo build -p resina-raster --bin resina-command-raster --locked
 cargo test --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
 cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
-python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-schema.txt
+python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-schema.txt -r tools/requirements-render.txt
 python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
 python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+QT_SCALE_FACTOR=1.25 python tools/check_qt_command_paint_runtime.py \
+  --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --raster target/debug/resina-command-raster --output-dir target/qt-command-paint-1.25
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py --report-only
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py
 ```
@@ -264,6 +306,6 @@ Slider. The [native label pair](../resina-qml/README.md#native-label-measurement
 separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication, native
 keyboard/pointer delivery, screen-reader operation, coherent complete component
-paint/publication, motion and native runtime CI remain unverified. The next
-dependency is native rendering/publication of the checked snapshot, followed by
-a Command owner connecting its lifecycle and real input.
+label/body publication, motion and native runtime CI remain unverified. The next
+dependency is a native owner preparing body and complete glyph drawing together,
+then connecting coherent publication to lifecycle, motion and real input.

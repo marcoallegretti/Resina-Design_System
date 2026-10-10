@@ -24,6 +24,11 @@ mod ffi {
     }
     extern "Rust" {
         fn resolve_snapshot(request: &QString, producer: &NativeLabelMeasure) -> QString;
+        fn resolve_painted_snapshot(
+            request: &QString,
+            producer: &NativeLabelMeasure,
+            options: &QString,
+        ) -> QString;
     }
 }
 
@@ -85,7 +90,20 @@ fn optional_color(value: &Value) -> Result<Option<SrgbFallback>, String> {
     }
 }
 
-fn prepare(source: &str, producer: &ffi::NativeLabelMeasure) -> Result<Value, String> {
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct RenderOptions {
+    x: f64,
+    y: f64,
+    device_scale: f64,
+    samples_per_axis: u8,
+}
+
+fn prepare(
+    source: &str,
+    producer: &ffi::NativeLabelMeasure,
+    rendering: Option<RenderOptions>,
+) -> Result<Value, String> {
     if source.len() > 8 * 1024 * 1024 {
         return Err("Qt command snapshot request exceeds 8 MiB".to_owned());
     }
@@ -175,15 +193,51 @@ fn prepare(source: &str, producer: &ffi::NativeLabelMeasure) -> Result<Value, St
         occupied_regions: &occupied_regions,
     })
     .map_err(|error| error.to_string())?;
-    Ok(
-        json!({"snapshot": {"label": snapshot.label(), "paint": snapshot.paint(),
-        "hitRegion": snapshot.hit_region(), "accessibility": snapshot.accessibility()}}),
-    )
+    let mut result = json!({"snapshot": {"label": snapshot.label(), "paint": snapshot.paint(),
+        "hitRegion": snapshot.hit_region(), "accessibility": snapshot.accessibility()}});
+    if let Some(options) = rendering {
+        let source = resina_qml::render_surface_paint(
+            snapshot.paint().paint(),
+            resina_model::PhysicalVector {
+                x: options.x,
+                y: options.y,
+            },
+            options.device_scale,
+            options.samples_per_axis,
+        )
+        .map_err(|error| error.to_string())?;
+        result["paintSource"] = Value::String(source);
+    }
+    Ok(result)
 }
 
 fn resolve_snapshot(request: &QString, producer: &ffi::NativeLabelMeasure) -> QString {
     QString::from(
-        prepare(&request.to_string(), producer)
+        prepare(&request.to_string(), producer, None)
+            .unwrap_or_else(|error| json!({"error": error}))
+            .to_string(),
+    )
+}
+
+fn resolve_painted_snapshot(
+    request: &QString,
+    producer: &ffi::NativeLabelMeasure,
+    options: &QString,
+) -> QString {
+    let result = (|| {
+        let options = options.to_string();
+        if options.len() > 64 * 1024 {
+            return Err("Qt command rendering options exceed 64 KiB".to_owned());
+        }
+        let document = parse_token_document(&options).map_err(|error| error.to_string())?;
+        if !document.is_object() {
+            return Err("Qt command rendering options must be an object".to_owned());
+        }
+        let rendering = serde_json::from_value(document).map_err(|error| error.to_string())?;
+        prepare(&request.to_string(), producer, Some(rendering))
+    })();
+    QString::from(
+        result
             .unwrap_or_else(|error| json!({"error": error}))
             .to_string(),
     )

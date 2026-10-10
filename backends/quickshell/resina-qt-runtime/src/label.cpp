@@ -32,4 +32,9 @@ QString CommandSnapshotResolver::resolveSnapshot(const QString& request, QObject
     const NativeLabelMeasure measurement(producer);
     return resolve_snapshot(request, measurement);
 }
+
+QString CommandSnapshotResolver::resolvePaintedSnapshot(const QString& request, QObject* producer, const QString& options) const {
+    const NativeLabelMeasure measurement(producer);
+    return resolve_painted_snapshot(request, measurement, options);
+}
 }
