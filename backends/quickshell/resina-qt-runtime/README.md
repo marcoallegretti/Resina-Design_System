@@ -1101,6 +1101,57 @@ toolkit checks passed. New checker usage and missing-plugin failures returned
 their expected nonzero statuses. CI is configured for the sampled matrix;
 no hosted run or broader platform qualification is claimed.
 
+## Native Slider capability boundary
+
+Slider already has portable value, edit, pointer, key, presentation, snapshot and
+track-segment contracts. Native Qt realization must preserve the complete
+[intrinsic semantics](../../../spec/60-slider-accessibility.md), including
+explicit orientation and any supplied localized value text. No native Slider
+component is currently supplied by this adapter.
+
+The toolkit-only probe below uses a real Qt Quick Item and isolated native
+AT-SPI delivery. It deliberately has no Resina controller; its observations
+are capability evidence, never component qualification. With Qt 6.11.2 on nested
+Weston, both authored orientations published Slider role 51, numeric bounds
+0..1, current value 0.4 and increment 0.05. Neither published HORIZONTAL or
+VERTICAL state. `Value.Text` failed and the host reported unimplemented `GetText`,
+despite an explicit `valueText: "40 percent"`. Numeric Value queries succeeded;
+the error must not be interpreted as absence of the whole numeric interface.
+
+A real native write changed the value to 0.65 and the fixture then made itself
+read-only. A second real write of 2 still changed the value. This is toolkit
+default property delivery, not a failure of an implemented Resina Slider.
+Resina must route every write through current reference permission, domain and
+edit adoption before coherent publication/product notification. A read-only
+semantic flag alone does not enforce this path.
+
+```sh
+QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1 QT_QUICK_BACKEND=software \
+  dbus-run-session -- python tools/run_qt_slider_capability_probe.py --orientation horizontal
+# Repeat --orientation vertical with an actual Linux display.
+```
+
+The exact [Qt Quick source](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/accessible/qaccessiblequickitem.cpp)
+reads conventional numeric properties and writes `value` directly. Its public
+attribute mapping supplies locale, not orientation, and its Slider text mapping
+does not supply localized value text. The
+[Qt AT-SPI bridge](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/accessible/linux/atspiadaptor.cpp)
+can map public `QAccessibleAttributesInterface` orientation to native state but
+omits `Text` from its Value interface. The
+[AT-SPI contract](https://github.com/GNOME/at-spi2-core/blob/main/xml/Value.xml)
+defines `Value.Text` as the human-readable value alternative.
+
+Two viable ownership routes remain: generic Qt Quick/AT-SPI mapping upstream,
+with conventional attached accessibility here; or a public accessibility factory
+restricted to a Resina native Slider item in this adapter, plus an upstream
+AT-SPI value-text repair. The latter adds process-wide factory/cache/lifetime
+ownership beyond the existing attached-accessibility pattern and therefore
+requires the architectural decision under AGENTS.md section 9. It can preserve
+orientation and guarded actions without private Qt APIs; localized native value
+text still requires a supporting toolkit. Neither route permits dropping value
+text, inventing orientation in a label, replacing description with value text,
+or reporting an incomplete native mapping as complete.
+
 ## Compiled destructive-observer regressions
 
 `python tools/check_qt_controller_lifetime.py --module-path <prepared-module>`
