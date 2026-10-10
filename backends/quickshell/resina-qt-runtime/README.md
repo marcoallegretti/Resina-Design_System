@@ -857,8 +857,8 @@ requirements for Command/Button.
 
 `ResinaToggleControl.qml` realizes the existing Toggle activation, state,
 accessibility, layout, part-paint and complete-snapshot contracts (specifications
-50–55). One Qt-owned `ToggleController` commits the Rust activation and binary checked state
-before `activated(checked)`. An application replaces selection explicitly with
+50–55). One Qt-owned `ToggleController` commits the Rust activation and binary checked
+state before `activated(checked)`. An application replaces selection explicitly with
 `control.setChecked(boolean)`; replacement preserves a live hold and produces no
 product effect. Accepted release or invocation uses that current value. The
 read-only `checked` property is never assigned by QML or Qt's default Toggle
@@ -1141,23 +1141,124 @@ omits `Text` from its Value interface. The
 [AT-SPI contract](https://github.com/GNOME/at-spi2-core/blob/main/xml/Value.xml)
 defines `Value.Text` as the human-readable value alternative.
 
-Two viable ownership routes remain: generic Qt Quick/AT-SPI mapping upstream,
-with conventional attached accessibility here; or a public accessibility factory
-restricted to a Resina native Slider item in this adapter, plus an upstream
-AT-SPI value-text repair. The latter adds process-wide factory/cache/lifetime
-ownership beyond the existing attached-accessibility pattern and therefore
-requires the architectural decision under AGENTS.md section 9. It can preserve
-orientation and guarded actions without private Qt APIs; localized native value
-text still requires a supporting toolkit. Neither route permits dropping value
-text, inventing orientation in a label, replacing description with value text,
-or reporting an incomplete native mapping as complete.
+The Resina adapter now owns a public accessibility factory restricted to
+`SliderAccessibilityItem`. It uses no private Qt accessibility API, toolkit
+patch, custom D-Bus service or upstream contribution. The portable contracts
+remain unchanged. The Qt AT-SPI value-text limitation is documented here and
+retained in the native evidence; it is not replaced by a label, description or
+custom attribute.
+
+### Continuous Slider accessibility bridge
+
+[`ResinaSliderAccessibility.qml`](../resina-qml/qml/ResinaSliderAccessibility.qml)
+is a native semantic leaf over the compiled `SliderAccessibilityItem`. It is a
+bridge for a composing presentation owner, not a complete painted Slider.
+It supplies the public [value](https://doc.qt.io/qt-6/qaccessiblevalueinterface.html),
+[action](https://doc.qt.io/qt-6/qaccessibleactioninterface.html) and
+[attributes](https://doc.qt.io/qt-6/qaccessibleattributesinterface.html) interfaces.
+Qt supplies the actual native accessibility bus and object cache. Decoration must be ignored
+and there must be only one semantic Slider item for the control.
+
+The composing owner calls `publish(JSON.stringify(publication))` with:
+
+```js
+{
+  accessibility: qualifiedSnapshot.accessibility, // complete Core SliderAccessibilityIR
+  revision: presentation.revision,
+  valuePolicy: {kind: "continuous"},
+  stepSize: authoredPositiveStep
+}
+```
+
+Publication is read-only. The bridge checks the complete semantic shape,
+version, domain and numeric literal precision, action availability, explicit
+orientation, optional nonblank description/value text, focusability and actual
+native focus. It rejects unknown/duplicate members, incoherent semantics,
+non-object records and requests exceeding 64 KiB. Invalid publication withdraws
+all semantics. Native focus changes also withdraw the publication, so the
+owner must requalify actual focus before accepting further actions. This profile
+accepts continuous values only; it explicitly rejects stops rather than silently applying continuous adjustment rules.
+`stepSize` is an authored positive finite amount, never a toolkit default.
+It maps the native minimum increment and Increase/Decrease amount; it does not
+create a quantization grid or restrict continuous SetValue to step multiples.
+
+The owner sets `sourceAvailable` only after qualifying and publishing the
+complete current native frame. It must withdraw readiness before replacement,
+failed preparation or revoked native context. The QML facade removes the leaf
+from native discovery while readiness is withdrawn; cached native actions still
+run the same live guards. This bridge also checks actual
+window visibility, item visibility, enabled state and positive native extent
+on every action. Its metadata checks cannot establish paint, layout, contrast,
+text measurement or native frame readiness; those belong to the composing
+complete-snapshot owner. No painted Slider, pointer/keyboard edit lifecycle or
+product effect is supplied by this bridge.
+
+Actual AT-SPI SetCurrentValue, Increase and Decrease call Rust's existing
+[Slider adjustment](../../../spec/59-slider-adjustment.md) resolver against
+current published value and live permissions. Native setters never write a Qt
+`value` property. Accepted proposals emit `adjustmentRequested` with
+`{candidate, candidateBase, revision}`; rejected, read-only, disabled or
+unavailable invocations emit no proposal. Keyboard focus is not required.
+Invalid out-of-domain values are rejected rather than clamped. Synchronous
+callback reentry cannot deliver a second proposal.
+
+The composing owner must adopt each candidate through the existing
+[presentation commit](../../../spec/69-slider-presentation.md) contract against
+its current visible value, revision and permissions, including cancellation of
+any open edit. The bridge does not commit a value or make this adoption decision.
+The owner must publish/requalify the resulting complete value and localized text
+before any consumer-owned changed-value effect. An accepted no-op is still a
+proposal, so the owner can close an edit; it must produce no changed-value
+product effect. A delayed proposal is never permission to bypass live adoption.
+
+The documented public [factory/cache API](https://doc.qt.io/qt-6/qaccessible.html#installFactory)
+is used with [QAccessibleObject](https://doc.qt.io/qt-6/qaccessibleobject.html) for
+the non-widget Qt Quick item. The public factory installs once per live
+QCoreApplication, on the UI thread, and removes itself when its application-owned registration object is destroyed.
+It recognizes the concrete Resina class only. Qt owns and invalidates each
+cached `QAccessibleObject` with the item; the factory retains no raw item pointer.
+The plugin must remain loaded until application teardown. This matches Qt's
+[default PreventUnloadHint](https://github.com/qt/qtbase/blob/v6.11.2/src/corelib/plugin/qpluginloader.cpp)
+for native plugins. Manual unloading while factories or native interfaces live
+is unsupported. This mechanism does not repair Quickshell's destroyed-initial-
+application AT-SPI bootstrap limitation documented above.
+
+The native adapter checker uses an isolated real AT-SPI bus and a standalone Qt
+Quick host. Its arithmetic continuous-value fixture publishes complete semantic
+value/text before counting a fixture effect; it deliberately has no Resina
+paint or pointer edit, so it cannot qualify a complete component. It verifies
+both axes, exact native binary64 values, SetValue/Increase/Decrease without
+focus, accepted no-op versus changed effects, out-of-domain rejection, live
+read-only/disabled/withdrawn source guards, invalid publication withdrawal,
+stable identity across publications, destruction/stale actions/recreation, and
+preservation of an unrelated default Qt Button factory.
+
+```sh
+python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation horizontal
+python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation vertical
+# Requires an actual Linux display; the checker isolates its own AT-SPI bus.
+# Fail closed when qualifying complete native intrinsic semantics:
+python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --require-value-text
+```
+
+Executed locally with unmodified PySide6 Qt 6.11.2 on nested Weston, both
+orientations passed the adapter criterion. The same adapter checks also passed
+on local Xvfb/X11. Real AT-SPI delivered the adjustments
+through Rust and observed coherent republished numeric values. `Value.Text`
+remained unsupported and `completeNativeIntrinsicSemantics` was `false`;
+`--require-value-text` therefore fails. The adapter exposes supplied value text
+at the public QAccessible Value text boundary, but that is not proof of native
+AT-SPI publication. Full native intrinsic accessibility, complete Slider paint,
+edit adoption/input integration, released Quickshell, physical input and screen
+reader operation remain unqualified. CI runs the same adapter criteria on Xvfb;
+configured CI checks are not evidence of an executed hosted run.
 
 ## Compiled destructive-observer regressions
 
 `python tools/check_qt_controller_lifetime.py --module-path <prepared-module>`
 checks Command notification destruction and the native pointer caller. Add
-`--controller ToggleController` for Toggle, including external checked replacement. Each
-scenario runs in a separate process and actually processes Qt DeferredDelete.
+`--controller ToggleController` for Toggle, including external checked replacement.
+Each scenario runs in a separate process and actually processes Qt DeferredDelete.
 The checks require no signal after controller destruction, no surviving hold
 after pointer removal, and no cancellation of a replacement gesture. They
 preserve the shared activation/reentrancy contracts. These synthetic operations

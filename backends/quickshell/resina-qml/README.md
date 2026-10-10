@@ -384,3 +384,15 @@ defines all required raw channels, public native scheduling, retargeting,
 coherent buffered publication, per-sample guards and native verification. The
 static profile remains the default. Checked semantics and selected roles are
 current throughout travel; fixture dynamics do not establish material calibration.
+
+## Native Slider accessibility bridge
+
+`qml/ResinaSliderAccessibility.qml` wraps the Resina-owned public Qt accessibility
+factory. Its continuous-value profile maps qualified Core Slider semantics and
+routes real native adjustment proposals through Rust guards. The composing
+presentation owner owns complete frame readiness, live edit adoption and
+publication before consumer effects. This is an accessibility bridge; complete
+Slider paint and pointer/keyboard editing are not supplied. Unmodified Qt 6.11.2
+still omits AT-SPI `Value.Text`. See the [runtime API, lifetime rules and actual
+native evidence](../resina-qt-runtime/README.md#continuous-slider-accessibility-bridge)
+before making a component or native accessibility qualification claim.

@@ -14,6 +14,7 @@ fn main() {
         "src/label.rs",
         "src/snapshot.rs",
         "src/pointer.rs",
+        "src/slider_accessibility.rs",
     ])
     .qt_module("Quick")
     .qt_module("Gui")
@@ -24,7 +25,9 @@ fn main() {
     .cpp_file("src/label.h")
     .cpp_file("src/label.cpp")
     .cpp_file("src/pointer.h")
-    .cpp_file("src/pointer.cpp");
+    .cpp_file("src/pointer.cpp")
+    .cpp_file("src/slider_accessibility.h")
+    .cpp_file("src/slider_accessibility.cpp");
     // Rust cdylib export filtering hides C++ symbols, including Qt's plugin entry.
     // Rename the generated entry so the Rust export can forward to it.
     unsafe {

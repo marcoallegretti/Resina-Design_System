@@ -79,6 +79,10 @@ jobs:
           cat target/qt-control-accessibility.json
           xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --motion --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf > target/qt-motion-accessibility.json
           cat target/qt-motion-accessibility.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation horizontal > target/qt-slider-horizontal-accessibility.json
+          cat target/qt-slider-horizontal-accessibility.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation vertical > target/qt-slider-vertical-accessibility.json
+          cat target/qt-slider-vertical-accessibility.json
       - name: Save native Qt captures and accessibility observations
         if: always()
         uses: actions/upload-artifact@v7
@@ -91,6 +95,7 @@ jobs:
             target/qt-control-*/*.png
             target/qt-motion-*/*.png
             target/qt-motion-accessibility.json
+            target/qt-slider-*-accessibility.json
             target/qt-control-accessibility.json
             target/qt-native-availability.json
           if-no-files-found: warn
