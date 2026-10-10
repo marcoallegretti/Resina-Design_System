@@ -5,10 +5,12 @@ import json
 import os
 import subprocess
 import unittest
+from pathlib import Path
 from unittest import mock
 
 import check_qt_native_availability as checker
 from run_qt_availability_probe import ActivationProbe
+import run_qt_availability_probe as runner
 
 
 HEADER = "method return time=1 sender=:1.2 -> destination=:1.3 serial=2 reply_serial=2\n"
@@ -78,6 +80,8 @@ class QtNativeAvailabilityTests(unittest.TestCase):
             lambda r: r.update(issues=[]),
             lambda r: r.update(actions=None),
             lambda r: r.update(binding="unknown"),
+            lambda r: r.update(host="unknown"),
+            lambda r: r.update(host="quickshell-0.3.1-qt-6.11.2"),
             lambda r: r["actions"]["Enabled command"].append("Press"),
             lambda r: r["callbacks"].pop(),
             lambda r: r["callbacks"][0].update(activations=1),
@@ -96,6 +100,35 @@ class QtNativeAvailabilityTests(unittest.TestCase):
         for output in ("", checker.PREFIX + "{}", (checker.PREFIX + json.dumps(result) + "\n") * 2):
             with self.subTest(output=output), self.assertRaises(ValueError):
                 checker.parse_report(output)
+
+    def test_quickshell_host_requires_rust_and_keeps_the_semantic_mismatch(self):
+        result = measured_report()
+        result.update(host="quickshell-0.3.1-qt-6.11.2", binding="rust-qt-runtime")
+        self.assertEqual(checker.parse_report(checker.PREFIX + json.dumps(result)), result)
+        self.assertFalse(result["conformant"])
+        with mock.patch.dict(os.environ, {"RESINA_QUICKSHELL_HOST": "/not/a/host"}, clear=True):
+            with self.assertRaisesRegex(ValueError, "compiled Rust"):
+                runner.main()
+
+    def test_quickshell_version_checks_build_and_runtime_without_forwarding_environment(self):
+        valid = "Quickshell: 0.3.1 (revision abc, distributed by Test)\nQt: 6.11.2 (built against 6.11.2)\n"
+        for output in (valid, valid.replace("0.3.1", "0.3.0"),
+                       valid.replace("built against 6.11.2", "built against 6.11.1"),
+                       valid.replace("Qt: 6.11.2", "Qt: 6.11.1"), valid + valid):
+            with self.subTest(output=output), \
+                 mock.patch.dict(os.environ, {"RESINA_QUICKSHELL_HOST": str(Path(__file__).resolve()),
+                                              "RESINA_QT_RUNTIME_MODULE": "/module"}, clear=True), \
+                 mock.patch.object(runner.sys, "argv", ["runner", "--version"]), \
+                 mock.patch.object(runner.subprocess, "run", return_value=
+                     subprocess.CompletedProcess([], 0, output + "secret environment\n", "")), \
+                 contextlib.redirect_stdout(io.StringIO()) as captured:
+                if output == valid:
+                    self.assertEqual(runner.main(), 0)
+                    self.assertEqual(captured.getvalue(), "Quickshell 0.3.1 / Qt Quick 6.11.2\n")
+                else:
+                    with self.assertRaises(ValueError):
+                        runner.main()
+                    self.assertEqual(captured.getvalue(), "")
 
     def test_report_only_never_hides_execution_errors(self):
         result = measured_report()

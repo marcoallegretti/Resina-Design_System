@@ -71,6 +71,13 @@ and uses Qt's expected plugin filename. Add this import root to the engine or
 neither a subprocess resolver nor Python; verification hosts use Python to drive
 Qt.
 
+The library explicitly exports Qt's generated `qt_plugin_instance()` factory
+through Rust. Rust's `cdylib` export filtering otherwise hides that C++ symbol:
+QML type registration can happen during library initialization even when the
+plugin factory cannot load. The compiled checker therefore calls
+`QPluginLoader.instance()` before testing QML objects; type creation alone is
+insufficient evidence for this packaging boundary.
+
 Acceptance is native QObject lifecycle delivery matching shared transitions,
 rejection without effects, committed state before intent, safe publication
 reentrancy and product availability revocation followed by actual AT-SPI delivery.
@@ -87,8 +94,51 @@ committed unavailable state, and the next Press produced none. Reports identify
 focusability because Qt clears it when disabling an item. `--report-only` retains
 that mismatch and never hides execution failures; no contract was weakened.
 
+### Quickshell hosting boundary
+
+The same diagnostic controls can run in a Quickshell `FloatingWindow`. The host
+runner validates both Quickshell 0.3.1 and its build/runtime Qt 6.11.2 versions,
+adds the packaged module import root, and executes Quickshell directly. It does
+not instantiate the Python lifecycle or a second Qt engine. For example:
+
+```sh
+RESINA_QUICKSHELL_HOST=/absolute/path/to/quickshell \
+RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" \
+python tools/check_qt_native_availability.py --report-only
+```
+
+Reports identify `host: quickshell-0.3.1-qt-6.11.2` separately from the binding.
+Standalone reports identify `host: qt-quick-6.11.2`. Host versions do not certify
+a distribution's build or patches. Missing native nodes remain execution
+failures, including with `--report-only`.
+
+**Unmodified Quickshell 0.3.1 currently fails this probe.** An executed build
+from its release source, with the official Qt 6.11.2 SDK, loaded the Rust plugin
+but published an AT-SPI application with no window children. Quickshell
+[destroys its initial QCoreApplication before constructing the GUI application](https://github.com/quickshell-mirror/quickshell/blob/v0.3.1/src/launch/launch.cpp#L282-L291).
+Qt's application teardown
+[clears registered accessibility factories](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/accessible/qaccessible.cpp#L572-L576),
+including the Qt Quick factory installed by
+[module initialization](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/util/qquickglobal.cpp#L311-L313).
+
+A separate scratch build called Qt's private `QQuick_initializeModule()` after
+constructing the GUI application. Actual AT-SPI Press then reached the Rust
+controller for all four expected deliveries, with complete committed results
+and no stale activation. The only semantic mismatch remained discoverable
+disabled focusability. **This is experimental evidence from a patched host,
+not working integration in the released Quickshell host.** The experiment used
+software rendering and X11/Xvfb; Quickshell's optional services, Wayland and
+specialized X11 modules were disabled. It proves no layer-shell behavior,
+hot-reload lifecycle or other toolkit factories. No private bootstrap or
+replacement accessibility factory is installed by this production adapter.
+
+The accepted integration route is an upstream host/toolkit repair, while this
+adapter continues in the standalone Qt host. The host/toolkit must preserve or
+restore its own native publication before Quickshell controls can be qualified.
+Resina does not own a process-wide private bootstrap as a semantic fallback.
+
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
-Slider. Quickshell hosting, native keyboard/pointer delivery, screen-reader
+Slider. Released Quickshell native publication, native keyboard/pointer delivery, screen-reader
 operation, continuous text scaling, coherent complete component snapshot/paint
 publication and native runtime CI remain unverified. The next dependency is a
 Command owner preparing its existing content, paint, target and semantics together.

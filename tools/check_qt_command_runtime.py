@@ -95,11 +95,14 @@ def main():
     parser.add_argument("--module-path", type=Path, required=True)
     arguments = parser.parse_args()
     try:
-        from PySide6.QtCore import QCoreApplication, QEvent, QUrl, qVersion
+        from PySide6.QtCore import QCoreApplication, QEvent, QPluginLoader, QUrl, qVersion
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         if qVersion() != "6.11.2":
             raise ValueError("requires Qt 6.11.2")
         application = QCoreApplication([])
+        loader = QPluginLoader(str(arguments.module_path.resolve(strict=True) / "Resina/Runtime/libResina_Runtime.so"))
+        if loader.instance() is None:
+            raise ValueError("Qt plugin factory failed: " + loader.errorString())
         engine = QQmlEngine()
         engine.addImportPath(str(arguments.module_path.resolve(strict=True)))
         component = QQmlComponent(engine)

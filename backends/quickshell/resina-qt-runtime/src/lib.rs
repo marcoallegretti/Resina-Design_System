@@ -8,6 +8,17 @@ use std::pin::Pin;
 
 const MAX_EVENT_BYTES: usize = 64 * 1024;
 
+unsafe extern "C" {
+    fn resina_qt_plugin_instance() -> *mut std::ffi::c_void;
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn qt_plugin_instance() -> *mut std::ffi::c_void {
+    // Qt's generated factory owns the QObject; no Rust reference or ownership
+    // crosses this boundary. The signature is Qt's QObject* plugin entry ABI.
+    unsafe { resina_qt_plugin_instance() }
+}
+
 #[cxx_qt::bridge]
 mod qobject {
     unsafe extern "C++" {

@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -44,6 +45,31 @@ class ActivationProbe:
 
 
 def main():
+    quickshell = os.environ.get("RESINA_QUICKSHELL_HOST")
+    if quickshell:
+        if not os.environ.get("RESINA_QT_RUNTIME_MODULE"):
+            raise ValueError("Quickshell requires the compiled Rust runtime module")
+        executable = str(Path(quickshell).resolve(strict=True))
+        if sys.argv[1:] == ["--version"]:
+            result = subprocess.run([executable, "--version", "--verbose", "--no-color"],
+                                    capture_output=True, text=True, timeout=10, check=False)
+            output = result.stdout + result.stderr
+            # Do not forward Quickshell's verbose environment diagnostics.
+            if result.returncode or len(re.findall(r"^Quickshell: 0\.3\.1 \([^\n]*\)$", output, re.M)) != 1 \
+                    or len(re.findall(r"^Qt: 6\.11\.2 \(built against 6\.11\.2\)$", output, re.M)) != 1:
+                raise ValueError("requires Quickshell 0.3.1 built and running with Qt 6.11.2")
+            print("Quickshell 0.3.1 / Qt Quick 6.11.2")
+            return 0
+        if sys.argv[1:]:
+            return 2
+        environment = dict(os.environ)
+        imports = [str(Path(environment["RESINA_QT_RUNTIME_MODULE"]).resolve(strict=True))]
+        if environment.get("QML_IMPORT_PATH"):
+            imports.append(environment["QML_IMPORT_PATH"])
+        environment["QML_IMPORT_PATH"] = os.pathsep.join(imports)
+        source = ROOT / "conformance/quickshell/shell-runtime-probe.qml"
+        os.execve(executable, [executable, "--no-color", "--path", str(source)], environment)
+
     from PySide6.QtCore import QObject, QUrl, Slot, qVersion
     from PySide6.QtGui import QGuiApplication
     from PySide6.QtQml import QQmlApplicationEngine
