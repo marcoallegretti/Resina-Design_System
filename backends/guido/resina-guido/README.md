@@ -58,6 +58,30 @@ The accessibility boundary describes this package's implemented scope; it does
 not certify or diagnose every upstream integration. Keep the authored Resina
 contracts intact while addressing the remaining native integration work.
 
+## Native accessibility integration
+
+Native accessibility-tree publication and lifetime are assigned to GUIdo;
+the upstream work is tracked in
+[GUIdo issue #653](https://github.com/MalpenZibo/guido/issues/653).
+GUIdo owns the platform bridge, surface lifetime, mounted identity and dispatch
+of assistive-technology actions to the owning UI loop. Resina supplies its
+existing Command, Toggle and Slider semantics and handles actions through the
+current interaction contracts before notifying product code. The generic
+widget semantic/action API remains an upstream decision; this package must
+consume the implemented boundary rather than reconstruct that runtime ownership.
+
+The selected ownership does not provide an implementation at the pinned revision.
+Native accessibility remains unimplemented here. Integration requires verified
+upstream tree and action APIs, followed by Resina mapping and real platform
+evidence. The first complete Command must expose one interactive node with its
+complete localized name, description and current availability/focus policy;
+invocation must recheck live availability and supersede a held gesture without
+duplicate activation. Delayed actions after removal, identity reuse or runtime
+disposal must not reach a replacement control. Verify discovery and invocation
+through AT-SPI on a compatible layer-shell compositor and with a real screen
+reader, separately from mounted-event and offscreen rendering tests. Toggle and
+Slider require their own checked-state and numeric-action mappings and evidence.
+
 ## Integration
 
 Call `prepare_surface`, `prepare_focus` or `prepare_surface_paint` with validated resolved IR, the actual
