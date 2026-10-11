@@ -610,12 +610,12 @@ separately verifies fractional sizing and authored tracking through native
 measurement and drawing. Released Quickshell native publication,
 physical-device/screen-reader operation and calibrated motion remain unverified.
 The integrated static profile below now verifies composed command input and
-native accessibility in the standalone host. The native runtime
-CI job is defined; a hosted run remains unverified.
+native accessibility in the standalone host. Hosted native runtime checks have
+also passed; the sampled profile section links the executed evidence.
 The decorative view now prepares body and complete glyph drawing together. The
 input owner connects actual focus/key routing and native mouse capture to current
 Rust activation and stable target mapping. The integrated static control below connects native hover and complete
-publication to AT actions; guarded motion remains the next dependency.
+publication to AT actions; the sampled profile below adds guarded motion.
 
 ### Integrated static command control
 
@@ -747,12 +747,11 @@ static profile; the older discoverable-disabled report retains its mismatch.
 
 This integrated path does not qualify calibrated motion, physical devices,
 multi-seat hardware identity, screen-reader operation, hardware GPU rendering,
-released Quickshell accessibility or a complete Command/Button epic. The optional
+released Quickshell accessibility or complete GUIdo Command/Button integration. The optional
 sampled profile below integrates guarded native motion with these same
 publication and cancellation boundaries. Material calibration and the upstream
-Quickshell host repair remain necessary for qualification. CI now exercises this
-path,
-but a hosted CI execution remains separate from local evidence.
+Quickshell host repair remain necessary for qualification. Hosted CI has executed
+this path successfully, separately from the local native Wayland evidence.
 
 ### Integrated sampled command frames
 
@@ -847,11 +846,11 @@ input checker passed through parent XTest/Weston into spontaneous Wayland events
 including German wrapping and Arabic paragraph content. Actual AT-SPI Press and
 state publication passed on X11/Xvfb and nested Wayland during unsettled motion;
 the default static AT profile also passed again. Captures of successive pressed
-samples were inspected. These are local executed checks; the updated hosted CI
-job has not been run here. The next component dependency is native Toggle
-composition over its existing activation/layout/paint/snapshot contracts;
-material calibration and the upstream Shell host repair remain qualification
-requirements for Command/Button.
+samples were inspected. The
+[hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
+also passed. These results apply to the standalone Qt host; GUIdo integration
+and released Quickshell accessibility require their own runtime verification.
+Material calibration and Shell host accessibility remain unverified.
 
 ## Integrated static Toggle control
 
