@@ -857,7 +857,7 @@ requirements for Command/Button.
 
 `ResinaToggleControl.qml` realizes the existing Toggle activation, state,
 accessibility, layout, part-paint and complete-snapshot contracts (specifications
-50–55). One Rust `ToggleController` commits activation and binary checked state
+50–55). One Qt-owned `ToggleController` commits the Rust activation and binary checked state
 before `activated(checked)`. An application replaces selection explicitly with
 `control.setChecked(boolean)`; replacement preserves a live hold and produces no
 product effect. Accepted release or invocation uses that current value. The
@@ -985,7 +985,8 @@ Switch success is claimed.
 ## Compiled destructive-observer regressions
 
 `python tools/check_qt_controller_lifetime.py --module-path <prepared-module>`
-checks Command notification destruction and the native pointer caller. Each
+checks Command notification destruction and the native pointer caller. Add
+`--controller ToggleController` for Toggle, including external checked replacement. Each
 scenario runs in a separate process and actually processes Qt DeferredDelete.
 The checks require no signal after controller destruction, no surviving hold
 after pointer removal, and no cancellation of a replacement gesture. They

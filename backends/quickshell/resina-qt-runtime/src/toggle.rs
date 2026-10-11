@@ -1,42 +1,33 @@
 use crate::{CommandOwner, MAX_EVENT_BYTES};
-use cxx_qt::CxxQtType;
 use cxx_qt_lib::QString;
 use resina_model::ActivationEvent;
 use resina_resolver::{
-    CaptureChange, ToggleActivationResult, resolve_toggle_activation,
-    resolve_toggle_activation_source,
+    ToggleActivationResult, resolve_toggle_activation, resolve_toggle_activation_source,
 };
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
-use std::pin::Pin;
 
-#[cxx_qt::bridge]
-mod qobject {
+#[cxx::bridge(namespace = "resina::qt")]
+mod toggle_ffi {
     unsafe extern "C++" {
         include!("cxx-qt-lib/qstring.h");
+        #[namespace = ""]
         type QString = cxx_qt_lib::QString;
     }
-    extern "RustQt" {
-        #[qobject]
-        #[qml_element]
-        #[qproperty(QString, publication, READ, NOTIFY)]
-        #[qproperty(QString, last_error, READ, cxx_name = "lastError")]
-        type ToggleController = super::ToggleControllerRust;
-        #[qinvokable]
-        fn dispatch(self: Pin<&mut ToggleController>, event: &QString) -> bool;
-        #[qinvokable]
-        #[cxx_name = "setChecked"]
-        fn set_checked(self: Pin<&mut ToggleController>, source: &QString) -> bool;
-        #[qsignal]
-        fn activated(self: Pin<&mut ToggleController>, checked: bool);
-        #[qsignal]
-        #[cxx_name = "captureRequested"]
-        fn capture_requested(self: Pin<&mut ToggleController>, id: QString, acquire: bool);
+    extern "Rust" {
+        type ToggleOwner;
+        fn new_toggle_owner() -> Box<ToggleOwner>;
+        fn toggle_initial_publication(owner: &ToggleOwner) -> QString;
+        fn dispatch_toggle(
+            owner: &mut ToggleOwner,
+            source: &QString,
+            replace_checked: bool,
+        ) -> Result<QString>;
     }
 }
 
 #[derive(Debug, Default)]
-struct ToggleOwner {
+pub struct ToggleOwner {
     activation: CommandOwner,
     checked: bool,
 }
@@ -83,77 +74,31 @@ impl ToggleOwner {
     }
 }
 
-pub struct ToggleControllerRust {
-    publication: QString,
-    last_error: QString,
-    owner: ToggleOwner,
-    publishing: bool,
+fn new_toggle_owner() -> Box<ToggleOwner> {
+    Box::new(ToggleOwner::default())
 }
-impl Default for ToggleControllerRust {
-    fn default() -> Self {
-        let owner = ToggleOwner::default();
-        let initial = resolve_toggle_activation(
-            owner.activation.state(),
-            owner.checked,
-            &ActivationEvent::Cancel {},
-        )
-        .expect("valid inactive toggle");
-        Self {
-            publication: QString::from(
-                serde_json::to_string(&initial).expect("validated transition"),
-            ),
-            last_error: QString::default(),
-            owner,
-            publishing: false,
-        }
-    }
+
+fn toggle_initial_publication(owner: &ToggleOwner) -> QString {
+    let initial = resolve_toggle_activation(
+        owner.activation.state(),
+        owner.checked,
+        &ActivationEvent::Cancel {},
+    )
+    .expect("valid inactive toggle");
+    QString::from(serde_json::to_string(&initial).expect("validated transition"))
 }
-impl qobject::ToggleController {
-    fn deliver(mut self: Pin<&mut Self>, source: &QString, replace_checked: bool) -> bool {
-        if self.rust().publishing {
-            self.as_mut().rust_mut().last_error =
-                QString::from("toggle publication is in progress");
-            return false;
-        }
-        let result = if replace_checked {
-            self.rust().owner.replace_checked(&source.to_string())
-        } else {
-            self.rust().owner.prepare(&source.to_string())
-        };
-        let result = match result {
-            Ok(result) => result,
-            Err(error) => {
-                self.as_mut().rust_mut().last_error = QString::from(error);
-                return false;
-            }
-        };
-        {
-            let mut owner = self.as_mut().rust_mut();
-            owner.publishing = true;
-            owner.owner.commit(&result);
-            owner.publication =
-                QString::from(serde_json::to_string(&result).expect("validated transition"));
-            owner.last_error = QString::default();
-        }
-        self.as_mut().publication_changed();
-        self.as_mut().rust_mut().publishing = false;
-        if let Some(capture) = result.activation().capture() {
-            let (id, acquire) = match capture {
-                CaptureChange::Acquire { id } => (id, true),
-                CaptureChange::Release { id } => (id, false),
-            };
-            self.as_mut()
-                .capture_requested(QString::from(id.as_str()), acquire);
-        }
-        if result.activation().activate() {
-            self.as_mut().activated(result.checked());
-        }
-        true
-    }
-    fn dispatch(self: Pin<&mut Self>, source: &QString) -> bool {
-        self.deliver(source, false)
-    }
-    fn set_checked(self: Pin<&mut Self>, source: &QString) -> bool {
-        self.deliver(source, true)
-    }
+
+fn dispatch_toggle(
+    owner: &mut ToggleOwner,
+    source: &QString,
+    replace_checked: bool,
+) -> Result<QString, String> {
+    let result = if replace_checked {
+        owner.replace_checked(&source.to_string())
+    } else {
+        owner.prepare(&source.to_string())
+    }?;
+    let publication = QString::from(serde_json::to_string(&result).expect("validated transition"));
+    owner.commit(&result);
+    Ok(publication)
 }

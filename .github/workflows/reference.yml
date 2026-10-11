@@ -50,6 +50,7 @@ jobs:
       - name: Check compiled controller, native content and coherent snapshots
         run: |
           python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import
+          python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import --controller ToggleController
           python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
           python tools/check_qt_toggle_runtime.py --module-path target/qt-runtime-import
           python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
