@@ -330,6 +330,13 @@ again. The final release can also reach widgets at the pointer position. This
 proves continued widget-tree delivery for a retained owner; it does not execute
 Resina capture effects or certify physical pointer/compositor delivery.
 
+The mounted Command pointer probe also feeds retained-route mouse delivery into
+the existing Rust activation resolver. It checks outside/reentry, secondary-button
+chords, outside release, availability revocation and a fresh gesture after
+interruption. Consumer handling observes committed state before revoking
+availability. This is widget-tree injection with the native GPU runtime, not
+native capture-effect execution, compositor input or accessibility verification.
+
 ## Toggle content composition
 
 Call `prepare_toggle_content` with a checked `ToggleSnapshot`, the verified font
