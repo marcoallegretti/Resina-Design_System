@@ -1,0 +1,1466 @@
+[
+  {
+    "name": "complete focused snapshot",
+    "changes": [],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "placed external label",
+    "changes": [
+      {
+        "path": "/labelOrigin/x",
+        "value": 200
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "conservative original track report",
+    "changes": [
+      {
+        "path": "/track/paint/body/edge/contrastRatio",
+        "value": 20
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "malformed /schemaVersion",
+    "changes": [
+      {
+        "path": "/schemaVersion",
+        "value": "0.2.0"
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /track/part",
+    "changes": [
+      {
+        "path": "/track/part",
+        "value": "thumb"
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /thumb/part",
+    "changes": [
+      {
+        "path": "/thumb/part",
+        "value": "track"
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /track/readOnly",
+    "changes": [
+      {
+        "path": "/track/readOnly",
+        "value": true
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /thumb/layoutDirection",
+    "changes": [
+      {
+        "path": "/thumb/layoutDirection",
+        "value": "rtl"
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /label/layoutDirection",
+    "changes": [
+      {
+        "path": "/label/layoutDirection",
+        "value": "rtl"
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /accessibility/orientation",
+    "changes": [
+      {
+        "path": "/accessibility/orientation",
+        "value": "vertical"
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /labelForeground/alpha",
+    "changes": [
+      {
+        "path": "/labelForeground/alpha",
+        "value": 0.5
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /labelContrastRatio",
+    "changes": [
+      {
+        "path": "/labelContrastRatio",
+        "value": 0
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /trackContrastRatio",
+    "changes": [
+      {
+        "path": "/trackContrastRatio",
+        "value": 22
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /reducedMotion",
+    "changes": [
+      {
+        "path": "/reducedMotion",
+        "value": "true"
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /labelOrigin/x",
+    "changes": [
+      {
+        "path": "/labelOrigin/x",
+        "value": null
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /track/paint/body/states/states",
+    "changes": [
+      {
+        "path": "/track/paint/body/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "malformed /accessibility/state/focused",
+    "changes": [
+      {
+        "path": "/accessibility/state/focused",
+        "value": false
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /layout/value/value",
+    "changes": [
+      {
+        "path": "/layout/value/value",
+        "value": 1
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /accessibility/value/value",
+    "changes": [
+      {
+        "path": "/accessibility/value/value",
+        "value": 1
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /accessibility/name",
+    "changes": [
+      {
+        "path": "/accessibility/name",
+        "value": "Other"
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /labelContrastRatio",
+    "changes": [
+      {
+        "path": "/labelContrastRatio",
+        "value": 20
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /presentation/visible/progress",
+    "changes": [
+      {
+        "path": "/presentation/visible/progress",
+        "value": 0.4
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /presentation/committed/maximum",
+    "changes": [
+      {
+        "path": "/presentation/committed/maximum",
+        "value": -20
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /presentation/committed/value",
+    "changes": [
+      {
+        "path": "/presentation/committed/value",
+        "value": 1
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "malformed /accessibility/actions/0/available",
+    "changes": [
+      {
+        "path": "/accessibility/actions/0/available",
+        "value": false
+      }
+    ],
+    "schemaValid": false,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /thumb/paint/body/geometry/front/bounds/width",
+    "changes": [
+      {
+        "path": "/thumb/paint/body/geometry/front/bounds/width",
+        "value": 23
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /trackContrastRatio",
+    "changes": [
+      {
+        "path": "/trackContrastRatio",
+        "value": 1
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /labelOrigin/x",
+    "changes": [
+      {
+        "path": "/labelOrigin/x",
+        "value": 20
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /hitRegion/bounds/width",
+    "changes": [
+      {
+        "path": "/hitRegion/bounds/width",
+        "value": 100
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incoherent /layout/maximumThumbBounds/x",
+    "changes": [
+      {
+        "path": "/layout/maximumThumbBounds/x",
+        "value": 400
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "stale thumb allocation",
+    "changes": [
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 50
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "reversed minimum endpoint",
+    "changes": [
+      {
+        "path": "/layout/minimumThumbBounds/x",
+        "value": 150
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "mismatched track span",
+    "changes": [
+      {
+        "path": "/layout/trackBounds/width",
+        "value": 100
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "lost complete label extent",
+    "changes": [
+      {
+        "path": "/label/labelBounds/width",
+        "value": 110
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "changed endpoint size",
+    "changes": [
+      {
+        "path": "/layout/maximumThumbBounds/width",
+        "value": 23
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "editing without contact feedback",
+    "changes": [
+      {
+        "path": "/presentation/editing",
+        "value": true
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "unordered equivalent part signals",
+    "changes": [
+      {
+        "path": "/thumb/paint/body/states/states",
+        "value": [
+          "focused",
+          "rest"
+        ]
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "target below retained minimum",
+    "changes": [
+      {
+        "path": "/hitRegion/minimumSize/width",
+        "value": 321
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "complete admitted stopped domain",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.25
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "off-domain committed value",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "unordered stop domain",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.25
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "stale stop progress",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.5
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "numeric minimum at opposite end",
+    "changes": [
+      {
+        "path": "/layout/minimumPosition",
+        "value": "end"
+      },
+      {
+        "path": "/layout/minimumThumbBounds",
+        "value": {
+          "x": 128.0,
+          "y": 8.0,
+          "width": 24.0,
+          "height": 24.0
+        }
+      },
+      {
+        "path": "/layout/maximumThumbBounds",
+        "value": {
+          "x": 8.0,
+          "y": 8.0,
+          "width": 24.0,
+          "height": 24.0
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 98
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "unrepresentable interior progress",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0,
+          "maximum": 1e+308,
+          "value": 5e-324,
+          "progress": 0
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0,
+          "maximum": 1e+308,
+          "value": 5e-324,
+          "progress": 0
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0,
+          "maximum": 1e+308,
+          "value": 5e-324,
+          "progress": 0
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": 0,
+          "maximum": 1e+308,
+          "value": 5e-324
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "interior value at false minimum",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998,
+          "progress": 0
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998,
+          "progress": 0
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998,
+          "progress": 0
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 8
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "interior value at false maximum",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 29.999999999999996,
+          "progress": 1
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 29.999999999999996,
+          "progress": 1
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 29.999999999999996,
+          "progress": 1
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 29.999999999999996
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 128
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "interior progress beyond four ULPs",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000005
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000005
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000005
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 38.00000000006
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "exact minimum with nonzero progress",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10,
+          "progress": 5e-13
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10,
+          "progress": 5e-13
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10,
+          "progress": 5e-13
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 8.00000000006
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "exact maximum with interior progress",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30,
+          "progress": 0.9999999999995
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30,
+          "progress": 0.9999999999995
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30,
+          "progress": 0.9999999999995
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 127.99999999994
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "interior progress within four ULPs",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000000002
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000000002
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000000002
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 38.00000000000003
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "blank complete label",
+    "changes": [
+      {
+        "path": "/label/text",
+        "value": " \t\u2003"
+      },
+      {
+        "path": "/accessibility/name",
+        "value": " \t\u2003"
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "blank description",
+    "changes": [
+      {
+        "path": "/accessibility/description",
+        "value": " \t\u3000"
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "blank value text",
+    "changes": [
+      {
+        "path": "/accessibility/valueText",
+        "value": "\u00a0\n"
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "nonblank text outside Unicode White_Space",
+    "changes": [
+      {
+        "path": "/accessibility/description",
+        "value": "\u001c"
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "dragging feedback without a pointer edit",
+    "changes": [
+      {
+        "path": "/track/paint/body/states/states",
+        "value": [
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      },
+      {
+        "path": "/thumb/paint/body/states/states",
+        "value": [
+          "focused",
+          "pressed",
+          "dragging"
+        ]
+      },
+      {
+        "path": "/track/phase",
+        "value": "dragging"
+      },
+      {
+        "path": "/thumb/phase",
+        "value": "dragging"
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "incomplete navigation state set",
+    "changes": [
+      {
+        "path": "/thumb/paint/focus/indicator/binding/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "exact minimum endpoint",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10,
+          "progress": 0.0
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10,
+          "progress": 0.0
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10,
+          "progress": 0.0
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -10
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 8.0
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "exact maximum endpoint",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30,
+          "progress": 1.0
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30,
+          "progress": 1.0
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30,
+          "progress": 1.0
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 30
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 128.0
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "representable near-minimum value",
+    "changes": [
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998,
+          "progress": 4.4408920985006264e-17
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998,
+          "progress": 4.4408920985006264e-17
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998,
+          "progress": 4.4408920985006264e-17
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": -9.999999999999998
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 8.000000000000005
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "absent optional semantic text",
+    "changes": [
+      {
+        "path": "/accessibility/description",
+        "value": null
+      },
+      {
+        "path": "/accessibility/valueText",
+        "value": null
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "stopped domain with representable near-endpoint stop",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -9.999999999999998,
+                "progress": 4.4408920985006264e-17
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.25
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "stopped domain with false endpoint progress",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -9.999999999999998,
+                "progress": 0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.25
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  },
+  {
+    "name": "stopped value with independently rounded allowed stop progress",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.2500000000000002
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "stopped current value with independently rounded allowed progress",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.25
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      },
+      {
+        "path": "/presentation/visible",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000000002
+        }
+      },
+      {
+        "path": "/presentation/committed",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000000002
+        }
+      },
+      {
+        "path": "/layout/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0,
+          "progress": 0.2500000000000002
+        }
+      },
+      {
+        "path": "/accessibility/value",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "minimum": -10,
+          "maximum": 30,
+          "value": 0
+        }
+      },
+      {
+        "path": "/layout/thumbBounds/x",
+        "value": 38.00000000000003
+      }
+    ],
+    "schemaValid": true,
+    "coherent": true
+  },
+  {
+    "name": "stop progress beyond four ULPs",
+    "changes": [
+      {
+        "path": "/presentation/valuePolicy",
+        "value": {
+          "kind": "stops",
+          "stops": {
+            "schemaVersion": "0.1.0",
+            "values": [
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": -10,
+                "progress": 0.0
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 0,
+                "progress": 0.2500000000000003
+              },
+              {
+                "schemaVersion": "0.1.0",
+                "minimum": -10,
+                "maximum": 30,
+                "value": 30,
+                "progress": 1.0
+              }
+            ]
+          },
+          "tieBreak": "lower"
+        }
+      }
+    ],
+    "schemaValid": true,
+    "coherent": false
+  }
+]
