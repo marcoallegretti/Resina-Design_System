@@ -61,7 +61,7 @@ assistive technology delivery. Those remain required for the full system.
 standard Command anatomy, Light theme, Label typography, complete native text
 measurement and checked paint/target snapshots. It renders static endpoints at
 device scale 1 and increments a consumer counter on activation. The third intent
-revokes availability. State is committed before the counter notification;
+revokes the current owner's availability. State is committed before the counter notification;
 focus paint follows observed widget and surface focus. The native runtime
 retains pointer delivery outside the target while a mouse button is held.
 
@@ -79,8 +79,16 @@ Vulkan rendering. The fixture requires DejaVu Sans in the supplied font file,
 uses the scene's authored canvas, preserves its direction and rejects native
 layout that cannot contain the reserved target. Observed non-unit integer output
 scale fails explicitly. Font replacement, fractional scale changes, dynamic
-layout/replacement and sampled motion are outside this fixed fixture's scope.
+layout and sampled motion are outside this fixed fixture's scope.
 Dimensions and padding are verification choices, not calibrated component defaults.
+
+Escape is a consumer verification shortcut that replaces the mounted Command
+with a fresh enabled owner in the same immutable context. It is not a Command
+activation key. The retired owner cancels through Rust, becomes unavailable and
+unfocused, and cannot publish later state, paint or intents. Retirement state
+does not depend on reactive handles: GUIdo disposes a dynamic child's scope before
+dropping its widget. Complete prepared content remains shared; the replacement
+has its own activation state, reactive scope and generational widget identity.
 
 The checker drives parent XTest events through Sway's native Wayland input.
 It starts the Command consumer and a separate GUIdo process whose top-right
@@ -113,12 +121,21 @@ libXtst are required. If `CARGO_TARGET_DIR` is set, supply its example binary
 instead of the default path. The checker verifies a single active `X11-1` output
 at scale 1, at least 720 × 240 logical pixels so the surfaces cannot overlap,
 and measures the parent window's origin before injecting input.
+Before gestures, actual pointer delivery verifies that both surfaces are mapped;
+a paint callback alone can precede native buffer presentation. The checker
+replaces the Command during a held Space and during a held pointer press. Each
+retired owner must be clean and distinct from its replacement, and the eventual
+release must reach the replacement without an intent. Keyboard focus loss may
+clear its hold before destruction; pointer retirement must issue the reference
+capture-release request. This still does not execute an explicit native capture
+API. A fresh pointer and key gesture must work after both replacements.
 
 Acceptance for this fixture is one pointer intent after outside/reentry, one
 Space intent after actual repeat delivery, one Enter intent, zero effects from
 surface-focus interruption and subsequent unavailable input, successful native
 focus recovery, no remaining hold, stable target publication and
-painted focus matching native observation. This is compositor-delivered injected
+painted focus matching native observation. Replacement must produce no intent
+or publication from a retired owner. This is compositor-delivered injected
 input, distinct from the mounted widget-tree tests. It does not execute a native
 capture API, publish an accessibility tree or establish AT-SPI, screen-reader or
 physical-device behavior. It is a verification consumer, not a reusable native
