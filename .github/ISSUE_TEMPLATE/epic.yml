@@ -1,0 +1,44 @@
+name: Epic
+description: Define a verifiable delivery outcome and its acceptance gates.
+title: "Epic: "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User outcome
+      description: Name the user, real workflow and supported target.
+    validations:
+      required: true
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Contracts and scope
+      description: Link normative requirements and state the affected ownership boundary.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria and proof
+      description: Use checkboxes with observable outcomes and reproducible evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and blockers
+      description: Link existing work and external dependencies; name what can proceed independently.
+    validations:
+      required: true
+  - type: textarea
+    id: exclusions
+    attributes:
+      label: Scope limits
+      description: State material exclusions and decisions reserved for maintainers.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Acceptance ledger
+      description: For each requirement, record implementation, commit, executed proof, environment and residual blocker. Update as work lands.

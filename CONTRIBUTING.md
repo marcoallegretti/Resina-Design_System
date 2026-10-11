@@ -52,3 +52,7 @@ install `tools/requirements-toolkit.txt` as shown in the
 Follow the [commit rules](AGENTS.md#21-git-rules), [independent maintenance review requirement](AGENTS.md#15-independent-review) and [PR requirements](AGENTS.md#16-pull-requests). The PR template asks for the problem, linked scope, resulting change, ownership, specific proof, actual validation, manual verification and material limitations. Explain changed expected output rather than merely accepting new snapshots.
 
 Keep published text about the project and concrete evidence. Record separately actionable remaining problems as issues when they meet the threshold. Maintainers decide whether to merge maintenance PRs and whether to advance a release stage.
+
+## Track delivery outcomes
+
+Use the Epic form for an accepted delivery outcome and link executable work as child issues. See [delivery tracking](docs/development/delivery.md) for status meanings, acceptance evidence and the minimal GUIdo shell testbed milestone. AGENTS.md remains the canonical engineering policy.

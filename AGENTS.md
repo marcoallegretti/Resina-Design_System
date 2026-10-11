@@ -831,9 +831,11 @@ Release-stage progression remains a maintainer decision.
 
 # 21. Git rules
 
-Primary Development follows the maintainer's active repository workflow.
+Primary Development, maintenance and external contribution work must use isolated branches and pull requests. No development mode may commit directly to `master`.
 
-Maintenance and external contribution work must never commit directly to `master`.
+Merges into `master` are maintainer decisions and must satisfy the repository's branch protections. Do not bypass protections or enable automatic merging to advance an autonomous Goal.
+
+Keep at most three implementation pull requests ready for review unless the maintainer explicitly changes the limit. State prerequisite branches and pull requests; dependent acceptance must be verified on the integrated candidate.
 
 All commits must be atomic, focused, reviewable, and independently revertible where reasonably possible.
 
