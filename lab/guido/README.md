@@ -82,7 +82,20 @@ scale fails explicitly. Font replacement, fractional scale changes, dynamic
 layout/replacement and sampled motion are outside this fixed fixture's scope.
 Dimensions and padding are verification choices, not calibrated component defaults.
 
-The checker drives parent XTest events through Sway's native Wayland input:
+The checker drives parent XTest events through Sway's native Wayland input.
+It starts the Command consumer and a separate GUIdo process whose top-right
+surface is labelled "Focus target". Clicking that surface while Space is held
+must deliver native focus loss to the Command, clear its hold without an intent,
+and deliver the release to the other client. Returning the pointer must restore
+observed focus; a fresh Space gesture must still activate exactly once. The
+tested Sway session uses `focus_follows_mouse yes`. This tests surface focus
+transfer between clients, not widget focus arbitration within one process.
+Both child processes are terminated and reaped on success or failure.
+
+To run the focus target alone, append `--focus-peer` to the example's three
+arguments. It is a verification surface, not a Command or a product action.
+
+Run the complete checker:
 
 ```sh
 python tools/check_guido_command_input.py \
@@ -98,11 +111,13 @@ the example values identify no particular running session. `WAYLAND_DISPLAY`
 and `XDG_RUNTIME_DIR` must select that same live session. `swaymsg`, libX11 and
 libXtst are required. If `CARGO_TARGET_DIR` is set, supply its example binary
 instead of the default path. The checker verifies a single active `X11-1` output
-at scale 1 and measures the parent window's origin before injecting input.
+at scale 1, at least 720 × 240 logical pixels so the surfaces cannot overlap,
+and measures the parent window's origin before injecting input.
 
 Acceptance for this fixture is one pointer intent after outside/reentry, one
 Space intent after actual repeat delivery, one Enter intent, zero effects from
-subsequent unavailable input, no remaining hold, stable target publication and
+surface-focus interruption and subsequent unavailable input, successful native
+focus recovery, no remaining hold, stable target publication and
 painted focus matching native observation. This is compositor-delivered injected
 input, distinct from the mounted widget-tree tests. It does not execute a native
 capture API, publish an accessibility tree or establish AT-SPI, screen-reader or
