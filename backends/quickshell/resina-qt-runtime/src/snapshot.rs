@@ -69,7 +69,7 @@ struct Request {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Rectangle {
+pub(crate) struct Rectangle {
     x: f64,
     y: f64,
     width: f64,
@@ -77,7 +77,7 @@ struct Rectangle {
 }
 
 impl Rectangle {
-    fn bounds(&self) -> PhysicalBounds {
+    pub(crate) fn bounds(&self) -> PhysicalBounds {
         PhysicalBounds {
             x: self.x,
             y: self.y,
@@ -113,11 +113,11 @@ fn optional_color(value: &Value) -> Result<Option<SrgbFallback>, String> {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct RenderOptions {
-    x: f64,
-    y: f64,
-    device_scale: f64,
-    samples_per_axis: u8,
+pub(crate) struct RenderOptions {
+    pub x: f64,
+    pub y: f64,
+    pub device_scale: f64,
+    pub samples_per_axis: u8,
 }
 
 fn prepare(

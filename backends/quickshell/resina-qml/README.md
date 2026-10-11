@@ -348,3 +348,20 @@ Use a fresh image path for every run. Repeat with `QT_QUICK_BACKEND=rhi QSG_RHI_
 The runtime checker requires a fresh, fully decoded 160 by 128 PNG at four capture pixels per logical px. An independent distance-to-rectangle oracle checks 17,696 off-boundary pixels: the ring interior must be opaque, and the hole and exterior must be clear. Every painted pixel must have the baseline's white pigment. A half-logical-px exclusion around each boundary allows native antialiasing and curve approximation; the alpha bounds must still preserve the complete expected footprint, and integrated alpha coverage must be within 1 logical px² of the analytic ring area.
 
 These are quality checks for this fixed baseline, not a normative geometry tolerance or proof of every boundary pixel. The generated cue passed these pixel checks on the three local rendering paths listed above. Regression tests reject blank, filled, shifted, clipped, incorrectly colored, faded and malformed captures, including boundary damage that escapes the off-boundary oracle. This primitive alone does not establish WCAG conformance, navigation behavior, complete state rendering or perceptual equivalence with other backends.
+
+## Integrated static Toggle
+
+`ResinaToggleControl.qml` composes the existing binary Toggle contracts into
+native input, complete track/thumb/label drawing, stable targeting and a single
+native Switch. Supply explicit authored layout/paint/content/reservation inputs;
+use `setChecked(boolean)` for external selection and `activated(checked)` for
+product effects. The [runtime contract](../resina-qt-runtime/README.md#integrated-static-toggle-control)
+defines strict preparation, checked replacement during a hold, excluding-disabled
+focus policy and acceptance checks. Static feedback is integrated; no default
+motion or material calibration is introduced.
+
+Native Switch qualification depends on the Qt build. Standard PySide6 6.11.2
+publishes CheckBox and fails the strict test. An isolated, unmodified Qt 6.11.2
+build against AT-SPI 2.62 headers demonstrated Switch and actual native Toggle
+action through the Rust adapter. This does not qualify released Quickshell's
+separate accessibility-bootstrap defect or make Resina own a toolkit distribution.

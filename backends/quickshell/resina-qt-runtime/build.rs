@@ -9,6 +9,8 @@ fn main() {
     )
     .files([
         "src/lib.rs",
+        "src/toggle.rs",
+        "src/toggle_snapshot.rs",
         "src/label.rs",
         "src/snapshot.rs",
         "src/pointer.rs",
@@ -17,6 +19,8 @@ fn main() {
     .qt_module("Gui")
     .cpp_file("src/command.h")
     .cpp_file("src/command.cpp")
+    .cpp_file("src/toggle.h")
+    .cpp_file("src/toggle.cpp")
     .cpp_file("src/label.h")
     .cpp_file("src/label.cpp")
     .cpp_file("src/pointer.h")

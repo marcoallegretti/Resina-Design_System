@@ -5,6 +5,8 @@ use resina_resolver::{ActivationResult, resolve_activation, resolve_activation_s
 mod label;
 mod pointer;
 mod snapshot;
+mod toggle;
+mod toggle_snapshot;
 
 const MAX_EVENT_BYTES: usize = 64 * 1024;
 

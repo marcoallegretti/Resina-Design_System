@@ -15,7 +15,8 @@ namespace resina::qt {
 namespace {
 QJsonObject activationState(QObject* controller) {
     const auto publication = QJsonDocument::fromJson(controller->property("publication").toString().toUtf8()).object();
-    const auto activation = publication;
+    const auto activation = controller->inherits("ToggleController")
+        ? publication.value("activation").toObject() : publication;
     return activation.value("state").toObject();
 }
 QString pointerId(const QMouseEvent* event) {
@@ -35,7 +36,7 @@ PendingPointerCancellation::PendingPointerCancellation(QObject* controller, QStr
 }
 void PendingPointerCancellation::observePublication() {
     const auto result = QJsonDocument::fromJson(controller_->property("publication").toString().toUtf8()).object();
-    const auto activation = result;
+    const auto activation = controller_->inherits("ToggleController") ? result.value("activation").toObject() : result;
     const auto capture = activation.value("capture").toObject();
     // A released gesture cannot be resurrected by reusing its native pointer id.
     if (capture.value("kind").toString() == "release" && capture.value("id").toString() == id_)
@@ -123,10 +124,10 @@ void CommandPointerItem::setController(QObject* controller) {
     if (controller_) {
         captureConnection_ = connect(controller_, SIGNAL(captureRequested(QString,bool)),
             this, SLOT(captureRequested(QString,bool)));
-        if (!captureConnection_ || !controller_->inherits("CommandController")) {
+        if (!captureConnection_ || (!controller_->inherits("CommandController") && !controller_->inherits("ToggleController"))) {
             disconnect(captureConnection_);
             controller_ = nullptr;
-            setError("pointer owner requires a CommandController");
+            setError("pointer owner requires a CommandController or ToggleController");
             if (!self) return;
         } else {
             controllerConnection_ = connect(controller_, &QObject::destroyed, this, [this] {

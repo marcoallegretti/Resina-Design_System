@@ -51,14 +51,17 @@ def worker(args):
             event = {"kind": "pointerUp", "id": "native-lifetime", "inside": True}
         elif args.scenario == "capture-acquire":
             event = {"kind": "pointerDown", "id": "native-lifetime", "inside": True}
-        signal = (controller.publicationChanged if args.scenario == "publication"
+        signal = (controller.publicationChanged if args.scenario in ("publication", "checked")
                   else controller.activated if args.scenario == "activated"
                   else controller.captureRequested)
         signal.connect(dispose)
-        controller.dispatch(json.dumps(event))
+        if args.scenario == "checked":
+            controller.setChecked('{"checked":true}')
+        else:
+            controller.dispatch(json.dumps(event))
         if not destroyed or isValid(controller):
             raise ValueError("destructive observer did not run")
-        expected = ([] if args.scenario == "publication"
+        expected = ([] if args.scenario in ("publication", "checked")
                     else ["activated"] if args.scenario == "activated" else ["capture"])
         if [name for name, _ in effects] != expected:
             raise ValueError("effect delivered after owner destruction: " + repr(effects))
@@ -114,7 +117,7 @@ Window {
         if destroyed:
             return
         current = json.loads(controller.property("publication"))
-        activation = current
+        activation = current["activation"] if args.controller == "ToggleController" else current
         hold = activation["state"]["hold"]
         if hold:
             removed_ids.append(hold["id"])
@@ -147,7 +150,7 @@ Window {
     for _ in range(3):
         app.processEvents()
     publication = json.loads(controller.property("publication"))
-    activation = publication
+    activation = publication["activation"] if args.controller == "ToggleController" else publication
     if args.scenario == "pointer-stale":
         if not activation["state"]["hold"] or activation["state"]["hold"]["id"] != removed_ids[0]:
             raise ValueError("queued native removal cancelled a replacement gesture")
@@ -161,13 +164,15 @@ Window {
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--module-path", type=Path, required=True)
-    parser.add_argument("--controller", choices=("CommandController",), default="CommandController")
-    parser.add_argument("--scenario", choices=("baseline", "publication", "capture-acquire", "capture-release", "activated", "pointer-publication", "pointer-capture", "pointer-activated", "pointer-stale", "target-publication"))
+    parser.add_argument("--controller", choices=("CommandController", "ToggleController"), default="CommandController")
+    parser.add_argument("--scenario", choices=("baseline", "publication", "capture-acquire", "capture-release", "activated", "checked", "pointer-publication", "pointer-capture", "pointer-activated", "pointer-stale", "target-publication"))
     args = parser.parse_args()
     if args.scenario:
         worker(args)
         return 0
     scenarios = ["baseline", "publication", "capture-acquire", "capture-release", "activated", "pointer-publication", "pointer-capture", "pointer-activated", "pointer-stale", "target-publication"]
+    if args.controller == "ToggleController":
+        scenarios.append("checked")
     for scenario in scenarios:
         result = subprocess.run([sys.executable, str(Path(__file__).resolve()), "--module-path",
                                  str(args.module_path.resolve()), "--controller", args.controller,

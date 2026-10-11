@@ -853,10 +853,140 @@ composition over its existing activation/layout/paint/snapshot contracts;
 material calibration and the upstream Shell host repair remain qualification
 requirements for Command/Button.
 
+## Integrated static Toggle control
+
+`ResinaToggleControl.qml` realizes the existing Toggle activation, state,
+accessibility, layout, part-paint and complete-snapshot contracts (specifications
+50–55). One Qt-owned `ToggleController` commits the Rust activation and binary checked state
+before `activated(checked)`. An application replaces selection explicitly with
+`control.setChecked(boolean)`; replacement preserves a live hold and produces no
+product effect. Accepted release or invocation uses that current value. The
+read-only `checked` property is never assigned by QML or Qt's default Toggle
+action. Consumers own persistence and product effects.
+
+The component owns native keyboard routing and compiled primary mouse capture,
+a complete decorative view and one `Accessible.Switch`. Both native Qt Toggle
+and Press actions call the same live guarded invocation. Its track, thumb,
+background and complete measured glyphs are decorative and ignored by AT.
+Selection, feedback and actual focus are separate dimensions. The explicit
+`disabledFocusable: false` profile relinquishes actual Qt focus on disabling;
+`true` is rejected with the existing diagnostic rather than substituting
+semantics. Static feedback has no inferred dynamics or material calibration.
+
+Supply `configuration`, `disabledFocusable` and `samplesPerAxis`. The backend
+request has these required fields (all names are case-sensitive):
+
+- `content`: the existing native complete-label request with theme sources,
+  environment, explicit font mapping, text, minimum/maximum size and padding.
+- `track` and `thumb`: neutral-rest `surface` intent, opaque `appearance`,
+  `checkedColorRole`, `interactionAppearance`, `foregroundRole`,
+  `minimumContentContrast` and `minimumEdgeContrast`.
+- `layout`: authored `trackSize`, `thumbSize` and logical `insets`.
+- `labelOrigin`: explicit physical placement of the complete label slot relative
+  to the track; `labelForegroundRole`, `background` and `minimumLabelContrast`.
+- `targetBounds`: explicit stable physical reservation; `availableBounds`,
+  `componentMinimum`, `occupiedRegions` and `minimumThumbContrast`.
+- `activation`, `hovered`, `checked`, `description` and `focusable`: validated
+  template observations, replaced from the component's live owner during use.
+
+The view paints the explicitly authored uniform opaque background across that
+reservation; label and track backdrop claims therefore describe actual drawing.
+Rust resolves the current track first and uses its actual pigment for thumb
+backdrop/edge contrast. The portable snapshot rejects occluded labels, incomplete
+navigation/endpoint coverage, nonuniform thumb placement and insufficient
+contrast. Every checked/availability/hover/press/focus endpoint is qualified
+before input is armed; all must retain the same explicit target. No geometry,
+color, contrast threshold or layout default is supplied by the component.
+
+`ToggleSnapshotResolver.resolveToggleSnapshot(request, producer, options, render)`
+returns an adapter envelope containing the existing complete snapshot members;
+`render: true` additionally returns `trackSource` and `thumbSource`. This is not
+a new portable wire format. Root requests retain strict object, duplicate and
+unknown-field rejection with an 8 MiB source limit; rendering options have a
+64 KiB limit. Measurement, context validation and publication stay on the Qt UI
+thread. Publication waits for both decoded parts and complete glyph preparation.
+Configuration, transform, placement, density, window, visibility or lifetime
+loss withdraws stale paint/semantics/input. Ordinary feedback keeps the stable
+qualified capture owner while preparing a replacement frame. Read-only
+`snapshot` and `currentFrame` identify the same selected complete view.
+
+Acceptance for this static increment is joint checked/activation coherence,
+complete native drawing matching the public CPU rasterizer outside verified
+label bounds, stable targeting, live selection replacement during held input,
+exactly-once product effects, actual Switch publication/action, and rejection
+without stale production channels. After building and packaging the adapter:
+
+```sh
+cargo build -p resina-raster --bin resina-toggle-part-raster --locked
+python tools/check_qt_toggle_runtime.py --module-path target/qt-runtime-import
+python tools/check_qt_toggle_control_runtime.py \
+  --raster target/debug/resina-toggle-part-raster \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/qt-toggle-captures
+python tools/check_qt_toggle_control_accessibility.py \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --action Toggle
+# Repeat the strict native action check with --action Press.
+```
+
+The controller check uses shared activation cases and injected QObject events.
+The complete-control check uses actual Qt font/layout/window readback, public
+Toggle part-raster comparison with the existing pixel tolerance, and injected
+Qt window key/pointer events. Optional parent XTest arguments use the existing
+measured nested Wayland path; these remain injected, never physical input. The
+AT checker requires native role 130 (Switch), binary checked/checkable state,
+no pressed/mixed state, stable node identity, live action delivery into Rust and
+one product effect, and no stale effect after product revocation.
+
+### Qt Switch qualification boundary
+
+The standard PySide6 6.11.2 build publishes `Accessible.Switch` as AT-SPI CheckBox
+(role 7). It fails the strict native Toggle check. Exact upstream Qt 6.11.2
+`src/gui/accessible/linux/qspiaccessiblebridge.cpp` enables Switch mapping only
+when compiled with `ATSPI_ROLE_COUNT >= 132`; AT-SPI 2.56 headers have count 131
+although Switch is already present. AT-SPI 2.62 headers have count 132. A local
+isolated build of **unmodified** Qt 6.11.2 against the latter headers demonstrated
+actual Switch publication and Toggle delivery over nested Wayland, then the
+integrated Rust control passed the strict action check. No private Qt bootstrap,
+role substitution, patched Resina semantics or distributed toolkit was added.
+
+For reproduction use the exact upstream `qtbase-everywhere-src-6.11.2` source,
+real AT-SPI 2.62 development headers and dependencies, verify configure enables
+`accessibility_atspi_bridge`, and build `Gui` and `DBus`. Use a matching 6.11.2
+host and verify the libraries actually loaded: PySide's loader uses its bundled
+Qt despite `LD_LIBRARY_PATH` alone. The isolated experiment explicitly preloaded
+its matching Core/DBus/Gui libraries and used QtQuick/PySide 6.11.2; the strict
+checker, rather than library presence, determines native success. This is
+isolated toolkit evidence, not support claimed for standard binary SDKs.
+
+Released Quickshell's separate application-bootstrap accessibility defect remains
+on the approved upstream repair route. Full Shell accessibility, calibrated
+Toggle travel/interaction motion, physical/touch/pen input, screen-reader
+operation, GPU realization and production performance are not qualified here.
+The next integrated dependency is Toggle travel and independent track/thumb
+interaction motion over specifications 56–57; Slider follows its prerequisites.
+
+Executed local checks for this increment used explicit DejaVu Sans and Qt 6.11.2
+software rendering. Complete Toggle light/dark and RTL/LTR window captures
+matched the public part rasterizer at DPR 1 and 2; captures were inspected.
+Held Space/pointer selection replacement, Enter-down activation, focus/transform/
+visibility cancellation, reentrant snapshot revocation and guard recovery were
+checked in the native component. Parent XTest traversed Weston into spontaneous
+Wayland pointer/key events and exactly-once effects. The isolated Qt build passed
+actual AT-SPI Toggle and Press separately; the standard PySide build failed the
+strict Switch-role check. Root workspace tests, native Qt tests/clippy, public
+Toggle activation/part-paint checks, Python tests and contributor-toolkit checks
+passed. The shared native publication/pointer changes also passed Command
+snapshot, sampled control and motion/readback regressions. CI is configured for
+controller and complete-control checks; no hosted run or standard-SDK native
+Switch success is claimed.
+
 ## Compiled destructive-observer regressions
 
 `python tools/check_qt_controller_lifetime.py --module-path <prepared-module>`
-checks Command notification destruction and the native pointer caller. Each
+checks Command notification destruction and the native pointer caller. Add
+`--controller ToggleController` for Toggle, including external checked replacement. Each
 scenario runs in a separate process and actually processes Qt DeferredDelete.
 The checks require no signal after controller destruction, no surviving hold
 after pointer removal, and no cancellation of a replacement gesture. They
