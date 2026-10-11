@@ -64,14 +64,17 @@ class NativeLabelCaptureTests(unittest.TestCase):
                     check_image(path, 1)
 
     def test_native_success_requires_exact_counts_scale_and_terminal_status(self):
-        success = "RESINA_LABEL_RENDER_PASS 25 9 1.25\n"
+        success = "RESINA_LABEL_RENDER_PASS 36 9 1.25 software\n"
         check_probe_output(SimpleNamespace(stdout=success, stderr="", returncode=0), 1.25)
         for log, status in (("", 0), (success + success, 0), (success, 1),
             (success + "RESINA_LABEL_RENDER_FAIL failed\n", 0),
-            (success.replace("25", "24"), 0), (success.replace("1.25", "1"), 0)):
+            (success.replace("software", "opengl"), 0),
+            (success.replace("PASS 36", "PASS 35"), 0), (success.replace("1.25", "1"), 0)):
             with self.subTest(log=log, status=status):
                 with self.assertRaises(ValueError):
                     check_probe_output(SimpleNamespace(stdout=log, stderr="", returncode=status), 1.25)
+        check_probe_output(SimpleNamespace(stdout=success.replace("software", "opengl"),
+                                          stderr="", returncode=0), 1.25, "rhi")
 
 
 if __name__ == "__main__":

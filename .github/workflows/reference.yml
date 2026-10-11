@@ -8,6 +8,97 @@ permissions:
   contents: read
 
 jobs:
+  qt-runtime:
+    runs-on: ubuntu-24.04
+    env:
+      QMAKE: ${{ github.workspace }}/target/qt-sdk/6.11.2/gcc_64/bin/qmake
+      CARGO_TARGET_DIR: ${{ github.workspace }}/target/qt-runtime-build
+      CXX_QT_EXPORT_DIR: ${{ github.workspace }}/target/qt-runtime-export
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install Qt build, font and native AT-SPI dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --no-upgrade -y \
+            g++ pkg-config lld libgl-dev libegl-dev libfontconfig1 libfreetype6 \
+            libxkbcommon-dev libxkbcommon-x11-0 libx11-xcb1 \
+            libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+            libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-shm0 \
+            libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core \
+            at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth
+          python -m pip install aqtinstall==3.3.0 -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
+          python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu
+      - name: Build and check the separate Qt workspace
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          cargo fmt --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml -- --check
+          cargo test --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
+          cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
+          cargo build --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
+          cargo build -p resina-raster --bin resina-command-raster --bin resina-command-motion-raster --bin resina-toggle-part-raster --bin resina-toggle-part-motion-raster --locked
+          python tools/prepare_qt_runtime_module.py --library target/qt-runtime-build/debug/libresina_qt_runtime.so --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime --output-dir target/qt-runtime-import
+      - name: Check compiled controller, native content and coherent snapshots
+        run: |
+          python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import
+          python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import --controller ToggleController
+          python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
+          python tools/check_qt_toggle_runtime.py --module-path target/qt-runtime-import
+          python tools/check_qt_toggle_control_runtime.py --motion --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir target/qt-toggle-moving-control
+          python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python tools/check_qt_command_control_runtime.py --motion --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir target/qt-control-motion
+      - name: Check actual Qt paint and command composition at native scales
+        run: |
+          for scale in 1 1.25 2 1.3; do
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_paint_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --raster target/qt-runtime-build/debug/resina-command-raster --output-dir "target/qt-paint-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_motion_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir "target/qt-toggle-motion-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_control_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-raster --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir "target/qt-toggle-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_control_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir "target/qt-control-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_motion_runtime.py --raster target/qt-runtime-build/debug/resina-command-motion-raster --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir "target/qt-motion-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_view_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir "target/qt-view-$scale"
+          done
+      - name: Measure native AT-SPI availability and invocation
+        env:
+          RESINA_QT_RUNTIME_MODULE: ${{ github.workspace }}/target/qt-runtime-import
+        run: |
+          xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --report-only > target/qt-native-availability.json
+          cat target/qt-native-availability.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf > target/qt-control-accessibility.json
+          cat target/qt-control-accessibility.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --motion --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf > target/qt-motion-accessibility.json
+          cat target/qt-motion-accessibility.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation horizontal > target/qt-slider-horizontal-accessibility.json
+          cat target/qt-slider-horizontal-accessibility.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation vertical > target/qt-slider-vertical-accessibility.json
+          cat target/qt-slider-vertical-accessibility.json
+      - name: Save native Qt captures and accessibility observations
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: qt-native-command-evidence
+          path: |
+            target/qt-toggle-*/*.png
+            target/qt-paint-*/*.png
+            target/qt-view-*/*.png
+            target/qt-control-*/*.png
+            target/qt-motion-*/*.png
+            target/qt-motion-accessibility.json
+            target/qt-slider-*-accessibility.json
+            target/qt-control-accessibility.json
+            target/qt-native-availability.json
+          if-no-files-found: warn
   guido:
     runs-on: ubuntu-latest
     steps:

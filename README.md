@@ -72,6 +72,12 @@ The Web backend's [SVG focus realization](backends/web/resina-svg/README.md) map
 
 The independent Shell backend's [native QML focus realization](backends/quickshell/resina-qml/README.md) maps that IR to Qt Quick lines/arcs with a software rendering fallback. Its command and public checker run on Linux and Windows; native Quickshell rendering is exercised separately on Linux. Complete Shell components remain outstanding.
 
+The separately locked [Qt runtime adapter](backends/quickshell/resina-qt-runtime/README.md)
+owns command activation in a native Rust/QObject binding. Compiled delivery
+matches shared activation cases, and actual Linux AT-SPI invocation verifies live
+availability through that binding. Complete component publication, Quickshell
+hosting and screen-reader qualification remain outstanding.
+
 The application backend's [native Slint focus realization](backends/slint/resina-slint/README.md) maps the same IR to native paths with opposite contour winding. Its command and public checker run on Linux and Windows; Linux CI also verifies released Slint software screenshots against independent ring geometry. Complete application components remain outstanding.
 
 The reference renderer's [GUIdo paint preparation](backends/guido/resina-guido/README.md) prepares complete Tier 0 surface and focus images before exposure. Its isolated Linux workspace pins an upstream GUIdo revision that includes the image-cache correction and letter spacing. Required GPU CI checks all thirty-two authored scenes across four device scales, including first-frame paint, source replacement and navigation removal. Complete reference components and advanced material effects remain outstanding.
@@ -93,6 +99,10 @@ The [command activation lifecycle](spec/42-command-activation.md) resolves prima
 [Complete command label layout](spec/46-command-label-layout.md) resolves content sizing and bounded reflow from complete producer measurements. Its portable IR preserves resolved typography and offered wrapping width. The GUIdo producer has real Linux font shaping evidence at 100%, 150% and 200% text scaling; native complete label drawing, including authored letter spacing, also has required GPU evidence at four device scales. Complete components and accessibility conformance remain pending.
 
 [Ordinary command accessibility](spec/47-command-accessibility.md) resolves complete label names, descriptions, current availability/focus, explicit focusability and semantic invocation availability before native tree mapping. Public headless cases distinguish disabled focus discovery from action availability and momentary feedback from toggle semantics. Native assistive technology delivery and complete Button conformance remain pending.
+
+GUIdo owns native accessibility-tree lifetime and platform action routing; this
+upstream dependency and the required Resina integration evidence are documented
+in the [native accessibility integration guide](backends/guido/resina-guido/README.md#native-accessibility-integration).
 
 [Command interaction projection](spec/48-command-states.md) connects current activation and explicit hover to paint state, retaining actual focus through disabled discovery and reflecting gesture cancellation from the shared lifecycle. The public command and external checker verify this boundary independently of native adapters.
 

@@ -36,11 +36,12 @@ def check_image(path, scale, overhang=False):
     return hashlib.sha256(image.tobytes()).digest()
 
 
-def check_probe_output(result, scale):
+def check_probe_output(result, scale, scene_graph="software"):
     log = result.stdout + result.stderr
-    matches = re.findall(r"RESINA_LABEL_RENDER_PASS 25 9 ([0-9.]+)(?:\s|$)", log)
+    matches = re.findall(r"RESINA_LABEL_RENDER_PASS 36 9 ([0-9.]+) (software|opengl)(?:\s|$)", log)
     if result.returncode or "RESINA_LABEL_RENDER_FAIL" in log or len(matches) != 1 \
-        or not math.isclose(float(matches[0]), scale, rel_tol=0, abs_tol=0.00001):
+        or not math.isclose(float(matches[0][0]), scale, rel_tol=0, abs_tol=0.00001) \
+        or matches[0][1] != ("opengl" if scene_graph == "rhi" else "software"):
         raise ValueError(f"native drawing probe failed (exit {result.returncode}): {log[-2000:]}")
 
 
@@ -64,6 +65,7 @@ def main():
     environment = os.environ.copy()
     environment.update(QT_QPA_PLATFORM=arguments.platform, QT_QUICK_BACKEND=arguments.scene_graph,
         QSG_RHI_BACKEND="opengl",
+        RESINA_LABEL_SCENE_GRAPH=arguments.scene_graph,
         RESINA_LABEL_FONT=arguments.font.resolve().as_uri(),
         RESINA_LABEL_MEASURE_QML=(root / "backends/quickshell/resina-qml/qml/ResinaLabelMeasure.qml").as_uri(),
         RESINA_LABEL_QML=(root / "backends/quickshell/resina-qml/qml/ResinaLabel.qml").as_uri())
@@ -77,14 +79,14 @@ def main():
             result = subprocess.run([arguments.quickshell, "--no-color", "--path",
                 str(root / "conformance/quickshell/label-render-probe.qml")], env=environment,
                 capture_output=True, encoding="utf-8", errors="strict", timeout=60, check=False)
-            check_probe_output(result, scale)
-            hashes = {check_image(directory / f"frame-{frame}.png", scale, frame == 0) for frame in range(25)}
-            if len(hashes) != 25:
+            check_probe_output(result, scale, arguments.scene_graph)
+            hashes = {check_image(directory / f"frame-{frame}.png", scale, frame in (0, 35)) for frame in range(36)}
+            if len(hashes) != 36:
                 raise ValueError("native drawing reused a stale or duplicate capture")
     except (OSError, UnicodeError, ValueError, subprocess.TimeoutExpired) as error:
         print(f"FAIL Quickshell label drawing: {error}", file=sys.stderr)
         return 1
-    print(f"Quickshell native label drawing passed {25 * len(arguments.scales)} complete capture pairs and {9 * len(arguments.scales)} rejection cases on {arguments.platform} ({arguments.scene_graph})")
+    print(f"Quickshell native label drawing passed {36 * len(arguments.scales)} complete capture pairs and {9 * len(arguments.scales)} rejection cases on {arguments.platform} ({arguments.scene_graph})")
     return 0
 
 

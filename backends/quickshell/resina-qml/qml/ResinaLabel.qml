@@ -57,9 +57,9 @@ Item {
                     throw new Error("Qt Quick native paragraph placement exceeds cumulative coordinate precision");
             }
             const style = {
-                family: request.family, pixelSize: request.pixelSize, weight: request.weight,
-                spacing: request.spacing, fixedLineHeight: request.pixelSize * request.lineHeight,
-                wrappingWidth: request.wrappingWidth,
+                family: request.family, pixelSize: measured.fontMapping.pixelSize, weight: request.weight,
+                spacing: measured.fontMapping.spacing, fixedLineHeight: measured.nativeLineHeight,
+                wrappingWidth: measured.nativeWrappingWidth, fontScale: measured.fontMapping.scale,
                 color: Qt.rgba(...request.color)
             };
             state.snapshot = {
@@ -90,7 +90,9 @@ Item {
             x: 0
             y: modelData.y
             width: modelData.style.wrappingWidth
-            height: modelData.height
+            height: modelData.height / modelData.style.fontScale
+            scale: modelData.style.fontScale
+            transformOrigin: Item.TopLeft
             text: modelData.nativeText
             font.family: modelData.style.family
             font.pixelSize: modelData.style.pixelSize
