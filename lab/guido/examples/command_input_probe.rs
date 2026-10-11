@@ -150,12 +150,88 @@ fn prepare(root: &str, scenes: &str, family: FontFamily) -> Result<Frames, Box<d
 
 struct Probe {
     frames: Rc<Frames>,
-    state: RwSignal<ActivationState>,
+    state: Rc<RefCell<ActivationState>>,
+    revision: RwSignal<bool>,
+    generation: u64,
+    native_id: Cell<Option<WidgetId>>,
     hovered: RwSignal<bool>,
     surface_active: RwSignal<bool>,
     mounted: RwSignal<Option<WidgetId>>,
     effects: Rc<Cell<usize>>,
     failure: Rc<RefCell<Option<String>>>,
+}
+
+impl Drop for Probe {
+    fn drop(&mut self) {
+        // GUIdo disposes a dynamic child's reactive owner before dropping its
+        // widget. Retirement must not read or write disposed signal handles.
+        let before = self.state.borrow().clone();
+        let cancelled = resolve_activation(&before, &ActivationEvent::Cancel {}).unwrap();
+        let unavailable = resolve_activation(
+            cancelled.state(),
+            &ActivationEvent::Availability { enabled: false },
+        )
+        .unwrap();
+        let retired = resolve_activation(
+            unavailable.state(),
+            &ActivationEvent::Focus { focused: false },
+        )
+        .unwrap();
+        *self.state.borrow_mut() = retired.state().clone();
+        println!(
+            "RESINA_NATIVE_RETIRED {}",
+            json!({
+                "generation": self.generation,
+                "widgetId": self.native_id.get().map(WidgetId::as_u64),
+                "previousHold": before.hold(),
+                "state": retired.state(),
+                "captureRequest": cancelled.capture(),
+            })
+        );
+    }
+}
+
+fn build_probe(
+    frames: Rc<Frames>,
+    generation: u64,
+    surface_active: RwSignal<bool>,
+    effects: Rc<Cell<usize>>,
+    failure: Rc<RefCell<Option<String>>>,
+) -> Probe {
+    let state = Rc::new(RefCell::new(
+        ActivationState::try_new(true, false, None).unwrap(),
+    ));
+    let revision = create_signal(false);
+    let hovered = create_signal(false);
+    let mounted = create_signal(None);
+    let observed = state.clone();
+    create_effect(move || {
+        let focused = surface_active.get()
+            && mounted.get().is_some()
+            && mounted.get() == guido::reactive::focus::focus_path().widget();
+        let previous = observed.borrow().clone();
+        let next = resolve_activation(&previous, &ActivationEvent::Focus { focused }).unwrap();
+        if previous != *next.state() {
+            *observed.borrow_mut() = next.state().clone();
+            revision.set(!revision.get_untracked());
+            println!(
+                "RESINA_NATIVE_FOCUS {}",
+                json!({"generation":generation,"focused":focused})
+            );
+        }
+    });
+    Probe {
+        frames,
+        state,
+        revision,
+        generation,
+        native_id: Cell::new(None),
+        hovered,
+        surface_active,
+        mounted,
+        effects,
+        failure,
+    }
 }
 
 // A separate native surface provides real Wayland keyboard-focus transfer.
@@ -181,6 +257,10 @@ impl Widget for FocusPeer {
     }
     fn event(&mut self, tree: &mut Tree, id: WidgetId, event: &Event) -> EventResponse {
         match event {
+            Event::MouseMove { .. } | Event::MouseEnter { .. } => {
+                println!("RESINA_NATIVE_PEER_POINTER_READY");
+                EventResponse::Handled
+            }
             Event::MouseDown {
                 button: MouseButton::Left,
                 ..
@@ -213,17 +293,18 @@ impl Probe {
         guido::quit_app();
     }
     fn apply(&self, event: ActivationEvent) {
-        let result = resolve_activation(&self.state.get_untracked(), &event).unwrap();
-        self.state.set(result.state().clone());
+        let result = resolve_activation(&self.state.borrow(), &event).unwrap();
+        *self.state.borrow_mut() = result.state().clone();
+        self.revision.set(!self.revision.get_untracked());
         println!(
             "RESINA_NATIVE_STATE {}",
-            json!({"event":event,"state":result.state(),"captureRequest":result.capture()})
+            json!({"generation":self.generation,"event":event,"state":result.state(),"captureRequest":result.capture()})
         );
         if result.activate() {
             self.effects.set(self.effects.get() + 1);
             println!(
                 "RESINA_NATIVE_EFFECT {}",
-                json!({"effects":self.effects.get(),"state":self.state.get_untracked()})
+                json!({"generation":self.generation,"effects":self.effects.get(),"state":*self.state.borrow()})
             );
             if self.effects.get() == 3 {
                 self.apply(ActivationEvent::Availability { enabled: false });
@@ -235,6 +316,7 @@ impl Widget for Probe {
     fn layout(&mut self, ctx: &mut LayoutCtx, constraints: Constraints) -> Size {
         if self.mounted.get_untracked().is_none() {
             self.mounted.set(Some(ctx.id()));
+            self.native_id.set(Some(ctx.id()));
             guido::reactive::focus::request_focus(ctx.tree_ref(), ctx.id());
         }
         let b = self.frames.target.bounds();
@@ -257,7 +339,8 @@ impl Widget for Probe {
             self.fail("input fixture requires unit output scale");
             return;
         }
-        let state = self.state.get();
+        self.revision.get();
+        let state = self.state.borrow().clone();
         let hovered = self.hovered.get();
         let native_focused = self.surface_active.get()
             && self
@@ -309,7 +392,7 @@ impl Widget for Probe {
         }
         println!(
             "RESINA_NATIVE_PAINT {}",
-            json!({"state":state,"hovered":hovered,"target":b,"nativeFocused":native_focused})
+            json!({"generation":self.generation,"widgetId":self.native_id.get().map(WidgetId::as_u64),"state":state,"hovered":hovered,"target":b,"nativeFocused":native_focused})
         );
     }
     fn event(&mut self, tree: &mut Tree, id: WidgetId, event: &Event) -> EventResponse {
@@ -336,7 +419,7 @@ impl Widget for Probe {
             self.surface_active.set(true);
         }
         let focused = self.surface_active.get_untracked() && guido::reactive::focus::has_focus(id);
-        if self.state.get_untracked().focused() != focused {
+        if self.state.borrow().focused() != focused {
             self.apply(ActivationEvent::Focus { focused });
         }
         let mapped = match event {
@@ -364,7 +447,7 @@ impl Widget for Probe {
                 id: "mouse-left".into(),
                 inside,
             }),
-            _ => activation_key_event(&self.state.get_untracked(), event),
+            _ => activation_key_event(&self.state.borrow(), event),
         };
         if let Some(mapped) = mapped {
             self.apply(mapped);
@@ -425,22 +508,9 @@ fn run() -> Result<(), Box<dyn Error>> {
     let failure = Rc::new(RefCell::new(None));
     let native_failure = failure.clone();
     let reason = App::new().run(move |app| {
-        let state = create_signal(ActivationState::try_new(true, false, None).unwrap());
-        let hovered = create_signal(false);
         let surface_active = create_signal(false);
-        let mounted = create_signal(None);
-        create_effect(move || {
-            let focused = surface_active.get()
-                && mounted.get().is_some()
-                && mounted.get() == guido::reactive::focus::focus_path().widget();
-            let next =
-                resolve_activation(&state.get_untracked(), &ActivationEvent::Focus { focused })
-                    .unwrap();
-            if state.get_untracked() != *next.state() {
-                state.set(next.state().clone());
-                println!("RESINA_NATIVE_FOCUS {}", json!({"focused":focused}));
-            }
-        });
+        let generation = create_signal(0u64);
+        let effects = Rc::new(Cell::new(0));
         app.add_surface(
             SurfaceConfig::new()
                 .width(500)
@@ -449,18 +519,34 @@ fn run() -> Result<(), Box<dyn Error>> {
                 .keyboard_interactivity(KeyboardInteractivity::OnDemand)
                 .background_color(canvas),
             move || {
+                let replacement_failure = native_failure.clone();
                 container()
                     .width(500.0)
                     .height(240.0)
                     .padding(40.0)
-                    .child(Probe {
-                        frames,
-                        state,
-                        hovered,
-                        surface_active,
-                        mounted,
-                        effects: Rc::new(Cell::new(0)),
-                        failure: native_failure,
+                    .on_key_down(move |key, _, repeat| {
+                        // Consumer verification shortcut; Command key semantics
+                        // continue to accept only their existing Space/Enter map.
+                        if key == Key::Escape && !repeat {
+                            let next = generation.get_untracked().checked_add(1);
+                            if let Some(next) = next {
+                                generation.set(next);
+                            } else {
+                                *replacement_failure.borrow_mut() =
+                                    Some("generation exhausted".into());
+                                eprintln!("native command probe: generation exhausted");
+                                guido::quit_app();
+                            }
+                        }
+                    })
+                    .child(move || {
+                        build_probe(
+                            frames.clone(),
+                            generation.get(),
+                            surface_active,
+                            effects.clone(),
+                            native_failure.clone(),
+                        )
                     })
             },
         );

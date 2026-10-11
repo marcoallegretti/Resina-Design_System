@@ -41,7 +41,7 @@ class ParentInput:
         self.display = self.xlib.XOpenDisplay(name.encode())
         if not self.display:
             raise ValueError("cannot open parent X11 display")
-        self.held_button, self.held_key = False, 0
+        self.held_button, self.held_keys = False, set()
         self.errors = []
         callback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p)
         self.error_handler = callback(lambda *_: self.errors.append(True) or 0)
@@ -82,15 +82,18 @@ class ParentInput:
         code = self.xlib.XKeysymToKeycode(self.display, keysym)
         if not code or not self.xtest.XTestFakeKeyEvent(self.display, code, down, 0):
             raise ValueError("parent key injection failed")
-        self.held_key = code if down else 0
+        if down:
+            self.held_keys.add(code)
+        else:
+            self.held_keys.discard(code)
         self.sync()
 
     def close(self):
         if self.display:
             if self.held_button:
                 self.xtest.XTestFakeButtonEvent(self.display, 1, False, 0)
-            if self.held_key:
-                self.xtest.XTestFakeKeyEvent(self.display, self.held_key, False, 0)
+            for code in self.held_keys:
+                self.xtest.XTestFakeKeyEvent(self.display, code, False, 0)
             self.xlib.XSync(self.display, False)
             self.xlib.XCloseDisplay(self.display)
             self.xlib.XSetErrorHandler(self.previous_handler)
@@ -150,9 +153,63 @@ def check(args):
             def effects():
                 return records("RESINA_NATIVE_EFFECT ")
 
+            peer = prepared[0]["focusPeer"]
+            parent.move(outputs[0]["rect"]["width"] - peer["width"] / 2, peer["height"] / 2)
+            until(lambda: "RESINA_NATIVE_PEER_POINTER_READY\n" in log_text(), "mapped native focus target")
+            parent.button(True)
+            parent.button(False)
+            until(lambda: "RESINA_NATIVE_PEER_POINTER\n" in log_text(), "initial focus target delivery")
             parent.move(placement["x"] + target["width"] / 2,
                 placement["y"] + target["height"] / 2)
-            until(lambda: records("RESINA_NATIVE_PAINT ")[-1]["hovered"], "native hover")
+            until(lambda: records("RESINA_NATIVE_PAINT ")[-1]["hovered"]
+                and records("RESINA_NATIVE_PAINT ")[-1]["nativeFocused"], "native hover and focus")
+            def replacement(kind, next_generation):
+                if kind == "key":
+                    parent.key(0x20, True)
+                else:
+                    parent.button(True)
+                until(lambda: state()["hold"] and state()["hold"]["kind"] == kind,
+                    "held gesture before replacement")
+                focus_baseline = len(records("RESINA_NATIVE_FOCUS "))
+                parent.key(0xff1b, True)
+                parent.key(0xff1b, False)
+                until(lambda: len(records("RESINA_NATIVE_RETIRED ")) == next_generation,
+                    "native widget retirement")
+                retired = records("RESINA_NATIVE_RETIRED ")[-1]
+                until(lambda: records("RESINA_NATIVE_PAINT ")[-1]["generation"] == next_generation,
+                    "replacement native paint")
+                current = records("RESINA_NATIVE_PAINT ")[-1]
+                previous_hold = retired["previousHold"]
+                # Unregister releases widget focus before destruction. Spec 42
+                # therefore clears a keyboard hold before Probe::drop; pointers
+                # remain owned until explicit retirement cancellation.
+                held_at_retirement = previous_hold is not None and previous_hold["kind"] == kind
+                keyboard_focus_cancelled = (kind == "key" and previous_hold is None
+                    and any(r["generation"] == next_generation - 1 and not r["focused"]
+                        for r in records("RESINA_NATIVE_FOCUS ")[focus_baseline:]))
+                if (retired["generation"] != next_generation - 1
+                        or not (held_at_retirement or keyboard_focus_cancelled)
+                        or retired["state"]["enabled"] or retired["state"]["focused"]
+                        or retired["state"]["hold"] is not None
+                        or current["widgetId"] == retired["widgetId"]
+                        or not current["nativeFocused"] or current["state"]["hold"] is not None
+                        or effects()):
+                    raise ValueError("replacement retained old identity, hold, focus or intent")
+                if kind == "pointer" and retired["captureRequest"] != {"kind":"release","id":"mouse-left"}:
+                    raise ValueError("retirement omitted the reference capture-release request")
+                baseline = len(records("RESINA_NATIVE_STATE "))
+                if kind == "key":
+                    parent.key(0x20, False)
+                else:
+                    parent.button(False)
+                until(lambda: any(r["generation"] == next_generation
+                    and r["event"]["kind"] == ("keyUp" if kind == "key" else "pointerUp")
+                    for r in records("RESINA_NATIVE_STATE ")[baseline:]), "release to replacement")
+                if effects() or state()["hold"] is not None:
+                    raise ValueError("stale held release activated the replacement")
+
+            replacement("key", 1)
+            replacement("pointer", 2)
             parent.button(True)
             until(lambda: state()["hold"] is not None, "native pointer press")
             if effects():
@@ -167,13 +224,14 @@ def check(args):
             if state()["hold"] is not None:
                 raise ValueError("pointer hold survived release")
             interrupted = len(records("RESINA_NATIVE_STATE "))
+            peer_pointer_baseline = log_text().count("RESINA_NATIVE_PEER_POINTER\n")
             parent.key(0x20, True)
             until(lambda: state()["hold"] and state()["hold"]["kind"] == "key", "interruptible Space hold")
-            peer = prepared[0]["focusPeer"]
             parent.move(outputs[0]["rect"]["width"] - peer["width"] / 2, peer["height"] / 2)
             parent.button(True)
             parent.button(False)
-            until(lambda: "RESINA_NATIVE_PEER_POINTER\n" in log_text(), "native focus target pointer delivery")
+            until(lambda: log_text().count("RESINA_NATIVE_PEER_POINTER\n") > peer_pointer_baseline,
+                "native focus target pointer delivery")
             until(lambda: any(r["event"]["kind"] == "cancel"
                 for r in records("RESINA_NATIVE_STATE ")[interrupted:]), "native surface focus-loss cancellation")
             until(lambda: not records("RESINA_NATIVE_PAINT ")[-1]["nativeFocused"], "unfocused Command paint")
@@ -218,17 +276,28 @@ def check(args):
                 raise ValueError("unavailable input activated or left a hold")
             until(lambda: not records("RESINA_NATIVE_PAINT ")[-1]["state"]["enabled"], "disabled paint")
             for index, record in enumerate(effects(), 1):
-                if record["effects"] != index or not record["state"]["enabled"]:
+                if record["effects"] != index or not record["state"]["enabled"] or record["generation"] != 2:
                     raise ValueError("consumer did not observe committed eligible state")
             for record in records("RESINA_NATIVE_PAINT "):
                 if record["target"] != target:
                     raise ValueError("native frame changed the reserved target")
                 if record["state"]["focused"] != record["nativeFocused"]:
                     raise ValueError("painted focus differs from observed native focus")
+            retired_generations = set()
+            for line in log_text().splitlines(keepends=True):
+                if not line.endswith("\n"):
+                    continue
+                if line.startswith("RESINA_NATIVE_RETIRED "):
+                    retired_generations.add(json.loads(line.partition(" ")[2])["generation"])
+                elif any(line.startswith(prefix) for prefix in
+                        ("RESINA_NATIVE_STATE ", "RESINA_NATIVE_PAINT ", "RESINA_NATIVE_EFFECT ", "RESINA_NATIVE_FOCUS ")):
+                    if json.loads(line.partition(" ")[2])["generation"] in retired_generations:
+                        raise ValueError("retired owner published a frame, state or intent")
             return {"profile": "GUIdo-static-command-DPR1-input-probe",
                 "delivery": "XTest/X11/Sway/Wayland/GUIdo", "pointerEffects": 1,
                 "spaceEffects": 1, "enterEffects": 1, "repeatObserved": True,
                 "focusLossEffects": 0, "focusRecoveryObserved": True,
+                "replacementEffects": 0, "retiredOwners": 2,
                 "unavailableEffects": 0, "finalHold": None,
                 "nativeAccessibility": False, "physicalDevices": False}
         finally:
