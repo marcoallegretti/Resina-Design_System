@@ -24,4 +24,4 @@ Keep detailed requirements and the live acceptance ledger in the issue. Document
 
 Follow the review queue limit in [AGENTS.md](../../AGENTS.md#21-git-rules): at most three implementation PRs ready for review unless the maintainer explicitly changes it. State each PR's base and blocking dependency. Preserve unrelated work and keep changes atomic and revertible.
 
-Development uses branches and PRs under the protected-master policy in AGENTS.md. Maintainers decide merges, epic acceptance and release-stage progression. Shell milestone acceptance does not itself authorize release publication.
+Development uses branches and PRs under the contribution rules in AGENTS.md. GitHub branch protection must be configured and verified separately; repository documentation does not enforce it. Maintainers decide merges, epic acceptance and release-stage progression. Shell milestone acceptance does not itself authorize release publication.
