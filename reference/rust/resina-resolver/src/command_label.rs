@@ -142,7 +142,35 @@ fn valid_size(size: SurfaceSize) -> bool {
 }
 fn extent_sum(left: f64, right: f64) -> Option<f64> {
     let sum = left + right;
-    (sum.is_finite() && (left == 0.0 || sum > right) && (right == 0.0 || sum > left)).then_some(sum)
+    if !sum.is_finite() || (left > 0.0 && sum <= right) || (right > 0.0 && sum <= left) {
+        return None;
+    }
+    let conservative = if sum_error(left, right, sum) > 0.0 {
+        sum.next_up()
+    } else {
+        sum
+    };
+    conservative.is_finite().then_some(conservative)
+}
+
+// Error-free TwoSum recovers the exact binary64 operands' residual. No epsilon
+// or unconditional extra pixel/ULP belongs in the portable sizing equations.
+fn sum_error(left: f64, right: f64, sum: f64) -> f64 {
+    let virtual_right = sum - left;
+    (left - (sum - virtual_right)) + (right - virtual_right)
+}
+
+fn extent_remainder(total: f64, padding: f64) -> Option<f64> {
+    let remainder = total - padding;
+    if !remainder.is_finite() || remainder <= 0.0 || (padding > 0.0 && remainder == total) {
+        return None;
+    }
+    let conservative = if sum_error(total, -padding, remainder) < 0.0 {
+        remainder.next_down()
+    } else {
+        remainder
+    };
+    (conservative > 0.0).then_some(conservative)
 }
 pub fn resolve_command_label<E>(
     input: CommandLabelInput<'_>,
@@ -192,10 +220,8 @@ pub fn resolve_command_label<E>(
     let width = preferred_width
         .max(input.minimum_size.width)
         .min(input.maximum_size.width);
-    let label_width = width - horizontal;
-    if label_width <= 0.0 || (horizontal > 0.0 && label_width == width) {
-        return Err(Invalid("chosen command width leaves no label extent"));
-    }
+    let label_width = extent_remainder(width, horizontal)
+        .ok_or(Invalid("chosen command width leaves no label extent"))?;
     let fitted = measure(LabelMeasureInput {
         text: input.text,
         typography: input.typography,
@@ -216,8 +242,10 @@ pub fn resolve_command_label<E>(
     if height > input.maximum_size.height {
         return Err(Invalid("complete label exceeds available command height"));
     }
-    let content_height = height - vertical;
-    if content_height < fitted.height || (vertical > 0.0 && content_height == height) {
+    let content_height = extent_remainder(height, vertical).ok_or(Invalid(
+        "label height is lost in command padding arithmetic",
+    ))?;
+    if content_height < fitted.height {
         return Err(Invalid(
             "label height is lost in command padding arithmetic",
         ));

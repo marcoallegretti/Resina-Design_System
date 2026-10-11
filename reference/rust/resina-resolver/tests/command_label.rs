@@ -191,3 +191,102 @@ fn empty_nonfinite_overwide_and_oversized_measurements_fail_without_ir() {
         json!("0.1.0")
     );
 }
+
+#[test]
+fn conservative_arithmetic_preserves_native_fractional_height_and_never_widens_an_offer() {
+    let style = style();
+    let mut request = input(&style);
+    request.maximum_size = size(240.0, 600.0);
+    request.minimum_size = size(160.0, 80.0);
+    request.padding = SafeArea {
+        start: 32.0,
+        end: 32.0,
+        top: 26.0,
+        bottom: 26.0,
+    };
+    let mut calls = 0;
+    let ir = resolve_command_label(request, |measurement| {
+        calls += 1;
+        Ok::<_, Infallible>(if measurement.maximum_width.is_none() {
+            size(259.79109613037105, 18.771255999999997)
+        } else {
+            assert_eq!(measurement.maximum_width, Some(176.0));
+            size(143.76308601074217, 37.542511999999995)
+        })
+    })
+    .unwrap();
+    assert_eq!(calls, 2);
+    assert_eq!(ir.size().height, 89.542512);
+    assert!(ir.size().height - 52.0 >= ir.label_bounds().height);
+
+    let mut request = input(&style);
+    request.minimum_size = size(1.1, 1.0);
+    request.maximum_size = size(1.1, 2.0);
+    request.padding = SafeArea {
+        start: 0.1,
+        end: 0.1,
+        top: 0.0,
+        bottom: 0.0,
+    };
+    resolve_command_label(request, |measurement| {
+        Ok::<_, Infallible>(if measurement.maximum_width.is_none() {
+            size(2.0, 1.0)
+        } else {
+            assert_eq!(measurement.maximum_width, Some(0.9));
+            size(0.9, 1.0)
+        })
+    })
+    .unwrap();
+}
+
+#[test]
+fn public_conservative_arithmetic_cases() {
+    let cases: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/content/command-label-arithmetic.json"
+    ))
+    .unwrap();
+    let style = style();
+    for case in cases["cases"].as_array().unwrap() {
+        let request = CommandLabelInput {
+            text: "Supplied complete label",
+            typography: &style,
+            minimum_size: serde_json::from_value(case["minimumSize"].clone()).unwrap(),
+            maximum_size: serde_json::from_value(case["maximumSize"].clone()).unwrap(),
+            padding: serde_json::from_value(case["padding"].clone()).unwrap(),
+            direction: serde_json::from_value(case["direction"].clone()).unwrap(),
+        };
+        let result = resolve_command_label(request, |measurement| {
+            let key = if measurement.maximum_width.is_none() {
+                "natural"
+            } else {
+                "fitted"
+            };
+            if let Some(expected) = case.get("expected")
+                && let Some(offered) = measurement.maximum_width
+            {
+                assert_eq!(
+                    offered,
+                    expected["labelBounds"]["width"].as_f64().unwrap(),
+                    "{}",
+                    case["name"]
+                );
+            }
+            Ok::<SurfaceSize, Infallible>(serde_json::from_value(case[key].clone()).unwrap())
+        });
+        if let Some(expected) = case.get("expected") {
+            let ir = serde_json::to_value(result.unwrap()).unwrap();
+            for member in ["size", "labelBounds"] {
+                for (key, value) in expected[member].as_object().unwrap() {
+                    assert_eq!(
+                        ir[member][key].as_f64(),
+                        value.as_f64(),
+                        "{} {member}.{key}",
+                        case["name"]
+                    );
+                }
+            }
+        } else {
+            assert!(result.is_err(), "{} produced IR", case["name"]);
+        }
+    }
+}

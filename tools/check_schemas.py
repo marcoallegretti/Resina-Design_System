@@ -5,6 +5,8 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
+from command_label_arithmetic import check_cases as check_label_arithmetic
+
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
@@ -156,6 +158,7 @@ def main():
         "schemas/slider-part-paint-request.schema.json",
         "schemas/slider-part-paint-case.schema.json",
         "schemas/command-label-expansion.schema.json",
+        "schemas/command-label-arithmetic.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-accessibility-ir.schema.json",
         "schemas/toggle-snapshot-cases.schema.json",
@@ -2023,6 +2026,9 @@ def main():
     extra = dict(label, renderer="native")
     check_case(label_validator, "renderer leakage", extra, False)
     checked += 1
+    arithmetic = load_json(ROOT / "conformance/content/command-label-arithmetic.json")
+    check_case(validator_for("schemas/command-label-arithmetic.schema.json"), "label arithmetic", arithmetic, True)
+    checked += 1 + check_label_arithmetic(arithmetic)
     expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
     checked += check_label_expansion(expansion)
     accessibility_validator = validator_for("schemas/command-accessibility-ir.schema.json")
