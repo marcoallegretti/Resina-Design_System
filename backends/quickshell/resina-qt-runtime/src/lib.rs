@@ -1,10 +1,6 @@
-use cxx_qt::CxxQtType;
 use cxx_qt_lib::QString;
 use resina_model::{ActivationEvent, ActivationState};
-use resina_resolver::{
-    ActivationResult, CaptureChange, resolve_activation, resolve_activation_source,
-};
-use std::pin::Pin;
+use resina_resolver::{ActivationResult, resolve_activation, resolve_activation_source};
 
 mod label;
 mod pointer;
@@ -23,35 +19,24 @@ extern "C" fn qt_plugin_instance() -> *mut std::ffi::c_void {
     unsafe { resina_qt_plugin_instance() }
 }
 
-#[cxx_qt::bridge]
-mod qobject {
+#[cxx::bridge(namespace = "resina::qt")]
+mod command_ffi {
     unsafe extern "C++" {
         include!("cxx-qt-lib/qstring.h");
+        #[namespace = ""]
         type QString = cxx_qt_lib::QString;
     }
-
-    extern "RustQt" {
-        #[qobject]
-        #[qml_element]
-        #[qproperty(QString, publication, READ, NOTIFY)]
-        #[qproperty(QString, last_error, READ, cxx_name = "lastError")]
-        type CommandController = super::CommandControllerRust;
-
-        #[qinvokable]
-        fn dispatch(self: Pin<&mut CommandController>, event: &QString) -> bool;
-
-        #[qsignal]
-        fn activated(self: Pin<&mut CommandController>);
-
-        #[qsignal]
-        #[cxx_name = "captureRequested"]
-        fn capture_requested(self: Pin<&mut CommandController>, id: QString, acquire: bool);
+    extern "Rust" {
+        type CommandOwner;
+        fn new_command_owner() -> Box<CommandOwner>;
+        fn command_initial_publication(owner: &CommandOwner) -> QString;
+        fn dispatch_command(owner: &mut CommandOwner, event: &QString) -> Result<QString>;
     }
 }
 
 /// Owns committed activation state independently of toolkit publication.
 #[derive(Debug)]
-struct CommandOwner {
+pub struct CommandOwner {
     state: ActivationState,
 }
 
@@ -83,67 +68,21 @@ impl CommandOwner {
     }
 }
 
-pub struct CommandControllerRust {
-    publication: QString,
-    last_error: QString,
-    owner: CommandOwner,
-    publishing: bool,
+fn new_command_owner() -> Box<CommandOwner> {
+    Box::new(CommandOwner::default())
 }
 
-impl Default for CommandControllerRust {
-    fn default() -> Self {
-        let owner = CommandOwner::default();
-        let initial = resolve_activation(owner.state(), &ActivationEvent::Cancel {})
-            .expect("valid inactive command");
-        Self {
-            publication: QString::from(
-                serde_json::to_string(&initial).expect("validated transition"),
-            ),
-            last_error: QString::default(),
-            owner,
-            publishing: false,
-        }
-    }
+fn command_initial_publication(owner: &CommandOwner) -> QString {
+    let initial = resolve_activation(owner.state(), &ActivationEvent::Cancel {})
+        .expect("valid inactive command");
+    QString::from(serde_json::to_string(&initial).expect("validated transition"))
 }
 
-impl qobject::CommandController {
-    fn dispatch(mut self: Pin<&mut Self>, event: &QString) -> bool {
-        if self.rust().publishing {
-            self.as_mut().rust_mut().last_error =
-                QString::from("command publication is in progress");
-            return false;
-        }
-        let result = match self.rust().owner.prepare(&event.to_string()) {
-            Ok(result) => result,
-            Err(error) => {
-                self.as_mut().rust_mut().last_error = QString::from(error);
-                return false;
-            }
-        };
-        let publication =
-            QString::from(serde_json::to_string(&result).expect("validated transition"));
-        {
-            let mut state = self.as_mut().rust_mut();
-            state.publishing = true;
-            state.owner.commit(&result);
-            state.publication = publication;
-            state.last_error = QString::default();
-        }
-        self.as_mut().publication_changed();
-        self.as_mut().rust_mut().publishing = false;
-        if let Some(capture) = result.capture() {
-            let (id, acquire) = match capture {
-                CaptureChange::Acquire { id } => (id, true),
-                CaptureChange::Release { id } => (id, false),
-            };
-            self.as_mut()
-                .capture_requested(QString::from(id.as_str()), acquire);
-        }
-        if result.activate() {
-            self.as_mut().activated();
-        }
-        true
-    }
+fn dispatch_command(owner: &mut CommandOwner, event: &QString) -> Result<QString, String> {
+    let result = owner.prepare(&event.to_string())?;
+    let publication = QString::from(serde_json::to_string(&result).expect("validated transition"));
+    owner.commit(&result);
+    Ok(publication)
 }
 
 #[cfg(test)]

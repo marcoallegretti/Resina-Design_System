@@ -10,6 +10,18 @@
 #include <optional>
 
 namespace resina::qt {
+class PendingPointerCancellation : public QObject {
+    Q_OBJECT
+public:
+    PendingPointerCancellation(QObject* controller, QString id);
+private slots:
+    void observePublication();
+private:
+    QPointer<QObject> controller_;
+    QString id_;
+    bool ended_ = false;
+    void deliver();
+};
 class CommandPointerItem : public QQuickItem {
     Q_OBJECT
     QML_ELEMENT

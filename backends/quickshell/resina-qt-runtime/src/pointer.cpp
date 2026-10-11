@@ -6,12 +6,18 @@
 #include <QMouseEvent>
 #include <QEnterEvent>
 #include <QQuickWindow>
-#include <QScopedValueRollback>
+#include <QtCore/qscopeguard.h>
 #include <QThread>
+#include <QTimer>
 #include <stdexcept>
 
 namespace resina::qt {
 namespace {
+QJsonObject activationState(QObject* controller) {
+    const auto publication = QJsonDocument::fromJson(controller->property("publication").toString().toUtf8()).object();
+    const auto activation = publication;
+    return activation.value("state").toObject();
+}
 QString pointerId(const QMouseEvent* event) {
     return QStringLiteral("qt-mouse-%1-%2")
         .arg(reinterpret_cast<quintptr>(event->pointingDevice()), 0, 16).arg(event->points().first().id());
@@ -20,6 +26,36 @@ QString pointerEvent(const char* kind, const QString& id, bool inside) {
     return QString::fromUtf8(QJsonDocument(QJsonObject{{"kind", kind},
         {"id", id}, {"inside", inside}}).toJson(QJsonDocument::Compact));
 }
+}
+
+PendingPointerCancellation::PendingPointerCancellation(QObject* controller, QString id)
+    : QObject(controller), controller_(controller), id_(std::move(id)) {
+    connect(controller, SIGNAL(publicationChanged()), this, SLOT(observePublication()));
+    QTimer::singleShot(0, this, [this] { deliver(); });
+}
+void PendingPointerCancellation::observePublication() {
+    const auto result = QJsonDocument::fromJson(controller_->property("publication").toString().toUtf8()).object();
+    const auto activation = result;
+    const auto capture = activation.value("capture").toObject();
+    // A released gesture cannot be resurrected by reusing its native pointer id.
+    if (capture.value("kind").toString() == "release" && capture.value("id").toString() == id_)
+        ended_ = true;
+}
+void PendingPointerCancellation::deliver() {
+    const auto hold = controller_ ? activationState(controller_).value("hold").toObject() : QJsonObject();
+    if (ended_ || hold.value("kind").toString() != "pointer" || hold.value("id").toString() != id_) {
+        deleteLater();
+        return;
+    }
+    const QString event = QString::fromUtf8(QJsonDocument(QJsonObject{{"kind", "pointerCancel"},
+        {"id", id_}}).toJson(QJsonDocument::Compact));
+    const QPointer<PendingPointerCancellation> self(this);
+    bool accepted = false;
+    const bool invoked = QMetaObject::invokeMethod(controller_, "dispatch", Qt::DirectConnection,
+        Q_RETURN_ARG(bool, accepted), Q_ARG(QString, event));
+    if (!self) return;
+    if (invoked && !accepted) QTimer::singleShot(0, this, [this] { deliver(); });
+    else deleteLater();
 }
 
 struct CommandPointerItem::Target {
@@ -41,14 +77,23 @@ struct CommandPointerItem::Target {
 CommandPointerItem::CommandPointerItem(QQuickItem* parent) : QQuickItem(parent) {
     setAcceptedMouseButtons(Qt::LeftButton);
     setKeepMouseGrab(true);
-    connect(this, &QQuickItem::windowChanged, this, [this] { invalidate(); observeWindow(); });
+    connect(this, &QQuickItem::windowChanged, this, [this] {
+        const QPointer<CommandPointerItem> self(this);
+        invalidate();
+        if (self) observeWindow();
+    });
     connect(this, &QQuickItem::parentChanged, this, [this] { invalidate(); });
 }
 
 CommandPointerItem::~CommandPointerItem() {
     if (observedWindow_) observedWindow_->removeEventFilter(this);
+    blockSignals(true);
     clearHover();
-    cancel();
+    if (controller_ && !pointerId_.isEmpty()) {
+        const auto hold = activationState(controller_).value("hold").toObject();
+        if (hold.value("kind").toString() == "pointer" && hold.value("id").toString() == pointerId_)
+            new PendingPointerCancellation(controller_, pointerId_);
+    }
     // QQuickItem teardown emits signals after derived members are destroyed.
     disconnect(this, nullptr, this, nullptr);
     disconnect(captureConnection_);
@@ -64,15 +109,17 @@ void CommandPointerItem::setError(const QString& error) {
 
 void CommandPointerItem::setController(QObject* controller) {
     if (controller_ == controller) return;
+    const QPointer<QObject> replacement(controller);
+    const QPointer<CommandPointerItem> self(this);
     invalidate();
+    if (!self) return;
     if (cancelPending_) {
-        const QPointer<QObject> replacement(controller);
         QMetaObject::invokeMethod(this, [this, replacement] { setController(replacement); }, Qt::QueuedConnection);
         return;
     }
     disconnect(captureConnection_);
     disconnect(controllerConnection_);
-    controller_ = controller;
+    controller_ = replacement;
     if (controller_) {
         captureConnection_ = connect(controller_, SIGNAL(captureRequested(QString,bool)),
             this, SLOT(captureRequested(QString,bool)));
@@ -80,10 +127,12 @@ void CommandPointerItem::setController(QObject* controller) {
             disconnect(captureConnection_);
             controller_ = nullptr;
             setError("pointer owner requires a CommandController");
+            if (!self) return;
         } else {
             controllerConnection_ = connect(controller_, &QObject::destroyed, this, [this] {
+                const QPointer<CommandPointerItem> self(this);
                 invalidate();
-                emit controllerChanged();
+                if (self) emit controllerChanged();
             });
         }
     }
@@ -92,12 +141,16 @@ void CommandPointerItem::setController(QObject* controller) {
 
 void CommandPointerItem::setCoordinateFrame(QQuickItem* frame) {
     if (frame_ == frame) return;
+    const QPointer<QQuickItem> replacement(frame);
+    const QPointer<CommandPointerItem> self(this);
     invalidate();
+    if (!self) return;
     disconnect(frameConnection_);
-    frame_ = frame;
+    frame_ = replacement;
     if (frame_) frameConnection_ = connect(frame_, &QObject::destroyed, this, [this] {
+        const QPointer<CommandPointerItem> self(this);
         invalidate();
-        emit coordinateFrameChanged();
+        if (self) emit coordinateFrameChanged();
     });
     emit coordinateFrameChanged();
 }
@@ -152,6 +205,8 @@ void CommandPointerItem::observeHover(const QPointingDevice* device, const QPoin
 }
 
 bool CommandPointerItem::eventFilter(QObject* watched, QEvent* event) {
+    const QPointer<CommandPointerItem> self(this);
+    const QPointer<QObject> receiver(watched);
     if (watched == observedWindow_) {
         switch (event->type()) {
         case QEvent::MouseMove:
@@ -176,22 +231,33 @@ bool CommandPointerItem::eventFilter(QObject* watched, QEvent* event) {
         default: break;
         }
     }
-    return QQuickItem::eventFilter(watched, event);
+    if (!receiver) return true;
+    return self ? QQuickItem::eventFilter(watched, event) : false;
 }
 
 void CommandPointerItem::observeWindow() {
+    const QPointer<CommandPointerItem> self(this);
     if (observedWindow_) observedWindow_->removeEventFilter(this);
     clearHover();
+    if (!self) return;
     observedWindow_ = window();
     if (observedWindow_) observedWindow_->installEventFilter(this);
     for (const auto& connection : windowConnections_) disconnect(connection);
     windowConnections_.clear();
     if (!window()) return;
     windowConnections_.append(connect(window(), &QWindow::activeChanged, this, [this] {
-        if (!window()->isActive()) { clearHover(); cancel(); }
+        if (!window()->isActive()) {
+            const QPointer<CommandPointerItem> self(this);
+            clearHover();
+            if (self) cancel();
+        }
     }));
     windowConnections_.append(connect(window(), &QWindow::visibleChanged, this, [this] {
-        if (!window()->isVisible()) { clearHover(); cancel(); }
+        if (!window()->isVisible()) {
+            const QPointer<CommandPointerItem> self(this);
+            clearHover();
+            if (self) cancel();
+        }
     }));
     windowConnections_.append(connect(window(), &QQuickWindow::afterAnimating, this, [this] {
         if (target_ && !contextValid()) invalidate();
@@ -221,8 +287,11 @@ QString CommandPointerItem::targetPublication() const {
 
 bool CommandPointerItem::prepareTarget(const QString& request) {
     if (preparing_) { setError("pointer target publication is in progress"); return false; }
-    const QScopedValueRollback<bool> publicationGuard(preparing_, true);
+    const QPointer<CommandPointerItem> self(this);
+    preparing_ = true;
+    const auto publicationGuard = qScopeGuard([self] { if (self) self->preparing_ = false; });
     invalidate();
+    if (!self) return false;
     try {
         if (QThread::currentThread() != thread() || !controller_ || !frame_ || !window()
             || frame_->window() != window() || !translationOnly(this) || !translationOnly(frame_))
@@ -245,11 +314,14 @@ bool CommandPointerItem::prepareTarget(const QString& request) {
         target_ = std::make_unique<Target>(Target{std::move(region), mapToScene(QPointF(0, 0)),
             frame_->mapToScene(QPointF(0, 0)), QSizeF(width(), height()), window(), window()->size(), ancestors});
         setError(QString());
+        if (!self) return false;
         refreshHover();
+        if (!self) return false;
         emit targetPublicationChanged();
+        if (!self) return false;
         if (!contextValid()) {
             invalidate();
-            setError("pointer target context changed during publication");
+            if (self) setError("pointer target context changed during publication");
             return false;
         }
         return true;
@@ -267,28 +339,37 @@ bool CommandPointerItem::contains(const QPointF& point) const {
 }
 
 bool CommandPointerItem::dispatch(const QString& event) {
+    const QPointer<CommandPointerItem> self(this);
+    const QPointer<QObject> controller(controller_);
     bool accepted = false;
-    if (!controller_ || QThread::currentThread() != thread() || controller_->thread() != thread()
-        || !QMetaObject::invokeMethod(controller_, "dispatch", Qt::DirectConnection,
-        Q_RETURN_ARG(bool, accepted), Q_ARG(QString, event))) {
+    if (!controller || QThread::currentThread() != thread() || controller->thread() != thread()) {
         setError("pointer owner lost its UI-thread command controller");
         return false;
     }
-    setError(accepted ? QString() : controller_->property("lastError").toString());
-    return accepted;
+    const bool invoked = QMetaObject::invokeMethod(controller, "dispatch", Qt::DirectConnection,
+        Q_RETURN_ARG(bool, accepted), Q_ARG(QString, event));
+    if (!self) return false;
+    if (!invoked || !controller || controller_ != controller) {
+        setError("pointer owner lost its UI-thread command controller");
+        return false;
+    }
+    setError(accepted ? QString() : controller->property("lastError").toString());
+    return self && accepted;
 }
 
 void CommandPointerItem::cancel() {
     if (!controller_) return;
-    const auto hold = QJsonDocument::fromJson(controller_->property("publication").toString().toUtf8())
-        .object().value("state").toObject().value("hold").toObject();
+    const auto hold = activationState(controller_).value("hold").toObject();
     if (pointerId_.isEmpty() || hold.value("kind").toString() != "pointer" || hold.value("id").toString() != pointerId_) {
         cancelPending_ = false;
         return;
     }
     const auto event = QString::fromUtf8(QJsonDocument(QJsonObject{{"kind", "pointerCancel"},
         {"id", pointerId_}}).toJson(QJsonDocument::Compact));
-    if (dispatch(event)) {
+    const QPointer<CommandPointerItem> self(this);
+    const bool accepted = dispatch(event);
+    if (!self) return;
+    if (accepted) {
         cancelPending_ = false;
         return;
     }
@@ -298,24 +379,29 @@ void CommandPointerItem::cancel() {
 }
 
 void CommandPointerItem::invalidate() {
+    const QPointer<CommandPointerItem> self(this);
     const bool hadTarget = bool(target_);
     target_.reset();
     refreshHover();
+    if (!self) return;
     cancel();
-    if (hadTarget) emit targetPublicationChanged();
+    if (self && hadTarget) emit targetPublicationChanged();
 }
 
 void CommandPointerItem::captureRequested(QString id, bool acquire) {
+    const QPointer<CommandPointerItem> self(this);
     if (id != pointerId_) return;
     if (acquire) {
         if (!delivery_ || !contextValid() || !isEnabled() || !isVisible()) { cancel(); return; }
         delivery_->setExclusiveGrabber(delivery_->point(0), this);
+        if (!self) return;
         if (delivery_->exclusiveGrabber(delivery_->point(0)) != this) { cancel(); return; }
         disconnect(deviceConnection_);
         deviceConnection_ = connect(delivery_->pointingDevice(), &QObject::destroyed, this, [this] { cancel(); });
     } else {
         releasing_ = true;
         ungrabMouse();
+        if (!self) return;
         releasing_ = false;
         disconnect(deviceConnection_);
         pointerId_.clear();
@@ -326,15 +412,15 @@ void CommandPointerItem::mousePressEvent(QMouseEvent* event) {
     event->ignore();
     if (!acceptsNewGestures_ || event->button() != Qt::LeftButton || event->modifiers() != Qt::NoModifier
         || !window() || !window()->isActive() || !contains(event->position())) return;
-    const auto previous = QJsonDocument::fromJson(controller_->property("publication").toString().toUtf8())
-        .object().value("state").toObject().value("hold");
+    const auto previous = activationState(controller_).value("hold");
     if (!previous.isNull()) return;
     pointerId_ = pointerId(event);
     delivery_ = event;
+    const QPointer<CommandPointerItem> self(this);
     const bool accepted = dispatch(pointerEvent("pointerDown", pointerId_, true));
+    if (!self) { event->ignore(); return; }
     delivery_ = nullptr;
-    const auto state = controller_ ? QJsonDocument::fromJson(controller_->property("publication").toString().toUtf8())
-        .object().value("state").toObject().value("hold").toObject() : QJsonObject();
+    const auto state = controller_ ? activationState(controller_).value("hold").toObject() : QJsonObject();
     event->setAccepted(accepted && !pointerId_.isEmpty() && state.value("id").toString() == pointerId_ && contextValid());
     if (!event->isAccepted()) cancel();
 }
@@ -342,28 +428,36 @@ void CommandPointerItem::mousePressEvent(QMouseEvent* event) {
 void CommandPointerItem::mouseMoveEvent(QMouseEvent* event) {
     if (pointerId_.isEmpty() || pointerId(event) != pointerId_) { event->ignore(); return; }
     if (!contextValid()) { invalidate(); event->ignore(); return; }
-    if (!dispatch(pointerEvent("pointerMove", pointerId_, contains(event->position())))) cancel();
-    event->accept();
+    const QPointer<CommandPointerItem> self(this);
+    const bool accepted = dispatch(pointerEvent("pointerMove", pointerId_, contains(event->position())));
+    if (self && !accepted) cancel();
+    event->setAccepted(bool(self));
 }
 
 void CommandPointerItem::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton || pointerId_.isEmpty() || pointerId(event) != pointerId_) { event->ignore(); return; }
     if (!contextValid()) { invalidate(); event->ignore(); return; }
-    if (!dispatch(pointerEvent("pointerUp", pointerId_, contains(event->position())))) cancel();
-    event->accept();
+    const QPointer<CommandPointerItem> self(this);
+    const bool accepted = dispatch(pointerEvent("pointerUp", pointerId_, contains(event->position())));
+    if (self && !accepted) cancel();
+    event->setAccepted(bool(self));
 }
 
 void CommandPointerItem::mouseUngrabEvent() { if (!releasing_) cancel(); }
 
 void CommandPointerItem::itemChange(ItemChange change, const ItemChangeData& data) {
+    const QPointer<CommandPointerItem> self(this);
     QQuickItem::itemChange(change, data);
+    if (!self) return;
     if (change == ItemVisibleHasChanged && !isVisible()) clearHover();
+    if (!self) return;
     if ((change == ItemEnabledHasChanged && !isEnabled())
         || (change == ItemVisibleHasChanged && !isVisible())) cancel();
 }
 
 void CommandPointerItem::geometryChange(const QRectF& current, const QRectF& previous) {
+    const QPointer<CommandPointerItem> self(this);
     QQuickItem::geometryChange(current, previous);
-    if (current != previous) invalidate();
+    if (self && current != previous) invalidate();
 }
 }

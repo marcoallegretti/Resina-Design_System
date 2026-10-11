@@ -49,6 +49,7 @@ jobs:
           python tools/prepare_qt_runtime_module.py --library target/qt-runtime-build/debug/libresina_qt_runtime.so --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime --output-dir target/qt-runtime-import
       - name: Check compiled controller, native content and coherent snapshots
         run: |
+          python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import
           python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
           python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf

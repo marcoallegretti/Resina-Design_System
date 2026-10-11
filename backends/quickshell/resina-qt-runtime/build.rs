@@ -15,6 +15,8 @@ fn main() {
     ])
     .qt_module("Quick")
     .qt_module("Gui")
+    .cpp_file("src/command.h")
+    .cpp_file("src/command.cpp")
     .cpp_file("src/label.h")
     .cpp_file("src/label.cpp")
     .cpp_file("src/pointer.h")

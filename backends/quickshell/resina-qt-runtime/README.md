@@ -1,8 +1,8 @@
 # Qt command runtime (0.1.0)
 
 This separately locked native workspace implements the Resina-owned
-Rust/QML runtime boundary. CXX-Qt 0.8.1 exposes Rust-owned command activation
-through a real Qt `QObject` in the `Resina.Runtime` QML plugin. The portable
+Rust/QML runtime boundary. CXX-Qt 0.8.1 packages Rust-owned command activation
+behind a Qt `QObject` facade in the `Resina.Runtime` QML plugin. The portable
 reference owns semantics, Qt owns object lifetime and native publication, and
 consumers own product effects. Qt and binding dependencies stay outside the
 portable workspace and normative artifacts.
@@ -28,8 +28,11 @@ without an intent. Failure returns `false`; read the non-notifying, read-only
 no capture or activation effect.
 
 The single read-only `publication` property contains complete existing
-`ActivationResult` JSON. Rust commits next state and updates the property before
-`publicationChanged`, capture effects or product intents. Every accepted event
+`ActivationResult` JSON. Rust commits next state before the Qt facade updates the property and emits
+`publicationChanged`, capture effects or product intents. The Rust borrow has
+ended before any observer runs. Qt checks QObject lifetime between notifications;
+destroying the controller during a notification suppresses subsequent effects
+without accessing destroyed Rust storage. Every accepted event
 publishes once, including unchanged state. Recursive dispatch during publication
 notification fails explicitly. Once publication completes, product and capture
 callbacks can synchronously dispatch another event.
@@ -37,12 +40,16 @@ callbacks can synchronously dispatch another event.
 `captureRequested(id, acquire)` supplies the exact capture effect after commit.
 The native gesture owner must maintain continued pointer delivery, cancel if
 capture cannot be maintained, and route capture loss, deactivation and removal
-through the lifecycle. `activated()` delivers one product intent after state and
+through the lifecycle. Pointer-item removal queues cancellation on the surviving
+controller, rather than on the removed item. That task observes capture release
+so a later gesture reusing the native pointer id cannot be cancelled by the old
+removal. `activated()` delivers one product intent after state and
 capture publication. Execute effects from these signals once; retained
 `publication.activate` and `publication.capture` do not authorize replay.
 
 Supply actual focus observations and current availability through their events.
-Mutation must stay on the QObject's owning thread. Use deferred Qt destruction
+Mutation must stay on the Qt UI thread. Wrong-thread calls return false without
+accessing Rust state or writing a diagnostic from another thread. Use deferred Qt destruction
 and cancel active gestures before removing their owner. This controller does not
 acquire focus, perform pointer capture, measure text, render paint or provide a
 Button. Complete component input/accessibility integration remains separate.
@@ -745,3 +752,14 @@ justified dependency is guarded native motion integrated with these same
 publication and cancellation boundaries; the upstream Quickshell host repair
 remains necessary for Shell qualification. CI now exercises this path, but a
 hosted CI execution remains separate from local evidence.
+
+## Compiled destructive-observer regressions
+
+`python tools/check_qt_controller_lifetime.py --module-path <prepared-module>`
+checks Command notification destruction and the native pointer caller. Each
+scenario runs in a separate process and actually processes Qt DeferredDelete.
+The checks require no signal after controller destruction, no surviving hold
+after pointer removal, and no cancellation of a replacement gesture. They
+preserve the shared activation/reentrancy contracts. These synthetic operations
+and injected Qt pointer events are lifetime evidence, not physical-device or
+AT-SPI evidence.
