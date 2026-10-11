@@ -50,8 +50,11 @@ def verify_paint(window, control, source, snapshot, path, raster):
     background=tuple(round(value*255) for value in source["background"]["components"])+(255,)
     expected=Image.new("RGBA",(image.width(),image.height()),"white")
     bounds=snapshot["hitRegion"]["bounds"]
-    ImageDraw.Draw(expected).rectangle((round((origin.x()+bounds["x"])*dpr),round((origin.y()+bounds["y"])*dpr),
-        round((origin.x()+bounds["x"]+bounds["width"])*dpr)-1,round((origin.y()+bounds["y"]+bounds["height"])*dpr)-1),fill=background)
+    # The native aliased Rectangle uses half-up device boundaries, independently
+    # reproduced with QPainter.fillRect(QRectF). Python round() uses ties-to-even.
+    boundary=lambda logical:math.floor(logical*dpr+.5)
+    ImageDraw.Draw(expected).rectangle((boundary(origin.x()+bounds["x"]),boundary(origin.y()+bounds["y"]),
+        boundary(origin.x()+bounds["x"]+bounds["width"])-1,boundary(origin.y()+bounds["y"]+bounds["height"])-1),fill=background)
     for part in ("track","thumb"):
         config=source[part]
         backdrop=source["background"] if part=="track" else snapshot["track"]["paint"]["body"]["pigment"]["body"]
