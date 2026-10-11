@@ -17,6 +17,9 @@ pub use command_content::{
     CommandContentPrepareError, prepare_command_content, prepare_command_content_at,
 };
 
+mod command_inputs;
+pub use command_inputs::{CommandInputs, CommandPrepareError, CommandPublication};
+
 mod text;
 pub use text::{
     LabelMeasureError, LabelPrepareError, measure_command_label, prepare_command_label,

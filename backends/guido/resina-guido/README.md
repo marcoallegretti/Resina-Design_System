@@ -238,6 +238,39 @@ never replace an existing frame.
 
 ## Command content composition
 
+`CommandInputs` owns one complete authored content and resolution context. Its
+`prepare` method resolves the selected anatomy, theme-bound typography, complete
+native label measurement, current paint, a neutral-rest target reservation and
+checked accessibility semantics before preparing either drawing channel. It
+returns a read-only `CommandPublication` only after every operation succeeds.
+The publication owns its members; a later preparation cannot change an earlier
+publication. All inputs are explicit, including layout limits, logical padding,
+neighbor reservations, contrast requirements and native font mapping.
+Content requirements below 4.5:1 and edge requirements below 3:1 are rejected,
+including for disabled and sampled publications. Stronger authored requirements
+reach the paint guards unchanged; invalid requirements are not clamped.
+
+Pass committed activation and observed hover. Requested availability must match
+the committed activation; resolve an availability transition before preparing
+its replacement. Preparation does not deliver an activation or commit a native
+update. On error, the owner must report the diagnostic and publish no replacement.
+
+`prepare_motion` uses the same producer with explicit retained channels and
+elapsed seconds through the shared motion resolver. Read the unprojected states
+from `publication.motion()` when retargeting; the bounded paint response is not
+the next spring state. Both paths preserve the neutral-rest reservation within
+one authored layout context. Rebuild the reservation when that context changes.
+
+The placement argument is applied to both drawing commands before device-grid
+sampling. Portable label, paint and target coordinates remain in their original
+component space. Map the target and native accessible bounds using that same
+placement. Do not apply a second translation to the drawing commands. Supply
+the actual device scale and a loaded font matching the resolved family role;
+this API does not observe compositor scale or select a font from that role.
+
+These methods prepare owned publications. They do not mount a Widget, schedule
+frames, observe focus, route input or publish a native accessibility tree.
+
 Use `prepare_command_content` for a checked `CommandSnapshot`, the same verified
 font family, device scale and sampling count. Resolve the snapshot with current
 activation, explicit hover, a stable reserved target and accessible semantics
