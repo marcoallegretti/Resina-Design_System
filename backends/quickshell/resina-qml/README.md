@@ -1,8 +1,59 @@
 # Quickshell paint and measurement (0.1.0)
 
-This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. It does not implement a complete control, interaction, animation, or a complete Shell conformance claim.
+This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement and drawing for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. The integrated static command profile below connects these foundations to native interaction and accessibility. Calibrated motion and complete Shell conformance remain unqualified.
+
+The separately locked [Qt runtime adapter](../resina-qt-runtime/README.md) supplies
+a Rust-owned command lifecycle QObject and native invocation evidence. The integrated profile now supplies native command input/accessibility in a standalone Qt host. Released Quickshell hosting remains a separate requirement.
+
+## Coherent command drawing
+
+[`ResinaCommandView.qml`](qml/ResinaCommandView.qml) prepares Rust-checked body,
+complete label, target and semantic data as one native drawing publication. It
+uses the compiled [Qt runtime](../resina-qt-runtime/README.md#coherent-native-command-view),
+waits for local image readiness, prepares complete glyphs with the checked body
+foreground, and withdraws all visible channels on replacement/failure/context
+loss. Its API, coordinate/lifetime requirements and executed capture matrix are
+specified in that runtime README. It is decorative, ignored by accessibility and
+has no native gesture handler. It does not implement a Button or animation.
+
+[`ResinaCommandKeyboard.qml`](qml/ResinaCommandKeyboard.qml) owns a native focus
+item and the Rust command lifecycle for keyboard delivery. Its
+[runtime contract and evidence](../resina-qt-runtime/README.md#native-command-keyboard-owner)
+cover repeat filtering, modified termination, interruption and lifetime.
+Pointer targeting, complete component composition and AT publication remain
+separate requirements.
+
+[`ResinaCommandInput.qml`](qml/ResinaCommandInput.qml) combines that keyboard
+owner with native primary mouse targeting/capture through the same Rust
+activation lifecycle. Its [native input contract](../resina-qt-runtime/README.md#native-command-pointer-owner)
+defines explicit stable reservations, coordinate mapping, capture cancellation,
+read-only native hover observations and executed Wayland evidence. Supply its
+current hover and committed activation together when preparing command drawing.
+It does not automatically prepare paint or publish an accessible Button.
+
+## Integrated static command control
+
+[`ResinaCommandControl.qml`](qml/ResinaCommandControl.qml) composes native input,
+Rust-validated complete content/body/target/semantics and a singular native
+accessible Button. Supply a complete snapshot request template, an explicit
+`disabledFocusable: false` policy and raster sample count. Fonts must already be
+registered. Consumers connect `activated` to product effects. The
+[runtime API and evidence](../resina-qt-runtime/README.md#integrated-static-command-control)
+define coherent readiness, cancellation, feedback publication and native
+AT-SPI verification. This profile realizes static feedback endpoints; calibrated
+motion and released Quickshell hosting remain separate qualification dependencies.
+`disabledFocusable: true` is rejected with a diagnostic, preserving the existing
+strict discoverable-disabled fixture and its known Qt mismatch.
 
 ## Native label measurement
+
+`ResinaCommandLabel.qml` connects the native pair to Rust-owned complete content
+layout through the [Qt runtime](../resina-qt-runtime/README.md#commandlabelresolver-and-native-content).
+It resolves authored Label typography, measures natural and fitted text in Qt,
+and prepares the resulting complete label box for drawing. It requires the
+compiled `Resina.Runtime` plugin and an explicit registered font mapping.
+Its color must come from guarded body paint after the composing owner validates
+content containment; it does not create input or accessibility semantics.
 
 Import [ResinaLabelMeasure.qml](qml/ResinaLabelMeasure.qml) into the application's
 QML module, or load it through a runtime `Loader`. Register the application's
@@ -11,7 +62,8 @@ The component is invisible, has no input target and is ignored by accessibility.
 Call its synchronous `measure(text, family, pixelSize, weight, spacing,
 lineHeight, maximumWidth)` method on the Qt UI thread for each natural/fitted
 request from the [portable label policy](../../../spec/46-command-label-layout.md).
-It returns `{width, height, nativeText, paragraphs}` or throws a diagnostic error;
+It returns `{width, height, nativeText, paragraphs, fontMapping,
+nativeLineHeight, nativeWrappingWidth}` or throws a diagnostic error;
 an error publishes no extent. `maximumWidth` is explicitly `null` for natural
 measurement or a finite positive logical wrapping constraint.
 Both dimensions are logical pixels. CRLF, CR, VT, FF and NEL hard breaks are
@@ -41,8 +93,8 @@ limit. `implicitHeight` preserves trailing blank lines that `contentHeight`
 omits on Qt 6.11.2. Natural width is the native implicit width; fitted width is
 the complete content width, checked against the unchanged offered constraint.
 
-The selected primary family, pixel size and reported weight must match the
-request for every nonempty paragraph. [Qt's empty-layout path](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L430-L455)
+The selected primary family, mapped native pixel size and reported weight must
+match for every nonempty paragraph. [Qt's empty-layout path](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L430-L455)
 uses current native font metrics without refreshing `fontInfo`; blank entries
 retain those metrics, while nonempty entries validate the actual selected face.
 Qt's native font selection/synthesis supplies the weight; per-glyph
@@ -54,15 +106,24 @@ matching the helper's explicit font traits and layout metrics.
 This helper measures layout; accessibility and a Rust/QML product binding
 require their own evidence. The drawing counterpart is described below.
 
-Native limits are explicit. [Qt's pixel-size property is integer-valued](https://doc.qt.io/qt-6.11/qml-qtquick-text.html#font.pixelSize-prop),
-so fractional resolved font sizes fail rather than rounding or shrinking.
-Using points does not provide arbitrary precision: [Qt 6.11.2 rounds the Text
-font to half-point steps](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L1630-L1634).
-Continuous text-scale conformance remains open for this backend. Native letter
-spacing conversion must retain the requested value within 1/1024 logical px.
-Values outside [Qt's signed 26.6 fixed-point range](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/painting/qfixed_p.h)
-fail before native assignment; quantization is checked through the native
-readout. U+009C fails because [Qt interprets it as a multi-length separator and
+Native limits are explicit. [Qt's pixel-size property is integer-valued](https://doc.qt.io/qt-6.11/qml-qtquick-text.html#font.pixelSize-prop).
+Integer sizes with representable spacing retain direct native layout. Otherwise
+the pair uses an integer native size of `max(1024, ceil(pixelSize * 8))` and a
+uniform inverse transform of `pixelSize / nativeSize`. Spacing, line height and
+wrapping width reach native layout in those same units; complete advances and
+heights return to logical units. Drawing uses exactly that mapping and transform.
+This is a native representation of requested typography, not font shrinking to
+fit content or another application of environment text scaling. It uses public
+Qt Quick `Text` and item transforms, with no private text API or point-size
+rounding.
+
+The effective font-size transform and native spacing readout must preserve
+requested values within the existing **1/1024 logical px** budget. Integer font
+and [signed 26.6 spacing ranges](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/painting/qfixed_p.h)
+are checked before assignment. Transformed wrapping widths round downward to
+the native fixed-point grid within that same budget; they never widen the
+offered width. The portable label box retains its full offered width. Excessive
+or collapsed conversions fail diagnostically. U+009C fails because [Qt interprets it as a multi-length separator and
 discards the suffix](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L224-L229),
 even with plain text and no ellipsis. The paragraph owner avoids Qt's ignored
 plain-text U+2029 break by using independent native layouts, consistent with
@@ -74,8 +135,9 @@ python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/
 python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --platform wayland
 ```
 
-The native probe checks 27 labels, three text scales and three signed spacing
+The native probe checks 27 labels, four text scales and four signed spacing
 values on each of five actual device scales (0.5, 1, 1.25, 2 and 1.3). It includes
+100.06% text scaling and the authored 0.15 px wide tracking, alongside
 Latin, expanded German, Arabic, 100/150/200% string-length fixtures, literal
 markup, LF/CRLF/CR, VT/FF/NEL, line separators and leading/trailing/consecutive
 blank lines and mixed-script/blank paragraphs. A separate native Text oracle
@@ -84,9 +146,10 @@ each fitted paragraph also matches its isolated native measurement. The probe
 checks complete line heights, contiguous paragraph offsets, wide-word reflow,
 spacing effects, weights with blank paragraphs, fractional line heights and
 13 invalid/unsupported inputs, including failure after a valid paragraph and
-recovery afterward. All 1215 measurement and 65 diagnostic cases passed locally
-on both software/offscreen and software/Wayland with Quickshell 0.3.1 /
-Qt 6.11.2 on WSLg. Runtime CI and other
+recovery afterward. The extended matrix passed software/offscreen with unmodified
+Quickshell 0.3.1 and Qt 6.11.2. Earlier integer-size evidence passed on
+software/Wayland with WSLg; the extended matrix has not been rerun there.
+Runtime CI and other
 fonts/compositors remain unverified. The checker itself is covered by portable
 CI tests that reject incomplete, duplicate, failed and wrong-scale evidence.
 
@@ -129,24 +192,32 @@ python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/tr
 python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --scene-graph rhi --scales 0.5 1 1.25 2 1.3 --output-dir target/qt-label-rhi
 ```
 
-Use fresh output directories. The probe compares 25 actual drawing/reference
+Use fresh output directories. The probe compares 36 actual drawing/reference
 capture pairs per device scale, including glyph overhang, three text scales,
 expanded German, Arabic, independent mixed-script paragraphs, literal markup,
-string-length expansion and blank paragraphs. It also checks request mutation,
+string-length expansion and blank paragraphs. Additional Latin, German, Arabic
+and mixed-paragraph captures use 12.3, 16.01, 20.5 and 20.012 px sizing with
+0.15 px tracking, including overhang from a 60.012 px `j`. It also checks request mutation,
 nine rejected requests and recovery. References use independent native Text
-items at the same physical position; this avoids GPU rounding differences from
+items at the same physical position and validate their selected font. The font
+asset has an unambiguous identifier rather than shadowing `Text.font`; a
+reference that falls back to the ambient family is rejected. This avoids GPU rounding differences from
 translating the reference across the viewport. Captures use logical item size:
 [Qt applies the window's device scale itself](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquickitemgrabresult.cpp#L244-L280).
 The checker rejects missing, stale, translucent, incorrectly sized or differing
 captures and requires visible ink outside the `j` advance box. Portable tests
 cover both image inputs and the one-byte channel comparison tolerance.
 
-On local Quickshell 0.3.1 / Qt 6.11.2, software/offscreen and software/Wayland
-passed scales 1, 1.25, 2 and 1.3; OpenGL RHI on Mesa software graphics passed
-0.5, 1, 1.25, 2 and 1.3 on both surfaces. Software `grabToImage` at 0.5 produces
+The extended captures passed software/offscreen and OpenGL RHI on Mesa software
+graphics on unmodified Quickshell 0.3.1 / Qt 6.11.2 at scales 1, 1.25, 2 and 1.3.
+The probe asserts the actual `GraphicsInfo.api`, rejecting renderer substitution.
+Prior integer-size captures passed
+software/Wayland and OpenGL RHI on Mesa software graphics; those prior captures
+did not assert the reference's selected font, so their font-mapping evidence is
+limited. Software `grabToImage` at 0.5 produces
 an invalid partially black capture and fails the checker when requested.
-Live software presentation at 0.5, hardware GPUs, runtime CI, continuous text
-scaling, other fonts and complete component/accessibility conformance remain
+Live software presentation at 0.5, hardware GPUs, runtime CI, arbitrary font
+mapping, other fonts and complete component/accessibility conformance remain
 unverified.
 
 ## Complete opaque paint
@@ -155,7 +226,7 @@ unverified.
 
 The result is standalone QML with one synchronous `Image` containing a percent-encoded sRGB RGBA8 PNG. It requires neither an external image file nor a JavaScript sampler. The CPU backend's pixel/sample limits and the Qt coordinate precision guard apply before output. PNG encoding also completes before publication; invalid scale, placement, sampling, bounds or resource use produces an error and no component.
 
-`paintOriginX` and `paintOriginY` already include the supplied parent placement, rounded outward to the device grid. Place the item at those coordinates without adding placement a second time. Its implicit dimensions reserve the complete pixel footprint, including negative focus origins and less than one pixel of transparent padding. Changing the root item's dimensions does not scale the image. Keep ancestors from clipping it, preserve its scale and translation, and publish it only when `paintReady` is true. The paint is decorative and owns no input or accessible semantics.
+`paintOriginX` and `paintOriginY` already include the supplied parent placement, rounded outward to the device grid. Place the item at those coordinates without adding placement a second time. Its implicit dimensions reserve the complete pixel footprint, including negative focus origins and less than one pixel of transparent padding. Changing the root item's dimensions does not scale the image. Keep ancestors from clipping it, preserve its scale and translation, and publish it only when `paintReady` is true. `paintError` reports native PNG decoding failure; a pending image is not ready paint. The paint is decorative and owns no input or accessible semantics.
 
 Preparation requires the actual destination device scale, available through Qt Quick's attached `Screen.devicePixelRatio` once the item is associated with its display. `preparedDeviceScale` records that value. Prepare a complete replacement when placement, device scale or resolved paint changes; changing the display scale cannot regenerate an exported static image. Schedule CPU preparation outside the interactive frame loop and reuse the result. This path does not claim animated, live monitor-transfer or component-state integration.
 
@@ -176,6 +247,66 @@ python tools/check_quickshell_paint_runtime.py \
 ```
 
 Generate the catalog using the existing [material scene tooling](../../../tools/material_scenarios.py), install the pinned render-test requirements below, and use a fresh output directory. On local Quickshell 0.3.1 / Qt 6.11.2, all 16 Light/Dark, Cast/Frost/Elastomer/Gel and resting/focused scenes passed software/offscreen captures at scales 1.25 and 2, and graphics/offscreen captures at scales 0.5, 1.25 and 2 using OpenGL on Mesa software graphics (`--scene-graph rhi`). Software `grabToImage` at scale 0.5 clipped the capture and fails the checker; live presentation at that scale remains unverified. The checker retains that failure when explicitly requested. Software/Wayland captures on WSLg also passed all 16 scenes at scales 1, 1.25 and 2 (`--platform wayland`). Hardware GPU, compositor diversity and runtime CI remain unverified.
+
+## Native command accessibility prerequisite
+
+The [Qt availability fixture](../../../conformance/quickshell/availability-probe.qml)
+and [native checker](../../../tools/check_qt_native_availability.py) measure the
+actual Linux AT-SPI tree and invoke its advertised Press actions. The diagnostic
+host uses pinned Qt 6.11.2 through PySide6; it does not run Quickshell. Reports
+identify the default `reference-protocol` binding. Setting
+`RESINA_QT_RUNTIME_MODULE` to the packaged runtime import root instead runs the
+compiled Rust controller, reported as `rust-qt-runtime`; see its README above.
+Install the native X11 or Wayland platform libraries and AT-SPI services, then run on a live
+display (Xvfb is sufficient for this tree/action probe):
+
+```sh
+python -m pip install -r tools/requirements-qt-native.txt
+python -m pip install -r tools/requirements-schema.txt
+cargo build -p resina-resolver --bin resina-activation --locked
+python tools/check_activation_backend.py -- target/debug/resina-activation -
+python tools/check_qt_native_availability.py --report-only
+python tools/check_qt_native_availability.py
+```
+
+The checker owns a fresh D-Bus session, bounds execution and rejects missing or
+duplicate nodes/actions, invalid state replies, failed action delivery and
+incorrect callback records. `--report-only` permits measured semantic mismatches;
+execution failures still exit nonzero. The strict command retains the existing
+discoverable-disabled expectation and currently fails it.
+
+Executed on Qt 6.11.2 with the native X11 platform, software scene graph and Xvfb:
+enabled commands publish enabled/sensitive/focusable; disabled commands publish
+neither enabled nor sensitive. Both disabled policies publish non-focusable,
+including the fixture that requests discoverable focus. Qt explicitly
+[clears focusability when the item is disabled](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/accessible/qaccessiblequickitem.cpp#L451-L460).
+The excluded-disabled policy matches; the discoverable-disabled policy remains
+unsupported. Resina semantics have not been changed to accommodate this limit.
+
+Native AT-SPI Press is delivered even to disabled items. The diagnostic host
+routes each callback through the existing `resina-activation` public protocol,
+validates its result schema and commits next state before counting its activation
+intent. The fixture's explicit product behavior revokes availability after the
+first activation through that same lifecycle. Disabled invocations produce no
+activation, the enabled invocation activates once, and a subsequent invocation
+produces no additional activation. The checker verifies the complete transition
+results, committed state, intent count and native availability after revocation.
+Set `RESINA_ACTIVATION_BACKEND` to the absolute path of another built reference
+executable if using a different target directory. This subprocess-backed host
+is a conformance diagnostic, not an interactive production binding. The fixture
+uses Qt's `accessiblePressAction()` method dispatch rather than an attached
+`onPressAction` signal, because Qt's Button role already advertises Press and the
+attached signal produces a duplicate. These behaviors follow the pinned
+[action implementation](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/accessible/qaccessiblequickitem.cpp#L515-L574).
+
+This evidence establishes native AT-SPI invocation through the canonical
+activation protocol and a live-availability guard requirement. It does not
+establish an interactive production binding, complete component conformance,
+keyboard/pointer input, screen-reader operation, Wayland behavior,
+Quickshell hosting or runtime CI. The fixture is diagnostic and supplies no
+production control or Resina appearance. Complete controls must map existing
+normative snapshots and operations, compose verified paint/text/focus, and obtain
+their own native integration evidence.
 
 ## Native focus contours
 

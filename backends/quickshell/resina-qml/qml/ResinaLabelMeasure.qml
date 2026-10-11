@@ -8,6 +8,37 @@ Item {
     activeFocusOnTab: false
     Accessible.ignored: true
 
+    function measureJson(source) {
+        try {
+            const request = JSON.parse(source);
+            const result = measure(request.text, request.family, request.pixelSize, request.weight,
+                request.spacing, request.lineHeight, request.maximumWidth);
+            return JSON.stringify({kind:"extent", width:result.width, height:result.height});
+        } catch (error) {
+            return JSON.stringify({kind:"error", message:error.message});
+        }
+    }
+
+    function fontMapping(pixelSize, spacing) {
+        if (!Number.isFinite(pixelSize) || pixelSize <= 0 || pixelSize > 2147483647)
+            throw new Error("Qt Quick label pixel size must be finite, positive and representable");
+        if (!Number.isFinite(spacing))
+            throw new Error("Qt Quick label spacing must be finite");
+        const directSpacing = Math.round(spacing * 64) / 64;
+        const direct = Number.isInteger(pixelSize) && Math.abs(directSpacing - spacing) <= 1 / 1024;
+        const nativeSize = direct ? pixelSize : Math.max(1024, Math.ceil(pixelSize * 8));
+        const scale = pixelSize / nativeSize;
+        const nativeSpacing = spacing / scale;
+        if (nativeSize > 2147483647 || !Number.isFinite(scale) || scale <= 0
+            || !Number.isFinite(Math.fround(scale)) || Math.fround(scale) <= 0
+            || Math.abs(nativeSize * Math.fround(scale) - pixelSize) > 1 / 1024)
+            throw new Error("Qt Quick label font transform exceeds the 1/1024 logical px precision budget");
+        if (!Number.isFinite(nativeSpacing) || nativeSpacing * 64 < -2147483648
+            || nativeSpacing * 64 > 2147483647)
+            throw new Error("Qt Quick label letter spacing exceeds the native fixed-point range");
+        return {pixelSize: nativeSize, scale: scale, spacing: nativeSpacing};
+    }
+
     function measure(text, family, pixelSize, weight, spacing, lineHeight, maximumWidth) {
         if (typeof text !== "string" || !text.trim().length)
             throw new Error("Qt Quick label text must not be blank");
@@ -15,15 +46,10 @@ Item {
             throw new Error("Qt Quick label cannot contain the native multi-length string separator");
         if (typeof family !== "string" || !Qt.fontFamilies().includes(family))
             throw new Error("Qt Quick label font family is not registered");
-        if (!Number.isInteger(pixelSize) || pixelSize <= 0 || pixelSize > 2147483647)
-            throw new Error("Qt Quick label pixel size must be a positive native integer");
         if (!Number.isInteger(weight) || weight < 1 || weight > 1000)
             throw new Error("Qt Quick label weight must be an integer in 1..1000");
         if (!Number.isFinite(spacing) || !Number.isFinite(lineHeight) || lineHeight <= 0)
             throw new Error("Qt Quick label spacing and line height must be finite, with positive line height");
-        // QFont converts spacing to a signed 26.6 fixed-point value before shaping.
-        if (spacing * 64 < -2147483648 || spacing * 64 > 2147483647)
-            throw new Error("Qt Quick label letter spacing exceeds the native fixed-point range");
         if (maximumWidth !== null && (!Number.isFinite(maximumWidth) || maximumWidth <= 0))
             throw new Error("Qt Quick label wrapping width must be null or finite and positive");
         const fixedHeight = pixelSize * lineHeight;
@@ -31,27 +57,41 @@ Item {
             throw new Error("Qt Quick label resolved line height is not representable");
 
         const nativeText = text.replace(/\r\n?|[\u000b\u000c\u0085]/g, "\n");
+        const mapping = fontMapping(pixelSize, spacing);
+        const nativeHeight = fixedHeight / mapping.scale;
+        let nativeWidth = maximumWidth === null ? null : maximumWidth / mapping.scale;
+        // QTextLayout uses 26.6 widths. A transformed offer must never widen.
+        if (nativeWidth !== null && mapping.scale !== 1) {
+            nativeWidth = Math.floor(nativeWidth * 64) / 64;
+            if (nativeWidth * mapping.scale > maximumWidth)
+                nativeWidth -= 1 / 64;
+            if (maximumWidth - nativeWidth * mapping.scale > 1 / 1024)
+                throw new Error("Qt Quick label wrapping width exceeds the 1/1024 logical px precision budget");
+        }
+        if (!Number.isFinite(nativeHeight) || nativeHeight <= 0
+            || (nativeWidth !== null && (!Number.isFinite(nativeWidth) || nativeWidth <= 0)))
+            throw new Error("Qt Quick label native extent is not representable");
         label.font.family = family;
-        label.font.pixelSize = pixelSize;
+        label.font.pixelSize = mapping.pixelSize;
         label.font.weight = weight;
-        label.font.letterSpacing = spacing;
-        if (Math.abs(label.font.letterSpacing - spacing) > 1 / 1024)
+        label.font.letterSpacing = mapping.spacing;
+        if (Math.abs(label.font.letterSpacing * mapping.scale - spacing) > 1 / 1024)
             throw new Error("Qt Quick label letter spacing exceeds the 1/1024 logical px native precision budget");
-        label.lineHeight = fixedHeight;
+        label.lineHeight = nativeHeight;
         const paragraphs = [];
         let width = 0;
         let height = 0;
         for (const paragraph of nativeText.split("\u2029")) {
             label.text = paragraph;
             label.forceLayout();
-            label.width = maximumWidth === null ? label.implicitWidth : maximumWidth;
+            label.width = nativeWidth === null ? label.implicitWidth : nativeWidth;
             label.forceLayout();
             // Qt does not refresh fontInfo for an empty layout, which has no glyphs.
             if (paragraph.length && (label.fontInfo.family !== family
-                || label.fontInfo.pixelSize !== pixelSize || label.fontInfo.weight !== weight))
+                || label.fontInfo.pixelSize !== mapping.pixelSize || label.fontInfo.weight !== weight))
                 throw new Error("Qt Quick label substituted the requested family, pixel size or weight");
-            const paragraphWidth = maximumWidth === null ? label.implicitWidth : label.contentWidth;
-            const paragraphHeight = label.implicitHeight;
+            const paragraphWidth = (nativeWidth === null ? label.implicitWidth : label.contentWidth) * mapping.scale;
+            const paragraphHeight = label.implicitHeight * mapping.scale;
             if (label.truncated || !Number.isFinite(paragraphWidth) || paragraphWidth < 0
                 || !Number.isFinite(paragraphHeight) || paragraphHeight <= 0
                 || (maximumWidth !== null && paragraphWidth > maximumWidth))
@@ -66,7 +106,8 @@ Item {
         }
         if (width <= 0)
             throw new Error("Qt Quick complete label advance must be positive");
-        return { width: width, height: height, nativeText: nativeText, paragraphs: paragraphs };
+        return { width: width, height: height, nativeText: nativeText, paragraphs: paragraphs,
+            fontMapping: mapping, nativeLineHeight: nativeHeight, nativeWrappingWidth: nativeWidth };
     }
 
     Text {

@@ -8,7 +8,7 @@ FloatingWindow {
     color: "white"
 
     FontLoader {
-        id: font
+        id: fontAsset
         source: Quickshell.env("RESINA_LABEL_FONT")
     }
     Loader {
@@ -18,7 +18,7 @@ FloatingWindow {
     Text {
         id: paragraphOracle
         visible: false
-        font.family: font.name
+        font.family: fontAsset.name
         font.pixelSize: 20
         font.weight: 400
         textFormat: Text.PlainText
@@ -32,7 +32,7 @@ FloatingWindow {
         running: true
         onTriggered: {
             try {
-                if (font.status !== FontLoader.Ready || font.name !== "DejaVu Sans")
+                if (fontAsset.status !== FontLoader.Ready || fontAsset.name !== "DejaVu Sans")
                     throw new Error("the explicit DejaVu Sans font must be loaded first");
                 if (measurement.status !== Loader.Ready)
                     throw new Error("the native measurement component must be loaded");
@@ -52,13 +52,16 @@ FloatingWindow {
                     "مرحبا بالعالم\u2029Reconnect", "Reconnect\u2029مرحبا بالعالم",
                     "مرحبا بالعالم\u2029! 123\u2029Reconnect"];
                 let checked = 0;
-                for (const scale of [1, 1.5, 2]) {
+                for (const scale of [1, 1.5, 2, 1.0006]) {
                     const size = 20 * scale;
                     for (const text of texts) {
-                        for (const spacing of [-0.25, 0, 0.5]) {
-                            const natural = measurer.measure(text, font.name, size, 400, spacing, 1.4, null);
+                        for (const spacing of [-0.25, 0, 0.5, 0.15]) {
+                            const natural = measurer.measure(text, fontAsset.name, size, 400, spacing, 1.4, null);
                             const offered = Math.min(natural.width, 100 * scale);
-                            const fitted = measurer.measure(text, font.name, size, 400, spacing, 1.4, offered);
+                            const fitted = measurer.measure(text, fontAsset.name, size, 400, spacing, 1.4, offered);
+                            if (Math.abs(fitted.fontMapping.pixelSize * fitted.fontMapping.scale - size) > 1 / 1024
+                                || fitted.nativeWrappingWidth * fitted.fontMapping.scale > offered)
+                                throw new Error("native font transform changed typography or widened the offer");
                             if (fitted.width > offered || fitted.height < natural.height)
                                 throw new Error("complete reflow extent is inconsistent");
                             if (fitted.nativeText !== natural.nativeText)
@@ -77,7 +80,7 @@ FloatingWindow {
                                     || paragraph.y !== paragraphHeight)
                                     throw new Error("paragraph content or placement changed");
                                 if (paragraph.nativeText.trim().length) {
-                                    const alone = measurer.measure(paragraph.nativeText, font.name, size, 400, spacing, 1.4, offered);
+                                    const alone = measurer.measure(paragraph.nativeText, fontAsset.name, size, 400, spacing, 1.4, offered);
                                     if (alone.width !== paragraph.width || alone.height !== paragraph.height)
                                         throw new Error("neighboring paragraphs changed native shaping");
                                 }
@@ -91,17 +94,19 @@ FloatingWindow {
                     }
                 }
                 const word = "Supercalifragilisticexpialidocious";
-                const natural = measurer.measure(word, font.name, 20, 400, 0, 1.4, null);
-                const fitted = measurer.measure(word, font.name, 20, 400, 0, 1.4, 60);
+                const natural = measurer.measure(word, fontAsset.name, 20, 400, 0, 1.4, null);
+                const fitted = measurer.measure(word, fontAsset.name, 20, 400, 0, 1.4, 60);
                 if (fitted.width > 60 || fitted.height <= natural.height * 2)
                     throw new Error("a wide word did not reflow completely");
-                const base = measurer.measure("Reconnect", font.name, 20, 400, 0, 1.4, null);
-                const mixed = measurer.measure("مرحبا بالعالم\u2029! 123\u2029Reconnect", font.name, 20, 400, 0, 1.4, null);
+                const base = measurer.measure("Reconnect", fontAsset.name, 20, 400, 0, 1.4, null);
+                const mixed = measurer.measure("مرحبا بالعالم\u2029! 123\u2029Reconnect", fontAsset.name, 20, 400, 0, 1.4, null);
                 for (let index = 0; index < mixed.paragraphs.length; index++) {
                     const paragraph = mixed.paragraphs[index];
                     paragraphOracle.text = paragraph.nativeText;
                     paragraphOracle.forceLayout();
-                    if (paragraphOracle.implicitWidth !== paragraph.width
+                    if (paragraphOracle.fontInfo.family !== fontAsset.name
+                        || paragraphOracle.fontInfo.pixelSize !== 20 || paragraphOracle.fontInfo.weight !== 400
+                        || paragraphOracle.implicitWidth !== paragraph.width
                         || paragraphOracle.implicitHeight !== paragraph.height
                         || paragraphOracle.effectiveHorizontalAlignment
                             !== (index === 0 ? Text.AlignRight : Text.AlignLeft))
@@ -110,12 +115,12 @@ FloatingWindow {
                                 width: paragraphOracle.implicitWidth, height: paragraphOracle.implicitHeight,
                                 alignment: paragraphOracle.effectiveHorizontalAlignment }));
                 }
-                const spaced = measurer.measure("Reconnect", font.name, 20, 400, 2, 1.4, null);
+                const spaced = measurer.measure("Reconnect", fontAsset.name, 20, 400, 2, 1.4, null);
                 if (spaced.width < base.width + 10)
                     throw new Error("letter spacing did not reach native shaping");
                 for (const weight of [100, 600, 900])
-                    measurer.measure("\u2029Reconnect\u2029", font.name, 20, weight, 0, 1.4, null);
-                const fractional = measurer.measure("a\u2029\u2029b", font.name, 20, 400, 0, 1.405, null);
+                    measurer.measure("\u2029Reconnect\u2029", fontAsset.name, 20, weight, 0, 1.4, null);
+                const fractional = measurer.measure("a\u2029\u2029b", fontAsset.name, 20, 400, 0, 1.405, null);
                 for (let index = 0; index < fractional.paragraphs.length; index++) {
                     if (Math.abs(fractional.paragraphs[index].height - 28.1) > 1e-9
                         || Math.abs(fractional.paragraphs[index].y - index * 28.1) > 1e-9)
@@ -123,24 +128,24 @@ FloatingWindow {
                 }
                 if (Math.abs(fractional.height - 84.3) > 1e-9)
                     throw new Error("fractional complete paragraph height was lost");
-                const literal = measurer.measure("<b>Reconnect</b>", font.name, 20, 400, 0, 1.4, null);
+                const literal = measurer.measure("<b>Reconnect</b>", fontAsset.name, 20, 400, 0, 1.4, null);
                 if (literal.width <= base.width)
                     throw new Error("plain text was interpreted as markup");
-                const firstParagraphWidth = measurer.measure("a", font.name, 20, 400, 0, 1.4, null).width;
+                const firstParagraphWidth = measurer.measure("a", fontAsset.name, 20, 400, 0, 1.4, null).width;
                 const failures = [
-                    [" ", font.name, 20, 400, 0, 1.4, null],
-                    ["a\u009cb", font.name, 20, 400, 0, 1.4, null],
+                    [" ", fontAsset.name, 20, 400, 0, 1.4, null],
+                    ["a\u009cb", fontAsset.name, 20, 400, 0, 1.4, null],
                     ["a", "Missing Resina Test Family", 20, 400, 0, 1.4, null],
-                    ["a", font.name, 20.5, 400, 0, 1.4, null],
-                    ["a", font.name, 20, 400.5, 0, 1.4, null],
-                    ["a", font.name, 20, 400, NaN, 1.4, null],
-                    ["a", font.name, 20, 400, 0.01, 1.4, null],
-                    ["a", font.name, 20, 400, 1e30, 1.4, null],
-                    ["a", font.name, 20, 400, 0, Infinity, null],
-                    ["a", font.name, 20, 400, 0, 1.4, 0],
-                    ["a", font.name, 20, 400, 0, 1.4, undefined],
-                    ["W", font.name, 20, 400, 0, 1.4, 0.001],
-                    ["a\u2029W", font.name, 20, 400, 0, 1.4, firstParagraphWidth]
+                    ["a", fontAsset.name, Number.MIN_VALUE, 400, 0, 1.4, null],
+                    ["a", fontAsset.name, 20, 400.5, 0, 1.4, null],
+                    ["a", fontAsset.name, 20, 400, NaN, 1.4, null],
+                    ["a", fontAsset.name, 2147483648, 400, 0, 1.4, null],
+                    ["a", fontAsset.name, 20, 400, 1e30, 1.4, null],
+                    ["a", fontAsset.name, 20, 400, 0, Infinity, null],
+                    ["a", fontAsset.name, 20, 400, 0, 1.4, 0],
+                    ["a", fontAsset.name, 20, 400, 0, 1.4, undefined],
+                    ["W", fontAsset.name, 20, 400, 0, 1.4, 0.001],
+                    ["a\u2029W", fontAsset.name, 20, 400, 0, 1.4, firstParagraphWidth]
                 ];
                 for (const request of failures) {
                     let rejected = false;
@@ -149,7 +154,7 @@ FloatingWindow {
                     if (!rejected)
                         throw new Error("invalid or unsupported native measurement succeeded");
                 }
-                const recovered = measurer.measure("Reconnect", font.name, 20, 400, 0, 1.4, null);
+                const recovered = measurer.measure("Reconnect", fontAsset.name, 20, 400, 0, 1.4, null);
                 if (recovered.width !== base.width || recovered.height !== base.height)
                     throw new Error("a failed request contaminated the next complete measurement");
                 console.log("RESINA_LABEL_PASS", checked, failures.length, window.screen.devicePixelRatio);

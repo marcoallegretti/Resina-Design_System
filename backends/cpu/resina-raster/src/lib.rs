@@ -311,6 +311,12 @@ fn quantize(channel: f64) -> u8 {
     (channel * 255.0).round() as u8
 }
 
+/// Check the same sampling, precision and resource guards used by rendering,
+/// without allocating or sampling a frame.
+pub fn validate_viewport(viewport: Viewport, samples_per_axis: u8) -> Result<(), RasterError> {
+    validate(viewport, samples_per_axis).map(|_| ())
+}
+
 fn validate(viewport: Viewport, samples_per_axis: u8) -> Result<usize, RasterError> {
     if !(1..=8).contains(&samples_per_axis) {
         return Err(RasterError::InvalidSampling);
