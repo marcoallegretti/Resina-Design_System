@@ -497,6 +497,7 @@ dependencies = [
  "cxx-qt-lib",
  "resina-environment",
  "resina-model",
+ "resina-motion",
  "resina-qml",
  "resina-resolver",
  "resina-tokens",

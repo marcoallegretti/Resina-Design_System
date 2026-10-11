@@ -6,11 +6,14 @@ ResinaCommandInput {
     required property string configuration
     required property bool disabledFocusable
     required property int samplesPerAxis
+    property string motionChannels: ""
+    property alias motion: resolver.motion
+    property alias currentFrame: resolver.frame
     // Alias the native read-only property: a consumer can reenter publication
     // without recursively mutating a QML string binding.
     property alias snapshot: resolver.publication
     readonly property bool ready: acceptsNewGestures && pointerOwner && pointerOwner.acceptsNewGestures
-        && snapshot.length > 0 && view.paintReady
+        && snapshot.length > 0 && currentFrame && currentFrame.paintReady
     readonly property string preparationError: state.error
     signal activated()
 
@@ -35,6 +38,43 @@ ResinaCommandInput {
         return controller.dispatch('{"kind":"invoke"}');
     }
 
+    function retireViews() {
+        view.invalidate();
+        if (state.alternate) state.alternate.invalidate();
+        state.pendingView = null;
+    }
+
+    function clockValue(source) {
+        const value = JSON.parse(source);
+        if (value.error) throw new Error(value.error);
+        return value;
+    }
+
+    function captureMotion() {
+        if (!state.channels || !state.motionTarget) return null;
+        const time = clockValue(clock.sample()).time;
+        return clockValue(resolver.retargetMotion(JSON.stringify({channels:state.channels,
+            target:state.motionTarget,policy:state.policy,time:time}))).channels;
+    }
+
+    function motionSource(request, options) {
+        // Resolve policy/target through Rust; no material policy is implemented in QML.
+        const retained = state.motionTarget ? captureMotion() : state.channels;
+        const probe = clockValue(resolver.resolveMotionSnapshot(request,measurement,options,
+            JSON.stringify({schemaVersion:"0.1.0",channels:retained,time:0}),false)).motion;
+        if (!state.motionTarget) {
+            clockValue(clock.restart());
+        } else if (canonical(probe.target) !== canonical(state.motionTarget) || probe.policy !== state.policy) {
+            const previousTime = clockValue(clock.restart()).previousTime;
+            const previous = clockValue(resolver.retargetMotion(JSON.stringify({channels:state.channels,
+                target:state.motionTarget,policy:state.policy,time:previousTime})));
+            state.channels = previous.channels;
+        }
+        state.motionTarget = probe.target;
+        state.policy = probe.policy;
+        return JSON.stringify({schemaVersion:"0.1.0",channels:state.channels,time:clockValue(clock.sample()).time});
+    }
+
     function fail(cause) {
         state.revision = {};
         state.qualified = false;
@@ -43,11 +83,15 @@ ResinaCommandInput {
         state.semantics = null;
         state.pending = "";
         state.error = cause;
+        state.motionActive = false;
+        state.channels = null;
+        state.motionTarget = null;
+        clock.invalidate();
         root.focus = false;
         const running = state.running;
         state.running = true;
         try {
-            view.invalidate();
+            retireViews();
             invalidateTarget();
             interrupt();
         } finally { state.running = running; }
@@ -93,19 +137,39 @@ ResinaCommandInput {
             const prepared = JSON.parse(resolver.qualifySnapshot(source,measurement,options));
             if (prepared.error) throw new Error(prepared.error);
         }
+        if (motionChannels.length) {
+            const channels = clockValue(resolver.validateMotionChannels(motionChannels)).channels;
+            const profile = canonical(channels);
+            state.channels = state.resumeChannels && profile === state.profile ? state.resumeChannels : channels;
+            state.profile = profile;
+            state.resumeChannels = null;
+            state.motionTarget = null;
+            if (!state.alternate) {
+                const component = Qt.createComponent("ResinaCommandView.qml");
+                if (component.status !== Component.Ready) throw new Error(component.errorString());
+                const candidate = component.createObject(root);
+                if (!candidate) throw new Error("Qt motion frame view could not be created");
+                state.alternate = candidate;
+                candidate.visible = Qt.binding(() => root.ready && root.currentFrame === candidate && candidate.paintReady);
+            }
+            state.alternate.x = view.x;
+            state.alternate.y = view.y;
+        }
         state.qualified = true;
     }
 
-    function refresh() {
+    function refresh(frameOnly) {
         if (!state.started) return;
         if (state.running) { state.dirty = true; return; }
         state.running = true;
         state.revision = {};
         state.dirty = false;
         try {
-            resolver.publishSnapshot("");
-            state.semantics = null;
-            view.invalidate();
+            if (frameOnly !== true || !motionChannels.length) {
+                resolver.publishSnapshot("");
+                state.semantics = null;
+                retireViews();
+            }
             if (disabledFocusable)
                 throw new Error("Qt command control does not support discoverable disabled focus; choose an explicit excluding policy");
             if (!state.qualified) qualify();
@@ -130,17 +194,26 @@ ResinaCommandInput {
             // Target preparation can expose a retained native hover observation.
             state.pending = requestFor(JSON.parse(publication).state,root.hovered);
             const origin = view.mapToItem(null,0,0);
-            view.prepare(state.pending,JSON.stringify({x:origin.x,y:origin.y,
-                deviceScale:view.nativeDeviceScale,samplesPerAxis:samplesPerAxis}));
+            const options = JSON.stringify({x:origin.x,y:origin.y,
+                deviceScale:view.nativeDeviceScale,samplesPerAxis:samplesPerAxis});
+            const candidate = motionChannels.length && root.currentFrame === view ? state.alternate : view;
+            state.pendingView = candidate;
+            candidate.invalidate();
+            if (motionChannels.length)
+                candidate.prepare(state.pending,options,motionSource(state.pending,options));
+            else
+                candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
-            view.completePreparation();
+            candidate.completePreparation();
             state.error = "";
         } catch (error) {
             fail(error.message);
         } finally {
             state.running = false;
         }
-        finish();
+        // Cached image decode can finish during activation publication. Notify
+        // component consumers after that controller commit guard has returned.
+        Qt.callLater(finish);
         if (state.dirty) Qt.callLater(refresh);
     }
 
@@ -151,23 +224,30 @@ ResinaCommandInput {
     }
 
     function finish() {
-        if (state.running || !state.pending.length || !view.paintReady) return;
+        const candidate = state.pendingView;
+        if (state.running || !state.pending.length || !candidate || !candidate.paintReady) return;
         const pending = JSON.parse(state.pending);
         const current = JSON.parse(publication).state;
         if (canonical(pending.activation) !== canonical(current) || pending.hovered !== root.hovered) {
             Qt.callLater(refresh);
             return;
         }
-        if (canonical(JSON.parse(view.snapshot).hitRegion) !== canonical(JSON.parse(targetPublication || "null"))
+        if (canonical(JSON.parse(candidate.snapshot).hitRegion) !== canonical(JSON.parse(targetPublication || "null"))
             || canonical(JSON.parse(targetPublication || "null")) !== canonical(JSON.parse(state.target))) {
             fail("native command publication lost its stable target");
             return;
         }
         const revision = state.revision;
         state.pending = "";
-        state.semantics = JSON.parse(view.snapshot).accessibility;
+        state.pendingView = null;
+        state.semantics = JSON.parse(candidate.snapshot).accessibility;
         if (state.revision !== revision) return;
-        resolver.publishSnapshot(view.snapshot);
+        resolver.publishFrame(candidate.snapshot,candidate.motion,candidate);
+        if (state.revision !== revision) return;
+        if (candidate.motion.length) {
+            const sample = JSON.parse(candidate.motion).motion;
+            state.motionActive = !(sample.bodyMix.settled && sample.depthScale.settled);
+        } else state.motionActive = false;
         if (state.revision !== revision) return;
         state.armed = true;
         if (state.revision !== revision) return;
@@ -180,6 +260,11 @@ ResinaCommandInput {
         const running = state.running;
         state.running = true;
         try {
+            const next = motionChannels.length ? JSON.parse(resolver.validateMotionChannels(motionChannels)) : null;
+            state.resumeChannels = next && !next.error && canonical(next.channels) === state.profile ? captureMotion() : null;
+            state.motionActive = false;
+            state.motionTarget = null;
+            clock.invalidate();
             state.qualified = false;
             state.armed = false;
             resolver.publishSnapshot("");
@@ -187,13 +272,15 @@ ResinaCommandInput {
             state.semantics = null;
             state.error = "";
             invalidateTarget();
-            view.invalidate();
+            retireViews();
             interrupt();
-        } finally { state.running = running; }
+        } catch (error) { fail(error.message); }
+        finally { state.running = running; }
         Qt.callLater(refresh);
     }
 
     onConfigurationChanged: reconfigure()
+    onMotionChannelsChanged: reconfigure()
     onDisabledFocusableChanged: reconfigure()
     onSamplesPerAxisChanged: reconfigure()
     onXChanged: reconfigure()
@@ -223,23 +310,44 @@ ResinaCommandInput {
         }
     }
     Connections {
-        target: view
-        function onSnapshotChanged() {
-            if (view.snapshot.length) Qt.callLater(root.finish);
-            else if (!state.running && resolver.publication.length) root.reconfigure();
-        }
+        target: state.pendingView
+        function onSnapshotChanged() { if (state.pendingView && state.pendingView.snapshot.length) Qt.callLater(root.finish); }
         function onPaintErrorChanged() {
-            if (!state.running && state.pending.length && view.paintError.length)
-                root.fail(view.paintError);
+            if (!state.running && state.pending.length && state.pendingView && state.pendingView.paintError.length)
+                root.fail(state.pendingView.paintError);
         }
+    }
+    Connections {
+        target: root.currentFrame
+        function onSnapshotChanged() {
+            if (root.currentFrame && !root.currentFrame.snapshot.length && !state.running && resolver.publication.length)
+                root.reconfigure();
+        }
+    }
+    Connections {
+        target: view
         function onNativeDeviceScaleChanged() { root.reconfigure(); }
     }
-    ResinaCommandView { id: view; visible: root.ready && paintReady }
+    FrameAnimation {
+        running: state.motionActive && motionChannels.length > 0 && !state.pending.length
+            && root.visible && root.nativeWindow && root.nativeWindow.visible && !state.error.length
+        onTriggered: root.refresh(true)
+    }
+    ResinaCommandView { id: view; visible: root.ready && root.currentFrame === view && paintReady }
+    CommandClock { id: clock }
     ResinaLabelMeasure { id: measurement }
     CommandSnapshotResolver { id: resolver }
     QtObject {
         id: state
         property var revision: ({})
+        property var pendingView: null
+        property var alternate: null
+        property var channels: null
+        property var resumeChannels: null
+        property var motionTarget: null
+        property string profile: ""
+        property string policy: ""
+        property bool motionActive: false
         property bool started: false
         property bool qualified: false
         property bool armed: false

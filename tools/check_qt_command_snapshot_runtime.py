@@ -12,10 +12,16 @@ from check_qt_command_label_runtime import verify_layout
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def verify_snapshot(snapshot, request, expected_states):
+def verify_snapshot(snapshot, request, expected_states, motion=None):
     if set(snapshot) != {"label", "paint", "hitRegion", "accessibility"}:
         raise ValueError("native preparation did not publish exactly the complete channels")
-    for member, schema in (("label", "command-label-ir"), ("paint", "command-paint-ir"),
+    if motion is not None:
+        validator_for("schemas/command-motion-ir.schema.json").validate(motion)
+        if snapshot["paint"] != motion["command"]:
+            raise ValueError("sampled snapshot paint differs from the guarded motion frame")
+    else:
+        validator_for("schemas/command-paint-ir.schema.json").validate(snapshot["paint"])
+    for member, schema in (("label", "command-label-ir"),
                            ("hitRegion", "hit-region-ir"), ("accessibility", "command-accessibility-ir")):
         validator_for(f"schemas/{schema}.schema.json").validate(snapshot[member])
     body = snapshot["paint"]["paint"]["body"]

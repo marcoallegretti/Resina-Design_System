@@ -17,6 +17,7 @@ serde_json = { version = "1", features = ["float_roundtrip", "raw_value"] }
 serde = { version = "1", features = ["derive"] }
 resina-environment = { path = "../../../reference/rust/resina-environment" }
 resina-tokens = { path = "../../../reference/rust/resina-tokens" }
+resina-motion = { path = "../../../reference/rust/resina-motion" }
 resina-model = { path = "../../../reference/rust/resina-model" }
 resina-resolver = { path = "../../../reference/rust/resina-resolver" }
 resina-qml = { path = "../resina-qml" }

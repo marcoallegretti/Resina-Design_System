@@ -10,6 +10,7 @@ def main():
     parser = argparse.ArgumentParser(description="Host the integrated Qt command for real AT-SPI probing.")
     parser.add_argument("--module-path", required=True, type=Path)
     parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--motion", action="store_true", help="Use explicit arithmetic spring fixture channels")
     args = parser.parse_args()
     from PySide6.QtCore import QPluginLoader, QTimer, QUrl, qVersion
     from PySide6.QtGui import QFontDatabase, QGuiApplication
@@ -29,7 +30,14 @@ def main():
     window = component.create()
     if window is None:
         raise ValueError("; ".join(error.toString() for error in component.errors()))
-    window.setProperty("configuration", json.dumps(request_for("light", "Reconnect")))
+    source = request_for("light", "Reconnect")
+    if args.motion:
+        source["content"]["environment"]["accessibilityPreferences"]["reducedMotion"] = False
+        channels = json.loads((ROOT / "conformance/ir/command-motion-request.json").read_text())["channels"]
+        for name in ("bodyMix", "depthScale"):
+            channels[name]["initial"]["position"] = source["body"]["commandAppearance"]["profiles"]["elastomer"]["disabled"][name]
+        window.setProperty("motionChannels", json.dumps(channels))
+    window.setProperty("configuration", json.dumps(source))
     window.setProperty("revoke", True)
     window.setProperty("logEvents", True)
     window.availability(True)
@@ -51,7 +59,8 @@ def main():
                 last[0] = mode
                 snapshot = json.loads(result["snapshot"])
                 print("RESINA_CONTROL_READY " + json.dumps({"state":result["state"],
-                    "accessibility":snapshot["accessibility"],"effects":result["effects"]}), flush=True)
+                    "accessibility":snapshot["accessibility"],"effects":result["effects"],
+                    "motion":json.loads(result["motion"]) if result["motion"] else None}), flush=True)
     timer = QTimer()
     timer.timeout.connect(observe)
     timer.start(20)
