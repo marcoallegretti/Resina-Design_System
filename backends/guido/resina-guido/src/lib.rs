@@ -13,7 +13,9 @@ pub use toggle_content::{
 };
 
 mod command_content;
-pub use command_content::{CommandContentPrepareError, prepare_command_content};
+pub use command_content::{
+    CommandContentPrepareError, prepare_command_content, prepare_command_content_at,
+};
 
 mod text;
 pub use text::{

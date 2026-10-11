@@ -255,6 +255,17 @@ and replace them together, including when consuming a sampled motion command.
 Do not apply the image rectangle's origin a second time to the node or label.
 The prepared RGBA source uses no deferred image decode or tint.
 
+For parent placement, use `prepare_command_content_at` with the same checked
+snapshot and an explicit origin. It applies that origin to material sampling
+before rounding outward on the device grid, and to the complete label rectangle.
+Both returned commands already include placement; do not translate them again.
+Prepare a new pair when placement or scale changes. Translating an origin-zero
+image afterward does not reproduce sampling at fractional parent coordinates.
+Nonfinite or unrepresentable placement fails before returning a command pair.
+The snapshot's hit-region bounds remain unchanged. The component owner must map
+those bounds and supply native accessibility bounds at the same placement; the
+portable accessibility snapshot contains semantics, not geometry.
+
 The caller still owns the common environment/typography context, font mapping,
 glyph overhang verification and surrounding clipping. Color conversion and
 antialiasing are native operations; nominal IR contrast alone is not evidence of

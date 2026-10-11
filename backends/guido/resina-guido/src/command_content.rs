@@ -1,8 +1,9 @@
-use crate::{LabelPrepareError, PrepareError, prepare_command_label, prepare_surface_paint};
+use crate::{LabelPrepareError, PrepareError, prepare_command_label_at, prepare_surface_paint_at};
 use guido::{
     renderer::DrawCommand,
     widgets::{Color, ContentFit, Rect, font::FontFamily},
 };
+use resina_model::PhysicalVector;
 use resina_resolver::CommandSnapshot;
 use std::fmt;
 
@@ -37,16 +38,34 @@ pub fn prepare_command_content(
     device_scale: f32,
     samples_per_axis: u8,
 ) -> Result<[DrawCommand; 2], CommandContentPrepareError> {
+    prepare_command_content_at(
+        snapshot,
+        family,
+        PhysicalVector { x: 0.0, y: 0.0 },
+        device_scale,
+        samples_per_axis,
+    )
+}
+
+/// Applies parent placement before sampling. Both commands include it and must not be translated again.
+pub fn prepare_command_content_at(
+    snapshot: &CommandSnapshot<'_>,
+    family: FontFamily,
+    origin: PhysicalVector,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<[DrawCommand; 2], CommandContentPrepareError> {
     let paint = snapshot.paint();
     let label = snapshot.label();
     let body = paint.paint().body();
     let [r, g, b] = body.foreground().components().map(|value| value as f32);
-    let material = prepare_surface_paint(paint.paint(), device_scale, samples_per_axis)
+    let material = prepare_surface_paint_at(paint.paint(), origin, device_scale, samples_per_axis)
         .map_err(CommandContentPrepareError::Paint)?;
-    let text = prepare_command_label(
+    let text = prepare_command_label_at(
         label,
         family,
         Color::rgba(r, g, b, body.foreground().alpha() as f32),
+        origin,
         device_scale,
     )
     .map_err(CommandContentPrepareError::Label)?;
