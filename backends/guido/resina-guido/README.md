@@ -246,6 +246,9 @@ returns a read-only `CommandPublication` only after every operation succeeds.
 The publication owns its members; a later preparation cannot change an earlier
 publication. All inputs are explicit, including layout limits, logical padding,
 neighbor reservations, contrast requirements and native font mapping.
+Content requirements below 4.5:1 and edge requirements below 3:1 are rejected,
+including for disabled and sampled publications. Stronger authored requirements
+reach the paint guards unchanged; invalid requirements are not clamped.
 
 Pass committed activation and observed hover. Requested availability must match
 the committed activation; resolve an availability transition before preparing

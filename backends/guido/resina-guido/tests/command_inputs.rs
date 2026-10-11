@@ -298,3 +298,136 @@ fn sampled_publication_retains_unprojected_state_for_continuous_retargeting() {
     assert_eq!(sample.depth_scale().state().velocity(), 0.0);
     assert_eq!(sample.command().response(), sample.target());
 }
+
+#[test]
+fn weaker_requirements_cannot_publish_invisible_content_or_insufficient_edges() {
+    let mut accepted = Vec::new();
+    for content in [true, false] {
+        let mut requested = inputs();
+        let source: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/command-motion-request.json"
+        ))
+        .unwrap();
+        let mut theme: Value = serde_json::from_str(
+            source["surface"]["body"]["theme"]["themeSource"]
+                .as_str()
+                .unwrap(),
+        )
+        .unwrap();
+        for collection in ["colorAssignments", "opaqueColorAssignments"] {
+            if content {
+                theme[collection]["roles"]["content.primary"] = "palette.base".into();
+            } else {
+                for role in ["outline", "outline.strong"] {
+                    theme[collection]["roles"][role] = "palette.base".into();
+                }
+            }
+        }
+        requested.theme = Arc::new(compile_theme_source(&theme.to_string()).unwrap());
+        let state = ActivationState::try_new(true, false, None).unwrap();
+        let origin = PhysicalVector { x: 0.0, y: 0.0 };
+        assert!(matches!(
+            requested.prepare(&state, false, origin),
+            Err(CommandPrepareError::Paint(_))
+        ));
+        if content {
+            requested.minimum_content_contrast = 1.0;
+        } else {
+            requested.minimum_edge_contrast = 1.0;
+        }
+        match requested.prepare(&state, false, origin) {
+            Ok(publication) => {
+                let body = publication.paint().paint().body();
+                accepted.push(format!(
+                    "weakened requirement accepted: content {}, edge {}",
+                    body.content_contrast_ratio(),
+                    body.edge().contrast_ratio()
+                ));
+            }
+            Err(CommandPrepareError::ContrastRequirement {
+                field,
+                requested,
+                minimum,
+            }) => {
+                assert_eq!(field, if content { "content" } else { "edge" });
+                assert_eq!(requested, 1.0);
+                assert_eq!(minimum, if content { 4.5 } else { 3.0 });
+            }
+            Err(error) => panic!("unexpected rejection: {error}"),
+        }
+    }
+    assert!(accepted.is_empty(), "{}", accepted.join("; "));
+}
+
+#[test]
+fn contrast_requirements_apply_to_static_sampled_and_disabled_publications() {
+    let source: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-motion-request.json"
+    ))
+    .unwrap();
+    let channels = serde_json::from_value(source["channels"].clone()).unwrap();
+    for enabled in [true, false] {
+        let state = ActivationState::try_new(enabled, false, None).unwrap();
+        let origin = PhysicalVector { x: 0.0, y: 0.0 };
+        let mut requested = inputs();
+        requested.enabled = enabled;
+        requested.prepare(&state, false, origin).unwrap();
+        requested
+            .prepare_motion(&state, false, origin, &channels, 0.0)
+            .unwrap();
+        for (content, edge) in [
+            (4.49, 3.0),
+            (4.5, 2.99),
+            (f64::NAN, 3.0),
+            (4.5, f64::NAN),
+            (f64::INFINITY, 3.0),
+            (4.5, f64::NEG_INFINITY),
+            (21.01, 3.0),
+            (4.5, 21.01),
+        ] {
+            requested.minimum_content_contrast = content;
+            requested.minimum_edge_contrast = edge;
+            assert!(requested.prepare(&state, false, origin).is_err());
+            assert!(
+                requested
+                    .prepare_motion(&state, false, origin, &channels, 0.0)
+                    .is_err()
+            );
+        }
+    }
+}
+
+#[test]
+fn stricter_authored_contrast_requirements_are_preserved() {
+    let mut requested = inputs();
+    let source: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-motion-request.json"
+    ))
+    .unwrap();
+    let mut theme: Value = serde_json::from_str(
+        source["surface"]["body"]["theme"]["themeSource"]
+            .as_str()
+            .unwrap(),
+    )
+    .unwrap();
+    theme["tokens"]["palette"]["black"]["$value"]["components"] =
+        serde_json::json!([0.4, 0.4, 0.4]);
+    requested.theme = Arc::new(compile_theme_source(&theme.to_string()).unwrap());
+    let state = ActivationState::try_new(true, false, None).unwrap();
+    let origin = PhysicalVector { x: 0.0, y: 0.0 };
+    let valid = requested.prepare(&state, false, origin).unwrap();
+    let body = valid.paint().paint().body();
+    assert!(body.content_contrast_ratio() >= 4.5 && body.content_contrast_ratio() < 7.0);
+    assert!(body.edge().contrast_ratio() >= 3.0 && body.edge().contrast_ratio() < 7.0);
+    for (content, edge) in [(7.0, 3.0), (4.5, 7.0)] {
+        requested.minimum_content_contrast = content;
+        requested.minimum_edge_contrast = edge;
+        assert!(matches!(
+            requested.prepare(&state, false, origin),
+            Err(CommandPrepareError::Paint(_))
+        ));
+    }
+    requested.minimum_content_contrast = 5.0;
+    requested.minimum_edge_contrast = 5.0;
+    requested.prepare(&state, false, origin).unwrap();
+}

@@ -91,7 +91,15 @@ impl CommandPublication {
 
 #[derive(Debug)]
 pub enum CommandPrepareError {
-    Availability { requested: bool, committed: bool },
+    Availability {
+        requested: bool,
+        committed: bool,
+    },
+    ContrastRequirement {
+        field: &'static str,
+        requested: f64,
+        minimum: f64,
+    },
     Theme(Vec<TypographyResolutionError>),
     Label(CommandLabelError<LabelMeasureError>),
     Paint(CommandPaintError),
@@ -109,6 +117,14 @@ impl fmt::Display for CommandPrepareError {
             } => write!(
                 f,
                 "requested Command availability {requested} disagrees with committed activation {committed}"
+            ),
+            Self::ContrastRequirement {
+                field,
+                requested,
+                minimum,
+            } => write!(
+                f,
+                "Command {field} contrast requirement {requested} must be finite and at least {minimum}:1"
             ),
             Self::Theme(errors) => {
                 f.write_str("Command theme resolution failed")?;
@@ -129,7 +145,7 @@ impl fmt::Display for CommandPrepareError {
 impl std::error::Error for CommandPrepareError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            Self::Availability { .. } => None,
+            Self::Availability { .. } | Self::ContrastRequirement { .. } => None,
             Self::Theme(errors) => errors.first().map(|error| error as &dyn std::error::Error),
             Self::Label(error) => Some(error),
             Self::Paint(error) => Some(error),
@@ -168,6 +184,18 @@ impl CommandInputs {
         placement: PhysicalVector,
         motion_input: Option<(&CommandMotionChannels, f64)>,
     ) -> Result<CommandPublication, CommandPrepareError> {
+        for (field, requested, minimum) in [
+            ("content", self.minimum_content_contrast, 4.5),
+            ("edge", self.minimum_edge_contrast, 3.0),
+        ] {
+            if !requested.is_finite() || requested < minimum {
+                return Err(CommandPrepareError::ContrastRequirement {
+                    field,
+                    requested,
+                    minimum,
+                });
+            }
+        }
         if self.enabled != activation.enabled() {
             return Err(CommandPrepareError::Availability {
                 requested: self.enabled,
