@@ -7,10 +7,11 @@ use resina_model::{
     SurfaceIntent, SurfaceSize,
 };
 use resina_resolver::{
-    HitRegionInput, OpaqueSurfaceInput, SurfacePaintInput, ToggleLayoutInput, TogglePart,
-    TogglePartPaintInput, ToggleSnapshotInput, resolve_hit_region, resolve_srgb_fallback,
-    resolve_toggle_layout, resolve_toggle_part_paint,
-    resolve_toggle_snapshot as resolve_snapshot_ir, resolve_toggle_states,
+    CommandMotionChannel, CommandMotionChannels, HitRegionInput, OpaqueSurfaceInput,
+    SurfacePaintInput, ToggleLayoutInput, TogglePart, TogglePartMotionInput, TogglePartPaintInput,
+    ToggleSnapshotInput, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
+    resolve_toggle_part_motion, resolve_toggle_part_paint,
+    resolve_toggle_snapshot as resolve_snapshot_ir, resolve_toggle_states, resolve_toggle_travel,
 };
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
@@ -32,6 +33,15 @@ mod ffi {
             options: &QString,
             render: bool,
         ) -> QString;
+        fn prepare_toggle_motion_snapshot(
+            request: &QString,
+            producer: &NativeLabelMeasure,
+            options: &QString,
+            motion: &QString,
+            render: bool,
+        ) -> QString;
+        fn validate_toggle_motion(source: &QString) -> QString;
+        fn retarget_toggle_motion(source: &QString) -> QString;
         fn compose_toggle_request(
             request: &QString,
             activation: &QString,
@@ -126,6 +136,7 @@ fn prepare(
     producer: &ffi::NativeLabelMeasure,
     options: &str,
     render: bool,
+    motion: Option<&MotionRequest>,
 ) -> Result<Value, String> {
     let request: Request =
         serde_json::from_value(document(source)?).map_err(|error| error.to_string())?;
@@ -168,53 +179,82 @@ fn prepare(
     let states = resolve_toggle_states(&request.activation, request.hovered, request.checked);
     let track_surface = request.track.surface.clone().with_states(states.clone());
     let thumb_surface = request.thumb.surface.clone().with_states(states);
-    let track = resolve_toggle_part_paint(
-        &content.theme,
-        &content.environment,
-        TogglePartPaintInput {
-            part: TogglePart::Track,
-            checked_color_role: request.track.checked_color_role,
-            interaction_appearance: &request.track.interaction_appearance,
-            surface: SurfacePaintInput {
-                surrounding_color: Some(&background),
-                body: OpaqueSurfaceInput {
-                    surface: &track_surface,
-                    size: request.layout.track_size,
-                    appearance: &request.track.appearance,
-                    foreground_role: request.track.foreground_role,
-                    post_treatment_backdrop: Some(&background),
-                    adjacent_color: &background,
-                    minimum_content_contrast: request.track.minimum_content_contrast,
-                    minimum_edge_contrast: request.track.minimum_edge_contrast,
-                },
+    let track_input = TogglePartPaintInput {
+        part: TogglePart::Track,
+        checked_color_role: request.track.checked_color_role,
+        interaction_appearance: &request.track.interaction_appearance,
+        surface: SurfacePaintInput {
+            surrounding_color: Some(&background),
+            body: OpaqueSurfaceInput {
+                surface: &track_surface,
+                size: request.layout.track_size,
+                appearance: &request.track.appearance,
+                foreground_role: request.track.foreground_role,
+                post_treatment_backdrop: Some(&background),
+                adjacent_color: &background,
+                minimum_content_contrast: request.track.minimum_content_contrast,
+                minimum_edge_contrast: request.track.minimum_edge_contrast,
             },
         },
-    )
-    .map_err(|error| error.to_string())?;
+    };
+    let (track, track_motion) = if let Some(motion) = motion {
+        let sampled = resolve_toggle_part_motion(
+            &content.theme,
+            &content.environment,
+            TogglePartMotionInput {
+                part: track_input,
+                channels: &motion.channels.track,
+                time: motion.time,
+            },
+        )
+        .map_err(|error| error.to_string())?;
+        (sampled.part_paint().clone(), Some(sampled))
+    } else {
+        (
+            resolve_toggle_part_paint(&content.theme, &content.environment, track_input)
+                .map_err(|error| error.to_string())?,
+            None,
+        )
+    };
     let track_pigment = track.paint().body().pigment().body();
-    let thumb = resolve_toggle_part_paint(
-        &content.theme,
-        &content.environment,
-        TogglePartPaintInput {
-            part: TogglePart::Thumb,
-            checked_color_role: request.thumb.checked_color_role,
-            interaction_appearance: &request.thumb.interaction_appearance,
-            surface: SurfacePaintInput {
-                surrounding_color: None,
-                body: OpaqueSurfaceInput {
-                    surface: &thumb_surface,
-                    size: request.layout.thumb_size,
-                    appearance: &request.thumb.appearance,
-                    foreground_role: request.thumb.foreground_role,
-                    post_treatment_backdrop: Some(track_pigment),
-                    adjacent_color: track_pigment,
-                    minimum_content_contrast: request.thumb.minimum_content_contrast,
-                    minimum_edge_contrast: request.thumb.minimum_edge_contrast,
-                },
+    let thumb_input = TogglePartPaintInput {
+        part: TogglePart::Thumb,
+        checked_color_role: request.thumb.checked_color_role,
+        interaction_appearance: &request.thumb.interaction_appearance,
+        surface: SurfacePaintInput {
+            surrounding_color: None,
+            body: OpaqueSurfaceInput {
+                surface: &thumb_surface,
+                size: request.layout.thumb_size,
+                appearance: &request.thumb.appearance,
+                foreground_role: request.thumb.foreground_role,
+                post_treatment_backdrop: Some(track_pigment),
+                adjacent_color: track_pigment,
+                minimum_content_contrast: request.thumb.minimum_content_contrast,
+                minimum_edge_contrast: request.thumb.minimum_edge_contrast,
             },
         },
-    )
-    .map_err(|error| error.to_string())?;
+    };
+    let (thumb, thumb_motion) = if let Some(motion) = motion {
+        let sampled = resolve_toggle_part_motion(
+            &content.theme,
+            &content.environment,
+            TogglePartMotionInput {
+                part: thumb_input,
+                channels: &motion.channels.thumb,
+                time: motion.time,
+            },
+        )
+        .map_err(|error| error.to_string())?;
+        (sampled.part_paint().clone(), Some(sampled))
+    } else {
+        (
+            resolve_toggle_part_paint(&content.theme, &content.environment, thumb_input)
+                .map_err(|error| error.to_string())?,
+            None,
+        )
+    };
+
     let occupied: Vec<_> = request
         .occupied_regions
         .iter()
@@ -259,7 +299,22 @@ fn prepare(
         x: options.x,
         y: options.y,
     };
-    let thumb_bounds = snapshot.layout().thumb_bounds();
+    let travel = motion
+        .map(|motion| {
+            resolve_toggle_travel(
+                &snapshot,
+                &motion.channels.travel.dynamics,
+                motion.channels.travel.initial,
+                motion.time,
+            )
+        })
+        .transpose()
+        .map_err(|error| error.to_string())?;
+    let thumb_bounds = travel
+        .as_ref()
+        .map_or(snapshot.layout().thumb_bounds(), |travel| {
+            travel.thumb_bounds()
+        });
     let thumb_origin = PhysicalVector {
         x: options.x + thumb_bounds.x,
         y: options.y + thumb_bounds.y,
@@ -280,6 +335,11 @@ fn prepare(
         "labelForeground":snapshot.label_foreground(),"labelBackground":snapshot.label_background(),"labelContrastRatio":snapshot.label_contrast_ratio(),
         "layout":snapshot.layout(),"track":snapshot.track(),"thumb":snapshot.thumb(),"hitRegion":snapshot.hit_region(),
         "accessibility":snapshot.accessibility(),"thumbContrastRatio":snapshot.thumb_contrast_ratio()}});
+    if let Some(travel) = travel {
+        result["motion"] = json!({"track":track_motion,"thumb":thumb_motion,
+            "travel":{"policy":travel.policy(),"target":if request.checked {1.0} else {0.0},
+                "trajectory":travel.trajectory(),"projection":travel.projection(),"thumbBounds":travel.thumb_bounds()}});
+    }
     if render {
         result["trackSource"] = Value::String(
             resina_qml::render_surface_paint(
@@ -310,9 +370,15 @@ fn prepare_toggle_snapshot(
     render: bool,
 ) -> QString {
     QString::from(
-        prepare(&request.to_string(), producer, &options.to_string(), render)
-            .unwrap_or_else(|error| json!({"error":error}))
-            .to_string(),
+        prepare(
+            &request.to_string(),
+            producer,
+            &options.to_string(),
+            render,
+            None,
+        )
+        .unwrap_or_else(|error| json!({"error":error}))
+        .to_string(),
     )
 }
 fn compose_toggle_request(
@@ -337,6 +403,172 @@ fn compose_toggle_request(
     QString::from(
         result
             .unwrap_or_else(|error: String| json!({"error":error}))
+            .to_string(),
+    )
+}
+
+// These are native adapter descriptors, not a new portable component protocol.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct MotionChannels {
+    track: CommandMotionChannels,
+    thumb: CommandMotionChannels,
+    travel: CommandMotionChannel,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct MotionRequest {
+    channels: MotionChannels,
+    time: f64,
+}
+fn motion_document<T: serde::de::DeserializeOwned>(source: &str) -> Result<T, String> {
+    if source.len() > 64 * 1024 {
+        return Err("Qt Toggle motion source exceeds 64 KiB".to_owned());
+    }
+    let value = parse_token_document(source).map_err(|error| error.to_string())?;
+    if !value.is_object() {
+        return Err("Qt Toggle motion source must be an object".to_owned());
+    }
+    if value
+        .get("channels")
+        .is_some_and(|channels| !channels.is_object())
+    {
+        return Err("Qt Toggle motion channels must be an object".to_owned());
+    }
+    if let Some(targets) = value.get("targets") {
+        if !targets.is_object() {
+            return Err("Qt Toggle motion targets must be named objects".to_owned());
+        }
+        for part in ["track", "thumb", "travel"] {
+            if !targets.get(part).is_some_and(Value::is_object)
+                || !targets[part].get("policy").is_some_and(Value::is_string)
+            {
+                return Err(
+                    "Qt Toggle motion targets require named part objects and policy strings"
+                        .to_owned(),
+                );
+            }
+        }
+        for part in ["track", "thumb"] {
+            if !targets[part].get("target").is_some_and(Value::is_object) {
+                return Err("Qt Toggle part target must be an object".to_owned());
+            }
+        }
+    }
+    serde_json::from_value(value).map_err(|error| error.to_string())
+}
+fn channel_value(channel: &CommandMotionChannel) -> Value {
+    json!({"dynamics":channel.dynamics,"initial":channel.initial})
+}
+fn channels_value(channels: &MotionChannels) -> Value {
+    json!({"track":{"bodyMix":channel_value(&channels.track.body_mix),"depthScale":channel_value(&channels.track.depth_scale)},
+        "thumb":{"bodyMix":channel_value(&channels.thumb.body_mix),"depthScale":channel_value(&channels.thumb.depth_scale)},
+        "travel":channel_value(&channels.travel)})
+}
+fn validate_toggle_motion(source: &QString) -> QString {
+    QString::from(
+        motion_document::<MotionChannels>(&source.to_string())
+            .map(|channels| json!({"channels":channels_value(&channels)}))
+            .unwrap_or_else(|error| json!({"error":error}))
+            .to_string(),
+    )
+}
+fn prepare_toggle_motion_snapshot(
+    request: &QString,
+    producer: &ffi::NativeLabelMeasure,
+    options: &QString,
+    motion: &QString,
+    render: bool,
+) -> QString {
+    let result = (|| {
+        let motion: MotionRequest = motion_document(&motion.to_string())?;
+        prepare(
+            &request.to_string(),
+            producer,
+            &options.to_string(),
+            render,
+            Some(&motion),
+        )
+    })();
+    QString::from(
+        result
+            .unwrap_or_else(|error| json!({"error":error}))
+            .to_string(),
+    )
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+enum PreviousPolicy {
+    Spring,
+    CastImmediate,
+    ReducedMotion,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PartTarget {
+    policy: PreviousPolicy,
+    target: resina_model::CommandResponse,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TravelTarget {
+    policy: PreviousPolicy,
+    target: f64,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Targets {
+    track: PartTarget,
+    thumb: PartTarget,
+    travel: TravelTarget,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RetargetRequest {
+    channels: MotionChannels,
+    targets: Targets,
+    time: f64,
+}
+fn retarget_toggle_motion(source: &QString) -> QString {
+    let result = (|| {
+        let mut request: RetargetRequest = motion_document(&source.to_string())?;
+        if request.targets.travel.target != 0.0 && request.targets.travel.target != 1.0 {
+            return Err("Qt Toggle travel target must be a binary endpoint".to_owned());
+        }
+        for (channels, target) in [
+            (&mut request.channels.track, &request.targets.track),
+            (&mut request.channels.thumb, &request.targets.thumb),
+        ] {
+            for (channel, value) in [
+                (&mut channels.body_mix, target.target.body_mix()),
+                (&mut channels.depth_scale, target.target.depth_scale()),
+            ] {
+                channel.initial = resina_motion::sample_spring_trajectory(
+                    &channel.dynamics,
+                    channel.initial,
+                    value,
+                    request.time,
+                    !matches!(target.policy, PreviousPolicy::Spring),
+                )
+                .map_err(|error| error.to_string())?
+                .state();
+            }
+        }
+        let travel = &mut request.channels.travel;
+        travel.initial = resina_motion::sample_spring_trajectory(
+            &travel.dynamics,
+            travel.initial,
+            request.targets.travel.target,
+            request.time,
+            !matches!(request.targets.travel.policy, PreviousPolicy::Spring),
+        )
+        .map_err(|error| error.to_string())?
+        .state();
+        Ok(json!({"channels":channels_value(&request.channels)}))
+    })();
+    QString::from(
+        result
+            .unwrap_or_else(|error| json!({"error":error}))
             .to_string(),
     )
 }

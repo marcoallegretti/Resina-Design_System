@@ -42,3 +42,12 @@ Pass an absolute bundle path: Cargo runs the benchmark from the package director
 Current point sampling can be expensive even for a small surface. Prepare reusable images before exposing a state; measure preparation and upload before using this realization in an input-event path. The benchmark accepts separate surface/focus scenes and complete paint scenes from the same public bundle and does not require PNG support.
 
 `resina-command-raster` uses the same viewport and sampling arguments as `resina-paint-raster`, with a [command paint request](../../../schemas/command-paint-request.schema.json). It renders the complete headless result through the existing surface paint sampler; command state rules remain in portable resolution.
+
+`resina-toggle-part-motion-raster` accepts the existing sampled Toggle part request
+from specification 57 and the same explicit viewport/sampling arguments as the
+other paint binaries. It resolves the guarded sample through the reference, then
+renders its complete body/navigation paint with the shared sampler. Success emits
+one RGBA8 sRGB PNG; invalid source, placement or resource limits emit no image.
+It requires the `png` feature. This supplies the native Toggle frame oracle;
+it does not schedule frames, place a component label, choose motion defaults or
+publish accessibility.
