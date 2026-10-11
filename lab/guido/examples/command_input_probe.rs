@@ -157,6 +157,54 @@ struct Probe {
     effects: Rc<Cell<usize>>,
     failure: Rc<RefCell<Option<String>>>,
 }
+
+// A separate native surface provides real Wayland keyboard-focus transfer.
+// It is a verification target, not a second Command or product action.
+struct FocusPeer;
+impl Widget for FocusPeer {
+    fn layout(&mut self, _ctx: &mut LayoutCtx, constraints: Constraints) -> Size {
+        constraints.constrain(Size::new(200.0, 120.0))
+    }
+    fn paint(&self, ctx: &mut PaintContext) {
+        ctx.draw_text_styled(
+            "Focus target",
+            Rect::new(16.0, 16.0, 168.0, 88.0),
+            Color::BLACK,
+            20.0,
+            FontFamily::name("DejaVu Sans"),
+            FontWeight::NORMAL,
+            LineHeight::default(),
+            0.0,
+            None,
+        );
+        println!("RESINA_NATIVE_PEER_PAINT");
+    }
+    fn event(&mut self, tree: &mut Tree, id: WidgetId, event: &Event) -> EventResponse {
+        match event {
+            Event::MouseDown {
+                button: MouseButton::Left,
+                ..
+            }
+            | Event::FocusIn => {
+                guido::reactive::focus::request_focus(tree, id);
+                if matches!(event, Event::FocusIn) {
+                    println!("RESINA_NATIVE_PEER_FOCUS");
+                } else {
+                    println!("RESINA_NATIVE_PEER_POINTER");
+                }
+                EventResponse::Handled
+            }
+            Event::KeyUp {
+                key: Key::Char(' '),
+                ..
+            } => {
+                println!("RESINA_NATIVE_PEER_RELEASE");
+                EventResponse::Handled
+            }
+            _ => EventResponse::Ignored,
+        }
+    }
+}
 impl Probe {
     fn fail(&self, message: &str) {
         *self.failure.borrow_mut() = Some(message.to_owned());
@@ -328,9 +376,10 @@ impl Widget for Probe {
 }
 fn run() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 3 {
+    let peer_mode = args.len() == 4 && args[3] == "--focus-peer";
+    if args.len() != 3 && !peer_mode {
         return Err(
-            "usage: native-command-probe <repository> <scenes.json> <DejaVuSans.ttf>".into(),
+            "usage: native-command-probe <repository> <scenes.json> <DejaVuSans.ttf> [--focus-peer]".into(),
         );
     }
     let font = std::fs::read(&args[2])?;
@@ -350,9 +399,27 @@ fn run() -> Result<(), Box<dyn Error>> {
         FontFamily::name("DejaVu Sans"),
     )?);
     let target = frames.target.bounds();
+    if peer_mode {
+        let canvas = frames.canvas;
+        let reason = App::new().run(move |app| {
+            app.add_surface(
+                SurfaceConfig::new()
+                    .width(200)
+                    .height(120)
+                    .anchor(Anchor::TOP | Anchor::RIGHT)
+                    .keyboard_interactivity(KeyboardInteractivity::OnDemand)
+                    .background_color(canvas),
+                || FocusPeer,
+            );
+        });
+        return match reason {
+            guido::ExitReason::Quit => Ok(()),
+            reason => Err(format!("focus target runtime exited: {reason:?}").into()),
+        };
+    }
     println!(
         "RESINA_NATIVE_PREPARED {}",
-        json!({"target":target,"profile":"DPR1-input-probe","nativeAT":false,"placement":{"x":40,"y":40}})
+        json!({"target":target,"profile":"DPR1-input-probe","nativeAT":false,"placement":{"x":40,"y":40},"focusPeer":{"width":200,"height":120}})
     );
     let canvas = frames.canvas;
     let failure = Rc::new(RefCell::new(None));

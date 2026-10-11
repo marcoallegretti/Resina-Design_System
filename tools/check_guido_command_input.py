@@ -101,16 +101,19 @@ def check(args):
     outputs = json.loads(subprocess.check_output([str(args.swaymsg), "-s", str(args.sway_socket),
         "-t", "get_outputs", "-r"], text=True))
     if (len(outputs) != 1 or not outputs[0]["active"] or outputs[0]["name"] != "X11-1"
-            or outputs[0]["scale"] != 1 or outputs[0]["rect"]["width"] < 500
+            or outputs[0]["scale"] != 1 or outputs[0]["rect"]["width"] < 720
             or outputs[0]["rect"]["height"] < 240):
-        raise ValueError("requires an isolated Sway X11 output at fixed scale 1")
+        raise ValueError("requires an isolated Sway X11 output at scale 1, at least 720 x 240")
     if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
         raise ValueError("requires the live Sway Wayland session")
     with tempfile.TemporaryFile() as log:
+        peer_process = None
         process = subprocess.Popen([str(args.probe.resolve()), str(ROOT), str(args.scenes.resolve()),
             str(args.font.resolve())], stdout=log, stderr=log)
         parent = None
         try:
+            peer_process = subprocess.Popen([str(args.probe.resolve()), str(ROOT), str(args.scenes.resolve()),
+                str(args.font.resolve()), "--focus-peer"], stdout=log, stderr=log)
             def log_text():
                 # Popen shares this open-file description. Reading must not move
                 # the child's write offset, including while it emits a new event.
@@ -124,14 +127,17 @@ def check(args):
             def until(predicate, description):
                 deadline = time.monotonic() + 5
                 while time.monotonic() < deadline:
-                    if process.poll() is not None:
-                        raise ValueError("native probe exited: " + log_text()[-2000:])
+                    for child, label in ((process, "Command"), (peer_process, "focus target")):
+                        status = child.poll()
+                        if status is not None:
+                            raise ValueError(f"native {label} exited with status {status}: " + log_text()[-2000:])
                     if predicate():
                         return
                     time.sleep(.02)
                 raise ValueError(description + ": " + log_text()[-2000:])
 
             until(lambda: bool(records("RESINA_NATIVE_PAINT ")), "missing actual native paint")
+            until(lambda: "RESINA_NATIVE_PEER_PAINT\n" in log_text(), "missing native focus target")
             prepared = records("RESINA_NATIVE_PREPARED ")
             if len(prepared) != 1 or prepared[0]["nativeAT"] is not False:
                 raise ValueError("unexpected fixture publication")
@@ -160,11 +166,32 @@ def check(args):
             until(lambda: len(effects()) == 1, "one pointer release effect")
             if state()["hold"] is not None:
                 raise ValueError("pointer hold survived release")
+            interrupted = len(records("RESINA_NATIVE_STATE "))
+            parent.key(0x20, True)
+            until(lambda: state()["hold"] and state()["hold"]["kind"] == "key", "interruptible Space hold")
+            peer = prepared[0]["focusPeer"]
+            parent.move(outputs[0]["rect"]["width"] - peer["width"] / 2, peer["height"] / 2)
+            parent.button(True)
+            parent.button(False)
+            until(lambda: "RESINA_NATIVE_PEER_POINTER\n" in log_text(), "native focus target pointer delivery")
+            until(lambda: any(r["event"]["kind"] == "cancel"
+                for r in records("RESINA_NATIVE_STATE ")[interrupted:]), "native surface focus-loss cancellation")
+            until(lambda: not records("RESINA_NATIVE_PAINT ")[-1]["nativeFocused"], "unfocused Command paint")
+            if state()["focused"] or state()["hold"] is not None or len(effects()) != 1:
+                raise ValueError("surface focus loss activated or retained the Space hold")
+            parent.key(0x20, False)
+            until(lambda: "RESINA_NATIVE_PEER_RELEASE\n" in log_text(), "Wayland keyboard release to focus target")
+            parent.move(placement["x"] + target["width"] / 2,
+                placement["y"] + target["height"] / 2)
+            until(lambda: records("RESINA_NATIVE_PAINT ")[-1]["nativeFocused"], "native focus recovery")
+            if not state()["focused"] or state()["hold"] is not None or len(effects()) != 1:
+                raise ValueError("focus recovery revived the interrupted hold or effect")
+            repeated = len(records("RESINA_NATIVE_STATE "))
             parent.key(0x20, True)
             until(lambda: state()["hold"] and state()["hold"]["kind"] == "key", "Space hold")
             until(lambda: any(record["event"].get("repeat") is True
                 and record["event"].get("key") == "space"
-                for record in records("RESINA_NATIVE_STATE ")), "native repeat delivery")
+                for record in records("RESINA_NATIVE_STATE ")[repeated:]), "native repeat delivery")
             if len(effects()) != 1:
                 raise ValueError("Space press or repeat activated")
             parent.key(0x20, False)
@@ -201,18 +228,20 @@ def check(args):
             return {"profile": "GUIdo-static-command-DPR1-input-probe",
                 "delivery": "XTest/X11/Sway/Wayland/GUIdo", "pointerEffects": 1,
                 "spaceEffects": 1, "enterEffects": 1, "repeatObserved": True,
+                "focusLossEffects": 0, "focusRecoveryObserved": True,
                 "unavailableEffects": 0, "finalHold": None,
                 "nativeAccessibility": False, "physicalDevices": False}
         finally:
             if parent:
                 parent.close()
-            if process.poll() is None:
-                process.terminate()
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait()
+            for child in (process, peer_process):
+                if child is not None and child.poll() is None:
+                    child.terminate()
+                    try:
+                        child.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        child.kill()
+                        child.wait()
 
 
 def main():
