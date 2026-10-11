@@ -18,7 +18,7 @@ use guido::{
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{
     CommandContentPrepareError, LabelMeasureError, LabelPrepareError, PrepareError,
-    measure_command_label, prepare_command_content,
+    measure_command_label, prepare_command_content, prepare_command_content_at,
 };
 use resina_model::{
     ActivationState, CommandAnatomy, CommandEmphasis, ContourSegment, PhysicalBounds,
@@ -40,6 +40,184 @@ const UNWRAPPED: LineFit = LineFit {
     overflow: TextOverflow::Clip,
     wrap: false,
 };
+
+#[test]
+fn placed_command_content_samples_material_before_native_translation() {
+    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
+    let family = FontFamily::name("DejaVu Sans");
+    let scenes: Value = serde_json::from_str(
+        &std::fs::read_to_string(std::env::var("RESINA_SCENES").unwrap()).unwrap(),
+    )
+    .unwrap();
+    let scene = scenes["scenarios"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|scene| scene["name"] == "light-elastomer-paint-focused")
+        .unwrap();
+    let mut frames = NativeFrames::new(family);
+    let mut changed_sampling = 0;
+    for (text, phase, focused) in [("Save", "rest", true), ("Save changes", "pressed", false)] {
+        let mut request = command_request(scene, phase, 1.0, LayoutDirection::Ltr);
+        if !focused {
+            request["surface"]["body"]["surface"]["states"]["states"] = json!([phase]);
+        }
+        let label = resolve_label(&mut request, text, family, 24.0);
+        let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+        let snapshot = snapshot(&request, &label, &paint, phase, focused).unwrap();
+        for scale in [1.0_f32, 1.25, 1.5, 2.0, 3.0] {
+            for origin in [
+                PhysicalVector { x: 0.0, y: 0.0 },
+                PhysicalVector { x: 7.125, y: 11.75 },
+                PhysicalVector {
+                    x: -0.375,
+                    y: -0.625,
+                },
+            ] {
+                let commands =
+                    prepare_command_content_at(&snapshot, family, origin, scale, 4).unwrap();
+                let DrawCommand::Image {
+                    source:
+                        guido::prelude::ImageSource::Rgba {
+                            width,
+                            height,
+                            pixels,
+                        },
+                    rect,
+                    ..
+                } = &commands[0]
+                else {
+                    panic!("material image required")
+                };
+                let DrawCommand::Text {
+                    text: actual_text,
+                    rect: text_rect,
+                    ..
+                } = &commands[1]
+                else {
+                    panic!("complete label required")
+                };
+                assert_eq!(actual_text, text);
+                let label_bounds = label.label_bounds();
+                assert!((f64::from(text_rect.x) - label_bounds.x - origin.x).abs() <= 1.0 / 1024.0);
+                assert!((f64::from(text_rect.y) - label_bounds.y - origin.y).abs() <= 1.0 / 1024.0);
+                let bounds = if let Some(focus) = paint.paint().focus() {
+                    let outer = focus.geometry().outer();
+                    let mut bounds = outer.contour().bounds().unwrap();
+                    bounds.x += outer.offset().x;
+                    bounds.y += outer.offset().y;
+                    bounds
+                } else {
+                    paint
+                        .paint()
+                        .body()
+                        .geometry()
+                        .silhouette()
+                        .bounds()
+                        .unwrap()
+                };
+                let dpr = f64::from(scale);
+                let left = ((bounds.x + origin.x) * dpr).floor();
+                let top = ((bounds.y + origin.y) * dpr).floor();
+                let right = ((bounds.x + bounds.width + origin.x) * dpr).ceil();
+                let bottom = ((bounds.y + bounds.height + origin.y) * dpr).ceil();
+                assert_eq!(
+                    (*width, *height),
+                    ((right - left) as u32, (bottom - top) as u32)
+                );
+                assert!((f64::from(rect.x) * dpr - left).abs() <= dpr / 1024.0);
+                assert!((f64::from(rect.y) * dpr - top).abs() <= dpr / 1024.0);
+                let expected = resina_raster::render_surface_paint(
+                    paint.paint(),
+                    resina_raster::Viewport {
+                        origin: PhysicalVector {
+                            x: left / dpr - origin.x,
+                            y: top / dpr - origin.y,
+                        },
+                        width: *width,
+                        height: *height,
+                        pixels_per_unit: dpr,
+                    },
+                    4,
+                )
+                .unwrap();
+                assert_eq!(pixels.as_ref(), expected.rgba());
+                let unplaced = prepare_command_content(&snapshot, family, scale, 4).unwrap();
+                let DrawCommand::Image {
+                    source:
+                        guido::prelude::ImageSource::Rgba {
+                            pixels: old_pixels, ..
+                        },
+                    ..
+                } = &unplaced[0]
+                else {
+                    unreachable!()
+                };
+                changed_sampling += usize::from(old_pixels.as_ref() != pixels.as_ref());
+                let full = frames.render(&commands, 900, 500, scale, background(&request));
+                if origin.x == 7.125
+                    && let Some(directory) = std::env::var_os("RESINA_COMMAND_CAPTURE_DIR")
+                {
+                    let directory = std::path::PathBuf::from(directory);
+                    std::fs::create_dir_all(&directory).unwrap();
+                    readback::capture(
+                        &directory.join(format!("placed-{phase}-device-{scale}.ppm")),
+                        900,
+                        500,
+                        &full,
+                    );
+                }
+                let body_only =
+                    frames.render(&commands[..1], 900, 500, scale, background(&request));
+                for (index, source) in pixels.as_chunks::<4>().0.iter().enumerate() {
+                    if source[3] != 255 {
+                        continue;
+                    }
+                    let x = (left + 16.0 * dpr) as u32 + index as u32 % width;
+                    let y = (top + 16.0 * dpr) as u32 + index as u32 / width;
+                    let at = ((y * 900 + x) * 4) as usize;
+                    for channel in 0..4 {
+                        assert!(
+                            body_only[at + channel].abs_diff(source[channel]) <= 1,
+                            "placed GPU material disagrees at {x},{y} for scale {scale}, origin {origin:?}"
+                        );
+                    }
+                }
+                assert!(
+                    full.as_chunks::<4>()
+                        .0
+                        .iter()
+                        .zip(body_only.as_chunks::<4>().0.iter())
+                        .filter(|(a, b)| a != b)
+                        .count()
+                        > 20,
+                    "placed label must reach the GPU"
+                );
+            }
+        }
+        for origin in [
+            PhysicalVector {
+                x: f64::NAN,
+                y: 0.0,
+            },
+            PhysicalVector {
+                x: 0.0,
+                y: f64::INFINITY,
+            },
+        ] {
+            assert!(matches!(
+                prepare_command_content_at(&snapshot, family, origin, 1.0, 4),
+                Err(CommandContentPrepareError::Paint(
+                    PrepareError::UnrepresentableBounds
+                ))
+            ));
+        }
+    }
+    assert!(
+        changed_sampling > 10,
+        "translating origin-zero pixels must not satisfy placed sampling"
+    );
+}
 
 fn command_request(scene: &Value, phase: &str, scale: f64, direction: LayoutDirection) -> Value {
     let mut surface = scene["request"].clone();
