@@ -262,8 +262,9 @@ Both returned commands already include placement; do not translate them again.
 Prepare a new pair when placement or scale changes. Translating an origin-zero
 image afterward does not reproduce sampling at fractional parent coordinates.
 Nonfinite or unrepresentable placement fails before returning a command pair.
-The snapshot's target and semantic bounds remain in their original coordinate
-space; the component owner must map them to the same native placement.
+The snapshot's hit-region bounds remain unchanged. The component owner must map
+those bounds and supply native accessibility bounds at the same placement; the
+portable accessibility snapshot contains semantics, not geometry.
 
 The caller still owns the common environment/typography context, font mapping,
 glyph overhang verification and surrounding clipping. Color conversion and
