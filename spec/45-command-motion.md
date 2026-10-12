@@ -1,6 +1,6 @@
 # Sampled command paint (candidate, schema 0.1.0)
 
-This contract connects [scalar trajectories](44-spring-trajectories.md) to [opaque command paint](43-command-paint.md). It resolves a complete paint sample with retained motion state. It does not schedule frames or calibrate material coefficients. The blueprint's material motion values remain qualitative until calibrated.
+This contract connects [scalar trajectories](44-spring-trajectories.md) to [opaque command paint](43-command-paint.md). It resolves a complete paint sample with retained motion state. It does not schedule frames or select material coefficients. [Authored response calibration](80-material-response-calibration.md) supplies explicit Frost/Elastomer body/depth profiles separately; the operation still requires complete dynamics from the caller.
 
 ## Ownership and inputs
 

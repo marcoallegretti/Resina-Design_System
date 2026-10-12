@@ -814,8 +814,8 @@ fn motion_channels() -> [Value; 2] {
     }
     channels
 }
-fn continue_channels(parts: &[TogglePartMotionIr; 2]) -> [Value; 2] {
-    let mut channels = motion_channels();
+fn continue_channels(parts: &[TogglePartMotionIr; 2], previous: &[Value; 2]) -> [Value; 2] {
+    let mut channels = previous.clone();
     for (index, part) in parts.iter().enumerate() {
         channels[index]["bodyMix"]["initial"] =
             serde_json::to_value(part.body_mix().state()).unwrap();
@@ -826,6 +826,15 @@ fn continue_channels(parts: &[TogglePartMotionIr; 2]) -> [Value; 2] {
 }
 #[test]
 fn sampled_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state() {
+    check_sampled_toggle_frames(false);
+}
+
+#[test]
+fn calibrated_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state() {
+    check_sampled_toggle_frames(true);
+}
+
+fn check_sampled_toggle_frames(calibrated: bool) {
     guido::load_font(
         std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
             .unwrap(),
@@ -836,8 +845,24 @@ fn sampled_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state
             .unwrap(),
     )
     .unwrap();
-    let capture = std::env::var_os("RESINA_TOGGLE_CAPTURE_DIR").map(std::path::PathBuf::from);
-    let dynamics = SpringDynamics::try_new(1.0, 100.0, 20.0, 0.0001, 0.0001).unwrap();
+    let capture = std::env::var_os("RESINA_TOGGLE_CAPTURE_DIR").map(|directory| {
+        let path = std::path::PathBuf::from(directory);
+        if calibrated {
+            path.join("calibrated")
+        } else {
+            path
+        }
+    });
+    let profile_root =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../definitions/motion");
+    let dynamics = if calibrated {
+        serde_json::from_str(
+            &std::fs::read_to_string(profile_root.join("toggle-travel.json")).unwrap(),
+        )
+        .unwrap()
+    } else {
+        SpringDynamics::try_new(1.0, 100.0, 20.0, 0.0001, 0.0001).unwrap()
+    };
     let mut frames = Frames::new();
     let mut count = 0;
     for scheme in ["light", "dark"] {
@@ -849,6 +874,20 @@ fn sampled_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state
                 .iter()
                 .find(|scene| scene["name"] == name)
                 .unwrap();
+            let mut channels = motion_channels();
+            if calibrated && material != "cast" {
+                for part in &mut channels {
+                    for (channel, profile) in [("bodyMix", "body"), ("depthScale", "depth")] {
+                        part[channel]["dynamics"] = serde_json::from_str::<Value>(
+                            &std::fs::read_to_string(
+                                profile_root.join(format!("{material}-{profile}.json")),
+                            )
+                            .unwrap(),
+                        )
+                        .unwrap();
+                    }
+                }
+            }
             for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
                 for checked in [false, true] {
                     let text = if direction == LayoutDirection::Ltr {
@@ -861,7 +900,6 @@ fn sampled_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state
                     let reserved = f.target.bounds();
                     let initial =
                         SpringState::try_new(if checked { 0.0 } else { 1.0 }, 0.0).unwrap();
-                    let channels = motion_channels();
                     for time in [0.0, 0.1, 100.0] {
                         let parts = f.sample_parts(&channels, time, false).unwrap();
                         if material != "cast" && time == 0.1 {
@@ -949,7 +987,7 @@ fn sampled_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state
                     let before = resolve_toggle_travel(&snapshot, &dynamics, initial, 0.1).unwrap();
                     let retained = before.trajectory().state();
                     let retained_bounds = before.thumb_bounds();
-                    let continued = continue_channels(&parts);
+                    let continued = continue_channels(&parts, &channels);
                     let mut rest =
                         Fixture::new(scene, "rest", direction, !checked, family, 1.0, text);
                     assert_eq!(rest.target.bounds(), reserved);
@@ -1051,7 +1089,7 @@ fn sampled_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_state
                     "تثبيت التحديثات تلقائيًا عند الاتصال بمصدر الطاقة"
                 };
                 let mut f = Fixture::new(scene, "pressed", direction, true, family, 2.0, text);
-                f.sample_parts(&motion_channels(), 0.1, false).unwrap();
+                f.sample_parts(&channels, 0.1, false).unwrap();
                 let snapshot = f.snapshot();
                 let travel = resolve_toggle_travel(
                     &snapshot,

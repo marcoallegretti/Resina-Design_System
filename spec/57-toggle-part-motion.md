@@ -82,8 +82,10 @@ Toggle state and selection ownership remain in the Toggle operation.
 [request fixture](../conformance/ir/toggle-part-motion-request.json) cover both
 parts, selection, all interaction phases, retained projection velocity, damping
 regimes, reduced motion and diagnostic failures. These explicit dynamics exercise
-arithmetic and are not calibrated material defaults. Rust tests cover every
-nonempty supported state set across all three persistent families and both parts,
+arithmetic and are not calibrated material defaults.
+The separate [authored response calibration](80-material-response-calibration.md)
+provides explicit body/depth dynamics without replacing these fixtures.
+Rust tests cover every nonempty supported state set across all three persistent families and both parts,
 exact settled/static equivalence, typed/source equivalence and retargeting.
 
 `resina-toggle-part-motion <path|->` uses strict UTF-8 JSON up to 1 MiB. Success

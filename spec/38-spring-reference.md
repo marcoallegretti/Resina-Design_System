@@ -1,6 +1,6 @@
 # Normalized scalar spring reference
 
-This contract implements the scalar spring foundation required by blueprint §56. It defines an unforced response from normalized position 0 to endpoint 1. The caller supplies the coefficients and accessibility preference. It does not select material profiles, retarget a moving component, schedule frames, or define component motion IR. Cast, Frost, Elastomer and Gel motion parameters remain uncalibrated.
+This contract implements the scalar spring foundation required by blueprint §56. It defines an unforced response from normalized position 0 to endpoint 1. The caller supplies the coefficients and accessibility preference. It does not select material profiles, retarget a moving component, schedule frames, or define component motion IR. [Authored response calibration](80-material-response-calibration.md) supplies explicit dynamics for existing Frost/Elastomer channels; it does not calibrate Gel or introduce deformation.
 
 ## Input and units
 
