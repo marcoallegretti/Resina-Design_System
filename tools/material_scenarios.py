@@ -35,7 +35,7 @@ def backend_document(command, request, schema, label, timeout):
     return result
 
 
-def prepare(manifest, resolve_theme):
+def prepare(manifest, resolve_theme, *, environment=None):
     validate("schemas/material-scene-manifest.schema.json", manifest, "material scenes")
     names = set()
     for scene in manifest["scenarios"]:
@@ -51,7 +51,8 @@ def prepare(manifest, resolve_theme):
             raise ValueError(f"{scene['name']}: focus scene requires focused")
         if scene["kind"] == "surfacePaint" and any(state not in ("rest", "focused") for state in states):
             raise ValueError(f"{scene['name']}: complete paint supports only rest and focused")
-    environment = parse_json(asset_source(manifest["environmentSource"]), "scene environment")
+    environment = (parse_json(asset_source(manifest["environmentSource"]), "scene environment")
+                   if environment is None else copy.deepcopy(environment))
     appearance = parse_json(asset_source(manifest["appearanceSource"]), "scene appearance")
     validate("schemas/environment.schema.json", environment, "scene environment")
     validate("schemas/opaque-surface-appearance.schema.json", appearance, "scene appearance")

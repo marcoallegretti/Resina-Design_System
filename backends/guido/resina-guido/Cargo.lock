@@ -1110,7 +1110,9 @@ dependencies = [
 name = "resina-guido"
 version = "0.1.0"
 dependencies = [
+ "fontdb",
  "guido",
+ "png",
  "resina-color",
  "resina-environment",
  "resina-model",

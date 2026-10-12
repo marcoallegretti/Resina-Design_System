@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:tool-schema:visual-capture-record:0.1.0",
+  "title": "Bounded CPU visual evidence capture record",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "commit", "purpose", "scene", "result", "capture", "scales", "sampling", "font", "colorEncoding", "renderer", "runtime", "image"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "purpose": {"enum": ["candidate", "diagnostic"]},
+    "scene": {"$ref": "urn:resina:tool-schema:visual-scene:0.1.0"},
+    "result": {"type": "object"},
+    "capture": {"$ref": "#/$defs/capture"},
+    "scales": {
+      "type": "object", "additionalProperties": false, "required": ["device", "text"],
+      "properties": {"device": {"type": "number", "exclusiveMinimum": 0}, "text": {"type": "number", "minimum": 1}}
+    },
+    "sampling": {
+      "type": "object", "additionalProperties": false, "required": ["time", "initialChannels"],
+      "properties": {"time": {"type": "number", "minimum": 0}, "initialChannels": {"type": ["object", "null"]}}
+    },
+    "font": {"type": "null", "description": "These producers draw no text. A null font never proves text coverage."},
+    "colorEncoding": {"const": "rgba8-srgb-straight"},
+    "renderer": {
+      "type": "object", "additionalProperties": false, "required": ["name", "sha256", "resolverSha256", "gpu"],
+      "properties": {
+        "name": {"$ref": "#/$defs/identity"}, "sha256": {"$ref": "#/$defs/digest"},
+        "resolverSha256": {"$ref": "#/$defs/digest"}, "gpu": {"type": "null"}
+      }
+    },
+    "runtime": {
+      "type": "object", "additionalProperties": false, "required": ["system", "machine", "python", "pillow"],
+      "properties": {"system": {"$ref": "#/$defs/identity"}, "machine": {"$ref": "#/$defs/identity"}, "python": {"$ref": "#/$defs/identity"}, "pillow": {"$ref": "#/$defs/identity"}}
+    },
+    "image": {
+      "type": "object", "additionalProperties": false, "required": ["file", "sha256"],
+      "properties": {"file": {"const": "image.png"}, "sha256": {"$ref": "#/$defs/digest"}}
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "opaqueSurface"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:opaque-surface-ir:0.1.0"}}}},
+    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "focusRing"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:focus-indicator-ir:0.1.0"}}}},
+    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "surfacePaint"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:surface-paint-ir:0.1.0"}}}},
+    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "commandMotion"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:command-motion-ir:0.1.0"}}}}
+  ],
+  "$defs": {
+    "identity": {"type": "string", "minLength": 1, "maxLength": 512},
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "capture": {
+      "type": "object", "additionalProperties": false,
+      "required": ["origin", "width", "height", "pixelsPerUnit", "samplesPerAxis"],
+      "properties": {
+        "origin": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
+        "width": {"type": "integer", "minimum": 1, "maximum": 4194304},
+        "height": {"type": "integer", "minimum": 1, "maximum": 4194304},
+        "pixelsPerUnit": {"type": "number", "exclusiveMinimum": 0},
+        "samplesPerAxis": {"type": "integer", "minimum": 1, "maximum": 8}
+      }
+    }
+  }
+}
