@@ -107,6 +107,11 @@ An independent checker must compare exposed support against the power equation
 and the sweep/disk identities, including the diagonal counterexample above.
 Coordinates and support use absolute or relative `1e-12`, whichever is larger;
 gap and stroke must remain representably positive regardless of that tolerance.
+Every nonzero input direction component retains a nonzero, correctly signed
+reported normal component. The supplied analytic `sideOffset` remains explicit;
+tiny witness or bound increments may round within the stated tolerance without
+erasing that analytic sweep. Disk expansions remain distinct and positive in
+the reported bounds, independently of relative coordinate tolerance.
 Agreement between a rounded point dot product and a rounded scalar is insufficient
 under cancellation. Certification must bound the real normalization, power
 boundary, selected sweep and disk arithmetic from the represented inputs. A
@@ -119,6 +124,12 @@ case permits either an atomic precision rejection or a complete result that
 passes the same independent geometry and color checks. Rejection must not become
 a mandatory semantic outcome merely because the reference cannot certify a
 mathematically valid calculation.
+All finite arithmetic-loss probes use this policy, including tiny projections,
+extreme normalized components and large bounds. Reference-specific rejection
+is tested as reference behaviour, rather than required of other implementations.
+The checker preserves precise geometry output numbers and uses 800-digit
+subtraction for positive disk/support differences across the admitted binary64
+input exponent range, alongside its independent 100-digit support calculation.
 
 This operation describes complete analytic focus geometry. It does not certify
 backend approximation, rasterized area, clipping, occlusion, accepted component

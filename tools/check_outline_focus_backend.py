@@ -32,10 +32,29 @@ def case_request(case):
     return apply_changes(request, case["changes"]), binding, outline["expected"]
 
 
+def decimal_number(value):
+    return Decimal.from_float(value) if isinstance(value, float) else Decimal(value)
+
+
+def parse_result(source, label):
+    actual = parse_json(source, label)
+    precise = json.loads(source, parse_float=Decimal)
+    if isinstance(actual, dict) and isinstance(actual.get("focus"), dict):
+        geometry = actual["focus"].get("geometry")
+        if isinstance(geometry, dict):
+            for field in ("silhouetteBounds", "innerBounds", "outerBounds"):
+                if field in geometry:
+                    geometry[field] = precise["focus"]["geometry"][field]
+    if isinstance(actual, dict) and "supports" in actual:
+        actual["supports"] = precise["supports"]
+    return actual
+
+
 def require_close(actual, expected, label):
-    if type(actual) not in (int, float) or not math.isfinite(actual) or not math.isclose(
-        actual, float(expected), rel_tol=1e-12, abs_tol=1e-12
-    ):
+    if type(actual) not in (int, float, Decimal):
+        raise AssertionError(f"{label}: expected {expected}, got {actual!r}")
+    value, target = decimal_number(actual), decimal_number(expected)
+    if not value.is_finite() or abs(value - target) > Decimal("1e-12") * max(1, abs(value), abs(target)):
         raise AssertionError(f"{label}: expected {expected}, got {actual!r}")
 
 
@@ -51,7 +70,7 @@ def check_geometry(actual, request, outline):
         raise AssertionError("support count differs from ordered directions")
     with localcontext() as context:
         context.prec = 100
-        dec = lambda value: Decimal.from_float(float(value))
+        dec = decimal_number
         w, h = (dec(outline["size"][key]) for key in ("width", "height"))
         dx, dy = (dec(request["sideOffset"][key]) for key in ("x", "y"))
         for field, outset in (("silhouetteBounds", 0), ("innerBounds", 2), ("outerBounds", 4)):
@@ -59,12 +78,24 @@ def check_geometry(actual, request, outline):
                         "width": w + abs(dx) + 2 * outset, "height": h + abs(dy) + 2 * outset}
             for key, value in expected.items():
                 require_close(geometry[field][key], value, f"{field}/{key}")
+        for first, second in (("silhouetteBounds", "innerBounds"), ("innerBounds", "outerBounds")):
+            for key, extent in (("x", -2), ("y", -2), ("width", 4), ("height", 4)):
+                with localcontext() as preservation:
+                    preservation.prec = 800
+                    difference = dec(geometry[second][key]) - dec(geometry[first][key])
+                if difference * extent <= 0:
+                    raise AssertionError(f"{first}/{second}/{key}: disk expansion lost")
+                require_close(difference, extent, f"{first}/{second}/{key} expansion")
         for index, (query, direction) in enumerate(zip(actual["supports"], request["directions"])):
             nx, ny = (dec(direction[key]) for key in ("x", "y"))
             length = (nx * nx + ny * ny).sqrt()
             nx, ny = nx / length, ny / length
             require_close(query["normal"]["x"], nx, f"normal {index}/x")
             require_close(query["normal"]["y"], ny, f"normal {index}/y")
+            for key in ("x", "y"):
+                component = dec(query["normal"][key])
+                if direction[key] != 0 and component * dec(direction[key]) <= 0:
+                    raise AssertionError(f"normal {index}/{key}: nonzero component lost or reversed")
             corner = ("bottom" if ny >= 0 else "top") + ("Right" if nx >= 0 else "Left")
             a, b = (dec(outline["corners"][corner][key]) for key in ("x", "y"))
             cx, cy = (w - a if nx >= 0 else a), (h - b if ny >= 0 else b)
@@ -88,8 +119,10 @@ def check_geometry(actual, request, outline):
                 require_close(query[field]["support"], support + outset, f"{field} {index}/support")
                 dot = dec(query[field]["point"]["x"]) * nx + dec(query[field]["point"]["y"]) * ny
                 require_close(query[field]["support"], dot, f"{field} {index}/witness")
-            gap = query["inner"]["support"] - query["silhouette"]["support"]
-            stroke = query["outer"]["support"] - query["inner"]["support"]
+            with localcontext() as preservation:
+                preservation.prec = 800
+                gap = dec(query["inner"]["support"]) - dec(query["silhouette"]["support"])
+                stroke = dec(query["outer"]["support"]) - dec(query["inner"]["support"])
             if gap <= 0 or stroke <= 0:
                 raise AssertionError("focus loses a positive gap or stroke")
             require_close(gap, 2, f"gap {index}")
@@ -132,7 +165,7 @@ def main():
                     break
                 if completed.returncode != 0 or completed.stderr:
                     raise AssertionError(f"{name}: expected clean success: {completed.stderr[:300]!r}")
-                actual = parse_json(completed.stdout, name)
+                actual = parse_result(completed.stdout, name)
                 errors = list(result_schema.iter_errors(actual))
                 if errors:
                     raise AssertionError(f"{name}: invalid result: {errors[0].message}")
@@ -153,7 +186,7 @@ def main():
     except (AssertionError, OSError, ValueError, ArithmeticError) as error:
         print(f"FAIL {error}", file=sys.stderr)
         return 1
-    print(f"Outline focus backend passed {len(cases) + len(failures)} conformance cases with independent 100-digit support checks")
+    print(f"Outline focus backend passed {len(cases) + len(failures)} conformance cases with independent 100-digit support and precise extent checks")
     return 0
 
 

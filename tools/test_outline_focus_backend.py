@@ -2,13 +2,17 @@ import copy
 import io
 import json
 import math
+import sys
+import tempfile
 import unittest
+from decimal import Decimal, localcontext
+from pathlib import Path
 from contextlib import redirect_stderr, redirect_stdout
 from subprocess import CompletedProcess
 from unittest.mock import patch
 
 from check_focus_indicator_backend import contrast
-from check_outline_focus_backend import case_request, check_geometry, main
+from check_outline_focus_backend import case_request, check_geometry, main, parse_result
 from check_schemas import ROOT, load_json, validator_for
 
 
@@ -52,10 +56,114 @@ def fixture():
     return request, outline, actual
 
 
+def precise_wire(value):
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, dict):
+        return "{" + ",".join(json.dumps(key) + ":" + precise_wire(item) for key, item in value.items()) + "}"
+    if isinstance(value, list):
+        return "[" + ",".join(precise_wire(item) for item in value) + "]"
+    return json.dumps(value, allow_nan=False)
+
+
+def precise_probe(case):
+    request, _, outline = case_request(case)
+    _, _, actual = fixture()
+    geometry = actual["focus"]["geometry"]
+    geometry["outline"] = outline
+    geometry["sideOffset"] = copy.deepcopy(request["sideOffset"])
+    with localcontext() as context:
+        context.prec = 800
+        dec = lambda value: Decimal.from_float(value) if isinstance(value, float) else Decimal(value)
+        w, h = (dec(outline["size"][key]) for key in ("width", "height"))
+        dx, dy = (dec(request["sideOffset"][key]) for key in ("x", "y"))
+        for field, extent in (("silhouetteBounds", 0), ("innerBounds", 2), ("outerBounds", 4)):
+            geometry[field] = {"x": min(0, dx) - extent, "y": min(0, dy) - extent,
+                               "width": w + abs(dx) + 2 * extent, "height": h + abs(dy) + 2 * extent}
+        supports = []
+        for direction in request["directions"]:
+            x, y = (dec(direction[key]) for key in ("x", "y"))
+            with localcontext() as powers:
+                powers.prec = 100
+                magnitude = (x * x + y * y).sqrt()
+                nx, ny = x / magnitude, y / magnitude
+            corner = ("bottom" if ny >= 0 else "top") + ("Right" if nx >= 0 else "Left")
+            a, b = (dec(outline["corners"][corner][key]) for key in ("x", "y"))
+            cx, cy = w - a if nx >= 0 else a, h - b if ny >= 0 else b
+            # Solve the quartic boundary gradient; scalar witnesses are independent point dot products.
+            with localcontext() as powers:
+                powers.prec = 100
+                denominator = powers.power(powers.power(a * abs(nx), Decimal(4) / 3)
+                                           + powers.power(b * abs(ny), Decimal(4) / 3), Decimal(1) / 4)
+                u = powers.power(a * abs(nx), Decimal(1) / 3) / denominator if denominator else Decimal(0)
+                v = powers.power(b * abs(ny), Decimal(1) / 3) / denominator if denominator else Decimal(0)
+            px = cx + (a * u if nx >= 0 else -a * u)
+            py = cy + (b * v if ny >= 0 else -b * v)
+            if x * dx + y * dy > 0:
+                px, py = px + dx, py + dy
+            query = {"normal": {"x": nx, "y": ny}}
+            for field, extent in (("silhouette", 0), ("inner", 2), ("outer", 4)):
+                qx, qy = px + extent * nx, py + extent * ny
+                query[field] = {"point": {"x": qx, "y": qy}, "support": qx * nx + qy * ny}
+            supports.append(query)
+        actual["supports"] = supports
+    return request, outline, actual
+
+
 class OutlineFocusCheckerTests(unittest.TestCase):
+    def test_all_precision_probes_accept_precise_output_through_the_wire_boundary(self):
+        cases = load_json(ROOT / "conformance/states/outline-focus-cases.json")
+        probes = [case for case in cases if case.get("accuracyProbe")]
+        self.assertEqual(len(probes), 5)
+        for probe in probes:
+            with self.subTest(probe=probe["name"]), tempfile.TemporaryDirectory() as directory:
+                request, _, actual = precise_probe(probe)
+                source = json.dumps(request, allow_nan=False)
+                response = precise_wire(actual)
+                backend = Path(directory) / "backend.py"
+                backend.write_text("import sys\nsource=sys.stdin.read()\n"
+                                   + "if source == " + repr(source) + ":\n    print(" + repr(response) + ")\n"
+                                   + "else:\n    print('invalid request',file=sys.stderr)\n    sys.exit(1)\n", encoding="utf-8")
+                def documents(path):
+                    return [probe] if path.name == "outline-focus-cases.json" else load_json(path)
+                with patch("sys.argv", ["check", "--", sys.executable, str(backend), "-"]), \
+                     patch("check_outline_focus_backend.load_json", side_effect=documents), \
+                     redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                    self.assertEqual(main(), 0)
+
+    def test_precise_output_rejects_lost_components_extents_and_authoritative_projection(self):
+        cases = load_json(ROOT / "conformance/states/outline-focus-cases.json")
+        for name, corrupt in [
+            ("tiny direction component precision probe", lambda result: result["supports"][0]["normal"].update(y=0)),
+            ("large projection precision probe", lambda result: result["supports"][0]["inner"].update(
+                support=result["supports"][0]["silhouette"]["support"])),
+            ("large projection precision probe", lambda result: result["focus"]["geometry"].update(
+                innerBounds=copy.deepcopy(result["focus"]["geometry"]["silhouetteBounds"]))),
+            ("tiny positive projection precision probe", lambda result: result["focus"]["geometry"]["sideOffset"].update(x=0)),
+        ]:
+            case = next(case for case in cases if case["name"] == name)
+            request, outline, actual = precise_probe(case)
+            check_geometry(actual, request, outline)
+            corrupt(actual)
+            with self.subTest(case=name), self.assertRaises(AssertionError):
+                check_geometry(actual, request, outline)
+
+    def test_precise_geometry_parsing_keeps_strict_json_and_schema_checks(self):
+        _, _, actual = fixture()
+        source = precise_wire(actual)
+        for invalid in (source.replace('"schemaVersion":"0.1.0"',
+                                       '"schemaVersion":"0.1.0","schemaVersion":"0.1.0"', 1),
+                        source.replace('"support":126', '"support":NaN', 1),
+                        source.replace('"support":126', '"support":1e999', 1)):
+            with self.subTest(source=invalid[:60]), self.assertRaises(ValueError):
+                parse_result(invalid, "invalid precise result")
+        actual["supports"][0]["normal"]["unknown"] = 1
+        parsed = parse_result(precise_wire(actual), "unknown member")
+        self.assertTrue(list(validator_for("schemas/outline-focus-result.schema.json").iter_errors(parsed)))
+
     def test_precise_large_projection_is_not_forced_to_share_reference_rejection(self):
         cases = load_json(ROOT / "conformance/states/outline-focus-cases.json")
-        probe = next(case for case in cases if case.get("accuracyProbe"))
+        probe = next(case for case in cases if case["name"] == "cancelled projection requires certified accuracy")
         request, _, outline = case_request(probe)
         _, _, actual = fixture()
         geometry = actual["focus"]["geometry"]
