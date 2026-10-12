@@ -103,6 +103,18 @@ pub fn resolve_surface_outline(
             "minimumInset must be finite and nonnegative".into(),
         ));
     }
+    for (authored, resolved) in [
+        (radii.top_start, normalized.top_start),
+        (radii.top_end, normalized.top_end),
+        (radii.bottom_end, normalized.bottom_end),
+        (radii.bottom_start, normalized.bottom_start),
+    ] {
+        if (authored.x > 0.0 && resolved.x == 0.0) || (authored.y > 0.0 && resolved.y == 0.0) {
+            return Err(SurfaceOutlineError(
+                "normalization loses a positive corner extent".into(),
+            ));
+        }
+    }
     let square = |r: CornerRadius| {
         if r.x == 0.0 || r.y == 0.0 {
             CornerRadius { x: 0.0, y: 0.0 }

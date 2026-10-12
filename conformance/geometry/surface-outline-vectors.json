@@ -1063,5 +1063,71 @@
     },
     "requestSchemaValid": false,
     "errorContains": "nonnegative"
+  },
+  {
+    "name": "normalization loses entire positive corners",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 1,
+        "height": 1
+      },
+      "radii": {
+        "topStart": {
+          "x": 1e+308,
+          "y": 1e+308
+        },
+        "topEnd": {
+          "x": 1e-300,
+          "y": 1e-300
+        },
+        "bottomEnd": {
+          "x": 1e-300,
+          "y": 1e-300
+        },
+        "bottomStart": {
+          "x": 1e-300,
+          "y": 1e-300
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 0
+    },
+    "requestSchemaValid": true,
+    "errorContains": "normalization loses a positive corner extent"
+  },
+  {
+    "name": "normalization loses one positive axis",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 1,
+        "height": 1
+      },
+      "radii": {
+        "topStart": {
+          "x": 1e+300,
+          "y": 1e-300
+        },
+        "topEnd": {
+          "x": 1e+300,
+          "y": 1e-300
+        },
+        "bottomEnd": {
+          "x": 1e+300,
+          "y": 1e-300
+        },
+        "bottomStart": {
+          "x": 1e+300,
+          "y": 1e-300
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 0
+    },
+    "requestSchemaValid": true,
+    "errorContains": "normalization loses a positive corner extent"
   }
 ]
