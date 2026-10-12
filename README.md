@@ -259,6 +259,13 @@ content plateau. Run `resina-surface-relief <path|->` and
 `python tools/check_surface_relief_backend.py -- <backend-command> -` for its
 versioned point-sampling contract. Relief does not select elevation or shadow.
 
+[Continuous outline focus](spec/84-outline-focus-geometry.md) retains the actual
+painted outline and physical sweep with Euclidean disk offsets for the existing
+2 px gap and 2 px stroke. Run `resina-outline-focus <path|->` and
+`python tools/check_outline_focus_backend.py -- <backend-command> -` for the
+analytic IR and independently checked support witnesses. Native focus rendering
+and accepted component appearance require separate evidence.
+
 [Opaque relief face paint](spec/83-opaque-relief-paint.md) composes analytic normals
 with existing pigments, a guarded exterior edge and a uniform readable content
 rectangle. Run `resina-relief-paint <path|->` and
