@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:outline-focus-case:0.1.0",
+  "title": "Resina Outline Focus Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "outlineVector", "changes", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "outlineVector": {"type": "string", "minLength": 1},
+    "changes": {"$ref": "urn:resina:schema:focus-indicator-case:0.1.0#/properties/changes"},
+    "requestSchemaValid": {"type": "boolean"},
+    "accuracyProbe": {"const": true},
+    "expected": {"$ref": "urn:resina:schema:focus-indicator-case:0.1.0#/properties/expected"},
+    "failure": {"const": true}
+  },
+  "allOf": [{"if": {"required": ["accuracyProbe"]}, "then": {"required": ["expected"], "properties": {"requestSchemaValid": {"const": true}}}}],
+  "oneOf": [
+    {"required": ["expected"], "not": {"required": ["failure"]}, "properties": {"requestSchemaValid": {"const": true}}},
+    {"required": ["failure"], "not": {"required": ["expected"]}}
+  ]
+}

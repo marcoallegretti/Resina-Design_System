@@ -1,5 +1,11 @@
 pub use resina_model::SliderOrientation;
 
+mod outline_focus;
+pub use outline_focus::{
+    OutlineFocusBoundary, OutlineFocusError, OutlineFocusGeometry, OutlineFocusIr,
+    OutlineFocusResult, OutlineFocusSupport, resolve_outline_focus, resolve_outline_focus_source,
+};
+
 mod relief_paint;
 pub use relief_paint::{
     ReliefPaint, ReliefPaintError, ReliefPaintPoint, ReliefPaintResult, resolve_relief_paint,

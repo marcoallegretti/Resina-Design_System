@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:outline-focus-request:0.1.0",
+  "title": "Resina Outline Focus Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "focus", "outline", "sideOffset", "directions"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "focus": {"$ref": "urn:resina:schema:focus-indicator-request:0.1.0"},
+    "outline": {"$ref": "urn:resina:schema:surface-outline-request:0.1.0"},
+    "sideOffset": {"$ref": "urn:resina:schema:outline-focus-ir:0.1.0#/$defs/vector"},
+    "directions": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {"$ref": "urn:resina:schema:outline-focus-ir:0.1.0#/$defs/vector"},
+          {"not": {"properties": {"x": {"const": 0}, "y": {"const": 0}}}}
+        ]
+      }
+    }
+  }
+}

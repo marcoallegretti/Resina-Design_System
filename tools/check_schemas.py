@@ -437,6 +437,10 @@ def main():
         "schemas/surface-outline-request.schema.json",
         "schemas/surface-outline-result.schema.json",
         "schemas/surface-outline-case.schema.json",
+        "schemas/outline-focus-request.schema.json",
+        "schemas/outline-focus-ir.schema.json",
+        "schemas/outline-focus-result.schema.json",
+        "schemas/outline-focus-case.schema.json",
         "schemas/surface-relief-request.schema.json",
         "schemas/surface-relief-result.schema.json",
         "schemas/surface-relief-case.schema.json",
@@ -830,6 +834,18 @@ def main():
         check_case(outline_request_schema, case["name"], case["request"], case["requestSchemaValid"])
         if "expected" in case:
             check_case(outline_result_schema, case["name"], case["expected"], True)
+    from check_outline_focus_backend import case_request as outline_focus_request
+    outline_focus_cases = load_json(ROOT / "conformance/states/outline-focus-cases.json")
+    outline_focus_case_schema = validator_for("schemas/outline-focus-case.schema.json")
+    outline_focus_request_schema = validator_for("schemas/outline-focus-request.schema.json")
+    outline_focus_names = set()
+    for case in outline_focus_cases:
+        if case["name"] in outline_focus_names:
+            raise ValueError(f"duplicate outline focus case: {case['name']}")
+        outline_focus_names.add(case["name"])
+        check_case(outline_focus_case_schema, case["name"], case, True)
+        request, _, _ = outline_focus_request(case)
+        check_case(outline_focus_request_schema, case["name"], request, case["requestSchemaValid"])
     relief_cases = load_json(ROOT / "conformance/geometry/surface-relief-vectors.json")
     relief_case_schema = validator_for("schemas/surface-relief-case.schema.json")
     relief_request_schema = validator_for("schemas/surface-relief-request.schema.json")
@@ -1294,6 +1310,7 @@ def main():
         + 2 * len(outline_cases) + sum("expected" in case for case in outline_cases)
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
+        + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + len(extrusion_cases)
         + len(invalid_extrusion_results)
