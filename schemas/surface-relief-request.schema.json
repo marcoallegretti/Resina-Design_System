@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-relief-request:0.1.0",
+  "title": "Resina Surface Relief Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "outline",
+    "profile",
+    "points"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "outline": {
+      "$ref": "urn:resina:schema:surface-outline-request:0.1.0"
+    },
+    "profile": {
+      "$ref": "#/$defs/profile"
+    },
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "x",
+          "y"
+        ],
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "bodyThickness",
+        "amplitude",
+        "shoulderWidth"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "flat",
+            "convex",
+            "recessed"
+          ]
+        },
+        "bodyThickness": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "amplitude": {
+          "type": "number",
+          "minimum": 0
+        },
+        "shoulderWidth": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "flat"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "amplitude": {
+                "const": 0
+              },
+              "shoulderWidth": {
+                "const": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "amplitude": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "shoulderWidth": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

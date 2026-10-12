@@ -124,6 +124,16 @@ const COMMANDS: &[(&str, &str, usize)] = &[
         MIB,
     ),
     (
+        "resina-surface-outline",
+        env!("CARGO_BIN_EXE_resina-surface-outline"),
+        MIB,
+    ),
+    (
+        "resina-surface-relief",
+        env!("CARGO_BIN_EXE_resina-surface-relief"),
+        MIB,
+    ),
+    (
         "resina-surface-readability",
         env!("CARGO_BIN_EXE_resina-surface-readability"),
         MIB,

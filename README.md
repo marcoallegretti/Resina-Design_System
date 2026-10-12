@@ -253,6 +253,12 @@ The independent command boundary is `resina-surface-outline <path|->`, checked b
 `python tools/check_surface_outline_backend.py -- <backend-command> -`.
 Existing shape, inset, extrusion and opaque surface outputs remain unchanged.
 
+[Bounded surface relief](spec/82-surface-relief.md) resolves independent body
+thickness, raised faces and recessed wells with analytic normals and a uniform
+content plateau. Run `resina-surface-relief <path|->` and
+`python tools/check_surface_relief_backend.py -- <backend-command> -` for its
+versioned point-sampling contract. Relief does not select elevation or shadow.
+
 [Slider part paint](spec/76-slider-part-paint.md) applies actual part responses
 before readability and geometry, retains dragging/read-only states, and places
 navigation paint on the thumb against all supplied surrounding ranges.
