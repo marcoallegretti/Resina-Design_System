@@ -42,6 +42,15 @@ without changing the active desktop session.
 
 ## Native conformance limits
 
+`prepare_relief_paint_at` prepares the independently resolved opaque relief face
+on the device grid after parent placement. It retains the same texture,
+coordinate and sampling limits as other prepared paint. The `relief_render`
+test verifies complete prepared-image GPU coverage after curve, profile and
+fractional-scale replacement. `lab/guido/examples/relief_probe.rs` opens a fixed
+native inspection surface for requests up to 120 × 60 logical px; its supplied
+device scale must match the compositor output. These are face-paint primitives,
+with no component input, navigation or native accessibility claim.
+
 The checked paint and content paths are implemented primitives. The following
 limits prevent claiming complete native command conformance:
 

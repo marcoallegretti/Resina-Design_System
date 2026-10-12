@@ -1,6 +1,9 @@
 use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb_to_linear_srgb};
 use resina_model::PhysicalVector;
-use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintError, SurfacePaintIr};
+use resina_resolver::{
+    FocusIndicatorIr, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError, SurfacePaintError,
+    SurfacePaintIr,
+};
 use std::{collections::TryReserveError, fmt};
 mod uniform;
 use uniform::SampleBox;
@@ -27,6 +30,7 @@ pub enum RasterError {
     ResourceLimit,
     Allocation(TryReserveError),
     Paint(SurfacePaintError),
+    ReliefPaint(ReliefPaintError),
     Color(ColorConversionError),
 }
 
@@ -38,6 +42,7 @@ impl fmt::Display for RasterError {
             Self::ResourceLimit => formatter.write_str("raster pixel or sample limit exceeded"),
             Self::Allocation(error) => write!(formatter, "raster allocation failed: {error}"),
             Self::Paint(error) => write!(formatter, "surface paint failed: {error}"),
+            Self::ReliefPaint(error) => write!(formatter, "relief paint failed: {error}"),
             Self::Color(error) => write!(formatter, "raster color conversion failed: {error}"),
         }
     }
@@ -48,6 +53,7 @@ impl std::error::Error for RasterError {
         match self {
             Self::Allocation(error) => Some(error),
             Self::Paint(error) => Some(error),
+            Self::ReliefPaint(error) => Some(error),
             Self::Color(error) => Some(error),
             _ => None,
         }
@@ -116,7 +122,7 @@ pub fn render_surface(
                 UniformRegion::Sample
             }
         },
-        |point| surface.sample_paint(point),
+        |point| surface.sample_paint(point).map_err(RasterError::Paint),
     )
 }
 
@@ -143,7 +149,7 @@ pub fn render_focus(
                 UniformRegion::Sample
             }
         },
-        |point| indicator.sample_paint(point),
+        |point| indicator.sample_paint(point).map_err(RasterError::Paint),
     )
 }
 
@@ -189,10 +195,42 @@ pub fn render_surface_paint(
                 UniformRegion::Sample
             }
         },
-        |point| match body.sample_paint(point)? {
+        |point| match body.sample_paint(point).map_err(RasterError::Paint)? {
             Some(color) => Ok(Some(color)),
-            None => focus.sample_paint(point),
+            None => focus.sample_paint(point).map_err(RasterError::Paint),
         },
+    )
+}
+
+pub fn render_relief_paint(
+    paint: &ReliefPaint,
+    viewport: Viewport,
+    samples_per_axis: u8,
+) -> Result<RasterImage, RasterError> {
+    let size = paint.surface().outline().size();
+    let content = paint.content_bounds();
+    render(
+        viewport,
+        samples_per_axis,
+        paint.pigment().body(),
+        |region| {
+            if region.max.x < 0.0
+                || region.max.y < 0.0
+                || region.min.x > size.width
+                || region.min.y > size.height
+            {
+                UniformRegion::Clear
+            } else if region.min.x >= content.x
+                && region.min.y >= content.y
+                && region.max.x <= content.x + content.width
+                && region.max.y <= content.y + content.height
+            {
+                UniformRegion::Solid
+            } else {
+                UniformRegion::Sample
+            }
+        },
+        |point| paint.sample_paint(point).map_err(RasterError::ReliefPaint),
     )
 }
 
@@ -201,7 +239,7 @@ fn render(
     samples_per_axis: u8,
     solid_color: &SrgbFallback,
     uniform: impl Fn(SampleBox) -> UniformRegion,
-    mut sample: impl FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, SurfacePaintError>,
+    mut sample: impl FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
 ) -> Result<RasterImage, RasterError> {
     let byte_count = validate(viewport, samples_per_axis)?;
     let mut rgba = Vec::new();
@@ -256,7 +294,7 @@ fn render(
                             + (f64::from(y) + (f64::from(sy) + 0.5) / grid)
                                 / viewport.pixels_per_unit,
                     };
-                    if let Some(color) = sample(point).map_err(RasterError::Paint)? {
+                    if let Some(color) = sample(point)? {
                         covered += 1;
                         let components = color.components();
                         let linear = match decoded_color {

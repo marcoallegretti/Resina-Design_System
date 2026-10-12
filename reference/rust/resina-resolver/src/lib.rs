@@ -1,5 +1,10 @@
 pub use resina_model::SliderOrientation;
 
+mod relief_paint;
+pub use relief_paint::{
+    ReliefPaint, ReliefPaintError, ReliefPaintPoint, ReliefPaintResult, resolve_relief_paint,
+    resolve_relief_paint_source,
+};
 mod surface_relief;
 pub use surface_relief::{
     FaceNormal, ReliefKind, ReliefPointSample, ReliefSample, SurfaceRelief, SurfaceReliefError,

@@ -259,6 +259,13 @@ content plateau. Run `resina-surface-relief <path|->` and
 `python tools/check_surface_relief_backend.py -- <backend-command> -` for its
 versioned point-sampling contract. Relief does not select elevation or shadow.
 
+[Opaque relief face paint](spec/83-opaque-relief-paint.md) composes analytic normals
+with existing pigments, a guarded exterior edge and a uniform readable content
+rectangle. Run `resina-relief-paint <path|->` and
+`python tools/check_relief_paint_backend.py -- <backend-command> -`.
+`resina-relief-raster` produces bounded CPU PNG output; this face primitive does
+not supply component input, navigation or a projected solid.
+
 [Slider part paint](spec/76-slider-part-paint.md) applies actual part responses
 before readability and geometry, retains dragging/read-only states, and places
 navigation paint on the thumb against all supplied surrounding ranges.
