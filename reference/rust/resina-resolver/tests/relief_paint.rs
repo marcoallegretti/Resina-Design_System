@@ -204,3 +204,33 @@ fn logical_mapping_preserves_physical_light_and_large_corner_inset() {
         }
     }
 }
+
+#[test]
+fn closed_edge_interior_distinguishes_exact_boundary_and_neighbors() {
+    for (size, radius, point) in [(56.0, 14.0, (9.0, 2.0_f64)), (18.0, 6.0, (3.0, 2.0))] {
+        let mut source = request("flat", "circular");
+        source["outline"]["size"] = json!({"width":size,"height":size});
+        source["outline"]["minimumInset"] = json!(0);
+        for corner in ["topStart", "topEnd", "bottomEnd", "bottomStart"] {
+            source["outline"]["radii"][corner] = json!({"x":radius,"y":radius});
+        }
+        source["edgeWidth"] = json!(1);
+        let paint = resolve_relief_paint_source(&source.to_string())
+            .unwrap()
+            .paint;
+        for (y, expected) in [
+            (point.1.next_down(), paint.edge().color()),
+            (point.1, paint.pigment().body()),
+            (point.1.next_up(), paint.pigment().body()),
+        ] {
+            assert_eq!(
+                paint
+                    .sample_paint(PhysicalVector { x: point.0, y })
+                    .unwrap()
+                    .as_ref(),
+                Some(expected),
+                "size={size} y={y}"
+            );
+        }
+    }
+}

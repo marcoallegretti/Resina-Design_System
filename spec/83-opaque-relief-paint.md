@@ -37,6 +37,19 @@ that outer corner, so its constraint is absent. Apply every constraint globally;
 derived axes can overlap. Do not renormalize them into another surface outline.
 This is a conservative inset region, not an exact Euclidean offset.
 
+The interior is closed and classification uses the exact represented input
+coordinates. A rounded power sum cannot select the body or edge pigment when
+its error can cross one. The reference first encloses the subtraction,
+division, powers and sum with outward arithmetic. Ambiguous comparisons fall
+back to exact integer arithmetic: write the finite binary64 inputs on one
+common dyadic lattice, then compare
+`U^n*B^n + V^n*A^n <= A^n*B^n`, where `U=max(a-dx,0)`,
+`V=max(b-dy,0)`, `A=a-i` and `B=b-i`. The common lattice cancels. This follows the
+[filtered exact predicate approach](https://www.cs.cmu.edu/~quake/robust.html);
+the reference uses [arbitrary-precision integers](https://docs.rs/num-bigint/0.5.1/num_bigint/struct.BigUint.html)
+only when the enclosing comparison is inconclusive. Binary64 inputs and power
+at most four bound the integer sizes; no geometric tolerance changes membership.
+
 For a constrained corner, outer normalized coordinates equal the inner
 coordinates multiplied by `(1-i/a)` and `(1-i/b)`. Thus its inner power sum at
 most one implies its outer power sum at most one. The box and each clipped-power

@@ -9,6 +9,7 @@ use resina_model::{KeyLight, PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+mod edge;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReliefPaintError(String);
@@ -216,38 +217,7 @@ impl ReliefPaint {
     }
 
     fn edge_interior_contains(&self, point: PhysicalVector) -> bool {
-        let size = self.surface.outline().size();
-        let inset = self.edge_width;
-        if point.x < inset
-            || point.y < inset
-            || point.x > size.width - inset
-            || point.y > size.height - inset
-        {
-            return false;
-        }
-        let distances = [
-            (point.x, point.y),
-            (size.width - point.x, point.y),
-            (size.width - point.x, size.height - point.y),
-            (point.x, size.height - point.y),
-        ];
-        let power = match self.surface.outline().curvature() {
-            OutlineCurvature::Circular => 2,
-            OutlineCurvature::Quartic => 4,
-        };
-        self.surface
-            .outline()
-            .corners()
-            .into_iter()
-            .zip(distances)
-            .all(|(corner, (dx, dy))| {
-                if corner.x <= inset || corner.y <= inset {
-                    return true;
-                }
-                let u = ((corner.x - dx) / (corner.x - inset)).max(0.0);
-                let v = ((corner.y - dy) / (corner.y - inset)).max(0.0);
-                u.powi(power) + v.powi(power) <= 1.0
-            })
+        edge::contains(self.surface.outline(), self.edge_width, point)
     }
 
     fn reserve_content(&self) -> Result<PhysicalBounds, ReliefPaintError> {
