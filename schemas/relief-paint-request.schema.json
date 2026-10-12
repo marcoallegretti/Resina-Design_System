@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "outline",
+    "profile",
+    "pigment",
+    "keyLight",
+    "edge",
+    "edgeWidth",
+    "foreground",
+    "minimumContentContrast",
+    "points"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "outline": {
+      "$ref": "urn:resina:schema:surface-outline-request:0.1.0"
+    },
+    "profile": {
+      "$ref": "urn:resina:schema:surface-relief-request:0.1.0#/$defs/profile"
+    },
+    "pigment": {
+      "$ref": "urn:resina:schema:opaque-pigment-request:0.1.0"
+    },
+    "keyLight": {
+      "$ref": "urn:resina:schema:key-light:0.1.0"
+    },
+    "edge": {
+      "$ref": "urn:resina:schema:edge-contrast-request:0.1.0"
+    },
+    "edgeWidth": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "foreground": {
+      "$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"
+    },
+    "minimumContentContrast": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 21
+    },
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "x",
+          "y"
+        ],
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:relief-paint-request:0.1.0",
+  "title": "Resina Opaque Relief Paint Request"
+}

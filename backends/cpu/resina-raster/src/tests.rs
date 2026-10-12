@@ -47,7 +47,7 @@ fn boundary_and_extreme_boxes_require_point_sampling() {
         8,
         surface.pigment().body(),
         |_| UniformRegion::Sample,
-        |point| surface.sample_paint(point),
+        |point| surface.sample_paint(point).map_err(RasterError::Paint),
     )
     .unwrap();
     assert_eq!(
@@ -116,7 +116,7 @@ fn uniform_regions_match_point_sampling_across_geometry_and_sampling_grids() {
                     samples,
                     surface.pigment().body(),
                     |_| UniformRegion::Sample,
-                    |point| surface.sample_paint(point),
+                    |point| surface.sample_paint(point).map_err(RasterError::Paint),
                 )
                 .unwrap();
                 assert_eq!(
@@ -129,7 +129,7 @@ fn uniform_regions_match_point_sampling_across_geometry_and_sampling_grids() {
                     samples,
                     focus.indicator().color(),
                     |_| UniformRegion::Sample,
-                    |point| focus.sample_paint(point),
+                    |point| focus.sample_paint(point).map_err(RasterError::Paint),
                 )
                 .unwrap();
                 assert_eq!(
@@ -142,9 +142,17 @@ fn uniform_regions_match_point_sampling_across_geometry_and_sampling_grids() {
                     samples,
                     paint.body().pigment().body(),
                     |_| UniformRegion::Sample,
-                    |point| match paint.body().sample_paint(point)? {
+                    |point| match paint
+                        .body()
+                        .sample_paint(point)
+                        .map_err(RasterError::Paint)?
+                    {
                         Some(color) => Ok(Some(color)),
-                        None => paint.focus().unwrap().sample_paint(point),
+                        None => paint
+                            .focus()
+                            .unwrap()
+                            .sample_paint(point)
+                            .map_err(RasterError::Paint),
                     },
                 )
                 .unwrap();

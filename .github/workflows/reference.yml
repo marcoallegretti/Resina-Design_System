@@ -281,6 +281,7 @@ jobs:
       - run: python tools/check_inset_contour_backend.py -- target/debug/resina-inset-contour${{ matrix.executableSuffix }} -
       - run: python tools/check_surface_outline_backend.py -- target/debug/resina-surface-outline${{ matrix.executableSuffix }} -
       - run: python tools/check_surface_relief_backend.py -- target/debug/resina-surface-relief${{ matrix.executableSuffix }} -
+      - run: python tools/check_relief_paint_backend.py -- target/debug/resina-relief-paint${{ matrix.executableSuffix }} -
       - run: python tools/check_key_light_backend.py -- target/debug/resina-key-light${{ matrix.executableSuffix }} -
       - run: python tools/check_extruded_contour_backend.py -- target/debug/resina-extruded-contour${{ matrix.executableSuffix }} -
       - run: python tools/check_opaque_surface_backend.py -- target/debug/resina-opaque-surface${{ matrix.executableSuffix }} -

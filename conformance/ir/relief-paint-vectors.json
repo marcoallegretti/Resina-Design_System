@@ -1,0 +1,6076 @@
+[
+  {
+    "name": "cast-flat-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "flat",
+            "bodyThickness": 4,
+            "amplitude": 0,
+            "shoulderWidth": 0
+          },
+          "contentBounds": {
+            "x": 2,
+            "y": 2,
+            "width": 116,
+            "height": 56
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "cast",
+          "profile": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.45,
+              0.36,
+              0.27
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.54,
+              0.448,
+              0.356
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 56
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "cast-convex-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "convex",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "cast",
+          "profile": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.45,
+              0.36,
+              0.27
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.54,
+              0.448,
+              0.356
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5064542252700905,
+              0.4077450703241086,
+              0.3090359153781267
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4919322184123869,
+              0.3935457747299095,
+              0.29515933104743214
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "cast-recessed-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "recessed",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "cast",
+          "profile": {
+            "sideShade": 0.1,
+            "highlightLift": 0.08
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.45,
+              0.36,
+              0.27
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.54,
+              0.448,
+              0.356
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4919322184123869,
+              0.3935457747299095,
+              0.29515933104743214
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5064542252700905,
+              0.4077450703241086,
+              0.3090359153781267
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "frost-flat-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "frost",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "flat",
+            "bodyThickness": 4,
+            "amplitude": 0,
+            "shoulderWidth": 0
+          },
+          "contentBounds": {
+            "x": 2,
+            "y": 2,
+            "width": 116,
+            "height": 56
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "frost",
+          "profile": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.43,
+              0.344,
+              0.258
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.59,
+              0.508,
+              0.426
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 56
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "frost-convex-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "frost",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "convex",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "frost",
+          "profile": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.43,
+              0.344,
+              0.258
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.59,
+              0.508,
+              0.426
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5145220068577037,
+              0.4174264082292443,
+              0.3203308096007851
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4887051057773416,
+              0.3909640846218733,
+              0.293223063466405
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "frost-recessed-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "frost",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "recessed",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "frost",
+          "profile": {
+            "sideShade": 0.14,
+            "highlightLift": 0.18
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.43,
+              0.344,
+              0.258
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.59,
+              0.508,
+              0.426
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4887051057773416,
+              0.3909640846218733,
+              0.293223063466405
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5145220068577037,
+              0.4174264082292443,
+              0.3203308096007851
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "elastomer-flat-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "flat",
+            "bodyThickness": 4,
+            "amplitude": 0,
+            "shoulderWidth": 0
+          },
+          "contentBounds": {
+            "x": 2,
+            "y": 2,
+            "width": 116,
+            "height": 56
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "elastomer",
+          "profile": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.375,
+              0.3,
+              0.225
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.57,
+              0.484,
+              0.398
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 56
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "elastomer-convex-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "convex",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "elastomer",
+          "profile": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.375,
+              0.3,
+              0.225
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.57,
+              0.484,
+              0.398
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5112948942226584,
+              0.41355387306719005,
+              0.3158128519117217
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4798305460309672,
+              0.3838644368247738,
+              0.2878983276185803
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "elastomer-recessed-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "recessed",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "elastomer",
+          "profile": {
+            "sideShade": 0.25,
+            "highlightLift": 0.14
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.375,
+              0.3,
+              0.225
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.57,
+              0.484,
+              0.398
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4798305460309672,
+              0.3838644368247738,
+              0.2878983276185803
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5112948942226584,
+              0.41355387306719005,
+              0.3158128519117217
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "gel-flat-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "gel",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "flat",
+            "bodyThickness": 4,
+            "amplitude": 0,
+            "shoulderWidth": 0
+          },
+          "contentBounds": {
+            "x": 2,
+            "y": 2,
+            "width": 116,
+            "height": 56
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "gel",
+          "profile": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.41,
+              0.328,
+              0.246
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.6,
+              0.52,
+              0.44
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 56
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "gel-convex-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "gel",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "convex",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "gel",
+          "profile": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.41,
+              0.328,
+              0.246
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.6,
+              0.52,
+              0.44
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5161355631752262,
+              0.4193626758102715,
+              0.3225897884453167
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4854779931422964,
+              0.3883823945138371,
+              0.2912867958853778
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "gel-recessed-opaque-face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "gel",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "paint": {
+        "surface": {
+          "outline": {
+            "schemaVersion": "0.1.0",
+            "curvature": "quartic",
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "corners": {
+              "topLeft": {
+                "x": 0,
+                "y": 0
+              },
+              "topRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomRight": {
+                "x": 0,
+                "y": 0
+              },
+              "bottomLeft": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            "contentBounds": {
+              "x": 2,
+              "y": 2,
+              "width": 116,
+              "height": 56
+            }
+          },
+          "profile": {
+            "kind": "recessed",
+            "bodyThickness": 4,
+            "amplitude": 0.5,
+            "shoulderWidth": 4
+          },
+          "contentBounds": {
+            "x": 4,
+            "y": 4,
+            "width": 112,
+            "height": 52
+          }
+        },
+        "pigment": {
+          "schemaVersion": "0.1.0",
+          "materialFamily": "gel",
+          "profile": {
+            "sideShade": 0.18,
+            "highlightLift": 0.2
+          },
+          "body": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          },
+          "side": {
+            "colorSpace": "srgb",
+            "components": [
+              0.41,
+              0.328,
+              0.246
+            ],
+            "alpha": 1
+          },
+          "highlight": {
+            "colorSpace": "srgb",
+            "components": [
+              0.6,
+              0.52,
+              0.44
+            ],
+            "alpha": 1
+          }
+        },
+        "direction": {
+          "x": -0.7071067811865476,
+          "y": -0.7071067811865476
+        },
+        "edge": {
+          "schemaVersion": "0.1.0",
+          "colorRole": "outline",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "contrastRatio": 21,
+          "fallbackApplied": false
+        },
+        "edgeWidth": 1,
+        "foreground": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "contentContrastRatio": 5.362055631160046,
+        "contentBounds": {
+          "x": 4,
+          "y": 4,
+          "width": 112,
+          "height": 52
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 2
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4854779931422964,
+              0.3883823945138371,
+              0.2912867958853778
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 58
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5161355631752262,
+              0.4193626758102715,
+              0.3225897884453167
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.5,
+              0.4,
+              0.3
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": 60,
+            "y": 0.5
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "color": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "zero-edge",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 0,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "edgeWidth"
+  },
+  {
+    "name": "negative-edge",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": -1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "edgeWidth"
+  },
+  {
+    "name": "collapsed-inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 30,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "edgeWidth"
+  },
+  {
+    "name": "lost-inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1e-300,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "edgeWidth"
+  },
+  {
+    "name": "unreadable-content",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 21,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "contrast"
+  },
+  {
+    "name": "invalid-content-threshold",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 0,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "minimumContentContrast"
+  },
+  {
+    "name": "translucent-foreground",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 0.5
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "opaque"
+  },
+  {
+    "name": "unsupported-version",
+    "request": {
+      "schemaVersion": "9.0.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "positional-profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": [
+        "convex",
+        4,
+        0.5,
+        4
+      ],
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "object"
+  },
+  {
+    "name": "positional-points",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "objects"
+  },
+  {
+    "name": "positional-light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": [
+        "0.1.0",
+        {
+          "x": -1,
+          "y": -1
+        }
+      ],
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "object"
+  },
+  {
+    "name": "translucent-pigment",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 0.5
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "opaque"
+  },
+  {
+    "name": "unusable-edge",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 4
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 60,
+          "y": 2
+        },
+        {
+          "x": 60,
+          "y": 58
+        },
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 60,
+          "y": 0.5
+        },
+        {
+          "x": -1,
+          "y": 30
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "insufficient"
+  },
+  {
+    "name": "atomic-uncertifiable-shoulder",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 3000000,
+          "height": 3000000
+        },
+        "radii": {
+          "topStart": {
+            "x": 1000000,
+            "y": 1000000
+          },
+          "topEnd": {
+            "x": 1000000,
+            "y": 1000000
+          },
+          "bottomEnd": {
+            "x": 1000000,
+            "y": 1000000
+          },
+          "bottomStart": {
+            "x": 1000000,
+            "y": 1000000
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5,
+            0.4,
+            0.3
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "keyLight": {
+        "schemaVersion": "0.1.0",
+        "direction": {
+          "x": -1,
+          "y": -1
+        }
+      },
+      "edge": {
+        "schemaVersion": "0.1.0",
+        "outline": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "outlineStrong": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1
+        },
+        "adjacentColor": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1
+        },
+        "minimumContrast": 3
+      },
+      "edgeWidth": 1e-08,
+      "foreground": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1
+      },
+      "minimumContentContrast": 3,
+      "points": [
+        {
+          "x": 1500000,
+          "y": 1500000
+        },
+        {
+          "x": 159104,
+          "y": 159104
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "precision"
+  }
+]

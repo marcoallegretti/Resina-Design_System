@@ -439,6 +439,9 @@ def main():
         "schemas/surface-relief-request.schema.json",
         "schemas/surface-relief-result.schema.json",
         "schemas/surface-relief-case.schema.json",
+        "schemas/relief-paint-request.schema.json",
+        "schemas/relief-paint-result.schema.json",
+        "schemas/relief-paint-case.schema.json",
         "schemas/key-light.schema.json",
         "schemas/key-light-request.schema.json",
         "schemas/key-light-result.schema.json",
@@ -839,6 +842,19 @@ def main():
         check_case(relief_request_schema, case["name"], case["request"], case["requestSchemaValid"])
         if "expected" in case:
             check_case(relief_result_schema, case["name"], case["expected"], True)
+    relief_paint_cases = load_json(ROOT / "conformance/ir/relief-paint-vectors.json")
+    relief_paint_case_schema = validator_for("schemas/relief-paint-case.schema.json")
+    relief_paint_request_schema = validator_for("schemas/relief-paint-request.schema.json")
+    relief_paint_result_schema = validator_for("schemas/relief-paint-result.schema.json")
+    relief_paint_names = set()
+    for case in relief_paint_cases:
+        if case["name"] in relief_paint_names:
+            raise ValueError(f"duplicate relief paint case: {case['name']}")
+        relief_paint_names.add(case["name"])
+        check_case(relief_paint_case_schema, case["name"], case, True)
+        check_case(relief_paint_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+        if "expected" in case:
+            check_case(relief_paint_result_schema, case["name"], case["expected"], True)
     pigment_profile_schema = validator_for("schemas/opaque-pigment-profiles.schema.json")
     check_case(
         pigment_profile_schema,
@@ -1276,6 +1292,7 @@ def main():
         + len(contour_cases)
         + 2 * len(outline_cases) + sum("expected" in case for case in outline_cases)
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
+        + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + len(key_light_cases)
         + len(extrusion_cases)
         + len(invalid_extrusion_results)

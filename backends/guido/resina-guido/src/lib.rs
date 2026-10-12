@@ -32,7 +32,7 @@ pub use focus::{FocusBinding, FocusTransferError, RequestedFocus, request_focus}
 use guido::{layout::Size, prelude::ImageSource};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{RasterError, RasterImage, Viewport, prepare_viewport};
-use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, SurfacePaintIr};
+use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, ReliefPaint, SurfacePaintIr};
 use std::fmt;
 
 const MAX_COORDINATE_ERROR: f64 = 1.0 / 1024.0;
@@ -174,6 +174,24 @@ pub fn prepare_surface_paint_at(
     };
     prepare_at(bounds, origin, device_scale, |viewport| {
         resina_raster::render_surface_paint(ir, viewport, samples_per_axis)
+    })
+}
+
+pub fn prepare_relief_paint_at(
+    paint: &ReliefPaint,
+    origin: PhysicalVector,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<PreparedPaint, PrepareError> {
+    let size = paint.surface().outline().size();
+    let bounds = PhysicalBounds {
+        x: 0.0,
+        y: 0.0,
+        width: size.width,
+        height: size.height,
+    };
+    prepare_at(bounds, origin, device_scale, |viewport| {
+        resina_raster::render_relief_paint(paint, viewport, samples_per_axis)
     })
 }
 

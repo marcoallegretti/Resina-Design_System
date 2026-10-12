@@ -9,6 +9,11 @@ use std::{
 const MIB: usize = 1024 * 1024;
 const COMMANDS: &[(&str, &str, usize)] = &[
     (
+        "resina-relief-paint",
+        env!("CARGO_BIN_EXE_resina-relief-paint"),
+        MIB,
+    ),
+    (
         "resina-activation",
         env!("CARGO_BIN_EXE_resina-activation"),
         MIB,

@@ -26,6 +26,53 @@ const REQUEST: &[u8] = include_bytes!("../../../../conformance/ir/opaque-surface
 const OPTIONS: &[&str] = &["24", "18", "-2", "-2", "1", "2"];
 
 #[test]
+fn relief_cli_preserves_png_metadata_and_atomic_failure() {
+    let cases: Vec<serde_json::Value> = serde_json::from_slice(include_bytes!(
+        "../../../../conformance/ir/relief-paint-vectors.json"
+    ))
+    .unwrap();
+    let mut request = cases[0]["request"].clone();
+    let program = env!("CARGO_BIN_EXE_resina-relief-raster");
+    let output = invoke_program(
+        program,
+        request.to_string().as_bytes(),
+        &["124", "64", "-2", "-2", "1", "1"],
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(output.stderr.is_empty());
+    let mut reader = png::Decoder::new(std::io::Cursor::new(output.stdout))
+        .read_info()
+        .unwrap();
+    assert_eq!(
+        reader.info().srgb,
+        Some(png::SrgbRenderingIntent::Perceptual)
+    );
+    let mut rgba = vec![0; reader.output_buffer_size().unwrap()];
+    let frame = reader.next_frame(&mut rgba).unwrap();
+    assert_eq!((frame.width, frame.height), (124, 64));
+    for (x, y, expected) in [
+        (0, 0, [0; 4]),
+        (62, 2, [0, 0, 0, 255]),
+        (62, 32, [128, 102, 77, 255]),
+    ] {
+        let index = (y * 124 + x) * 4;
+        assert_eq!(&rgba[index..index + 4], &expected);
+    }
+    request["edgeWidth"] = serde_json::json!(0);
+    let failure = invoke_program(program, request.to_string().as_bytes(), OPTIONS);
+    assert_eq!(failure.status.code(), Some(1));
+    assert!(failure.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&failure.stderr).contains("edgeWidth"));
+    let oversized = invoke_program(program, &vec![b' '; 1_048_577], OPTIONS);
+    assert_eq!(oversized.status.code(), Some(1));
+    assert!(oversized.stdout.is_empty());
+}
+
+#[test]
 fn complete_paint_cli_contains_body_ring_and_transparent_gap() {
     let mut body: serde_json::Value = serde_json::from_slice(REQUEST).unwrap();
     body["surface"]["states"]["states"] = serde_json::json!(["focused"]);
