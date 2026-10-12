@@ -58,3 +58,36 @@ The Rust reference exposes `CommandLabelIr::validate_content(&OpaqueSurfaceIr)`.
 This guard neither changes layout nor guesses new padding. On failure, composition must resolve a suitable size, padding or complete reflow policy and validate again; it MUST NOT crop, silently shrink or relocate text. Logical padding has already been mapped to physical coordinates by label resolution. The caller must retain the common environment and typography context for label and paint; containment does not validate that context.
 
 This is layout-box evidence, not exact glyph-ink containment. Producers and renderers must still allow required overhang and verify its actual background when evaluating content contrast. Antialiasing coverage, font substitutions, motion frames, surrounding clipping and full Button conformance remain separate requirements. The [public containment cases](../conformance/content/command-label-containment.json) specify supplied measurement extents and expected outcomes independently of any font engine.
+
+## Relief face content
+
+The same complete-label policy applies to [opaque relief face paint](83-opaque-relief-paint.md).
+Its certified content region is a uniform rectangle, independently established
+inside the analytic plateau and contrasting edge interior. Before using the
+face's guarded foreground, composition MUST match the label's command size to
+the relief outline size and contain the complete physical layout box in that
+published region. Both paint and label retain the same placement origin.
+
+`CommandLabelIr::validate_relief_content(&ReliefPaint)` performs this guard without
+changing layout, relief, targets or navigation. The label's right/bottom endpoints
+use the smallest finite binary64 values at least their exact coordinate-plus-extent
+sums, using the existing conservative extent arithmetic. Compare them to the
+certified represented content endpoints used by face sampling. An endpoint that
+cannot retain both positive operands is diagnostic; rounding cannot authorize
+text outside the plateau. Rectangle boundaries are included. A shoulder, edge,
+mismatched size or unrepresentable box fails explicitly. Resolve suitable size,
+padding or complete reflow and validate again; do not crop or shrink content.
+
+This is layout-box containment, with the same font, ink-overhang, actual-background
+and environment obligations as the preceding guard. It does not certify a
+focused component or native interaction. Relief does not alter text measurement.
+
+The [supplied containment matrix](../conformance/content/command-relief-containment.json)
+uses complete 120×60 px faces and supplied 1 px wide layout advances. For curved
+faces, 14/18 px logical padding keeps the complete 20 px high label away from
+all shoulders; zero horizontal padding crosses the exterior edge. For square
+convex/recessed faces with a 6 px shoulder, the plateau is exactly
+`[6,114] × [6,54]`: the 48 px high box with 6 px horizontal padding is included,
+while its next binary64 height is outside. Both layout directions consume the
+same physical containment law. These are supplied measurement cases, not native
+font or complete styling evidence.

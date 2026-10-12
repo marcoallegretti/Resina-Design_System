@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-relief-containment:0.1.0",
+  "title": "Complete label layout-box containment in an opaque relief plateau",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "size", "cases"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "size": {"allOf": [
+      {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+      {"properties": {"width": {"exclusiveMinimum": 0}, "height": {"exclusiveMinimum": 0}}}
+    ]},
+    "cases": {"type": "array", "minItems": 1, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "kind", "curvature", "radius", "shoulderWidth", "start", "end", "height", "contained"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "kind": {"enum": ["flat", "convex", "recessed"]},
+        "curvature": {"enum": ["circular", "quartic"]},
+        "radius": {"type": "number", "minimum": 0},
+        "shoulderWidth": {"type": "number", "minimum": 0},
+        "start": {"type": "number", "minimum": 0},
+        "end": {"type": "number", "minimum": 0},
+        "height": {"type": "number", "exclusiveMinimum": 0},
+        "contained": {"type": "boolean"}
+      }
+    }}
+  }
+}
