@@ -141,3 +141,28 @@ capture API, publish an accessibility tree or establish AT-SPI, screen-reader or
 physical-device behavior. It is a verification consumer, not a reusable native
 Command component. Native accessibility integration remains tracked in
 [GUIdo issue #653](https://github.com/MalpenZibo/guido/issues/653).
+
+## Native relief content inspection
+
+Build the `relief_content_probe` example to compare complete face and text pixels
+on an owned nested Wayland output. The checker isolates font discovery in its
+owned children and uses an explicit regular normal-width DejaVu Sans file.
+The probe rejects discovered system fonts, authors weight 400 through existing
+theme resolution, and registers supplied bytes before each rendering lifetime.
+The checker records the input hash and compares the whole opaque canvas against
+a GPU reference at device scales 1/1.25/1.5/2/3. The default fixture exercises RTL placement and
+supports text scale 2, including complete wrapping of `j Reconnect now`.
+This native fixture is distinct from the backend's `j Reconnect` GPU ink cases.
+
+```sh
+cargo build --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe
+python tools/check_guido_relief_native.py --probe lab/guido/target/debug/examples/relief_content_probe --content-font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --text-scale 2 --output-dir target/relief-content-native
+```
+
+If `CARGO_TARGET_DIR` is set, supply its example binary path. Run under a live
+parent Wayland display with Sway and grim available. Complete
+content reference preparation has a 120-second deadline for software renderers.
+The checker retains the same pixel comparison threshold and terminates only its
+own client and nested compositor. These diagnostic pixels
+prove native composition; they do not establish accepted material appearance,
+interactive controls, focus or assistive technology integration.

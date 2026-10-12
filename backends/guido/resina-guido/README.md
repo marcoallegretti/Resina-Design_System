@@ -517,6 +517,21 @@ by this paint-preparation API.
 
 ## Verification
 
+`prepare_relief_content_at` composes a resolved opaque relief face and complete
+native label at one physical origin. It first validates the full layout box
+against the certified uniform plateau, then verifies native font measurement
+and uses the face's contrast-checked foreground. Replace both returned commands
+together. Containment, text and raster failures retain their underlying error.
+
+The `relief_content` renderer test compares actual glyph pixels with the face
+without text, requiring every changed pixel's full logical footprint to remain
+on the uniform body. Its diagnostic matrix covers circular/quartic geometry,
+flat/convex/recessed faces, both directions, device scales 1/1.25/1.5/2/3 and
+text scales 1/2. This is a verified fixture, rather than a guarantee that every
+font's ink stays inside its measured layout box; callers still own overhang and
+surrounding clipping. Focus, input, scheduling and accessibility publication
+remain separate component responsibilities.
+
 Linux needs Wayland and xkbcommon development libraries and a working GPU or
 software Vulkan implementation. The required renderer test fails if a GPU
 context cannot be created; it never skips rendering checks.
