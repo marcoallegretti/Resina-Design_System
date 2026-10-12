@@ -1,0 +1,201 @@
+# Resina design language
+
+This is informative guidance for designers, component authors and backend
+implementers. It introduces no new normative behavior. The
+[blueprint](../RESINA_DESIGN_SYSTEM_BLUEPRINT.md) describes intended direction;
+the versioned [specifications](../spec/), [definitions](../definitions/),
+[schemas](../schemas/), [tokens](../tokens/) and [conformance cases](../conformance/)
+define implemented behavior. An implemented candidate contract is not a claim of
+Stable maturity, accepted production styling or complete backend qualification.
+
+## Material grammar
+
+Persistence is expressed through curing, direct interaction through elasticity,
+and transience through viscosity. These relationships communicate what a surface
+does. They do not require a literal physics simulation.
+
+| Family | Design intention | Current contract and evidence |
+| --- | --- | --- |
+| Cast | Stable structure and persistent content; calm edges and restrained relief. | [Role assignments](../spec/05-materials.md), [opaque pigment](../spec/29-opaque-pigment.md) and [surface IR](../spec/36-opaque-surface-ir.md) provide a static dimensional representation. [Material scenes](../conformance/scenes/README.md) exercise opaque rest and focus. |
+| Frost | Pigmented, diffusive chrome that separates content from its surroundings. | [Fallback](../spec/31-fallback.md) and [readability](../spec/26-frost-surface-readability.md) preserve the family when opaque. The same scenes prove its opaque representation, not rendered backdrop diffusion. [Diffusive paint](https://github.com/marcoallegretti/Resina-Design_System/issues/130) remains a separate contract. |
+| Elastomer | Tactile controls, compression and prompt recovery. | Static pigment and geometry are exercised by the material scenes; [Command motion](../spec/45-command-motion.md) and [Toggle motion](../spec/57-toggle-part-motion.md) define sampled channels. They do not provide calibrated deformation. [Calibration](https://github.com/marcoallegretti/Resina-Design_System/issues/133) and [deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) have distinct ownership. |
+| Gel | Viscous, expressive transient feedback over stable structure. | [Role assignment](../spec/05-materials.md) limits Gel to transient surfaces and feedback. Its static catalog specimen is not a persistent control or evidence of liquid motion. [Emergence and deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) require explicit contracts. |
+
+Components request semantic material roles; themes assign families. Family,
+pigment, shape, elevation, state and optical treatment are separate choices.
+Gel cannot be assigned to persistent surface or control roles. Avoid making every
+surface translucent or every interaction elastic: material variation carries
+hierarchy rather than decorative noise.
+
+[Lens-family treatments](../spec/06-optics.md) are an independent axis, not a fifth
+material. The current contract validates one ancestor chain and rejects more than
+one Lens-family treatment on that chain. It does not define optical rendering or
+fallback; those belong to the [treatment proposal](https://github.com/marcoallegretti/Resina-Design_System/issues/131).
+
+## Shape, presence and hierarchy
+
+Use calmer geometry for structural surfaces and softer geometry for small
+interactive surfaces. Reserve organic expression for a meaningful tactile or
+transient role. A universal capsule shape removes this hierarchy.
+
+[Semantic shapes](../spec/09-geometry.md) name structural, soft, rounded, capsule
+and organic intent. The authored [Tier 0 shape assignments](../definitions/tier0-shapes.json)
+map them to bounded circular or square corners, including asymmetric organic
+corners. Continuous curvature is blueprint intent, not a property promised by
+that fallback.
+
+[Elevation](../spec/08-elevation.md) communicates embedded, base, raised,
+floating, overlay and modal relationships. The current
+[surface IR](../spec/36-opaque-surface-ir.md) realizes nonnegative side-plane
+extrusion and guarded edge/highlight bands with a uniform content region. It does
+not define bevel relief, a concave well or an independent physical shadow model.
+The [relief proposal](https://github.com/marcoallegretti/Resina-Design_System/issues/128)
+owns those distinctions. Do not treat negative extrusion as a recess or a shadow
+as the meaning of elevation.
+
+Depth and light should clarify containment and interaction without competing
+with the content. Basic shape, pigment, edge and separation remain important
+when advanced rendering is unavailable.
+
+## Light and pigment
+
+Keep one physical key direction within a visual context. The
+[key-light contract](../spec/34-key-light.md) uses physical right/down axes and
+does not mirror with RTL layout. Logical corners are mapped to physical corners
+before their normals are evaluated. Its directional weights are a portable
+perceptual convention, not calibrated reflectance or a three-dimensional light.
+[Ambient and interaction response](https://github.com/marcoallegretti/Resina-Design_System/issues/129)
+needs its own shared contract.
+
+Semantic color communicates emphasis and status; material pigment expresses the
+selected family's surface. [Opaque pigment profiles](../spec/29-opaque-pigment.md)
+derive explicit side and highlight colors without making a backend's shader the
+definition of the material.
+
+The authored [Light and Dark themes](../spec/23-authored-themes.md) pair a warm
+mineral base and a deep blue-black base with teal primary, blue secondary and
+amber tertiary accents. They supply semantic assignments, not physical fonts,
+component proportions or a universal production motion profile.
+[Environmental pigment adaptation](https://github.com/marcoallegretti/Resina-Design_System/issues/138)
+must preserve role ownership and actual readability; it is not permission for
+undocumented color mixing.
+
+## Content provides calm structure
+
+[Typography roles](../spec/11-typography.md) express hierarchy independently of
+physical font files. Backends supply real measurements and shaping. Preserve
+normal text and semantic icons from deformation and optical distortion.
+
+Allow labels to grow, wrap or reflow under translation and increased text scale.
+[Command label layout](../spec/46-command-label-layout.md) accepts complete
+producer measurements rather than guessing width. A fixed narrow text slot or
+silently smaller text undermines both hierarchy and accessibility.
+
+Symbolic icons should identify controls; full-color artwork can identify product
+content. Shared icon metrics, directional metadata and icon-only Command content
+are [proposed work](https://github.com/marcoallegretti/Resina-Design_System/issues/135),
+not a current portable glyph or asset contract. Physical light direction and an
+icon's logical mirroring policy are different concerns.
+
+## Motion and interaction
+
+Motion expresses material response and continuity, then settles. The
+[scalar spring](../spec/38-spring-reference.md) and
+[retargetable trajectories](../spec/44-spring-trajectories.md) define deterministic
+sampling and retained position/velocity. Command body mix/depth and Toggle thumb
+travel are bounded sampled contracts; frame scheduling belongs to integration.
+
+Their arithmetic fixtures do not establish accepted material calibration.
+[Slider appearance](../spec/71-slider-appearance.md) makes the same distinction.
+Do not substitute an unexplained animation constant for material meaning or
+advertise a numerical fixture as production styling.
+
+Reduced-motion spring sampling validates the input and returns the immediate
+endpoint. This is the implemented refinement of the blueprint's qualitative
+short-response guidance. Immediate pigment, edge and focus feedback remains;
+feedback does not depend on overshoot or deformation.
+
+Visual motion cannot move the interactive target under the user. The
+[Command](../spec/49-command-snapshot.md), [Toggle](../spec/55-toggle-snapshot.md)
+and [Slider](../spec/77-slider-snapshot.md) snapshots check coherent current paint,
+layout, targets and semantic state. Direct manipulation and cancellation follow
+their interaction contracts, not a decorative trajectory.
+
+## Components, density and adaptation
+
+[Component anatomy](../spec/78-component-anatomy.md) binds Command and Toggle
+parts to semantic roles; themes change role values rather than rebinding parts.
+Command has explicit standard and primary emphasis. Toggle uses the selection
+role for its checked track: forcing the authored primary accent would fail its
+thumb-edge contrast guard. That is a readability refinement, not missing accent
+styling. Disabled labels and component identification remain guarded.
+
+Slider has value, interaction, layout, paint and snapshot contracts, plus
+[track-segment allocation](../spec/79-slider-track-segments.md). Shared production
+proportions and authored Slider anatomy belong to the
+[component-profile proposal](https://github.com/marcoallegretti/Resina-Design_System/issues/134).
+Diagnostic component dimensions are not accepted defaults. Tri-state
+[Checkbox](https://github.com/marcoallegretti/Resina-Design_System/issues/136) and
+single-selection [Segmented Control](https://github.com/marcoallegretti/Resina-Design_System/issues/137)
+have separate semantic decisions; adjacent commands or a binary Toggle cannot
+silently substitute for them.
+
+[Density](../spec/17-density.md) is independent of device categories. The
+[environment](../spec/18-environment.md) expresses geometry, input capabilities,
+viewing, preferences and direction. It does not define phone or desktop modes.
+Components own adaptation and retain minimum targets, readable content and clear
+focus under narrower space, mixed input and increased text size.
+
+## Accessibility and fallback preserve identity
+
+Optional effects enhance material identity. They do not supply its only cue.
+[Explicit capabilities](../spec/30-capabilities.md), quality policy and
+accessibility preferences select the actual representation; renderer names and
+descriptive tier numbers do not authorize effects.
+
+Opaque Frost remains Frost. Reduced transparency or high contrast does not
+replace its family with Cast. Focus remains identifiable without animation.
+[Actual content and edge contrast](../spec/28-surface-readability.md),
+[focus contrast](../spec/27-focus-indicator.md), measured text and
+[minimum targets](../spec/15-targets.md) take priority over appearance. Palette
+preflight alone does not prove readability over a rendered material or backdrop.
+
+## Find the owning contract
+
+| Appearance channel | Implemented boundary and evidence | Remaining contract or acceptance work |
+| --- | --- | --- |
+| Material and treatment | [Families](../spec/05-materials.md), [role vectors](../conformance/materials/role-assignment-vectors.json), [treatment stacks](../spec/06-optics.md) | [Frost paint](https://github.com/marcoallegretti/Resina-Design_System/issues/130), [optical realization](https://github.com/marcoallegretti/Resina-Design_System/issues/131) |
+| Geometry and depth | [Opaque IR](../spec/36-opaque-surface-ir.md), [surface vectors](../conformance/ir/opaque-surface-cases.json) | [Dimensional relief](https://github.com/marcoallegretti/Resina-Design_System/issues/128) |
+| Light and pigment | [Key light](../spec/34-key-light.md), [light vectors](../conformance/lighting/key-light-vectors.json), [authored themes](../spec/23-authored-themes.md) | [Material light response](https://github.com/marcoallegretti/Resina-Design_System/issues/129), [environmental influence](https://github.com/marcoallegretti/Resina-Design_System/issues/138) |
+| Motion | [Trajectories](../spec/44-spring-trajectories.md), [trajectory cases](../conformance/motion/spring-trajectory-cases.json), sampled component paint | [Calibration](https://github.com/marcoallegretti/Resina-Design_System/issues/133), [bounded deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) |
+| Anatomy, layout and hierarchy | [Role bindings](../spec/78-component-anatomy.md), measured labels and checked snapshots | [Profiles](https://github.com/marcoallegretti/Resina-Design_System/issues/134), [icons](https://github.com/marcoallegretti/Resina-Design_System/issues/135), distinct selection components |
+| Visual proof and presentation | [Shared scenes](../conformance/scenes/README.md), [raster evidence](../conformance/raster/README.md), [native static Material Board](../lab/guido/README.md) | [Visual acceptance suite](https://github.com/marcoallegretti/Resina-Design_System/issues/127), [interactive UI Kit](https://github.com/marcoallegretti/Resina-Design_System/issues/141) |
+
+The static material catalog compares four families in Light/Dark and opaque
+rest/focus. Its scene checker verifies resolved meaning, geometry, contrast and
+capture containment; CPU raster and native GPU tests verify their documented
+paint boundaries. These are reproducible examples of current expression, not
+accepted component proportions, calibrated motion, optical rendering, native
+interaction or assistive-technology qualification. Follow the linked scene and
+Material Board instructions to reproduce that bounded evidence.
+
+## Documentation and implementation ownership
+
+This guide stays in the existing documentation structure. A separate `language/`
+directory adds no missing ownership boundary: design guidance links to contracts
+instead of defining another token, profile or specification authority. A future
+documentation reorganization should identify a concrete unmet reader need and
+remain informative.
+
+The Rust reference demonstrates contracts. [GUIdo](../backends/guido/resina-guido/README.md)
+is the high-fidelity reference renderer; [Quickshell](../backends/quickshell/resina-qml/README.md),
+[Slint](../backends/slint/resina-slint/README.md) and
+[Web](../backends/web/resina-svg/README.md) provide independent, bounded mappings.
+Their READMEs describe actual support; a rendered specimen does not certify a
+complete component. The Lab presents shared results and diagnostics rather than
+defining a second design system. Product layout, services and artwork remain
+outside Resina Core.
+
+Follow [delivery tracking](development/delivery.md) for integration and acceptance
+status. Approval of a new semantic contract, acceptance of visual styling and
+release-stage progression remain explicit decisions.
