@@ -113,7 +113,7 @@ fn complete_authored_updates_rebuild_all_channels_without_mutating_the_old_publi
     let DrawCommand::Text { text, rect, .. } = &changed.commands()[1] else {
         panic!("complete label missing")
     };
-    assert_eq!(text.as_str(), changed.label().text());
+    assert_eq!(text.as_ref(), changed.label().text());
     assert!(
         (f64::from(rect.x) - (changed.label().label_bounds().x + origin.x)).abs() <= 1.0 / 1024.0
     );
@@ -225,7 +225,7 @@ fn changed_environment_remeasures_complete_text_and_maps_logical_padding() {
     else {
         panic!("label missing")
     };
-    assert_eq!(text, after.label().text());
+    assert_eq!(text.as_ref(), after.label().text());
     assert_eq!(
         f64::from(*font_size),
         after.label().typography().font_size()

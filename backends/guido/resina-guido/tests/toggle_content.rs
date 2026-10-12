@@ -507,7 +507,7 @@ fn check_commands(
     else {
         panic!("complete measured label required")
     };
-    assert_eq!(text, f.label.text());
+    assert_eq!(text.as_ref(), f.label.text());
     let lines = (f.label.label_bounds().height
         / (f.label.typography().font_size() * f.label.typography().line_height()))
     .round();
