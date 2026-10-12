@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-outline-result:0.1.0",
+  "title": "Resina Surface Outline Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "curvature",
+    "size",
+    "corners",
+    "contentBounds"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "curvature": {
+      "enum": [
+        "circular",
+        "quartic"
+      ]
+    },
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "corners": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topLeft",
+        "topRight",
+        "bottomRight",
+        "bottomLeft"
+      ],
+      "properties": {
+        "topLeft": {
+          "$ref": "urn:resina:schema:logical-corner-radii:0.1.0#/$defs/corner"
+        },
+        "topRight": {
+          "$ref": "urn:resina:schema:logical-corner-radii:0.1.0#/$defs/corner"
+        },
+        "bottomRight": {
+          "$ref": "urn:resina:schema:logical-corner-radii:0.1.0#/$defs/corner"
+        },
+        "bottomLeft": {
+          "$ref": "urn:resina:schema:logical-corner-radii:0.1.0#/$defs/corner"
+        }
+      }
+    },
+    "contentBounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  }
+}

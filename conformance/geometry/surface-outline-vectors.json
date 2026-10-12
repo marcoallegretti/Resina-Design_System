@@ -1,0 +1,1133 @@
+[
+  {
+    "name": "quartic elliptical corners",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "topRight": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "bottomRight": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "bottomLeft": {
+          "x": 20.0,
+          "y": 12.0
+        }
+      },
+      "contentBounds": {
+        "x": 3.182071694925709,
+        "y": 2.0,
+        "width": 113.63585661014858,
+        "height": 56.0
+      }
+    }
+  },
+  {
+    "name": "circular content reservation",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "circular",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "circular",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "topRight": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "bottomRight": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "bottomLeft": {
+          "x": 20.0,
+          "y": 12.0
+        }
+      },
+      "contentBounds": {
+        "x": 5.85786437626905,
+        "y": 3.5147186257614296,
+        "width": 108.2842712474619,
+        "height": 52.97056274847714
+      }
+    }
+  },
+  {
+    "name": "straight rectangle",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 0
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 0
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 0
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "topRight": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "bottomRight": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "bottomLeft": {
+          "x": 0.0,
+          "y": 0.0
+        }
+      },
+      "contentBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 120.0,
+        "height": 60.0
+      }
+    }
+  },
+  {
+    "name": "partial zero radius makes a square corner",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 0,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 0,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 0,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 0,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 1
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "topRight": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "bottomRight": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "bottomLeft": {
+          "x": 0.0,
+          "y": 0.0
+        }
+      },
+      "contentBounds": {
+        "x": 1.0,
+        "y": 1.0,
+        "width": 118.0,
+        "height": 58.0
+      }
+    }
+  },
+  {
+    "name": "overlapping corners use common scale",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 30,
+        "height": 20
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 30,
+        "height": 20
+      },
+      "corners": {
+        "topLeft": {
+          "x": 15.0,
+          "y": 9.0
+        },
+        "topRight": {
+          "x": 15.0,
+          "y": 9.0
+        },
+        "bottomRight": {
+          "x": 15.0,
+          "y": 9.0
+        },
+        "bottomLeft": {
+          "x": 15.0,
+          "y": 9.0
+        }
+      },
+      "contentBounds": {
+        "x": 2.386553771194282,
+        "y": 2.0,
+        "width": 25.226892457611438,
+        "height": 16.0
+      }
+    }
+  },
+  {
+    "name": "explicit inset wins over curvature reservation",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 8
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "topRight": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "bottomRight": {
+          "x": 20.0,
+          "y": 12.0
+        },
+        "bottomLeft": {
+          "x": 20.0,
+          "y": 12.0
+        }
+      },
+      "contentBounds": {
+        "x": 8.0,
+        "y": 8.0,
+        "width": 104.0,
+        "height": 44.0
+      }
+    }
+  },
+  {
+    "name": "circular capsule",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 100,
+        "height": 40
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 20
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 20
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "circular",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "circular",
+      "size": {
+        "width": 100,
+        "height": 40
+      },
+      "corners": {
+        "topLeft": {
+          "x": 20.0,
+          "y": 20.0
+        },
+        "topRight": {
+          "x": 20.0,
+          "y": 20.0
+        },
+        "bottomRight": {
+          "x": 20.0,
+          "y": 20.0
+        },
+        "bottomLeft": {
+          "x": 20.0,
+          "y": 20.0
+        }
+      },
+      "contentBounds": {
+        "x": 5.85786437626905,
+        "y": 5.85786437626905,
+        "width": 88.2842712474619,
+        "height": 28.284271247461902
+      }
+    }
+  },
+  {
+    "name": "logical asymmetric outline LTR",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 60,
+        "height": 50
+      },
+      "radii": {
+        "topStart": {
+          "x": 22,
+          "y": 14
+        },
+        "topEnd": {
+          "x": 7,
+          "y": 20
+        },
+        "bottomEnd": {
+          "x": 15,
+          "y": 8
+        },
+        "bottomStart": {
+          "x": 5,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 1
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 60,
+        "height": 50
+      },
+      "corners": {
+        "topLeft": {
+          "x": 22.0,
+          "y": 14.0
+        },
+        "topRight": {
+          "x": 7.0,
+          "y": 20.0
+        },
+        "bottomRight": {
+          "x": 15.0,
+          "y": 8.0
+        },
+        "bottomLeft": {
+          "x": 5.0,
+          "y": 12.0
+        }
+      },
+      "contentBounds": {
+        "x": 3.50027886441828,
+        "y": 3.182071694925709,
+        "width": 54.11316736438744,
+        "height": 44.90868528811887
+      }
+    }
+  },
+  {
+    "name": "logical asymmetric outline RTL",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 60,
+        "height": 50
+      },
+      "radii": {
+        "topStart": {
+          "x": 22,
+          "y": 14
+        },
+        "topEnd": {
+          "x": 7,
+          "y": 20
+        },
+        "bottomEnd": {
+          "x": 15,
+          "y": 8
+        },
+        "bottomStart": {
+          "x": 5,
+          "y": 12
+        }
+      },
+      "layoutDirection": "rtl",
+      "curvature": "quartic",
+      "minimumInset": 1
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 60,
+        "height": 50
+      },
+      "corners": {
+        "topLeft": {
+          "x": 7.0,
+          "y": 20.0
+        },
+        "topRight": {
+          "x": 22.0,
+          "y": 14.0
+        },
+        "bottomRight": {
+          "x": 5.0,
+          "y": 12.0
+        },
+        "bottomLeft": {
+          "x": 15.0,
+          "y": 8.0
+        }
+      },
+      "contentBounds": {
+        "x": 2.386553771194282,
+        "y": 3.182071694925709,
+        "width": 54.11316736438744,
+        "height": 44.90868528811887
+      }
+    }
+  },
+  {
+    "name": "structural continuous outline",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 8,
+          "y": 8
+        },
+        "topEnd": {
+          "x": 8,
+          "y": 8
+        },
+        "bottomEnd": {
+          "x": 8,
+          "y": 8
+        },
+        "bottomStart": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 8.0,
+          "y": 8.0
+        },
+        "topRight": {
+          "x": 8.0,
+          "y": 8.0
+        },
+        "bottomRight": {
+          "x": 8.0,
+          "y": 8.0
+        },
+        "bottomLeft": {
+          "x": 8.0,
+          "y": 8.0
+        }
+      },
+      "contentBounds": {
+        "x": 2.0,
+        "y": 2.0,
+        "width": 116.0,
+        "height": 56.0
+      }
+    }
+  },
+  {
+    "name": "soft continuous outline",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 12,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 12,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 12,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 12,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 12.0,
+          "y": 12.0
+        },
+        "topRight": {
+          "x": 12.0,
+          "y": 12.0
+        },
+        "bottomRight": {
+          "x": 12.0,
+          "y": 12.0
+        },
+        "bottomLeft": {
+          "x": 12.0,
+          "y": 12.0
+        }
+      },
+      "contentBounds": {
+        "x": 2.0,
+        "y": 2.0,
+        "width": 116.0,
+        "height": 56.0
+      }
+    }
+  },
+  {
+    "name": "rounded continuous outline",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 20
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 20
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "curvature": "quartic",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "corners": {
+        "topLeft": {
+          "x": 20.0,
+          "y": 20.0
+        },
+        "topRight": {
+          "x": 20.0,
+          "y": 20.0
+        },
+        "bottomRight": {
+          "x": 20.0,
+          "y": 20.0
+        },
+        "bottomLeft": {
+          "x": 20.0,
+          "y": 20.0
+        }
+      },
+      "contentBounds": {
+        "x": 3.182071694925709,
+        "y": 3.182071694925709,
+        "width": 113.63585661014858,
+        "height": 53.63585661014858
+      }
+    }
+  },
+  {
+    "name": "collapsed bounds",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 0,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "positive area"
+  },
+  {
+    "name": "negative inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": -1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "nonnegative"
+  },
+  {
+    "name": "collapsed content",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 30
+    },
+    "requestSchemaValid": true,
+    "errorContains": "positive area"
+  },
+  {
+    "name": "unrepresentable tiny corner in large bounds",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 1e+100,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": true,
+    "errorContains": "unrepresentable"
+  },
+  {
+    "name": "unsupported curvature",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "spline",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "unsupported version",
+    "request": {
+      "schemaVersion": "9.9.9",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "unknown field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2,
+      "unexpected": 1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "missing explicit inset",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic"
+    },
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "negative corner",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 120,
+        "height": 60
+      },
+      "radii": {
+        "topStart": {
+          "x": -1,
+          "y": 12
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 12
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 12
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 2
+    },
+    "requestSchemaValid": false,
+    "errorContains": "nonnegative"
+  },
+  {
+    "name": "normalization loses entire positive corners",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 1,
+        "height": 1
+      },
+      "radii": {
+        "topStart": {
+          "x": 1e+308,
+          "y": 1e+308
+        },
+        "topEnd": {
+          "x": 1e-300,
+          "y": 1e-300
+        },
+        "bottomEnd": {
+          "x": 1e-300,
+          "y": 1e-300
+        },
+        "bottomStart": {
+          "x": 1e-300,
+          "y": 1e-300
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 0
+    },
+    "requestSchemaValid": true,
+    "errorContains": "normalization loses a positive corner extent"
+  },
+  {
+    "name": "normalization loses one positive axis",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 1,
+        "height": 1
+      },
+      "radii": {
+        "topStart": {
+          "x": 1e+300,
+          "y": 1e-300
+        },
+        "topEnd": {
+          "x": 1e+300,
+          "y": 1e-300
+        },
+        "bottomEnd": {
+          "x": 1e+300,
+          "y": 1e-300
+        },
+        "bottomStart": {
+          "x": 1e+300,
+          "y": 1e-300
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "quartic",
+      "minimumInset": 0
+    },
+    "requestSchemaValid": true,
+    "errorContains": "normalization loses a positive corner extent"
+  }
+]
