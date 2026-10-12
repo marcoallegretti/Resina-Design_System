@@ -13,6 +13,6 @@ resina-model = { path = "../../reference/rust/resina-model" }
 resina-environment = { path = "../../reference/rust/resina-environment" }
 resina-resolver = { path = "../../reference/rust/resina-resolver" }
 serde_json = { version = "1", features = ["float_roundtrip"] }
-fontdb = { version = "=0.23.0", default-features = false }
+fontdb = { version = "=0.23.0", default-features = false, features = ["fs", "fontconfig"] }
 png = "=0.18.1"
 wgpu = { version = "=30.0.1", default-features = false }

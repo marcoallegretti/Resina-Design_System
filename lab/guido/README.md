@@ -145,10 +145,14 @@ Command component. Native accessibility integration remains tracked in
 ## Native relief content inspection
 
 Build the `relief_content_probe` example to compare complete face and text pixels
-on an owned nested Wayland output. The checker uses an explicit DejaVu Sans file,
-records its hash, and compares the whole opaque canvas against a GPU reference
-at device scales 1/1.25/1.5/2/3. The default fixture exercises RTL placement and
-supports text scale 2, including complete wrapping.
+on an owned nested Wayland output. The checker isolates font discovery in its
+owned children and uses an explicit regular normal-width DejaVu Sans file.
+The probe rejects discovered system fonts, authors weight 400 through existing
+theme resolution, and registers supplied bytes before each rendering lifetime.
+The checker records the input hash and compares the whole opaque canvas against
+a GPU reference at device scales 1/1.25/1.5/2/3. The default fixture exercises RTL placement and
+supports text scale 2, including complete wrapping of `j Reconnect now`.
+This native fixture is distinct from the backend's `j Reconnect` GPU ink cases.
 
 ```sh
 cargo build --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe

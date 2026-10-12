@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import xml.etree.ElementTree as ET
 
 from PIL import Image
 from check_schemas import ROOT, load_json
@@ -50,6 +51,14 @@ def check_scale(probe, request, output, parent, scale, content=None):
         config.write_text(f"xwayland disable\noutput * mode {output_width}x840 scale {scale}\nseat seat0 xcursor_theme default 24\n")
         env = dict(os.environ, XDG_RUNTIME_DIR=runtime, WAYLAND_DISPLAY=str(parent),
                    WLR_BACKENDS="wayland", WLR_RENDERER="pixman", WLR_LIBINPUT_NO_DEVICES="1")
+        if content:
+            fonts = Path(runtime) / "fonts"
+            fonts.mkdir()
+            fontconfig = Path(runtime) / "fonts.conf"
+            root = ET.Element("fontconfig")
+            ET.SubElement(root, "dir").text = str(fonts)
+            ET.ElementTree(root).write(fontconfig, encoding="utf-8", xml_declaration=True)
+            env["FONTCONFIG_FILE"] = str(fontconfig)
         children = []
         client_path = output / f"client-{scale}.log"
         with (output / f"compositor-{scale}.log").open("w") as compositor_log, client_path.open("w") as client_log:
@@ -143,7 +152,7 @@ def main():
     parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--request", type=Path)
-    parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit DejaVu Sans file")
+    parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit regular DejaVu Sans file")
     parser.add_argument("--text-scale", type=float, default=1)
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 1.5, 2, 3])
     args = parser.parse_args()

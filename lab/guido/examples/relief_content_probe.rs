@@ -69,14 +69,22 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
     let font = std::fs::read(&args[1])?;
     let mut database = fontdb::Database::new();
-    database.load_font_data(font.clone());
-    if !database
-        .faces()
-        .any(|face| face.families.iter().any(|(name, _)| name == "DejaVu Sans"))
-    {
-        return Err("inspection font contains no DejaVu Sans face".into());
+    database.load_system_fonts();
+    if database.faces().next().is_some() {
+        return Err(
+            "inspection requires isolated font discovery; use check_guido_relief_native.py".into(),
+        );
     }
-    guido::load_font(font);
+    database.load_font_data(font.clone());
+    if !database.faces().any(|face| {
+        face.families.iter().any(|(name, _)| name == "DejaVu Sans")
+            && face.weight == fontdb::Weight::NORMAL
+            && face.style == fontdb::Style::Normal
+            && face.stretch == fontdb::Stretch::Normal
+    }) {
+        return Err("inspection font contains no regular normal-width DejaVu Sans face".into());
+    }
+    guido::load_font(font.clone());
     let scale: f32 = args[2].parse()?;
     let text_scale: f64 = args[3].parse()?;
     if !scale.is_finite()
@@ -105,19 +113,21 @@ fn run() -> Result<(), Box<dyn Error>> {
     let theme = &theme_request["surface"]["body"]["theme"];
     let mut environment = theme["environment"].clone();
     environment["textScale"] = json!(text_scale);
-    let resolved = compile_theme_source(
+    let mut theme_source: Value = serde_json::from_str(
         theme["themeSource"]
             .as_str()
             .ok_or("theme source missing")?,
-    )?
-    .resolve(&serde_json::from_value(environment)?)
-    .map_err(|errors| format!("inspection theme: {errors:?}"))?;
+    )?;
+    theme_source["tokens"]["type"]["weight"]["$value"] = json!(400);
+    let resolved = compile_theme_source(&theme_source.to_string())?
+        .resolve(&serde_json::from_value(environment)?)
+        .map_err(|errors| format!("inspection theme: {errors:?}"))?;
     let direction: LayoutDirection =
         serde_json::from_value(request["outline"]["layoutDirection"].clone())?;
     let family = guido::widgets::font::FontFamily::name("DejaVu Sans");
     let label = resolve_command_label(
         CommandLabelInput {
-            text: "j Reconnect",
+            text: "j Reconnect now",
             typography: &resolved.typography()[&TypographyRole::Label],
             minimum_size: size,
             maximum_size: size,
@@ -163,6 +173,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         writer.write_image_data(&pixels)?;
         writer.finish()?;
     }
+    guido::load_font(font);
     println!(
         "RESINA_RELIEF_CONTENT_PREPARED {}",
         json!({"scale":scale,"textScale":text_scale,"width":width,"height":height,"labelBounds":label.label_bounds(),"contentBounds":paint.content_bounds()})
