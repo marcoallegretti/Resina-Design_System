@@ -17,6 +17,9 @@ pub use command_content::{
     CommandContentPrepareError, prepare_command_content, prepare_command_content_at,
 };
 
+mod relief_content;
+pub use relief_content::{ReliefContentPrepareError, prepare_relief_content_at};
+
 mod command_inputs;
 pub use command_inputs::{CommandInputs, CommandPrepareError, CommandPublication};
 

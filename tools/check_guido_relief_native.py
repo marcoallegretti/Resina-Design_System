@@ -43,10 +43,11 @@ def capture_matches(capture, prepared, origin):
     return count, worst
 
 
-def check_scale(probe, request, output, parent, scale):
+def check_scale(probe, request, output, parent, scale, content=None):
     with tempfile.TemporaryDirectory(prefix="resina-relief-native-") as runtime:
         config = Path(runtime) / "config"
-        config.write_text(f"xwayland disable\noutput * mode 840x840 scale {scale}\nseat seat0 xcursor_theme default 24\n")
+        output_width = 1260 if content else 840
+        config.write_text(f"xwayland disable\noutput * mode {output_width}x840 scale {scale}\nseat seat0 xcursor_theme default 24\n")
         env = dict(os.environ, XDG_RUNTIME_DIR=runtime, WAYLAND_DISPLAY=str(parent),
                    WLR_BACKENDS="wayland", WLR_RENDERER="pixman", WLR_LIBINPUT_NO_DEVICES="1")
         children = []
@@ -74,16 +75,24 @@ def check_scale(probe, request, output, parent, scale):
                 if len(outputs) != 1 or outputs[0]["scale"] != scale:
                     raise ValueError("compositor did not adopt the requested single-output scale")
                 mode = outputs[0]["current_mode"]
-                if (mode["width"], mode["height"]) != (840, 840):
+                if (mode["width"], mode["height"]) != (output_width, 840):
                     raise ValueError("compositor did not adopt the required physical output size")
                 prepared_path = output / f"prepared-{scale}.png"
-                client = subprocess.Popen([str(probe), str(request), str(scale), str(prepared_path)],
+                arguments = [str(probe), str(request), str(scale), str(prepared_path)]
+                marker = "RESINA_RELIEF_PREPARED "
+                if content:
+                    font, text_scale = content
+                    arguments = [str(probe), str(request), str(font), str(scale), str(text_scale), str(prepared_path)]
+                    marker = "RESINA_RELIEF_CONTENT_PREPARED "
+                client = subprocess.Popen(arguments,
                                           cwd=ROOT, env=env, stdout=client_log, stderr=client_log)
                 children.append(client)
                 metadata = None
-                for _ in range(400):
+                preparation_seconds = 120 if content else 20
+                deadline = time.monotonic() + preparation_seconds
+                while time.monotonic() < deadline:
                     for line in client_path.read_text().splitlines():
-                        if line.startswith("RESINA_RELIEF_PREPARED "):
+                        if line.startswith(marker):
                             metadata = json.loads(line.split(" ", 1)[1])
                     if metadata is not None and prepared_path.exists():
                         break
@@ -91,11 +100,18 @@ def check_scale(probe, request, output, parent, scale):
                         raise ValueError("native client exited; inspect its saved log")
                     time.sleep(0.05)
                 if metadata is None or not prepared_path.exists():
-                    raise ValueError("native client did not publish prepared paint")
+                    raise ValueError(f"native client did not publish prepared paint within {preparation_seconds} seconds")
                 if metadata["scale"] != scale:
                     raise ValueError("native fixture preparation scale differs from compositor scale")
                 prepared = Image.open(prepared_path).convert("RGBA")
-                origin = tuple(round(metadata["origin"][axis] * scale) for axis in ("x", "y"))
+                if content:
+                    if prepared.size != (round(360 * scale), round(200 * scale)):
+                        raise ValueError("native complete-content GPU reference dimensions disagree")
+                    if prepared.getchannel("A").getextrema() != (255, 255):
+                        raise ValueError("native complete-content reference must have an opaque canvas")
+                    origin = (0, 0)
+                else:
+                    origin = tuple(round(metadata["origin"][axis] * scale) for axis in ("x", "y"))
                 capture_path = output / f"native-{scale}.png"
                 for _ in range(100):
                     subprocess.run(["grim", "-o", outputs[0]["name"], str(capture_path)], env=env,
@@ -127,10 +143,16 @@ def main():
     parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--request", type=Path)
+    parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit DejaVu Sans file")
+    parser.add_argument("--text-scale", type=float, default=1)
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 1.5, 2, 3])
     args = parser.parse_args()
+    if not args.content_font and args.text_scale != 1:
+        parser.error("text scale requires the complete-content probe and --content-font")
     if any(not math.isfinite(s) or s <= 0 or (840 / s) != round(840 / s) for s in args.scales):
         parser.error("each positive scale must divide the 840 px output into integral logical dimensions")
+    if args.content_font and (not math.isfinite(args.text_scale) or not 1 <= args.text_scale <= 2 or any(s < 1 or s > 3 or (1260 / s) != round(1260 / s) for s in args.scales)):
+        parser.error("content requires device scales [1,3] with integral 1260 px width and text scale [1,2]")
     try:
         parent = Path(os.environ["WAYLAND_DISPLAY"])
         if not parent.is_absolute():
@@ -140,11 +162,19 @@ def main():
         args.output_dir.mkdir(parents=True)
         request_path = args.output_dir / "request.json"
         request = load_json(args.request) if args.request else diagnostic_request()
+        if args.content_font and not args.request:
+            request["outline"]["size"] = {"width": 320, "height": 160}
+            request["outline"]["layoutDirection"] = "rtl"
         request_path.write_text(json.dumps(request, allow_nan=False))
-        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale)
+        content = (args.content_font.resolve(), args.text_scale) if args.content_font else None
+        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content)
                    for scale in args.scales]
         report = {"records": records, "nestedBackend": "wayland", "renderer": "pixman",
                   "scope": "opaque native face-paint pixels; no appearance, input, focus or AT acceptance"}
+        if content:
+            report["scope"] = "complete native face and glyph pixels against GPU reference; no appearance, input, focus or AT acceptance"
+            report["textScale"] = args.text_scale
+            report["fontSha256"] = hashlib.sha256(args.content_font.read_bytes()).hexdigest()
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2) + "\n")
         print(json.dumps(report))
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
