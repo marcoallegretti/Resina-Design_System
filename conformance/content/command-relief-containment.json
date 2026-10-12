@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "0.1.0",
+  "size": {
+    "width": 120,
+    "height": 60
+  },
+  "cases": [
+    {
+      "name": "flat-circular-contained",
+      "kind": "flat",
+      "curvature": "circular",
+      "radius": 10,
+      "shoulderWidth": 0,
+      "start": 14,
+      "end": 18,
+      "height": 20,
+      "contained": true
+    },
+    {
+      "name": "flat-circular-edge-overlap",
+      "kind": "flat",
+      "curvature": "circular",
+      "radius": 10,
+      "shoulderWidth": 0,
+      "start": 0,
+      "end": 0,
+      "height": 20,
+      "contained": false
+    },
+    {
+      "name": "flat-quartic-contained",
+      "kind": "flat",
+      "curvature": "quartic",
+      "radius": 10,
+      "shoulderWidth": 0,
+      "start": 14,
+      "end": 18,
+      "height": 20,
+      "contained": true
+    },
+    {
+      "name": "flat-quartic-edge-overlap",
+      "kind": "flat",
+      "curvature": "quartic",
+      "radius": 10,
+      "shoulderWidth": 0,
+      "start": 0,
+      "end": 0,
+      "height": 20,
+      "contained": false
+    },
+    {
+      "name": "convex-circular-contained",
+      "kind": "convex",
+      "curvature": "circular",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 14,
+      "end": 18,
+      "height": 20,
+      "contained": true
+    },
+    {
+      "name": "convex-circular-edge-overlap",
+      "kind": "convex",
+      "curvature": "circular",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 0,
+      "end": 0,
+      "height": 20,
+      "contained": false
+    },
+    {
+      "name": "convex-quartic-contained",
+      "kind": "convex",
+      "curvature": "quartic",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 14,
+      "end": 18,
+      "height": 20,
+      "contained": true
+    },
+    {
+      "name": "convex-quartic-edge-overlap",
+      "kind": "convex",
+      "curvature": "quartic",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 0,
+      "end": 0,
+      "height": 20,
+      "contained": false
+    },
+    {
+      "name": "recessed-circular-contained",
+      "kind": "recessed",
+      "curvature": "circular",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 14,
+      "end": 18,
+      "height": 20,
+      "contained": true
+    },
+    {
+      "name": "recessed-circular-edge-overlap",
+      "kind": "recessed",
+      "curvature": "circular",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 0,
+      "end": 0,
+      "height": 20,
+      "contained": false
+    },
+    {
+      "name": "recessed-quartic-contained",
+      "kind": "recessed",
+      "curvature": "quartic",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 14,
+      "end": 18,
+      "height": 20,
+      "contained": true
+    },
+    {
+      "name": "recessed-quartic-edge-overlap",
+      "kind": "recessed",
+      "curvature": "quartic",
+      "radius": 10,
+      "shoulderWidth": 1,
+      "start": 0,
+      "end": 0,
+      "height": 20,
+      "contained": false
+    },
+    {
+      "name": "convex-square-closed-plateau",
+      "kind": "convex",
+      "curvature": "quartic",
+      "radius": 0,
+      "shoulderWidth": 6,
+      "start": 6,
+      "end": 6,
+      "height": 48,
+      "contained": true
+    },
+    {
+      "name": "convex-square-shoulder-neighbor",
+      "kind": "convex",
+      "curvature": "quartic",
+      "radius": 0,
+      "shoulderWidth": 6,
+      "start": 6,
+      "end": 6,
+      "height": 48.00000000000001,
+      "contained": false
+    },
+    {
+      "name": "recessed-square-closed-plateau",
+      "kind": "recessed",
+      "curvature": "quartic",
+      "radius": 0,
+      "shoulderWidth": 6,
+      "start": 6,
+      "end": 6,
+      "height": 48,
+      "contained": true
+    },
+    {
+      "name": "recessed-square-shoulder-neighbor",
+      "kind": "recessed",
+      "curvature": "quartic",
+      "radius": 0,
+      "shoulderWidth": 6,
+      "start": 6,
+      "end": 6,
+      "height": 48.00000000000001,
+      "contained": false
+    }
+  ]
+}

@@ -283,6 +283,7 @@ def main():
         "schemas/command-label-expansion.schema.json",
         "schemas/command-label-arithmetic.schema.json",
         "schemas/command-label-ir.schema.json",
+        "schemas/command-relief-containment.schema.json",
         "schemas/command-accessibility-ir.schema.json",
         "schemas/toggle-snapshot-cases.schema.json",
         "schemas/toggle-travel-cases.schema.json",
@@ -2229,6 +2230,21 @@ def main():
     arithmetic = load_json(ROOT / "conformance/content/command-label-arithmetic.json")
     check_case(validator_for("schemas/command-label-arithmetic.schema.json"), "label arithmetic", arithmetic, True)
     checked += 1 + check_label_arithmetic(arithmetic)
+    relief_content = load_json(ROOT / "conformance/content/command-relief-containment.json")
+    relief_content_validator = validator_for("schemas/command-relief-containment.schema.json")
+    check_case(relief_content_validator, "relief content cases", relief_content, True)
+    checked += 1
+    for path, value in [("/schemaVersion", "unsupported"),
+                        ("/cases/0/kind", "negative-extrusion"),
+                        ("/cases/0/curvature", "backend-shape"),
+                        ("/cases/0/radius", -1),
+                        ("/cases/0/shoulderWidth", -1),
+                        ("/cases/0/start", -1),
+                        ("/cases/0/height", 0),
+                        ("/cases/0/contained", "yes")]:
+        check_case(relief_content_validator, f"relief content invalid {path}",
+                   apply_changes(relief_content, [{"path": path, "value": value}]), False)
+        checked += 1
     expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
     checked += check_label_expansion(expansion)
     accessibility_validator = validator_for("schemas/command-accessibility-ir.schema.json")

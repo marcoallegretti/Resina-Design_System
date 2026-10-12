@@ -1,5 +1,6 @@
 use crate::{
-    OpaqueSurfaceIr, ResolvedTypography, SurfacePaintError, opaque_paint::placed_contains,
+    OpaqueSurfaceIr, ReliefPaint, ResolvedTypography, SurfacePaintError,
+    opaque_paint::placed_contains,
 };
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_model::{PhysicalBounds, PhysicalVector, SurfaceSize};
@@ -30,6 +31,25 @@ pub struct CommandLabelIr {
     layout_direction: LayoutDirection,
 }
 impl CommandLabelIr {
+    pub fn validate_relief_content(&self, paint: &ReliefPaint) -> Result<(), CommandContentError> {
+        if self.size != paint.surface().outline().size() {
+            return Err(CommandContentError::SizeMismatch);
+        }
+        let bounds = self.label_bounds;
+        let right = extent_sum(bounds.x, bounds.width).ok_or(CommandContentError::NumericRange)?;
+        let bottom =
+            extent_sum(bounds.y, bounds.height).ok_or(CommandContentError::NumericRange)?;
+        let content = paint.content_bounds();
+        if bounds.x < content.x
+            || bounds.y < content.y
+            || right > content.x + content.width
+            || bottom > content.y + content.height
+        {
+            return Err(CommandContentError::OutsideContent);
+        }
+        Ok(())
+    }
+
     pub fn validate_content(&self, body: &OpaqueSurfaceIr) -> Result<(), CommandContentError> {
         let front = body
             .geometry()
