@@ -349,7 +349,7 @@ pub fn prepare_command_label_at(
         })
     };
     Ok(DrawCommand::Text {
-        text: ir.text().to_owned(),
+        text: ir.text().into(),
         rect,
         color,
         font_size: style.size,
