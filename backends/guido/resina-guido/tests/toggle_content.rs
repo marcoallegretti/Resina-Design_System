@@ -874,6 +874,20 @@ fn check_sampled_toggle_frames(calibrated: bool) {
                 .iter()
                 .find(|scene| scene["name"] == name)
                 .unwrap();
+            let mut channels = motion_channels();
+            if calibrated && material != "cast" {
+                for part in &mut channels {
+                    for (channel, profile) in [("bodyMix", "body"), ("depthScale", "depth")] {
+                        part[channel]["dynamics"] = serde_json::from_str::<Value>(
+                            &std::fs::read_to_string(
+                                profile_root.join(format!("{material}-{profile}.json")),
+                            )
+                            .unwrap(),
+                        )
+                        .unwrap();
+                    }
+                }
+            }
             for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
                 for checked in [false, true] {
                     let text = if direction == LayoutDirection::Ltr {
@@ -886,21 +900,6 @@ fn check_sampled_toggle_frames(calibrated: bool) {
                     let reserved = f.target.bounds();
                     let initial =
                         SpringState::try_new(if checked { 0.0 } else { 1.0 }, 0.0).unwrap();
-                    let mut channels = motion_channels();
-                    if calibrated && material != "cast" {
-                        for part in &mut channels {
-                            for (channel, profile) in [("bodyMix", "body"), ("depthScale", "depth")]
-                            {
-                                part[channel]["dynamics"] = serde_json::from_str::<Value>(
-                                    &std::fs::read_to_string(
-                                        profile_root.join(format!("{material}-{profile}.json")),
-                                    )
-                                    .unwrap(),
-                                )
-                                .unwrap();
-                            }
-                        }
-                    }
                     for time in [0.0, 0.1, 100.0] {
                         let parts = f.sample_parts(&channels, time, false).unwrap();
                         if material != "cast" && time == 0.1 {
@@ -1090,7 +1089,7 @@ fn check_sampled_toggle_frames(calibrated: bool) {
                     "تثبيت التحديثات تلقائيًا عند الاتصال بمصدر الطاقة"
                 };
                 let mut f = Fixture::new(scene, "pressed", direction, true, family, 2.0, text);
-                f.sample_parts(&motion_channels(), 0.1, false).unwrap();
+                f.sample_parts(&channels, 0.1, false).unwrap();
                 let snapshot = f.snapshot();
                 let travel = resolve_toggle_travel(
                     &snapshot,

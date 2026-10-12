@@ -29,9 +29,11 @@ and stronger controlled compression response. The equations, retained state and
 paint-only saturation remain the existing contracts. A depth peak is not in-plane
 deformation. Focus and selection semantics stay immediate and independent.
 
-Toggle travel uses critical damping to avoid reversing its physical thumb after
-a resting target change. Its progress is a separately bounded placement channel;
-it need not use the depth response's overshoot. Both current material families
+Toggle travel uses critical damping to avoid endpoint overshoot on a unit step
+from rest. Interrupted travel retains velocity and can briefly continue in the
+previous direction before reversing toward its new target. Its progress is a
+separately bounded placement channel; it need not use the depth response's
+overshoot. Both current material families
 share this travel choice while retaining their distinct body/depth response.
 
 Cast remains immediate under the existing material policy, including at time
@@ -114,3 +116,39 @@ they are not silently promoted into these calibrated definitions. Native frame
 scheduling, complete component styling, deformation and backend qualification
 remain separate contracts. Acceptance of these profiles requires their response
 proof and actual bounded paint/visual evidence; determinism alone is insufficient.
+
+## Repeatable native composition evidence
+
+The calibrated Command test samples Light/Dark Frost/Elastomer hover, press and
+disable, followed by a release retaining the raw 0.050 s state. Each leg is
+sampled at 0, 0.016, 0.050, 0.100, 0.200 and 0.350 s, with German LTR and Arabic
+RTL content at text scale 2 and device scales 1.25, 1.5 and 2: 864 complete
+frames. Each frame checks the original reserved target, coherent current
+snapshot, complete shaped glyph footprints and solid native glyph contrast.
+
+The calibrated Toggle test produces 180 complete frames at device scale 1.25,
+covering Light/Dark Cast/Frost/Elastomer, LTR/RTL, checked/unchecked, press,
+retarget, disable and reduced motion, plus increased text at scale 2. Track and
+thumb use the authored body/depth dynamics; travel uses its separate profile.
+Current actual adjacency, selection semantics, retained state, disabled focus
+and action availability, target bounds, label ink and containment are checked.
+The original arithmetic Toggle test remains independently executable.
+
+For example, in a Linux checkout with the native backend's documented build
+dependencies and DejaVu Sans installed:
+
+```bash
+cargo build -p resina-resolver --bin resina-theme-resolve --locked
+python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
+export RESINA_SCENES="$PWD/target/material-scenes.json"
+export RESINA_LABEL_FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+RESINA_COMMAND_CAPTURE_DIR="$PWD/target/calibrated-command" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing --test command_content calibrated_command_profiles_preserve_complete_native_content_on_retarget
+RESINA_TOGGLE_CAPTURE_DIR="$PWD/target/calibrated-toggle" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing --test toggle_content frames_keep_current_adjacency_semantics_and_raw_retarget_state -- --test-threads=1
+```
+
+Use fresh capture directories: output refuses to overwrite an existing frame.
+The Toggle calibrated frames are in the `calibrated/` child directory. Preserve
+the committed source, supplied scene file, actual font and adapter identity when
+recording a run. The checked WSL specimens use DejaVu Sans and llvmpipe Vulkan;
+they are sampled native composition evidence, not hardware cadence, native
+input, assistive-technology qualification or full component-style acceptance.
