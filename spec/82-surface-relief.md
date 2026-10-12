@@ -121,6 +121,26 @@ unit normal or null. Numeric results use absolute
 or relative tolerance `1e-12`, whichever is larger; source/result structure,
 versions, kinds and inside/null classifications remain exact.
 
+Finite inputs alone do not establish sampling accuracy. In particular, a thin
+shoulder can amplify subtraction error in the corner residual. A requested
+sample whose height or normal cannot meet the numeric tolerance fails with a
+precision diagnostic; it must not yield an approximate successful sample or
+partial result. Geometry with an empty points array can still resolve, and a
+uniform plateau does not imply that every shoulder sample is representable.
+
+The reference encloses the analytic calculation for its represented binary64
+inputs with outward-rounded intervals, including coordinate subtraction,
+corner powers, transition gates, product derivatives and normal normalization.
+The quintic value is monotone on its clamped interval; its derivative has its
+single maximum at one half. These facts bound gates without treating the
+rounded corner residual as exact. Every output component must be within the
+stated tolerance of the whole enclosure. Relative tolerance uses the enclosure's
+minimum absolute magnitude. Basic operations and
+[correctly rounded square root](https://doc.rust-lang.org/std/primitive.f64.html#method.sqrt)
+support the enclosure; this is a reference numeric strategy, not a backend
+identity or required rendering algorithm. Exact subnormal and Sterbenz
+subtractions avoid unnecessary error expansion at supported tiny scales.
+
 `resina-surface-relief <path|->` reads one UTF-8 request up to 1 MiB. Success
 exits 0 with one complete JSON result and no diagnostic; invalid input exits 1
 with no result and a diagnostic; usage errors exit 2.

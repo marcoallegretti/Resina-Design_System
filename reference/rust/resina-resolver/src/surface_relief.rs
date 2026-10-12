@@ -151,7 +151,7 @@ pub fn resolve_surface_relief(
     }
     if profile.amplitude == 0.0
         || profile.shoulder_width == 0.0
-        || profile.amplitude > profile.shoulder_width / 2.0
+        || profile.amplitude * 2.0 > profile.shoulder_width
     {
         return Err(fail(
             "relief requires positive amplitude no greater than shoulderWidth/2",
@@ -308,69 +308,80 @@ impl SurfaceRelief {
             }));
         }
         let size = self.outline.size();
-        let w = self.profile.shoulder_width;
-        let straight = |distance: f64, x: f64, y: f64| {
-            let (value, derivative) = smooth(if distance >= w { 1.0 } else { distance / w });
-            (value, derivative * x, derivative * y)
+        let w = SampleNumber::exact(self.profile.shoulder_width);
+        let px = SampleNumber::exact(point.x);
+        let py = SampleNumber::exact(point.y);
+        let right = SampleNumber::exact(size.width) - px;
+        let bottom = SampleNumber::exact(size.height) - py;
+        let straight = |distance: SampleNumber, x: f64, y: f64| {
+            let (value, derivative) = (distance / w).smooth();
+            (value, derivative * x.into(), derivative * y.into())
         };
+        let one = SampleNumber::exact(1.0);
+        let zero = SampleNumber::exact(0.0);
         let mut gates = [
-            straight(point.x, 1.0, 0.0),
-            straight(size.width - point.x, -1.0, 0.0),
-            straight(point.y, 0.0, 1.0),
-            straight(size.height - point.y, 0.0, -1.0),
-            (1.0, 0.0, 0.0),
-            (1.0, 0.0, 0.0),
-            (1.0, 0.0, 0.0),
-            (1.0, 0.0, 0.0),
+            straight(px, 1.0, 0.0),
+            straight(right, -1.0, 0.0),
+            straight(py, 0.0, 1.0),
+            straight(bottom, 0.0, -1.0),
+            (one, zero, zero),
+            (one, zero, zero),
+            (one, zero, zero),
+            (one, zero, zero),
         ];
         let corners = [
-            (point.x, point.y, 1.0, 1.0),
-            (size.width - point.x, point.y, -1.0, 1.0),
-            (size.width - point.x, size.height - point.y, -1.0, -1.0),
-            (point.x, size.height - point.y, 1.0, -1.0),
+            (px, py, 1.0, 1.0),
+            (right, py, -1.0, 1.0),
+            (right, bottom, -1.0, -1.0),
+            (px, bottom, 1.0, -1.0),
         ];
         for (i, (r, (x, y, sx, sy))) in self.outline.corners().into_iter().zip(corners).enumerate()
         {
             if r.x == 0.0 {
                 continue;
             }
-            let (rx, ry, tau) = self.corner_ratios(r.x, r.y)?;
-            let u = if x >= r.x { 0.0 } else { (r.x - x) / r.x };
-            let v = if y >= r.y { 0.0 } else { (r.y - y) / r.y };
+            let a = SampleNumber::exact(r.x);
+            let b = SampleNumber::exact(r.y);
+            let rx = w / a;
+            let ry = w / b;
+            let n = SampleNumber::exact(self.exponent());
+            let tau = n * (rx + ry);
+            let u = ((a - x) / a).clamp(0.0, 1.0);
+            let v = ((b - y) / b).clamp(0.0, 1.0);
             let (up, vp, du, dv) = match self.outline.curvature() {
                 OutlineCurvature::Circular => (u * u, v * v, u, v),
                 OutlineCurvature::Quartic => (u * u * u * u, v * v * v * v, u * u * u, v * v * v),
             };
-            let f = (1.0 - up) - vp;
-            let (value, derivative) = smooth(if f >= tau { 1.0 } else { f / tau });
+            let f = (one - up) - vp;
+            let (value, derivative) = (f / tau).smooth();
             gates[i + 4] = (
                 value,
-                derivative * self.exponent() * du * (rx / tau) * sx,
-                derivative * self.exponent() * dv * (ry / tau) * sy,
+                derivative * n * du * (rx / tau) * sx.into(),
+                derivative * n * dv * (ry / tau) * sy.into(),
             );
         }
-        let value: f64 = gates.iter().map(|g| g.0).product();
-        let (mut dx, mut dy) = (0.0, 0.0);
+        let value = gates.iter().fold(one, |product, g| product * g.0);
+        let (mut dx, mut dy) = (zero, zero);
         for (i, gate) in gates.iter().enumerate() {
-            let product: f64 = gates
+            let product = gates
                 .iter()
                 .enumerate()
                 .filter(|(j, _)| *j != i)
-                .map(|(_, g)| g.0)
-                .product();
-            dx += gate.1 * product;
-            dy += gate.2 * product;
+                .fold(one, |product, (_, g)| product * g.0);
+            dx = dx + gate.1 * product;
+            dy = dy + gate.2 * product;
         }
-        let ratio = self.signed_amplitude() / w;
-        dx *= ratio;
-        dy *= ratio;
-        let length = (dx * dx + dy * dy + 1.0).sqrt();
+        let amplitude = SampleNumber::exact(self.signed_amplitude());
+        let ratio = amplitude / w;
+        dx = dx * ratio;
+        dy = dy * ratio;
+        let length = (dx * dx + dy * dy + one).sqrt();
         Ok(Some(ReliefSample {
-            height: self.signed_amplitude() * value,
+            height: (amplitude * value).certify()?,
             normal: FaceNormal {
-                x: -dx / length,
-                y: -dy / length,
-                z: 1.0 / length,
+                x: ((zero - dx) / length).certify()?,
+                y: ((zero - dy) / length).certify()?,
+                z: (one / length).certify()?,
             },
         }))
     }
@@ -385,6 +396,224 @@ fn smooth(t: f64) -> (f64, f64) {
         (
             (t * t * t * (10.0 + t * (-15.0 + 6.0 * t))).clamp(0.0, 1.0),
             30.0 * t * t * (1.0 - t) * (1.0 - t),
+        )
+    }
+}
+
+// Outward rounding encloses the analytic result for the represented inputs.
+#[derive(Clone, Copy)]
+struct SampleNumber {
+    value: f64,
+    lower: f64,
+    upper: f64,
+}
+
+impl From<f64> for SampleNumber {
+    fn from(value: f64) -> Self {
+        Self::exact(value)
+    }
+}
+
+impl SampleNumber {
+    fn exact(value: f64) -> Self {
+        Self {
+            value,
+            lower: value,
+            upper: value,
+        }
+    }
+
+    fn rounded(value: f64, lower: f64, upper: f64) -> Self {
+        if lower.is_nan() || upper.is_nan() {
+            return Self {
+                value,
+                lower: f64::NEG_INFINITY,
+                upper: f64::INFINITY,
+            };
+        }
+        Self {
+            value,
+            lower: lower.next_down(),
+            upper: upper.next_up(),
+        }
+    }
+
+    fn is_exact(self, value: f64) -> bool {
+        self.lower == value && self.upper == value
+    }
+
+    fn clamp(self, lower: f64, upper: f64) -> Self {
+        Self {
+            value: self.value.clamp(lower, upper),
+            lower: self.lower.clamp(lower, upper),
+            upper: self.upper.clamp(lower, upper),
+        }
+    }
+
+    fn sqrt(self) -> Self {
+        Self::rounded(
+            self.value.sqrt(),
+            self.lower.max(0.0).sqrt(),
+            self.upper.sqrt(),
+        )
+    }
+
+    fn smooth(self) -> (Self, Self) {
+        let (value, derivative) = smooth(self.value);
+        let t = self.clamp(0.0, 1.0);
+        let polynomial = |x: f64| {
+            if x == 0.0 || x == 1.0 {
+                return Self::exact(x);
+            }
+            let x = Self::exact(x);
+            x * x * x * (Self::exact(10.0) + x * (Self::exact(-15.0) + Self::exact(6.0) * x))
+        };
+        let derivative_at = |x: f64| {
+            if x == 0.0 || x == 1.0 {
+                return Self::exact(0.0);
+            }
+            let x = Self::exact(x);
+            let rest = Self::exact(1.0) - x;
+            Self::exact(30.0) * x * x * rest * rest
+        };
+        let low_value = polynomial(t.lower).clamp(0.0, 1.0);
+        let high_value = polynomial(t.upper).clamp(0.0, 1.0);
+        let low_derivative = derivative_at(t.lower).clamp(0.0, 15.0 / 8.0);
+        let high_derivative = derivative_at(t.upper).clamp(0.0, 15.0 / 8.0);
+        (
+            Self {
+                value,
+                lower: low_value.lower,
+                upper: high_value.upper,
+            },
+            Self {
+                value: derivative,
+                lower: low_derivative.lower.min(high_derivative.lower),
+                upper: if t.lower <= 0.5 && t.upper >= 0.5 {
+                    15.0 / 8.0
+                } else {
+                    low_derivative.upper.max(high_derivative.upper)
+                },
+            },
+        )
+    }
+
+    fn certify(self) -> Result<f64, SurfaceReliefError> {
+        let minimum_magnitude = if self.lower <= 0.0 && self.upper >= 0.0 {
+            0.0
+        } else {
+            self.lower.abs().min(self.upper.abs())
+        };
+        let tolerance = 1e-12_f64.max(minimum_magnitude * 1e-12).next_down();
+        if !self.value.is_finite()
+            || !self.lower.is_finite()
+            || !self.upper.is_finite()
+            || (self.value - self.lower).next_up() > tolerance
+            || (self.upper - self.value).next_up() > tolerance
+        {
+            return Err(SurfaceReliefError(
+                "sample precision cannot certify height and normal within 1e-12".into(),
+            ));
+        }
+        Ok(self.value)
+    }
+}
+
+impl std::ops::Add for SampleNumber {
+    type Output = Self;
+    fn add(self, rhs: Self) -> Self {
+        if self.is_exact(0.0) {
+            return rhs;
+        }
+        if rhs.is_exact(0.0) {
+            return self;
+        }
+        Self::rounded(
+            self.value + rhs.value,
+            self.lower + rhs.lower,
+            self.upper + rhs.upper,
+        )
+    }
+}
+impl std::ops::Sub for SampleNumber {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
+        if rhs.is_exact(0.0) {
+            return self;
+        }
+        if self.lower == self.upper && rhs.lower == rhs.upper && self.value == rhs.value {
+            return Self::exact(0.0);
+        }
+        let bound = |a: f64, b: f64, lower: bool| {
+            let value = a - b;
+            // Subnormal differences and Sterbenz subtraction are exact.
+            if (a.abs() < f64::MIN_POSITIVE && b.abs() < f64::MIN_POSITIVE)
+                || (a >= 0.0 && b >= 0.0 && a <= 2.0 * b && b <= 2.0 * a)
+            {
+                value
+            } else if lower {
+                value.next_down()
+            } else {
+                value.next_up()
+            }
+        };
+        Self {
+            value: self.value - rhs.value,
+            lower: bound(self.lower, rhs.upper, true),
+            upper: bound(self.upper, rhs.lower, false),
+        }
+    }
+}
+impl std::ops::Mul for SampleNumber {
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self {
+        if self.is_exact(0.0) || rhs.is_exact(0.0) {
+            return Self::exact(self.value * rhs.value);
+        }
+        if self.is_exact(1.0) {
+            return rhs;
+        }
+        if rhs.is_exact(1.0) {
+            return self;
+        }
+        let products = [
+            self.lower * rhs.lower,
+            self.lower * rhs.upper,
+            self.upper * rhs.lower,
+            self.upper * rhs.upper,
+        ];
+        if products.iter().any(|p| p.is_nan()) {
+            return Self::rounded(self.value * rhs.value, f64::NEG_INFINITY, f64::INFINITY);
+        }
+        Self::rounded(
+            self.value * rhs.value,
+            products.into_iter().fold(f64::INFINITY, f64::min),
+            products.into_iter().fold(f64::NEG_INFINITY, f64::max),
+        )
+    }
+}
+impl std::ops::Div for SampleNumber {
+    type Output = Self;
+    fn div(self, rhs: Self) -> Self {
+        if rhs.is_exact(1.0) {
+            return self;
+        }
+        if rhs.lower <= 0.0 && rhs.upper >= 0.0 {
+            return Self::rounded(self.value / rhs.value, f64::NEG_INFINITY, f64::INFINITY);
+        }
+        let quotients = [
+            self.lower / rhs.lower,
+            self.lower / rhs.upper,
+            self.upper / rhs.lower,
+            self.upper / rhs.upper,
+        ];
+        if quotients.iter().any(|p| p.is_nan()) {
+            return Self::rounded(self.value / rhs.value, f64::NEG_INFINITY, f64::INFINITY);
+        }
+        Self::rounded(
+            self.value / rhs.value,
+            quotients.into_iter().fold(f64::INFINITY, f64::min),
+            quotients.into_iter().fold(f64::NEG_INFINITY, f64::max),
         )
     }
 }

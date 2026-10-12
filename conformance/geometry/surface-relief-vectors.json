@@ -2994,5 +2994,284 @@
     },
     "requestSchemaValid": true,
     "errorContains": "shoulderWidth must remain representable in surface coordinates"
+  },
+  {
+    "name": "subnormal rounded half width exceeds amplitude limit",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 4.94e-322,
+          "height": 4.94e-322
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 0
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 5e-323,
+        "amplitude": 1e-323,
+        "shoulderWidth": 1.5e-323
+      },
+      "points": []
+    },
+    "requestSchemaValid": true,
+    "errorContains": "shoulderWidth/2"
+  },
+  {
+    "name": "adjacent subnormal amplitude at exact half width",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 4.94e-322,
+          "height": 4.94e-322
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 0
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 5e-323,
+        "amplitude": 1e-323,
+        "shoulderWidth": 2e-323
+      },
+      "points": []
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "quartic",
+          "size": {
+            "width": 4.94e-322,
+            "height": 4.94e-322
+          },
+          "corners": {
+            "topLeft": {
+              "x": 0,
+              "y": 0
+            },
+            "topRight": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomRight": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomLeft": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "contentBounds": {
+            "x": 0,
+            "y": 0,
+            "width": 4.94e-322,
+            "height": 4.94e-322
+          }
+        },
+        "profile": {
+          "kind": "convex",
+          "bodyThickness": 5e-323,
+          "amplitude": 1e-323,
+          "shoulderWidth": 2e-323
+        },
+        "contentBounds": {
+          "x": 2e-323,
+          "y": 2e-323,
+          "width": 4.55e-322,
+          "height": 4.55e-322
+        }
+      },
+      "samples": []
+    }
+  },
+  {
+    "name": "thin circular shoulder loses normal precision",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 2,
+          "height": 2
+        },
+        "radii": {
+          "topStart": {
+            "x": 1,
+            "y": 1
+          },
+          "topEnd": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomEnd": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomStart": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "circular",
+        "minimumInset": 0
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 1e-15,
+        "amplitude": 1e-16,
+        "shoulderWidth": 2e-16
+      },
+      "points": [
+        {
+          "x": 0.2928932188134525,
+          "y": 0.2928932188134525
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "sample precision"
+  },
+  {
+    "name": "thin quartic shoulder loses sample precision",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 3000000,
+          "height": 3000000
+        },
+        "radii": {
+          "topStart": {
+            "x": 1000000,
+            "y": 1000000
+          },
+          "topEnd": {
+            "x": 1000000,
+            "y": 1000000
+          },
+          "bottomEnd": {
+            "x": 1000000,
+            "y": 1000000
+          },
+          "bottomStart": {
+            "x": 1000000,
+            "y": 1000000
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 0
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 159104,
+          "y": 159104
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "sample precision"
+  },
+  {
+    "name": "large corner cancellation loses sample precision",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 3000000000000000,
+          "height": 3000000000000000
+        },
+        "radii": {
+          "topStart": {
+            "x": 1000000000000000,
+            "y": 1000000000000000
+          },
+          "topEnd": {
+            "x": 1000000000000000,
+            "y": 1000000000000000
+          },
+          "bottomEnd": {
+            "x": 1000000000000000,
+            "y": 1000000000000000
+          },
+          "bottomStart": {
+            "x": 1000000000000000,
+            "y": 1000000000000000
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 0
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 159103584746285.62,
+          "y": 159103584746285.62
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "sample precision"
   }
 ]

@@ -38,7 +38,11 @@ fn authored_relief_vectors_match_independent_decimal_expectations() {
     for case in cases {
         let result = resina_resolver::resolve_surface_relief_source(&case["request"].to_string());
         if let Some(expected) = case.get("expected") {
-            compare(&serde_json::to_value(result.unwrap()).unwrap(), expected);
+            compare(
+                &serde_json::to_value(result.unwrap_or_else(|e| panic!("{}: {e}", case["name"])))
+                    .unwrap(),
+                expected,
+            );
         } else {
             let diagnostic = result.unwrap_err().to_string();
             assert!(
@@ -373,4 +377,83 @@ fn asymmetric_logical_mirroring_preserves_height_and_physical_normals() {
             }
         }
     }
+}
+
+#[test]
+fn uncertifiable_corner_samples_fail_without_rejecting_the_uniform_plateau() {
+    let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/geometry/surface-relief-vectors.json"
+    ))
+    .unwrap();
+    for case in cases
+        .iter()
+        .filter(|case| case["errorContains"] == "sample precision")
+    {
+        let mut request = case["request"].clone();
+        let invalid_point = request["points"][0].clone();
+        request["points"] = serde_json::json!([]);
+        let resolved =
+            resina_resolver::resolve_surface_relief_source(&request.to_string()).unwrap();
+        let size = resolved.surface.outline().size();
+        let center = serde_json::json!({"x":size.width / 2.0,"y":size.height / 2.0});
+        request["points"] = serde_json::json!([center]);
+        let plateau = resina_resolver::resolve_surface_relief_source(&request.to_string()).unwrap();
+        let normal = plateau.samples[0].sample.unwrap().normal;
+        assert_eq!((normal.x, normal.y, normal.z), (0.0, 0.0, 1.0));
+        request["points"] = serde_json::json!([center, invalid_point]);
+        assert!(
+            resina_resolver::resolve_surface_relief_source(&request.to_string())
+                .unwrap_err()
+                .to_string()
+                .contains("sample precision")
+        );
+    }
+}
+
+#[test]
+fn exact_subnormal_amplitude_limit_distinguishes_adjacent_widths() {
+    let m = f64::from_bits(1);
+    let radius = CornerRadius { x: 0.0, y: 0.0 };
+    let outline = resolve_surface_outline(
+        SurfaceSize {
+            width: 100.0 * m,
+            height: 100.0 * m,
+        },
+        LogicalCornerRadii {
+            top_start: radius,
+            top_end: radius,
+            bottom_end: radius,
+            bottom_start: radius,
+        },
+        LayoutDirection::Ltr,
+        OutlineCurvature::Quartic,
+        0.0,
+    )
+    .unwrap();
+    let mut profile = SurfaceReliefProfile {
+        kind: ReliefKind::Convex,
+        body_thickness: 10.0 * m,
+        amplitude: 2.0 * m,
+        shoulder_width: 3.0 * m,
+    };
+    assert!(
+        resolve_surface_relief(outline.clone(), profile)
+            .unwrap_err()
+            .to_string()
+            .contains("shoulderWidth/2")
+    );
+    profile.shoulder_width = 4.0 * m;
+    let surface = resolve_surface_relief(outline, profile).unwrap();
+    let sample = surface
+        .sample(PhysicalVector {
+            x: 50.0 * m,
+            y: 50.0 * m,
+        })
+        .unwrap()
+        .unwrap();
+    assert_eq!(sample.height, 2.0 * m);
+    assert_eq!(
+        (sample.normal.x, sample.normal.y, sample.normal.z),
+        (0.0, 0.0, 1.0)
+    );
 }
