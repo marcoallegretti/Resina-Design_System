@@ -7,7 +7,7 @@ mod readback;
 
 use guido::{
     renderer::{
-        DrawCommand, FlattenScratch, GpuContext, RenderNode, RenderTarget, Renderer,
+        DrawCommand, FlattenScratch, GpuContext, LineFit, RenderNode, RenderTarget, Renderer,
         flatten_root_into,
     },
     widgets::{Color, font::FontFamily},
@@ -103,24 +103,28 @@ fn actual_glyph_ink_remains_on_the_opaque_plateau_at_fractional_device_and_text_
     let origin = PhysicalVector { x: 12.25, y: 7.125 };
     for curve in ["circular", "quartic"] {
         for kind in ["flat", "convex", "recessed"] {
-            let mut request = vectors[0]["request"].clone();
+            let mut request = vectors[7]["request"].clone();
             request["outline"]["size"] = json!({"width":320,"height":160});
             request["outline"]["curvature"] = json!(curve);
-            for name in ["topStart", "topEnd", "bottomEnd", "bottomStart"] {
-                request["outline"]["radii"][name] = json!({"x":24,"y":24});
-            }
+            request["outline"]["radii"] = json!({
+                "topStart": {"x":20,"y":12}, "topEnd": {"x":30,"y":15},
+                "bottomEnd": {"x":24,"y":18}, "bottomStart": {"x":12,"y":20}
+            });
+            request["edgeWidth"] = json!(0.25);
+            request["points"] = json!([]);
             request["profile"] = json!({"kind":kind,"bodyThickness":4,
                 "amplitude":if kind == "flat" {0.0} else {0.25},
                 "shoulderWidth":if kind == "flat" {0.0} else {1.0}});
-            let paint = resolve_relief_paint_source(&request.to_string())
-                .unwrap()
-                .paint;
             for text_scale in [1.0, 2.0] {
-                let typography = label_style::style(text_scale, 0.0, 400.0, 1.4);
+                let typography = label_style::style(text_scale, 0.25, 400.0, 1.4);
                 for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+                    request["outline"]["layoutDirection"] = json!(direction);
+                    let paint = resolve_relief_paint_source(&request.to_string())
+                        .unwrap()
+                        .paint;
                     let label = resolve_command_label(
                         CommandLabelInput {
-                            text: "j Reconnect",
+                            text: "j Reconnect now",
                             typography: &typography,
                             minimum_size: paint.surface().outline().size(),
                             maximum_size: paint.surface().outline().size(),
@@ -139,6 +143,22 @@ fn actual_glyph_ink_remains_on_the_opaque_plateau_at_fractional_device_and_text_
                         let [material, text] =
                             prepare_relief_content_at(&paint, &label, family, origin, scale, 4)
                                 .unwrap();
+                        let mut expanded_text = text.clone();
+                        let DrawCommand::Text {
+                            text: complete,
+                            rect,
+                            fit,
+                            ..
+                        } = &mut expanded_text
+                        else {
+                            panic!("complete native text required")
+                        };
+                        assert_eq!(complete.as_ref(), "j Reconnect now");
+                        if fit.is_none() {
+                            *fit = Some(LineFit::wrapping(Some(rect.width)));
+                        }
+                        rect.x -= 32.0;
+                        rect.width += 64.0;
                         let mut root = RenderNode::new(1);
                         root.commands.push(Rc::new(material));
                         let width = (360.0 * scale).round() as u32;
@@ -167,6 +187,22 @@ fn actual_glyph_ink_remains_on_the_opaque_plateau_at_fractional_device_and_text_
                         );
                         assert!(renderer.render(&mut target, &commands, &layers, Color::WHITE));
                         let composed = readback::read_frame(&target);
+                        root.commands.pop();
+                        root.commands.push(Rc::new(expanded_text));
+                        commands.clear();
+                        layers.clear();
+                        flatten_root_into(
+                            &root,
+                            &mut commands,
+                            &mut layers,
+                            &mut FlattenScratch::default(),
+                        );
+                        assert!(renderer.render(&mut target, &commands, &layers, Color::WHITE));
+                        assert_eq!(
+                            composed,
+                            readback::read_frame(&target),
+                            "complete label must match an expanded native text rectangle"
+                        );
                         let mut ink_pixels = 0;
                         for (index, (before, after)) in background
                             .as_chunks::<4>()
