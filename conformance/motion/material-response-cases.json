@@ -1,0 +1,642 @@
+[
+  {
+    "name": "frost-body:unit-step-50ms",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 0.05,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 0.5939941502901619,
+        "velocity": 10.826822658929016
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "frost-body:retained-velocity",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0.03,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0,
+      "state": {
+        "position": 0.40360024396235084,
+        "velocity": -7.710571824952374
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "frost-body:settled",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 1,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 1,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "frost-body:reduced-motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "target": 0,
+      "state": {
+        "position": 0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "frost-depth:unit-step-50ms",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 0.05,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 0.5939941502901619,
+        "velocity": 10.826822658929016
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "frost-depth:retained-velocity",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0.03,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0,
+      "state": {
+        "position": 0.40360024396235084,
+        "velocity": -7.710571824952374
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "frost-depth:settled",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 1,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 1,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "frost-depth:reduced-motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "target": 0,
+      "state": {
+        "position": 0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "elastomer-body:unit-step-50ms",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 64,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 0.05,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 0.6759406363138583,
+        "velocity": 12.545029739446953
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "elastomer-body:retained-velocity",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 64,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0.03,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0,
+      "state": {
+        "position": 0.39640423268060043,
+        "velocity": -8.805954278244993
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "elastomer-body:settled",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 64,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 1,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 1,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "elastomer-body:reduced-motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 64,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "target": 0,
+      "state": {
+        "position": 0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "elastomer-depth:unit-step-50ms",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 56,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 0.05,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 0.7257131307952929,
+        "velocity": 13.672172049050513
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "elastomer-depth:retained-velocity",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 56,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0.03,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0,
+      "state": {
+        "position": 0.39263894133538346,
+        "velocity": -9.436206339147613
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "elastomer-depth:settled",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 56,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 1,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 1,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "elastomer-depth:reduced-motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 56,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "target": 0,
+      "state": {
+        "position": 0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "toggle-travel:unit-step-50ms",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 0.05,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 0.5939941502901619,
+        "velocity": 10.826822658929016
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "toggle-travel:retained-velocity",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0.03,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0,
+      "state": {
+        "position": 0.40360024396235084,
+        "velocity": -7.710571824952374
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "toggle-travel:settled",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      },
+      "target": 1,
+      "time": 1,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1,
+      "state": {
+        "position": 1,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "toggle-travel:reduced-motion",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.001,
+        "velocityThreshold": 0.05
+      },
+      "initial": {
+        "position": 0.5,
+        "velocity": 8
+      },
+      "target": 0,
+      "time": 0,
+      "reducedMotion": true
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "immediate",
+      "target": 0,
+      "state": {
+        "position": 0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  }
+]

@@ -219,6 +219,98 @@ fn placed_command_content_samples_material_before_native_translation() {
     );
 }
 
+#[test]
+fn calibrated_command_profiles_preserve_complete_native_content_on_retarget() {
+    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
+    let font = FontFamily::name("DejaVu Sans");
+    let scenes: Value = serde_json::from_str(
+        &std::fs::read_to_string(std::env::var("RESINA_SCENES").unwrap()).unwrap(),
+    )
+    .unwrap();
+    let captures = std::env::var_os("RESINA_COMMAND_CAPTURE_DIR").map(std::path::PathBuf::from);
+    let mut frames = NativeFrames::new(font);
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../definitions/motion");
+    let mut count = 0;
+    for scheme in ["light", "dark"] {
+        for material in ["frost", "elastomer"] {
+            let scene = scenes["scenarios"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|scene| scene["name"] == format!("{scheme}-{material}-paint-focused"))
+                .unwrap();
+            let dynamics = |channel: &str| -> Value {
+                serde_json::from_str(
+                    &std::fs::read_to_string(root.join(format!("{material}-{channel}.json")))
+                        .unwrap(),
+                )
+                .unwrap()
+            };
+            for (text, direction) in [
+                ("Verbindung herstellen", LayoutDirection::Ltr),
+                ("حفظ التغييرات", LayoutDirection::Rtl),
+            ] {
+                for phase in ["hover", "pressed", "disabled"] {
+                    let mut request = command_request(scene, phase, 2.0, direction);
+                    request["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]
+                        ["reducedMotion"] = json!(false);
+                    request["channels"] = json!({
+                        "bodyMix": {"dynamics": dynamics("body"), "initial": {"position": 0, "velocity": 0}},
+                        "depthScale": {"dynamics": dynamics("depth"), "initial": {"position": 1, "velocity": 0}},
+                    });
+                    let label = resolve_label(&mut request, text, font, 24.0);
+                    let mut retained = None;
+                    let mut reserved_target = None;
+                    for leg in ["step", "release"] {
+                        if leg == "release" {
+                            request["surface"]["body"]["surface"]["states"]["states"] =
+                                json!(["rest", "focused"]);
+                            let (body, depth) = retained.take().unwrap();
+                            request["channels"]["bodyMix"]["initial"] = body;
+                            request["channels"]["depthScale"]["initial"] = depth;
+                        }
+                        for time in [0.0, 0.016, 0.05, 0.10, 0.20, 0.35] {
+                            request["time"] = json!(time);
+                            let motion =
+                                resolve_command_motion_source(&request.to_string()).unwrap();
+                            assert_eq!(motion.policy(), CommandMotionPolicy::Spring);
+                            if leg == "step" && time == 0.05 {
+                                retained = Some((
+                                    serde_json::to_value(motion.body_mix().state()).unwrap(),
+                                    serde_json::to_value(motion.depth_scale().state()).unwrap(),
+                                ));
+                            }
+                            let current_phase = if leg == "step" { phase } else { "rest" };
+                            let snapshot =
+                                snapshot(&request, &label, motion.command(), current_phase, true)
+                                    .unwrap();
+                            if let Some(target) = reserved_target {
+                                assert_eq!(*snapshot.hit_region(), target);
+                            } else {
+                                reserved_target = Some(*snapshot.hit_region());
+                            }
+                            for scale in [1.25, 1.5, 2.0] {
+                                check_frame(
+                                    &mut frames,
+                                    &snapshot,
+                                    scale,
+                                    &format!(
+                                        "calibrated-{scheme}-{material}-{direction:?}-{phase}-{leg}-{time}"
+                                    ),
+                                    captures.as_deref(),
+                                    background(&request),
+                                );
+                                count += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(count, 864);
+}
+
 fn command_request(scene: &Value, phase: &str, scale: f64, direction: LayoutDirection) -> Value {
     let mut surface = scene["request"].clone();
     let body = &mut surface["body"];

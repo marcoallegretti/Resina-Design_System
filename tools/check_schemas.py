@@ -2111,7 +2111,9 @@ def main():
 
     checked += 2 + 2 * len(load_json(ROOT / "conformance/ir/command-paint-cases.json"))
     trajectory_names = set()
-    for case in load_json(ROOT / "conformance/motion/spring-trajectory-cases.json"):
+    trajectory_cases = load_json(ROOT / "conformance/motion/spring-trajectory-cases.json")
+    trajectory_cases += load_json(ROOT / "conformance/motion/material-response-cases.json")
+    for case in trajectory_cases:
         name = case["name"]
         if name in trajectory_names:
             raise ValueError("duplicate trajectory case: " + name)
@@ -2123,6 +2125,16 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/spring-trajectory-result.schema.json"), name, case["expected"], True)
             checked += 1
+    for profile in ("frost-body", "frost-depth", "elastomer-body", "elastomer-depth", "toggle-travel"):
+        dynamics = load_json(ROOT / f"definitions/motion/{profile}.json")
+        dynamics_validator = validator_for("schemas/spring-dynamics.schema.json")
+        check_case(dynamics_validator, profile, dynamics, True)
+        check_case(dynamics_validator, profile + " invalid threshold",
+                   {**dynamics, "positionThreshold": 0}, False)
+        matching = [case for case in trajectory_cases if case["name"].startswith(profile + ":")]
+        if len(matching) != 4 or any(case["request"]["dynamics"] != dynamics for case in matching):
+            raise ValueError("material response vectors disagree with authored profile: " + profile)
+        checked += 2
     motion_base = load_json(ROOT / "conformance/ir/command-motion-request.json")
     motion_names = set()
     check_case(validator_for("schemas/command-motion-request.schema.json"), "motion baseline", motion_base, True)
