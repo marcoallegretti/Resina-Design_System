@@ -537,6 +537,9 @@ fn run() -> Result<(), Box<dyn Error>> {
                                 eprintln!("native command probe: generation exhausted");
                                 guido::quit_app();
                             }
+                            EventResponse::Handled
+                        } else {
+                            EventResponse::Ignored
                         }
                     })
                     .child(move || {

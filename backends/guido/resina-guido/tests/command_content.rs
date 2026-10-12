@@ -97,7 +97,7 @@ fn placed_command_content_samples_material_before_native_translation() {
                 else {
                     panic!("complete label required")
                 };
-                assert_eq!(actual_text, text);
+                assert_eq!(actual_text.as_ref(), text);
                 let label_bounds = label.label_bounds();
                 assert!((f64::from(text_rect.x) - label_bounds.x - origin.x).abs() <= 1.0 / 1024.0);
                 assert!((f64::from(text_rect.y) - label_bounds.y - origin.y).abs() <= 1.0 / 1024.0);
@@ -596,7 +596,7 @@ fn check_frame(
     else {
         panic!("complete text must follow material");
     };
-    assert_eq!(text, label.text());
+    assert_eq!(text.as_ref(), label.text());
     assert_ne!(label.typography().letter_spacing(), 0.0);
     assert_eq!(*letter_spacing, label.typography().letter_spacing() as f32);
     let lines = (label.label_bounds().height

@@ -151,7 +151,7 @@ fn complete_centered_labels_reach_every_native_line_at_all_scales() {
                 else {
                     panic!("text command required")
                 };
-                assert_eq!(drawn, text);
+                assert_eq!(drawn.as_ref(), text);
                 assert_eq!(*letter_spacing, (0.15 * text_scale) as f32);
                 assert_eq!(*align, TextAlign::Center);
                 let unwrapped = lines == text.split('\n').count();
