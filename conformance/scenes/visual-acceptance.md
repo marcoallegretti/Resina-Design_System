@@ -141,16 +141,19 @@ evidence, in addition to these format and comparison tests.
 ## Acceptance and remaining coverage
 
 Before a seed becomes an accepted baseline, inspect its actual images together
-with semantic and native evidence. Record the maintainer decision, exact source
+with semantic and native evidence. Record the acceptance decision, exact source
 revision, scenario/capture identity and accepted bounds. Changes require an
 explained design or contract change and renewed acceptance; never regenerate an
 expected image solely to remove a failure. Diagnostic response/profile fixtures
 cannot be promoted into accepted component styling.
 
+The [accepted opaque seed](accepted-opaque-seed.md) records the bounded current
+rest/focus baseline, its immutable revision, exact set and reproduction gates.
+
 | Coverage | Current evidence boundary | Owning acceptance work |
 | --- | --- | --- |
-| Four families, Light/Dark, opaque rest/focus, scale/direction/preferences | Candidate complete static paint records; explicit semantic/containment gates | #127: seed image inspection and acceptance |
-| Long translated labels, shaped RTL script and actual text scaling | GUIdo measurement/GPU checks and diagnostic readback records with font/runtime/GPU identity; text-free CPU records do not cover these | #127: execute, repeat and inspect native evidence |
+| Four families, Light/Dark, opaque rest/focus, scale/direction/preferences | Accepted bounded static seed; explicit semantic/containment and exact pixel gates | #127: accepted opaque seed; new contracts append separately accepted cases |
+| Long translated labels, shaped RTL script and actual text scaling | 90 repeated and inspected GUIdo diagnostic readback records with font/runtime/GPU identity; text-free CPU records do not cover these | #127: diagnostic measurement/readback evidence; authored component styling remains #134/#139/#140 |
 | Neutral/primary controls and hover/press/disabled/selected styling | Existing contracts and diagnostic component fixtures; shared production profiles remain unaccepted | #134: authored profiles, followed by #139/#140 realization |
 | Interrupted motion | Diagnostic sampled Command paint with retained state; no accepted calibration | #133: accepted response profiles and criteria |
 | Bright/dark/busy backdrops with enhanced material response | Current static catalog uses known uniform surroundings; diffusion/optics not implemented | #130/#131: shared contracts and new scenarios |
