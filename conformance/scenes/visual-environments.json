@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "0.1.0",
+  "variants": [
+    {"name": "standard-ltr", "scale": 1, "textScale": 1, "locale": "en", "layoutDirection": "ltr", "accessibilityPreferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false}},
+    {"name": "motion-rtl", "scale": 1.25, "textScale": 1.5, "locale": "ar", "layoutDirection": "rtl", "accessibilityPreferences": {"reducedMotion": true, "reducedTransparency": false, "highContrast": false}},
+    {"name": "opaque-ltr", "scale": 1.5, "textScale": 2, "locale": "de", "layoutDirection": "ltr", "accessibilityPreferences": {"reducedMotion": false, "reducedTransparency": true, "highContrast": false}},
+    {"name": "contrast-rtl", "scale": 2, "textScale": 1, "locale": "ar", "layoutDirection": "rtl", "accessibilityPreferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": true}},
+    {"name": "motion-opaque-ltr", "scale": 1, "textScale": 1.5, "locale": "en", "layoutDirection": "ltr", "accessibilityPreferences": {"reducedMotion": true, "reducedTransparency": true, "highContrast": false}},
+    {"name": "motion-contrast-rtl", "scale": 1.25, "textScale": 2, "locale": "ar", "layoutDirection": "rtl", "accessibilityPreferences": {"reducedMotion": true, "reducedTransparency": false, "highContrast": true}},
+    {"name": "opaque-contrast-ltr", "scale": 1.5, "textScale": 1, "locale": "de", "layoutDirection": "ltr", "accessibilityPreferences": {"reducedMotion": false, "reducedTransparency": true, "highContrast": true}},
+    {"name": "all-preferences-rtl", "scale": 2, "textScale": 2, "locale": "ar", "layoutDirection": "rtl", "accessibilityPreferences": {"reducedMotion": true, "reducedTransparency": true, "highContrast": true}}
+  ]
+}

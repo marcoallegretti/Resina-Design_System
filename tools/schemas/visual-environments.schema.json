@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:tool-schema:visual-environments:0.1.0",
+  "title": "Explicit visual evidence environment variants",
+  "type": "object", "additionalProperties": false, "required": ["schemaVersion", "variants"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "variants": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["name", "scale", "textScale", "locale", "layoutDirection", "accessibilityPreferences"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "not": {"pattern": "[\\r\\n]"}},
+          "scale": {"enum": [1, 1.25, 1.5, 2]},
+          "textScale": {"enum": [1, 1.5, 2]},
+          "locale": {"type": "string", "minLength": 1},
+          "layoutDirection": {"enum": ["ltr", "rtl"]},
+          "accessibilityPreferences": {"$ref": "urn:resina:schema:environment:0.2.0#/properties/accessibilityPreferences"}
+        }
+      }
+    }
+  }
+}

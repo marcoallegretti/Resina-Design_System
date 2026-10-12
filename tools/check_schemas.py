@@ -68,7 +68,19 @@ def schema_registry():
 def validator_for(path):
     schema = load_json(ROOT / path)
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, registry=schema_registry())
+    registry = tool_schema_registry() if (ROOT / path).resolve().is_relative_to((ROOT / "tools/schemas").resolve()) else schema_registry()
+    return Draft202012Validator(schema, registry=registry)
+
+
+@lru_cache(maxsize=1)
+def tool_schema_registry():
+    registry = schema_registry()
+    for path in (ROOT / "tools/schemas").glob("*.schema.json"):
+        schema = load_json(path)
+        if not schema["$id"].startswith("urn:resina:tool-schema:"):
+            raise ValueError(f"tool schema must have a distinct evidence namespace: {path}")
+        registry = registry.with_resource(schema["$id"], Resource.from_contents(schema))
+    return registry
 
 
 def check_case(validator, name, document, expected_valid):
@@ -148,6 +160,115 @@ def check_label_expansion(expansion):
     if targets != {1.0, 1.5, 2.0}:
         raise ValueError("label expansion needs 100, 150 and 200 percent coverage")
     return 1 + len(expansion["cases"])
+
+
+def check_visual_record_schemas():
+    from check_surface_paint_backend import baseline, expected_result
+
+    expected = {"visual-scene.schema.json", "visual-capture-record.schema.json", "visual-environments.schema.json", "native-label-capture.schema.json"}
+    paths = sorted((ROOT / "tools/schemas").glob("*.schema.json"))
+    if {path.name for path in paths} != expected:
+        raise ValueError("visual tool schema coverage differs")
+    for path in paths:
+        validator_for(path.relative_to(ROOT))
+    request = baseline()
+    request["body"]["surface"]["states"]["states"] = ["focused"]
+    record = {
+        "schemaVersion": "0.1.0", "commit": "a" * 40, "purpose": "diagnostic",
+        "scene": {"name": "schema-fixture", "kind": "surfacePaint", "expectedMaterialFamily": "cast", "request": request},
+        "result": expected_result(request),
+        "capture": {"origin": {"x": -6, "y": -6}, "width": 32, "height": 26, "pixelsPerUnit": 1, "samplesPerAxis": 4},
+        "scales": {"device": 1, "text": 1}, "sampling": {"time": 0, "initialChannels": None},
+        "font": None, "colorEncoding": "rgba8-srgb-straight",
+        "renderer": {"name": "schema-fixture", "sha256": "0" * 64, "resolverSha256": "0" * 64, "gpu": None},
+        "runtime": {"system": "schema-fixture", "machine": "test", "python": "test", "pillow": "test"},
+        "image": {"file": "image.png", "sha256": "0" * 64},
+    }
+    validator = validator_for("tools/schemas/visual-capture-record.schema.json")
+    check_case(validator, "diagnostic capture record schema fixture", record, True)
+    checked = 1
+    for field in record:
+        missing = copy.deepcopy(record)
+        missing.pop(field)
+        check_case(validator, f"visual record requires {field}", missing, False)
+        checked += 1
+    for name, path, value in (
+        ("cannot self-accept styling", "/purpose", "accepted"),
+        ("invalid source commit", "/commit", "not-a-commit"),
+        ("no guessed font proof", "/font", {"family": "unmeasured"}),
+        ("wrong color encoding", "/colorEncoding", "display-p3"),
+        ("invalid PNG digest", "/image/sha256", "missing"),
+        ("image escapes record directory", "/image/file", "../image.png"),
+        ("invalid capture size", "/capture/width", 0),
+        ("unsupported sampling", "/capture/samplesPerAxis", 9),
+        ("invalid source scale", "/scales/device", 0),
+        ("no invented GPU proof", "/renderer/gpu", "not-observed"),
+        ("wrong scene/result pair", "/scene/kind", "commandMotion"),
+    ):
+        changed = apply_changes(record, [{"path": path, "value": value}])
+        check_case(validator, name, changed, False)
+        checked += 1
+    check_case(validator, "undeclared visual record field", record | {"extra": True}, False)
+    checked += 1
+    scene_validator = validator_for("tools/schemas/visual-scene.schema.json")
+    for kind, source in (
+        ("opaqueSurface", load_json(ROOT / "conformance/ir/opaque-surface-request.json")),
+        ("focusRing", load_json(ROOT / "conformance/ir/focus-ir-request.json")),
+        ("surfacePaint", request),
+        ("commandMotion", load_json(ROOT / "conformance/ir/command-motion-request.json")),
+    ):
+        scene = record["scene"] | {"kind": kind, "request": source}
+        check_case(scene_validator, f"visual {kind} source", scene, True)
+        check_case(scene_validator, f"visual {kind} rejects missing source", scene | {"request": {}}, False)
+        checked += 2
+    visual_environments = load_json(ROOT / "conformance/scenes/visual-environments.json")
+    environment_validator = validator_for("tools/schemas/visual-environments.schema.json")
+    check_case(environment_validator, "explicit visual environment variants", visual_environments, True)
+    for name, path, value in (
+        ("unsupported visual device scale", "/variants/0/scale", 0),
+        ("missing text proof cannot be guessed", "/variants/0/textScale", 0.5),
+        ("invalid visual preference", "/variants/0/accessibilityPreferences/reducedMotion", "false"),
+        ("invalid direction", "/variants/0/layoutDirection", "automatic"),
+    ):
+        changed = apply_changes(visual_environments, [{"path": path, "value": value}])
+        check_case(environment_validator, name, changed, False)
+        checked += 1
+    checked += 1
+    native = {
+        "schemaVersion": "0.1.0", "kind": "nativeLabel", "purpose": "diagnostic",
+        "commit": "a" * 40, "scenario": "schema-fixture", "width": 220, "height": 300,
+        "deviceScale": 1, "textScale": 1,
+        "sampling": {"time": 0, "inputTrajectory": []},
+        "semanticResult": {
+            "schemaVersion": "0.1.0", "text": "Save", "layoutDirection": "ltr",
+            "typography": load_json(ROOT / "conformance/headless/expected-resolution.json")["typography"]["label"],
+            "size": {"width": 64, "height": 44}, "labelBounds": {"x": 16, "y": 8, "width": 36, "height": 28}
+        },
+        "font": {"family": "DejaVu Sans", "gitBlob": "b" * 40},
+        "renderer": {"name": "guido-native-label-test", "gitBlob": "c" * 40,
+                     "gpu": {"name": "schema-fixture", "vendor": 0, "device": 0, "backend": "Vulkan", "deviceType": "Cpu", "driver": "test", "driverInfo": "test"}},
+        "runtime": {"system": "test", "machine": "test"}, "colorEncoding": "rgba8-srgb-straight",
+        "image": {"file": "schema-fixture.png", "gitBlob": "d" * 40}
+    }
+    native_validator = validator_for("tools/schemas/native-label-capture.schema.json")
+    check_case(native_validator, "diagnostic native label schema fixture", native, True)
+    for field in native:
+        changed = copy.deepcopy(native)
+        changed.pop(field)
+        check_case(native_validator, f"native label requires {field}", changed, False)
+        checked += 1
+    for name, path, value in (
+        ("native fixture cannot self-accept", "/purpose", "accepted"),
+        ("native font must identify its file", "/font/gitBlob", "unknown"),
+        ("native readback needs actual GPU metadata", "/renderer/gpu", None),
+        ("native image cannot escape directory", "/image/file", "../image.png"),
+        ("native text cannot lose semantic result", "/semanticResult", {}),
+        ("native text needs actual scale", "/textScale", 0),
+    ):
+        changed = apply_changes(native, [{"path": path, "value": value}])
+        check_case(native_validator, name, changed, False)
+        checked += 1
+    return checked + 1
 
 
 def main():
@@ -360,6 +481,8 @@ def main():
         raise ValueError(f"schema coverage differs: {actual_paths ^ expected_paths}")
     for path in schema_paths:
         validator_for(path.relative_to(ROOT))
+
+    visual_checked = check_visual_record_schemas()
 
     material_scenes = load_json(ROOT / "conformance/scenes/tier0-materials.json")
     material_scene_schema = validator_for("schemas/material-scene-manifest.schema.json")
@@ -1103,7 +1226,7 @@ def main():
         + len(common_contrast_cases) + 4
         + len(paint_range_cases) + 4
         + len(phase_cases) + 5 + 36 * 6
-        + len(invalid_material_scenes) + 2
+        + len(invalid_material_scenes) + 2 + visual_checked
         + len(focus_ir_cases) + len(invalid_focus_ir_results)
         + len(focus_paint_vectors) + 3
         + len(ir_cases) + len(invalid_ir_results) + 3
@@ -2630,7 +2753,7 @@ def main():
         check_case(slider_case_validator, name, case, True)
         check_case(slider_request_validator, name, apply_changes(slider_part_request, case["requestChanges"]), case["requestSchemaValid"])
         checked += 2
-    print(f"Validated {len(schema_paths)} schemas and {checked} conformance cases")
+    print(f"Validated {len(schema_paths)} normative schemas, 4 visual tool schemas and {checked} conformance cases")
 
 
 if __name__ == "__main__":

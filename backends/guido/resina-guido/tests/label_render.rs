@@ -2,6 +2,8 @@
 
 #[path = "common/cases.rs"]
 mod label_cases;
+#[path = "common/label_evidence.rs"]
+mod label_evidence;
 #[path = "common/label.rs"]
 mod label_style;
 
@@ -135,7 +137,7 @@ fn complete_centered_labels_reach_every_native_line_at_all_scales() {
             .unwrap();
             let line_height = typography.font_size() * typography.line_height();
             let lines = (ir.label_bounds().height / line_height).round() as usize;
-            for device_scale in [1.0_f32, 1.25, 2.0, 3.0] {
+            for device_scale in [1.0_f32, 1.25, 1.5, 2.0, 3.0] {
                 let command =
                     prepare_command_label(&ir, family, Color::BLACK, device_scale).unwrap();
                 let DrawCommand::Text {
@@ -212,13 +214,17 @@ fn complete_centered_labels_reach_every_native_line_at_all_scales() {
                     }
                 }
                 if let Some(path) = &captures {
-                    capture(
-                        &path.join(format!(
-                            "{name}-text-{text_scale}-device-{device_scale}.ppm"
-                        )),
-                        width,
-                        height,
+                    let image_path = path.join(format!(
+                        "{name}-text-{text_scale}-device-{device_scale}.ppm"
+                    ));
+                    capture(&image_path, width, height, &pixels);
+                    label_evidence::capture(
+                        &image_path,
+                        (width, height),
                         &pixels,
+                        &gpu,
+                        &ir,
+                        (device_scale, text_scale),
                     );
                 }
             }

@@ -11,6 +11,18 @@ from material_scenarios import MANIFEST, asset_source, backend_document, main, p
 
 
 class MaterialSceneTests(unittest.TestCase):
+    def test_explicit_environment_variants_are_validated_and_preserved(self):
+        environment = load_json(ROOT / "conformance/environment/valid-minimal-capabilities.json")
+        environment.update(scale=1.25, textScale=1.5, layoutDirection="ltr", locale="de")
+        before = copy.deepcopy(environment)
+        bundle = prepare(self.manifest, self.backend, environment=environment)
+        self.assertEqual(environment, before)
+        for scene in bundle["scenarios"]:
+            request = scene["request"]["body"] if scene["kind"] == "surfacePaint" else scene["request"]
+            self.assertEqual(request["theme"]["environment"], before)
+        with self.assertRaises(ValueError):
+            prepare(self.manifest, self.backend, environment=environment | {"scale": 0})
+
     def setUp(self):
         self.manifest = load_json(MANIFEST)
         self.resolution = load_json(ROOT / "conformance/headless/expected-resolution.json")

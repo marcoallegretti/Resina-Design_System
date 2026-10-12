@@ -1,5 +1,9 @@
 # Static material scenarios (candidate, 0.1.0)
 
+For recorded candidates, diagnostic motion, independent semantic gates and image
+metrics, see [visual acceptance evidence](visual-acceptance.md). Reproducible
+captures and accepted design baselines remain distinct.
+
 Blueprint §§128–130 require shared scenarios, semantic and geometry assertions, and image review. The [Tier 0 catalog](tier0-materials.json) provides thirty-two explicit scenes: Light and Dark themes, Cast/Frost/Elastomer/Gel, each with a resting opaque body, a separate immediate focus ring, complete focused paint and complete rest paint. These are static slices of the existing contracts, not components, input interaction scenarios or backend certification.
 
 The [manifest schema](../../schemas/material-scene-manifest.schema.json) defines repository-root relative JSON asset paths, explicit theme sources and external-source identifier mappings, actual environment and appearance source, common logical surface size and image capture, and named scenarios. Resolve asset paths within the repository, including symlink targets; do not fetch URLs or infer platform settings. Names are unique; each scene names a declared theme. The catalog uses the authored theme/profile assets directly rather than copying their numerical choices into a second palette or profile.

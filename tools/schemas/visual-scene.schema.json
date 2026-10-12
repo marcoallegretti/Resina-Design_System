@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:tool-schema:visual-scene:0.1.0",
+  "title": "Bounded visual evidence scene (not a new Resina IR)",
+  "type": "object", "additionalProperties": false,
+  "required": ["name", "kind", "expectedMaterialFamily", "request"],
+  "properties": {
+    "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "not": {"pattern": "[\\r\\n]"}, "maxLength": 160},
+    "kind": {"enum": ["opaqueSurface", "focusRing", "surfacePaint", "commandMotion"]},
+    "expectedMaterialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
+    "request": {"type": "object"}
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "opaqueSurface"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:opaque-surface-request:0.1.0"}}}},
+    {"if": {"properties": {"kind": {"const": "focusRing"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:focus-ir-request:0.1.0"}}}},
+    {"if": {"properties": {"kind": {"const": "surfacePaint"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:surface-paint-request:0.1.0"}}}},
+    {"if": {"properties": {"kind": {"const": "commandMotion"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:command-motion-request:0.1.0"}}}}
+  ]
+}

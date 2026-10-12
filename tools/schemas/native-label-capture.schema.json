@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:tool-schema:native-label-capture:0.1.0",
+  "title": "Diagnostic native label readback evidence",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "purpose", "commit", "scenario", "semanticResult", "width", "height", "deviceScale", "textScale", "sampling", "font", "renderer", "runtime", "colorEncoding", "image"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"}, "kind": {"const": "nativeLabel"}, "purpose": {"const": "diagnostic"},
+    "commit": {"$ref": "#/$defs/blob"}, "scenario": {"$ref": "#/$defs/name"},
+    "semanticResult": {"$ref": "urn:resina:schema:command-label-ir:0.1.0"},
+    "width": {"type": "integer", "minimum": 1, "maximum": 4194304},
+    "height": {"type": "integer", "minimum": 1, "maximum": 4194304},
+    "deviceScale": {"enum": [1, 1.25, 1.5, 2, 3]}, "textScale": {"enum": [1, 1.5, 2]},
+    "sampling": {
+      "type": "object", "additionalProperties": false, "required": ["time", "inputTrajectory"],
+      "properties": {"time": {"const": 0}, "inputTrajectory": {"type": "array", "maxItems": 0}}
+    },
+    "font": {
+      "type": "object", "additionalProperties": false, "required": ["family", "gitBlob"],
+      "properties": {"family": {"const": "DejaVu Sans"}, "gitBlob": {"$ref": "#/$defs/blob"}}
+    },
+    "renderer": {
+      "type": "object", "additionalProperties": false, "required": ["name", "gitBlob", "gpu"],
+      "properties": {
+        "name": {"const": "guido-native-label-test"}, "gitBlob": {"$ref": "#/$defs/blob"},
+        "gpu": {
+          "type": "object", "additionalProperties": false,
+          "required": ["name", "vendor", "device", "backend", "deviceType", "driver", "driverInfo"],
+          "properties": {
+            "name": {"type": "string", "minLength": 1}, "vendor": {"type": "integer", "minimum": 0}, "device": {"type": "integer", "minimum": 0},
+            "backend": {"const": "Vulkan"}, "deviceType": {"type": "string", "minLength": 1},
+            "driver": {"type": "string"}, "driverInfo": {"type": "string"}
+          }
+        }
+      }
+    },
+    "runtime": {
+      "type": "object", "additionalProperties": false, "required": ["system", "machine"],
+      "properties": {"system": {"type": "string", "minLength": 1}, "machine": {"type": "string", "minLength": 1}}
+    },
+    "colorEncoding": {"const": "rgba8-srgb-straight"},
+    "image": {
+      "type": "object", "additionalProperties": false, "required": ["file", "gitBlob"],
+      "properties": {"file": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*\\.png$", "not": {"pattern": "[\\r\\n]"}}, "gitBlob": {"$ref": "#/$defs/blob"}}
+    }
+  },
+  "$defs": {
+    "blob": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*$", "not": {"pattern": "[\\r\\n]"}}
+  }
+}
