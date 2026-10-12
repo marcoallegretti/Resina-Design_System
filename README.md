@@ -247,6 +247,12 @@ actual Frost legibility and capability fallbacks before publishing a result.
 flat regions and a conservative continuous-highlight range from resolved surface
 IR. It accounts for reference arithmetic; spatial adjacency remains explicit.
 
+[Continuous surface outlines](spec/81-surface-outline.md) provide an explicit
+quartic or circular convex outline with a proved rectangular content reservation.
+The independent command boundary is `resina-surface-outline <path|->`, checked by
+`python tools/check_surface_outline_backend.py -- <backend-command> -`.
+Existing shape, inset, extrusion and opaque surface outputs remain unchanged.
+
 [Slider part paint](spec/76-slider-part-paint.md) applies actual part responses
 before readability and geometry, retains dragging/read-only states, and places
 navigation paint on the thumb against all supplied surrounding ranges.

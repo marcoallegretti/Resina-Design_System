@@ -1,5 +1,11 @@
 pub use resina_model::SliderOrientation;
 
+mod surface_outline;
+pub use surface_outline::{
+    OutlineCurvature, SurfaceOutline, SurfaceOutlineError, resolve_surface_outline,
+    resolve_surface_outline_source,
+};
+
 mod slider_snapshot;
 pub use slider_snapshot::{
     SliderSnapshot, SliderSnapshotError, SliderSnapshotInput, resolve_slider_snapshot,
