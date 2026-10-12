@@ -1,0 +1,2998 @@
+[
+  {
+    "name": "quartic flat face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "quartic",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "topRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomLeft": {
+              "x": 20.0,
+              "y": 12.0
+            }
+          },
+          "contentBounds": {
+            "x": 3.182071694925709,
+            "y": 2.0,
+            "width": 113.63585661014858,
+            "height": 56.0
+          }
+        },
+        "profile": {
+          "kind": "flat",
+          "bodyThickness": 4,
+          "amplitude": 0,
+          "shoulderWidth": 0
+        },
+        "contentBounds": {
+          "x": 3.182071694925709,
+          "y": 2.0,
+          "width": 113.63585661014858,
+          "height": 56.0
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "quartic convex face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "quartic",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "topRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomLeft": {
+              "x": 20.0,
+              "y": 12.0
+            }
+          },
+          "contentBounds": {
+            "x": 3.182071694925709,
+            "y": 2.0,
+            "width": 113.63585661014858,
+            "height": 56.0
+          }
+        },
+        "profile": {
+          "kind": "convex",
+          "bodyThickness": 4,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 6.099699405557476,
+          "y": 3.659819643334486,
+          "width": 107.80060118888505,
+          "height": 52.68036071333103
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0004859993452052997,
+            "normal": {
+              "x": -0.006855675031645902,
+              "y": 0.0,
+              "z": 0.9999764995837954
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0004859993452052997,
+            "normal": {
+              "x": 0.006855675031645902,
+              "y": 0.0,
+              "z": 0.9999764995837954
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": {
+            "height": 0.26287315771929415,
+            "normal": {
+              "x": -0.17189463402324126,
+              "y": -0.23606135653826468,
+              "z": 0.9564137549948402
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": {
+            "height": 0.26287315771929415,
+            "normal": {
+              "x": 0.17189463402324126,
+              "y": 0.23606135653826468,
+              "z": 0.9564137549948402
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "quartic recessed face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "quartic",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "topRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomLeft": {
+              "x": 20.0,
+              "y": 12.0
+            }
+          },
+          "contentBounds": {
+            "x": 3.182071694925709,
+            "y": 2.0,
+            "width": 113.63585661014858,
+            "height": 56.0
+          }
+        },
+        "profile": {
+          "kind": "recessed",
+          "bodyThickness": 4,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 6.099699405557476,
+          "y": 3.659819643334486,
+          "width": 107.80060118888505,
+          "height": 52.68036071333103
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.0004859993452052997,
+            "normal": {
+              "x": 0.006855675031645902,
+              "y": 0.0,
+              "z": 0.9999764995837954
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.0004859993452052997,
+            "normal": {
+              "x": -0.006855675031645902,
+              "y": 0.0,
+              "z": 0.9999764995837954
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": {
+            "height": -0.26287315771929415,
+            "normal": {
+              "x": 0.17189463402324126,
+              "y": 0.23606135653826468,
+              "z": 0.9564137549948402
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": {
+            "height": -0.26287315771929415,
+            "normal": {
+              "x": -0.17189463402324126,
+              "y": -0.23606135653826468,
+              "z": 0.9564137549948402
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "circular flat face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "circular",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "circular",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "topRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomLeft": {
+              "x": 20.0,
+              "y": 12.0
+            }
+          },
+          "contentBounds": {
+            "x": 5.85786437626905,
+            "y": 3.5147186257614296,
+            "width": 108.2842712474619,
+            "height": 52.97056274847714
+          }
+        },
+        "profile": {
+          "kind": "flat",
+          "bodyThickness": 4,
+          "amplitude": 0,
+          "shoulderWidth": 0
+        },
+        "contentBounds": {
+          "x": 5.85786437626905,
+          "y": 3.5147186257614296,
+          "width": 108.2842712474619,
+          "height": 52.97056274847714
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": 0,
+            "normal": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "circular convex face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "circular",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "circular",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "topRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomLeft": {
+              "x": 20.0,
+              "y": 12.0
+            }
+          },
+          "contentBounds": {
+            "x": 5.85786437626905,
+            "y": 3.5147186257614296,
+            "width": 108.2842712474619,
+            "height": 52.97056274847714
+          }
+        },
+        "profile": {
+          "kind": "convex",
+          "bodyThickness": 4,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 7.889398583610033,
+          "y": 4.73363915016602,
+          "width": 104.22120283277994,
+          "height": 50.53272169966796
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.000555847127420748,
+            "normal": {
+              "x": -0.00797071557379478,
+              "y": 0.0,
+              "z": 0.9999682333420605
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.000555847127420748,
+            "normal": {
+              "x": 0.00797071557379478,
+              "y": 0.0,
+              "z": 0.9999682333420605
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "circular recessed face",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "circular",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "circular",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "topRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomLeft": {
+              "x": 20.0,
+              "y": 12.0
+            }
+          },
+          "contentBounds": {
+            "x": 5.85786437626905,
+            "y": 3.5147186257614296,
+            "width": 108.2842712474619,
+            "height": 52.97056274847714
+          }
+        },
+        "profile": {
+          "kind": "recessed",
+          "bodyThickness": 4,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 7.889398583610033,
+          "y": 4.73363915016602,
+          "width": 104.22120283277994,
+          "height": 50.53272169966796
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.000555847127420748,
+            "normal": {
+              "x": 0.00797071557379478,
+              "y": 0.0,
+              "z": 0.9999682333420605
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.000555847127420748,
+            "normal": {
+              "x": -0.00797071557379478,
+              "y": 0.0,
+              "z": 0.9999682333420605
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": -0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "square plateau",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 3,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "quartic",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "topRight": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "bottomRight": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "bottomLeft": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          "contentBounds": {
+            "x": 2.0,
+            "y": 2.0,
+            "width": 116.0,
+            "height": 56.0
+          }
+        },
+        "profile": {
+          "kind": "convex",
+          "bodyThickness": 3,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 2.0,
+          "y": 2.0,
+          "width": 116.0,
+          "height": 56.0
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.25,
+            "normal": {
+              "x": -0.6839411288813299,
+              "y": 0.0,
+              "z": 0.7295372041400852
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.25,
+            "normal": {
+              "x": 0.6839411288813299,
+              "y": 0.0,
+              "z": 0.7295372041400852
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": {
+            "height": 0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": {
+            "height": 0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": {
+            "height": 0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "capsule plateau",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 30,
+            "y": 30
+          },
+          "topEnd": {
+            "x": 30,
+            "y": 30
+          },
+          "bottomEnd": {
+            "x": 30,
+            "y": 30
+          },
+          "bottomStart": {
+            "x": 30,
+            "y": 30
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "circular",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 3,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "circular",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 30.0,
+              "y": 30.0
+            },
+            "topRight": {
+              "x": 30.0,
+              "y": 30.0
+            },
+            "bottomRight": {
+              "x": 30.0,
+              "y": 30.0
+            },
+            "bottomLeft": {
+              "x": 30.0,
+              "y": 30.0
+            }
+          },
+          "contentBounds": {
+            "x": 8.786796564403573,
+            "y": 8.786796564403573,
+            "width": 102.42640687119285,
+            "height": 42.42640687119285
+          }
+        },
+        "profile": {
+          "kind": "convex",
+          "bodyThickness": 3,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 10.2515823418685,
+          "y": 10.2515823418685,
+          "width": 99.496835316263,
+          "height": 39.496835316262995
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.002566971487542615,
+            "normal": {
+              "x": -0.03558399823558106,
+              "y": 0.0,
+              "z": 0.9993666889933696
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.002566971487542615,
+            "normal": {
+              "x": 0.03558399823558106,
+              "y": 0.0,
+              "z": 0.9993666889933696
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "organic rtl plateau",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 22,
+            "y": 14
+          },
+          "topEnd": {
+            "x": 12,
+            "y": 10
+          },
+          "bottomEnd": {
+            "x": 18,
+            "y": 16
+          },
+          "bottomStart": {
+            "x": 10,
+            "y": 8
+          }
+        },
+        "layoutDirection": "rtl",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 3,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "quartic",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 12.0,
+              "y": 10.0
+            },
+            "topRight": {
+              "x": 22.0,
+              "y": 14.0
+            },
+            "bottomRight": {
+              "x": 10.0,
+              "y": 8.0
+            },
+            "bottomLeft": {
+              "x": 18.0,
+              "y": 16.0
+            }
+          },
+          "contentBounds": {
+            "x": 2.8638645254331383,
+            "y": 2.2274501864479963,
+            "width": 113.63585661014858,
+            "height": 55.226892457611434
+          }
+        },
+        "profile": {
+          "kind": "convex",
+          "bodyThickness": 3,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 5.098869116230067,
+          "y": 3.957249205286464,
+          "width": 108.70409175565388,
+          "height": 51.51042269139792
+        }
+      },
+      "samples": [
+        {
+          "point": {
+            "x": 60,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.5,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0013675884081324472,
+            "normal": {
+              "x": -0.01866386684500548,
+              "y": 0.0,
+              "z": 0.9998258148669656
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 119.5,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0007691854606249259,
+            "normal": {
+              "x": 0.010613517568694861,
+              "y": 0.0,
+              "z": 0.9999436750361588
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 4,
+            "y": 3
+          },
+          "sample": {
+            "height": 0.4567341325771679,
+            "normal": {
+              "x": -0.06418091294972592,
+              "y": -0.08915691522411176,
+              "z": 0.9939476117384961
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 116,
+            "y": 57
+          },
+          "sample": {
+            "height": 0.47009798730070734,
+            "normal": {
+              "x": 0.03745745512052187,
+              "y": 0.052921796898342935,
+              "z": 0.9978958976110407
+            }
+          }
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 30
+          },
+          "sample": {
+            "height": 0.0,
+            "normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            }
+          }
+        },
+        {
+          "point": {
+            "x": -1,
+            "y": 30
+          },
+          "sample": null
+        },
+        {
+          "point": {
+            "x": 0,
+            "y": 0
+          },
+          "sample": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "empty samples",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": []
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "surface": {
+        "outline": {
+          "schemaVersion": "0.1.0",
+          "curvature": "quartic",
+          "size": {
+            "width": 120,
+            "height": 60
+          },
+          "corners": {
+            "topLeft": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "topRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomRight": {
+              "x": 20.0,
+              "y": 12.0
+            },
+            "bottomLeft": {
+              "x": 20.0,
+              "y": 12.0
+            }
+          },
+          "contentBounds": {
+            "x": 3.182071694925709,
+            "y": 2.0,
+            "width": 113.63585661014858,
+            "height": 56.0
+          }
+        },
+        "profile": {
+          "kind": "convex",
+          "bodyThickness": 4,
+          "amplitude": 0.5,
+          "shoulderWidth": 1
+        },
+        "contentBounds": {
+          "x": 6.099699405557476,
+          "y": 3.659819643334486,
+          "width": 107.80060118888505,
+          "height": 52.68036071333103
+        }
+      },
+      "samples": []
+    }
+  },
+  {
+    "name": "negative thickness",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": -1,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "bodyThickness"
+  },
+  {
+    "name": "zero amplitude",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "positive amplitude"
+  },
+  {
+    "name": "unbounded slope",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.6,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "shoulderWidth/2"
+  },
+  {
+    "name": "recess removes body",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 0.5,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "relieved thickness"
+  },
+  {
+    "name": "corner shoulder collapses plateau",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 10
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "corner shoulder ratios"
+  },
+  {
+    "name": "unrepresentable thickness",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 1e+300,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "relieved thickness"
+  },
+  {
+    "name": "unsupported profile",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "dome",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown variant"
+  },
+  {
+    "name": "unsupported version",
+    "request": {
+      "schemaVersion": "2.0.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "schemaVersion"
+  },
+  {
+    "name": "unknown field",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "extra": 1
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "missing points",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "points"
+  },
+  {
+    "name": "positional point",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "vector objects"
+  },
+  {
+    "name": "flat with relief",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0.5,
+        "shoulderWidth": 1
+      },
+      "points": [
+        {
+          "x": 60,
+          "y": 30
+        },
+        {
+          "x": 0.5,
+          "y": 30
+        },
+        {
+          "x": 119.5,
+          "y": 30
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 116,
+          "y": 57
+        },
+        {
+          "x": 0,
+          "y": 30
+        },
+        {
+          "x": -1,
+          "y": 30
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "flat requires"
+  },
+  {
+    "name": "unrepresentable slope ratio",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 1e+300,
+          "height": 1e+300
+        },
+        "radii": {
+          "topStart": {
+            "x": 0,
+            "y": 0
+          },
+          "topEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomEnd": {
+            "x": 0,
+            "y": 0
+          },
+          "bottomStart": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 0
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 2e-300,
+        "amplitude": 1e-300,
+        "shoulderWidth": 1e+299
+      },
+      "points": []
+    },
+    "requestSchemaValid": true,
+    "errorContains": "amplitude/shoulderWidth"
+  },
+  {
+    "name": "shoulder lost in surface coordinates",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "outline": {
+        "schemaVersion": "0.1.0",
+        "size": {
+          "width": 120,
+          "height": 60
+        },
+        "radii": {
+          "topStart": {
+            "x": 20,
+            "y": 12
+          },
+          "topEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomEnd": {
+            "x": 20,
+            "y": 12
+          },
+          "bottomStart": {
+            "x": 20,
+            "y": 12
+          }
+        },
+        "layoutDirection": "ltr",
+        "curvature": "quartic",
+        "minimumInset": 2
+      },
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 2e-20,
+        "amplitude": 5e-21,
+        "shoulderWidth": 1e-20
+      },
+      "points": []
+    },
+    "requestSchemaValid": true,
+    "errorContains": "shoulderWidth must remain representable in surface coordinates"
+  }
+]

@@ -1,5 +1,12 @@
 pub use resina_model::SliderOrientation;
 
+mod surface_relief;
+pub use surface_relief::{
+    FaceNormal, ReliefKind, ReliefPointSample, ReliefSample, SurfaceRelief, SurfaceReliefError,
+    SurfaceReliefProfile, SurfaceReliefResult, resolve_surface_relief,
+    resolve_surface_relief_source,
+};
+
 mod surface_outline;
 pub use surface_outline::{
     OutlineCurvature, SurfaceOutline, SurfaceOutlineError, resolve_surface_outline,

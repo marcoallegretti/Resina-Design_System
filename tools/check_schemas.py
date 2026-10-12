@@ -436,6 +436,9 @@ def main():
         "schemas/surface-outline-request.schema.json",
         "schemas/surface-outline-result.schema.json",
         "schemas/surface-outline-case.schema.json",
+        "schemas/surface-relief-request.schema.json",
+        "schemas/surface-relief-result.schema.json",
+        "schemas/surface-relief-case.schema.json",
         "schemas/key-light.schema.json",
         "schemas/key-light-request.schema.json",
         "schemas/key-light-result.schema.json",
@@ -823,6 +826,19 @@ def main():
         check_case(outline_request_schema, case["name"], case["request"], case["requestSchemaValid"])
         if "expected" in case:
             check_case(outline_result_schema, case["name"], case["expected"], True)
+    relief_cases = load_json(ROOT / "conformance/geometry/surface-relief-vectors.json")
+    relief_case_schema = validator_for("schemas/surface-relief-case.schema.json")
+    relief_request_schema = validator_for("schemas/surface-relief-request.schema.json")
+    relief_result_schema = validator_for("schemas/surface-relief-result.schema.json")
+    relief_names = set()
+    for case in relief_cases:
+        if case["name"] in relief_names:
+            raise ValueError(f"duplicate surface relief case: {case['name']}")
+        relief_names.add(case["name"])
+        check_case(relief_case_schema, case["name"], case, True)
+        check_case(relief_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+        if "expected" in case:
+            check_case(relief_result_schema, case["name"], case["expected"], True)
     pigment_profile_schema = validator_for("schemas/opaque-pigment-profiles.schema.json")
     check_case(
         pigment_profile_schema,
@@ -1259,6 +1275,7 @@ def main():
         + len(pigment_cases)
         + len(contour_cases)
         + 2 * len(outline_cases) + sum("expected" in case for case in outline_cases)
+        + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + len(key_light_cases)
         + len(extrusion_cases)
         + len(invalid_extrusion_results)
