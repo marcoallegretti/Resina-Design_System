@@ -557,6 +557,17 @@ The native focus test uses real mounted widgets and frames to verify deferred
 transfer, superseding requests, null outcomes, validation before side effects,
 pending-request preservation and stale-handle diagnostics after disposal.
 
+## Continuous-outline focus preparation
+
+`prepare_outline_focus_at(&OutlineFocusIr, PhysicalVector, device_scale)` prepares
+the analytic circular/quartic focus ring through the bounded CPU realization.
+It reserves the complete outer bounds, applies physical parent placement before
+device-grid sampling and retains prepared RGBA pixels. Existing coordinate and
+texture limits apply. Consumers own the actual footprint supplied to resolution,
+surrounding clips and component focus publication; nominal relief thickness does
+not invent a physical projection. This operation preserves guarded focus color
+and does not replace existing circular/square focus preparation.
+
 ## Sampled Toggle part paint
 
 `resolve_toggle_part_motion` returns complete checked part paint with retained raw
