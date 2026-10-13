@@ -63,6 +63,15 @@ then evaluates existing opaque pigment endpoints over full unit normals.
 the public protocol, exact uniform body, outward color ranges and invalid source
 admission. Complete paint integration and accepted scenes require separate evidence.
 
+Run `cargo run -p resina-resolver --bin resina-material-relief-paint -- <path>`
+for a [material-lit relief request](schemas/material-relief-paint-request.schema.json).
+The [composed paint contract](spec/86-material-relief-paint.md) retains the
+exterior edge and uniform content guards while applying the bounded light law
+to analytic full normals. `python tools/check_material_relief_paint_backend.py --
+<backend-command> -` checks its public boundary. The `resina-material-relief-raster`
+command uses the existing relief raster arguments to write bounded RGBA8 PNG
+output. Native content/focus and accepted scene evidence remain separate requirements.
+
 Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for an [extruded contour request](schemas/extruded-contour-request.schema.json). It resolves the swept silhouette as portable lines and elliptical arcs, including physical corner mapping and split curves. `python tools/check_extruded_contour_backend.py -- <backend-command> -` checks the public geometry protocol.
 
 Run `cargo run -p resina-resolver --bin resina-opaque-surface -- <path>` for an [opaque base-state surface request](schemas/opaque-surface-request.schema.json). It resolves one complete static opaque surface appearance from a theme, actual environment and surroundings, and explicit appearance profile. `python tools/check_opaque_surface_backend.py -- <backend-command> -` checks its portable IR and diagnostic failures. The Rust `resolve_opaque_surface` API reuses a compiled theme across surfaces.

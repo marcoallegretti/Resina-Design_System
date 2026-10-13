@@ -447,6 +447,9 @@ def main():
         "schemas/relief-paint-request.schema.json",
         "schemas/relief-paint-result.schema.json",
         "schemas/relief-paint-case.schema.json",
+        "schemas/material-relief-paint-request.schema.json",
+        "schemas/material-relief-paint-result.schema.json",
+        "schemas/material-relief-paint-case.schema.json",
         "schemas/key-light.schema.json",
         "schemas/key-light-request.schema.json",
         "schemas/key-light-result.schema.json",
@@ -877,6 +880,19 @@ def main():
         check_case(relief_request_schema, case["name"], case["request"], case["requestSchemaValid"])
         if "expected" in case:
             check_case(relief_result_schema, case["name"], case["expected"], True)
+    material_paint_cases = load_json(ROOT / "conformance/ir/material-relief-paint-vectors.json")
+    material_paint_case_schema = validator_for("schemas/material-relief-paint-case.schema.json")
+    material_paint_request_schema = validator_for("schemas/material-relief-paint-request.schema.json")
+    material_paint_result_schema = validator_for("schemas/material-relief-paint-result.schema.json")
+    material_paint_names = set()
+    for case in material_paint_cases:
+        if case["name"] in material_paint_names:
+            raise ValueError(f"duplicate material relief paint case: {case['name']}")
+        material_paint_names.add(case["name"])
+        check_case(material_paint_case_schema, case["name"], case, True)
+        check_case(material_paint_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+        if "expected" in case:
+            check_case(material_paint_result_schema, case["name"], case["expected"], True)
     relief_paint_cases = load_json(ROOT / "conformance/ir/relief-paint-vectors.json")
     relief_paint_case_schema = validator_for("schemas/relief-paint-case.schema.json")
     relief_paint_request_schema = validator_for("schemas/relief-paint-request.schema.json")
@@ -1328,6 +1344,7 @@ def main():
         + 2 * len(outline_cases) + sum("expected" in case for case in outline_cases)
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
+        + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)

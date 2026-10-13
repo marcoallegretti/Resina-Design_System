@@ -51,6 +51,17 @@ the sign; cancellation or overflow falls back to exact rational arithmetic.
 Prepare and reuse the complete image before exposing a state. This operation
 does not schedule frames, compose component content or accept component styling.
 
+`resina-material-relief-raster` accepts a
+[material-lit relief paint request](../../../schemas/material-relief-paint-request.schema.json)
+and the same explicit viewport and sampling arguments as `resina-relief-raster`.
+It preserves guarded edges and uniform content while evaluating bounded light
+over the analytic face. Success writes one RGBA8 perceptual-sRGB PNG; invalid
+source, placement or resource limits emit no image. The binary requires `png`.
+Run `python tools/check_material_relief_raster_backend.py -- <backend-command>`
+for independent rectangular normal, color and coverage checks at scales
+1, 1.25, 1.5, 2 and 3, deterministic output and atomic boundary rejection.
+Raster evidence does not establish complete component or accepted native appearance.
+
 ## Preparation benchmark
 
 Generate the [shared scene bundle](../../../conformance/scenes/README.md), then measure a named authored scene:
