@@ -12,7 +12,7 @@ from subprocess import CompletedProcess
 from unittest.mock import patch
 
 from check_focus_indicator_backend import contrast
-from check_outline_focus_backend import case_request, check_geometry, main, parse_result
+from check_outline_focus_backend import case_request, check_geometry, check_source_precision, main, parse_result, source_precision_probes
 from check_schemas import ROOT, load_json, validator_for
 
 
@@ -66,8 +66,10 @@ def precise_wire(value):
     return json.dumps(value, allow_nan=False)
 
 
-def precise_probe(case):
+def precise_probe(case, supplied=None):
     request, _, outline = case_request(case)
+    if supplied is not None:
+        request = copy.deepcopy(supplied)
     _, _, actual = fixture()
     geometry = actual["focus"]["geometry"]
     geometry["outline"] = outline
@@ -111,6 +113,30 @@ def precise_probe(case):
 
 
 class OutlineFocusCheckerTests(unittest.TestCase):
+    def test_source_underflow_probes_admit_precise_results_and_reject_erased_components(self):
+        case = load_json(ROOT / "conformance/states/outline-focus-cases.json")[0]
+        base, binding, outline = case_request(case)
+        probes = list(source_precision_probes(base))
+        self.assertEqual(len(probes), 8)
+        for name, source, request in probes:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                _, _, actual = precise_probe(case, request)
+                response = precise_wire(actual)
+                backend = Path(directory) / "backend.py"
+                backend.write_text("import sys\nsource=sys.stdin.read()\n"
+                                   + "if source == " + repr(source) + ":\n    print(" + repr(response) + ")\n"
+                                   + "else:\n    print('invalid request',file=sys.stderr)\n    sys.exit(1)\n", encoding="utf-8")
+                check_source_precision([sys.executable, str(backend), "-"], source,
+                                       request, binding, outline, 30, name)
+                if "directions" in name:
+                    key = name.split("/")[1].split()[0]
+                    actual["supports"][0]["normal"][key] = 0
+                else:
+                    key = name.split("/")[1].split()[0]
+                    actual["focus"]["geometry"]["sideOffset"][key] = 0
+                with self.assertRaises(AssertionError):
+                    check_geometry(parse_result(precise_wire(actual), name), request, outline)
+
     def test_all_precision_probes_accept_precise_output_through_the_wire_boundary(self):
         cases = load_json(ROOT / "conformance/states/outline-focus-cases.json")
         probes = [case for case in cases if case.get("accuracyProbe")]
@@ -203,6 +229,7 @@ class OutlineFocusCheckerTests(unittest.TestCase):
                                   ([partial], 1), ([success, rejection], 1), ([false_success], 1)]:
             with self.subTest(expected=expected, statuses=[item.returncode for item in outputs]):
                 with patch("sys.argv", ["check", "--", "backend", "-"]), \
+                     patch("check_outline_focus_backend.source_precision_probes", return_value=[]), \
                      patch("check_outline_focus_backend.load_json", side_effect=documents), \
                      patch("check_outline_focus_backend.run_backend", side_effect=outputs), \
                      patch("check_outline_focus_backend.check_failure"), \

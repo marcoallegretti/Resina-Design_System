@@ -45,6 +45,11 @@ def parse_result(source, label):
             for field in ("silhouetteBounds", "innerBounds", "outerBounds"):
                 if field in geometry:
                     geometry[field] = precise["focus"]["geometry"][field]
+            if isinstance(geometry.get("sideOffset"), dict):
+                for key in ("x", "y"):
+                    original = precise["focus"]["geometry"]["sideOffset"].get(key)
+                    if geometry["sideOffset"].get(key) == 0 and original != 0:
+                        geometry["sideOffset"][key] = original
     if isinstance(actual, dict) and "supports" in actual:
         actual["supports"] = precise["supports"]
     return actual
@@ -108,8 +113,8 @@ def check_geometry(actual, request, outline):
                     if support_length else (Decimal(0), Decimal(0)))
             px, py = cx + (a * u if nx >= 0 else -a * u), cy + (b * v if ny >= 0 else -b * v)
             sweep = dx * nx + dy * ny
-            exact_sweep = (Fraction(float(direction["x"])) * Fraction(float(request["sideOffset"]["x"]))
-                           + Fraction(float(direction["y"])) * Fraction(float(request["sideOffset"]["y"])))
+            exact_sweep = (Fraction(dec(direction["x"])) * Fraction(dec(request["sideOffset"]["x"]))
+                           + Fraction(dec(direction["y"])) * Fraction(dec(request["sideOffset"]["y"])))
             if exact_sweep > 0:
                 px, py = px + dx, py + dy
             support = cx * nx + cy * ny + support_length + max(0, sweep)
@@ -127,6 +132,42 @@ def check_geometry(actual, request, outline):
                 raise AssertionError("focus loses a positive gap or stroke")
             require_close(gap, 2, f"gap {index}")
             require_close(stroke, 2, f"stroke {index}")
+
+
+def source_precision_probes(base):
+    for field in ("directions", "sideOffset"):
+        for key in ("x", "y"):
+            for literal in ("1e-400", "-1e-400"):
+                request = copy.deepcopy(base)
+                request["directions"] = [{"x": 1, "y": 1}]
+                vector = request["directions"][0] if field == "directions" else request[field]
+                vector[key] = -9999.0
+                source = json.dumps(request, allow_nan=False).replace("-9999.0", literal)
+                vector[key] = Decimal(literal)
+                yield f"source precision {field}/{key} {literal}", source, request
+
+
+def check_source_precision(command, source, request, binding, outline, timeout, name):
+    previous = None
+    for attempt in range(2):
+        completed = run_backend(command, source, timeout)
+        if completed.returncode == 1:
+            if previous is not None or completed.stdout or not completed.stderr.strip():
+                raise AssertionError(f"{name}: precision rejection must be atomic and repeatable")
+            check_failure(command, source, timeout, name)
+            return
+        if completed.returncode != 0 or completed.stderr:
+            raise AssertionError(f"{name}: expected complete success or precision rejection")
+        actual = parse_result(completed.stdout, name)
+        errors = list(validator_for("schemas/outline-focus-result.schema.json").iter_errors(actual))
+        if errors:
+            raise AssertionError(f"{name}: invalid result: {errors[0].message}")
+        check_indicator(actual["focus"]["indicator"], request["focus"],
+                        {"colorRole": "focus", "fallbackApplied": False}, binding)
+        check_geometry(actual, request, outline)
+        if previous is not None and actual != previous:
+            raise AssertionError(f"{name}: repeated request changed its result")
+        previous = actual
 
 
 def main():
@@ -174,7 +215,10 @@ def main():
                 if previous is not None and actual != previous:
                     raise AssertionError(f"{name}: repeated request changed its result")
                 previous = actual
-        base, _, _ = case_request(cases[0])
+        base, binding, outline = case_request(cases[0])
+        probes = list(source_precision_probes(base))
+        for name, source, request in probes:
+            check_source_precision(command, source, request, binding, outline, args.timeout, name)
         failures = [
             ("positional request", json.dumps(list(base.values()))),
             ("duplicate direction", duplicate_member_source(base, "/directions/0/x")),
@@ -186,7 +230,7 @@ def main():
     except (AssertionError, OSError, ValueError, ArithmeticError) as error:
         print(f"FAIL {error}", file=sys.stderr)
         return 1
-    print(f"Outline focus backend passed {len(cases) + len(failures)} conformance cases with independent 100-digit support and precise extent checks")
+    print(f"Outline focus backend passed {len(cases) + len(failures) + len(probes)} conformance cases with independent 100-digit support and precise extent checks")
     return 0
 
 

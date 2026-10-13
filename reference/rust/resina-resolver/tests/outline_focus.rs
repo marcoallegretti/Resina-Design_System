@@ -268,3 +268,41 @@ fn assert_numeric_json(actual: &Value, expected: &Value) {
         _ => assert_eq!(actual, expected),
     }
 }
+
+#[test]
+fn nonzero_decimal_components_must_not_decode_as_zero_directions_or_sweeps() {
+    for field in ["directions", "sideOffset"] {
+        for component in ["x", "y"] {
+            for literal in ["1e-400", "-1e-400"] {
+                let mut request = baseline();
+                request["directions"] = json!([]);
+                if field == "directions" {
+                    request["directions"] = json!([{"x":1.0,"y":1.0}]);
+                    request["directions"][0][component] = json!(-9999.0);
+                } else {
+                    request["sideOffset"][component] = json!(-9999.0);
+                }
+                let source = request.to_string();
+                assert_eq!(source.matches("-9999.0").count(), 1);
+                let source = source.replace("-9999.0", literal);
+                assert!(
+                    resolve_outline_focus_source(&source).is_err(),
+                    "{field}/{component}: {literal}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn explicit_decimal_zero_components_keep_their_zero_semantics() {
+    for literal in ["0e-400", "-0.000e-400", "0.0E-400"] {
+        let mut request = baseline();
+        request["directions"] = json!([{"x":1.0,"y":-9999.0}]);
+        request["sideOffset"] = json!({"x":-9999.0,"y":4.0});
+        let source = request.to_string().replace("-9999.0", literal);
+        let result = resolve_outline_focus_source(&source).unwrap();
+        assert_eq!(result.supports()[0].normal.y, 0.0);
+        assert_eq!(result.focus().geometry().side_offset().x, 0.0);
+    }
+}

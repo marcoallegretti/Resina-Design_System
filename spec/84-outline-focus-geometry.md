@@ -83,8 +83,8 @@ A valid request returns the complete `focus` IR and ordered `supports` in one
 JSON result with clean exit 0. Invalid geometry, requests or arithmetic return
 exit 1, a diagnostic on stderr and no partial stdout. Invalid command usage
 returns exit 2. Runtime checks supplement schema validity: a finite direction
-can still lose a component during normalization, and finite geometry can lose
-the positive disk extent. No result may conceal these failures.
+can still lose a component during decoding or normalization, and finite geometry
+can lose the positive disk extent. No result may conceal these failures.
 
 `conformance/states/outline-focus-cases.json` composes the established outline
 vectors and focus scenarios. `tools/check_outline_focus_backend.py` verifies
