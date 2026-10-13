@@ -26,18 +26,25 @@ pub(crate) fn validate_pigment_source(
             let Some(value) = member(profiles.get(), &["profiles", family, coefficient])? else {
                 continue;
             };
-            let literal = value.get();
-            let numeric: f64 = serde_json::from_str(literal)?;
-            let nonzero = literal
-                .bytes()
-                .take_while(|byte| !matches!(byte, b'e' | b'E'))
-                .any(|byte| matches!(byte, b'1'..=b'9'));
-            if numeric == 0.0 && literal.starts_with('-') && nonzero {
-                return Err(serde_json::Error::custom(format!(
-                    "{family}.{coefficient} must be nonnegative before numeric rounding"
-                )));
-            }
+            validate_nonnegative_coefficient(value.get(), &format!("{family}.{coefficient}"))?;
         }
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_nonnegative_coefficient(
+    literal: &str,
+    field: &str,
+) -> Result<(), serde_json::Error> {
+    let numeric: f64 = serde_json::from_str(literal)?;
+    let nonzero = literal
+        .bytes()
+        .take_while(|byte| !matches!(byte, b'e' | b'E'))
+        .any(|byte| matches!(byte, b'1'..=b'9'));
+    if numeric == 0.0 && literal.starts_with('-') && nonzero {
+        return Err(serde_json::Error::custom(format!(
+            "{field} must be nonnegative before numeric rounding"
+        )));
     }
     Ok(())
 }
