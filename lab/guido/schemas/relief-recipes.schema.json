@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:tool-schema:lab-relief-recipes:0.1.0",
+  "title": "Lab relief specimen recipes",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sizes",
+    "minimumInset",
+    "edgeWidth",
+    "recipes",
+    "pigmentProfiles"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "sizes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flat",
+        "convex",
+        "recessed"
+      ],
+      "properties": {
+        "flat": {
+          "$ref": "#/$defs/positiveSize"
+        },
+        "convex": {
+          "$ref": "#/$defs/positiveSize"
+        },
+        "recessed": {
+          "$ref": "#/$defs/positiveSize"
+        }
+      }
+    },
+    "minimumInset": {
+      "type": "number",
+      "minimum": 0
+    },
+    "edgeWidth": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "recipes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "shape",
+          "curvature",
+          "materialRole",
+          "colorRole",
+          "foregroundRole",
+          "expectedMaterialFamily",
+          "label",
+          "profile",
+          "corners"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "shape": {
+            "$ref": "urn:resina:schema:shape-fallback-request:0.1.0#/properties/shape"
+          },
+          "curvature": {
+            "enum": [
+              "circular",
+              "quartic"
+            ]
+          },
+          "materialRole": {
+            "$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/materialRole"
+          },
+          "colorRole": {
+            "$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"
+          },
+          "foregroundRole": {
+            "$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"
+          },
+          "expectedMaterialFamily": {
+            "enum": [
+              "cast",
+              "frost",
+              "elastomer",
+              "gel"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "profile": {
+            "$ref": "urn:resina:schema:surface-relief-request:0.1.0#/$defs/profile"
+          },
+          "corners": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "radii"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "explicit"
+                  },
+                  "radii": {
+                    "$ref": "urn:resina:schema:logical-corner-radii:0.1.0"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "capsule"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "pigmentProfiles": {
+      "$ref": "urn:resina:schema:opaque-pigment-profiles:0.1.0"
+    }
+  },
+  "$defs": {
+    "positiveSize": {
+      "allOf": [
+        {
+          "$ref": "urn:resina:schema:surface-size:0.1.0"
+        },
+        {
+          "properties": {
+            "width": {
+              "exclusiveMinimum": 0
+            },
+            "height": {
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      ]
+    }
+  }
+}
