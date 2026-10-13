@@ -297,8 +297,14 @@ def main():
                                RESINA_COMMAND_CASES=str(case_file.resolve()),
                                RESINA_COMMAND_FONT=font.as_uri(), RESINA_COMMAND_OUTPUT=str(output.resolve()))
             environment["RESINA_COMMAND_ALTERNATE_FONT"] = alternate_font.as_uri()
-            result = subprocess.run([str(host), "--no-color", "--path", str((output / "config.qml").resolve())],
-                                    env=environment, capture_output=True, text=True, timeout=10 * len(cases))
+            try:
+                result = subprocess.run([str(host), "--no-color", "--path", str((output / "config.qml").resolve())],
+                                        env=environment, capture_output=True, text=True, timeout=10 * len(cases))
+            except subprocess.TimeoutExpired as error:
+                partial = "".join(stream.decode("utf-8", errors="replace") if isinstance(stream, bytes)
+                                  else stream or "" for stream in (error.stdout, error.stderr))
+                (output / "run.log").write_text(partial, encoding="utf-8")
+                raise
             log = result.stdout + result.stderr
             (output / "run.log").write_text(log, encoding="utf-8")
             if result.returncode:

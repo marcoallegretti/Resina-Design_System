@@ -2,6 +2,7 @@ import copy
 from contextlib import redirect_stderr
 import io
 import json
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
@@ -17,6 +18,31 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_native_timeout_retains_partial_streams_and_failure(self):
+        for stdout, stderr in ((b"partial observation\xff\n", b"native error\n"),
+                               ("partial observation\n", "native error\n"), (None, None)):
+            with self.subTest(stdout=stdout), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for name in ("host", "font"):
+                    (root / name).touch()
+                (root / "module").mkdir()
+                argv = ["check", "--host", str(root / "host"), "--font", str(root / "font"),
+                        "--alternate-font", str(root / "font"), "--module-path", str(root / "module"),
+                        "--output-dir", str(root / "output")]
+                timeout = subprocess.TimeoutExpired(["host"], 350, output=stdout, stderr=stderr)
+                with patch("sys.argv", argv), redirect_stderr(io.StringIO()), \
+                        patch("check_quickshell_command_updates.subprocess.run", side_effect=[
+                            SimpleNamespace(returncode=0, stdout="Quickshell 0.3.2 / Qt Quick 6.11.2\n", stderr=""),
+                            timeout]) as run:
+                    self.assertEqual(main(), 1)
+                self.assertEqual(run.call_args.kwargs["timeout"], 10 * len(authored_cases()))
+                log = (root / "output/0/run.log").read_text(encoding="utf-8")
+                if stdout is None:
+                    self.assertEqual(log, "")
+                else:
+                    self.assertIn("partial observation", log)
+                    self.assertIn("native error", log)
+
     def test_callbacks_retain_independently_checked_layout_and_target(self):
         case = next(case for case in authored_cases() if case["name"] == "authored-layout-ltr")
         content = case["request"]["content"]
