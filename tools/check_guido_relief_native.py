@@ -41,9 +41,12 @@ def diagnostic_content_focus_request(paint):
     from check_focus_indicator_backend import baseline, contrast
     focus, _ = baseline()
     family = paint["pigment"]["materialFamily"]
-    binding = next(case for case in load_json(ROOT / "conformance/surfaces/binding-vectors.json")
-                   if case.get("expected", {}).get("materialFamily") == family)
-    focus["scenario"]["surface"] = copy.deepcopy(binding["document"])
+    assignments = focus["scenario"]["resolution"]["materialAssignments"]
+    role = next((f"{namespace}.{name}" for namespace in ("surface", "control", "feedback")
+                 for name, value in assignments[namespace].items() if value == family), None)
+    if role is None:
+        raise ValueError(f"no authored focus material role for {family!r}")
+    focus["scenario"]["surface"]["materialRole"] = role
     focus["scenario"]["surface"]["treatmentStack"]["treatments"] = ["none"]
     focus["scenario"]["surface"]["states"]["states"] = ["selected", "focused", "hover"]
     focus["surroundingColor"] = copy.deepcopy(paint["edge"]["adjacentColor"])

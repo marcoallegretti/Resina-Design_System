@@ -11,6 +11,22 @@ from check_schemas import validator_for
 
 
 class NativeReliefComparisonTests(unittest.TestCase):
+    def test_content_focus_supports_every_authored_material_family(self):
+        for family in ("cast", "frost", "elastomer", "gel"):
+            paint = diagnostic_request()
+            paint["pigment"]["materialFamily"] = family
+            request = diagnostic_content_focus_request(paint)
+            scenario = request["focus"]["scenario"]
+            namespace, role = scenario["surface"]["materialRole"].split(".")
+            self.assertEqual(scenario["resolution"]["materialAssignments"][namespace][role], family)
+            self.assertEqual(list(validator_for("schemas/outline-focus-request.schema.json").iter_errors(request)), [])
+
+    def test_content_focus_diagnoses_an_unassigned_material_family(self):
+        paint = diagnostic_request()
+        paint["pigment"]["materialFamily"] = "unknown"
+        with self.assertRaisesRegex(ValueError, "no authored focus material role"):
+            diagnostic_content_focus_request(paint)
+
     def test_content_focus_retains_actual_outline_canvas_family_and_concurrent_states(self):
         from check_focus_indicator_backend import contrast
         for canvas in ([1, 1, 1], [0.01, 0.015, 0.02]):

@@ -105,6 +105,11 @@ fn run() -> Result<(), Box<dyn Error>> {
         let source = std::fs::read_to_string(path)?;
         let request: Value = serde_json::from_str(&source)?;
         let result = resolve_outline_focus_source(&source)?;
+        if result.focus().indicator().binding().material_family()
+            != paint.pigment().material_family()
+        {
+            return Err("focus material family differs from the actual relief face".into());
+        }
         if resolve_srgb_fallback(&request["focus"]["surroundingColor"])? != canvas {
             return Err("focus surrounding color differs from the actual canvas".into());
         }
