@@ -18,6 +18,8 @@ def compare(actual, expected):
     found = mismatch(actual, expected)
     if found:
         return found
+    if actual["pigment"]["body"] != expected["pigment"]["body"]:
+        return "/pigment/body"
     body = actual["pigment"]["body"]["components"]
     for index, (sample, target) in enumerate(zip(actual["samples"], expected["samples"])):
         if target["weight"] == 0 and (sample["weight"] != 0 or sample["color"] != actual["pigment"]["body"]):

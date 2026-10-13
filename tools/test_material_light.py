@@ -49,6 +49,17 @@ class MaterialLightProofTests(unittest.TestCase):
         self.assertTrue(any("suppressed True" in name and "negative" in name for name, _ in failures))
         self.assertTrue(any("-0e-400" in name for name, _, _ in successes))
 
+    def test_checker_rejects_coherent_retained_body_drift(self):
+        _, successes = source_cases()
+        _, source, expected = successes[0]
+        cases = (("authored", baseline(), expected_result(baseline())),
+                 ("generated", json.loads(source), expected))
+        for name, request, expected in cases:
+            with self.subTest(name=name):
+                changed = copy.deepcopy(request)
+                changed["pigment"]["body"]["components"][0] += 1e-14
+                self.assertIsNotNone(compare(expected_result(changed), expected))
+
     def test_negative_sources_violate_exact_schema_minimum(self):
         validator = validator_for("schemas/material-light-request.schema.json")
         failures, _ = source_cases()
