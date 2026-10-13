@@ -636,8 +636,9 @@ factory is installed by this adapter.
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
-measurement and drawing. Released Quickshell native publication,
-physical-device/screen-reader operation and calibrated motion remain unverified.
+measurement and drawing. Complete reusable-control qualification in released
+Quickshell, physical-device/screen-reader operation and calibrated motion remain
+unverified.
 The integrated static profile below now verifies composed command input and
 native accessibility in the standalone host. Hosted native runtime checks have
 also passed; the sampled profile section links the executed evidence.
