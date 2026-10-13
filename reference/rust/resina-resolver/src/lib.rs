@@ -6,6 +6,7 @@ pub use outline_focus::{
     OutlineFocusResult, OutlineFocusSupport, resolve_outline_focus, resolve_outline_focus_source,
 };
 
+mod pigment_source;
 mod relief_paint;
 pub use relief_paint::{
     ReliefPaint, ReliefPaintError, ReliefPaintPoint, ReliefPaintResult, resolve_relief_paint,
@@ -271,7 +272,7 @@ pub use opaque_pigment::{
 };
 pub use opaque_surface::{
     OpaqueSurfaceError, OpaqueSurfaceGeometry, OpaqueSurfaceInput, OpaqueSurfaceIr,
-    resolve_opaque_surface, resolve_opaque_surface_source,
+    parse_opaque_surface_appearance_source, resolve_opaque_surface, resolve_opaque_surface_source,
 };
 pub use surface_paint::{
     SurfacePaintInput, SurfacePaintIr, SurfacePaintResolutionError, resolve_surface_paint,

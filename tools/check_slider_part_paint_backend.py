@@ -5,6 +5,7 @@ import math
 import sys
 
 from backend_source import duplicate_member_source, nonfinite_member_source
+from opaque_request_source import pigment_coefficient_failures
 from check_color_guard_backend import check_failure
 from check_extruded_contour_backend import contour_mismatch
 from check_headless_backend import run_backend
@@ -248,6 +249,7 @@ def main():
                 changed = copy.deepcopy(base)
                 del changed[field]
                 failures.append((f"missing {field}", json.dumps(changed)))
+        failures.extend(pigment_coefficient_failures(base, "/appearance/pigmentProfiles"))
         for name, source in failures:
             check_failure(command, source, args.timeout, name)
             count += 1

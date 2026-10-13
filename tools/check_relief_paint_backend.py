@@ -4,6 +4,7 @@ from backend_source import duplicate_member_source, negative_underflow_member_so
 from check_color_guard_backend import check_backend
 from check_schemas import ROOT, load_json
 from check_surface_relief_backend import relief_mismatch
+from opaque_request_source import pigment_coefficient_failures
 
 
 if __name__ == "__main__":
@@ -15,7 +16,7 @@ if __name__ == "__main__":
         "schemas/relief-paint-result.schema.json",
         "conformance/ir/relief-paint-vectors.json",
         compare=relief_mismatch,
-        extra_failures=(
+        extra_failures=pigment_coefficient_failures(baseline, "/pigment/profiles") + (
             ("positional request", json.dumps(list(baseline.values()))),
             ("duplicate edge width", duplicate_member_source(baseline, "/edgeWidth")),
             ("nonfinite edge width", nonfinite_member_source(baseline, "/edgeWidth")),

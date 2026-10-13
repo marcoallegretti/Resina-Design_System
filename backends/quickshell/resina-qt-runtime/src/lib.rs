@@ -2,6 +2,7 @@ use cxx_qt_lib::QString;
 use resina_model::{ActivationEvent, ActivationState};
 use resina_resolver::{ActivationResult, resolve_activation, resolve_activation_source};
 
+mod appearance_source;
 mod label;
 mod pointer;
 mod slider_accessibility;

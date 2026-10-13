@@ -4,6 +4,7 @@ import json
 from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
 from check_schemas import ROOT, load_json, replace_at_pointer
+from opaque_request_source import pigment_coefficient_failures
 
 
 def positional_profile_failures(baseline):
@@ -45,7 +46,8 @@ if __name__ == "__main__":
             "schemas/opaque-pigment-request.schema.json",
             "schemas/opaque-pigment-result.schema.json",
             "conformance/materials/opaque-pigment-vectors.json",
-            extra_failures=positional_profile_failures(baseline) + (
+            extra_failures=positional_profile_failures(baseline)
+            + pigment_coefficient_failures(baseline, "/profiles") + (
                 ("positional request", json.dumps(positional, allow_nan=False)),
                 (
                     "unsupported positional request",

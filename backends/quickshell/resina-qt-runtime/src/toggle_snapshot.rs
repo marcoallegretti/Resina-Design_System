@@ -56,12 +56,40 @@ mod ffi {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Part {
     surface: SurfaceIntent,
+    #[serde(deserialize_with = "crate::appearance_source::deserialize")]
     appearance: OpaqueSurfaceAppearance,
     checked_color_role: ColorRole,
     interaction_appearance: CommandAppearance,
     foreground_role: ColorRole,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
+}
+
+#[cfg(test)]
+mod pigment_source_tests {
+    use super::*;
+
+    #[test]
+    fn toggle_part_rejects_negative_pigment_sources_before_rounding() {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/toggle-part-paint-request.json"
+        ))
+        .unwrap();
+        let body = &request["surface"]["body"];
+        let mut input = json!({
+            "surface": body["surface"], "appearance": body["appearance"],
+            "checkedColorRole": request["checkedColorRole"], "interactionAppearance": request["interactionAppearance"],
+            "foregroundRole": body["foregroundRole"],
+            "minimumContentContrast": body["minimumContentContrast"], "minimumEdgeContrast": body["minimumEdgeContrast"],
+        });
+        assert!(serde_json::from_str::<Part>(&input.to_string()).is_ok());
+        input["appearance"]["pigmentProfiles"]["profiles"]["gel"]["highlightLift"] =
+            json!("coefficient-source");
+        let source = input
+            .to_string()
+            .replace("\"coefficient-source\"", "-1e-400");
+        assert!(serde_json::from_str::<Part>(&source).is_err());
+    }
 }
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -127,7 +155,7 @@ fn document(source: &str) -> Result<Value, String> {
     {
         return Err("Qt Toggle occupiedRegions must contain named bounds".to_owned());
     }
-    let _: Request = serde_json::from_value(value.clone()).map_err(|error| error.to_string())?;
+    let _: Request = serde_json::from_str(source).map_err(|error| error.to_string())?;
     Ok(value)
 }
 
@@ -138,8 +166,8 @@ fn prepare(
     render: bool,
     motion: Option<&MotionRequest>,
 ) -> Result<Value, String> {
-    let request: Request =
-        serde_json::from_value(document(source)?).map_err(|error| error.to_string())?;
+    document(source)?;
+    let request: Request = serde_json::from_str(source).map_err(|error| error.to_string())?;
     if options.len() > 64 * 1024 {
         return Err("Qt Toggle rendering options exceed 64 KiB".to_owned());
     }
