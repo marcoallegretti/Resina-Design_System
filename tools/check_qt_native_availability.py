@@ -63,7 +63,7 @@ def callback_records(log):
 def report(observed, actions, callbacks, after, binding="reference-protocol", host="qt-quick-6.11.2"):
     if binding not in ("reference-protocol", "rust-qt-runtime"):
         raise ValueError("unknown Qt binding evidence")
-    if host not in ("qt-quick-6.11.2", "quickshell-0.3.1-qt-6.11.2") \
+    if host not in ("qt-quick-6.11.2", "quickshell-0.3.1-qt-6.11.2", "quickshell-0.3.2-qt-6.11.2") \
             or (host.startswith("quickshell-") and binding != "rust-qt-runtime"):
         raise ValueError("unknown or contradictory Qt host evidence")
     if not isinstance(observed, dict) or not isinstance(actions, dict):
@@ -119,7 +119,7 @@ def parse_report(output):
     return result
 
 
-def session_probe():
+def session_probe(host):
     address = string_value(call("org.a11y.Bus", "/org/a11y/bus", "org.a11y.Bus.GetAddress"))
     for name in ("IsEnabled", "ScreenReaderEnabled"):
         call("org.a11y.Bus", "/org/a11y/bus", PROPERTIES + ".Set",
@@ -160,7 +160,6 @@ def session_probe():
                     raise ValueError("missing or duplicate native callback: " + log.read()[-2000:])
             after = state_flags(call(*nodes["Enabled command"], ACCESSIBLE + ".GetState", address=address))
             binding = "rust-qt-runtime" if os.environ.get("RESINA_QT_RUNTIME_MODULE") else "reference-protocol"
-            host = "quickshell-0.3.1-qt-6.11.2" if os.environ.get("RESINA_QUICKSHELL_HOST") else "qt-quick-6.11.2"
             return report(observed, actions, callback_records(log), after, binding, host)
         finally:
             if process.poll() is None:
@@ -212,10 +211,15 @@ def main():
             raise ValueError("requires Linux and a native display")
         version = subprocess.run([sys.executable, str(RUNNER), "--version"],
             capture_output=True, text=True, timeout=10, check=False)
-        expected_version = "Quickshell 0.3.1 / Qt Quick 6.11.2" if os.environ.get("RESINA_QUICKSHELL_HOST") else "Qt Quick 6.11.2"
-        if version.returncode or version.stdout.strip() != expected_version:
-            raise ValueError("requires Qt 6.11.2; Quickshell hosting also requires version 0.3.1 and the Rust module")
-        result = session_probe() if arguments.session else run_session()
+        versions = ({"Quickshell 0.3.1 / Qt Quick 6.11.2": "quickshell-0.3.1-qt-6.11.2",
+                     "Quickshell 0.3.2 / Qt Quick 6.11.2": "quickshell-0.3.2-qt-6.11.2"}
+                    if os.environ.get("RESINA_QUICKSHELL_HOST") else {"Qt Quick 6.11.2": "qt-quick-6.11.2"})
+        host = versions.get(version.stdout.strip())
+        if version.returncode or host is None:
+            raise ValueError("requires Qt 6.11.2; Quickshell hosting also requires version 0.3.1 or 0.3.2 and the Rust module")
+        result = session_probe(host) if arguments.session else run_session()
+        if result["host"] != host:
+            raise ValueError("native session host disagrees with the verified runtime")
         print((PREFIX if arguments.session else "") + json.dumps(result, sort_keys=True))
         if not result["conformant"] and not arguments.report_only:
             raise ValueError("unsupported native enabled/focusable semantics; see reported observations")

@@ -564,7 +564,7 @@ that mismatch and never hides execution failures; no contract was weakened.
 ### Quickshell hosting boundary
 
 The same diagnostic controls can run in a Quickshell `FloatingWindow`. The host
-runner validates both Quickshell 0.3.1 and its build/runtime Qt 6.11.2 versions,
+runner accepts Quickshell 0.3.1 or 0.3.2 and validates its build/runtime Qt 6.11.2 versions,
 adds the packaged module import root, and executes Quickshell directly. It does
 not instantiate the Python lifecycle or a second Qt engine. For example:
 
@@ -574,10 +574,29 @@ RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" \
 python tools/check_qt_native_availability.py --report-only
 ```
 
-Reports identify `host: quickshell-0.3.1-qt-6.11.2` separately from the binding.
+Reports identify `host: quickshell-0.3.1-qt-6.11.2` or
+`host: quickshell-0.3.2-qt-6.11.2` from the verified host version, separately from the binding.
 Standalone reports identify `host: qt-quick-6.11.2`. Host versions do not certify
 a distribution's build or patches. Missing native nodes remain execution
 failures, including with `--report-only`.
+
+The [`qt-runtime` CI job](../../../.github/workflows/reference.yml) builds
+unmodified Quickshell 0.3.2 release revision
+`4f508be500dea6e5732cc3d50382a0048b17e7b1` with the same Qt 6.11.2 SDK used
+to compile the Rust plugin. Its installation, build and native-probe steps are
+the reproducible build procedure. The SDK additionally requires `qtshadertools`;
+the host requires CLI11, libdrm, jemalloc, Wayland 1.24 or later and Wayland
+protocols 1.41 or later. Qt 6.11.2's private headers reference `wl_fixes`,
+which older Wayland headers do not declare; use matching headers and libraries.
+The configuration retains Wayland/layer-shell and X11, while disabling the crash
+handler, screencopy, compositor-specific integrations and optional system services.
+Those disabled features are outside this qualification target.
+
+The released-host probe loads the packaged `Resina.Runtime` module and records
+AT-SPI discovery and Press delivery through X11/Xvfb. Its diagnostic report
+preserves native semantic mismatches; it does not establish complete Command
+acceptance, layer-shell behavior, reload lifetime or screen-reader verification.
+The standalone and released-host reports are saved as separate CI artifacts.
 
 **Unmodified Quickshell 0.3.1 currently fails this probe.** An executed build
 from its release source, with the official Qt 6.11.2 SDK, loaded the Rust plugin
@@ -599,10 +618,20 @@ specialized X11 modules were disabled. It proves no layer-shell behavior,
 hot-reload lifecycle or other toolkit factories. No private bootstrap or
 replacement accessibility factory is installed by this production adapter.
 
-The accepted integration route is an upstream host/toolkit repair, while this
-adapter continues in the standalone Qt host. The host/toolkit must preserve or
-restore its own native publication before Quickshell controls can be qualified.
-Resina does not own a process-wide private bootstrap as a semantic fallback.
+**Unmodified Quickshell 0.3.2 passes native discovery and action delivery in this
+probe.** The release removes the initial application teardown. Executed with
+Qt 6.11.2 and Wayland 1.24.0, the packaged Rust module exposed all three fixture
+commands through AT-SPI on X11/Xvfb. All four Press deliveries produced their
+expected committed results: unavailable commands did not activate, the enabled
+command activated once and became unavailable, and its next action did not
+activate again. The report retains the same discoverable-disabled focusability
+mismatch and identifies `host: quickshell-0.3.2-qt-6.11.2` with
+`binding: rust-qt-runtime`.
+
+This is native bootstrap and guarded-action evidence for the recorded build;
+it does not qualify the complete reusable control, layer-shell, reload or a
+screen reader. No process-wide private bootstrap or replacement accessibility
+factory is installed by this adapter.
 
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
@@ -959,7 +988,7 @@ its matching Core/DBus/Gui libraries and used QtQuick/PySide 6.11.2; the strict
 checker, rather than library presence, determines native success. This is
 isolated toolkit evidence, not support claimed for standard binary SDKs.
 
-Released Quickshell's separate application-bootstrap accessibility defect remains
+Quickshell 0.3.1's separate application-bootstrap accessibility defect remains
 on the approved upstream repair route. Full Shell accessibility, calibrated
 Toggle travel/interaction motion, physical/touch/pen input, screen-reader
 operation, GPU realization and production performance are not qualified here.

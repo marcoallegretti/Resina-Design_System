@@ -30,14 +30,38 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends --no-upgrade -y \
-            g++ pkg-config lld libgl-dev libegl-dev libfontconfig1 libfreetype6 \
+            g++ pkg-config lld cmake ninja-build libgl-dev libegl-dev libfontconfig1 libfreetype6 \
+            libdrm-dev libwayland-dev wayland-protocols libcli11-dev spirv-tools libjemalloc-dev \
+            meson libffi-dev libexpat1-dev curl \
             libxkbcommon-dev libxkbcommon-x11-0 libx11-xcb1 \
             libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
             libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-shm0 \
             libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core \
             at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth
           python -m pip install aqtinstall==3.3.0 -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
-          python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu
+          python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu --modules qtshadertools
+      - name: Build matching Wayland headers and libraries for Qt 6.11.2
+        run: |
+          curl --fail --location https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.24.0/downloads/wayland-1.24.0.tar.xz --output target/wayland-1.24.0.tar.xz
+          printf '%s\n' '82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536  target/wayland-1.24.0.tar.xz' | sha256sum -c
+          tar -xf target/wayland-1.24.0.tar.xz -C target
+          meson setup target/wayland-build target/wayland-1.24.0 --prefix "$PWD/target/wayland-sdk" --libdir lib -Ddocumentation=false -Dtests=false -Ddtd_validation=false
+          meson compile -C target/wayland-build -j 2
+          meson install -C target/wayland-build
+      - name: Build the released Quickshell host with the matching Qt SDK
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export PKG_CONFIG_PATH="$PWD/target/wayland-sdk/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+          export PATH="$PWD/target/wayland-sdk/bin:$PATH"
+          git clone --branch v0.3.2 --depth 1 https://github.com/quickshell-mirror/quickshell.git target/quickshell-source
+          test "$(git -C target/quickshell-source rev-parse HEAD)" = 4f508be500dea6e5732cc3d50382a0048b17e7b1
+          cmake -S target/quickshell-source -B target/quickshell-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_PREFIX_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64;$PWD/target/wayland-sdk" \
+            -DCRASH_HANDLER=OFF -DSCREENCOPY=OFF -DHYPRLAND=OFF -DI3=OFF \
+            -DSERVICE_PIPEWIRE=OFF -DSERVICE_PAM=OFF -DSERVICE_POLKIT=OFF -DSERVICE_GREETD=OFF \
+            -DSERVICE_STATUS_NOTIFIER=OFF -DSERVICE_MPRIS=OFF -DSERVICE_UPOWER=OFF \
+            -DSERVICE_NOTIFICATIONS=OFF -DBLUETOOTH=OFF -DNETWORK=OFF
+          cmake --build target/quickshell-build --parallel 2
       - name: Build and check the separate Qt workspace
         run: |
           export LD_LIBRARY_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -83,6 +107,15 @@ jobs:
           cat target/qt-slider-horizontal-accessibility.json
           xvfb-run -a -e /dev/stderr python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation vertical > target/qt-slider-vertical-accessibility.json
           cat target/qt-slider-vertical-accessibility.json
+      - name: Measure released Quickshell native publication and invocation
+        env:
+          RESINA_QT_RUNTIME_MODULE: ${{ github.workspace }}/target/qt-runtime-import
+          RESINA_QUICKSHELL_HOST: ${{ github.workspace }}/target/quickshell-build/src/quickshell
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          python tools/run_qt_availability_probe.py --version
+          xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --report-only > target/quickshell-native-availability.json
+          cat target/quickshell-native-availability.json
       - name: Save native Qt captures and accessibility observations
         if: always()
         uses: actions/upload-artifact@v7
@@ -98,6 +131,7 @@ jobs:
             target/qt-slider-*-accessibility.json
             target/qt-control-accessibility.json
             target/qt-native-availability.json
+            target/quickshell-native-availability.json
           if-no-files-found: warn
   guido:
     runs-on: ubuntu-latest
