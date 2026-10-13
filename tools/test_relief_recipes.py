@@ -1,4 +1,5 @@
 import copy
+import math
 import unittest
 
 from check_schemas import ROOT, load_json, validator_for
@@ -23,6 +24,37 @@ class ReliefRecipeTests(unittest.TestCase):
             self.assertLessEqual(profile["amplitude"], profile["shoulderWidth"] / 2)
             self.assertLess(profile["amplitude"], profile["bodyThickness"])
 
+    def test_profile_admission_after_corner_normalization_at_text_scales(self):
+        outlines = {}
+        for recipe in self.recipes["recipes"]:
+            for text_scale in (1, 2, 3):
+                size = self.recipes["sizes"][recipe["profile"]["kind"]]
+                width, height = size["width"], size["height"] * text_scale
+                corners = recipe["corners"]
+                if corners["kind"] == "capsule":
+                    r = min(width, height) / 2
+                    radii = {k: {"x": r, "y": r} for k in
+                             ("topStart", "topEnd", "bottomEnd", "bottomStart")}
+                else:
+                    radii = corners["radii"]
+                factor = min(1, width / (radii["topStart"]["x"] + radii["topEnd"]["x"]),
+                             width / (radii["bottomStart"]["x"] + radii["bottomEnd"]["x"]),
+                             height / (radii["topStart"]["y"] + radii["bottomStart"]["y"]),
+                             height / (radii["topEnd"]["y"] + radii["bottomEnd"]["y"]))
+                exponent = 2 if recipe["curvature"] == "circular" else 4
+                signature = (exponent, tuple((c["x"] * factor, c["y"] * factor)
+                                            for c in radii.values()))
+                group = outlines.setdefault((recipe["profile"]["kind"], text_scale), set())
+                self.assertNotIn(signature, group, recipe["name"])
+                group.add(signature)
+                shoulder = recipe["profile"]["shoulderWidth"]
+                for corner in radii.values():
+                    tau = exponent * shoulder * (1 / (corner["x"] * factor) + 1 / (corner["y"] * factor))
+                    self.assertTrue(math.isfinite(tau))
+                    if shoulder:
+                        self.assertGreater(tau, 0)
+                        self.assertLess(tau, 1, recipe["name"])
+
     def test_schema_rejects_unsupported_and_incomplete_recipe_contracts(self):
         for mutate in (
             lambda d: d.update(schemaVersion="0.2.0"),
@@ -34,6 +66,9 @@ class ReliefRecipeTests(unittest.TestCase):
             lambda d: d["recipes"][0]["profile"].update(kind="negativeExtrusion"),
             lambda d: d["recipes"][0]["profile"].update(amplitude=1),
             lambda d: d["recipes"][0].pop("foregroundRole"),
+            lambda d: d["recipes"][0].pop("corners"),
+            lambda d: d["recipes"][0]["corners"].update(kind="inferred"),
+            lambda d: d["pigmentProfiles"]["profiles"]["cast"].update(sideShade=1),
         ):
             document = copy.deepcopy(self.recipes)
             mutate(document)

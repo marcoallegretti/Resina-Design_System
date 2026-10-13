@@ -43,7 +43,13 @@ raised Elastomer controls and recessed Cast wells. Each page includes the five
 authored shape intents in Light and Dark. Its explicit
 [recipes](relief-recipes.json) are Lab specimen choices, with a separate
 [tool schema](schemas/relief-recipes.schema.json); they do not define component
-defaults. Corner extents come from the existing foundation and shape assignments.
+defaults. Corner extents and pigment strengths are authored explicitly for these
+specimens. Quartic extents increase from structural through rounded; organic
+corners alternate large and small logical extents. The resolver normalizes them
+against each actual face size before checking the relief profile. Wider shoulders
+remain outside the outline stroke, and Cast's specimen pigment strengths make
+inward relief visible in both palette polarities. These choices do not replace
+the Tier 0 circular shape fallback or its pigment defaults.
 Capsules use circular geometry; the other specimens explicitly select quartic
 geometry. Nominal body thickness does not project a side or create a shadow.
 
@@ -78,7 +84,11 @@ Wayland output. The ten-specimen board has a bounded 300-second preparation
 deadline for software rendering. Every native canvas pixel is compared, including text and
 antialiasing. Board GPU tests separately compare prepared opaque pixels and
 complete text against expanded text rectangles; an omitted caption must change
-the result. Native checks establish presentation, not input or assistive
+the result. Nonflat specimens must retain opposite top/bottom shoulder tones
+and a multi-pixel interior cue after excluding the outline. Recipe checks also
+reject shape collisions after corner normalization. These checks constrain the
+authored specimens; visual inspection still evaluates their material identity.
+Native checks establish presentation, not input or assistive
 technology integration.
 
 Set `RESINA_SCENES` to the prepared catalog and `RESINA_LABEL_FONT` to a DejaVu

@@ -10,7 +10,7 @@ use resina_model::{
 };
 use resina_resolver::{
     CommandLabelInput, resolve_command_label, resolve_focus_indicator, resolve_outline_focus,
-    resolve_relief_paint_source, resolve_shape_fallback_source,
+    resolve_relief_paint_source,
 };
 use serde_json::{Value, json};
 use std::error::Error;
@@ -48,9 +48,6 @@ pub(crate) fn prepare(
     let appearance: Value = serde_json::from_str(include_str!(
         "../../../definitions/tier0-surface-appearance.json"
     ))?;
-    let tokens: Value = serde_json::from_str(include_str!("../../../tokens/foundation.json"))?;
-    let assignments: Value =
-        serde_json::from_str(include_str!("../../../definitions/tier0-shapes.json"))?;
     let mut size: SurfaceSize = serde_json::from_value(recipes["sizes"][kind].clone())?;
     size.height *= text_scale;
     let light = &specimens["light-cast-paint-rest"].theme;
@@ -149,14 +146,19 @@ pub(crate) fn prepare(
             if recipe["shape"] != shape || recipe["profile"]["kind"] != kind {
                 return Err("relief recipe identifier differs from its shape/profile".into());
             }
-            let shape_request = json!({
-                "schemaVersion": "0.1.0", "tokens": tokens, "assignments": assignments,
-                "shape": shape, "size": size,
-            });
-            let radii = serde_json::to_value(resolve_shape_fallback_source(
-                &shape_request.to_string(),
-            )?)?["radii"]
-                .clone();
+            let radii = match recipe["corners"]["kind"].as_str() {
+                Some("explicit") => recipe["corners"]["radii"].clone(),
+                Some("capsule") => {
+                    let radius = size.width.min(size.height) / 2.0;
+                    json!({
+                        "topStart": {"x": radius, "y": radius},
+                        "topEnd": {"x": radius, "y": radius},
+                        "bottomEnd": {"x": radius, "y": radius},
+                        "bottomStart": {"x": radius, "y": radius},
+                    })
+                }
+                _ => return Err("relief recipe has unsupported corner extents".into()),
+            };
             let outline = json!({
                 "schemaVersion": "0.1.0", "size": size, "radii": radii,
                 "layoutDirection": direction, "curvature": recipe["curvature"],
@@ -184,7 +186,7 @@ pub(crate) fn prepare(
                 "schemaVersion": "0.1.0", "outline": outline, "profile": recipe["profile"],
                 "pigment": {
                     "schemaVersion": "0.1.0", "materialFamily": material,
-                    "body": body, "profiles": appearance["pigmentProfiles"],
+                    "body": body, "profiles": recipes["pigmentProfiles"],
                 },
                 "keyLight": appearance["keyLight"],
                 "edge": {
@@ -337,6 +339,7 @@ mod tests {
                 })
                 .collect();
             let mut compared = 0;
+            let mut relief_faces = 0;
             for command in &board.commands {
                 let DrawCommand::Image {
                     source:
@@ -351,6 +354,36 @@ mod tests {
                 else {
                     continue;
                 };
+                if kind != "flat" {
+                    let at = |y: u32| {
+                        let i = ((y * width + width / 2) * 4) as usize;
+                        &pixels[i..i + 4]
+                    };
+                    let body = at(height / 2);
+                    if body[3] == 255 {
+                        let signed_sum = |y| {
+                            let pixel = at(y);
+                            assert_eq!(pixel[3], 255);
+                            (0..3)
+                                .map(|c| i32::from(pixel[c]) - i32::from(body[c]))
+                                .sum::<i32>()
+                        };
+                        let sign = if kind == "convex" { 1 } else { -1 };
+                        let top: Vec<_> = (3..height / 4).map(signed_sum).collect();
+                        let bottom: Vec<_> = (height * 3 / 4..height - 3).map(signed_sum).collect();
+                        assert!(top.iter().any(|delta| delta * sign > 0));
+                        assert!(bottom.iter().any(|delta| delta * sign < 0));
+                        assert!(
+                            top.iter()
+                                .chain(&bottom)
+                                .filter(|delta| delta.abs() >= 5)
+                                .count()
+                                >= 3,
+                            "{kind}: interior shoulder cue collapses to an isolated pixel"
+                        );
+                        relief_faces += 1;
+                    }
+                }
                 let ox = (rect.x * board.scale).round() as u32;
                 let oy = (rect.y * board.scale).round() as u32;
                 for y in 0..*height {
@@ -382,6 +415,9 @@ mod tests {
                 }
             }
             assert!(compared > 100_000);
+            if kind != "flat" {
+                assert_eq!(relief_faces, 10);
+            }
             let commands = board.commands.clone();
             for command in &mut board.commands {
                 if let DrawCommand::Text {
