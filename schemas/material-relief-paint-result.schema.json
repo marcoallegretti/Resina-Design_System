@@ -1,0 +1,122 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "paint",
+    "samples"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "paint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface",
+        "pigment",
+        "edge",
+        "edgeWidth",
+        "foreground",
+        "contentContrastRatio",
+        "contentBounds",
+        "light",
+        "colorRanges"
+      ],
+      "properties": {
+        "surface": {
+          "$ref": "urn:resina:schema:relief-paint-result:0.1.0#/properties/paint/properties/surface"
+        },
+        "pigment": {
+          "$ref": "urn:resina:schema:relief-paint-result:0.1.0#/properties/paint/properties/pigment"
+        },
+        "edge": {
+          "$ref": "urn:resina:schema:relief-paint-result:0.1.0#/properties/paint/properties/edge"
+        },
+        "edgeWidth": {
+          "$ref": "urn:resina:schema:relief-paint-result:0.1.0#/properties/paint/properties/edgeWidth"
+        },
+        "foreground": {
+          "$ref": "urn:resina:schema:relief-paint-result:0.1.0#/properties/paint/properties/foreground"
+        },
+        "contentContrastRatio": {
+          "$ref": "urn:resina:schema:relief-paint-result:0.1.0#/properties/paint/properties/contentContrastRatio"
+        },
+        "contentBounds": {
+          "$ref": "urn:resina:schema:relief-paint-result:0.1.0#/properties/paint/properties/contentBounds"
+        },
+        "light": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "keyDirection",
+            "ambient",
+            "interaction"
+          ],
+          "properties": {
+            "keyDirection": {
+              "$ref": "urn:resina:schema:material-light-result:0.1.0#/properties/keyDirection"
+            },
+            "ambient": {
+              "$ref": "urn:resina:schema:material-light-result:0.1.0#/properties/ambient"
+            },
+            "interaction": {
+              "$ref": "urn:resina:schema:material-light-result:0.1.0#/properties/interaction"
+            }
+          }
+        },
+        "colorRanges": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "$ref": "urn:resina:schema:opaque-srgb-range:0.1.0"
+          }
+        }
+      }
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "point",
+          "color"
+        ],
+        "properties": {
+          "point": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            }
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:material-relief-paint-result:0.1.0",
+  "title": "Resina Material Relief Paint Result"
+}
