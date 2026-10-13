@@ -5,6 +5,7 @@ import io
 import json
 import math
 import subprocess
+import zlib
 
 from PIL import Image
 
@@ -32,6 +33,9 @@ def check_png(result, width, height, expected):
         end = offset + length + 12
         if end > len(result.stdout):
             raise ValueError("result must contain a single PNG")
+        checksum = int.from_bytes(result.stdout[end - 4:end], "big")
+        if zlib.crc32(result.stdout[offset + 4:end - 4]) != checksum:
+            raise ValueError("PNG chunk checksum mismatch")
         if result.stdout[offset + 4:offset + 8] == b"IEND":
             if length != 0 or end != len(result.stdout):
                 raise ValueError("result must contain a single PNG")

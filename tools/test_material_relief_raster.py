@@ -20,6 +20,24 @@ def result(pixels, srgb=True):
 
 
 class MaterialReliefRasterProofTests(unittest.TestCase):
+    def test_corrupt_data_and_end_checksums_are_rejected(self):
+        expected = [(128, 102, 77, 255)]
+        actual = result(expected)
+        offset = 8
+        found = set()
+        while offset < len(actual.stdout):
+            length = int.from_bytes(actual.stdout[offset:offset + 4], "big")
+            end = offset + length + 12
+            kind = actual.stdout[offset + 4:offset + 8]
+            if kind in (b"IDAT", b"IEND"):
+                found.add(kind)
+                changed = bytearray(actual.stdout)
+                changed[end - 1] ^= 1
+                with self.subTest(chunk=kind), self.assertRaisesRegex(ValueError, "checksum"):
+                    check_png(SimpleNamespace(returncode=0, stderr=b"", stdout=bytes(changed)), 1, 1, expected)
+            offset = end
+        self.assertEqual(found, {b"IDAT", b"IEND"})
+
     def test_complete_rgba_metadata_and_pixels_are_required(self):
         expected = [(0, 0, 0, 0), (128, 102, 77, 255)]
         actual = result(expected)
