@@ -116,6 +116,14 @@ jobs:
           python tools/run_qt_availability_probe.py --version
           xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --report-only > target/quickshell-native-availability.json
           cat target/quickshell-native-availability.json
+      - name: Check authored Command updates in released Quickshell
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          python tools/check_quickshell_command_updates.py \
+            --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+            --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+            --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
+            --output-dir target/quickshell-command-updates --scales 1 1.25 2
       - name: Save native Qt captures and accessibility observations
         if: always()
         uses: actions/upload-artifact@v7
@@ -132,6 +140,7 @@ jobs:
             target/qt-control-accessibility.json
             target/qt-native-availability.json
             target/quickshell-native-availability.json
+            target/quickshell-command-updates/
           if-no-files-found: warn
   guido:
     runs-on: ubuntu-latest

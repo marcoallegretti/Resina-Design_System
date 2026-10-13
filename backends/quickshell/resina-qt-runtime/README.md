@@ -779,9 +779,52 @@ This integrated path does not qualify calibrated motion, physical devices,
 multi-seat hardware identity, screen-reader operation, hardware GPU rendering,
 released Quickshell accessibility or complete GUIdo Command/Button integration. The optional
 sampled profile below integrates guarded native motion with these same
-publication and cancellation boundaries. Material calibration and the upstream
-Quickshell host repair remain necessary for qualification. Hosted CI has executed
+publication and cancellation boundaries. Material calibration and released-host
+control qualification remain necessary. Hosted CI has executed
 this path successfully, separately from the local native Wayland evidence.
+
+### Released Quickshell authored updates
+
+The [released-host probe](../../../conformance/quickshell/command-updates-probe.qml)
+mounts `ResinaCommandControl` and replaces its complete authored configuration.
+Run with the packaged module and an unmodified Quickshell 0.3.2 built and running
+against Qt 6.11.2:
+
+```sh
+python tools/check_quickshell_command_updates.py \
+  --host target/quickshell-build/src/quickshell \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
+  --output-dir target/quickshell-command-updates --scales 1 1.25 2
+```
+
+Use a fresh output directory. Install the existing schema, render and native Qt
+test requirements. The checker validates the actual host before starting the
+scenario sequence. The default software/offscreen path records actual device
+density; `--platform xcb` or `--platform wayland` requires a live display.
+
+The 35 scenarios cover light/dark Latin, expanded German and mixed Arabic/Latin
+paragraphs at four text scales, changed typography and asymmetric LTR/RTL padding,
+an explicitly loaded alternate font, unavailable state, malformed configuration,
+unsupported focus policy and rotation, and recovery after each rejection.
+Every consumer snapshot observation is checked against its current authored
+source and interaction state. Final natural and fitted native measurements reach
+the independent rational layout checker. These remeasurements verify final
+layout arithmetic; they do not observe the control's internal measurement calls.
+
+Each successful case saves a PNG and its complete snapshot. Pixel checks require
+foreground ink on every measured line at the placed label coordinates; they do
+not establish every glyph's shape, universal fallback coverage or product styling
+acceptance. Logs retain native font diagnostics: Qt's
+[software glyph bounds](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/scenegraph/adaptations/software/qsgsoftwareglyphnode.cpp)
+and [FreeType metric fallback](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/text/freetype/qfontengine_ft.cpp)
+can recover from a bounding-query failure independently of painting. A diagnostic
+alone does not prove missing painted glyphs. Inspect captures
+and diagnostics together. Invalid cases must withdraw paint, target and accessible
+publication before recovery. These authored-update tests do not deliver pointer
+or keyboard input, inspect AT-SPI, test reload/closure, sample motion or establish
+screen-reader acceptance.
 
 ### Integrated sampled command frames
 

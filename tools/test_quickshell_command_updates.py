@@ -1,0 +1,129 @@
+import copy
+from contextlib import redirect_stderr
+import io
+import json
+from pathlib import Path
+from types import SimpleNamespace
+import tempfile
+import unittest
+from unittest.mock import patch
+from PIL import Image
+
+from check_quickshell_command_updates import (
+    authored_cases, main, read_reports, verify_capture, verify_case,
+    verify_stable_targets, verify_typography, verify_version,
+)
+
+
+class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_capture_rejects_missing_shifted_or_incomplete_line_ink(self):
+        snapshot = {"label": {"labelBounds": {"x": 10, "y": 10, "width": 50, "height": 20},
+                              "typography": {"fontSize": {"value": 10}, "lineHeight": 1}},
+                    "hitRegion": {"bounds": {"x": 0, "y": 0}},
+                    "paint": {"paint": {"body": {"foreground": {
+                        "colorSpace": "srgb", "alpha": 1, "components": [0, 0, 0]}}}}}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "capture.png"
+            for points in ([], [(65, 65)], [(65, 65), (65, 75)], [(5, 5), (5, 15)]):
+                image = Image.new("RGBA", (500, 800), "white")
+                for point in points:
+                    image.putpixel(point, (0, 0, 0, 255))
+                image.save(path)
+                if points == [(65, 65), (65, 75)]:
+                    verify_capture(path, snapshot, 1)
+                else:
+                    with self.assertRaises(ValueError):
+                        verify_capture(path, snapshot, 1)
+            Image.new("RGBA", (499, 800), "white").save(path)
+            with self.assertRaises(ValueError):
+                verify_capture(path, snapshot, 1)
+
+    def test_host_execution_failure_is_distinct_from_unsupported_version(self):
+        with self.assertRaisesRegex(ValueError, "verification failed:.*timed out"):
+            verify_version(SimpleNamespace(returncode=1, stdout="", stderr="traceback\ntimed out after 10 seconds"))
+        with self.assertRaisesRegex(ValueError, "requires released Quickshell"):
+            verify_version(SimpleNamespace(returncode=0, stdout="Quickshell 0.3.1 / Qt Quick 6.11.2", stderr=""))
+        verify_version(SimpleNamespace(returncode=0, stdout="Quickshell 0.3.2 / Qt Quick 6.11.2\n", stderr=""))
+
+    def rejected(self):
+        return {"name": "invalid", "ready": False, "error": "invalid configuration",
+                "snapshot": "", "target": "", "state": {
+                    "schemaVersion": "0.1.0", "enabled": True, "focused": False, "hold": None},
+                "hovered": False, "ignored": True, "deviceScale": 1, "renderer": "software",
+                "publications": [], "measurements": []}
+
+    def test_complete_rejected_replacement_is_reported(self):
+        report = self.rejected()
+        cases = [{"name": "invalid", "reject": True}]
+        log = "RESINA_COMMAND_CASE " + json.dumps(report) + "\nRESINA_COMMAND_DONE 1\n"
+        self.assertEqual(read_reports(log, cases), [report])
+        verify_case(cases[0], report, 1)
+        with self.assertRaisesRegex(ValueError, "different failure cause"):
+            verify_case({**cases[0], "expectedError": "matching native translation"}, report, 1)
+
+    def test_missing_duplicate_reordered_or_failed_native_cases_are_rejected(self):
+        report = json.dumps(self.rejected())
+        line = "RESINA_COMMAND_CASE " + report + "\n"
+        valid = line + "RESINA_COMMAND_DONE 1\n"
+        for log in ("", line, "RESINA_COMMAND_DONE 1\n", line + valid,
+                    valid + "RESINA_COMMAND_DONE 1\n", valid.replace("DONE 1", "DONE 0"),
+                    valid.replace('"invalid"', '"other"'), valid + "RESINA_COMMAND_FAIL failed\n",
+                    valid.replace('"ready": false', '"ready": false, "ready": false')):
+            with self.subTest(log=log), self.assertRaises(ValueError):
+                read_reports(log, [{"name": "invalid"}])
+
+    def test_font_diagnostics_are_retained_without_claiming_pixel_failure(self):
+        report = self.rejected()
+        log = "render glyph failed err=62\nRESINA_COMMAND_CASE " + json.dumps(report) + "\nRESINA_COMMAND_DONE 1\n"
+        self.assertEqual(read_reports(log, [{"name": "invalid"}]), [report])
+
+    def test_failed_replacement_cannot_keep_any_published_channel(self):
+        for field, value in (("error", ""), ("ready", True), ("snapshot", "{}"),
+                             ("target", "{}"), ("ignored", False), ("publications", [{}]), ("measurements", [{}]),
+                             ("deviceScale", 1.25), ("deviceScale", True), ("renderer", "unsupported"), ("ready", 0)):
+            report = copy.deepcopy(self.rejected())
+            report[field] = value
+            with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                verify_case({"name": "invalid", "reject": True}, report, 1)
+
+    def test_authored_typography_detects_stale_size_weight_spacing_and_line_height(self):
+        cases = authored_cases()
+        for case in (cases[0], next(case for case in cases if case["name"] == "authored-layout-rtl")):
+            scale = case["request"]["content"]["environment"]["textScale"]
+            style = copy.deepcopy(case.get("typography", {"familyRole": "sans",
+                "fontSize": {"value": 14 * scale, "unit": "px"}, "fontWeight": 500,
+                "lineHeight": 1.34, "letterSpacing": {"value": 0.15 * scale, "unit": "px"}}))
+            verify_typography(case, {"typography": style})
+            for field in style:
+                stale = copy.deepcopy(style)
+                stale[field] = None
+                with self.subTest(case=case["name"], field=field), self.assertRaises(ValueError):
+                    verify_typography(case, {"typography": stale})
+
+    def test_requested_platform_applies_to_host_verification(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("host", "font"):
+                (root / name).touch()
+            (root / "module").mkdir()
+            argv = ["check", "--host", str(root / "host"), "--font", str(root / "font"),
+                    "--alternate-font", str(root / "font"),
+                    "--module-path", str(root / "module"), "--output-dir", str(root / "output")]
+            with patch("sys.argv", argv), patch.dict("os.environ", {"QT_QPA_PLATFORM": "wayland"}), \
+                    patch("check_quickshell_command_updates.subprocess.run", return_value=SimpleNamespace(
+                        returncode=1, stdout="", stderr="unavailable host")) as run, redirect_stderr(io.StringIO()):
+                self.assertEqual(main(), 1)
+            self.assertEqual(run.call_args.kwargs["env"]["QT_QPA_PLATFORM"], "offscreen")
+            self.assertFalse((root / "output").exists())
+
+    def test_availability_and_recovery_cannot_move_the_same_authored_target(self):
+        cases = [{"request": {"content": "same"}}, {"request": {"content": "same"}, "enabled": False}]
+        reports = [{"target": '{"x":0}'}, {"target": '{"x":0}'}]
+        verify_stable_targets(cases, reports)
+        reports[1]["target"] = '{"x":1}'
+        with self.assertRaisesRegex(ValueError, "same authored target"):
+            verify_stable_targets(cases, reports)
+
+
+if __name__ == "__main__":
+    unittest.main()
