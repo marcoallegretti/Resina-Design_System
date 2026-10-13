@@ -13,6 +13,9 @@ resina-color = { path = "../../../reference/rust/resina-color" }
 resina-model = { path = "../../../reference/rust/resina-model" }
 resina-resolver = { path = "../../../reference/rust/resina-resolver" }
 png = { version = "0.18.1", optional = true }
+num-bigint = "0.5.1"
+num-rational = { version = "=0.4.2", default-features = false, features = ["std"] }
+num-traits = "0.2"
 
 [dev-dependencies]
 serde = { version = "1", features = ["derive"] }

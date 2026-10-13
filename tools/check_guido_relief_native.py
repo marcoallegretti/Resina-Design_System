@@ -1,4 +1,4 @@
-"""Compare an opaque face's prepared pixels with an owned nested Wayland capture."""
+"""Compare prepared relief, content or focus pixels with an owned nested Wayland capture."""
 import argparse
 import copy
 import hashlib
@@ -27,6 +27,16 @@ def diagnostic_request():
     return request
 
 
+def diagnostic_outline_focus_request():
+    from check_outline_focus_backend import case_request
+    case = load_json(ROOT / "conformance/states/outline-focus-cases.json")[0]
+    request, _, _ = case_request(case)
+    request["directions"] = []
+    request["outline"]["layoutDirection"] = "rtl"
+    request["sideOffset"] = {"x": -6, "y": 4}
+    return request
+
+
 def capture_matches(capture, prepared, origin):
     if origin[0] < 0 or origin[1] < 0 or origin[0] + prepared.width > capture.width or origin[1] + prepared.height > capture.height:
         raise ValueError("native capture clips the complete prepared image")
@@ -44,7 +54,15 @@ def capture_matches(capture, prepared, origin):
     return count, worst
 
 
-def check_scale(probe, request, output, parent, scale, content=None):
+def validate_canvas_reference(prepared, logical_size, scale):
+    expected = tuple(round(dimension * scale) for dimension in logical_size)
+    if prepared.size != expected:
+        raise ValueError("native opaque-canvas GPU reference dimensions disagree")
+    if prepared.getchannel("A").getextrema() != (255, 255):
+        raise ValueError("native GPU reference must have an opaque canvas")
+
+
+def check_scale(probe, request, output, parent, scale, content=None, outline_focus=False):
     with tempfile.TemporaryDirectory(prefix="resina-relief-native-") as runtime:
         config = Path(runtime) / "config"
         output_width = 1260 if content else 840
@@ -93,11 +111,13 @@ def check_scale(probe, request, output, parent, scale, content=None):
                     font, text_scale = content
                     arguments = [str(probe), str(request), str(font), str(scale), str(text_scale), str(prepared_path)]
                     marker = "RESINA_RELIEF_CONTENT_PREPARED "
+                elif outline_focus:
+                    marker = "RESINA_OUTLINE_FOCUS_PREPARED "
                 client = subprocess.Popen(arguments,
                                           cwd=ROOT, env=env, stdout=client_log, stderr=client_log)
                 children.append(client)
                 metadata = None
-                preparation_seconds = 120 if content else 20
+                preparation_seconds = 120 if content or outline_focus else 20
                 deadline = time.monotonic() + preparation_seconds
                 while time.monotonic() < deadline:
                     for line in client_path.read_text().splitlines():
@@ -113,11 +133,8 @@ def check_scale(probe, request, output, parent, scale, content=None):
                 if metadata["scale"] != scale:
                     raise ValueError("native fixture preparation scale differs from compositor scale")
                 prepared = Image.open(prepared_path).convert("RGBA")
-                if content:
-                    if prepared.size != (round(360 * scale), round(200 * scale)):
-                        raise ValueError("native complete-content GPU reference dimensions disagree")
-                    if prepared.getchannel("A").getextrema() != (255, 255):
-                        raise ValueError("native complete-content reference must have an opaque canvas")
+                if content or outline_focus:
+                    validate_canvas_reference(prepared, (360, 200) if content else (160, 96), scale)
                     origin = (0, 0)
                 else:
                     origin = tuple(round(metadata["origin"][axis] * scale) for axis in ("x", "y"))
@@ -153,9 +170,14 @@ def main():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--request", type=Path)
     parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit regular DejaVu Sans file")
+    parser.add_argument("--outline-focus", action="store_true", help="check the continuous-outline focus probe against its full opaque GPU reference")
     parser.add_argument("--text-scale", type=float, default=1)
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 1.5, 2, 3])
     args = parser.parse_args()
+    if args.outline_focus and (args.content_font or any(
+            not math.isfinite(s) or not 1 <= s <= 3
+            or 160 * s != round(160 * s) or 96 * s != round(96 * s) for s in args.scales)):
+        parser.error("outline focus requires scales [1,3] with integral 160x96 pixels and no content font")
     if not args.content_font and args.text_scale != 1:
         parser.error("text scale requires the complete-content probe and --content-font")
     if any(not math.isfinite(s) or s <= 0 or (840 / s) != round(840 / s) for s in args.scales):
@@ -170,13 +192,14 @@ def main():
             raise ValueError("parent Wayland socket is absent")
         args.output_dir.mkdir(parents=True)
         request_path = args.output_dir / "request.json"
-        request = load_json(args.request) if args.request else diagnostic_request()
+        request = load_json(args.request) if args.request else (
+            diagnostic_outline_focus_request() if args.outline_focus else diagnostic_request())
         if args.content_font and not args.request:
             request["outline"]["size"] = {"width": 320, "height": 160}
             request["outline"]["layoutDirection"] = "rtl"
         request_path.write_text(json.dumps(request, allow_nan=False))
         content = (args.content_font.resolve(), args.text_scale) if args.content_font else None
-        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content)
+        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content, args.outline_focus)
                    for scale in args.scales]
         report = {"records": records, "nestedBackend": "wayland", "renderer": "pixman",
                   "scope": "opaque native face-paint pixels; no appearance, input, focus or AT acceptance"}
@@ -184,10 +207,12 @@ def main():
             report["scope"] = "complete native face and glyph pixels against GPU reference; no appearance, input, focus or AT acceptance"
             report["textScale"] = args.text_scale
             report["fontSha256"] = hashlib.sha256(args.content_font.read_bytes()).hexdigest()
+        elif args.outline_focus:
+            report["scope"] = "complete native continuous-outline focus pixels against GPU reference; no component appearance, input or AT acceptance"
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2) + "\n")
         print(json.dumps(report))
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
-        print(f"FAIL native relief paint: {error}", file=sys.stderr)
+        print(f"FAIL native paint: {error}", file=sys.stderr)
         return 1
     return 0
 

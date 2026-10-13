@@ -35,7 +35,9 @@ pub use focus::{FocusBinding, FocusTransferError, RequestedFocus, request_focus}
 use guido::{layout::Size, prelude::ImageSource};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{RasterError, RasterImage, Viewport, prepare_viewport};
-use resina_resolver::{FocusIndicatorIr, OpaqueSurfaceIr, ReliefPaint, SurfacePaintIr};
+use resina_resolver::{
+    FocusIndicatorIr, OpaqueSurfaceIr, OutlineFocusIr, ReliefPaint, SurfacePaintIr,
+};
 use std::fmt;
 
 const MAX_COORDINATE_ERROR: f64 = 1.0 / 1024.0;
@@ -127,6 +129,19 @@ pub fn prepare_focus(
     prepare(bounds, device_scale, |viewport| {
         resina_raster::render_focus(ir, viewport, samples_per_axis)
     })
+}
+
+pub fn prepare_outline_focus_at(
+    ir: &OutlineFocusIr,
+    origin: PhysicalVector,
+    device_scale: f32,
+) -> Result<PreparedPaint, PrepareError> {
+    prepare_at(
+        ir.geometry().outer_bounds(),
+        origin,
+        device_scale,
+        |viewport| resina_raster::render_outline_focus(ir, viewport),
+    )
 }
 
 fn coordinate(value: f64) -> Result<f32, PrepareError> {

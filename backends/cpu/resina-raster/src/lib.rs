@@ -9,6 +9,8 @@ mod uniform;
 use uniform::SampleBox;
 mod placement;
 pub use placement::{PreparedViewport, prepare_viewport};
+mod outline_focus;
+pub use outline_focus::render_outline_focus;
 #[cfg(test)]
 mod tests;
 
@@ -31,6 +33,8 @@ pub enum RasterError {
     Allocation(TryReserveError),
     Paint(SurfacePaintError),
     ReliefPaint(ReliefPaintError),
+    OutlineFocus(resina_resolver::OutlineFocusError),
+    FocusPrecision(&'static str),
     Color(ColorConversionError),
 }
 
@@ -39,10 +43,16 @@ impl fmt::Display for RasterError {
         match self {
             Self::InvalidViewport(reason) => write!(formatter, "invalid raster viewport: {reason}"),
             Self::InvalidSampling => formatter.write_str("samples per axis must be in 1..=8"),
-            Self::ResourceLimit => formatter.write_str("raster pixel or sample limit exceeded"),
+            Self::ResourceLimit => {
+                formatter.write_str("raster pixel, sample or work limit exceeded")
+            }
             Self::Allocation(error) => write!(formatter, "raster allocation failed: {error}"),
             Self::Paint(error) => write!(formatter, "surface paint failed: {error}"),
             Self::ReliefPaint(error) => write!(formatter, "relief paint failed: {error}"),
+            Self::OutlineFocus(error) => write!(formatter, "focus support failed: {error}"),
+            Self::FocusPrecision(reason) => {
+                write!(formatter, "focus coverage cannot be certified: {reason}")
+            }
             Self::Color(error) => write!(formatter, "raster color conversion failed: {error}"),
         }
     }
@@ -54,6 +64,7 @@ impl std::error::Error for RasterError {
             Self::Allocation(error) => Some(error),
             Self::Paint(error) => Some(error),
             Self::ReliefPaint(error) => Some(error),
+            Self::OutlineFocus(error) => Some(error),
             Self::Color(error) => Some(error),
             _ => None,
         }

@@ -142,6 +142,29 @@ physical-device behavior. It is a verification consumer, not a reusable native
 Command component. Native accessibility integration remains tracked in
 [GUIdo issue #653](https://github.com/MalpenZibo/guido/issues/653).
 
+## Native continuous-outline focus inspection
+
+`outline_focus_probe` prepares the complete circular/quartic analytic focus ring
+on a fixed opaque canvas, captures a GPU reference and presents the same prepared
+paint on a native surface. The surrounding color comes from the checked focus
+request; insufficient contrast fails before presentation. The checker compares
+the entire opaque canvas, including the composited antialiased ring, on owned
+nested Wayland outputs at scales 1/1.25/1.5/2/3. Complete outer bounds must fit
+inside the diagnostic canvas. Other inspection scales must map its 160x96
+logical canvas to integral physical pixels.
+
+```sh
+cargo build --release --locked --manifest-path lab/guido/Cargo.toml --example outline_focus_probe
+python tools/check_guido_relief_native.py --outline-focus --probe lab/guido/target/release/examples/outline_focus_probe --output-dir target/outline-focus-native
+```
+
+Supply `--request` for another valid public outline-focus request and its actual
+opaque surrounding color. The default uses the shared quartic conformance case,
+RTL corners and explicit signed projection. Under a live parent Wayland display,
+the checker requires Sway and grim; use the actual `CARGO_TARGET_DIR` binary path
+when that variable is set. These diagnostic frames establish native pixel
+realization, rather than accepted component appearance, input or accessibility.
+
 ## Native relief content inspection
 
 Build the `relief_content_probe` example to compare complete face and text pixels

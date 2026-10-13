@@ -27,6 +27,30 @@ cargo test -p resina-raster --locked
 
 Both configurations are tested in Linux and Windows CI. Coverage includes independent square/circle/focus geometry oracles, linear-light filtering, straight alpha, resource and precision failures, and ownership transfer without a copy; the PNG configuration additionally checks encoding metadata, transport and failures. This backend does not implement components, input, layout, animation or optical treatments, and does not replace GUIdo's role as the high-fidelity reference renderer.
 
+## Continuous-outline focus
+
+`render_outline_focus(&OutlineFocusIr, Viewport)` realizes the analytic ring from
+[specification 84](../../../spec/84-outline-focus-geometry.md). It retains the
+resolved guarded sRGB color and explicit physical sweep. Circular and quartic
+corner axes are never enlarged to substitute for Euclidean disk offsets.
+
+Adaptive support queries construct convex contact hulls and conservative support
+half-plane intersections. Exact represented-input rational clipping bounds each
+pixel's ring area. The contact hull's coordinate uncertainty is accounted for
+through convex erosion; the containing intersection accounts for support and
+normal uncertainty. Subdivision guides preparation, while the final area bounds
+decide whether coverage is accurate enough to quantize. The admitted coverage
+interval is at most 1/255 wide; midpoint rounding differs from exact coverage by
+at most one alpha byte. Pixels use straight RGBA8; transparent pixels are zero.
+
+Preparation admits at most 4,096 support directions and 134,217,728 bounded work
+steps, alongside the existing viewport and pixel limits. Lost precision,
+nonconvergence and exhausted limits return a diagnostic without partial output.
+Filtered orientation predicates use outward float intervals only when they prove
+the sign; cancellation or overflow falls back to exact rational arithmetic.
+Prepare and reuse the complete image before exposing a state. This operation
+does not schedule frames, compose component content or accept component styling.
+
 ## Preparation benchmark
 
 Generate the [shared scene bundle](../../../conformance/scenes/README.md), then measure a named authored scene:
