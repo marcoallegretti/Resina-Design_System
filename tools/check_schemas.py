@@ -451,6 +451,10 @@ def main():
         "schemas/key-light-request.schema.json",
         "schemas/key-light-result.schema.json",
         "schemas/key-light-case.schema.json",
+        "schemas/material-light.schema.json",
+        "schemas/material-light-request.schema.json",
+        "schemas/material-light-result.schema.json",
+        "schemas/material-light-case.schema.json",
         "schemas/shape-fallback-assignments.schema.json",
         "schemas/shape-fallback-assignment-case.schema.json",
         "schemas/shape-fallback-case.schema.json",
@@ -811,6 +815,20 @@ def main():
             raise ValueError(f"duplicate key light case: {case['name']}")
         key_light_names.add(case["name"])
         check_case(key_light_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+    light_cases = load_json(ROOT / "conformance/lighting/material-light-vectors.json")
+    check_case(validator_for("schemas/material-light.schema.json"), "reference material light", load_json(ROOT / "definitions/material-light.json"), True)
+    light_case_schema = validator_for("schemas/material-light-case.schema.json")
+    light_request_schema = validator_for("schemas/material-light-request.schema.json")
+    light_result_schema = validator_for("schemas/material-light-result.schema.json")
+    light_names = set()
+    for case in light_cases:
+        check_case(light_case_schema, case["name"], case, True)
+        if case["name"] in light_names:
+            raise ValueError(f"duplicate material light case: {case['name']}")
+        light_names.add(case["name"])
+        check_case(light_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+        if "expected" in case:
+            check_case(light_result_schema, case["name"], case["expected"], True)
     contour_cases = load_json(ROOT / "conformance/geometry/inset-contour-vectors.json")
     contour_case_schema = validator_for("schemas/inset-contour-case.schema.json")
     contour_request_schema = validator_for("schemas/inset-contour-request.schema.json")
@@ -1312,6 +1330,7 @@ def main():
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
+        + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)
         + len(extrusion_cases)
         + len(invalid_extrusion_results)
         + 1

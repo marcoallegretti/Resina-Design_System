@@ -1,0 +1,7473 @@
+[
+  {
+    "name": "cast existing key response",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "frost existing key response",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "frost",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "frost",
+        "profile": {
+          "sideShade": 0.14,
+          "highlightLift": 0.18
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.34400000000000003,
+            0.43,
+            0.516
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.508,
+            0.59,
+            0.6719999999999999
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.508000000000001,
+              0.590000000000001,
+              0.6720000000000009
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3439999999999991,
+              0.42999999999999905,
+              0.515999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4648,
+              0.5539999999999999,
+              0.6432
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3664,
+              0.458,
+              0.5496
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "elastomer existing key response",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "elastomer",
+        "profile": {
+          "sideShade": 0.25,
+          "highlightLift": 0.14
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.30000000000000004,
+            0.375,
+            0.44999999999999996
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.48400000000000004,
+            0.5700000000000001,
+            0.656
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.484000000000001,
+              0.5700000000000011,
+              0.656000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2999999999999991,
+              0.37499999999999906,
+              0.449999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4504,
+              0.542,
+              0.6336
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.34,
+              0.425,
+              0.51
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "gel existing key response",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "gel",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "gel",
+        "profile": {
+          "sideShade": 0.18,
+          "highlightLift": 0.2
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.32800000000000007,
+            0.41000000000000003,
+            0.492
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.52,
+            0.6,
+            0.6799999999999999
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.520000000000001,
+              0.600000000000001,
+              0.6800000000000009
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3279999999999991,
+              0.4099999999999991,
+              0.49199999999999905
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.47200000000000003,
+              0.5599999999999999,
+              0.6479999999999999
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.35680000000000006,
+              0.446,
+              0.5352
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "static ambient attenuation",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": 0.5,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0.5,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.3,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4144,
+              0.512,
+              0.6096
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.3,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.388,
+              0.485,
+              0.582
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "opposite interaction convex mixture",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": {
+        "direction": {
+          "x": -1.0,
+          "y": 0.0
+        },
+        "strength": 0.25
+      },
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4144,
+              0.512,
+              0.6096
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.388,
+              0.485,
+              0.582
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "ambient and interaction compose",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": 0.5,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0.5,
+      "interaction": {
+        "direction": {
+          "x": -1.0,
+          "y": 0.0
+        },
+        "strength": 0.25
+      },
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.14999999999999997,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4072,
+              0.506,
+              0.6048
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.14999999999999997,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.394,
+              0.4925,
+              0.591
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "RTL retains physical light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "rtl",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": {
+        "direction": {
+          "x": -1.0,
+          "y": 0.0
+        },
+        "strength": 0.25
+      },
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4144,
+              0.512,
+              0.6096
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.388,
+              0.485,
+              0.582
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "disabled suppresses interaction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": false,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "settled interaction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": false,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "unavailable dynamic light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": false,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "economy suppresses interaction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "economy"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "balanced admits authored strength",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "balanced"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": {
+        "direction": {
+          "x": -1.0,
+          "y": 0.0
+        },
+        "strength": 0.25
+      },
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4144,
+              0.512,
+              0.6096
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.388,
+              0.485,
+              0.582
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "reduced motion suppresses interaction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": true,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "reduced transparency preserves opaque light",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": true,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": {
+        "direction": {
+          "x": -1.0,
+          "y": 0.0
+        },
+        "strength": 0.25
+      },
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4144,
+              0.512,
+              0.6096
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.29999999999999993,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.388,
+              0.485,
+              0.582
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "high contrast static baseline",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": 0.5,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": true
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "changed physical key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": -1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": -1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "explicit zero interaction has no effective direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": 0
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "empty samples",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": []
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": []
+    }
+  },
+  {
+    "name": "repeated full normals",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "subnormal planar direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 5e-324,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "maximum finite planar direction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1.7976931348623157e+308,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 1.0,
+        "y": 0.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "negative ambient",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": -0.1,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "ambient"
+  },
+  {
+    "name": "ambient replacement",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": 1,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "ambient"
+  },
+  {
+    "name": "invalid unused interaction",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": 0,
+            "y": 0
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": false,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "direction"
+  },
+  {
+    "name": "invalid suppressed strength",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": -1,
+            "y": 0
+          },
+          "strength": -0.1
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": false,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "strength"
+  },
+  {
+    "name": "nonunit full normal",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.7
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "normal 0"
+  },
+  {
+    "name": "unknown light member",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null,
+        "extra": true
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "positional normal",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        [
+          0.6,
+          0,
+          0.8
+        ],
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": false,
+    "errorContains": "object"
+  },
+  {
+    "name": "vertical key full tilt",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 0,
+            "y": -1
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0,
+          "y": 0.6,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": -0.6,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 0.0,
+        "y": -1.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "rotated physical light and normals",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0,
+          "y": 0.6,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": -0.6,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 0.0,
+        "y": 1.0
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4288,
+              0.524,
+              0.6192
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37600000000000006,
+              0.47000000000000003,
+              0.5640000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "oblique full normal",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": -1
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.48,
+          "y": 0.64,
+          "z": 0.6
+        },
+        {
+          "x": -0.48,
+          "y": -0.64,
+          "z": 0.6
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": 0.7071067811865475,
+        "y": -0.7071067811865475
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": -0.11313708498984759,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3954745166004061,
+              0.49434314575050764,
+              0.5932117749006092
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.11313708498984759,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4054305800795127,
+              0.5045254833995939,
+              0.6036203867196751
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "two axis interaction and key",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": -1,
+            "y": -1
+          }
+        },
+        "ambient": null,
+        "interaction": {
+          "direction": {
+            "x": 1,
+            "y": -1
+          },
+          "strength": 0.25
+        }
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.48,
+          "y": 0.64,
+          "z": 0.6
+        },
+        {
+          "x": -0.48,
+          "y": -0.64,
+          "z": 0.6
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": -0.7071067811865475,
+        "y": -0.7071067811865475
+      },
+      "ambient": 0,
+      "interaction": {
+        "direction": {
+          "x": 0.7071067811865475,
+          "y": -0.7071067811865475
+        },
+        "strength": 0.25
+      },
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": -0.6222539674441617,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.37510984130223357,
+              0.4688873016277919,
+              0.5626647619533504
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.6222539674441617,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4298681904373198,
+              0.5248901586977665,
+              0.6199121269582132
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "authored reference null lighting",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": -1,
+            "y": -1
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "profile": {
+          "sideShade": 0.1,
+          "highlightLift": 0.08
+        },
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "side": {
+          "colorSpace": "srgb",
+          "components": [
+            0.36000000000000004,
+            0.45,
+            0.54
+          ],
+          "alpha": 1
+        },
+        "highlight": {
+          "colorSpace": "srgb",
+          "components": [
+            0.448,
+            0.54,
+            0.632
+          ],
+          "alpha": 1
+        }
+      },
+      "keyDirection": {
+        "x": -0.7071067811865475,
+        "y": -0.7071067811865475
+      },
+      "ambient": 0,
+      "interaction": null,
+      "colorRanges": [
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3999999999999991,
+              0.49999999999999906,
+              0.599999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.44800000000000095,
+              0.540000000000001,
+              0.632000000000001
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3599999999999991,
+              0.44999999999999907,
+              0.539999999999999
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.40000000000000097,
+              0.500000000000001,
+              0.600000000000001
+            ],
+            "alpha": 1
+          }
+        }
+      ],
+      "samples": [
+        {
+          "weight": -0.42426406871192845,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3830294372515229,
+              0.4787867965644036,
+              0.5745441558772842
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": 0.42426406871192845,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.42036467529817256,
+              0.5169705627484772,
+              0.6135764501987817
+            ],
+            "alpha": 1
+          }
+        },
+        {
+          "weight": -0.0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4,
+              0.5,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "late invalid normal",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "light": {
+        "schemaVersion": "0.1.0",
+        "keyLight": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        "ambient": null,
+        "interaction": null
+      },
+      "environment": {
+        "schemaVersion": "0.2.0",
+        "geometry": {
+          "width": 480,
+          "height": 320,
+          "safeArea": {
+            "start": 16,
+            "end": 16,
+            "top": 8,
+            "bottom": 8
+          }
+        },
+        "scale": 1,
+        "textScale": 1,
+        "inputCapabilities": [],
+        "viewingProfile": "unknown",
+        "densityPreference": "standard",
+        "accessibilityPreferences": {
+          "reducedMotion": false,
+          "reducedTransparency": false,
+          "highContrast": false
+        },
+        "locale": "en",
+        "layoutDirection": "ltr",
+        "rendererCapabilities": {
+          "gradients": false,
+          "translucentSurfaces": false,
+          "innerShadow": false,
+          "advancedShadow": false,
+          "sdfShapes": false,
+          "backdropEffect": false,
+          "backdropBlur": false,
+          "shapedBackdrop": false,
+          "dynamicLighting": true,
+          "deformation": false,
+          "masks": false,
+          "customShader": false,
+          "wideGamut": false,
+          "hdr": false
+        },
+        "qualityPolicy": "full"
+      },
+      "enabled": true,
+      "interactionActive": true,
+      "pigment": {
+        "schemaVersion": "0.1.0",
+        "materialFamily": "cast",
+        "body": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.5,
+            0.6
+          ],
+          "alpha": 1
+        },
+        "profiles": {
+          "schemaVersion": "0.1.0",
+          "profiles": {
+            "cast": {
+              "sideShade": 0.1,
+              "highlightLift": 0.08
+            },
+            "frost": {
+              "sideShade": 0.14,
+              "highlightLift": 0.18
+            },
+            "elastomer": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "gel": {
+              "sideShade": 0.18,
+              "highlightLift": 0.2
+            }
+          }
+        }
+      },
+      "normals": [
+        {
+          "x": 0.6,
+          "y": 0,
+          "z": 0.8
+        },
+        {
+          "x": -0.6,
+          "y": 0,
+          "z": 0.7
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        }
+      ]
+    },
+    "requestSchemaValid": true,
+    "errorContains": "normal 1"
+  }
+]
