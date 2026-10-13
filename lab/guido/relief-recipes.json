@@ -1,0 +1,543 @@
+{
+  "schemaVersion": "0.1.0",
+  "minimumInset": 8,
+  "edgeWidth": 0.75,
+  "recipes": [
+    {
+      "name": "flat-structural",
+      "shape": "structural",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.high",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Structure",
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 24,
+            "y": 24
+          },
+          "topEnd": {
+            "x": 24,
+            "y": 24
+          },
+          "bottomEnd": {
+            "x": 24,
+            "y": 24
+          },
+          "bottomStart": {
+            "x": 24,
+            "y": 24
+          }
+        }
+      }
+    },
+    {
+      "name": "flat-soft",
+      "shape": "soft",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.high",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Structure",
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 28,
+            "y": 28
+          },
+          "topEnd": {
+            "x": 28,
+            "y": 28
+          },
+          "bottomEnd": {
+            "x": 28,
+            "y": 28
+          },
+          "bottomStart": {
+            "x": 28,
+            "y": 28
+          }
+        }
+      }
+    },
+    {
+      "name": "flat-rounded",
+      "shape": "rounded",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.high",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Structure",
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 48,
+            "y": 48
+          },
+          "topEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomStart": {
+            "x": 48,
+            "y": 48
+          }
+        }
+      }
+    },
+    {
+      "name": "flat-capsule",
+      "shape": "capsule",
+      "curvature": "circular",
+      "materialRole": "surface.content",
+      "colorRole": "surface.high",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Structure",
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "corners": {
+        "kind": "capsule"
+      }
+    },
+    {
+      "name": "flat-organic",
+      "shape": "organic",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.high",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Structure",
+      "profile": {
+        "kind": "flat",
+        "bodyThickness": 4,
+        "amplitude": 0,
+        "shoulderWidth": 0
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 48,
+            "y": 48
+          },
+          "topEnd": {
+            "x": 32,
+            "y": 32
+          },
+          "bottomEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomStart": {
+            "x": 32,
+            "y": 32
+          }
+        }
+      }
+    },
+    {
+      "name": "convex-structural",
+      "shape": "structural",
+      "curvature": "quartic",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "foregroundRole": "content.inverse",
+      "expectedMaterialFamily": "elastomer",
+      "label": "Control",
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 1.375,
+        "shoulderWidth": 2.75
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 24,
+            "y": 24
+          },
+          "topEnd": {
+            "x": 24,
+            "y": 24
+          },
+          "bottomEnd": {
+            "x": 24,
+            "y": 24
+          },
+          "bottomStart": {
+            "x": 24,
+            "y": 24
+          }
+        }
+      }
+    },
+    {
+      "name": "convex-soft",
+      "shape": "soft",
+      "curvature": "quartic",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "foregroundRole": "content.inverse",
+      "expectedMaterialFamily": "elastomer",
+      "label": "Control",
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 1.5,
+        "shoulderWidth": 3
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 28,
+            "y": 28
+          },
+          "topEnd": {
+            "x": 28,
+            "y": 28
+          },
+          "bottomEnd": {
+            "x": 28,
+            "y": 28
+          },
+          "bottomStart": {
+            "x": 28,
+            "y": 28
+          }
+        }
+      }
+    },
+    {
+      "name": "convex-rounded",
+      "shape": "rounded",
+      "curvature": "quartic",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "foregroundRole": "content.inverse",
+      "expectedMaterialFamily": "elastomer",
+      "label": "Control",
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 1.5,
+        "shoulderWidth": 3
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 48,
+            "y": 48
+          },
+          "topEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomStart": {
+            "x": 48,
+            "y": 48
+          }
+        }
+      }
+    },
+    {
+      "name": "convex-capsule",
+      "shape": "capsule",
+      "curvature": "circular",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "foregroundRole": "content.inverse",
+      "expectedMaterialFamily": "elastomer",
+      "label": "Control",
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 2.5,
+        "shoulderWidth": 5
+      },
+      "corners": {
+        "kind": "capsule"
+      }
+    },
+    {
+      "name": "convex-organic",
+      "shape": "organic",
+      "curvature": "quartic",
+      "materialRole": "control.primary",
+      "colorRole": "accent.primary",
+      "foregroundRole": "content.inverse",
+      "expectedMaterialFamily": "elastomer",
+      "label": "Control",
+      "profile": {
+        "kind": "convex",
+        "bodyThickness": 4,
+        "amplitude": 1.375,
+        "shoulderWidth": 2.75
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 48,
+            "y": 48
+          },
+          "topEnd": {
+            "x": 32,
+            "y": 32
+          },
+          "bottomEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomStart": {
+            "x": 32,
+            "y": 32
+          }
+        }
+      }
+    },
+    {
+      "name": "recessed-structural",
+      "shape": "structural",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.low",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Well",
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 1.375,
+        "shoulderWidth": 2.75
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 24,
+            "y": 24
+          },
+          "topEnd": {
+            "x": 24,
+            "y": 24
+          },
+          "bottomEnd": {
+            "x": 24,
+            "y": 24
+          },
+          "bottomStart": {
+            "x": 24,
+            "y": 24
+          }
+        }
+      }
+    },
+    {
+      "name": "recessed-soft",
+      "shape": "soft",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.low",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Well",
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 1.5,
+        "shoulderWidth": 3
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 28,
+            "y": 28
+          },
+          "topEnd": {
+            "x": 28,
+            "y": 28
+          },
+          "bottomEnd": {
+            "x": 28,
+            "y": 28
+          },
+          "bottomStart": {
+            "x": 28,
+            "y": 28
+          }
+        }
+      }
+    },
+    {
+      "name": "recessed-rounded",
+      "shape": "rounded",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.low",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Well",
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 1.5,
+        "shoulderWidth": 3
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 48,
+            "y": 48
+          },
+          "topEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomStart": {
+            "x": 48,
+            "y": 48
+          }
+        }
+      }
+    },
+    {
+      "name": "recessed-capsule",
+      "shape": "capsule",
+      "curvature": "circular",
+      "materialRole": "surface.content",
+      "colorRole": "surface.low",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Well",
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 2.5,
+        "shoulderWidth": 5
+      },
+      "corners": {
+        "kind": "capsule"
+      }
+    },
+    {
+      "name": "recessed-organic",
+      "shape": "organic",
+      "curvature": "quartic",
+      "materialRole": "surface.content",
+      "colorRole": "surface.low",
+      "foregroundRole": "content.primary",
+      "expectedMaterialFamily": "cast",
+      "label": "Well",
+      "profile": {
+        "kind": "recessed",
+        "bodyThickness": 4,
+        "amplitude": 1.375,
+        "shoulderWidth": 2.75
+      },
+      "corners": {
+        "kind": "explicit",
+        "radii": {
+          "topStart": {
+            "x": 48,
+            "y": 48
+          },
+          "topEnd": {
+            "x": 32,
+            "y": 32
+          },
+          "bottomEnd": {
+            "x": 48,
+            "y": 48
+          },
+          "bottomStart": {
+            "x": 32,
+            "y": 32
+          }
+        }
+      }
+    }
+  ],
+  "sizes": {
+    "flat": {
+      "width": 320,
+      "height": 96
+    },
+    "convex": {
+      "width": 256,
+      "height": 64
+    },
+    "recessed": {
+      "width": 320,
+      "height": 80
+    }
+  },
+  "pigmentProfiles": {
+    "schemaVersion": "0.1.0",
+    "profiles": {
+      "cast": {
+        "sideShade": 0.3,
+        "highlightLift": 0.2
+      },
+      "frost": {
+        "sideShade": 0.14,
+        "highlightLift": 0.18
+      },
+      "elastomer": {
+        "sideShade": 0.25,
+        "highlightLift": 0.14
+      },
+      "gel": {
+        "sideShade": 0.18,
+        "highlightLift": 0.2
+      }
+    }
+  }
+}
