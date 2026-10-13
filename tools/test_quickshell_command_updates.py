@@ -2,6 +2,7 @@ import copy
 from contextlib import redirect_stderr
 import io
 import json
+import math
 import subprocess
 from pathlib import Path
 from types import SimpleNamespace
@@ -18,6 +19,43 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_authored_depth_reaches_light_and_extrusion_bounds(self):
+        from check_quickshell_command_updates import verify_authored_geometry
+        request = authored_cases()[0]["request"]
+
+        def snapshot(scale):
+            offset = math.sqrt(2) * scale
+            return {"paint": {"response": {"depthScale": scale}, "paint": {"body": {
+                "materialFamily": "elastomer", "lighting": {
+                    "direction": {"x": -math.sqrt(0.5), "y": -math.sqrt(0.5)},
+                    "sideOffset": {"x": offset, "y": offset}},
+                "geometry": {
+                    "front": {"bounds": {"x": 0, "y": 0, "width": 160, "height": 80}},
+                    "silhouette": {"bounds": {"x": 0, "y": 0, "width": 160 + offset, "height": 80 + offset}},
+                    "edgeInterior": {"offset": {"x": 1, "y": 1}, "contour": {"bounds": {
+                        "x": 0, "y": 0, "width": 158 + offset, "height": 78 + offset}}}}}}}}
+
+        rest, disabled = snapshot(1), snapshot(0.7)
+        for direction in ("ltr", "rtl"):
+            request["content"]["environment"]["layoutDirection"] = direction
+            verify_authored_geometry(request, rest)
+            verify_authored_geometry(request, disabled)
+        for change in ("geometry", "lighting", "both", "origin", "edge-placement", "edge-bounds"):
+            changed = copy.deepcopy(disabled)
+            body = changed["paint"]["paint"]["body"]
+            if change in ("geometry", "both"):
+                body["geometry"] = copy.deepcopy(rest["paint"]["paint"]["body"]["geometry"])
+            if change in ("lighting", "both"):
+                body["lighting"] = copy.deepcopy(rest["paint"]["paint"]["body"]["lighting"])
+            if change == "origin":
+                body["geometry"]["silhouette"]["bounds"]["x"] = 1
+            elif change == "edge-placement":
+                body["geometry"]["edgeInterior"]["offset"]["x"] = 0
+            elif change == "edge-bounds":
+                body["geometry"]["edgeInterior"]["contour"]["bounds"]["width"] += 1
+            with self.subTest(change=change), self.assertRaisesRegex(ValueError, "(geometry|lighting) differs from the authored depth response"):
+                verify_authored_geometry(request, changed)
+
     def test_native_timeout_retains_partial_streams_and_failure(self):
         for stdout, stderr in ((b"partial observation\xff\n", b"native error\n"),
                                ("partial observation\n", "native error\n"), (None, None)):
@@ -99,10 +137,11 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                     "components": [252/255, 251/255, 248/255]}},
                 "foreground": {"colorSpace": "srgb", "alpha": 1, "components": [24/255, 41/255, 45/255]},
                 "edge": {"color": {"colorSpace": "srgb", "alpha": 1, "components": [109/255, 129/255, 128/255]}}}}}}
-        verify_authored_paint(request, snapshot)
-        request["content"]["themeSource"] = authored_cases()[12]["request"]["content"]["themeSource"]
-        with self.assertRaisesRegex(ValueError, "authored"):
+        with patch("check_quickshell_command_updates.verify_authored_geometry"):
             verify_authored_paint(request, snapshot)
+            request["content"]["themeSource"] = authored_cases()[12]["request"]["content"]["themeSource"]
+            with self.assertRaisesRegex(ValueError, "authored"):
+                verify_authored_paint(request, snapshot)
 
     def test_capture_rejects_missing_shifted_or_incomplete_line_ink(self):
         snapshot = {"label": {"labelBounds": {"x": 10, "y": 10, "width": 50, "height": 20},

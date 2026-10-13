@@ -111,6 +111,53 @@ def verify_authored_paint(request, snapshot):
             or body["foreground"] != inline_color(request["body"]["foregroundRole"]) \
             or body["edge"]["color"] != inline_color("outline"):
         raise ValueError("native paint differs from the authored theme, form or response")
+    verify_authored_geometry(request, snapshot)
+
+
+def verify_authored_geometry(request, snapshot):
+    appearance = request["body"]["appearance"]
+    theme = json.loads(request["content"]["themeSource"], object_pairs_hook=unique_object)
+    sources = theme["tokenResolver"]["sets"]["foundation"]["sources"]
+    if len(sources) != 1 or set(sources[0]) != {"$ref"}:
+        raise ValueError("authored geometry requires the fixture's single foundation source")
+    token = json.loads(request["content"]["externalSources"][sources[0]["$ref"]], object_pairs_hook=unique_object)
+    elevation = request["body"]["surface"]["form"]["elevation"]
+    for member in appearance["depthAssignments"]["roles"][elevation].split("."):
+        token = token[member]
+    dimension = token["$value"]
+    if not isinstance(dimension, dict) or dimension.get("unit") != "px" \
+            or type(dimension.get("value")) not in (int, float) \
+            or not math.isfinite(dimension["value"]) or dimension["value"] < 0:
+        raise ValueError("authored geometry requires a literal foundation depth in px")
+    body = snapshot["paint"]["paint"]["body"]
+    depth = dimension["value"] * snapshot["paint"]["response"]["depthScale"]
+    light = appearance["keyLight"]["direction"]
+    magnitude = math.hypot(light["x"], light["y"])
+    if not math.isfinite(magnitude) or magnitude == 0:
+        raise ValueError("authored geometry requires a finite nonzero key light")
+    direction = {axis: light[axis] / magnitude for axis in ("x", "y")}
+    offset = {axis: -direction[axis] * depth for axis in ("x", "y")}
+
+    def equal_numbers(actual, expected):
+        return set(actual) == set(expected) and all(
+            math.isclose(actual[name], value, rel_tol=1e-12, abs_tol=1e-12)
+            for name, value in expected.items())
+
+    if not equal_numbers(body["lighting"]["direction"], direction) \
+            or not equal_numbers(body["lighting"]["sideOffset"], offset):
+        raise ValueError("native lighting differs from the authored depth response")
+    geometry = body["geometry"]
+    front = geometry["front"]["bounds"]
+    edge = appearance["bands"][body["materialFamily"]]["edgeWidth"]
+    silhouette = {"x": min(0, offset["x"]), "y": min(0, offset["y"]),
+                  "width": front["width"] + abs(offset["x"]),
+                  "height": front["height"] + abs(offset["y"])}
+    interior = {**silhouette, "width": front["width"] - 2 * edge + abs(offset["x"]),
+                "height": front["height"] - 2 * edge + abs(offset["y"])}
+    if not equal_numbers(geometry["silhouette"]["bounds"], silhouette) \
+            or not equal_numbers(geometry["edgeInterior"]["contour"]["bounds"], interior) \
+            or not equal_numbers(geometry["edgeInterior"]["offset"], {"x": edge, "y": edge}):
+        raise ValueError("native geometry differs from the authored depth response")
 
 
 def unique_object(pairs):

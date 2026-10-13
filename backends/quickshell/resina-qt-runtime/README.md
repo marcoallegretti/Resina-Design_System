@@ -811,7 +811,14 @@ unsupported focus policy and rotation, and recovery after each rejection.
 Every consumer snapshot observation is checked against its current authored
 source and interaction state, including literal pigment bindings from the current
 inline theme and the authored material/form/phase response. This fixture lookup
-does not resolve arbitrary DTCG aliases or multi-source themes. Final natural and fitted native measurements reach
+does not resolve arbitrary DTCG aliases or multi-source themes. The selected
+literal foundation depth, response and physical key light independently determine
+the expected lighting offset and swept silhouette/edge-interior bounds. Final
+snapshots and callbacks must retain those bounds and inset placement; this check
+does not certify every analytic contour segment. Callback labels and reserved
+targets must equal the independently checked final values in each fixed authored
+context, while interaction paint follows each callback's own state.
+Final natural and fitted native measurements reach
 the independent rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
 
