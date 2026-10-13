@@ -2,6 +2,16 @@ use resina_model::PhysicalVector;
 use resina_resolver::resolve_relief_paint_source;
 use serde_json::{Value, json};
 
+#[test]
+fn nested_outline_must_retain_original_numeric_source() {
+    for literal in ["1e-400", "-1e-400"] {
+        let mut request = request("flat", "quartic");
+        request["outline"]["radii"]["topStart"]["x"] = json!(-9999.0);
+        let source = request.to_string().replace("-9999.0", literal);
+        assert!(resolve_relief_paint_source(&source).is_err(), "{literal}");
+    }
+}
+
 fn request(kind: &str, curve: &str) -> Value {
     json!({
         "schemaVersion": "0.1.0",

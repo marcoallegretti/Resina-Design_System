@@ -100,6 +100,8 @@ duplicate JSON members, positional arrays, nonfinite/negative extents or inset,
 and bounds without positive area. Validate extents even if the bounds collapse.
 Content bounds must have finite, representable positive area. Requested positive
 extents or padding lost to precision fail diagnostically instead of disappearing.
+This includes numeric source decoding, before normalization or nested resolution;
+a requested nonzero extent or inset must not silently become zero.
 Invalid sampling points fail. Membership uses bounded normalized arithmetic;
 the reference does not square unbounded physical coordinates.
 

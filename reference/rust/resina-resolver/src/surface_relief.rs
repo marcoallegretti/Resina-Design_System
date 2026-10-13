@@ -54,9 +54,10 @@ impl std::error::Error for SurfaceReliefError {}
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct ReliefRequest {
+struct ReliefRequest<'a> {
     schema_version: String,
-    outline: serde_json::Value,
+    #[serde(borrow)]
+    outline: &'a serde_json::value::RawValue,
     profile: SurfaceReliefProfile,
     points: Vec<PhysicalVector>,
 }
@@ -96,12 +97,12 @@ pub fn resolve_surface_relief_source(
             "points must contain vector objects".into(),
         ));
     }
-    let request: ReliefRequest =
-        serde_json::from_value(document).map_err(|e| SurfaceReliefError(e.to_string()))?;
+    let request: ReliefRequest<'_> =
+        serde_json::from_str(source).map_err(|e| SurfaceReliefError(e.to_string()))?;
     if request.schema_version != "0.1.0" {
         return Err(SurfaceReliefError("schemaVersion must be 0.1.0".into()));
     }
-    let outline = resolve_surface_outline_source(&request.outline.to_string())
+    let outline = resolve_surface_outline_source(request.outline.get())
         .map_err(|e| SurfaceReliefError(e.to_string()))?;
     let surface = resolve_surface_relief(outline, request.profile)?;
     let samples = request

@@ -1,6 +1,6 @@
 import json
 
-from backend_source import duplicate_member_source, nonfinite_member_source
+from backend_source import duplicate_member_source, negative_underflow_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
 from check_schemas import ROOT, load_json
 from check_surface_outline_backend import outline_mismatch
@@ -37,5 +37,6 @@ if __name__ == "__main__":
             ("duplicate amplitude", duplicate_member_source(baseline, "/profile/amplitude")),
             ("nonfinite amplitude", nonfinite_member_source(baseline, "/profile/amplitude")),
             ("nonfinite sample point", nonfinite_member_source(baseline, "/points/0/x")),
+            ("negative nested radius", negative_underflow_member_source(baseline, "/outline/radii/topStart/x")),
         ),
     ))

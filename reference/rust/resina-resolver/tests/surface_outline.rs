@@ -3,6 +3,58 @@ use resina_model::{CornerRadius, LogicalCornerRadii, PhysicalVector, SurfaceSize
 use resina_resolver::{OutlineCurvature, resolve_surface_outline};
 
 #[test]
+fn source_corner_extents_must_not_disappear_before_normalization() {
+    let cases: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../conformance/geometry/surface-outline-vectors.json"
+    ))
+    .unwrap();
+    let mut accepted = Vec::new();
+    for corner in ["topStart", "topEnd", "bottomEnd", "bottomStart"] {
+        for axis in ["x", "y"] {
+            for literal in ["1e-400", "-1e-400"] {
+                let mut request = cases[0]["request"].clone();
+                request["radii"][corner][axis] = serde_json::json!(-9999.0);
+                let source = request.to_string().replace("-9999.0", literal);
+                if resina_resolver::resolve_surface_outline_source(&source).is_ok() {
+                    accepted.push(format!("{corner}/{axis}: {literal}"));
+                }
+            }
+        }
+    }
+    assert!(
+        accepted.is_empty(),
+        "lost source extents accepted: {accepted:?}"
+    );
+}
+
+#[test]
+fn source_inset_distinguishes_underflow_from_explicit_decimal_zero() {
+    let cases: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../conformance/geometry/surface-outline-vectors.json"
+    ))
+    .unwrap();
+    for literal in ["1e-400", "-1e-400"] {
+        let mut request = cases[0]["request"].clone();
+        request["minimumInset"] = serde_json::json!(-9999.0);
+        let source = request.to_string().replace("-9999.0", literal);
+        assert!(
+            resina_resolver::resolve_surface_outline_source(&source).is_err(),
+            "{literal}"
+        );
+    }
+    for literal in ["0e-400", "-0.000e-400", "0.0E-400"] {
+        let mut request = cases[0]["request"].clone();
+        request["radii"]["topStart"]["x"] = serde_json::json!(-9999.0);
+        request["minimumInset"] = serde_json::json!(-9999.0);
+        let source = request.to_string().replace("-9999.0", literal);
+        let resolved = resina_resolver::resolve_surface_outline_source(&source).unwrap();
+        let result = serde_json::to_value(resolved).unwrap();
+        assert_eq!(result["corners"]["topLeft"]["x"], 0.0);
+        assert_eq!(result["corners"]["topLeft"]["y"], 0.0);
+    }
+}
+
+#[test]
 fn authored_public_vectors_and_diagnostic_failures() {
     let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!(
         "../../../../conformance/geometry/surface-outline-vectors.json"

@@ -31,6 +31,16 @@ fn baseline() -> Value {
     })
 }
 
+#[test]
+fn nested_outline_must_retain_original_numeric_source() {
+    for literal in ["1e-400", "-1e-400"] {
+        let mut request = baseline();
+        request["outline"]["radii"]["topStart"]["x"] = json!(-9999.0);
+        let source = request.to_string().replace("-9999.0", literal);
+        assert!(resolve_outline_focus_source(&source).is_err(), "{literal}");
+    }
+}
+
 fn resolve(request: &Value) -> Value {
     serde_json::to_value(resolve_outline_focus_source(&request.to_string()).unwrap()).unwrap()
 }

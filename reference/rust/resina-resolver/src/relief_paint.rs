@@ -50,9 +50,10 @@ pub struct ReliefPaintResult {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct PaintRequest {
+struct PaintRequest<'a> {
     schema_version: String,
-    outline: serde_json::Value,
+    #[serde(borrow)]
+    outline: &'a serde_json::value::RawValue,
     profile: SurfaceReliefProfile,
     pigment: serde_json::Value,
     key_light: KeyLight,
@@ -94,12 +95,11 @@ pub fn resolve_relief_paint_source(source: &str) -> Result<ReliefPaintResult, Re
     if points.iter().any(|point| !point.is_object()) {
         return Err(ReliefPaintError("points must contain objects".into()));
     }
-    let request: PaintRequest = serde_json::from_value(document).map_err(|e| error(&e))?;
+    let request: PaintRequest<'_> = serde_json::from_str(source).map_err(|e| error(&e))?;
     if request.schema_version != "0.1.0" {
         return Err(ReliefPaintError("schemaVersion must be 0.1.0".into()));
     }
-    let outline =
-        resolve_surface_outline_source(&request.outline.to_string()).map_err(|e| error(&e))?;
+    let outline = resolve_surface_outline_source(request.outline.get()).map_err(|e| error(&e))?;
     let surface = resolve_surface_relief(outline, request.profile).map_err(|e| error(&e))?;
     let pigment =
         resolve_opaque_pigment_source(&request.pigment.to_string()).map_err(|e| error(&e))?;

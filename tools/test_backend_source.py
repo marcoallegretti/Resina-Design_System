@@ -7,14 +7,23 @@ import sys
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from subprocess import CompletedProcess
+from decimal import Decimal
 from unittest.mock import patch
 
-from backend_source import duplicate_member_source, nonfinite_member_source
+from backend_source import duplicate_member_source, negative_underflow_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
 from check_schemas import parse_json, validator_for
 
 
 class BackendSourceTests(unittest.TestCase):
+    def test_negative_underflow_preserves_raw_numeric_sign_and_selected_member(self):
+        document = {"items": [{"extent": 1.5}], "text": "-1e-400"}
+        source = negative_underflow_member_source(document, "/items/0/extent")
+        actual = json.loads(source, parse_float=Decimal)
+        self.assertEqual(actual["items"][0]["extent"], Decimal("-1e-400"))
+        self.assertEqual(actual["text"], "-1e-400")
+        self.assertEqual(document["items"][0]["extent"], 1.5)
+
     def test_only_selected_member_is_duplicated_and_document_is_unchanged(self):
         document = {
             "a/b": [{"~key": {"text": '"λ"', "value": [True, None, 1.5]}}],

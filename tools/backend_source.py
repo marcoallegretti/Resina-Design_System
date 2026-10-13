@@ -12,7 +12,11 @@ def nonfinite_member_source(document, pointer):
     return _member_source(document, pointer, duplicate=False)
 
 
-def _member_source(document, pointer, *, duplicate):
+def negative_underflow_member_source(document, pointer):
+    return _member_source(document, pointer, duplicate=False, numeric_literal="-1e-400")
+
+
+def _member_source(document, pointer, *, duplicate, numeric_literal="1e400"):
     options = {"ensure_ascii": False, "allow_nan": False, "separators": (",", ":")}
     source = json.dumps(document, **options)
     marker = "source-member-value"
@@ -33,6 +37,6 @@ def _member_source(document, pointer, *, duplicate):
         replacement = value + "," + json.dumps(member, **options) + ":" + value
     else:
         if isinstance(original, bool) or not isinstance(original, (int, float)):
-            raise ValueError(f"nonfinite target must be a number: {pointer!r}")
-        replacement = "1e400"
+            raise ValueError(f"source target must be a number: {pointer!r}")
+        replacement = numeric_literal
     return json.dumps(changed, **options).replace(json.dumps(marker, **options), replacement, 1)

@@ -6,7 +6,7 @@ import sys
 from decimal import Decimal, localcontext
 from fractions import Fraction
 
-from backend_source import duplicate_member_source, nonfinite_member_source
+from backend_source import duplicate_member_source, negative_underflow_member_source, nonfinite_member_source
 from check_color_guard_backend import check_failure
 from check_focus_indicator_backend import baseline as focus_baseline, check_success as check_indicator
 from check_headless_backend import run_backend
@@ -180,6 +180,7 @@ def main():
             ("duplicate direction", duplicate_member_source(base, "/directions/0/x")),
             ("duplicate nested focus", duplicate_member_source(base, "/focus/schemaVersion")),
             ("nonfinite projection", nonfinite_member_source(base, "/sideOffset/x")),
+            ("negative nested radius", negative_underflow_member_source(base, "/outline/radii/topStart/x")),
         ]
         for name, source in failures:
             check_failure(command, source, args.timeout, name)
