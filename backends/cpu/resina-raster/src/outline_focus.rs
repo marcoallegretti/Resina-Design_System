@@ -188,7 +188,134 @@ impl Plane {
 }
 
 struct Polygon(Vec<Point>);
+
+struct PixelRow {
+    polygon: Polygon,
+    full_columns: Option<(u32, u32)>,
+    y: u32,
+}
+
+impl PixelRow {
+    fn new(polygon: Polygon, y: u32) -> Self {
+        let extrema = |line: Rational| {
+            let mut values = polygon
+                .0
+                .iter()
+                .filter(|point| point.y == line)
+                .map(|point| &point.x);
+            let first = values.next()?;
+            let (mut low, mut high) = (first, first);
+            for value in values {
+                low = low.min(value);
+                high = high.max(value);
+            }
+            Some((low, high))
+        };
+        // Convexity keeps the endpoint overlap inside the complete unit-height strip.
+        let full_columns = extrema(integer(y))
+            .zip(extrema(integer(y) + Rational::one()))
+            .and_then(|((top_left, top_right), (bottom_left, bottom_right))| {
+                let left = top_left
+                    .max(bottom_left)
+                    .ceil()
+                    .max(Rational::zero())
+                    .min(integer(u32::MAX))
+                    .to_integer()
+                    .to_u32()?;
+                let right = top_right
+                    .min(bottom_right)
+                    .floor()
+                    .max(Rational::zero())
+                    .min(integer(u32::MAX))
+                    .to_integer()
+                    .to_u32()?;
+                (left < right).then_some((left, right))
+            });
+        Self {
+            polygon,
+            full_columns,
+            y,
+        }
+    }
+
+    fn area(&self, x: u32, y: u32, budget: &mut Budget) -> Result<Rational, RasterError> {
+        if y == self.y
+            && self
+                .full_columns
+                .is_some_and(|(left, right)| x >= left && x < right)
+        {
+            return Ok(Rational::one());
+        }
+        self.polygon.area(x, y, budget)
+    }
+}
+
+fn clip_axis(
+    points: &[Point],
+    axis: usize,
+    bound: &Rational,
+    keep_greater: bool,
+    budget: &mut Budget,
+) -> Result<Vec<Point>, RasterError> {
+    let mut clipped = Vec::new();
+    clipped
+        .try_reserve(points.len() + 2)
+        .map_err(RasterError::Allocation)?;
+    if let Some(mut previous) = points.last() {
+        for current in points {
+            budget.spend(1)?;
+            let before = if keep_greater {
+                previous.coordinate(axis) >= bound
+            } else {
+                previous.coordinate(axis) <= bound
+            };
+            let after = if keep_greater {
+                current.coordinate(axis) >= bound
+            } else {
+                current.coordinate(axis) <= bound
+            };
+            if before != after {
+                let fraction = (previous.coordinate(axis) - bound)
+                    / (previous.coordinate(axis) - current.coordinate(axis));
+                let other = previous.coordinate(1 - axis)
+                    + fraction * (current.coordinate(1 - axis) - previous.coordinate(1 - axis));
+                clipped.push(if axis == 0 {
+                    Point::new(bound.clone(), other)
+                } else {
+                    Point::new(other, bound.clone())
+                });
+            }
+            if after {
+                clipped.push(current.clone());
+            }
+            previous = current;
+        }
+    }
+    Ok(clipped)
+}
+
 impl Polygon {
+    fn clipped_row(&self, y: u32, budget: &mut Budget) -> Result<Option<PixelRow>, RasterError> {
+        let top = integer(y);
+        let bottom = &top + Rational::one();
+        let points = clip_axis(&self.0, 1, &top, true, budget)?;
+        let points = clip_axis(&points, 1, &bottom, false, budget)?;
+        if points.len() < 3 {
+            return Ok(None);
+        }
+        let mut positive_area = false;
+        for pair in points[1..].windows(2) {
+            if orientation(&points[0], &pair[0], &pair[1], budget)? != Ordering::Equal {
+                positive_area = true;
+                break;
+            }
+        }
+        if !positive_area {
+            return Ok(None);
+        }
+        Self::hull(points, budget).map(|polygon| Some(PixelRow::new(polygon, y)))
+    }
+
     fn hull(mut points: Vec<Point>, budget: &mut Budget) -> Result<Self, RasterError> {
         points.sort_by(|a, b| a.x.cmp(&b.x).then(a.y.cmp(&b.y)));
         points.dedup();
@@ -345,50 +472,7 @@ impl Polygon {
             (1, &top, true),
             (1, &bottom, false),
         ] {
-            let mut clipped = Vec::new();
-            clipped
-                .try_reserve(polygon.len() + 2)
-                .map_err(RasterError::Allocation)?;
-            if let Some(mut previous) = polygon.last() {
-                for current in &polygon {
-                    budget.spend(1)?;
-                    let before = if keep_greater {
-                        previous.coordinate(axis) >= bound
-                    } else {
-                        previous.coordinate(axis) <= bound
-                    };
-                    let after = if keep_greater {
-                        current.coordinate(axis) >= bound
-                    } else {
-                        current.coordinate(axis) <= bound
-                    };
-                    if before != after {
-                        let fraction = (previous.coordinate(axis) - bound)
-                            / (previous.coordinate(axis) - current.coordinate(axis));
-                        let other = previous.coordinate(1 - axis)
-                            + fraction
-                                * (current.coordinate(1 - axis) - previous.coordinate(1 - axis));
-                        clipped.push(if axis == 0 {
-                            Point {
-                                x: bound.clone(),
-                                y: other,
-                                enclosure: None,
-                            }
-                        } else {
-                            Point {
-                                x: other,
-                                y: bound.clone(),
-                                enclosure: None,
-                            }
-                        });
-                    }
-                    if after {
-                        clipped.push(current.clone());
-                    }
-                    previous = current;
-                }
-            }
-            polygon = clipped;
+            polygon = clip_axis(&polygon, axis, bound, keep_greater, budget)?;
         }
         let mut twice = Rational::zero();
         if let Some(mut previous) = polygon.last() {
@@ -593,21 +677,35 @@ pub fn render_outline_focus(
         rgba.resize(bytes, 0);
         let mut complete = true;
         'pixels: for y in 0..viewport.height {
+            let Some(outer_containing_row) = outer.containing.clipped_row(y, &mut budget)? else {
+                continue;
+            };
+            let inner_contacts_row = inner.contacts.clipped_row(y, &mut budget)?;
+            let outer_contacts_row = outer.contacts.clipped_row(y, &mut budget)?;
+            let inner_containing_row = inner.containing.clipped_row(y, &mut budget)?;
             for x in 0..viewport.width {
-                let inner_contacts = inner.contacts.area(x, y, &mut budget)?;
+                let inner_contacts = match &inner_contacts_row {
+                    Some(row) => row.area(x, y, &mut budget)?,
+                    None => Rational::zero(),
+                };
                 // For convex P within A + D(e), P eroded by e is within A.
                 // Eroding P intersect a unit pixel loses at most 4e area.
                 if inner_contacts.is_one() {
                     continue;
                 }
-                let outer_containing = outer.containing.area(x, y, &mut budget)?;
+                let outer_containing = outer_containing_row.area(x, y, &mut budget)?;
                 if outer_containing.is_zero() {
                     continue;
                 }
-                let low = (outer.contacts.area(x, y, &mut budget)?
-                    - &allowance
-                    - inner.containing.area(x, y, &mut budget)?)
-                .max(Rational::zero());
+                let outer_contacts = match &outer_contacts_row {
+                    Some(row) => row.area(x, y, &mut budget)?,
+                    None => Rational::zero(),
+                };
+                let inner_containing = match &inner_containing_row {
+                    Some(row) => row.area(x, y, &mut budget)?,
+                    None => Rational::zero(),
+                };
+                let low = (outer_contacts - &allowance - inner_containing).max(Rational::zero());
                 let high = (outer_containing - inner_contacts + &allowance).min(Rational::one());
                 if high < low {
                     return Err(RasterError::FocusPrecision(
@@ -766,6 +864,63 @@ mod tests {
             );
         }
         assert!(polygon.area(2, 0, &mut Budget(100)).unwrap().is_zero());
+    }
+
+    #[test]
+    fn clipped_rows_preserve_exact_pixel_areas_for_fractional_and_degenerate_intersections() {
+        for coordinates in [
+            vec![(0.25, 0.25), (7.75, 0.25), (7.75, 7.75), (0.25, 7.75)],
+            vec![(0.0, 0.0), (8.0, 0.0), (0.0, 8.0)],
+            vec![(-2.0, -1.0), (4.0, 0.0), (9.0, 6.0), (1.0, 8.0)],
+            vec![(0.0, 1.0), (8.0, 1.0), (8.0, 1.125), (0.0, 1.125)],
+            vec![(0.0, -2.0), (8.0, -2.0), (8.0, 0.0), (0.0, 0.0)],
+        ] {
+            let polygon = Polygon::hull(
+                coordinates
+                    .into_iter()
+                    .map(|(x, y)| Point::new(rational(x), rational(y)))
+                    .collect(),
+                &mut Budget(10000),
+            )
+            .unwrap();
+            for y in 0..10 {
+                let row = polygon.clipped_row(y, &mut Budget(10000)).unwrap();
+                for x in 0..10 {
+                    let actual = match &row {
+                        Some(row) => row.area(x, y, &mut Budget(10000)).unwrap(),
+                        None => Rational::zero(),
+                    };
+                    assert_eq!(
+                        actual,
+                        polygon.area(x, y, &mut Budget(10000)).unwrap(),
+                        "pixel ({x},{y})"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn clipped_rows_keep_the_work_budget_and_closed_integer_boundaries() {
+        let polygon = Polygon::hull(
+            [(0.0, 0.0), (8.0, 0.0), (8.0, 8.0), (0.0, 8.0)]
+                .map(|(x, y)| Point::new(rational(x), rational(y)))
+                .to_vec(),
+            &mut Budget(100),
+        )
+        .unwrap();
+        assert!(matches!(
+            polygon.clipped_row(0, &mut Budget(0)),
+            Err(RasterError::ResourceLimit)
+        ));
+        for y in 0..8 {
+            let row = polygon.clipped_row(y, &mut Budget(1000)).unwrap().unwrap();
+            for x in 0..8 {
+                assert!(row.area(x, y, &mut Budget(1000)).unwrap().is_one());
+                assert!(row.area(x, y + 1, &mut Budget(1000)).unwrap().is_zero());
+            }
+        }
+        assert!(polygon.clipped_row(8, &mut Budget(1000)).unwrap().is_none());
     }
 
     #[test]
