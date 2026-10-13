@@ -84,11 +84,21 @@ def validate_canvas_reference(prepared, logical_size, scale):
         raise ValueError("native GPU reference must have an opaque canvas")
 
 
-def check_scale(probe, request, output, parent, scale, content=None, outline_focus=False, content_focus=None):
+def board_dimensions(prepared, scale):
+    width, height = prepared.size
+    if width * height > 16_777_216 or width / scale != round(width / scale) or height / scale != round(height / scale):
+        raise ValueError("native board must fit integral logical dimensions within 16 megapixels")
+    logical = (round(width / scale), round(height / scale))
+    validate_canvas_reference(prepared, logical, scale)
+    return logical
+
+
+def check_scale(probe, request, output, parent, scale, content=None, outline_focus=False, content_focus=None, board=None):
+    preparation_seconds = 300 if board else 120 if content or outline_focus else 20
     with tempfile.TemporaryDirectory(prefix="resina-relief-native-") as runtime:
         config = Path(runtime) / "config"
         output_width = 1260 if content else 840
-        config.write_text(f"xwayland disable\noutput * mode {output_width}x840 scale {scale}\nseat seat0 xcursor_theme default 24\n")
+        output_height = 840
         env = dict(os.environ, XDG_RUNTIME_DIR=runtime, WAYLAND_DISPLAY=str(parent),
                    WLR_BACKENDS="wayland", WLR_RENDERER="pixman", WLR_LIBINPUT_NO_DEVICES="1")
         if content:
@@ -99,6 +109,17 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
             ET.SubElement(root, "dir").text = str(fonts)
             ET.ElementTree(root).write(fontconfig, encoding="utf-8", xml_declaration=True)
             env["FONTCONFIG_FILE"] = str(fontconfig)
+        logical_board = None
+        if board:
+            font, text_scale = content
+            layout_path = output / f"layout-{scale}.png"
+            preflight = subprocess.run([str(probe), "relief-board", str(request), str(font), "DejaVu Sans", str(layout_path), str(scale), str(text_scale), *board], env=env, cwd=ROOT, capture_output=True, text=True, timeout=preparation_seconds)
+            if preflight.returncode != 0 or preflight.stderr:
+                raise ValueError(f"board preflight failed: {preflight.stderr[:400]}")
+            layout = Image.open(layout_path).convert("RGBA")
+            logical_board = board_dimensions(layout, scale)
+            output_width, output_height = layout.size
+        config.write_text(f"xwayland disable\noutput * mode {output_width}x{output_height} scale {scale}\nseat seat0 xcursor_theme default 24\n")
         children = []
         client_path = output / f"client-{scale}.log"
         with (output / f"compositor-{scale}.log").open("w") as compositor_log, client_path.open("w") as client_log:
@@ -124,12 +145,16 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                 if len(outputs) != 1 or outputs[0]["scale"] != scale:
                     raise ValueError("compositor did not adopt the requested single-output scale")
                 mode = outputs[0]["current_mode"]
-                if (mode["width"], mode["height"]) != (output_width, 840):
+                if (mode["width"], mode["height"]) != (output_width, output_height):
                     raise ValueError("compositor did not adopt the required physical output size")
                 prepared_path = output / f"prepared-{scale}.png"
                 arguments = [str(probe), str(request), str(scale), str(prepared_path)]
                 marker = "RESINA_RELIEF_PREPARED "
-                if content:
+                if board:
+                    font, text_scale = content
+                    arguments = [str(probe), "relief-board-native", str(request), str(font), "DejaVu Sans", str(prepared_path), str(scale), str(text_scale), *board]
+                    marker = "RESINA_RELIEF_BOARD_PREPARED "
+                elif content:
                     font, text_scale = content
                     arguments = [str(probe), str(request), str(font), str(scale), str(text_scale), str(prepared_path)]
                     if content_focus:
@@ -141,7 +166,6 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                                           cwd=ROOT, env=env, stdout=client_log, stderr=client_log)
                 children.append(client)
                 metadata = None
-                preparation_seconds = 120 if content or outline_focus else 20
                 deadline = time.monotonic() + preparation_seconds
                 while time.monotonic() < deadline:
                     for line in client_path.read_text().splitlines():
@@ -158,8 +182,13 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                     raise ValueError("native fixture preparation scale differs from compositor scale")
                 if content_focus and metadata.get("focusComposed") is not True:
                     raise ValueError("native fixture did not prepare the requested focus composition")
+                if board and (metadata.get("reliefKind"), metadata.get("reliefState"), metadata.get("textScale"), metadata.get("logicalWidth"), metadata.get("logicalHeight")) != (*board, content[1], *logical_board):
+                    raise ValueError("native board metadata differs from its requested layout/state")
                 prepared = Image.open(prepared_path).convert("RGBA")
-                if content or outline_focus:
+                if board:
+                    validate_canvas_reference(prepared, logical_board, scale)
+                    origin = (0, 0)
+                elif content or outline_focus:
                     validate_canvas_reference(prepared, (360, 200) if content else (160, 96), scale)
                     origin = (0, 0)
                 else:
@@ -198,9 +227,15 @@ def main():
     parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit regular DejaVu Sans file")
     parser.add_argument("--outline-focus", action="store_true", help="check the continuous-outline focus probe against its full opaque GPU reference")
     parser.add_argument("--content-focus", action="store_true", help="compose a guarded focus ring around the actual complete-content footprint")
+    parser.add_argument("--relief-board", choices=["flat", "convex", "recessed"], help="check the complete themed Relief Board using the Lab binary")
+    parser.add_argument("--board-state", choices=["rest", "focused"], default="rest")
     parser.add_argument("--text-scale", type=float, default=1)
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 1.5, 2, 3])
     args = parser.parse_args()
+    if args.relief_board and (not args.content_font or not args.request or args.content_focus or args.outline_focus):
+        parser.error("relief board requires --content-font, --request and no other probe mode")
+    if not args.relief_board and args.board_state != "rest":
+        parser.error("board state requires --relief-board")
     if args.content_focus and not args.content_font:
         parser.error("content focus requires --content-font and the complete-content probe")
     if args.outline_focus and (args.content_font or any(
@@ -209,10 +244,10 @@ def main():
         parser.error("outline focus requires scales [1,3] with integral 160x96 pixels and no content font")
     if not args.content_font and args.text_scale != 1:
         parser.error("text scale requires the complete-content probe and --content-font")
-    if any(not math.isfinite(s) or s <= 0 or (840 / s) != round(840 / s) for s in args.scales):
+    if any(not math.isfinite(s) or s <= 0 or (not args.relief_board and (840 / s) != round(840 / s)) for s in args.scales):
         parser.error("each positive scale must divide the 840 px output into integral logical dimensions")
-    if args.content_font and (not math.isfinite(args.text_scale) or not 1 <= args.text_scale <= 2 or any(s < 1 or s > 3 or (1260 / s) != round(1260 / s) for s in args.scales)):
-        parser.error("content requires device scales [1,3] with integral 1260 px width and text scale [1,2]")
+    if args.content_font and (not math.isfinite(args.text_scale) or not 1 <= args.text_scale <= (3 if args.relief_board else 2) or any(s < 1 or s > 3 or (not args.relief_board and (1260 / s) != round(1260 / s)) for s in args.scales)):
+        parser.error(f"content requires device scales [1,3], integral output dimensions and text scale [1,{3 if args.relief_board else 2}]")
     try:
         parent = Path(os.environ["WAYLAND_DISPLAY"])
         if not parent.is_absolute():
@@ -232,7 +267,8 @@ def main():
         if args.content_focus:
             content_focus = (args.output_dir / "focus.json").resolve()
             content_focus.write_text(json.dumps(diagnostic_content_focus_request(request), allow_nan=False))
-        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content, args.outline_focus, content_focus)
+        board = (args.relief_board, args.board_state) if args.relief_board else None
+        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content, args.outline_focus, content_focus, board)
                    for scale in args.scales]
         report = {"records": records, "nestedBackend": "wayland", "renderer": "pixman",
                   "scope": "opaque native face-paint pixels; no appearance, input, focus or AT acceptance"}
@@ -243,6 +279,9 @@ def main():
             if content_focus:
                 report["scope"] = "complete native relief, glyph and focus pixels against GPU reference; no component appearance, input or AT acceptance"
                 report["focusRequestSha256"] = hashlib.sha256(content_focus.read_bytes()).hexdigest()
+            if board:
+                report["scope"] = "complete native themed Relief Board against GPU reference; no live input or AT acceptance"
+                report["reliefKind"], report["reliefState"] = board
         elif args.outline_focus:
             report["scope"] = "complete native continuous-outline focus pixels against GPU reference; no component appearance, input or AT acceptance"
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2) + "\n")

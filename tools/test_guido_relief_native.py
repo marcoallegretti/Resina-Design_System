@@ -6,11 +6,30 @@ import unittest
 from unittest.mock import patch
 
 from PIL import Image
-from check_guido_relief_native import capture_matches, diagnostic_content_focus_request, diagnostic_outline_focus_request, diagnostic_request, main, validate_canvas_reference
+from check_guido_relief_native import board_dimensions, capture_matches, diagnostic_content_focus_request, diagnostic_outline_focus_request, diagnostic_request, main, validate_canvas_reference
 from check_schemas import validator_for
 
 
 class NativeReliefComparisonTests(unittest.TestCase):
+    def test_board_reference_requires_complete_opaque_integral_surface_dimensions(self):
+        image = Image.new("RGBA", (10, 15), (2, 3, 4, 255))
+        self.assertEqual(board_dimensions(image, 1.25), (8, 12))
+        with self.assertRaisesRegex(ValueError, "integral logical"):
+            board_dimensions(image, 1.5)
+        image.putpixel((9, 14), (2, 3, 4, 254))
+        with self.assertRaisesRegex(ValueError, "opaque canvas"):
+            board_dimensions(image, 1.25)
+
+    def test_board_mode_rejects_missing_sources_and_mixed_probe_modes(self):
+        for extra in ([], ["--content-font", "font"], ["--request", "scenes"],
+                      ["--content-font", "font", "--request", "scenes", "--content-focus"],
+                      ["--content-font", "font", "--request", "scenes", "--outline-focus"]):
+            arguments = ["checker", "--probe", "probe", "--output-dir", "unused", "--relief-board", "convex", *extra]
+            with patch.object(sys, "argv", arguments), contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as raised:
+                    main()
+                self.assertEqual(raised.exception.code, 2)
+
     def test_content_focus_supports_every_authored_material_family(self):
         for family in ("cast", "frost", "elastomer", "gel"):
             paint = diagnostic_request()
