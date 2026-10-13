@@ -1,15 +1,41 @@
 import contextlib
+import copy
 import io
 import sys
 import unittest
 from unittest.mock import patch
 
 from PIL import Image
-from check_guido_relief_native import capture_matches, diagnostic_outline_focus_request, main, validate_canvas_reference
+from check_guido_relief_native import capture_matches, diagnostic_content_focus_request, diagnostic_outline_focus_request, diagnostic_request, main, validate_canvas_reference
 from check_schemas import validator_for
 
 
 class NativeReliefComparisonTests(unittest.TestCase):
+    def test_content_focus_retains_actual_outline_canvas_family_and_concurrent_states(self):
+        from check_focus_indicator_backend import contrast
+        for canvas in ([1, 1, 1], [0.01, 0.015, 0.02]):
+            paint = diagnostic_request()
+            paint["edge"]["adjacentColor"]["components"] = canvas
+            original = copy.deepcopy(paint)
+            request = diagnostic_content_focus_request(paint)
+            self.assertEqual(list(validator_for("schemas/outline-focus-request.schema.json").iter_errors(request)), [])
+            self.assertEqual(request["outline"], original["outline"])
+            self.assertEqual(paint, original)
+            self.assertEqual(request["sideOffset"], {"x": 0, "y": 0})
+            self.assertEqual(request["focus"]["surroundingColor"], paint["edge"]["adjacentColor"])
+            self.assertEqual(request["focus"]["scenario"]["surface"]["states"]["states"], ["selected", "focused", "hover"])
+            resolution = request["focus"]["scenario"]["resolution"]
+            token = resolution["opaqueColorAssignments"]["roles"]["focus"].split(".")[1]
+            self.assertGreaterEqual(contrast(resolution["tokens"]["palette"][token]["$value"]["components"], canvas), 3)
+            request["outline"]["radii"]["topStart"]["x"] += 1
+            self.assertEqual(paint, original)
+
+    def test_content_focus_requires_an_actual_complete_content_probe(self):
+        with patch.object(sys, "argv", ["checker", "--content-focus", "--probe", "probe", "--output-dir", "unused"]), contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as raised:
+                main()
+            self.assertEqual(raised.exception.code, 2)
+
     def test_focus_usage_rejects_mixed_probe_modes_and_partial_reference_pixels(self):
         for extra in [["--content-font", "font.ttf"], ["--scales", "1.2"], ["--scales", "3.5"]]:
             arguments = ["checker", "--outline-focus", "--probe", "probe", "--output-dir", "unused", *extra]
