@@ -9,6 +9,7 @@ use resina_model::{OpticalTreatment, PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use serde_json::value::RawValue;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -88,6 +89,46 @@ struct Request {
     directions: Vec<PhysicalVector>,
 }
 
+#[derive(Deserialize)]
+struct SourceVector<'a> {
+    #[serde(borrow)]
+    x: &'a RawValue,
+    #[serde(borrow)]
+    y: &'a RawValue,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct SourceVectors<'a> {
+    #[serde(borrow)]
+    side_offset: SourceVector<'a>,
+    #[serde(borrow)]
+    directions: Vec<SourceVector<'a>>,
+}
+
+fn retain_source_components(
+    source: &SourceVector<'_>,
+    represented: PhysicalVector,
+    location: &str,
+) -> Result<(), OutlineFocusError> {
+    for (component, original, value) in [
+        ("x", source.x, represented.x),
+        ("y", source.y, represented.y),
+    ] {
+        let nonzero = original
+            .get()
+            .bytes()
+            .take_while(|byte| !matches!(byte, b'e' | b'E'))
+            .any(|byte| matches!(byte, b'1'..=b'9'));
+        if value == 0.0 && nonzero {
+            return Err(OutlineFocusError(format!(
+                "{location}/{component}: numeric precision cannot retain nonzero source component"
+            )));
+        }
+    }
+    Ok(())
+}
+
 pub fn resolve_outline_focus_source(source: &str) -> Result<OutlineFocusResult, OutlineFocusError> {
     let document = parse_token_document(source).map_err(|e| OutlineFocusError(e.to_string()))?;
     if !document.is_object() {
@@ -97,6 +138,17 @@ pub fn resolve_outline_focus_source(source: &str) -> Result<OutlineFocusResult, 
         serde_json::from_value(document).map_err(|e| OutlineFocusError(e.to_string()))?;
     if request.schema_version != "0.1.0" {
         return Err(OutlineFocusError("schemaVersion must be 0.1.0".into()));
+    }
+    let originals: SourceVectors<'_> =
+        serde_json::from_str(source).map_err(|error| OutlineFocusError(error.to_string()))?;
+    retain_source_components(&originals.side_offset, request.side_offset, "sideOffset")?;
+    for (index, (original, represented)) in originals
+        .directions
+        .iter()
+        .zip(&request.directions)
+        .enumerate()
+    {
+        retain_source_components(original, *represented, &format!("directions/{index}"))?;
     }
     let indicator = resolve_focus_indicator_source(&request.focus.to_string())
         .map_err(|e| OutlineFocusError(e.to_string()))?;
