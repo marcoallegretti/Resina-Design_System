@@ -152,7 +152,9 @@ theme resolution, and registers supplied bytes before each rendering lifetime.
 The checker records the input hash and compares the whole opaque canvas against
 a GPU reference at device scales 1/1.25/1.5/2/3. The default fixture exercises RTL placement and
 supports text scale 2, including complete wrapping of `j Reconnect now`.
-This native fixture is distinct from the backend's `j Reconnect` GPU ink cases.
+The backend GPU ink matrix uses the same complete longer label. Its expanded
+reference preserves wrapping and admits the complete measured height; a deliberate
+shortened-height render must expose a missing wrapped line while retaining ink.
 
 ```sh
 cargo build --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe
