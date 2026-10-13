@@ -12,15 +12,36 @@ from PIL import Image
 from check_quickshell_command_updates import (
     authored_cases, main, read_reports, verify_capture, verify_case,
     verify_stable_targets, verify_typography, verify_version,
+    verify_authored_paint,
 )
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_old_theme_paint_cannot_be_relabelled_as_the_new_source(self):
+        case = authored_cases()[0]
+        request = case["request"]
+        snapshot = {"paint": {"phase": "rest", "response": {"bodyMix": 0, "depthScale": 1},
+            "paint": {"body": {"materialFamily": "elastomer", "materialRole": "control.interactive",
+                "colorRole": "surface.high", "foregroundRole": "content.primary",
+                "form": {"schemaVersion": "0.1.0", "shape": "rounded", "elevation": "raised"},
+                "pigment": {"body": {"colorSpace": "srgb", "alpha": 1,
+                    "components": [252/255, 251/255, 248/255]}},
+                "foreground": {"colorSpace": "srgb", "alpha": 1, "components": [24/255, 41/255, 45/255]},
+                "edge": {"color": {"colorSpace": "srgb", "alpha": 1, "components": [109/255, 129/255, 128/255]}}}}}}
+        verify_authored_paint(request, snapshot)
+        request["content"]["themeSource"] = authored_cases()[12]["request"]["content"]["themeSource"]
+        with self.assertRaisesRegex(ValueError, "authored"):
+            verify_authored_paint(request, snapshot)
+
     def test_capture_rejects_missing_shifted_or_incomplete_line_ink(self):
         snapshot = {"label": {"labelBounds": {"x": 10, "y": 10, "width": 50, "height": 20},
+                              "size": {"width": 80, "height": 60},
                               "typography": {"fontSize": {"value": 10}, "lineHeight": 1}},
                     "hitRegion": {"bounds": {"x": 0, "y": 0}},
-                    "paint": {"paint": {"body": {"foreground": {
+                    "paint": {"paint": {"body": {
+                        "geometry": {"content": {"offset": {"x": 3, "y": 3}}},
+                        "pigment": {"body": {"colorSpace": "srgb", "alpha": 1, "components": [1, 1, 1]}},
+                        "foreground": {
                         "colorSpace": "srgb", "alpha": 1, "components": [0, 0, 0]}}}}}
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "capture.png"
@@ -36,6 +57,13 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                         verify_capture(path, snapshot, 1)
             Image.new("RGBA", (499, 800), "white").save(path)
             with self.assertRaises(ValueError):
+                verify_capture(path, snapshot, 1)
+            image = Image.new("RGBA", (500, 800), "white")
+            for point in ((65, 65), (65, 75)):
+                image.putpixel(point, (0, 0, 0, 255))
+            image.putpixel((90, 56), (255, 0, 0, 255))
+            image.save(path)
+            with self.assertRaisesRegex(ValueError, "body pigment"):
                 verify_capture(path, snapshot, 1)
 
     def test_host_execution_failure_is_distinct_from_unsupported_version(self):

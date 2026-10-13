@@ -82,6 +82,37 @@ def verify_typography(case, label):
         raise ValueError("native label differs from authored typography")
 
 
+def verify_authored_paint(request, snapshot):
+    theme = json.loads(request["content"]["themeSource"], object_pairs_hook=unique_object)
+    surface = request["body"]["surface"]
+    group, role = surface["materialRole"].split(".")
+    family = theme["materialAssignments"][group][role]
+    paint = snapshot["paint"]
+    body = paint["paint"]["body"]
+    response = {"bodyMix": 0, "depthScale": 1} if paint["phase"] == "rest" \
+        else request["body"]["commandAppearance"]["profiles"][family][paint["phase"]]
+
+    def inline_color(role):
+        token = theme["tokenResolver"]["sets"]["theme"]["sources"][0]
+        for member in theme["colorAssignments"]["roles"][role].split("."):
+            token = token[member]
+        value = token["$value"]
+        return {"colorSpace": value["colorSpace"], "components": value["components"],
+                "alpha": value.get("alpha", 1)}
+
+    color = inline_color(surface["colorRole"])
+    mix = response["bodyMix"]
+    color["components"] = [channel * (1 + mix) if mix < 0 else channel + (1 - channel) * mix
+                           for channel in color["components"]]
+    if paint["response"] != response or body["materialFamily"] != family \
+            or any(body[field] != surface[field] for field in ("materialRole", "colorRole", "form")) \
+            or body["foregroundRole"] != request["body"]["foregroundRole"] \
+            or body["pigment"]["body"] != color \
+            or body["foreground"] != inline_color(request["body"]["foregroundRole"]) \
+            or body["edge"]["color"] != inline_color("outline"):
+        raise ValueError("native paint differs from the authored theme, form or response")
+
+
 def unique_object(pairs):
     value = {}
     for name, member in pairs:
@@ -145,6 +176,7 @@ def verify_case(case, report, scale):
     states = {"schemaVersion": "0.1.0", "states": ["rest"] if enabled else ["disabled"]}
     snapshot = json.loads(report["snapshot"], object_pairs_hook=unique_object)
     verify_snapshot(snapshot, request, states)
+    verify_authored_paint(request, snapshot)
     verify_typography(case, snapshot["label"])
     verify_layout(snapshot["label"], report["measurements"], request["content"])
     if json.loads(report["target"], object_pairs_hook=unique_object) != snapshot["hitRegion"]:
@@ -171,6 +203,7 @@ def verify_case(case, report, scale):
             raise ValueError("authored update acquired an unexpected hold")
         verify_snapshot(publication["snapshot"], source,
                         {"schemaVersion": "0.1.0", "states": flags or ["rest"]})
+        verify_authored_paint(source, publication["snapshot"])
         verify_typography(case, publication["snapshot"]["label"])
 
 
@@ -194,6 +227,16 @@ def verify_capture(path, snapshot, scale):
     left = math.floor((50 - target["x"] + bounds["x"]) * scale)
     right = math.ceil((50 - target["x"] + bounds["x"] + bounds["width"]) * scale)
     top = 50 - target["y"] + bounds["y"]
+    body = snapshot["paint"]["paint"]["body"]
+    color = body["pigment"]["body"]
+    if color["colorSpace"] != "srgb" or color["alpha"] != 1:
+        raise ValueError("capture requires the supported opaque sRGB body pigment")
+    body_x = math.floor((50 - target["x"] + label["size"]["width"] / 2) * scale)
+    body_y = math.floor((50 - target["y"] + (body["geometry"]["content"]["offset"]["y"] + bounds["y"]) / 2) * scale)
+    pixel = image.getpixel((body_x, body_y))
+    if pixel[3] != 255 or any(abs(pixel[channel] - round(color["components"][channel] * 255)) > 1
+                             for channel in range(3)):
+        raise ValueError("native capture body pigment differs from its current authored snapshot")
     for line in range(lines):
         first = math.floor((top + line * line_height) * scale)
         last = math.ceil((top + (line + 1) * line_height) * scale)

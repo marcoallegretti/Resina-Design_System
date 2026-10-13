@@ -809,12 +809,15 @@ paragraphs at four text scales, changed typography and asymmetric LTR/RTL paddin
 an explicitly loaded alternate font, unavailable state, malformed configuration,
 unsupported focus policy and rotation, and recovery after each rejection.
 Every consumer snapshot observation is checked against its current authored
-source and interaction state. Final natural and fitted native measurements reach
+source and interaction state, including literal pigment bindings from the current
+inline theme and the authored material/form/phase response. This fixture lookup
+does not resolve arbitrary DTCG aliases or multi-source themes. Final natural and fitted native measurements reach
 the independent rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
 
 Each successful case saves a PNG and its complete snapshot. Pixel checks require
-foreground ink on every measured line at the placed label coordinates; they do
+a representative uniform body sample above the label to retain the current pigment
+and foreground ink on every measured line at the placed label coordinates; they do
 not establish every glyph's shape, universal fallback coverage or product styling
 acceptance. Logs retain native font diagnostics: Qt's
 [software glyph bounds](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/scenegraph/adaptations/software/qsgsoftwareglyphnode.cpp)
