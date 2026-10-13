@@ -16,7 +16,8 @@ use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{ReliefContentPrepareError, measure_command_label, prepare_relief_content_at};
 use resina_model::PhysicalVector;
 use resina_resolver::{
-    CommandContentError, CommandLabelInput, resolve_command_label, resolve_relief_paint_source,
+    CommandContentError, CommandLabelInput, LabelMeasureInput, resolve_command_label,
+    resolve_relief_paint_source,
 };
 use serde_json::{Value, json};
 use std::rc::Rc;
@@ -143,6 +144,31 @@ fn actual_glyph_ink_remains_on_the_opaque_plateau_at_fractional_device_and_text_
                         let [material, text] =
                             prepare_relief_content_at(&paint, &label, family, origin, scale, 4)
                                 .unwrap();
+                        let truncated_text = if curve == "circular"
+                            && kind == "flat"
+                            && text_scale == 2.0
+                            && direction == LayoutDirection::Ltr
+                            && scale == 1.0
+                        {
+                            let unwrapped = measure_command_label(
+                                family,
+                                LabelMeasureInput {
+                                    text: label.text(),
+                                    typography: label.typography(),
+                                    maximum_width: None,
+                                },
+                            )
+                            .unwrap();
+                            assert!(label.label_bounds().height > unwrapped.height);
+                            let mut truncated = text.clone();
+                            let DrawCommand::Text { rect, .. } = &mut truncated else {
+                                panic!("native text required")
+                            };
+                            rect.height = 1.0;
+                            Some(truncated)
+                        } else {
+                            None
+                        };
                         let mut expanded_text = text.clone();
                         let DrawCommand::Text {
                             text: complete,
@@ -159,6 +185,7 @@ fn actual_glyph_ink_remains_on_the_opaque_plateau_at_fractional_device_and_text_
                         }
                         rect.x -= 32.0;
                         rect.width += 64.0;
+                        rect.height = label.label_bounds().height as f32 + 64.0;
                         let mut root = RenderNode::new(1);
                         root.commands.push(Rc::new(material));
                         let width = (360.0 * scale).round() as u32;
@@ -203,6 +230,31 @@ fn actual_glyph_ink_remains_on_the_opaque_plateau_at_fractional_device_and_text_
                             readback::read_frame(&target),
                             "complete label must match an expanded native text rectangle"
                         );
+                        if let Some(truncated) = truncated_text {
+                            root.commands.pop();
+                            root.commands.push(Rc::new(truncated));
+                            commands.clear();
+                            layers.clear();
+                            flatten_root_into(
+                                &root,
+                                &mut commands,
+                                &mut layers,
+                                &mut FlattenScratch::default(),
+                            );
+                            assert!(renderer.render(&mut target, &commands, &layers, Color::WHITE));
+                            let truncated_frame = readback::read_frame(&target);
+                            assert_ne!(
+                                truncated_frame, composed,
+                                "missing wrapped line must be detected"
+                            );
+                            assert_ne!(
+                                truncated_frame, background,
+                                "truncated label must still have ink"
+                            );
+                            println!(
+                                "deliberate wrapped-line truncation detected with remaining native ink"
+                            );
+                        }
                         let mut ink_pixels = 0;
                         for (index, (before, after)) in background
                             .as_chunks::<4>()
