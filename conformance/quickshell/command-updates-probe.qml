@@ -122,7 +122,14 @@ FloatingWindow {
     Timer {
         id: deadline
         interval: 5000
-        onTriggered: root.fail("case did not complete: " + root.cases[root.index].name)
+        onTriggered: root.fail("case did not complete: " + JSON.stringify({
+            name:root.cases[root.index].name, capturing:root.capturing,
+            ready:command.ready, error:command.preparationError,
+            snapshotLength:command.snapshot.length, targetLength:command.targetPublication.length,
+            acceptsNewGestures:command.acceptsNewGestures, windowVisible:root.visible,
+            frameReady:command.currentFrame ? command.currentFrame.paintReady : false,
+            frameError:command.currentFrame ? command.currentFrame.paintError : ""
+        }))
     }
 
     Timer {
