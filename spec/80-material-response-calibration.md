@@ -149,6 +149,6 @@ RESINA_TOGGLE_CAPTURE_DIR="$PWD/target/calibrated-toggle" cargo test --manifest-
 Use fresh capture directories: output refuses to overwrite an existing frame.
 The Toggle calibrated frames are in the `calibrated/` child directory. Preserve
 the committed source, supplied scene file, actual font and adapter identity when
-recording a run. The checked WSL specimens use DejaVu Sans and llvmpipe Vulkan;
+recording a run. The checked Linux specimens use DejaVu Sans and llvmpipe Vulkan;
 they are sampled native composition evidence, not hardware cadence, native
 input, assistive-technology qualification or full component-style acceptance.
