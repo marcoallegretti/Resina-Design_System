@@ -55,7 +55,8 @@ struct PaintRequest<'a> {
     #[serde(borrow)]
     outline: &'a serde_json::value::RawValue,
     profile: SurfaceReliefProfile,
-    pigment: serde_json::Value,
+    #[serde(borrow)]
+    pigment: &'a serde_json::value::RawValue,
     key_light: KeyLight,
     edge: serde_json::Value,
     edge_width: f64,
@@ -101,8 +102,7 @@ pub fn resolve_relief_paint_source(source: &str) -> Result<ReliefPaintResult, Re
     }
     let outline = resolve_surface_outline_source(request.outline.get()).map_err(|e| error(&e))?;
     let surface = resolve_surface_relief(outline, request.profile).map_err(|e| error(&e))?;
-    let pigment =
-        resolve_opaque_pigment_source(&request.pigment.to_string()).map_err(|e| error(&e))?;
+    let pigment = resolve_opaque_pigment_source(request.pigment.get()).map_err(|e| error(&e))?;
     let edge = resolve_edge_contrast_source(&request.edge.to_string()).map_err(|e| error(&e))?;
     let foreground = request.foreground.into_fallback().map_err(|e| match e {
         SrgbInputError::InvalidColorSpace => ReliefPaintError("foreground must use sRGB".into()),

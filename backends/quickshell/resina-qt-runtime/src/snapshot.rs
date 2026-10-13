@@ -91,6 +91,7 @@ impl Rectangle {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Body {
     surface: SurfaceIntent,
+    #[serde(deserialize_with = "crate::appearance_source::deserialize")]
     appearance: OpaqueSurfaceAppearance,
     command_appearance: CommandAppearance,
     foreground_role: ColorRole,
@@ -99,6 +100,34 @@ struct Body {
     surrounding_color: Value,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
+}
+
+#[cfg(test)]
+mod pigment_source_tests {
+    use super::*;
+
+    #[test]
+    fn command_body_rejects_negative_pigment_sources_before_rounding() {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/command-paint-request.json"
+        ))
+        .unwrap();
+        let body = &request["surface"]["body"];
+        let mut input = json!({
+            "surface": body["surface"], "appearance": body["appearance"],
+            "commandAppearance": request["commandAppearance"],
+            "foregroundRole": body["foregroundRole"], "adjacentColor": body["adjacentColor"],
+            "postTreatmentBackdrop": body["postTreatmentBackdrop"], "surroundingColor": request["surface"]["surroundingColor"],
+            "minimumContentContrast": body["minimumContentContrast"], "minimumEdgeContrast": body["minimumEdgeContrast"],
+        });
+        assert!(serde_json::from_str::<Body>(&input.to_string()).is_ok());
+        input["appearance"]["pigmentProfiles"]["profiles"]["gel"]["highlightLift"] =
+            json!("coefficient-source");
+        let source = input
+            .to_string()
+            .replace("\"coefficient-source\"", "-1e-400");
+        assert!(serde_json::from_str::<Body>(&source).is_err());
+    }
 }
 
 fn optional_color(value: &Value) -> Result<Option<SrgbFallback>, String> {
@@ -143,7 +172,7 @@ fn prepare(
     {
         return Err("Qt command target bounds must be named objects".to_owned());
     }
-    let request: Request = serde_json::from_value(document).map_err(|error| error.to_string())?;
+    let request: Request = serde_json::from_str(source).map_err(|error| error.to_string())?;
     let description: Option<String> =
         serde_json::from_value(request.description).map_err(|error| error.to_string())?;
     let rest = resolve_command_states(
@@ -335,7 +364,7 @@ fn compose_source(
     }
     // Validate the complete original shape before replacing native-owned channels.
     // In particular, never round-trip untrusted source through QML JSON.parse.
-    let _: Request = serde_json::from_value(document.clone()).map_err(|error| error.to_string())?;
+    let _: Request = serde_json::from_str(source).map_err(|error| error.to_string())?;
     let state = parse_token_document(activation).map_err(|error| error.to_string())?;
     let _: ActivationState =
         serde_json::from_value(state.clone()).map_err(|error| error.to_string())?;

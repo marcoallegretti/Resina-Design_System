@@ -7,6 +7,7 @@ import sys
 
 from check_schemas import validator_for
 from check_qt_command_label_runtime import verify_layout
+from opaque_request_source import pigment_coefficient_failures
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -103,6 +104,7 @@ def main():
         from PySide6.QtCore import QPluginLoader, QUrl, qVersion
         from PySide6.QtGui import QFontDatabase, QGuiApplication
         from PySide6.QtQml import QQmlComponent, QQmlEngine
+        from check_qt_toggle_control_runtime import request_for as toggle_request_for
         from PySide6 import QtQuick  # Load the pinned host's native plugin dependency.
         if qVersion() != "6.11.2":
             raise ValueError("requires Qt 6.11.2")
@@ -122,6 +124,7 @@ import "''' + (ROOT / "backends/quickshell/resina-qml/qml").as_uri() + '''" as C
 Item {
     property string measurements: "[]"
     CommandSnapshotResolver { id: resolver }
+    ToggleSnapshotResolver { id: toggleResolver }
     Content.ResinaLabelMeasure { id: measurement }
     QtObject {
         id: producer
@@ -137,6 +140,16 @@ Item {
         const result = resolver.resolveSnapshot(source, producer);
         measurements = JSON.stringify(producer.calls);
         return result;
+    }
+    function composeCommand(source, activation) {
+        return resolver.composeRequest(source, activation, false, true);
+    }
+    function resolveToggle(source) {
+        return toggleResolver.resolveToggleSnapshot(source, producer,
+            '{"x":0,"y":0,"deviceScale":1,"samplesPerAxis":4}', false);
+    }
+    function composeToggle(source, activation) {
+        return toggleResolver.composeToggleRequest(source, activation, false, false, true);
     }
 }
 ''').encode(), QUrl())
@@ -163,6 +176,26 @@ Item {
                     target = current_target
                     count += 1
         baseline = request_for("light", "Reconnect")
+        toggle = toggle_request_for()
+        for request, path, resolve, compose in (
+            (baseline, "/body/appearance/pigmentProfiles", root.resolve, root.composeCommand),
+            (toggle, "/track/appearance/pigmentProfiles", root.resolveToggle, root.composeToggle),
+            (toggle, "/thumb/appearance/pigmentProfiles", root.resolveToggle, root.composeToggle),
+        ):
+            activation = json.dumps(request["activation"])
+            for name, source in pigment_coefficient_failures(request, path):
+                for result in (resolve(source), compose(source, activation)):
+                    failure = json.loads(result)
+                    if set(failure) != {"error"} or not failure["error"]:
+                        raise ValueError(path + " / " + name + ": invalid pigment source published channels")
+                for literal in ("0e-400", "-0.000e-400", "1e-400"):
+                    valid = source.replace("-1e-400", literal)
+                    prepared = json.loads(resolve(valid))
+                    if set(prepared) != {"snapshot"}:
+                        raise ValueError(path + " / " + name + " / " + literal
+                                         + ": valid pigment source failed preparation: " + str(prepared))
+                    if set(json.loads(compose(valid, activation))) != {"request"}:
+                        raise ValueError(path + ": valid pigment source failed composition")
         bad_requests = []
         for changes in ({"focusable": False}, {"description": " "},
                         {"availableBounds": {"x": 0, "y": 0, "width": 1, "height": 1}},

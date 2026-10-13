@@ -16,6 +16,16 @@ from check_schemas import parse_json, validator_for
 
 
 class BackendSourceTests(unittest.TestCase):
+    def test_mutation_changes_only_one_serialized_member_when_inputs_share_objects(self):
+        profile = {"sideShade": 0.04, "highlightLift": 0.08}
+        document = {"track": profile, "thumb": profile}
+        source = negative_underflow_member_source(document, "/track/sideShade")
+        changed = json.loads(source)
+        self.assertEqual(source.count("-1e-400"), 1)
+        self.assertNotIn("source-member-value", source)
+        self.assertEqual(changed["thumb"], profile)
+        self.assertEqual(profile, {"sideShade": 0.04, "highlightLift": 0.08})
+
     def test_negative_underflow_preserves_raw_numeric_sign_and_selected_member(self):
         document = {"items": [{"extent": 1.5}], "text": "-1e-400"}
         source = negative_underflow_member_source(document, "/items/0/extent")

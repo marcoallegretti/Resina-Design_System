@@ -264,6 +264,8 @@ pub fn resolve_opaque_surface_source(source: &str) -> Result<OpaqueSurfaceIr, Op
     let document = parse_token_document(source).map_err(OpaqueSurfaceError::Parse)?;
     let request: OpaqueSurfaceRequest =
         serde_json::from_value(document).map_err(OpaqueSurfaceError::Request)?;
+    crate::pigment_source::validate_pigment_source(source, &["appearance", "pigmentProfiles"])
+        .map_err(OpaqueSurfaceError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(OpaqueSurfaceError::UnsupportedVersion);
     }
@@ -294,6 +296,15 @@ pub fn resolve_opaque_surface_source(source: &str) -> Result<OpaqueSurfaceIr, Op
             minimum_edge_contrast: request.minimum_edge_contrast,
         },
     )
+}
+
+/// Decode an appearance document while preserving pigment coefficient validation.
+pub fn parse_opaque_surface_appearance_source(
+    source: &str,
+) -> Result<OpaqueSurfaceAppearance, serde_json::Error> {
+    let appearance = serde_json::from_value(parse_token_document(source)?)?;
+    crate::pigment_source::validate_pigment_source(source, &["pigmentProfiles"])?;
+    Ok(appearance)
 }
 
 pub fn resolve_opaque_surface(
