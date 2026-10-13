@@ -134,6 +134,11 @@ pub fn resolve_surface_paint_source(
     let document = parse_token_document(source).map_err(SurfacePaintResolutionError::Parse)?;
     let request: SurfacePaintRequest =
         serde_json::from_value(document).map_err(SurfacePaintResolutionError::Request)?;
+    crate::pigment_source::validate_pigment_source(
+        source,
+        &["body", "appearance", "pigmentProfiles"],
+    )
+    .map_err(SurfacePaintResolutionError::Request)?;
     let (theme, environment, owned) = parse_surface_paint_request(request)?;
     resolve_surface_paint(&theme, &environment, owned.input())
 }

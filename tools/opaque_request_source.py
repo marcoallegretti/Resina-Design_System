@@ -1,6 +1,7 @@
 import copy
 import json
 
+from backend_source import negative_underflow_member_source
 from check_schemas import replace_at_pointer
 
 
@@ -27,4 +28,15 @@ def opaque_request_failures(document, pointer):
         else:
             request = value
         failures.append((name, json.dumps(request, ensure_ascii=False, allow_nan=False)))
-    return tuple(failures)
+    return tuple(failures) + pigment_coefficient_failures(
+        document, pointer + "/appearance/pigmentProfiles"
+    )
+
+
+def pigment_coefficient_failures(document, pointer):
+    return tuple(
+        (f"negative source {family} {coefficient}",
+         negative_underflow_member_source(document, f"{pointer}/profiles/{family}/{coefficient}"))
+        for family in ("cast", "frost", "elastomer", "gel")
+        for coefficient in ("sideShade", "highlightLift")
+    )

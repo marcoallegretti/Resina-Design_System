@@ -198,6 +198,11 @@ impl<'de> Deserialize<'de> for Request {
 pub fn resolve_command_motion_source(source: &str) -> Result<CommandMotionIr, CommandPaintError> {
     let document = resina_tokens::parse_token_document(source).map_err(CommandPaintError::Parse)?;
     let request: Request = serde_json::from_value(document).map_err(CommandPaintError::Request)?;
+    crate::pigment_source::validate_pigment_source(
+        source,
+        &["surface", "body", "appearance", "pigmentProfiles"],
+    )
+    .map_err(CommandPaintError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(CommandPaintError::UnsupportedVersion);
     }

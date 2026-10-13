@@ -1,9 +1,10 @@
 import json
+from decimal import Decimal
 import unittest
 
 from check_schemas import ROOT, apply_changes, load_json, validator_for
 from check_surface_paint_backend import baseline as paint_baseline
-from opaque_request_source import opaque_request_failures
+from opaque_request_source import opaque_request_failures, pigment_coefficient_failures
 
 
 class OpaqueRequestSourceTests(unittest.TestCase):
@@ -26,8 +27,8 @@ class OpaqueRequestSourceTests(unittest.TestCase):
             self.assertEqual(apply_changes(original, case["requestChanges"]),
                              json.loads(opaque_request_failures(original, pointer)[1][1]))
             failures = opaque_request_failures(original, pointer)
-            self.assertEqual(len(failures), 2)
-            for name, source in failures:
+            self.assertEqual(len(failures), 10)
+            for name, source in failures[:2]:
                 with self.subTest(consumer=consumer, name=name):
                     changed = json.loads(source)
                     self.assertFalse(validator.is_valid(changed))
@@ -55,6 +56,22 @@ class OpaqueRequestSourceTests(unittest.TestCase):
                     else:
                         self.assertEqual(malformed, {**body, "foregroundRole": {body["foregroundRole"]: None}})
             self.assertTrue(validator.is_valid(original))
+
+    def test_pigment_source_failures_violate_the_exact_nonnegative_contract(self):
+        original = load_json(ROOT / "conformance/materials/opaque-pigment-vectors.json")[0]["request"]
+        validator = validator_for("schemas/opaque-pigment-profiles.schema.json")
+        failures = pigment_coefficient_failures(original, "/profiles")
+        self.assertEqual(len(failures), 8)
+        for name, source in failures:
+            with self.subTest(name=name):
+                changed = json.loads(source, parse_float=Decimal)
+                errors = list(validator.iter_errors(changed["profiles"]))
+                self.assertEqual(len(errors), 1)
+                self.assertEqual(errors[0].validator, "minimum")
+                self.assertEqual(errors[0].instance, Decimal("-1e-400"))
+                for literal in ("0e-400", "-0.000e-400", "1e-400"):
+                    valid = json.loads(source.replace("-1e-400", literal), parse_float=Decimal)
+                    self.assertTrue(validator.is_valid(valid["profiles"]))
 
 
 if __name__ == "__main__":

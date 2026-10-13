@@ -273,6 +273,11 @@ pub fn resolve_toggle_part_paint_source(
         resina_tokens::parse_token_document(source).map_err(TogglePartPaintError::Parse)?;
     let request: Request =
         serde_json::from_value(document).map_err(TogglePartPaintError::Request)?;
+    crate::pigment_source::validate_pigment_source(
+        source,
+        &["surface", "body", "appearance", "pigmentProfiles"],
+    )
+    .map_err(TogglePartPaintError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(TogglePartPaintError::UnsupportedVersion);
     }

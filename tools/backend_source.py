@@ -1,4 +1,3 @@
-import copy
 import json
 
 from check_schemas import pointer_member, replace_at_pointer
@@ -22,7 +21,7 @@ def _member_source(document, pointer, *, duplicate, numeric_literal="1e400"):
     marker = "source-member-value"
     while json.dumps(marker, **options) in source:
         marker += "-"
-    changed = copy.deepcopy(document)
+    changed = json.loads(source)
     replace_at_pointer(changed, pointer, marker)
     segments = [part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")]
     parent = document

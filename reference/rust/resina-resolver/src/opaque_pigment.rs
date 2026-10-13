@@ -94,6 +94,8 @@ pub fn resolve_opaque_pigment_source(
     }
     let request: OpaquePigmentRequest =
         serde_json::from_value(document).map_err(OpaquePigmentError::Request)?;
+    crate::pigment_source::validate_pigment_source(source, &["profiles"])
+        .map_err(OpaquePigmentError::Request)?;
     debug_assert_eq!(request.schema_version, "0.1.0");
     let body = request.body.into_fallback().map_err(|error| match error {
         SrgbInputError::InvalidColorSpace => OpaquePigmentError::InvalidColorSpace,

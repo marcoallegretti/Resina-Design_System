@@ -165,6 +165,8 @@ pub fn resolve_slider_part_paint_source(
     }
     let request: Request =
         serde_json::from_value(document).map_err(SliderPartPaintSourceError::Request)?;
+    crate::pigment_source::validate_pigment_source(source, &["appearance", "pigmentProfiles"])
+        .map_err(SliderPartPaintSourceError::Request)?;
     if request.schema_version != "0.1.0" {
         return Err(SliderPartPaintSourceError::UnsupportedVersion);
     }
