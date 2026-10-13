@@ -17,6 +17,51 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_callbacks_retain_independently_checked_layout_and_target(self):
+        case = next(case for case in authored_cases() if case["name"] == "authored-layout-ltr")
+        content = case["request"]["content"]
+        style = case["typography"]
+        label = {"schemaVersion": "0.1.0", "text": content["text"], "typography": style,
+                 "layoutDirection": "ltr", "size": {"width": 200, "height": 100},
+                 "labelBounds": {"x": 40, "y": 51, "width": 136, "height": 8}}
+        state = {"schemaVersion": "0.1.0", "enabled": True, "focused": False, "hold": None}
+        snapshot = {"label": label, "hitRegion": {"bounds": {"x": 0, "y": 0, "width": 220, "height": 120}},
+                    "paint": {"geometry": {"front": {"bounds": {"width": 200, "height": 100}}}}}
+        measurement = {"text": content["text"], "family": content["fontFamily"]["name"],
+                       "pixelSize": 16, "weight": 700, "spacing": 0, "lineHeight": 1.48}
+        report = {**self.rejected(), "name": case["name"], "ready": True, "error": "", "ignored": False,
+                  "snapshot": json.dumps(snapshot), "target": json.dumps(snapshot["hitRegion"]),
+                  "measurements": [{"request": {**measurement, "maximumWidth": maximum},
+                                    "result": {"kind": "extent", "width": 100, "height": 8}}
+                                   for maximum in (None, 136)],
+                  "publications": [{"configuration": json.dumps(case["request"]),
+                                    "snapshot": copy.deepcopy(snapshot), "state": state, "hovered": False}]}
+        with patch("check_quickshell_command_updates.verify_snapshot") as validate_snapshot, \
+                patch("check_quickshell_command_updates.verify_authored_paint"):
+            verify_case(case, report, 1)
+            report["publications"][0]["hovered"] = True
+            report["publications"][0]["snapshot"]["paint"]["phase"] = "hover"
+            verify_case(case, report, 1)
+            self.assertEqual(validate_snapshot.call_args.args[2]["states"], ["hover"])
+            invalid_final = copy.deepcopy(report)
+            invalid_layout = json.loads(invalid_final["snapshot"])
+            invalid_layout["label"]["labelBounds"]["x"] = 0
+            invalid_final["snapshot"] = json.dumps(invalid_layout)
+            with self.assertRaisesRegex(ValueError, "complete Rust layout equations"):
+                verify_case(case, invalid_final, 1)
+            for change in ("offset", "size", "target"):
+                changed = copy.deepcopy(report)
+                callback = changed["publications"][0]["snapshot"]
+                if change == "offset":
+                    callback["label"]["labelBounds"]["x"] = 0
+                elif change == "size":
+                    callback["label"]["size"]["width"] += 1
+                    callback["paint"]["geometry"]["front"]["bounds"]["width"] += 1
+                else:
+                    callback["hitRegion"]["bounds"]["width"] += 1
+                with self.subTest(change=change), self.assertRaisesRegex(ValueError, "callback.*layout|callback.*target"):
+                    verify_case(case, changed, 1)
+
     def test_old_theme_paint_cannot_be_relabelled_as_the_new_source(self):
         case = authored_cases()[0]
         request = case["request"]

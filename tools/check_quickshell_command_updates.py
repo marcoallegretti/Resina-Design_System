@@ -205,6 +205,10 @@ def verify_case(case, report, scale):
                         {"schemaVersion": "0.1.0", "states": flags or ["rest"]})
         verify_authored_paint(source, publication["snapshot"])
         verify_typography(case, publication["snapshot"]["label"])
+        if publication["snapshot"]["label"] != snapshot["label"]:
+            raise ValueError("consumer callback changed the fixed authored layout")
+        if publication["snapshot"]["hitRegion"] != snapshot["hitRegion"]:
+            raise ValueError("consumer callback changed the fixed authored target")
 
 
 def verify_capture(path, snapshot, scale):
