@@ -41,6 +41,27 @@ pub struct OpaquePigmentResult {
 }
 
 impl OpaquePigmentResult {
+    pub(crate) fn color_ranges(&self) -> [resina_color::OpaqueSrgbRange; 2] {
+        [self.highlight(), self.side()].map(|endpoint| {
+            let body = self.body().components();
+            let tip = endpoint.components();
+            let margin = 4.0 * f64::EPSILON;
+            let lower = std::array::from_fn::<_, 3, _>(|i| {
+                (body[i].min(tip[i]) - margin).next_down().max(0.0)
+            });
+            let upper = std::array::from_fn::<_, 3, _>(|i| {
+                (body[i].max(tip[i]) + margin).next_up().min(1.0)
+            });
+            let color = |components: [f64; 3]| {
+                resolve_srgb_fallback(
+                    &json!({"colorSpace":"srgb","components":components,"alpha":1}),
+                )
+                .expect("bounded opaque interpolation range")
+            };
+            resina_color::OpaqueSrgbRange::try_new(color(lower), color(upper))
+                .expect("ordered pigment range")
+        })
+    }
     pub fn material_family(&self) -> MaterialFamily {
         self.material_family
     }

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:material-light-request:0.1.0",
+  "title": "Resina Material Light Request",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "light", "environment", "enabled", "interactionActive", "pigment", "normals"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "light": {"$ref": "urn:resina:schema:material-light:0.1.0"},
+    "environment": {"$ref": "urn:resina:schema:environment:0.2.0"},
+    "enabled": {"type": "boolean"},
+    "interactionActive": {"type": "boolean"},
+    "pigment": {"$ref": "urn:resina:schema:opaque-pigment-request:0.1.0"},
+    "normals": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["x", "y", "z"],
+        "properties": {
+          "x": {"type": "number", "minimum": -1, "maximum": 1},
+          "y": {"type": "number", "minimum": -1, "maximum": 1},
+          "z": {"type": "number", "minimum": -1, "maximum": 1}
+        }
+      }
+    }
+  },
+  "$comment": "Full normal squared length must be within 1e-12 of one; spec/85-bounded-material-light.md defines this semantic constraint."
+}
