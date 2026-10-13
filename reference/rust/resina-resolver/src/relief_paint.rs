@@ -317,27 +317,10 @@ impl ReliefPaint {
     }
 
     pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {
-        let range = |endpoint: &SrgbFallback| {
-            let body = self.pigment.body().components();
-            let tip = endpoint.components();
-            let margin = 4.0 * f64::EPSILON;
-            let lower = std::array::from_fn::<_, 3, _>(|i| {
-                (body[i].min(tip[i]) - margin).next_down().max(0.0)
-            });
-            let upper = std::array::from_fn::<_, 3, _>(|i| {
-                (body[i].max(tip[i]) + margin).next_up().min(1.0)
-            });
-            let color = |components: [f64; 3]| {
-                resina_color::resolve_srgb_fallback(&serde_json::json!({
-                    "colorSpace":"srgb","components":components,"alpha":1
-                }))
-                .expect("bounded opaque interpolation range")
-            };
-            OpaqueSrgbRange::try_new(color(lower), color(upper)).expect("ordered pigment range")
-        };
+        let [highlight, side] = self.pigment.color_ranges();
         vec![
-            range(self.pigment.highlight()),
-            range(self.pigment.side()),
+            highlight,
+            side,
             OpaqueSrgbRange::try_new(self.edge.color().clone(), self.edge.color().clone())
                 .expect("opaque edge"),
         ]

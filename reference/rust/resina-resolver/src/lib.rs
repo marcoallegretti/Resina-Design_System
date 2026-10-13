@@ -6,7 +6,9 @@ pub use outline_focus::{
     OutlineFocusResult, OutlineFocusSupport, resolve_outline_focus, resolve_outline_focus_source,
 };
 
+mod material_light;
 mod pigment_source;
+pub use material_light::{MaterialLightError, MaterialLightResult, resolve_material_light_source};
 mod relief_paint;
 pub use relief_paint::{
     ReliefPaint, ReliefPaintError, ReliefPaintPoint, ReliefPaintResult, resolve_relief_paint,

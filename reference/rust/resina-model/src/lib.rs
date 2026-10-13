@@ -38,6 +38,8 @@ pub use geometry::{
 };
 mod key_light;
 pub use key_light::KeyLight;
+mod material_light;
+pub use material_light::{InteractionLight, MaterialLight};
 mod elevation;
 pub use elevation::ElevationDepthAssignments;
 mod frost;

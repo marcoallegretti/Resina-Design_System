@@ -54,6 +54,15 @@ Run `cargo run -p resina-resolver --bin resina-inset-contour -- <path>` for an [
 
 Run `cargo run -p resina-resolver --bin resina-key-light -- <path>` for a [key-light request](schemas/key-light-request.schema.json). The operation resolves a physical lighting direction, side offset, and highlight weights for straight edges and supplied normals. `python tools/check_key_light_backend.py -- <backend-command> -` checks its directional output and failures.
 
+Run `cargo run -p resina-resolver --bin resina-material-light -- <path>` for a
+[bounded material-light request](schemas/material-light-request.schema.json).
+The [light contract](spec/85-bounded-material-light.md) resolves explicit ambient
+and interaction inputs against environment, quality and accessibility policy,
+then evaluates existing opaque pigment endpoints over full unit normals.
+`python tools/check_material_light_backend.py -- <backend-command> -` checks
+the public protocol, exact uniform body, outward color ranges and invalid source
+admission. Complete paint integration and accepted scenes require separate evidence.
+
 Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for an [extruded contour request](schemas/extruded-contour-request.schema.json). It resolves the swept silhouette as portable lines and elliptical arcs, including physical corner mapping and split curves. `python tools/check_extruded_contour_backend.py -- <backend-command> -` checks the public geometry protocol.
 
 Run `cargo run -p resina-resolver --bin resina-opaque-surface -- <path>` for an [opaque base-state surface request](schemas/opaque-surface-request.schema.json). It resolves one complete static opaque surface appearance from a theme, actual environment and surroundings, and explicit appearance profile. `python tools/check_opaque_surface_backend.py -- <backend-command> -` checks its portable IR and diagnostic failures. The Rust `resolve_opaque_surface` API reuses a compiled theme across surfaces.

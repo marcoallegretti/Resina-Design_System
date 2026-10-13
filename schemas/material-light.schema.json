@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:material-light:0.1.0",
+  "title": "Resina Bounded Material Light",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "keyLight", "ambient", "interaction"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "keyLight": {"$ref": "urn:resina:schema:key-light:0.1.0"},
+    "ambient": {"type": ["number", "null"], "minimum": 0, "exclusiveMaximum": 1},
+    "interaction": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["direction", "strength"],
+          "properties": {
+            "direction": {"$ref": "urn:resina:schema:key-light:0.1.0#/properties/direction"},
+            "strength": {"type": "number", "minimum": 0, "exclusiveMaximum": 1}
+          }
+        }
+      ]
+    }
+  }
+}
