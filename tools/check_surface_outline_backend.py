@@ -1,7 +1,7 @@
 import json
 import math
 
-from backend_source import duplicate_member_source, nonfinite_member_source
+from backend_source import duplicate_member_source, negative_underflow_member_source, nonfinite_member_source
 from check_color_guard_backend import check_backend
 from check_schemas import ROOT, load_json
 from check_headless_backend import mismatch
@@ -37,5 +37,7 @@ if __name__ == "__main__":
             ("positional corner", json.dumps(positional_corner)),
             ("duplicate radius", duplicate_member_source(baseline, "/radii/topStart/x")),
             ("nonfinite inset", nonfinite_member_source(baseline, "/minimumInset")),
+            ("negative underflowed radius", negative_underflow_member_source(baseline, "/radii/topStart/x")),
+            ("negative underflowed inset", negative_underflow_member_source(baseline, "/minimumInset")),
         ),
     ))

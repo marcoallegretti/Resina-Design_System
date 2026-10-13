@@ -2,7 +2,8 @@ use crate::normalize_corner_radii;
 use resina_environment::LayoutDirection;
 use resina_model::{CornerRadius, LogicalCornerRadii, PhysicalBounds, PhysicalVector, SurfaceSize};
 use resina_tokens::parse_token_document;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::value::RawValue;
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
@@ -46,10 +47,65 @@ impl std::error::Error for SurfaceOutlineError {}
 struct OutlineRequest {
     schema_version: String,
     size: SurfaceSize,
+    #[serde(deserialize_with = "source_radii")]
     radii: LogicalCornerRadii,
     layout_direction: LayoutDirection,
     curvature: OutlineCurvature,
+    #[serde(deserialize_with = "source_extent")]
     minimum_inset: f64,
+}
+
+fn source_extent<'de, D: Deserializer<'de>>(deserializer: D) -> Result<f64, D::Error> {
+    let source = <&RawValue>::deserialize(deserializer)?;
+    let value: f64 = serde_json::from_str(source.get()).map_err(serde::de::Error::custom)?;
+    let nonzero = source
+        .get()
+        .bytes()
+        .take_while(|byte| !matches!(byte, b'e' | b'E'))
+        .any(|byte| matches!(byte, b'1'..=b'9'));
+    if value == 0.0 && nonzero {
+        return Err(serde::de::Error::custom(
+            "numeric precision cannot retain nonzero source extent",
+        ));
+    }
+    Ok(value)
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SourceCorner {
+    #[serde(deserialize_with = "source_extent")]
+    x: f64,
+    #[serde(deserialize_with = "source_extent")]
+    y: f64,
+}
+impl From<SourceCorner> for CornerRadius {
+    fn from(source: SourceCorner) -> Self {
+        Self {
+            x: source.x,
+            y: source.y,
+        }
+    }
+}
+
+fn source_radii<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<LogicalCornerRadii, D::Error> {
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct SourceRadii {
+        top_start: SourceCorner,
+        top_end: SourceCorner,
+        bottom_end: SourceCorner,
+        bottom_start: SourceCorner,
+    }
+    let source = SourceRadii::deserialize(deserializer)?;
+    Ok(LogicalCornerRadii {
+        top_start: source.top_start.into(),
+        top_end: source.top_end.into(),
+        bottom_end: source.bottom_end.into(),
+        bottom_start: source.bottom_start.into(),
+    })
 }
 
 pub fn resolve_surface_outline_source(source: &str) -> Result<SurfaceOutline, SurfaceOutlineError> {
@@ -71,7 +127,7 @@ pub fn resolve_surface_outline_source(source: &str) -> Result<SurfaceOutline, Su
         }
     }
     let request: OutlineRequest =
-        serde_json::from_value(document).map_err(|e| SurfaceOutlineError(e.to_string()))?;
+        serde_json::from_str(source).map_err(|e| SurfaceOutlineError(e.to_string()))?;
     if request.schema_version != "0.1.0" {
         return Err(SurfaceOutlineError("schemaVersion must be 0.1.0".into()));
     }

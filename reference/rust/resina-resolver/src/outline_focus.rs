@@ -81,10 +81,11 @@ impl OutlineFocusResult {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct Request {
+struct Request<'a> {
     schema_version: String,
     focus: Value,
-    outline: Value,
+    #[serde(borrow)]
+    outline: &'a serde_json::value::RawValue,
     side_offset: PhysicalVector,
     directions: Vec<PhysicalVector>,
 }
@@ -134,8 +135,8 @@ pub fn resolve_outline_focus_source(source: &str) -> Result<OutlineFocusResult, 
     if !document.is_object() {
         return Err(OutlineFocusError("request must be an object".into()));
     }
-    let request: Request =
-        serde_json::from_value(document).map_err(|e| OutlineFocusError(e.to_string()))?;
+    let request: Request<'_> =
+        serde_json::from_str(source).map_err(|e| OutlineFocusError(e.to_string()))?;
     if request.schema_version != "0.1.0" {
         return Err(OutlineFocusError("schemaVersion must be 0.1.0".into()));
     }
@@ -152,7 +153,7 @@ pub fn resolve_outline_focus_source(source: &str) -> Result<OutlineFocusResult, 
     }
     let indicator = resolve_focus_indicator_source(&request.focus.to_string())
         .map_err(|e| OutlineFocusError(e.to_string()))?;
-    let outline = resolve_surface_outline_source(&request.outline.to_string())
+    let outline = resolve_surface_outline_source(request.outline.get())
         .map_err(|e| OutlineFocusError(e.to_string()))?;
     let focus = resolve_outline_focus(indicator, outline, request.side_offset)?;
     let supports = request

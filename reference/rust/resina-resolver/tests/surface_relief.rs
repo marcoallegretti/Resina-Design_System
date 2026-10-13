@@ -6,6 +6,23 @@ use resina_resolver::{
 };
 
 #[test]
+fn nested_outline_must_retain_original_numeric_source() {
+    let cases: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../conformance/geometry/surface-relief-vectors.json"
+    ))
+    .unwrap();
+    for literal in ["1e-400", "-1e-400"] {
+        let mut request = cases[0]["request"].clone();
+        request["outline"]["radii"]["topStart"]["x"] = serde_json::json!(-9999.0);
+        let source = request.to_string().replace("-9999.0", literal);
+        assert!(
+            resina_resolver::resolve_surface_relief_source(&source).is_err(),
+            "{literal}"
+        );
+    }
+}
+
+#[test]
 fn authored_relief_vectors_match_independent_decimal_expectations() {
     let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!(
         "../../../../conformance/geometry/surface-relief-vectors.json"
