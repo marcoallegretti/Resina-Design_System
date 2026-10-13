@@ -1,16 +1,16 @@
 //! Fixed-size native relief and complete-label inspection fixture.
 use guido::{prelude::*, renderer::DrawCommand, widget_prelude::*};
 use resina_environment::{LayoutDirection, SafeArea};
-use resina_guido::{measure_command_label, prepare_relief_content_at};
+use resina_guido::{measure_command_label, prepare_outline_focus_at, prepare_relief_content_at};
 use resina_model::{PhysicalVector, TypographyRole};
 use resina_resolver::{
-    CommandLabelInput, compile_theme_source, resolve_command_label, resolve_relief_paint_source,
-    resolve_srgb_fallback,
+    CommandLabelInput, compile_theme_source, resolve_command_label, resolve_outline_focus_source,
+    resolve_relief_paint_source, resolve_srgb_fallback,
 };
 use serde_json::{Value, json};
 use std::error::Error;
 
-struct Content([DrawCommand; 2]);
+struct Content(Vec<DrawCommand>);
 impl Widget for Content {
     fn layout(&mut self, _ctx: &mut LayoutCtx, constraints: Constraints) -> Size {
         constraints.constrain(Size::new(360.0, 200.0))
@@ -64,8 +64,8 @@ fn config(canvas: Color) -> SurfaceConfig {
 }
 fn run() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    if args.len() != 5 {
-        return Err("usage: relief_content_probe <paint.json> <font.ttf> <device-scale> <text-scale> <expected.png>".into());
+    if args.len() != 5 && args.len() != 6 {
+        return Err("usage: relief_content_probe <paint.json> <font.ttf> <device-scale> <text-scale> <expected.png> [focus.json]".into());
     }
     let font = std::fs::read(&args[1])?;
     let mut database = fontdb::Database::new();
@@ -101,6 +101,27 @@ fn run() -> Result<(), Box<dyn Error>> {
     if canvas.alpha() != 1.0 {
         return Err("inspection canvas must be opaque".into());
     }
+    let focus = if let Some(path) = args.get(5) {
+        let source = std::fs::read_to_string(path)?;
+        let request: Value = serde_json::from_str(&source)?;
+        let result = resolve_outline_focus_source(&source)?;
+        if result.focus().indicator().binding().material_family()
+            != paint.pigment().material_family()
+        {
+            return Err("focus material family differs from the actual relief face".into());
+        }
+        if resolve_srgb_fallback(&request["focus"]["surroundingColor"])? != canvas {
+            return Err("focus surrounding color differs from the actual canvas".into());
+        }
+        if result.focus().geometry().outline() != paint.surface().outline()
+            || result.focus().geometry().side_offset() != (PhysicalVector { x: 0.0, y: 0.0 })
+        {
+            return Err("focus must match the actual unprojected relief footprint".into());
+        }
+        Some(result)
+    } else {
+        None
+    };
     let [r, g, b] = canvas.components().map(|value| value as f32);
     let canvas = Color::rgb(r, g, b);
     let size = paint.surface().outline().size();
@@ -141,14 +162,27 @@ fn run() -> Result<(), Box<dyn Error>> {
         },
         |input| measure_command_label(family, input),
     )?;
-    let commands = prepare_relief_content_at(
-        &paint,
-        &label,
-        family,
-        PhysicalVector { x: 12.25, y: 7.125 },
-        scale,
-        4,
-    )?;
+    let origin = PhysicalVector { x: 12.25, y: 7.125 };
+    let mut commands =
+        prepare_relief_content_at(&paint, &label, family, origin, scale, 4)?.to_vec();
+    if let Some(focus) = &focus {
+        let prepared = prepare_outline_focus_at(focus.focus(), origin, scale)?;
+        let (x, y) = prepared.origin();
+        let size = prepared.logical_size();
+        if x < 0.0 || y < 0.0 || x + size.width > 360.0 || y + size.height > 200.0 {
+            return Err("inspection canvas clips complete outer focus bounds".into());
+        }
+        commands.insert(
+            0,
+            DrawCommand::Image {
+                source: prepared.image_source(),
+                decoded: None,
+                rect: Rect::new(x, y, size.width, size.height),
+                content_fit: ContentFit::Fill,
+                tint: None,
+            },
+        );
+    }
     let width = (360.0 * scale).round() as u32;
     let height = (200.0 * scale).round() as u32;
     {
@@ -176,7 +210,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     guido::load_font(font);
     println!(
         "RESINA_RELIEF_CONTENT_PREPARED {}",
-        json!({"scale":scale,"textScale":text_scale,"width":width,"height":height,"labelBounds":label.label_bounds(),"contentBounds":paint.content_bounds()})
+        json!({"scale":scale,"textScale":text_scale,"width":width,"height":height,"labelBounds":label.label_bounds(),"contentBounds":paint.content_bounds(),"focusComposed":focus.is_some()})
     );
     match App::new().run(move |app| {
         app.add_surface(config(canvas), move || Content(commands));

@@ -188,6 +188,16 @@ If `CARGO_TARGET_DIR` is set, supply its example binary path. Run under a live
 parent Wayland display with Sway and grim available. Complete
 content reference preparation has a 120-second deadline for software renderers.
 The checker retains the same pixel comparison threshold and terminates only its
-own client and nested compositor. These diagnostic pixels
-prove native composition; they do not establish accepted material appearance,
-interactive controls, focus or assistive technology integration.
+own client and nested compositor.
+
+Add `--content-focus` to compose an outline focus ring behind the complete face
+and label. The checker supplies a guarded focus request using the actual canvas,
+material family and unprojected footprint, with concurrent selected, focused and
+hover states. The probe rejects mismatched material families or outlines,
+projected focus and clipped outer bounds before capture or presentation. Its
+optional sixth argument accepts the same public outline-focus request directly.
+The GPU composition tests also verify retained opaque focus pixels and unchanged content wherever the ring is
+transparent in both canvas polarities, directions and outline curvatures.
+
+These diagnostic pixels prove native composition; they do not establish accepted
+material appearance, interactive controls or assistive technology integration.

@@ -37,6 +37,28 @@ def diagnostic_outline_focus_request():
     return request
 
 
+def diagnostic_content_focus_request(paint):
+    from check_focus_indicator_backend import baseline, contrast
+    focus, _ = baseline()
+    family = paint["pigment"]["materialFamily"]
+    assignments = focus["scenario"]["resolution"]["materialAssignments"]
+    role = next((f"{namespace}.{name}" for namespace in ("surface", "control", "feedback")
+                 for name, value in assignments[namespace].items() if value == family), None)
+    if role is None:
+        raise ValueError(f"no authored focus material role for {family!r}")
+    focus["scenario"]["surface"]["materialRole"] = role
+    focus["scenario"]["surface"]["treatmentStack"]["treatments"] = ["none"]
+    focus["scenario"]["surface"]["states"]["states"] = ["selected", "focused", "hover"]
+    focus["surroundingColor"] = copy.deepcopy(paint["edge"]["adjacentColor"])
+    resolution = focus["scenario"]["resolution"]
+    token = resolution["opaqueColorAssignments"]["roles"]["focus"].split(".")[1]
+    components = [0, 0, 0] if contrast([0, 0, 0], focus["surroundingColor"]["components"]) >= 3 else [1, 1, 1]
+    resolution["tokens"]["palette"][token]["$value"] = {
+        "colorSpace": "srgb", "components": components, "alpha": 1}
+    return {"schemaVersion": "0.1.0", "focus": focus, "outline": copy.deepcopy(paint["outline"]),
+            "sideOffset": {"x": 0, "y": 0}, "directions": []}
+
+
 def capture_matches(capture, prepared, origin):
     if origin[0] < 0 or origin[1] < 0 or origin[0] + prepared.width > capture.width or origin[1] + prepared.height > capture.height:
         raise ValueError("native capture clips the complete prepared image")
@@ -62,7 +84,7 @@ def validate_canvas_reference(prepared, logical_size, scale):
         raise ValueError("native GPU reference must have an opaque canvas")
 
 
-def check_scale(probe, request, output, parent, scale, content=None, outline_focus=False):
+def check_scale(probe, request, output, parent, scale, content=None, outline_focus=False, content_focus=None):
     with tempfile.TemporaryDirectory(prefix="resina-relief-native-") as runtime:
         config = Path(runtime) / "config"
         output_width = 1260 if content else 840
@@ -110,6 +132,8 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                 if content:
                     font, text_scale = content
                     arguments = [str(probe), str(request), str(font), str(scale), str(text_scale), str(prepared_path)]
+                    if content_focus:
+                        arguments.append(str(content_focus))
                     marker = "RESINA_RELIEF_CONTENT_PREPARED "
                 elif outline_focus:
                     marker = "RESINA_OUTLINE_FOCUS_PREPARED "
@@ -132,6 +156,8 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                     raise ValueError(f"native client did not publish prepared paint within {preparation_seconds} seconds")
                 if metadata["scale"] != scale:
                     raise ValueError("native fixture preparation scale differs from compositor scale")
+                if content_focus and metadata.get("focusComposed") is not True:
+                    raise ValueError("native fixture did not prepare the requested focus composition")
                 prepared = Image.open(prepared_path).convert("RGBA")
                 if content or outline_focus:
                     validate_canvas_reference(prepared, (360, 200) if content else (160, 96), scale)
@@ -171,9 +197,12 @@ def main():
     parser.add_argument("--request", type=Path)
     parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit regular DejaVu Sans file")
     parser.add_argument("--outline-focus", action="store_true", help="check the continuous-outline focus probe against its full opaque GPU reference")
+    parser.add_argument("--content-focus", action="store_true", help="compose a guarded focus ring around the actual complete-content footprint")
     parser.add_argument("--text-scale", type=float, default=1)
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 1.5, 2, 3])
     args = parser.parse_args()
+    if args.content_focus and not args.content_font:
+        parser.error("content focus requires --content-font and the complete-content probe")
     if args.outline_focus and (args.content_font or any(
             not math.isfinite(s) or not 1 <= s <= 3
             or 160 * s != round(160 * s) or 96 * s != round(96 * s) for s in args.scales)):
@@ -199,7 +228,11 @@ def main():
             request["outline"]["layoutDirection"] = "rtl"
         request_path.write_text(json.dumps(request, allow_nan=False))
         content = (args.content_font.resolve(), args.text_scale) if args.content_font else None
-        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content, args.outline_focus)
+        content_focus = None
+        if args.content_focus:
+            content_focus = (args.output_dir / "focus.json").resolve()
+            content_focus.write_text(json.dumps(diagnostic_content_focus_request(request), allow_nan=False))
+        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content, args.outline_focus, content_focus)
                    for scale in args.scales]
         report = {"records": records, "nestedBackend": "wayland", "renderer": "pixman",
                   "scope": "opaque native face-paint pixels; no appearance, input, focus or AT acceptance"}
@@ -207,6 +240,9 @@ def main():
             report["scope"] = "complete native face and glyph pixels against GPU reference; no appearance, input, focus or AT acceptance"
             report["textScale"] = args.text_scale
             report["fontSha256"] = hashlib.sha256(args.content_font.read_bytes()).hexdigest()
+            if content_focus:
+                report["scope"] = "complete native relief, glyph and focus pixels against GPU reference; no component appearance, input or AT acceptance"
+                report["focusRequestSha256"] = hashlib.sha256(content_focus.read_bytes()).hexdigest()
         elif args.outline_focus:
             report["scope"] = "complete native continuous-outline focus pixels against GPU reference; no component appearance, input or AT acceptance"
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2) + "\n")
