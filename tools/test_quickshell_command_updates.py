@@ -19,6 +19,36 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_focus_guard_checks_authored_pigment_and_fallback_independently(self):
+        from check_quickshell_command_updates import verify_authored_focus
+        theme = json.loads(authored_cases()[0]["request"]["content"]["themeSource"])
+        palette = theme["tokenResolver"]["sets"]["theme"]["sources"][0].setdefault("palette", {})
+        black = {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1}
+        white = {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1}
+        palette.update(testSource={"$type": "color", "$value": black},
+                       testFocus={"$type": "color", "$value": black}, testOutline={"$type": "color", "$value": black})
+        theme["colorAssignments"]["roles"].update({"focus": "palette.testSource", "outline.strong": "palette.testSource"})
+        theme["opaqueColorAssignments"]["roles"].pop("focus", None)
+        theme["opaqueColorAssignments"]["roles"].pop("outline.strong", None)
+        indicator = {"colorRole": "focus", "color": black, "fallbackApplied": False, "contrastRatio": 21}
+        verify_authored_focus(theme, white, indicator)
+        theme["opaqueColorAssignments"]["roles"].update({"focus": "palette.testFocus", "outline.strong": "palette.testOutline"})
+        verify_authored_focus(theme, white, indicator)
+        for field, value in (("color", white), ("contrastRatio", 3), ("contrastRatio", 21 + 1e-11),
+                             ("colorRole", "outline.strong"), ("fallbackApplied", True)):
+            changed = {**indicator, field: value}
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "authored pigment or contrast"):
+                verify_authored_focus(theme, white, changed)
+        palette["testFocus"]["$value"] = white
+        fallback = {**indicator, "colorRole": "outline.strong", "fallbackApplied": True}
+        verify_authored_focus(theme, white, fallback)
+        with self.assertRaisesRegex(ValueError, "authored pigment or contrast"):
+            verify_authored_focus(theme, white, indicator)
+        palette["testOutline"]["$value"] = white
+        with self.assertRaisesRegex(ValueError, "both fail"):
+            verify_authored_focus(theme, white, fallback)
+        verify_authored_focus(theme, black, {**indicator, "color": white})
+
     def test_both_published_variants_have_focused_cases_in_both_themes(self):
         cases = authored_cases()
         for name in ("light-latin-1", "dark-latin-1", "light-primary", "dark-primary"):

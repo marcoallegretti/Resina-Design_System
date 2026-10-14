@@ -16,6 +16,7 @@ from check_schemas import validator_for
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
 from check_qt_command_label_runtime import verify_layout
 from check_surface_paint_backend import surface_paint_channel_mismatch
+from check_focus_indicator_backend import contrast
 
 
 def authored_cases():
@@ -95,6 +96,33 @@ def verify_typography(case, label):
         raise ValueError("native label differs from authored typography")
 
 
+def inline_color(theme, role, assignments="colorAssignments"):
+    token = theme["tokenResolver"]["sets"]["theme"]["sources"][0]
+    path = theme[assignments]["roles"].get(role, theme["colorAssignments"]["roles"][role])
+    for member in path.split("."):
+        token = token[member]
+    value = token["$value"]
+    return {"colorSpace": value["colorSpace"], "components": value["components"],
+            "alpha": value.get("alpha", 1)}
+
+
+def verify_authored_focus(theme, surrounding, indicator):
+    if surrounding["colorSpace"] != "srgb" or surrounding["alpha"] != 1:
+        raise ValueError("authored focus requires opaque sRGB surroundings")
+    for role in ("focus", "outline.strong"):
+        color = inline_color(theme, role, "opaqueColorAssignments")
+        if color["colorSpace"] != "srgb" or color["alpha"] != 1:
+            raise ValueError("authored focus requires opaque sRGB pigment")
+        ratio = contrast(color["components"], surrounding["components"])
+        if ratio >= 3:
+            if indicator["colorRole"] != role or indicator["color"] != color \
+                    or indicator["fallbackApplied"] != (role == "outline.strong") \
+                    or not math.isclose(indicator["contrastRatio"], ratio, rel_tol=0, abs_tol=1e-12):
+                raise ValueError("native focus differs from the authored pigment or contrast guard")
+            return
+    raise ValueError("authored focus and strong outline both fail the contrast guard")
+
+
 def verify_authored_paint(request, snapshot):
     theme = json.loads(request["content"]["themeSource"], object_pairs_hook=unique_object)
     surface = request["body"]["surface"]
@@ -105,15 +133,7 @@ def verify_authored_paint(request, snapshot):
     response = {"bodyMix": 0, "depthScale": 1} if paint["phase"] == "rest" \
         else request["body"]["commandAppearance"]["profiles"][family][paint["phase"]]
 
-    def inline_color(role):
-        token = theme["tokenResolver"]["sets"]["theme"]["sources"][0]
-        for member in theme["colorAssignments"]["roles"][role].split("."):
-            token = token[member]
-        value = token["$value"]
-        return {"colorSpace": value["colorSpace"], "components": value["components"],
-                "alpha": value.get("alpha", 1)}
-
-    color = inline_color(surface["colorRole"])
+    color = inline_color(theme, surface["colorRole"])
     mix = response["bodyMix"]
     color["components"] = [channel * (1 + mix) if mix < 0 else channel + (1 - channel) * mix
                            for channel in color["components"]]
@@ -121,12 +141,14 @@ def verify_authored_paint(request, snapshot):
             or any(body[field] != surface[field] for field in ("materialRole", "colorRole", "form")) \
             or body["foregroundRole"] != request["body"]["foregroundRole"] \
             or body["pigment"]["body"] != color \
-            or body["foreground"] != inline_color(request["body"]["foregroundRole"]) \
-            or body["edge"]["color"] != inline_color("outline"):
+            or body["foreground"] != inline_color(theme, request["body"]["foregroundRole"]) \
+            or body["edge"]["color"] != inline_color(theme, "outline"):
         raise ValueError("native paint differs from the authored theme, form or response")
     verify_authored_geometry(request, snapshot)
     if surface_paint_channel_mismatch(paint["paint"]):
         raise ValueError("native focus binding or silhouette differs from the current body")
+    if "focus" in paint["paint"]:
+        verify_authored_focus(theme, request["body"]["surroundingColor"], paint["paint"]["focus"]["indicator"])
 
 
 def verify_authored_geometry(request, snapshot):

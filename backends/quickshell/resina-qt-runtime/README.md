@@ -832,7 +832,9 @@ Each successful case saves a PNG and its complete snapshot. Pixel checks require
 a representative uniform body sample above the label to retain the current pigment
 and foreground ink on every measured line at the placed label coordinates; they do
 not establish every glyph's shape, universal fallback coverage or product styling
-acceptance. Focused captures also require the opaque indicator color at the
+acceptance. Focus pigment selection, fallback and unrounded contrast are checked
+independently against the authored opaque assignments and surrounding color.
+Focused captures also require the opaque indicator color at the
 midpoint of each exterior side, using the specified gap and stroke. Their capture
 backdrop is the authored opaque surrounding color used by the focus contrast guard;
 the checker also verifies that background. These samples
