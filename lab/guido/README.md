@@ -265,6 +265,8 @@ before its positional arguments. It resolves the complete source through the
 material-relief protocol and uses the backend's checked content preparation.
 The checker requires explicit confirmation of the selected lighting mode from
 the probe; `--content-focus` retains the actual face's independently guarded ring.
+Custom request bytes reach the probe unchanged after strict JSON parsing for
+fixture derivation, preserving source-number rejection before numeric rounding.
 Whole-canvas native pixel agreement remains separate from accepted appearance,
 component interaction, disabled-state styling and accessibility publication.
 

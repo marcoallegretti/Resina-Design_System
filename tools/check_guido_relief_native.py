@@ -13,7 +13,7 @@ import time
 import xml.etree.ElementTree as ET
 
 from PIL import Image
-from check_schemas import ROOT, load_json
+from check_schemas import ROOT, load_json, parse_json
 
 
 def diagnostic_request():
@@ -275,13 +275,15 @@ def main():
             raise ValueError("parent Wayland socket is absent")
         args.output_dir.mkdir(parents=True)
         request_path = args.output_dir / "request.json"
-        request = load_json(args.request) if args.request else (
+        request_source = args.request.read_bytes() if args.request else None
+        request = parse_json(request_source.decode("utf-8"), args.request) if request_source is not None else (
             diagnostic_outline_focus_request() if args.outline_focus else
             diagnostic_material_request() if args.material_light else diagnostic_request())
         if args.content_font and not args.request:
             request["outline"]["size"] = {"width": 320, "height": 160}
             request["outline"]["layoutDirection"] = "rtl"
-        request_path.write_text(json.dumps(request, allow_nan=False))
+        request_path.write_bytes(request_source if request_source is not None else
+                                 json.dumps(request, allow_nan=False).encode("utf-8"))
         content = (args.content_font.resolve(), args.text_scale) if args.content_font else None
         content_focus = None
         if args.content_focus:

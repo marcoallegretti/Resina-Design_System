@@ -1,7 +1,11 @@
 import contextlib
 import copy
 import io
+import json
+import os
+from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -12,6 +16,47 @@ import check_guido_relief_native as native
 
 
 class NativeReliefComparisonTests(unittest.TestCase):
+    def test_custom_material_source_reaches_probe_without_numeric_rewriting(self):
+        request_document = native.diagnostic_material_request()
+        request_document["enabled"] = False
+        request_document["environment"]["accessibilityPreferences"]["highContrast"] = True
+        source = json.dumps(request_document, indent=2).replace(
+            '"ambient": 0.5', '"amb\\u0069ent": -1e-400')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request = root / "request.json"
+            request.write_bytes(source.encode("utf-8"))
+            arguments = ["checker", "--probe", "probe", "--output-dir", str(root / "output"),
+                         "--request", str(request), "--material-light", "--content-font", "font",
+                         "--scales", "1.25"]
+
+            def inspect_request(_probe, forwarded, *_args, **_kwargs):
+                self.assertIn(b"-1e-400", forwarded.read_bytes())
+                self.assertEqual(forwarded.read_bytes(), request.read_bytes())
+                raise ValueError("stop before native launch")
+
+            with patch.object(sys, "argv", arguments), patch.dict(os.environ, {"WAYLAND_DISPLAY": str(root / "parent-socket")}), \
+                    patch.object(Path, "is_socket", return_value=True), \
+                    patch.object(native, "check_scale", side_effect=inspect_request) as check, \
+                    contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(), 1)
+                check.assert_called_once()
+
+    def test_custom_material_source_rejects_duplicate_members_before_probe(self):
+        source = json.dumps(native.diagnostic_material_request()).replace(
+            '"ambient": 0.5', '"ambient": 0.5, "amb\\u0069ent": 0')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request = root / "request.json"
+            request.write_bytes(source.encode("utf-8"))
+            arguments = ["checker", "--probe", "probe", "--output-dir", str(root / "output"),
+                         "--request", str(request), "--material-light", "--content-font", "font"]
+            with patch.object(sys, "argv", arguments), patch.dict(os.environ, {"WAYLAND_DISPLAY": str(root / "parent-socket")}), \
+                    patch.object(Path, "is_socket", return_value=True), \
+                    patch.object(native, "check_scale") as check, contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(), 1)
+                check.assert_not_called()
+
     def test_material_fixture_preserves_guards_and_has_one_active_light_source(self):
         original = diagnostic_request()
         request = native.diagnostic_material_request()
