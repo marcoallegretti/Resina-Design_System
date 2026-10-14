@@ -23,13 +23,13 @@ const MAX_PIXELS: u64 = 16_777_216;
 pub(crate) struct Board {
     pub(crate) width: u32,
     pub(crate) height: u32,
-    commands: Vec<DrawCommand>,
-    scale: f32,
-    clear: Color,
+    pub(crate) commands: Vec<DrawCommand>,
+    pub(crate) scale: f32,
+    pub(crate) clear: Color,
 }
-struct Specimen {
+pub(crate) struct Specimen {
     paint: SurfacePaintIr,
-    theme: HeadlessResolution,
+    pub(crate) theme: HeadlessResolution,
 }
 
 pub(crate) fn validate_font(data: &[u8], name: &str) -> Result<()> {
@@ -44,11 +44,11 @@ pub(crate) fn validate_font(data: &[u8], name: &str) -> Result<()> {
     }
     Ok(())
 }
-fn color(value: &SrgbFallback) -> Color {
+pub(crate) fn color(value: &SrgbFallback) -> Color {
     let [r, g, b] = value.components().map(|v| v as f32);
     Color::rgba(r, g, b, value.alpha() as f32)
 }
-fn rectangle(rect: Rect, color: Color) -> DrawCommand {
+pub(crate) fn rectangle(rect: Rect, color: Color) -> DrawCommand {
     DrawCommand::RoundedRect {
         rect,
         color,
@@ -59,7 +59,7 @@ fn rectangle(rect: Rect, color: Color) -> DrawCommand {
         gradient: None,
     }
 }
-fn label(
+pub(crate) fn label(
     theme: &HeadlessResolution,
     family: FontFamily,
     role: TypographyRole,
@@ -118,7 +118,7 @@ fn label(
     Ok(command)
 }
 
-fn specimens(source: &str, text_scale: f64) -> Result<BTreeMap<String, Specimen>> {
+pub(crate) fn specimens(source: &str, text_scale: f64) -> Result<BTreeMap<String, Specimen>> {
     if !text_scale.is_finite() || !(1.0..=3.0).contains(&text_scale) {
         return Err("text scale must be finite and in [1, 3]".into());
     }

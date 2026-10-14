@@ -5,6 +5,66 @@ use std::{
 };
 
 #[test]
+fn relief_command_writes_opaque_srgb_and_rejects_invalid_modes_without_overwriting() {
+    let output =
+        std::env::temp_dir().join(format!("resina-relief-board-{}.png", std::process::id()));
+    let args = [
+        "relief-board".to_owned(),
+        std::env::var("RESINA_SCENES").unwrap(),
+        std::env::var("RESINA_LABEL_FONT").unwrap(),
+        "DejaVu Sans".to_owned(),
+        output.to_str().unwrap().to_owned(),
+        "1.25".to_owned(),
+        "1".to_owned(),
+        "convex".to_owned(),
+        "rest".to_owned(),
+    ];
+    let run = |args: &[String]| {
+        Command::new(env!("CARGO_BIN_EXE_resina-lab"))
+            .args(args)
+            .output()
+            .unwrap()
+    };
+    let result = run(&args);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let bytes = fs::read(&output).unwrap();
+    let mut reader = png::Decoder::new(BufReader::new(Cursor::new(&bytes)))
+        .read_info()
+        .unwrap();
+    assert_eq!((reader.info().width, reader.info().height), (1050, 1160));
+    assert_eq!(reader.info().color_type, png::ColorType::Rgba);
+    assert!(reader.info().srgb.is_some());
+    let mut pixels = vec![0; reader.output_buffer_size().unwrap()];
+    let frame = reader.next_frame(&mut pixels).unwrap();
+    assert!(
+        pixels[..frame.buffer_size()]
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .all(|pixel| pixel[3] == 255)
+    );
+    for (index, value, diagnostic) in [
+        (7, "negativeExtrusion", "relief kind"),
+        (8, "pressed", "relief state"),
+        (5, "NaN", "device scale"),
+    ] {
+        let mut invalid = args.clone();
+        invalid[index] = value.to_owned();
+        let result = run(&invalid);
+        assert!(!result.status.success());
+        assert!(String::from_utf8_lossy(&result.stderr).contains(diagnostic));
+        assert_eq!(fs::read(&output).unwrap(), bytes);
+    }
+    assert!(!run(&args).status.success());
+    assert_eq!(fs::read(&output).unwrap(), bytes);
+    fs::remove_file(output).unwrap();
+}
+
+#[test]
 fn command_writes_native_srgb_png_and_preserves_existing_output() {
     let output =
         std::env::temp_dir().join(format!("resina-material-board-{}.png", std::process::id()));
