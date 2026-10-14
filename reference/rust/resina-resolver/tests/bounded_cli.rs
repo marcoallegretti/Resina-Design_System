@@ -3,7 +3,7 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
     process::{Command, Output, Stdio},
-    time::{SystemTime, UNIX_EPOCH},
+    sync::atomic::{AtomicU64, Ordering},
 };
 
 const MIB: usize = 1024 * 1024;
@@ -181,18 +181,28 @@ const COMMANDS: &[(&str, &str, usize)] = &[
 ];
 
 struct RequestFile(PathBuf);
+static NEXT_REQUEST_FILE: AtomicU64 = AtomicU64::new(0);
 impl RequestFile {
     fn new(source: &[u8]) -> Self {
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!(
-            "resina-bounded-cli-é-{}-{unique}.json",
-            std::process::id()
-        ));
-        fs::write(&path, source).unwrap();
-        Self(path)
+        loop {
+            let unique = NEXT_REQUEST_FILE.fetch_add(1, Ordering::Relaxed);
+            let path = std::env::temp_dir().join(format!(
+                "resina-bounded-cli-é-{}-{unique}.json",
+                std::process::id()
+            ));
+            match fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&path)
+            {
+                Ok(mut file) => {
+                    file.write_all(source).unwrap();
+                    return Self(path);
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+                Err(error) => panic!("request fixture creation failed: {error}"),
+            }
+        }
     }
     fn path(&self) -> &Path {
         &self.0
@@ -202,6 +212,39 @@ impl Drop for RequestFile {
     fn drop(&mut self) {
         fs::remove_file(&self.0).unwrap();
     }
+}
+
+#[test]
+fn concurrent_request_fixtures_retain_distinct_paths_and_contents() {
+    use std::{
+        collections::HashSet,
+        sync::{Arc, Barrier},
+    };
+    let barrier = Arc::new(Barrier::new(8));
+    let workers: Vec<_> = (0..8)
+        .map(|worker| {
+            let barrier = barrier.clone();
+            std::thread::spawn(move || {
+                barrier.wait();
+                (0..16)
+                    .map(|index| {
+                        let source = format!("{worker}/{index}").into_bytes();
+                        (RequestFile::new(&source), source)
+                    })
+                    .collect::<Vec<_>>()
+            })
+        })
+        .collect();
+    let fixtures: Vec<_> = workers
+        .into_iter()
+        .flat_map(|worker| worker.join().unwrap())
+        .collect();
+    let mut paths = HashSet::new();
+    for (fixture, source) in &fixtures {
+        assert!(paths.insert(fixture.path()));
+        assert_eq!(&fs::read(fixture.path()).unwrap(), source);
+    }
+    assert_eq!(paths.len(), 128);
 }
 
 fn stdin(binary: &str, source: &[u8]) -> Output {
