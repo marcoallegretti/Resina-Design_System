@@ -19,6 +19,33 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_native_focus_matrix_covers_fallback_failure_and_focused_recovery(self):
+        cases = authored_cases()
+        for theme_name in ("light", "dark"):
+            baseline = next(case for case in cases if case["name"] == theme_name + "-latin-1-focused")
+            for suffix in ("-focus-fallback", "-focus-contrast", "-focus-recovery"):
+                name = theme_name + suffix
+                with self.subTest(name=name):
+                    matches = [case for case in cases if case["name"] == name]
+                    self.assertEqual(len(matches), 1, "native focus guard case is missing")
+                    case = matches[0]
+                    self.assertIs(case["focused"], True)
+                    if suffix == "-focus-recovery":
+                        self.assertEqual(case["request"], baseline["request"])
+                        continue
+                    theme = json.loads(case["request"]["content"]["themeSource"])
+                    path = theme["colorAssignments"]["roles"]["surface.base"]
+                    self.assertEqual(theme["opaqueColorAssignments"]["roles"]["focus"], path)
+                    if suffix == "-focus-contrast":
+                        self.assertIs(case["reject"], True)
+                        self.assertEqual(theme["opaqueColorAssignments"]["roles"]["outline.strong"], path)
+                        self.assertEqual(case["expectedError"], "focus indicator contrast is insufficient")
+                    else:
+                        self.assertNotIn("reject", case)
+                        original = json.loads(baseline["request"]["content"]["themeSource"])
+                        self.assertEqual(theme["opaqueColorAssignments"]["roles"].get("outline.strong"),
+                                         original["opaqueColorAssignments"]["roles"].get("outline.strong"))
+
     def test_focus_guard_checks_authored_pigment_and_fallback_independently(self):
         from check_quickshell_command_updates import verify_authored_focus
         theme = json.loads(authored_cases()[0]["request"]["content"]["themeSource"])

@@ -83,6 +83,20 @@ def authored_cases():
         if name == "unsupported-transform":
             recovery["renewPlacement"] = True
         cases.append(recovery)
+    for theme_name in ("light", "dark"):
+        baseline = next(case for case in cases if case["name"] == theme_name + "-latin-1-focused")
+        fallback = {**copy.deepcopy(baseline), "name": theme_name + "-focus-fallback"}
+        theme = json.loads(fallback["request"]["content"]["themeSource"])
+        path = theme["colorAssignments"]["roles"]["surface.base"]
+        theme["opaqueColorAssignments"]["roles"]["focus"] = path
+        fallback["request"]["content"]["themeSource"] = json.dumps(theme)
+        cases.append(fallback)
+        rejected = {**copy.deepcopy(fallback), "name": theme_name + "-focus-contrast",
+                    "reject": True, "expectedError": "focus indicator contrast is insufficient"}
+        theme["opaqueColorAssignments"]["roles"]["outline.strong"] = path
+        rejected["request"]["content"]["themeSource"] = json.dumps(theme)
+        cases.append(rejected)
+        cases.append({**copy.deepcopy(baseline), "name": theme_name + "-focus-recovery"})
     return cases
 
 
