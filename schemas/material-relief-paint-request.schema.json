@@ -1,0 +1,82 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "outline",
+    "profile",
+    "pigment",
+    "edge",
+    "edgeWidth",
+    "foreground",
+    "minimumContentContrast",
+    "points",
+    "light",
+    "environment",
+    "enabled",
+    "interactionActive"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "outline": {
+      "$ref": "urn:resina:schema:surface-outline-request:0.1.0"
+    },
+    "profile": {
+      "$ref": "urn:resina:schema:surface-relief-request:0.1.0#/$defs/profile"
+    },
+    "pigment": {
+      "$ref": "urn:resina:schema:opaque-pigment-request:0.1.0"
+    },
+    "edge": {
+      "$ref": "urn:resina:schema:edge-contrast-request:0.1.0"
+    },
+    "edgeWidth": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "foreground": {
+      "$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"
+    },
+    "minimumContentContrast": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 21
+    },
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "x",
+          "y"
+        ],
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "light": {
+      "$ref": "urn:resina:schema:material-light:0.1.0"
+    },
+    "environment": {
+      "$ref": "urn:resina:schema:environment:0.2.0"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "interactionActive": {
+      "type": "boolean"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:material-relief-paint-request:0.1.0",
+  "title": "Resina Material Relief Paint Request"
+}
