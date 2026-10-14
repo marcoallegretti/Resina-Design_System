@@ -829,6 +829,8 @@ that does not become observed focus fails within the existing case deadline.
 Focused rest retains both `rest`
 and `focused`; body and navigation bindings and silhouettes must agree. Offscreen
 focus observations do not establish compositor focus policy or physical input.
+Before publishing a prepared frame, the control synchronizes native focus and
+pending interruption, then validates the resulting preparation generation.
 Final natural and fitted native measurements reach
 the independent rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
