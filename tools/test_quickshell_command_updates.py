@@ -19,6 +19,21 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_primary_cases_retain_the_published_anatomy_in_both_themes(self):
+        from check_quickshell_command_updates import ROOT
+        definition = json.loads((ROOT / "definitions/components/command.json").read_text())["variants"]["primary"]["body"]
+        cases = authored_cases()
+        for theme in ("light", "dark"):
+            with self.subTest(theme=theme):
+                matches = [case for case in cases if case["name"] == theme + "-primary"]
+                self.assertEqual(len(matches), 1, "published primary Command lacks a native authored case")
+                body = matches[0]["request"]["body"]
+                self.assertEqual(body["surface"]["materialRole"], definition["materialRole"])
+                self.assertEqual(body["surface"]["colorRole"], definition["colorRole"])
+                self.assertEqual(body["surface"]["form"], {
+                    "schemaVersion": "0.1.0", "shape": definition["shape"], "elevation": definition["elevation"]})
+                self.assertEqual(body["foregroundRole"], definition["contentRole"])
+
     def test_authored_depth_reaches_light_and_extrusion_bounds(self):
         from check_quickshell_command_updates import verify_authored_geometry
         request = authored_cases()[0]["request"]
@@ -126,7 +141,7 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                 with self.subTest(change=change), self.assertRaisesRegex(ValueError, "callback.*layout|callback.*target"):
                     verify_case(case, changed, 1)
 
-    def test_old_theme_paint_cannot_be_relabelled_as_the_new_source(self):
+    def test_paint_cannot_be_relabelled_as_another_theme_or_variant(self):
         case = authored_cases()[0]
         request = case["request"]
         snapshot = {"paint": {"phase": "rest", "response": {"bodyMix": 0, "depthScale": 1},
@@ -142,6 +157,14 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             request["content"]["themeSource"] = authored_cases()[12]["request"]["content"]["themeSource"]
             with self.assertRaisesRegex(ValueError, "authored"):
                 verify_authored_paint(request, snapshot)
+            for primary in (case for case in authored_cases() if case["name"].endswith("-primary")):
+                with self.subTest(variant=primary["name"]):
+                    relabelled = copy.deepcopy(snapshot)
+                    body = relabelled["paint"]["paint"]["body"]
+                    body.update(primary["request"]["body"]["surface"])
+                    body["foregroundRole"] = primary["request"]["body"]["foregroundRole"]
+                    with self.assertRaisesRegex(ValueError, "authored"):
+                        verify_authored_paint(primary["request"], relabelled)
 
     def test_capture_rejects_missing_shifted_or_incomplete_line_ink(self):
         snapshot = {"label": {"labelBounds": {"x": 10, "y": 10, "width": 50, "height": 20},
