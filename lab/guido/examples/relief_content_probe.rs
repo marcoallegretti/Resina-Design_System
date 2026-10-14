@@ -1,16 +1,66 @@
 //! Fixed-size native relief and complete-label inspection fixture.
 use guido::{prelude::*, renderer::DrawCommand, widget_prelude::*};
 use resina_environment::{LayoutDirection, SafeArea};
-use resina_guido::{measure_command_label, prepare_outline_focus_at, prepare_relief_content_at};
-use resina_model::{PhysicalVector, TypographyRole};
+use resina_guido::{
+    ReliefContentPrepareError, measure_command_label, prepare_material_relief_content_at,
+    prepare_outline_focus_at, prepare_relief_content_at,
+};
+use resina_model::{PhysicalBounds, PhysicalVector, TypographyRole};
 use resina_resolver::{
-    CommandLabelInput, compile_theme_source, resolve_command_label, resolve_outline_focus_source,
+    CommandLabelInput, CommandLabelIr, MaterialReliefPaint, OpaquePigmentResult, ReliefPaint,
+    SurfaceRelief, compile_theme_source, resolve_command_label,
+    resolve_material_relief_paint_source, resolve_outline_focus_source,
     resolve_relief_paint_source, resolve_srgb_fallback,
 };
 use serde_json::{Value, json};
 use std::error::Error;
 
 struct Content(Vec<DrawCommand>);
+
+enum Paint {
+    Static(ReliefPaint),
+    Material(MaterialReliefPaint),
+}
+
+impl Paint {
+    fn surface(&self) -> &SurfaceRelief {
+        match self {
+            Self::Static(paint) => paint.surface(),
+            Self::Material(paint) => paint.surface(),
+        }
+    }
+
+    fn pigment(&self) -> &OpaquePigmentResult {
+        match self {
+            Self::Static(paint) => paint.pigment(),
+            Self::Material(paint) => paint.pigment(),
+        }
+    }
+
+    fn content_bounds(&self) -> PhysicalBounds {
+        match self {
+            Self::Static(paint) => paint.content_bounds(),
+            Self::Material(paint) => paint.content_bounds(),
+        }
+    }
+
+    fn prepare(
+        &self,
+        label: &CommandLabelIr,
+        family: guido::widgets::font::FontFamily,
+        origin: PhysicalVector,
+        scale: f32,
+    ) -> Result<[DrawCommand; 2], ReliefContentPrepareError> {
+        match self {
+            Self::Static(paint) => {
+                prepare_relief_content_at(paint, label, family, origin, scale, 4)
+            }
+            Self::Material(paint) => {
+                prepare_material_relief_content_at(paint, label, family, origin, scale, 4)
+            }
+        }
+    }
+}
 impl Widget for Content {
     fn layout(&mut self, _ctx: &mut LayoutCtx, constraints: Constraints) -> Size {
         constraints.constrain(Size::new(360.0, 200.0))
@@ -63,9 +113,13 @@ fn config(canvas: Color) -> SurfaceConfig {
         .background_color(canvas)
 }
 fn run() -> Result<(), Box<dyn Error>> {
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    let mut args: Vec<String> = std::env::args().skip(1).collect();
+    let material_light = args.first().is_some_and(|arg| arg == "--material-light");
+    if material_light {
+        args.remove(0);
+    }
     if args.len() != 5 && args.len() != 6 {
-        return Err("usage: relief_content_probe <paint.json> <font.ttf> <device-scale> <text-scale> <expected.png> [focus.json]".into());
+        return Err("usage: relief_content_probe [--material-light] <paint.json> <font.ttf> <device-scale> <text-scale> <expected.png> [focus.json]".into());
     }
     let font = std::fs::read(&args[1])?;
     let mut database = fontdb::Database::new();
@@ -96,7 +150,11 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
     let source = std::fs::read_to_string(&args[0])?;
     let request: Value = serde_json::from_str(&source)?;
-    let paint = resolve_relief_paint_source(&source)?.paint;
+    let paint = if material_light {
+        Paint::Material(resolve_material_relief_paint_source(&source)?.paint)
+    } else {
+        Paint::Static(resolve_relief_paint_source(&source)?.paint)
+    };
     let canvas = resolve_srgb_fallback(&request["edge"]["adjacentColor"])?;
     if canvas.alpha() != 1.0 {
         return Err("inspection canvas must be opaque".into());
@@ -163,8 +221,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         |input| measure_command_label(family, input),
     )?;
     let origin = PhysicalVector { x: 12.25, y: 7.125 };
-    let mut commands =
-        prepare_relief_content_at(&paint, &label, family, origin, scale, 4)?.to_vec();
+    let mut commands = paint.prepare(&label, family, origin, scale)?.to_vec();
     if let Some(focus) = &focus {
         let prepared = prepare_outline_focus_at(focus.focus(), origin, scale)?;
         let (x, y) = prepared.origin();
@@ -210,7 +267,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     guido::load_font(font);
     println!(
         "RESINA_RELIEF_CONTENT_PREPARED {}",
-        json!({"scale":scale,"textScale":text_scale,"width":width,"height":height,"labelBounds":label.label_bounds(),"contentBounds":paint.content_bounds(),"focusComposed":focus.is_some()})
+        json!({"scale":scale,"textScale":text_scale,"width":width,"height":height,"labelBounds":label.label_bounds(),"contentBounds":paint.content_bounds(),"focusComposed":focus.is_some(),"materialLighting":material_light})
     );
     match App::new().run(move |app| {
         app.add_surface(config(canvas), move || Content(commands));

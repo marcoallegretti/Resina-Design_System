@@ -163,3 +163,64 @@ fn square_plateau_boundary_is_closed_and_the_adjacent_shoulder_is_rejected() {
         }
     }
 }
+
+#[test]
+fn every_material_light_policy_preserves_complete_label_bounds() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/material-relief-paint-vectors.json"
+    ))
+    .unwrap();
+    for case in cases
+        .into_iter()
+        .filter(|case| case.get("expected").is_some())
+    {
+        let paint =
+            resina_resolver::resolve_material_relief_paint_source(&case["request"].to_string())
+                .unwrap()
+                .paint;
+        let size = paint.surface().outline().size();
+        let content = paint.content_bounds();
+        let end = size.width - content.x - content.width;
+        for direction in [LayoutDirection::Ltr, LayoutDirection::Rtl] {
+            let (start, end) = if direction == LayoutDirection::Ltr {
+                (content.x, end)
+            } else {
+                (end, content.x)
+            };
+            let complete = label(
+                size,
+                start + content.width * 0.25,
+                end + content.width * 0.25,
+                content.height * 0.5,
+                direction,
+            );
+            assert_eq!(
+                complete.validate_material_relief_content(&paint),
+                Ok(()),
+                "{}",
+                case["name"]
+            );
+            let outside = label(size, start, end, content.height + 1.0 / 1024.0, direction);
+            assert_eq!(
+                outside.validate_material_relief_content(&paint),
+                Err(CommandContentError::OutsideContent),
+                "{}",
+                case["name"]
+            );
+            let wrong_size = label(
+                SurfaceSize {
+                    width: size.width + 1.0,
+                    height: size.height,
+                },
+                start,
+                end,
+                content.height,
+                direction,
+            );
+            assert_eq!(
+                wrong_size.validate_material_relief_content(&paint),
+                Err(CommandContentError::SizeMismatch)
+            );
+        }
+    }
+}

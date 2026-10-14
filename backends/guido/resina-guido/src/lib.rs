@@ -18,7 +18,9 @@ pub use command_content::{
 };
 
 mod relief_content;
-pub use relief_content::{ReliefContentPrepareError, prepare_relief_content_at};
+pub use relief_content::{
+    ReliefContentPrepareError, prepare_material_relief_content_at, prepare_relief_content_at,
+};
 
 mod command_inputs;
 pub use command_inputs::{CommandInputs, CommandPrepareError, CommandPublication};
@@ -36,7 +38,8 @@ use guido::{layout::Size, prelude::ImageSource};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{RasterError, RasterImage, Viewport, prepare_viewport};
 use resina_resolver::{
-    FocusIndicatorIr, OpaqueSurfaceIr, OutlineFocusIr, ReliefPaint, SurfacePaintIr,
+    FocusIndicatorIr, MaterialReliefPaint, OpaqueSurfaceIr, OutlineFocusIr, ReliefPaint,
+    SurfacePaintIr,
 };
 use std::fmt;
 
@@ -210,6 +213,24 @@ pub fn prepare_relief_paint_at(
     };
     prepare_at(bounds, origin, device_scale, |viewport| {
         resina_raster::render_relief_paint(paint, viewport, samples_per_axis)
+    })
+}
+
+pub fn prepare_material_relief_paint_at(
+    paint: &MaterialReliefPaint,
+    origin: PhysicalVector,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<PreparedPaint, PrepareError> {
+    let size = paint.surface().outline().size();
+    let bounds = PhysicalBounds {
+        x: 0.0,
+        y: 0.0,
+        width: size.width,
+        height: size.height,
+    };
+    prepare_at(bounds, origin, device_scale, |viewport| {
+        resina_raster::render_material_relief_paint(paint, viewport, samples_per_axis)
     })
 }
 

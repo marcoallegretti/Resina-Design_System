@@ -13,7 +13,7 @@ import time
 import xml.etree.ElementTree as ET
 
 from PIL import Image
-from check_schemas import ROOT, load_json
+from check_schemas import ROOT, load_json, parse_json
 
 
 def diagnostic_request():
@@ -24,6 +24,18 @@ def diagnostic_request():
     }
     request["profile"].update(amplitude=0.25, shoulderWidth=1)
     request.update(edgeWidth=0.25, points=[])
+    return request
+
+
+def diagnostic_material_request():
+    request = diagnostic_request()
+    cases = load_json(ROOT / "conformance/ir/material-relief-paint-vectors.json")
+    source = next(case["request"] for case in cases
+                  if case["name"] == "cast-convex-opaque-face-active-light")
+    request["light"] = copy.deepcopy(source["light"])
+    request["light"]["keyLight"] = request.pop("keyLight")
+    for name in ("environment", "enabled", "interactionActive"):
+        request[name] = copy.deepcopy(source[name])
     return request
 
 
@@ -93,7 +105,7 @@ def board_dimensions(prepared, scale):
     return logical
 
 
-def check_scale(probe, request, output, parent, scale, content=None, outline_focus=False, content_focus=None, board=None):
+def check_scale(probe, request, output, parent, scale, content=None, outline_focus=False, content_focus=None, board=None, material_light=False):
     preparation_seconds = 300 if board else 120 if content or outline_focus else 20
     with tempfile.TemporaryDirectory(prefix="resina-relief-native-") as runtime:
         config = Path(runtime) / "config"
@@ -157,6 +169,8 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                 elif content:
                     font, text_scale = content
                     arguments = [str(probe), str(request), str(font), str(scale), str(text_scale), str(prepared_path)]
+                    if material_light:
+                        arguments.insert(1, "--material-light")
                     if content_focus:
                         arguments.append(str(content_focus))
                     marker = "RESINA_RELIEF_CONTENT_PREPARED "
@@ -182,6 +196,8 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                     raise ValueError("native fixture preparation scale differs from compositor scale")
                 if content_focus and metadata.get("focusComposed") is not True:
                     raise ValueError("native fixture did not prepare the requested focus composition")
+                if material_light and metadata.get("materialLighting") is not True:
+                    raise ValueError("native fixture did not prepare the requested material lighting")
                 if board and (metadata.get("reliefKind"), metadata.get("reliefState"), metadata.get("textScale"), metadata.get("logicalWidth"), metadata.get("logicalHeight")) != (*board, content[1], *logical_board):
                     raise ValueError("native board metadata differs from its requested layout/state")
                 prepared = Image.open(prepared_path).convert("RGBA")
@@ -227,17 +243,20 @@ def main():
     parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit regular DejaVu Sans file")
     parser.add_argument("--outline-focus", action="store_true", help="check the continuous-outline focus probe against its full opaque GPU reference")
     parser.add_argument("--content-focus", action="store_true", help="compose a guarded focus ring around the actual complete-content footprint")
+    parser.add_argument("--material-light", action="store_true", help="use material-lit relief in the complete-content probe")
     parser.add_argument("--relief-board", choices=["flat", "convex", "recessed"], help="check the complete themed Relief Board using the Lab binary")
     parser.add_argument("--board-state", choices=["rest", "focused"], default="rest")
     parser.add_argument("--text-scale", type=float, default=1)
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 1.5, 2, 3])
     args = parser.parse_args()
-    if args.relief_board and (not args.content_font or not args.request or args.content_focus or args.outline_focus):
+    if args.relief_board and (not args.content_font or not args.request or args.content_focus or args.outline_focus or args.material_light):
         parser.error("relief board requires --content-font, --request and no other probe mode")
     if not args.relief_board and args.board_state != "rest":
         parser.error("board state requires --relief-board")
     if args.content_focus and not args.content_font:
         parser.error("content focus requires --content-font and the complete-content probe")
+    if args.material_light and (not args.content_font or args.outline_focus):
+        parser.error("material lighting requires the complete-content probe and --content-font")
     if args.outline_focus and (args.content_font or any(
             not math.isfinite(s) or not 1 <= s <= 3
             or 160 * s != round(160 * s) or 96 * s != round(96 * s) for s in args.scales)):
@@ -256,19 +275,22 @@ def main():
             raise ValueError("parent Wayland socket is absent")
         args.output_dir.mkdir(parents=True)
         request_path = args.output_dir / "request.json"
-        request = load_json(args.request) if args.request else (
-            diagnostic_outline_focus_request() if args.outline_focus else diagnostic_request())
+        request_source = args.request.read_bytes() if args.request else None
+        request = parse_json(request_source.decode("utf-8"), args.request) if request_source is not None else (
+            diagnostic_outline_focus_request() if args.outline_focus else
+            diagnostic_material_request() if args.material_light else diagnostic_request())
         if args.content_font and not args.request:
             request["outline"]["size"] = {"width": 320, "height": 160}
             request["outline"]["layoutDirection"] = "rtl"
-        request_path.write_text(json.dumps(request, allow_nan=False))
+        request_path.write_bytes(request_source if request_source is not None else
+                                 json.dumps(request, allow_nan=False).encode("utf-8"))
         content = (args.content_font.resolve(), args.text_scale) if args.content_font else None
         content_focus = None
         if args.content_focus:
             content_focus = (args.output_dir / "focus.json").resolve()
             content_focus.write_text(json.dumps(diagnostic_content_focus_request(request), allow_nan=False))
         board = (args.relief_board, args.board_state) if args.relief_board else None
-        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content, args.outline_focus, content_focus, board)
+        records = [check_scale(args.probe.resolve(), request_path.resolve(), args.output_dir.resolve(), parent, scale, content, args.outline_focus, content_focus, board=board, material_light=args.material_light)
                    for scale in args.scales]
         report = {"records": records, "nestedBackend": "wayland", "renderer": "pixman",
                   "scope": "opaque native face-paint pixels; no appearance, input, focus or AT acceptance"}
@@ -276,6 +298,8 @@ def main():
             report["scope"] = "complete native face and glyph pixels against GPU reference; no appearance, input, focus or AT acceptance"
             report["textScale"] = args.text_scale
             report["fontSha256"] = hashlib.sha256(args.content_font.read_bytes()).hexdigest()
+            if args.material_light:
+                report["materialLighting"] = True
             if content_focus:
                 report["scope"] = "complete native relief, glyph and focus pixels against GPU reference; no component appearance, input or AT acceptance"
                 report["focusRequestSha256"] = hashlib.sha256(content_focus.read_bytes()).hexdigest()
