@@ -30,6 +30,7 @@ Item {{
     readonly property bool paintReady: paint.status === Image.Ready
     readonly property string paintError: paint.status === Image.Error ? "error" : ""
     Image {{
+        id: paint
         Accessible.ignored: true
         width: 5
         height: 4
@@ -61,6 +62,7 @@ Item {{
                          ("focus: false", "focus: true"),
                          ("Accessible.ignored: true", "Accessible.ignored: false"),
                          ("paint.status === Image.Ready", "true"),
+                         ("id: paint", "id: unrelated"),
                          ("%89", "%8G")):
             with self.subTest(old=old), self.assertRaises(ValueError):
                 self.check(self.source.replace(old, new))
@@ -74,6 +76,36 @@ Item {{
             damaged[4] = color
             with self.subTest(color=color), self.assertRaises(ValueError):
                 self.check(self.source, damaged)
+
+    def test_comment_decoys_cannot_satisfy_native_profile(self):
+        for old, wrong in (("smooth: false", "smooth: true"),
+                           ("mipmap: false", "mipmap: true"),
+                           ("asynchronous: false", "asynchronous: true"),
+                           ("focus: false", "focus: true"),
+                           ("activeFocusOnTab: false", "activeFocusOnTab: true"),
+                           ("Accessible.ignored: true", "Accessible.ignored: false"),
+                           ("paint.status === Image.Ready", "true"),
+                           ('paint.status === Image.Error ? "error" : ""', '""')):
+            for comment in (f" // {old}", f" /* {old} */"):
+                with self.subTest(old=old, comment=comment), self.assertRaises(ValueError):
+                    self.check(self.source.replace(old, wrong + comment))
+
+    def test_comments_are_ignored_without_corrupting_string_values(self):
+        source = self.source.replace('"error"', '"error // not a comment"')
+        source = source.replace("smooth: false", "smooth: false /* smooth: true */")
+        source = "/*\nAccessible.ignored: false\nfocus: true\n*/\n" + source
+        self.assertEqual(self.check(source), (self.png, 0))
+        with self.assertRaises(ValueError):
+            self.check(self.source + "/* unterminated")
+
+    def test_properties_must_belong_to_the_painted_nodes(self):
+        extra_image = self.source.replace("        smooth: false", "        opacity: 1; smooth: true")
+        extra_image = extra_image.rsplit("}", 1)[0] + "    Image {\n        smooth: false\n    }\n}\n"
+        misplaced_focus = self.source.replace("    focus: false", "    opacity: 1; focus: true", 1)
+        misplaced_focus = misplaced_focus.replace("        width: 5", "        focus: false\n        width: 5")
+        for source in (extra_image, misplaced_focus):
+            with self.subTest(source=source), self.assertRaises(ValueError):
+                self.check(source)
 
 
 if __name__ == "__main__":

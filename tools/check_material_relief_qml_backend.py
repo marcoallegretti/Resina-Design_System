@@ -18,11 +18,55 @@ from check_schemas import ROOT, load_json
 from check_quickshell_paint_runtime import compare_images
 from material_relief_arithmetic import rectangular_pixels
 
+DOUBLE_QUOTED_STRING = r'"(?:\\.|[^"\\])*"'
+
+
+def without_qml_comments(text):
+    def replace(match):
+        token = match.group(0)
+        if token.startswith('"'):
+            return token
+        if token.startswith("/*") and not token.endswith("*/"):
+            raise ValueError("unterminated QML comment")
+        return re.sub(r"[^\r\n]", " ", token)
+
+    return re.sub(DOUBLE_QUOTED_STRING + r'|//[^\r\n]*|/\*[\s\S]*?(?:\*/|\Z)', replace, text)
+
+
+def emitted_object_scopes(text):
+    allowed = (("Item",), ("Item", "Image"), ("Item", "Image", "Scale"))
+    stack, spans, opened = [], {}, set()
+    for token in re.finditer(DOUBLE_QUOTED_STRING + r"|[{}]", text):
+        if token.group(0).startswith('"'):
+            continue
+        if token.group(0) == "{":
+            prefix = text[text.rfind("\n", 0, token.start()) + 1:token.start()].strip()
+            name = "Scale" if re.fullmatch(r"transform\s*:\s*Scale", prefix) else prefix
+            path = tuple(entry[0] for entry in stack) + (name,)
+            if path not in allowed or path in opened:
+                raise ValueError("unexpected or repeated native paint object")
+            opened.add(path)
+            stack.append((name, token.end()))
+        else:
+            if not stack:
+                raise ValueError("unmatched native paint object boundary")
+            name, start = stack.pop()
+            spans[name] = (start, token.start())
+    if stack or opened != set(allowed):
+        raise ValueError("incomplete native paint object hierarchy")
+    root, image, scale = (spans[name] for name in ("Item", "Image", "Scale"))
+    return {
+        "Item": text[root[0]:image[0] - 1] + "\n" + text[image[1] + 1:root[1]],
+        "Image": text[image[0]:scale[0] - 1] + "\n" + text[scale[1] + 1:image[1]],
+        "Scale": text[scale[0]:scale[1]],
+    }
+
 
 def component_png(result, width, height, placement, scale, expected):
     if result.returncode or result.stderr:
         raise ValueError("material-relief QML command failed")
-    text = result.stdout.decode("utf-8")
+    text = without_qml_comments(result.stdout.decode("utf-8"))
+    scopes = emitted_object_scopes(text)
     left, top = (math.floor(value * scale) for value in placement)
     values = {
         "paintOriginX": left / scale,
@@ -30,26 +74,42 @@ def component_png(result, width, height, placement, scale, expected):
         "preparedDeviceScale": scale,
     }
     for name, value in values.items():
-        matches = re.findall(r"^\s*readonly property real " + name + r": ([^\n]+)$", text, re.MULTILINE)
+        matches = re.findall(r"^\s*readonly property real " + name + r": ([^\n]+)$", scopes["Item"], re.MULTILINE)
         if len(matches) != 1 or float(matches[0]) != value:
             raise ValueError(f"incorrect or repeated native profile: {name}")
     for name, value in (("implicitWidth", width / scale), ("implicitHeight", height / scale)):
-        matches = re.findall(r"^\s*" + name + r": ([^\n]+)$", text, re.MULTILINE)
+        matches = re.findall(r"^\s*" + name + r": ([^\n]+)$", scopes["Item"], re.MULTILINE)
         if len(matches) != 1 or float(matches[0]) != value:
             raise ValueError(f"incorrect native extent: {name}")
     for name, value in (("width", width), ("height", height)):
-        matches = re.findall(r"^\s*" + name + r": ([^\n]+)$", text, re.MULTILINE)
+        matches = re.findall(r"^\s*" + name + r": ([^\n]+)$", scopes["Image"], re.MULTILINE)
         if len(matches) != 1 or int(matches[0]) != value:
             raise ValueError(f"incorrect image-node extent: {name}")
-    transforms = re.findall(r"transform: Scale \{ xScale: ([^;]+); yScale: ([^}]+) \}", text)
-    if len(transforms) != 1 or any(float(value) != 1 / scale for value in transforms[0]):
+    transform = re.fullmatch(r"\s*xScale: ([^;]+); yScale: ([^;]+)\s*", scopes["Scale"])
+    if transform is None or any(float(value) != 1 / scale for value in transform.groups()):
         raise ValueError("incorrect image-node inverse-density transform")
-    for marker in ("focus: false", "activeFocusOnTab: false", "smooth: false", "mipmap: false", "asynchronous: false", "paint.status === Image.Ready", "paint.status === Image.Error"):
-        if marker not in text:
-            raise ValueError(f"missing native paint profile: {marker}")
-    if text.count("Accessible.ignored: true") != 2:
+
+    def assignments(name, scope="Item"):
+        return [value.strip() for value in re.findall(r"^[ \t]*" + name + r"[ \t]*:[ \t]*([^\r\n]*)$", scopes[scope], re.MULTILINE)]
+
+    for name in ("focus", "activeFocusOnTab"):
+        if assignments(name) != ["false"]:
+            raise ValueError(f"incorrect native paint profile: {name}")
+        if assignments(name, "Image") not in ([], ["false"]):
+            raise ValueError(f"paint image must not acquire {name}")
+    for name in ("smooth", "mipmap", "asynchronous"):
+        if assignments(name, "Image") != ["false"]:
+            raise ValueError(f"incorrect image profile: {name}")
+    if assignments(r"Accessible\.ignored") != ["true"] or assignments(r"Accessible\.ignored", "Image") != ["true"]:
         raise ValueError("paint must remain decorative")
-    images = re.findall(r'source: "data:image/png,((?:%[0-9A-F]{2})+)"', text)
+    if assignments("id", "Image") != ["paint"]:
+        raise ValueError("readiness must refer to the painted image")
+    if assignments("readonly property bool paintReady") != ["paint.status === Image.Ready"]:
+        raise ValueError("paint readiness must follow actual image decoding")
+    errors = assignments("readonly property string paintError")
+    if len(errors) != 1 or re.fullmatch(r'paint.status === Image.Error \? "(?:[^"\\]|\\.)+" : ""', errors[0]) is None:
+        raise ValueError("paint errors must follow actual image decoding")
+    images = re.findall(r'source: "data:image/png,((?:%[0-9A-F]{2})+)"', scopes["Image"])
     if len(images) != 1 or text.count("data:image/png,") != 1:
         raise ValueError("expected one complete encoded paint image")
     png = bytes.fromhex(images[0].replace("%", ""))
