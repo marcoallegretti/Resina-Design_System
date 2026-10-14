@@ -55,10 +55,13 @@ def main():
                                     capture_output=True, text=True, timeout=10, check=False)
             output = result.stdout + result.stderr
             # Do not forward Quickshell's verbose environment diagnostics.
-            if result.returncode or len(re.findall(r"^Quickshell: 0\.3\.1 \([^\n]*\)$", output, re.M)) != 1 \
-                    or len(re.findall(r"^Qt: 6\.11\.2 \(built against 6\.11\.2\)$", output, re.M)) != 1:
-                raise ValueError("requires Quickshell 0.3.1 built and running with Qt 6.11.2")
-            print("Quickshell 0.3.1 / Qt Quick 6.11.2")
+            headers = re.findall(r"^Quickshell: ([^\n]*)$", output, re.M)
+            version = re.fullmatch(r"(0\.3\.[12]) \([^\n]*\)", headers[0]) if len(headers) == 1 else None
+            qt_headers = re.findall(r"^Qt: [^\n]*$", output, re.M)
+            if result.returncode or version is None \
+                    or qt_headers != ["Qt: 6.11.2 (built against 6.11.2)"]:
+                raise ValueError("requires Quickshell 0.3.1 or 0.3.2 built and running with Qt 6.11.2")
+            print("Quickshell " + version[1] + " / Qt Quick 6.11.2")
             return 0
         if sys.argv[1:]:
             return 2
