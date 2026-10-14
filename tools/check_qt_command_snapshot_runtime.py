@@ -44,8 +44,13 @@ def verify_snapshot(snapshot, request, expected_states, motion=None):
                for axis, extent in (("x", "width"), ("y", "height")))
            for occupied in request["occupiedRegions"]):
         raise ValueError("native target overlaps an occupied region")
-    if any(target[axis] < request["componentMinimum"][axis] for axis in ("width", "height")):
-        raise ValueError("native target loses the explicit component minimum")
+    capabilities = request["content"]["environment"]["inputCapabilities"]
+    floor = 48 if any(capability in capabilities for capability in ("coarsePointer", "directTouch")) else 24
+    minimum = {axis: max(floor, request["componentMinimum"][axis]) for axis in ("width", "height")}
+    if snapshot["hitRegion"]["minimumSize"] != minimum:
+        raise ValueError("native resolved target minimum differs from authored requirements")
+    if any(target[axis] < minimum[axis] for axis in ("width", "height")):
+        raise ValueError("native target bounds lose the resolved target minimum")
     activation = request["activation"]
     if body["states"] != expected_states:
         raise ValueError("body signals differ from the public command-state case")
