@@ -249,7 +249,7 @@ jobs:
       - run: cargo build -p resina-svg --bins --locked
       - run: cargo build -p resina-qml --bins --locked
       - run: cargo build -p resina-slint --bins --locked
-      - run: cargo build -p resina-raster --bin resina-paint-raster --locked
+      - run: cargo build -p resina-raster --bin resina-paint-raster --bin resina-material-relief-raster --locked
       - run: python tools/check_focus_slint_backend.py -- target/debug/resina-focus-slint${{ matrix.executableSuffix }} -
       - name: Check native Slint focus
         if: runner.os == 'Linux'
@@ -319,6 +319,8 @@ jobs:
       - run: python tools/check_relief_paint_backend.py -- target/debug/resina-relief-paint${{ matrix.executableSuffix }} -
       - run: python tools/check_key_light_backend.py -- target/debug/resina-key-light${{ matrix.executableSuffix }} -
       - run: python tools/check_material_light_backend.py -- target/debug/resina-material-light${{ matrix.executableSuffix }} -
+      - run: python tools/check_material_relief_paint_backend.py -- target/debug/resina-material-relief-paint${{ matrix.executableSuffix }} -
+      - run: python tools/check_material_relief_raster_backend.py -- target/debug/resina-material-relief-raster${{ matrix.executableSuffix }}
       - run: python tools/check_extruded_contour_backend.py -- target/debug/resina-extruded-contour${{ matrix.executableSuffix }} -
       - run: python tools/check_opaque_surface_backend.py -- target/debug/resina-opaque-surface${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_ir_backend.py -- target/debug/resina-focus-ir${{ matrix.executableSuffix }} -

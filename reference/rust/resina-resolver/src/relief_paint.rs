@@ -10,6 +10,10 @@ use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 mod edge;
+mod material;
+pub use material::{
+    MaterialReliefPaint, MaterialReliefPaintResult, resolve_material_relief_paint_source,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReliefPaintError(String);
@@ -278,6 +282,34 @@ impl ReliefPaint {
         &self,
         point: PhysicalVector,
     ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
+        self.sample_paint_with(point, |normal| {
+            let q = (normal.x * self.direction.x + normal.y * self.direction.y).clamp(-1.0, 1.0);
+            if q == 0.0 {
+                return Ok(self.pigment.body().clone());
+            }
+            let endpoint = if q > 0.0 {
+                self.pigment.highlight()
+            } else {
+                self.pigment.side()
+            };
+            let body = self.pigment.body().components();
+            let tip = endpoint.components();
+            let weight = q.abs();
+            let components =
+                std::array::from_fn::<_, 3, _>(|i| body[i] * (1.0 - weight) + tip[i] * weight);
+            let color = resina_color::resolve_srgb_fallback(&serde_json::json!({
+                "colorSpace":"srgb","components":components,"alpha":1
+            }))
+            .map_err(|e| ReliefPaintError(e.to_string()))?;
+            Ok(color)
+        })
+    }
+
+    pub(crate) fn sample_paint_with(
+        &self,
+        point: PhysicalVector,
+        shade: impl FnOnce(crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
         if !self
             .surface
             .outline()
@@ -295,25 +327,7 @@ impl ReliefPaint {
             .map_err(|e| ReliefPaintError(e.to_string()))?
             .ok_or_else(|| ReliefPaintError("interior point lost outline containment".into()))?
             .normal;
-        let q = (normal.x * self.direction.x + normal.y * self.direction.y).clamp(-1.0, 1.0);
-        if q == 0.0 {
-            return Ok(Some(self.pigment.body().clone()));
-        }
-        let endpoint = if q > 0.0 {
-            self.pigment.highlight()
-        } else {
-            self.pigment.side()
-        };
-        let body = self.pigment.body().components();
-        let tip = endpoint.components();
-        let weight = q.abs();
-        let components =
-            std::array::from_fn::<_, 3, _>(|i| body[i] * (1.0 - weight) + tip[i] * weight);
-        let color = resina_color::resolve_srgb_fallback(&serde_json::json!({
-            "colorSpace":"srgb","components":components,"alpha":1
-        }))
-        .map_err(|e| ReliefPaintError(e.to_string()))?;
-        Ok(Some(color))
+        shade(normal).map(Some)
     }
 
     pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {

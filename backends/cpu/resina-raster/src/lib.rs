@@ -1,8 +1,8 @@
 use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb_to_linear_srgb};
-use resina_model::PhysicalVector;
+use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_resolver::{
-    FocusIndicatorIr, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError, SurfacePaintError,
-    SurfacePaintIr,
+    FocusIndicatorIr, MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError,
+    SurfacePaintError, SurfacePaintIr,
 };
 use std::{collections::TryReserveError, fmt};
 mod uniform;
@@ -219,16 +219,49 @@ pub fn render_relief_paint(
     samples_per_axis: u8,
 ) -> Result<RasterImage, RasterError> {
     let size = paint.surface().outline().size();
-    let content = paint.content_bounds();
+    render_relief_face(
+        (size.width, size.height),
+        paint.content_bounds(),
+        paint.pigment().body(),
+        viewport,
+        samples_per_axis,
+        |point| paint.sample_paint(point),
+    )
+}
+
+pub fn render_material_relief_paint(
+    paint: &MaterialReliefPaint,
+    viewport: Viewport,
+    samples_per_axis: u8,
+) -> Result<RasterImage, RasterError> {
+    let size = paint.surface().outline().size();
+    render_relief_face(
+        (size.width, size.height),
+        paint.content_bounds(),
+        paint.pigment().body(),
+        viewport,
+        samples_per_axis,
+        |point| paint.sample_paint(point),
+    )
+}
+
+fn render_relief_face(
+    size: (f64, f64),
+    content: PhysicalBounds,
+    body: &SrgbFallback,
+    viewport: Viewport,
+    samples_per_axis: u8,
+    sample: impl Fn(PhysicalVector) -> Result<Option<SrgbFallback>, ReliefPaintError>,
+) -> Result<RasterImage, RasterError> {
     render(
         viewport,
         samples_per_axis,
-        paint.pigment().body(),
+        body,
         |region| {
             if region.max.x < 0.0
                 || region.max.y < 0.0
-                || region.min.x > size.width
-                || region.min.y > size.height
+                || region.min.x > size.0
+                || region.min.y > size.1
             {
                 UniformRegion::Clear
             } else if region.min.x >= content.x
@@ -241,7 +274,7 @@ pub fn render_relief_paint(
                 UniformRegion::Sample
             }
         },
-        |point| paint.sample_paint(point).map_err(RasterError::ReliefPaint),
+        |point| sample(point).map_err(RasterError::ReliefPaint),
     )
 }
 

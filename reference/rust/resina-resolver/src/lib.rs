@@ -11,8 +11,9 @@ mod pigment_source;
 pub use material_light::{MaterialLightError, MaterialLightResult, resolve_material_light_source};
 mod relief_paint;
 pub use relief_paint::{
-    ReliefPaint, ReliefPaintError, ReliefPaintPoint, ReliefPaintResult, resolve_relief_paint,
-    resolve_relief_paint_source,
+    MaterialReliefPaint, MaterialReliefPaintResult, ReliefPaint, ReliefPaintError,
+    ReliefPaintPoint, ReliefPaintResult, resolve_material_relief_paint_source,
+    resolve_relief_paint, resolve_relief_paint_source,
 };
 mod surface_relief;
 pub use surface_relief::{
