@@ -51,6 +51,18 @@ native inspection surface for requests up to 120 × 60 logical px; its supplied
 device scale must match the compositor output. These are face-paint primitives,
 with no component input, navigation or native accessibility claim.
 
+`prepare_material_relief_paint_at` prepares the separately resolved material-lit
+face through the same bounded device-grid path. `prepare_material_relief_content_at`
+requires the complete measured label box to fit the certified content rectangle
+before preparing either image or text. It uses the exact guarded foreground and
+the same parent origin for both commands. Optional lighting cannot relax label
+containment or replace edge, focus or disabled identification.
+The `material_relief` tests check first-frame replacement for every successful
+authored lighting scenario at scales 1/1.25/1.5/2/3 while image decoding is held,
+plus complete-label containment in both directions and at doubled text scale.
+GPU image comparison establishes realization of prepared pixels; independent
+lighting arithmetic remains the public protocol and CPU checkers' responsibility.
+
 The checked paint and content paths are implemented primitives. The following
 limits prevent claiming complete native command conformance:
 

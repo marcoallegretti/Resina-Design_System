@@ -1,16 +1,83 @@
 import contextlib
 import copy
 import io
+import json
+import os
+from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
 from PIL import Image
 from check_guido_relief_native import board_dimensions, capture_matches, diagnostic_content_focus_request, diagnostic_outline_focus_request, diagnostic_request, main, validate_canvas_reference
 from check_schemas import validator_for
+import check_guido_relief_native as native
 
 
 class NativeReliefComparisonTests(unittest.TestCase):
+    def test_custom_material_source_reaches_probe_without_numeric_rewriting(self):
+        request_document = native.diagnostic_material_request()
+        request_document["enabled"] = False
+        request_document["environment"]["accessibilityPreferences"]["highContrast"] = True
+        source = json.dumps(request_document, indent=2).replace(
+            '"ambient": 0.5', '"amb\\u0069ent": -1e-400')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request = root / "request.json"
+            request.write_bytes(source.encode("utf-8"))
+            arguments = ["checker", "--probe", "probe", "--output-dir", str(root / "output"),
+                         "--request", str(request), "--material-light", "--content-font", "font",
+                         "--scales", "1.25"]
+
+            def inspect_request(_probe, forwarded, *_args, **_kwargs):
+                self.assertIn(b"-1e-400", forwarded.read_bytes())
+                self.assertEqual(forwarded.read_bytes(), request.read_bytes())
+                raise ValueError("stop before native launch")
+
+            with patch.object(sys, "argv", arguments), patch.dict(os.environ, {"WAYLAND_DISPLAY": str(root / "parent-socket")}), \
+                    patch.object(Path, "is_socket", return_value=True), \
+                    patch.object(native, "check_scale", side_effect=inspect_request) as check, \
+                    contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(), 1)
+                check.assert_called_once()
+
+    def test_custom_material_source_rejects_duplicate_members_before_probe(self):
+        source = json.dumps(native.diagnostic_material_request()).replace(
+            '"ambient": 0.5', '"ambient": 0.5, "amb\\u0069ent": 0')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request = root / "request.json"
+            request.write_bytes(source.encode("utf-8"))
+            arguments = ["checker", "--probe", "probe", "--output-dir", str(root / "output"),
+                         "--request", str(request), "--material-light", "--content-font", "font"]
+            with patch.object(sys, "argv", arguments), patch.dict(os.environ, {"WAYLAND_DISPLAY": str(root / "parent-socket")}), \
+                    patch.object(Path, "is_socket", return_value=True), \
+                    patch.object(native, "check_scale") as check, contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(), 1)
+                check.assert_not_called()
+
+    def test_material_fixture_preserves_guards_and_has_one_active_light_source(self):
+        original = diagnostic_request()
+        request = native.diagnostic_material_request()
+        self.assertEqual(list(validator_for("schemas/material-relief-paint-request.schema.json").iter_errors(request)), [])
+        self.assertNotIn("keyLight", request)
+        self.assertEqual(request["light"]["keyLight"], original["keyLight"])
+        for member in ("outline", "profile", "pigment", "edge", "edgeWidth", "foreground", "minimumContentContrast", "points"):
+            self.assertEqual(request[member], original[member])
+        self.assertIsNotNone(request["light"]["ambient"])
+        self.assertIsNotNone(request["light"]["interaction"])
+        self.assertTrue(request["enabled"])
+        self.assertTrue(request["interactionActive"])
+        self.assertTrue(request["environment"]["rendererCapabilities"]["dynamicLighting"])
+
+    def test_material_fixture_focus_retains_the_actual_guarded_footprint(self):
+        paint = native.diagnostic_material_request()
+        focus = diagnostic_content_focus_request(paint)
+        self.assertEqual(list(validator_for("schemas/outline-focus-request.schema.json").iter_errors(focus)), [])
+        self.assertEqual(focus["outline"], paint["outline"])
+        self.assertEqual(focus["focus"]["surroundingColor"], paint["edge"]["adjacentColor"])
+
     def test_board_reference_requires_complete_opaque_integral_surface_dimensions(self):
         image = Image.new("RGBA", (10, 15), (2, 3, 4, 255))
         self.assertEqual(board_dimensions(image, 1.25), (8, 12))
@@ -23,7 +90,8 @@ class NativeReliefComparisonTests(unittest.TestCase):
     def test_board_mode_rejects_missing_sources_and_mixed_probe_modes(self):
         for extra in ([], ["--content-font", "font"], ["--request", "scenes"],
                       ["--content-font", "font", "--request", "scenes", "--content-focus"],
-                      ["--content-font", "font", "--request", "scenes", "--outline-focus"]):
+                      ["--content-font", "font", "--request", "scenes", "--outline-focus"],
+                      ["--content-font", "font", "--request", "scenes", "--material-light"]):
             arguments = ["checker", "--probe", "probe", "--output-dir", "unused", "--relief-board", "convex", *extra]
             with patch.object(sys, "argv", arguments), contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit) as raised:

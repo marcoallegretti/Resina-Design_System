@@ -1,10 +1,13 @@
-use crate::{LabelPrepareError, PrepareError, prepare_command_label_at, prepare_relief_paint_at};
+use crate::{
+    LabelPrepareError, PrepareError, PreparedPaint, prepare_command_label_at,
+    prepare_material_relief_paint_at, prepare_relief_paint_at,
+};
 use guido::{
     renderer::DrawCommand,
     widgets::{Color, ContentFit, Rect, font::FontFamily},
 };
 use resina_model::PhysicalVector;
-use resina_resolver::{CommandContentError, CommandLabelIr, ReliefPaint};
+use resina_resolver::{CommandContentError, CommandLabelIr, MaterialReliefPaint, ReliefPaint};
 use std::fmt;
 
 #[derive(Debug)]
@@ -46,16 +49,49 @@ pub fn prepare_relief_content_at(
         .validate_relief_content(paint)
         .map_err(ReliefContentPrepareError::Content)?;
     let [r, g, b] = paint.foreground().components().map(|value| value as f32);
-    let text = prepare_command_label_at(
+    prepare_content_at(
         label,
         family,
         Color::rgba(r, g, b, 1.0),
         origin,
         device_scale,
+        || prepare_relief_paint_at(paint, origin, device_scale, samples_per_axis),
     )
-    .map_err(ReliefContentPrepareError::Label)?;
-    let material = prepare_relief_paint_at(paint, origin, device_scale, samples_per_axis)
-        .map_err(ReliefContentPrepareError::Paint)?;
+}
+
+pub fn prepare_material_relief_content_at(
+    paint: &MaterialReliefPaint,
+    label: &CommandLabelIr,
+    family: FontFamily,
+    origin: PhysicalVector,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<[DrawCommand; 2], ReliefContentPrepareError> {
+    label
+        .validate_material_relief_content(paint)
+        .map_err(ReliefContentPrepareError::Content)?;
+    let [r, g, b] = paint.foreground().components().map(|value| value as f32);
+    prepare_content_at(
+        label,
+        family,
+        Color::rgba(r, g, b, 1.0),
+        origin,
+        device_scale,
+        || prepare_material_relief_paint_at(paint, origin, device_scale, samples_per_axis),
+    )
+}
+
+fn prepare_content_at(
+    label: &CommandLabelIr,
+    family: FontFamily,
+    color: Color,
+    origin: PhysicalVector,
+    device_scale: f32,
+    material: impl FnOnce() -> Result<PreparedPaint, PrepareError>,
+) -> Result<[DrawCommand; 2], ReliefContentPrepareError> {
+    let text = prepare_command_label_at(label, family, color, origin, device_scale)
+        .map_err(ReliefContentPrepareError::Label)?;
+    let material = material().map_err(ReliefContentPrepareError::Paint)?;
     let origin = material.origin();
     let size = material.logical_size();
     Ok([
