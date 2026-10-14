@@ -110,11 +110,48 @@ class QtNativeAvailabilityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "compiled Rust"):
                 runner.main()
 
+    def test_released_quickshell_host_preserves_version_and_semantic_mismatch(self):
+        result = measured_report()
+        result.update(host="quickshell-0.3.2-qt-6.11.2", binding="rust-qt-runtime")
+        self.assertEqual(checker.parse_report(checker.PREFIX + json.dumps(result)), result)
+        self.assertFalse(result["conformant"])
+        result.update(binding="reference-protocol")
+        with self.assertRaisesRegex(ValueError, "host evidence"):
+            checker.parse_report(checker.PREFIX + json.dumps(result))
+
+    def test_released_quickshell_version_is_reported_without_environment(self):
+        output = "Quickshell: 0.3.2 (revision release, distributed by Test)\nQt: 6.11.2 (built against 6.11.2)\n"
+        with mock.patch.dict(os.environ, {"RESINA_QUICKSHELL_HOST": str(Path(__file__).resolve()),
+                                         "RESINA_QT_RUNTIME_MODULE": "/module"}, clear=True), \
+             mock.patch.object(runner.sys, "argv", ["runner", "--version"]), \
+             mock.patch.object(runner.subprocess, "run", return_value=
+                               subprocess.CompletedProcess([], 0, output + "private environment\n", "")), \
+             contextlib.redirect_stdout(io.StringIO()) as captured:
+            self.assertEqual(runner.main(), 0)
+            self.assertEqual(captured.getvalue(), "Quickshell 0.3.2 / Qt Quick 6.11.2\n")
+
+    def test_released_quickshell_session_receives_verified_host_identity(self):
+        result = measured_report()
+        result.update(host="quickshell-0.3.2-qt-6.11.2", binding="rust-qt-runtime")
+        with mock.patch.object(checker.sys, "argv", ["checker", "--session", "--report-only"]), \
+             mock.patch.object(checker.sys, "platform", "linux"), \
+             mock.patch.dict(os.environ, {"DISPLAY": ":42", "RESINA_QUICKSHELL_HOST": "/host"}), \
+             mock.patch.object(checker.subprocess, "run", return_value=
+                               subprocess.CompletedProcess([], 0, "Quickshell 0.3.2 / Qt Quick 6.11.2\n", "")), \
+             mock.patch.object(checker, "session_probe", return_value=result) as probe, \
+             contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(checker.main(), 0)
+            probe.assert_called_once_with("quickshell-0.3.2-qt-6.11.2")
+
     def test_quickshell_version_checks_build_and_runtime_without_forwarding_environment(self):
         valid = "Quickshell: 0.3.1 (revision abc, distributed by Test)\nQt: 6.11.2 (built against 6.11.2)\n"
         for output in (valid, valid.replace("0.3.1", "0.3.0"),
+                       valid.replace("0.3.1", "0.3.3"),
                        valid.replace("built against 6.11.2", "built against 6.11.1"),
-                       valid.replace("Qt: 6.11.2", "Qt: 6.11.1"), valid + valid):
+                       valid.replace("Qt: 6.11.2", "Qt: 6.11.1"), valid + valid,
+                       valid + "Quickshell: 0.3.2 (revision other)\n",
+                       valid + "Qt: 6.11.1 (built against 6.11.1)\n",
+                       valid.replace("0.3.1", "0.3.2").replace("built against 6.11.2", "built against 6.11.1")):
             with self.subTest(output=output), \
                  mock.patch.dict(os.environ, {"RESINA_QUICKSHELL_HOST": str(Path(__file__).resolve()),
                                               "RESINA_QT_RUNTIME_MODULE": "/module"}, clear=True), \
@@ -130,6 +167,24 @@ class QtNativeAvailabilityTests(unittest.TestCase):
                         runner.main()
                     self.assertEqual(captured.getvalue(), "")
 
+    def test_session_cannot_relabel_a_different_verified_host(self):
+        result = measured_report()
+        for native_session in (False, True):
+            arguments = ["checker", "--report-only"] + (["--session"] if native_session else [])
+            with self.subTest(native_session=native_session), \
+                 mock.patch.object(checker.sys, "argv", arguments), \
+                 mock.patch.object(checker.sys, "platform", "linux"), \
+                 mock.patch.dict(os.environ, {"DISPLAY": ":42", "RESINA_QUICKSHELL_HOST": "/host"}), \
+                 mock.patch.object(checker.subprocess, "run", return_value=
+                                   subprocess.CompletedProcess([], 0, "Quickshell 0.3.2 / Qt Quick 6.11.2\n", "")), \
+                 mock.patch.object(checker, "session_probe", return_value=result), \
+                 mock.patch.object(checker, "run_session", return_value=result), \
+                 contextlib.redirect_stdout(io.StringIO()) as output, \
+                 contextlib.redirect_stderr(io.StringIO()) as errors:
+                self.assertEqual(checker.main(), 1)
+                self.assertEqual(output.getvalue(), "")
+                self.assertIn("disagrees with the verified runtime", errors.getvalue())
+
     def test_report_only_never_hides_execution_errors(self):
         result = measured_report()
         for report_only, outcome, expected in ((False, result, 1), (True, result, 0),
@@ -138,7 +193,7 @@ class QtNativeAvailabilityTests(unittest.TestCase):
                  mock.patch.object(checker.sys, "argv", ["checker", "--session"] +
                                    (["--report-only"] if report_only else [])), \
                  mock.patch.object(checker.sys, "platform", "linux"), \
-                 mock.patch.dict(os.environ, {"DISPLAY": ":42"}), \
+                 mock.patch.dict(os.environ, {"DISPLAY": ":42"}, clear=True), \
                  mock.patch.object(checker.subprocess, "run", return_value=
                                    subprocess.CompletedProcess([], 0, "Qt Quick 6.11.2", "")), \
                  mock.patch.object(checker, "session_probe", return_value=outcome,
