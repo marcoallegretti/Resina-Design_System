@@ -821,8 +821,12 @@ does not certify every analytic contour segment. Callback labels and reserved
 targets must equal the independently checked final values in each fixed authored
 context, while interaction paint follows each callback's own state.
 Focused cases request native item focus and independently record actual item/window
-focus alongside final and callback state. A request that does not become observed
-focus fails within the existing case deadline. Focused rest retains both `rest`
+focus alongside final and callback state. Each observation retains the raw item,
+window, visibility and availability values read at that callback or final sample.
+The reported native focus is their conjunction; the bound aggregate is retained
+only as a diagnostic because QML binding notification order can differ. A request
+that does not become observed focus fails within the existing case deadline.
+Focused rest retains both `rest`
 and `focused`; body and navigation bindings and silhouettes must agree. Offscreen
 focus observations do not establish compositor focus policy or physical input.
 Final natural and fitted native measurements reach

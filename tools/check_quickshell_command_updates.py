@@ -255,9 +255,20 @@ def static_authored_states(state, hovered):
     return {"schemaVersion": "0.1.0", "states": flags}
 
 
+def verify_native_focus(report):
+    observation = report["nativeFocus"]
+    fields = {"activeFocus", "windowActive", "visible", "enabled", "windowVisible", "boundFocused"}
+    if not isinstance(observation, dict) or set(observation) != fields \
+            or any(type(value) is not bool for value in observation.values()):
+        raise ValueError("raw native focus observation fields or types differ")
+    focused = all(observation[field] for field in fields - {"boundFocused"})
+    if report["nativeFocused"] != focused:
+        raise ValueError("native focus observation does not match callback-time native values")
+
+
 def verify_case(case, report, scale):
     fields = {"name", "ready", "error", "snapshot", "target", "state", "hovered",
-              "ignored", "deviceScale", "renderer", "publications", "measurements", "nativeFocused"}
+              "ignored", "deviceScale", "renderer", "publications", "measurements", "nativeFocused", "nativeFocus"}
     if set(report) != fields or type(report["deviceScale"]) not in (int, float) or report["deviceScale"] != scale:
         raise ValueError("native command report fields or actual device scale differ")
     if report["renderer"] != "software":
@@ -266,6 +277,7 @@ def verify_case(case, report, scale):
             or not all(type(report[field]) is bool for field in ("ready", "hovered", "ignored", "nativeFocused")) \
             or not isinstance(report["publications"], list):
         raise ValueError("native command report types differ")
+    verify_native_focus(report)
     validator_for("schemas/activation-state.schema.json").validate(report["state"])
     if report["state"]["focused"] != report["nativeFocused"]:
         raise ValueError("native focus observation and committed state disagree")
@@ -295,7 +307,7 @@ def verify_case(case, report, scale):
     if json.loads(report["target"], object_pairs_hook=unique_object) != snapshot["hitRegion"]:
         raise ValueError("native target and published snapshot disagree")
     for publication in report["publications"]:
-        if set(publication) != {"configuration", "snapshot", "state", "hovered", "nativeFocused"}:
+        if set(publication) != {"configuration", "snapshot", "state", "hovered", "nativeFocused", "nativeFocus"}:
             raise ValueError("native publication observation is incomplete")
         source = json.loads(publication["configuration"], object_pairs_hook=unique_object)
         if source != case["request"] or publication["snapshot"]["label"]["text"] != source["content"]["text"]:
@@ -303,6 +315,7 @@ def verify_case(case, report, scale):
         validator_for("schemas/activation-state.schema.json").validate(publication["state"])
         if any(type(publication[field]) is not bool for field in ("hovered", "nativeFocused")):
             raise ValueError("publication native observation is not Boolean")
+        verify_native_focus(publication)
         if publication["state"]["focused"] != publication["nativeFocused"]:
             raise ValueError("consumer callback disagrees with native focus observation")
         source.update(activation=publication["state"], hovered=publication["hovered"],

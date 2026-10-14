@@ -19,6 +19,22 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_focus_observation_uses_raw_native_values_instead_of_a_bound_aggregate(self):
+        from check_quickshell_command_updates import verify_native_focus
+        observed = dict(activeFocus=True, windowActive=True, visible=True,
+                        enabled=True, windowVisible=True, boundFocused=False)
+        verify_native_focus({"nativeFocused": True, "nativeFocus": observed})
+        for field in ("activeFocus", "windowActive", "visible", "enabled", "windowVisible"):
+            changed = {**observed, field: False, "boundFocused": True}
+            with self.subTest(field=field):
+                verify_native_focus({"nativeFocused": False, "nativeFocus": changed})
+                with self.assertRaisesRegex(ValueError, "native focus observation"):
+                    verify_native_focus({"nativeFocused": True, "nativeFocus": changed})
+        for changed in ({**observed, "activeFocus": 1}, {**observed, "extra": True},
+                        {key: value for key, value in observed.items() if key != "windowActive"}):
+            with self.subTest(observation=changed), self.assertRaisesRegex(ValueError, "native focus observation"):
+                verify_native_focus({"nativeFocused": True, "nativeFocus": changed})
+
     def test_native_focus_matrix_covers_fallback_failure_and_focused_recovery(self):
         cases = authored_cases()
         for theme_name in ("light", "dark"):
@@ -195,7 +211,7 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                                    for maximum in (None, 136)],
                   "publications": [{"configuration": json.dumps(case["request"]),
                                     "snapshot": copy.deepcopy(snapshot), "state": state, "hovered": False,
-                                    "nativeFocused": False}]}
+                                    "nativeFocused": False, "nativeFocus": self.rejected()["nativeFocus"]}]}
         with patch("check_quickshell_command_updates.verify_snapshot") as validate_snapshot, \
                 patch("check_quickshell_command_updates.verify_authored_paint"):
             verify_case(case, report, 1)
@@ -328,7 +344,9 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                 "snapshot": "", "target": "", "state": {
                     "schemaVersion": "0.1.0", "enabled": True, "focused": False, "hold": None},
                 "hovered": False, "nativeFocused": False, "ignored": True, "deviceScale": 1, "renderer": "software",
-                "publications": [], "measurements": []}
+                "publications": [], "measurements": [],
+                "nativeFocus": dict(activeFocus=False, windowActive=True, visible=True,
+                                    enabled=True, windowVisible=True, boundFocused=False)}
 
     def test_complete_rejected_replacement_is_reported(self):
         report = self.rejected()
