@@ -804,9 +804,10 @@ test requirements. The checker validates the actual host before starting the
 scenario sequence. The default software/offscreen path records actual device
 density; `--platform xcb` or `--platform wayland` requires a live display.
 
-The 35 scenarios cover light/dark Latin, expanded German and mixed Arabic/Latin
+The 37 scenarios cover light/dark Latin, expanded German and mixed Arabic/Latin
 paragraphs at four text scales, changed typography and asymmetric LTR/RTL padding,
-an explicitly loaded alternate font, unavailable state, malformed configuration,
+an explicitly loaded alternate font, both published Command variants in Light
+and Dark, unavailable state, malformed configuration,
 unsupported focus policy and rotation, and recovery after each rejection.
 Every consumer snapshot observation is checked against its current authored
 source and interaction state, including literal pigment bindings from the current

@@ -55,6 +55,15 @@ def authored_cases():
                       "typography": {"familyRole": "monospace", "fontSize": {"value": 14, "unit": "px"},
                                      "fontWeight": 500, "lineHeight": 1.34,
                                      "letterSpacing": {"value": 0.15, "unit": "px"}}})
+    primary = json.loads((ROOT / "definitions/components/command.json").read_text())["variants"]["primary"]["body"]
+    for theme_name in ("light", "dark"):
+        request = request_for(theme_name, "Reconnect")
+        request["content"]["environment"]["textScale"] = 1
+        request["body"]["surface"].update(
+            materialRole=primary["materialRole"], colorRole=primary["colorRole"],
+            form={"schemaVersion": "0.1.0", "shape": primary["shape"], "elevation": primary["elevation"]})
+        request["body"]["foregroundRole"] = primary["contentRole"]
+        cases.append({"name": theme_name + "-primary", "request": request, "enabled": True})
     source = request_for("light", "Reconnect")
     cases.append({"name": "disabled", "request": source, "enabled": False})
     for name, request, options in (
