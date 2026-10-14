@@ -55,9 +55,11 @@ def emitted_object_scopes(text):
     if stack or opened != set(allowed):
         raise ValueError("incomplete native paint object hierarchy")
     root, image, scale = (spans[name] for name in ("Item", "Image", "Scale"))
+    if re.fullmatch(r"\s*import QtQuick\s+Item\s*", text[:root[0] - 1]) is None or text[root[1] + 1:].strip():
+        raise ValueError("unexpected native paint component statements")
     return {
-        "Item": text[root[0]:image[0] - 1] + "\n" + text[image[1] + 1:root[1]],
-        "Image": text[image[0]:scale[0] - 1] + "\n" + text[scale[1] + 1:image[1]],
+        "Item": text[root[0]:text.rfind("\n", root[0], image[0])] + "\n" + text[image[1] + 1:root[1]],
+        "Image": text[image[0]:text.rfind("\n", image[0], scale[0])] + "\n" + text[scale[1] + 1:image[1]],
         "Scale": text[scale[0]:scale[1]],
     }
 
@@ -67,6 +69,18 @@ def component_png(result, width, height, placement, scale, expected):
         raise ValueError("material-relief QML command failed")
     text = without_qml_comments(result.stdout.decode("utf-8"))
     scopes = emitted_object_scopes(text)
+    declarations = {
+        "Item": ("readonly property real paintOriginX", "readonly property real paintOriginY",
+                 "readonly property real preparedDeviceScale", "implicitWidth", "implicitHeight",
+                 "focus", "activeFocusOnTab", "Accessible.ignored", "readonly property bool paintReady",
+                 "readonly property string paintError"),
+        "Image": ("id", "Accessible.ignored", "width", "height", "fillMode", "smooth", "mipmap",
+                  "asynchronous", "source", "focus", "activeFocusOnTab"),
+    }
+    for scope, names in declarations.items():
+        pattern = r"(?:" + "|".join(re.escape(name) for name in names) + r")[ \t]*:[ \t]*[^\r\n]+"
+        if any(line.strip() and re.fullmatch(pattern, line.strip()) is None for line in scopes[scope].splitlines()):
+            raise ValueError("unexpected executable native paint statement")
     left, top = (math.floor(value * scale) for value in placement)
     values = {
         "paintOriginX": left / scale,
@@ -100,6 +114,8 @@ def component_png(result, width, height, placement, scale, expected):
     for name in ("smooth", "mipmap", "asynchronous"):
         if assignments(name, "Image") != ["false"]:
             raise ValueError(f"incorrect image profile: {name}")
+    if assignments("fillMode", "Image") not in ([], ["Image.Stretch"]):
+        raise ValueError("incorrect image fill mode")
     if assignments(r"Accessible\.ignored") != ["true"] or assignments(r"Accessible\.ignored", "Image") != ["true"]:
         raise ValueError("paint must remain decorative")
     if assignments("id", "Image") != ["paint"]:
@@ -109,10 +125,11 @@ def component_png(result, width, height, placement, scale, expected):
     errors = assignments("readonly property string paintError")
     if len(errors) != 1 or re.fullmatch(r'paint.status === Image.Error \? "(?:[^"\\]|\\.)+" : ""', errors[0]) is None:
         raise ValueError("paint errors must follow actual image decoding")
-    images = re.findall(r'source: "data:image/png,((?:%[0-9A-F]{2})+)"', scopes["Image"])
-    if len(images) != 1 or text.count("data:image/png,") != 1:
+    sources = assignments("source", "Image")
+    image = re.fullmatch(r'"data:image/png,((?:%[0-9A-F]{2})+)"', sources[0]) if len(sources) == 1 else None
+    if image is None:
         raise ValueError("expected one complete encoded paint image")
-    png = bytes.fromhex(images[0].replace("%", ""))
+    png = bytes.fromhex(image.group(1).replace("%", ""))
     worst = check_png(SimpleNamespace(returncode=0, stderr=b"", stdout=png), width, height, expected)
     return png, worst
 

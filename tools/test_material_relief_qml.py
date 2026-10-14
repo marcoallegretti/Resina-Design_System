@@ -107,6 +107,15 @@ Item {{
             with self.subTest(source=source), self.assertRaises(ValueError):
                 self.check(source)
 
+    def test_unused_image_source_and_executable_overrides_fail(self):
+        declaration = next(line.strip() for line in self.source.splitlines() if line.strip().startswith("source:"))
+        decoy = self.source.replace(declaration, 'source: "file:///nonexistent.png"\n        readonly property string unusedProof: \'' + declaration + "'")
+        overrides = [self.source.replace("        smooth: false", "        smooth: false\n        " + handler)
+                     for handler in ("Component.onCompleted: smooth = true", "Component.onCompleted: paint.smooth = true")]
+        for source in (decoy, *overrides):
+            with self.subTest(source=source), self.assertRaises(ValueError):
+                self.check(source)
+
 
 if __name__ == "__main__":
     unittest.main()
