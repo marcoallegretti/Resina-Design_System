@@ -8,9 +8,31 @@ from unittest.mock import patch
 from PIL import Image
 from check_guido_relief_native import capture_matches, diagnostic_content_focus_request, diagnostic_outline_focus_request, diagnostic_request, main, validate_canvas_reference
 from check_schemas import validator_for
+import check_guido_relief_native as native
 
 
 class NativeReliefComparisonTests(unittest.TestCase):
+    def test_material_fixture_preserves_guards_and_has_one_active_light_source(self):
+        original = diagnostic_request()
+        request = native.diagnostic_material_request()
+        self.assertEqual(list(validator_for("schemas/material-relief-paint-request.schema.json").iter_errors(request)), [])
+        self.assertNotIn("keyLight", request)
+        self.assertEqual(request["light"]["keyLight"], original["keyLight"])
+        for member in ("outline", "profile", "pigment", "edge", "edgeWidth", "foreground", "minimumContentContrast", "points"):
+            self.assertEqual(request[member], original[member])
+        self.assertIsNotNone(request["light"]["ambient"])
+        self.assertIsNotNone(request["light"]["interaction"])
+        self.assertTrue(request["enabled"])
+        self.assertTrue(request["interactionActive"])
+        self.assertTrue(request["environment"]["rendererCapabilities"]["dynamicLighting"])
+
+    def test_material_fixture_focus_retains_the_actual_guarded_footprint(self):
+        paint = native.diagnostic_material_request()
+        focus = diagnostic_content_focus_request(paint)
+        self.assertEqual(list(validator_for("schemas/outline-focus-request.schema.json").iter_errors(focus)), [])
+        self.assertEqual(focus["outline"], paint["outline"])
+        self.assertEqual(focus["focus"]["surroundingColor"], paint["edge"]["adjacentColor"])
+
     def test_content_focus_supports_every_authored_material_family(self):
         for family in ("cast", "frost", "elastomer", "gel"):
             paint = diagnostic_request()

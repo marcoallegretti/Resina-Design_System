@@ -1,5 +1,5 @@
 use crate::{
-    OpaqueSurfaceIr, ReliefPaint, ResolvedTypography, SurfacePaintError,
+    MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ResolvedTypography, SurfacePaintError,
     opaque_paint::placed_contains,
 };
 use resina_environment::{LayoutDirection, SafeArea};
@@ -32,14 +32,28 @@ pub struct CommandLabelIr {
 }
 impl CommandLabelIr {
     pub fn validate_relief_content(&self, paint: &ReliefPaint) -> Result<(), CommandContentError> {
-        if self.size != paint.surface().outline().size() {
+        self.validate_relief_bounds(paint.surface().outline().size(), paint.content_bounds())
+    }
+
+    pub fn validate_material_relief_content(
+        &self,
+        paint: &MaterialReliefPaint,
+    ) -> Result<(), CommandContentError> {
+        self.validate_relief_bounds(paint.surface().outline().size(), paint.content_bounds())
+    }
+
+    fn validate_relief_bounds(
+        &self,
+        size: SurfaceSize,
+        content: PhysicalBounds,
+    ) -> Result<(), CommandContentError> {
+        if self.size != size {
             return Err(CommandContentError::SizeMismatch);
         }
         let bounds = self.label_bounds;
         let right = extent_sum(bounds.x, bounds.width).ok_or(CommandContentError::NumericRange)?;
         let bottom =
             extent_sum(bounds.y, bounds.height).ok_or(CommandContentError::NumericRange)?;
-        let content = paint.content_bounds();
         if bounds.x < content.x
             || bounds.y < content.y
             || right > content.x + content.width

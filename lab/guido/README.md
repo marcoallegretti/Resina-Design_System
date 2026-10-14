@@ -201,3 +201,24 @@ transparent in both canvas polarities, directions and outline curvatures.
 
 These diagnostic pixels prove native composition; they do not establish accepted
 material appearance, interactive controls or assistive technology integration.
+
+Add `--material-light` to the checker with `--content-font` to use the complete
+material-lit relief request. Its default diagnostic retains the existing guarded
+outline, pigment and foreground, supplying one physical key plus active bounded
+ambient and interaction channels. The same probe accepts `--material-light`
+before its positional arguments. It resolves the complete source through the
+material-relief protocol and uses the backend's checked content preparation.
+The checker requires explicit confirmation of the selected lighting mode from
+the probe; `--content-focus` retains the actual face's independently guarded ring.
+Whole-canvas native pixel agreement remains separate from accepted appearance,
+component interaction, disabled-state styling and accessibility publication.
+
+Use the optimized probe for the complete material-lit fractional-scale matrix:
+
+```sh
+cargo build --release --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe
+python tools/check_guido_relief_native.py --probe lab/guido/target/release/examples/relief_content_probe --material-light --content-font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --content-focus --text-scale 2 --output-dir target/material-relief-content-native
+```
+
+Supply the actual font and `CARGO_TARGET_DIR` paths on the host. The same
+120-second preparation deadline and complete opaque-canvas comparison apply.
