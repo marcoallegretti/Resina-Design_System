@@ -112,7 +112,8 @@ Item {{
         decoy = self.source.replace(declaration, 'source: "file:///nonexistent.png"\n        readonly property string unusedProof: \'' + declaration + "'")
         overrides = [self.source.replace("        smooth: false", "        smooth: false\n        " + handler)
                      for handler in ("Component.onCompleted: smooth = true", "Component.onCompleted: paint.smooth = true")]
-        for source in (decoy, *overrides):
+        multiline_decoy = self.source.replace("        smooth: false", '        opacity: 1; smooth: true\n        property string decoy: "\n        smooth: false\n        "')
+        for source in (decoy, multiline_decoy, *overrides):
             with self.subTest(source=source), self.assertRaises(ValueError):
                 self.check(source)
 
