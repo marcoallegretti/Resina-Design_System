@@ -15,6 +15,8 @@ from PIL import Image
 from check_schemas import validator_for
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
 from check_qt_command_label_runtime import verify_layout
+from check_surface_paint_backend import surface_paint_channel_mismatch
+from check_focus_indicator_backend import contrast
 
 
 def authored_cases():
@@ -64,6 +66,9 @@ def authored_cases():
             form={"schemaVersion": "0.1.0", "shape": primary["shape"], "elevation": primary["elevation"]})
         request["body"]["foregroundRole"] = primary["contentRole"]
         cases.append({"name": theme_name + "-primary", "request": request, "enabled": True})
+    for name in ("light-latin-1", "dark-latin-1", "light-primary", "dark-primary"):
+        baseline = next(case for case in cases if case["name"] == name)
+        cases.append({**copy.deepcopy(baseline), "name": name + "-focused", "focused": True})
     source = request_for("light", "Reconnect")
     cases.append({"name": "disabled", "request": source, "enabled": False})
     for name, request, options in (
@@ -91,6 +96,33 @@ def verify_typography(case, label):
         raise ValueError("native label differs from authored typography")
 
 
+def inline_color(theme, role, assignments="colorAssignments"):
+    token = theme["tokenResolver"]["sets"]["theme"]["sources"][0]
+    path = theme[assignments]["roles"].get(role, theme["colorAssignments"]["roles"][role])
+    for member in path.split("."):
+        token = token[member]
+    value = token["$value"]
+    return {"colorSpace": value["colorSpace"], "components": value["components"],
+            "alpha": value.get("alpha", 1)}
+
+
+def verify_authored_focus(theme, surrounding, indicator):
+    if surrounding["colorSpace"] != "srgb" or surrounding["alpha"] != 1:
+        raise ValueError("authored focus requires opaque sRGB surroundings")
+    for role in ("focus", "outline.strong"):
+        color = inline_color(theme, role, "opaqueColorAssignments")
+        if color["colorSpace"] != "srgb" or color["alpha"] != 1:
+            raise ValueError("authored focus requires opaque sRGB pigment")
+        ratio = contrast(color["components"], surrounding["components"])
+        if ratio >= 3:
+            if indicator["colorRole"] != role or indicator["color"] != color \
+                    or indicator["fallbackApplied"] != (role == "outline.strong") \
+                    or not math.isclose(indicator["contrastRatio"], ratio, rel_tol=0, abs_tol=1e-12):
+                raise ValueError("native focus differs from the authored pigment or contrast guard")
+            return
+    raise ValueError("authored focus and strong outline both fail the contrast guard")
+
+
 def verify_authored_paint(request, snapshot):
     theme = json.loads(request["content"]["themeSource"], object_pairs_hook=unique_object)
     surface = request["body"]["surface"]
@@ -101,15 +133,7 @@ def verify_authored_paint(request, snapshot):
     response = {"bodyMix": 0, "depthScale": 1} if paint["phase"] == "rest" \
         else request["body"]["commandAppearance"]["profiles"][family][paint["phase"]]
 
-    def inline_color(role):
-        token = theme["tokenResolver"]["sets"]["theme"]["sources"][0]
-        for member in theme["colorAssignments"]["roles"][role].split("."):
-            token = token[member]
-        value = token["$value"]
-        return {"colorSpace": value["colorSpace"], "components": value["components"],
-                "alpha": value.get("alpha", 1)}
-
-    color = inline_color(surface["colorRole"])
+    color = inline_color(theme, surface["colorRole"])
     mix = response["bodyMix"]
     color["components"] = [channel * (1 + mix) if mix < 0 else channel + (1 - channel) * mix
                            for channel in color["components"]]
@@ -117,10 +141,14 @@ def verify_authored_paint(request, snapshot):
             or any(body[field] != surface[field] for field in ("materialRole", "colorRole", "form")) \
             or body["foregroundRole"] != request["body"]["foregroundRole"] \
             or body["pigment"]["body"] != color \
-            or body["foreground"] != inline_color(request["body"]["foregroundRole"]) \
-            or body["edge"]["color"] != inline_color("outline"):
+            or body["foreground"] != inline_color(theme, request["body"]["foregroundRole"]) \
+            or body["edge"]["color"] != inline_color(theme, "outline"):
         raise ValueError("native paint differs from the authored theme, form or response")
     verify_authored_geometry(request, snapshot)
+    if surface_paint_channel_mismatch(paint["paint"]):
+        raise ValueError("native focus binding or silhouette differs from the current body")
+    if "focus" in paint["paint"]:
+        verify_authored_focus(theme, request["body"]["surroundingColor"], paint["paint"]["focus"]["indicator"])
 
 
 def verify_authored_geometry(request, snapshot):
@@ -200,18 +228,33 @@ def read_reports(log, cases):
     return reports
 
 
+def static_authored_states(state, hovered):
+    if state["hold"] is not None:
+        raise ValueError("authored update acquired an unexpected hold")
+    flags = ["rest"] if state["enabled"] and not hovered else []
+    if hovered:
+        flags.append("hover")
+    if state["focused"]:
+        flags.append("focused")
+    if not state["enabled"]:
+        flags.append("disabled")
+    return {"schemaVersion": "0.1.0", "states": flags}
+
+
 def verify_case(case, report, scale):
     fields = {"name", "ready", "error", "snapshot", "target", "state", "hovered",
-              "ignored", "deviceScale", "renderer", "publications", "measurements"}
+              "ignored", "deviceScale", "renderer", "publications", "measurements", "nativeFocused"}
     if set(report) != fields or type(report["deviceScale"]) not in (int, float) or report["deviceScale"] != scale:
         raise ValueError("native command report fields or actual device scale differ")
     if report["renderer"] != "software":
         raise ValueError("native command did not use the requested software renderer")
     if not all(isinstance(report[field], str) for field in ("error", "snapshot", "target")) \
-            or not all(type(report[field]) is bool for field in ("ready", "hovered", "ignored")) \
+            or not all(type(report[field]) is bool for field in ("ready", "hovered", "ignored", "nativeFocused")) \
             or not isinstance(report["publications"], list):
         raise ValueError("native command report types differ")
     validator_for("schemas/activation-state.schema.json").validate(report["state"])
+    if report["state"]["focused"] != report["nativeFocused"]:
+        raise ValueError("native focus observation and committed state disagree")
     if case.get("reject"):
         if case.get("expectedError", "") not in report["error"]:
             raise ValueError("rejected replacement reported a different failure cause")
@@ -224,12 +267,12 @@ def verify_case(case, report, scale):
         raise ValueError("native command did not publish complete supported content")
     state = report["state"]
     enabled = case.get("enabled", True)
-    if state != {"schemaVersion": "0.1.0", "enabled": enabled, "focused": False, "hold": None} \
+    if state != {"schemaVersion": "0.1.0", "enabled": enabled, "focused": case.get("focused", False), "hold": None} \
             or report["hovered"]:
         raise ValueError("authored update changed the expected native interaction state")
     request = copy.deepcopy(case["request"])
     request.update(activation=state, hovered=False, focusable=enabled)
-    states = {"schemaVersion": "0.1.0", "states": ["rest"] if enabled else ["disabled"]}
+    states = static_authored_states(state, False)
     snapshot = json.loads(report["snapshot"], object_pairs_hook=unique_object)
     verify_snapshot(snapshot, request, states)
     verify_authored_paint(request, snapshot)
@@ -238,27 +281,20 @@ def verify_case(case, report, scale):
     if json.loads(report["target"], object_pairs_hook=unique_object) != snapshot["hitRegion"]:
         raise ValueError("native target and published snapshot disagree")
     for publication in report["publications"]:
-        if set(publication) != {"configuration", "snapshot", "state", "hovered"}:
+        if set(publication) != {"configuration", "snapshot", "state", "hovered", "nativeFocused"}:
             raise ValueError("native publication observation is incomplete")
         source = json.loads(publication["configuration"], object_pairs_hook=unique_object)
         if source != case["request"] or publication["snapshot"]["label"]["text"] != source["content"]["text"]:
             raise ValueError("consumer observed a mixed authored generation")
         validator_for("schemas/activation-state.schema.json").validate(publication["state"])
-        if type(publication["hovered"]) is not bool:
-            raise ValueError("publication hover observation is not Boolean")
+        if any(type(publication[field]) is not bool for field in ("hovered", "nativeFocused")):
+            raise ValueError("publication native observation is not Boolean")
+        if publication["state"]["focused"] != publication["nativeFocused"]:
+            raise ValueError("consumer callback disagrees with native focus observation")
         source.update(activation=publication["state"], hovered=publication["hovered"],
                       focusable=publication["state"]["enabled"])
-        flags = []
-        if publication["hovered"]:
-            flags.append("hover")
-        if publication["state"]["focused"]:
-            flags.append("focused")
-        if not publication["state"]["enabled"]:
-            flags.append("disabled")
-        if publication["state"]["hold"] is not None:
-            raise ValueError("authored update acquired an unexpected hold")
         verify_snapshot(publication["snapshot"], source,
-                        {"schemaVersion": "0.1.0", "states": flags or ["rest"]})
+                        static_authored_states(publication["state"], publication["hovered"]))
         verify_authored_paint(source, publication["snapshot"])
         verify_typography(case, publication["snapshot"]["label"])
         if publication["snapshot"]["label"] != snapshot["label"]:
@@ -267,7 +303,7 @@ def verify_case(case, report, scale):
             raise ValueError("consumer callback changed the fixed authored target")
 
 
-def verify_capture(path, snapshot, scale):
+def verify_capture(path, snapshot, scale, surrounding_color=None):
     with Image.open(path) as source:
         if source.format != "PNG" or source.size != (round(500 * scale), round(800 * scale)):
             raise ValueError("native command capture format or dimensions differ")
@@ -306,6 +342,32 @@ def verify_capture(path, snapshot, scale):
                    for y in range(first, last) for x in range(left, right)
                    for pixel in (image.getpixel((x, y)),)):
             raise ValueError(f"native capture has no foreground ink on label line {line + 1}")
+    focus = snapshot["paint"]["paint"].get("focus")
+    if focus is not None:
+        if surrounding_color is None or surrounding_color["colorSpace"] != "srgb" or surrounding_color["alpha"] != 1:
+            raise ValueError("focus capture requires explicit opaque sRGB surroundings")
+        background = tuple(round(channel * 255) for channel in surrounding_color["components"])
+        pixel = image.getpixel((0, 0))
+        if pixel[3] != 255 or any(abs(pixel[channel] - background[channel]) > 1 for channel in range(3)):
+            raise ValueError("native focus surroundings differ from the guarded authored background")
+        indicator = focus["indicator"]
+        color = indicator["color"]
+        if color["colorSpace"] != "srgb" or color["alpha"] != 1:
+            raise ValueError("capture requires the supported opaque sRGB focus indicator")
+        ink = tuple(round(channel * 255) for channel in color["components"])
+        silhouette = body["geometry"]["silhouette"]["bounds"]
+        x, y, width, height = (silhouette[field] for field in ("x", "y", "width", "height"))
+        distance = indicator["gap"] + indicator["strokeWidth"] / 2
+        points = ((x + width / 2, y - distance), (x + width / 2, y + height + distance),
+                  (x - distance, y + height / 2), (x + width + distance, y + height / 2))
+        for x, y in points:
+            column = math.floor((50 - target["x"] + x) * scale)
+            row = math.floor((50 - target["y"] + y) * scale)
+            if not 0 <= column < image.width or not 0 <= row < image.height:
+                raise ValueError("native focus indicator lies outside the capture")
+            pixel = image.getpixel((column, row))
+            if pixel[3] != 255 or any(abs(pixel[channel] - ink[channel]) > 1 for channel in range(3)):
+                raise ValueError("native focus indicator is absent, shifted or differs from its snapshot")
 
 
 def verify_stable_targets(cases, reports):
@@ -369,7 +431,8 @@ def main():
             for case, report in zip(cases, reports):
                 verify_case(case, report, scale)
                 if not case.get("reject"):
-                    verify_capture(output / (case["name"] + ".png"), json.loads(report["snapshot"]), scale)
+                    verify_capture(output / (case["name"] + ".png"), json.loads(report["snapshot"]), scale,
+                                   case["request"]["body"]["surroundingColor"])
             verify_stable_targets(cases, reports)
             (output / "observations.json").write_text(json.dumps(reports, indent=2), encoding="utf-8")
             print(f"PASS {len(cases)} authored Command cases at device scale {scale}", flush=True)

@@ -13,6 +13,8 @@ FloatingWindow {
     property string configuration: ""
     property var publications: []
     property bool capturing: false
+    readonly property bool nativeFocused: command.activeFocus && command.Window.active
+        && command.visible && command.enabled && root.backingWindowVisible
 
     function start() {
         if (index < 0) next();
@@ -32,13 +34,22 @@ FloatingWindow {
             Qt.quit();
             return;
         }
+        other.forceActiveFocus();
         publications = [];
         const scenario = cases[index];
+        if (scenario.focused === true) {
+            const color = scenario.request.body.surroundingColor;
+            if (color.colorSpace !== "srgb" || color.alpha !== 1) {
+                fail("focused capture requires opaque sRGB surroundings");
+                return;
+            }
+        }
         carrier.rotation = scenario.rotation || 0;
         command.disabledFocusable = scenario.disabledFocusable === true;
         configuration = typeof scenario.request === "string" ? scenario.request : JSON.stringify(scenario.request);
         command.controller.dispatch(JSON.stringify({kind:"availability", enabled:scenario.enabled !== false}));
         if (scenario.renewPlacement === true) command.reconfigure();
+        if (scenario.focused === true) command.forceActiveFocus();
         deadline.restart();
         capturing = false;
     }
@@ -97,6 +108,16 @@ FloatingWindow {
         id: capture
         width: 500
         height: 800
+        Rectangle {
+            anchors.fill: parent
+            Accessible.ignored: true
+            color: {
+                if (!root.cases || root.index < 0 || root.index >= root.cases.length
+                    || root.cases[root.index].focused !== true) return "transparent";
+                const components = root.cases[root.index].request.body.surroundingColor.components;
+                return Qt.rgba(components[0], components[1], components[2], 1);
+            }
+        }
         Item {
             id: carrier
             anchors.fill: parent
@@ -112,10 +133,12 @@ FloatingWindow {
                         configuration: root.configuration,
                         snapshot: JSON.parse(snapshot),
                         state: JSON.parse(publication).state,
-                        hovered: hovered
+                        hovered: hovered,
+                        nativeFocused: root.nativeFocused
                     });
                 }
             }
+            Item { id: other; width: 1; height: 1 }
         }
     }
 
@@ -127,6 +150,7 @@ FloatingWindow {
             ready:command.ready, error:command.preparationError,
             snapshotLength:command.snapshot.length, targetLength:command.targetPublication.length,
             acceptsNewGestures:command.acceptsNewGestures, windowVisible:root.visible,
+            nativeFocused:root.nativeFocused, windowActive:command.Window.active,
             frameReady:command.currentFrame ? command.currentFrame.paintReady : false,
             frameError:command.currentFrame ? command.currentFrame.paintError : ""
         }))
@@ -147,6 +171,7 @@ FloatingWindow {
                 target: command.targetPublication,
                 state: JSON.parse(command.publication).state,
                 hovered: command.hovered,
+                nativeFocused: root.nativeFocused,
                 ignored: command.Accessible.ignored,
                 deviceScale: capture.Screen.devicePixelRatio,
                 renderer: capture.GraphicsInfo.api === GraphicsInfo.Software ? "software" : "unsupported",
@@ -163,6 +188,7 @@ FloatingWindow {
             }
             if (result.error.length) { root.fail(result.error); return; }
             if (!result.ready) return;
+            if (result.nativeFocused !== (scenario.focused === true)) return;
             try { result.measurements = root.measureComplete(result.snapshot, scenario); }
             catch (error) { root.fail(error.message); return; }
             root.capturing = true;
