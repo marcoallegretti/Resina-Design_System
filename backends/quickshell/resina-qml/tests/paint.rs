@@ -285,3 +285,136 @@ fn endpoint_preflight_uses_the_renderer_coordinate_sampling_and_resource_guards(
         assert_eq!(preflight.to_string(), rendering.to_string());
     }
 }
+
+#[test]
+fn material_relief_retains_all_authored_policy_pixels_after_placement() {
+    let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/material-relief-paint-vectors.json"
+    ))
+    .unwrap();
+    let mut accepted = 0;
+    for case in cases.iter().filter(|case| case.get("expected").is_some()) {
+        let paint =
+            resina_resolver::resolve_material_relief_paint_source(&case["request"].to_string())
+                .unwrap()
+                .paint;
+        for scale in [1.0, 1.25, 1.5, 2.0, 3.0] {
+            let placement = PhysicalVector { x: 13.3, y: -17.1 };
+            let prepared =
+                resina_qml::prepare_material_relief_paint(&paint, placement, scale, 1).unwrap();
+            let qml =
+                resina_qml::render_material_relief_paint(&paint, placement, scale, 1).unwrap();
+            let (width, height, pixels) = image(&qml);
+            let expected =
+                resina_raster::render_material_relief_paint(&paint, prepared.viewport(), 1)
+                    .unwrap();
+            assert_eq!((width, height), (expected.width(), expected.height()));
+            assert_eq!(pixels, expected.rgba(), "{} / {scale}", case["name"]);
+            assert!(qml.contains(&format!("paintOriginX: {}", prepared.bounds().x)));
+            assert!(qml.contains(&format!("paintOriginY: {}", prepared.bounds().y)));
+            assert!(qml.contains("smooth: false"));
+            assert_eq!(qml.matches("Accessible.ignored: true").count(), 2);
+        }
+        accepted += 1;
+    }
+    assert_eq!(accepted, 52);
+}
+
+#[test]
+fn material_relief_preflight_and_rendering_share_failure_guards() {
+    let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/material-relief-paint-vectors.json"
+    ))
+    .unwrap();
+    let paint =
+        resina_resolver::resolve_material_relief_paint_source(&cases[0]["request"].to_string())
+            .unwrap()
+            .paint;
+    let origin = PhysicalVector { x: 13.3, y: 17.1 };
+    for (placement, scale, samples) in [
+        (origin, 0.0, 4),
+        (origin, f64::NAN, 4),
+        (origin, 1.0, 0),
+        (origin, 1.0, 9),
+        (origin, 10_000.0, 4),
+        (PhysicalVector { x: 1e20, y: 0.0 }, 1.0, 4),
+        (
+            PhysicalVector {
+                x: f64::INFINITY,
+                y: 0.0,
+            },
+            1.0,
+            4,
+        ),
+    ] {
+        let preflight =
+            resina_qml::prepare_material_relief_paint(&paint, placement, scale, samples)
+                .unwrap_err();
+        let rendering = resina_qml::render_material_relief_paint(&paint, placement, scale, samples)
+            .unwrap_err();
+        assert_eq!(preflight.to_string(), rendering.to_string());
+    }
+}
+
+#[test]
+fn material_relief_command_preserves_source_admission_and_atomic_output() {
+    let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/material-relief-paint-vectors.json"
+    ))
+    .unwrap();
+    let source = cases[0]["request"].to_string();
+    let mut suppressed = cases[0]["request"].clone();
+    suppressed["enabled"] = serde_json::json!(false);
+    suppressed["light"]["ambient"] = serde_json::json!(0.5);
+    let tiny_negative = suppressed
+        .to_string()
+        .replace("\"ambient\":0.5", "\"ambient\":-1e-400");
+    let duplicate = source.replacen(
+        "\"schemaVersion\":\"0.1.0\"",
+        "\"schemaVersion\":\"0.1.0\",\"schemaVersion\":\"0.1.0\"",
+        1,
+    );
+    let oversized = vec![b' '; 1024 * 1024 + 1];
+    for (input, accepted) in [
+        (source.as_bytes(), true),
+        (tiny_negative.as_bytes(), false),
+        (duplicate.as_bytes(), false),
+        (b"{}".as_slice(), false),
+        (b"\xff".as_slice(), false),
+        (oversized.as_slice(), false),
+    ] {
+        let mut child = Command::new(env!("CARGO_BIN_EXE_resina-material-relief-qml"))
+            .args(["-", "1.25", "1", "13.3", "17.1"])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        child.stdin.take().unwrap().write_all(input).unwrap();
+        let result = child.wait_with_output().unwrap();
+        assert_eq!(result.status.success(), accepted);
+        if accepted {
+            assert!(result.stderr.is_empty());
+            let paint = resina_resolver::resolve_material_relief_paint_source(&source)
+                .unwrap()
+                .paint;
+            let expected = resina_qml::render_material_relief_paint(
+                &paint,
+                PhysicalVector { x: 13.3, y: 17.1 },
+                1.25,
+                1,
+            )
+            .unwrap();
+            assert_eq!(result.stdout, expected.as_bytes());
+        } else {
+            assert_eq!(result.status.code(), Some(1));
+            assert!(result.stdout.is_empty());
+            assert!(!result.stderr.is_empty());
+        }
+    }
+    let usage = Command::new(env!("CARGO_BIN_EXE_resina-material-relief-qml"))
+        .output()
+        .unwrap();
+    assert_eq!(usage.status.code(), Some(2));
+    assert!(usage.stdout.is_empty());
+}
