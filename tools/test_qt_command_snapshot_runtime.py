@@ -23,10 +23,45 @@ class NativeSnapshotEvidenceTests(unittest.TestCase):
                     "hitRegion": target, "accessibility": semantic}
         request = request_for("light", "Reconnect")
         request.update(description=None, componentMinimum={"width": 24, "height": 24})
+        request["content"]["environment"]["inputCapabilities"] = ["finePointer"]
         return snapshot, request, body["states"]
 
     def test_supplied_public_channels(self):
         verify_snapshot(*self.fixture())
+
+    def test_resolved_minimum_matches_authored_environment_and_component(self):
+        vectors = json.loads((ROOT / "conformance/interaction/target-minimum-vectors.json").read_text())
+        for vector in vectors:
+            for component in ({"width": 12, "height": 16}, {"width": 80, "height": 32}):
+                snapshot, request, states = copy.deepcopy(self.fixture())
+                request["content"]["environment"].update(
+                    {key: value for key, value in vector.items() if key not in ("name", "expected")})
+                request["componentMinimum"] = component
+                minimum = {axis: max(component[axis], vector["expected"][field])
+                           for axis, field in (("width", "minimumWidth"), ("height", "minimumHeight"))}
+                snapshot["hitRegion"]["minimumSize"] = minimum
+                snapshot["hitRegion"]["bounds"].update(minimum)
+                with self.subTest(vector=vector["name"], component=component):
+                    verify_snapshot(snapshot, request, states)
+                    for axis in ("width", "height"):
+                        for value in (1, minimum[axis] + 1):
+                            bad = copy.deepcopy(snapshot)
+                            bad["hitRegion"]["minimumSize"][axis] = value
+                            with self.subTest(axis=axis, value=value), self.assertRaisesRegex(
+                                    ValueError, "resolved target minimum"):
+                                verify_snapshot(bad, request, states)
+
+    def test_target_bounds_preserve_environment_floor(self):
+        for capability in ("coarsePointer", "directTouch"):
+            for axis in ("width", "height"):
+                snapshot, request, states = copy.deepcopy(self.fixture())
+                request["content"]["environment"]["inputCapabilities"] = [capability]
+                snapshot["hitRegion"]["minimumSize"] = {"width": 48, "height": 48}
+                snapshot["hitRegion"]["bounds"].update(width=48, height=48)
+                snapshot["hitRegion"]["bounds"][axis] = 24
+                with self.subTest(capability=capability, axis=axis), self.assertRaisesRegex(
+                        ValueError, "resolved target minimum"):
+                    verify_snapshot(snapshot, request, states)
 
     def test_partial_stale_or_inconsistent_channels_fail(self):
         for change in ("missing", "extra", "semantic", "body", "direction", "focus", "target", "available", "occupied"):
