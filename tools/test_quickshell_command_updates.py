@@ -19,6 +19,29 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
+    def test_both_published_variants_have_focused_cases_in_both_themes(self):
+        cases = authored_cases()
+        for name in ("light-latin-1", "dark-latin-1", "light-primary", "dark-primary"):
+            with self.subTest(name=name):
+                baseline = next(case for case in cases if case["name"] == name)
+                focused = [case for case in cases if case["name"] == name + "-focused"]
+                self.assertEqual(len(focused), 1, "native focused Command case is missing")
+                self.assertIs(focused[0]["focused"], True)
+                self.assertEqual(focused[0]["request"], baseline["request"])
+
+    def test_static_authored_projection_matches_public_hold_free_vectors(self):
+        from check_quickshell_command_updates import ROOT, static_authored_states
+        cases = json.loads((ROOT / "conformance/interaction/command-states-cases.json").read_text())
+        for case in cases:
+            request = case["request"]
+            if "expected" not in case or request["activation"]["hold"] is not None:
+                continue
+            with self.subTest(name=case["name"]):
+                self.assertEqual(static_authored_states(request["activation"], request["hovered"]), case["expected"])
+        for hold in ({"kind": "key", "key": "space"}, {"kind": "pointer", "id": "primary", "inside": True}):
+            with self.subTest(hold=hold), self.assertRaisesRegex(ValueError, "unexpected hold"):
+                static_authored_states({"enabled": True, "focused": True, "hold": hold}, False)
+
     def test_primary_cases_retain_the_published_anatomy_in_both_themes(self):
         from check_quickshell_command_updates import ROOT
         definition = json.loads((ROOT / "definitions/components/command.json").read_text())["variants"]["primary"]["body"]
@@ -114,7 +137,8 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                                     "result": {"kind": "extent", "width": 100, "height": 8}}
                                    for maximum in (None, 136)],
                   "publications": [{"configuration": json.dumps(case["request"]),
-                                    "snapshot": copy.deepcopy(snapshot), "state": state, "hovered": False}]}
+                                    "snapshot": copy.deepcopy(snapshot), "state": state, "hovered": False,
+                                    "nativeFocused": False}]}
         with patch("check_quickshell_command_updates.verify_snapshot") as validate_snapshot, \
                 patch("check_quickshell_command_updates.verify_authored_paint"):
             verify_case(case, report, 1)
@@ -122,6 +146,15 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             report["publications"][0]["snapshot"]["paint"]["phase"] = "hover"
             verify_case(case, report, 1)
             self.assertEqual(validate_snapshot.call_args.args[2]["states"], ["hover"])
+            for member, value in (("final", True), ("callback", True), ("callback", 1)):
+                changed = copy.deepcopy(report)
+                if member == "final":
+                    changed["nativeFocused"] = value
+                else:
+                    changed["publications"][0]["nativeFocused"] = value
+                with self.subTest(member=member, value=value), self.assertRaisesRegex(
+                        ValueError, "native focus|native observation"):
+                    verify_case(case, changed, 1)
             invalid_final = copy.deepcopy(report)
             invalid_layout = json.loads(invalid_final["snapshot"])
             invalid_layout["label"]["labelBounds"]["x"] = 0
@@ -198,6 +231,33 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             image.save(path)
             with self.assertRaisesRegex(ValueError, "body pigment"):
                 verify_capture(path, snapshot, 1)
+            snapshot["paint"]["paint"]["body"]["geometry"]["silhouette"] = {
+                "bounds": {"x": 0, "y": 0, "width": 80, "height": 60}}
+            snapshot["paint"]["paint"]["focus"] = {"indicator": {
+                "color": {"colorSpace": "srgb", "alpha": 1, "components": [1, 0, 0]},
+                "gap": 2, "strokeWidth": 2}}
+            points = [(90, 47), (90, 113), (47, 80), (133, 80)]
+            surrounding = {"colorSpace": "srgb", "alpha": 1, "components": [1, 1, 1]}
+            for fault in ("none", "missing", "shifted", "color", "alpha", "background"):
+                with self.subTest(focus=fault):
+                    image = Image.new("RGBA", (500, 800), "white")
+                    for point in ((65, 65), (65, 75)):
+                        image.putpixel(point, (0, 0, 0, 255))
+                    for x, y in points[1:] if fault == "missing" else points:
+                        image.putpixel((x + (5 if fault == "shifted" else 0), y),
+                                       (0, 0, 255, 255) if fault == "color" else
+                                       (255, 0, 0, 128 if fault == "alpha" else 255))
+                    image.save(path)
+                    if fault == "background":
+                        image.putpixel((0, 0), (0, 0, 0, 255))
+                        image.save(path)
+                    if fault == "none":
+                        verify_capture(path, snapshot, 1, surrounding)
+                        with self.assertRaisesRegex(ValueError, "explicit opaque"):
+                            verify_capture(path, snapshot, 1)
+                    else:
+                        with self.assertRaisesRegex(ValueError, "focus indicator|focus surroundings"):
+                            verify_capture(path, snapshot, 1, surrounding)
 
     def test_host_execution_failure_is_distinct_from_unsupported_version(self):
         with self.assertRaisesRegex(ValueError, "verification failed:.*timed out"):
@@ -210,7 +270,7 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
         return {"name": "invalid", "ready": False, "error": "invalid configuration",
                 "snapshot": "", "target": "", "state": {
                     "schemaVersion": "0.1.0", "enabled": True, "focused": False, "hold": None},
-                "hovered": False, "ignored": True, "deviceScale": 1, "renderer": "software",
+                "hovered": False, "nativeFocused": False, "ignored": True, "deviceScale": 1, "renderer": "software",
                 "publications": [], "measurements": []}
 
     def test_complete_rejected_replacement_is_reported(self):

@@ -804,10 +804,10 @@ test requirements. The checker validates the actual host before starting the
 scenario sequence. The default software/offscreen path records actual device
 density; `--platform xcb` or `--platform wayland` requires a live display.
 
-The 37 scenarios cover light/dark Latin, expanded German and mixed Arabic/Latin
+The 41 scenarios cover light/dark Latin, expanded German and mixed Arabic/Latin
 paragraphs at four text scales, changed typography and asymmetric LTR/RTL padding,
 an explicitly loaded alternate font, both published Command variants in Light
-and Dark, unavailable state, malformed configuration,
+and Dark, focused standard/primary variants, unavailable state, malformed configuration,
 unsupported focus policy and rotation, and recovery after each rejection.
 Every consumer snapshot observation is checked against its current authored
 source and interaction state, including literal pigment bindings from the current
@@ -819,6 +819,11 @@ snapshots and callbacks must retain those bounds and inset placement; this check
 does not certify every analytic contour segment. Callback labels and reserved
 targets must equal the independently checked final values in each fixed authored
 context, while interaction paint follows each callback's own state.
+Focused cases request native item focus and independently record actual item/window
+focus alongside final and callback state. A request that does not become observed
+focus fails within the existing case deadline. Focused rest retains both `rest`
+and `focused`; body and navigation bindings and silhouettes must agree. Offscreen
+focus observations do not establish compositor focus policy or physical input.
 Final natural and fitted native measurements reach
 the independent rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
@@ -827,7 +832,12 @@ Each successful case saves a PNG and its complete snapshot. Pixel checks require
 a representative uniform body sample above the label to retain the current pigment
 and foreground ink on every measured line at the placed label coordinates; they do
 not establish every glyph's shape, universal fallback coverage or product styling
-acceptance. Logs retain native font diagnostics: Qt's
+acceptance. Focused captures also require the opaque indicator color at the
+midpoint of each exterior side, using the specified gap and stroke. Their capture
+backdrop is the authored opaque surrounding color used by the focus contrast guard;
+the checker also verifies that background. These samples
+do not certify every rounded corner or the complete perimeter; inspect the focused
+captures as well. Logs retain native font diagnostics: Qt's
 [software glyph bounds](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/scenegraph/adaptations/software/qsgsoftwareglyphnode.cpp)
 and [FreeType metric fallback](https://github.com/qt/qtbase/blob/v6.11.2/src/gui/text/freetype/qfontengine_ft.cpp)
 can recover from a bounding-query failure independently of painting. A diagnostic
