@@ -396,3 +396,47 @@ Slider paint and pointer/keyboard editing are not supplied. Unmodified Qt 6.11.2
 still omits AT-SPI `Value.Text`. See the [runtime API, lifetime rules and actual
 native evidence](../resina-qt-runtime/README.md#continuous-slider-accessibility-bridge)
 before making a component or native accessibility qualification claim.
+
+## Material-lit relief face
+
+`prepare_material_relief_paint` and `render_material_relief_paint` consume the
+resolved shared `MaterialReliefPaint`. They retain its physical light, exact
+exterior edge, uniform content reservation and foreground guards. They neither
+select appearance nor derive another light law. The existing bounded CPU raster
+supplies pixels; Qt Quick realizes the decorative image.
+
+Preparation applies the existing binary32 placement budget, complete device-grid
+viewport, inverse-density image transform and sampling/resource guards. Returned
+paint origins already include parent placement. Keep the emitted image at its
+prepared dimensions and device scale; filtering and asynchronous replacement
+remain disabled. Readiness and decoding errors are explicit. This face primitive
+owns no text, input, focus or accessible component semantics; the composing
+component must prepare and verify those independently.
+
+```sh
+cargo build -p resina-qml --bin resina-material-relief-qml --locked
+python tools/check_material_relief_qml_backend.py -- target/debug/resina-material-relief-qml
+```
+
+The command accepts the existing complete material-relief request followed by
+device scale, samples per axis and parent x/y. It preserves original source
+through strict shared admission, accepts file or stdin up to 1 MiB, and returns
+only a complete QML component. Success, invalid input and usage retain status
+0/1/2. No Resina schema, IR, capability or light semantics change.
+
+The external checker computes rectangular relief normals, bounded light and
+sampled pixels independently. It verifies five scales, fractional placement,
+four pigment families, flat/convex/recessed profiles, source-sign controls,
+strict negative cases, complete embedded PNGs and native profile metadata.
+For actual Quickshell drawing, supply a scale-1 Wayland session and a fresh
+output directory:
+
+```sh
+python tools/check_material_relief_qml_backend.py --native-output-dir target/material-relief-native -- target/debug/resina-material-relief-qml
+```
+
+The native mode records each original request, component, log and capture. It
+requires the actual native device scale to match each requested scale and
+compares the full captured canvas against independently computed pixels.
+This is realization evidence, not acceptance of component appearance,
+interaction/disabled identification, content shaping, accessibility or a release.

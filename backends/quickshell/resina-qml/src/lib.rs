@@ -3,7 +3,10 @@ use resina_resolver::{FocusIndicatorIr, PlacedContour};
 use std::fmt::{self, Write};
 
 mod paint;
-pub use paint::{PaintQmlError, prepare_surface_paint, render_surface_paint};
+pub use paint::{
+    PaintQmlError, prepare_material_relief_paint, prepare_surface_paint,
+    render_material_relief_paint, render_surface_paint,
+};
 
 const MAX_COORDINATE_ERROR: f64 = 1.0 / 1024.0;
 

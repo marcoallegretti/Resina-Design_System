@@ -1,7 +1,9 @@
 use crate::{QmlError, check_coordinates};
-use resina_model::PhysicalVector;
-use resina_raster::{PreparedViewport, RasterError, prepare_viewport, validate_viewport};
-use resina_resolver::SurfacePaintIr;
+use resina_model::{PhysicalBounds, PhysicalVector};
+use resina_raster::{
+    PreparedViewport, RasterError, RasterImage, prepare_viewport, validate_viewport,
+};
+use resina_resolver::{MaterialReliefPaint, SurfacePaintIr};
 use std::{error::Error, fmt, fmt::Write};
 
 #[derive(Debug)]
@@ -101,6 +103,39 @@ pub fn prepare_surface_paint(
             .bounds()
             .expect("validated body bounds")
     };
+    prepare_bounds(bounds, placement, device_scale, samples_per_axis)
+}
+
+/// Check the complete relief face's native placement and sampling limits.
+pub fn prepare_material_relief_paint(
+    paint: &MaterialReliefPaint,
+    placement: PhysicalVector,
+    device_scale: f64,
+    samples_per_axis: u8,
+) -> Result<PreparedViewport, PaintQmlError> {
+    let size = paint.surface().outline().size();
+    prepare_bounds(
+        PhysicalBounds {
+            x: 0.0,
+            y: 0.0,
+            width: size.width,
+            height: size.height,
+        },
+        placement,
+        device_scale,
+        samples_per_axis,
+    )
+}
+
+fn prepare_bounds(
+    bounds: PhysicalBounds,
+    placement: PhysicalVector,
+    device_scale: f64,
+    samples_per_axis: u8,
+) -> Result<PreparedViewport, PaintQmlError> {
+    if !device_scale.is_finite() || device_scale <= 0.0 {
+        return Err(PaintQmlError::InvalidScale);
+    }
     let prepared = prepare_viewport(bounds, placement, device_scale)
         .map_err(|_| PaintQmlError::UnrepresentableBounds)?;
     let bounds = prepared.bounds();
@@ -141,6 +176,30 @@ pub fn render_surface_paint(
     samples_per_axis: u8,
 ) -> Result<String, PaintQmlError> {
     let prepared = prepare_surface_paint(ir, placement, device_scale, samples_per_axis)?;
+    let image = resina_raster::render_surface_paint(ir, prepared.viewport(), samples_per_axis)
+        .map_err(PaintQmlError::Raster)?;
+    render_image(prepared, device_scale, image)
+}
+
+/// Realize a resolved material-lit face without changing its light or readability guards.
+pub fn render_material_relief_paint(
+    paint: &MaterialReliefPaint,
+    placement: PhysicalVector,
+    device_scale: f64,
+    samples_per_axis: u8,
+) -> Result<String, PaintQmlError> {
+    let prepared = prepare_material_relief_paint(paint, placement, device_scale, samples_per_axis)?;
+    let image =
+        resina_raster::render_material_relief_paint(paint, prepared.viewport(), samples_per_axis)
+            .map_err(PaintQmlError::Raster)?;
+    render_image(prepared, device_scale, image)
+}
+
+fn render_image(
+    prepared: PreparedViewport,
+    device_scale: f64,
+    image: RasterImage,
+) -> Result<String, PaintQmlError> {
     let bounds = prepared.bounds();
     let origin_x = bounds.x;
     let origin_y = bounds.y;
@@ -149,8 +208,6 @@ pub fn render_surface_paint(
     let image_width = prepared.viewport().width;
     let image_height = prepared.viewport().height;
     let inverse_scale = image_transform(prepared, device_scale)?;
-    let image = resina_raster::render_surface_paint(ir, prepared.viewport(), samples_per_axis)
-        .map_err(PaintQmlError::Raster)?;
     let mut png = Vec::new();
     image
         .write_png(&mut png)
