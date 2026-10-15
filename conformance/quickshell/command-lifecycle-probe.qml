@@ -66,7 +66,7 @@ ShellRoot {
         if (!control.snapshot.length || !control.motion.length) return;
         log("frame", {time:Date.now() / 1000, configuration:configurationName, snapshot:JSON.parse(control.snapshot),
             motion:JSON.parse(control.motion), state:JSON.parse(control.publication).state, hovered:control.hovered,
-            target:JSON.parse(control.targetPublication || "null")});
+            target:JSON.parse(control.targetPublication || "null"), center:targetCenter()});
     }
 
     function activated(control) {
@@ -148,7 +148,6 @@ ShellRoot {
                         samplesPerAxis: 4
                         activeFocusOnTab: true
                         onActivated: root.activated(command)
-                        onSnapshotChanged: root.frame(command)
                         onMotionChanged: root.frame(command)
                         onPreparationErrorChanged: if (preparationError.length && root.configuration.length)
                             root.log("rejected", {error:preparationError})

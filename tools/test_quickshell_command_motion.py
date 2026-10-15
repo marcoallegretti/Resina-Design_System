@@ -1,14 +1,22 @@
+import copy
 import unittest
 
-from check_quickshell_command_motion import expected_states, frames, moving, settled, verify_clock
+from check_command_motion_backend import equation_sample
+from check_quickshell_command_motion import (epochs, expected_states, frames, moving, settled, verify_clock,
+                                             verify_fixture, verify_retarget)
+
+DYNAMICS = {"schemaVersion": "0.1.0", "mass": 1, "stiffness": 4, "damping": 4,
+            "positionThreshold": 1e-06, "velocityThreshold": 1e-06}
+REST = {"dynamics": DYNAMICS, "initial": {"position": 0, "velocity": 0}}
+FIXTURE = {"bodyMix": copy.deepcopy(REST), "depthScale": copy.deepcopy(REST)}
 
 
 def frame(time, sample_time, settled_channels=(False, False), policy="spring", target=None, channels=None,
           hovered=False, focused=True, enabled=True, hold=None):
     return {"kind": "frame", "time": time, "hovered": hovered,
             "state": {"enabled": enabled, "focused": focused, "hold": hold},
-            "motion": {"time": sample_time, "channels": channels or {"bodyMix": 1},
-                       "motion": {"policy": policy, "target": target or {"bodyMix": 1},
+            "motion": {"time": sample_time, "channels": copy.deepcopy(channels or FIXTURE),
+                       "motion": {"policy": policy, "target": target or {"bodyMix": 1, "depthScale": .5},
                                   "bodyMix": {"settled": settled_channels[0]},
                                   "depthScale": {"settled": settled_channels[1]}}}}
 
@@ -37,16 +45,45 @@ class CommandMotionEvidenceTests(unittest.TestCase):
         self.assertFalse(moving(frame(0, 0, (False, False), policy="reducedMotion")))
         self.assertTrue(settled(frame(0, 0, (True, True), policy="castImmediate")))
 
-    def test_sample_clock_must_advance_with_native_time(self):
-        verify_clock([frame(10.0, 0.0), frame(10.1, 0.1), frame(10.3, 0.3)])
-        with self.assertRaisesRegex(ValueError, "did not advance"):
-            verify_clock([frame(10.0, 0.5), frame(10.1, 0.5)])
-        with self.assertRaisesRegex(ValueError, "does not track"):
-            verify_clock([frame(10.0, 0.0), frame(10.1, 0.6)])
+    def test_epochs_split_on_retarget(self):
+        retargeted = {"bodyMix": {**REST, "initial": {"position": .4, "velocity": 1}}, "depthScale": REST}
+        sequence = [frame(0, 0), frame(.1, .1), frame(.2, 0, channels=retargeted, target={"bodyMix": 0, "depthScale": 0})]
+        self.assertEqual([len(group) for group in epochs(sequence)], [2, 1])
 
-    def test_clock_pairs_exclude_retargeted_frames(self):
-        retargeted = frame(10.1, 2.0, channels={"bodyMix": 2}, target={"bodyMix": 0})
-        verify_clock([frame(10.0, 0.0), retargeted, frame(10.2, 2.1, channels={"bodyMix": 2}, target={"bodyMix": 0})])
+    def test_sample_clock_must_track_native_time_across_each_epoch(self):
+        verify_clock([frame(10 + step * .016, step * .016) for step in range(60)])
+        for rate in (2, .5):
+            with self.subTest(rate=rate), self.assertRaisesRegex(ValueError, "sample clock advanced"):
+                verify_clock([frame(10 + step * .016, step * .016 * rate) for step in range(60)])
+        with self.assertRaisesRegex(ValueError, "long enough"):
+            verify_clock([frame(10 + step * .016, step * .016) for step in range(10)])
+
+    def test_dynamics_and_initial_state_must_be_authored(self):
+        verify_fixture([frame(0, 0), frame(.1, .1)], FIXTURE)
+        changed = copy.deepcopy(FIXTURE)
+        changed["depthScale"]["dynamics"]["stiffness"] = 8
+        with self.assertRaisesRegex(ValueError, "authored dynamics"):
+            verify_fixture([frame(0, 0, channels=changed)], FIXTURE)
+        moved = copy.deepcopy(FIXTURE)
+        moved["bodyMix"]["initial"]["position"] = .2
+        with self.assertRaisesRegex(ValueError, "authored initial state"):
+            verify_fixture([frame(0, 0, channels=moved)], FIXTURE)
+
+    def test_retarget_must_continue_from_the_reached_state(self):
+        previous = frame(10.3, .3)
+        reached = {name: equation_sample(FIXTURE[name], previous["motion"]["motion"]["target"][name], .35, False)["state"]
+                   for name in ("bodyMix", "depthScale")}
+        channels = {name: {"dynamics": DYNAMICS, "initial": dict(reached[name])} for name in reached}
+        verify_retarget(previous, frame(10.36, .01, channels=channels, target={"bodyMix": 0, "depthScale": 0}))
+        jumped = copy.deepcopy(channels)
+        jumped["bodyMix"]["initial"]["position"] += .2
+        with self.assertRaisesRegex(ValueError, "did not continue"):
+            verify_retarget(previous, frame(10.36, .01, channels=jumped, target={"bodyMix": 0, "depthScale": 0}))
+        stopped = copy.deepcopy(channels)
+        for name in stopped:
+            stopped[name]["initial"]["velocity"] = 0
+        with self.assertRaises(ValueError):
+            verify_retarget(previous, frame(10.36, .01, channels=stopped, target={"bodyMix": 0, "depthScale": 0}))
 
 
 if __name__ == "__main__":

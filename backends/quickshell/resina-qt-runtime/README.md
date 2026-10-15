@@ -949,16 +949,20 @@ frame's complete snapshot and motion sample is checked against the request in
 effect, the projected state set and the independent spring equations. Input
 reaches the control through the compositor:
 
-- holding Space publishes several unsettled spring frames; the release retarget
-  retains velocity, the sample clock tracks elapsed native time within 0.25 s,
-  one channel may settle before the other, both settle, and no frame follows;
+- holding Space publishes several unsettled spring frames with the authored
+  dynamics and initial state; the release retarget continues from the position
+  and velocity the previous trajectory had reached; each sampled epoch's clock
+  advances with elapsed native time within 10 % or 50 ms; one channel settles
+  before the other, both settle, and no frame follows;
 - compositor hover enters and leaves the target through spring frames. Qt's
   Wayland client types the seat pointer as a touchpad when the compositor offers
   pointer gestures, so hover accepts mouse events from mouse and touchpad devices;
-- switching to the reduced-motion preference during a press publishes only
-  immediate settled frames;
-- moving the control during motion cancels the held gesture without an effect
-  and republishes guarded frames at the new position;
+- focus loss during motion republishes frames without the focus cue;
+- switching to the reduced-motion preference or withdrawing availability during a
+  press cancels the held gesture without an effect; reduced motion then publishes
+  only immediate settled frames;
+- moving the control during a press cancels the held gesture without an effect
+  and publishes frames at the new position;
 - reduced motion and Cast publish immediate settled frames, and Frost with
   reduced transparency keeps its family and spring policy.
 

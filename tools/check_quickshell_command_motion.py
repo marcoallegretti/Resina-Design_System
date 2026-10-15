@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 
+from check_command_motion_backend import equation_sample
 from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_quickshell_command_lifecycle import OUTSIDE, Session, authored_requests, expect_effects, effects
@@ -58,15 +59,51 @@ def moving(frame):
     return frame["motion"]["motion"]["policy"] == "spring" and not settled(frame)
 
 
-def verify_clock(sequence):
-    pairs = [(a, b) for a, b in zip(sequence, sequence[1:])
-             if a["motion"]["channels"] == b["motion"]["channels"]
-             and a["motion"]["motion"]["target"] == b["motion"]["motion"]["target"]]
-    if not any(b["motion"]["time"] > a["motion"]["time"] for a, b in pairs):
-        raise ValueError("native sampled clock did not advance")
-    for a, b in pairs:
-        if abs((b["motion"]["time"] - a["motion"]["time"]) - (b["time"] - a["time"])) > .25:
-            raise ValueError("sample clock does not track elapsed native time")
+def epochs(sequence):
+    groups = []
+    for frame in sequence:
+        key = (json.dumps(frame["motion"]["channels"], sort_keys=True),
+               json.dumps(frame["motion"]["motion"]["target"], sort_keys=True))
+        if groups and groups[-1][0] == key:
+            groups[-1][1].append(frame)
+        else:
+            groups.append((key, [frame]))
+    return [group for _, group in groups]
+
+
+def verify_clock(sequence, minimum=.5):
+    spans = [(group[-1]["motion"]["time"] - group[0]["motion"]["time"], group[-1]["time"] - group[0]["time"])
+             for group in epochs(sequence)]
+    measured = [(sample, native) for sample, native in spans if native >= minimum]
+    if not measured:
+        raise ValueError("no sampled epoch lasted long enough to measure the native clock")
+    for sample, native in measured:
+        if abs(sample - native) > max(.05, .1 * native):
+            raise ValueError(f"sample clock advanced {sample:.3f} s during {native:.3f} s of native time")
+
+
+def verify_fixture(sequence, channels):
+    for frame in sequence:
+        for name in CHANNELS:
+            if frame["motion"]["channels"][name]["dynamics"] != channels[name]["dynamics"]:
+                raise ValueError("native motion replaced the authored dynamics")
+    first = sequence[0]["motion"]["channels"]
+    if any(first[name]["initial"] != channels[name]["initial"] for name in CHANNELS):
+        raise ValueError("native motion did not start from the authored initial state")
+
+
+def verify_retarget(previous, retargeted, tolerance=(.02, .1)):
+    begun = retargeted["time"] - retargeted["motion"]["time"]
+    elapsed = previous["motion"]["time"] + begun - previous["time"]
+    for name in CHANNELS:
+        expected = equation_sample(previous["motion"]["channels"][name],
+                                   previous["motion"]["motion"]["target"][name], elapsed, False)["state"]
+        initial = retargeted["motion"]["channels"][name]["initial"]
+        if abs(initial["position"] - expected["position"]) > tolerance[0] \
+                or abs(initial["velocity"] - expected["velocity"]) > tolerance[1]:
+            raise ValueError(f"{name} retarget did not continue from the reached state: {initial} versus {expected}")
+    if not any(retargeted["motion"]["channels"][name]["initial"]["velocity"] for name in CHANNELS):
+        raise ValueError("release retarget discarded retained velocity")
 
 
 class Motion:
@@ -80,27 +117,32 @@ class Motion:
         return self.session.wait(lambda: [frame for frame in self.frames()[start:] if predicate(frame)],
                                  description, timeout)
 
+    def index(self, start, predicate, description):
+        found = self.wait_frames(start, predicate, description)[0]
+        return self.frames().index(found, start)
 
-def spring_cases(session, motion):
+    def settle(self, description):
+        self.session.wait(lambda: self.frames() and settled(self.frames()[-1]), description, timeout=30)
+
+
+def spring_cases(session, motion, channels):
     results = []
     session.reset("motion", True)
     start = len(motion.frames())
     before = len(effects(session.events()))
     session.input.key(KEY_SPACE, True)
-    pressing = motion.wait_frames(start, lambda frame: moving(frame) and frame["state"]["hold"],
-                                  "unsettled spring frames while pressed")
-    motion.session.wait(lambda: len([frame for frame in motion.frames()[start:] if moving(frame)]) >= 3,
-                        "multiple native pressed frames", timeout=10)
+    session.wait(lambda: len([frame for frame in motion.frames()[start:]
+                              if moving(frame) and frame["state"]["hold"]]) >= 3,
+                 "several unsettled pressed spring frames", timeout=10)
     release = len(motion.frames())
     session.input.key(KEY_SPACE, False)
     expect_effects(session, before, 1, "sampled Command activation")
-    retargeted = motion.wait_frames(release, lambda frame: not frame["state"]["hold"],
-                                    "retargeted release frames")
-    if not any(any(abs(frame["motion"]["channels"][name]["initial"]["velocity"]) > 0 for name in CHANNELS)
-               for frame in retargeted):
-        raise ValueError("release retarget discarded retained velocity")
-    session.wait(lambda: motion.frames() and settled(motion.frames()[-1]), "both channels settled", timeout=30)
+    first = motion.index(release, lambda frame: not frame["state"]["hold"], "retargeted release frame")
+    recorded = motion.frames()
+    verify_retarget(recorded[first - 1], recorded[first])
+    motion.settle("both channels settled")
     sequence = motion.frames()[start:]
+    verify_fixture(sequence, channels)
     if not any(frame["motion"]["motion"]["bodyMix"]["settled"] != frame["motion"]["motion"]["depthScale"]["settled"]
                for frame in sequence):
         raise ValueError("no frame showed one channel settled while the other remained scheduled")
@@ -109,52 +151,68 @@ def spring_cases(session, motion):
     session.quiet(.5)
     if len(motion.frames()) != count:
         raise ValueError("native frame scheduling continued after both channels settled")
-    if not pressing:
-        raise ValueError("no pressed spring frame was published")
-    results.append("pressed and released spring frames follow the independent equations and settle")
+    results.append("pressed and released spring frames follow the authored dynamics, continue across "
+                   "the retarget, track native time and settle")
 
     start = len(motion.frames())
-    observed = session.current()
-    session.point(observed)
-    motion.wait_frames(start, lambda frame: frame["hovered"] and moving(frame), "hover spring frames")
+    session.point(session.current())
+    entered = motion.index(start, lambda frame: frame["hovered"] and moving(frame), "hover spring frames")
     session.input.move(*OUTSIDE)
-    motion.wait_frames(start, lambda frame: not frame["hovered"] and moving(frame), "hover exit spring frames")
-    session.wait(lambda: settled(motion.frames()[-1]), "hover motion settled", timeout=30)
-    results.append("compositor hover enters and leaves through spring frames")
+    motion.wait_frames(entered + 1, lambda frame: not frame["hovered"] and moving(frame), "hover exit spring frames")
+    motion.settle("hover motion settled")
+    results.append("compositor hover enters and then leaves through spring frames")
+
+    session.point(session.current())
+    start = len(motion.frames())
+    motion.wait_frames(start, lambda frame: frame["hovered"] and moving(frame), "hover spring frames before focus loss")
+    change = len(motion.frames())
+    session.call("focusOther")
+    motion.wait_frames(change, lambda frame: not frame["state"]["focused"] and frame["hovered"],
+                       "frames after focus loss during motion")
+    session.input.move(*OUTSIDE)
+    motion.settle("motion settled after focus loss")
+    results.append("focus loss during motion republishes frames without the focus cue")
     return results
 
 
 def interruption_cases(session, motion):
     results = []
-    session.reset("motion", True)
-    start = len(motion.frames())
-    session.input.key(KEY_SPACE, True)
-    motion.wait_frames(start, moving, "spring frames before the preference change")
-    change = len(motion.frames())
-    session.call("configure", "reduced")
-    reduced = motion.wait_frames(change, lambda frame: frame["configuration"] == "reduced",
-                                 "frames after reduced-motion preference")
-    if any(frame["motion"]["motion"]["policy"] != "reducedMotion" or not settled(frame) for frame in reduced):
-        raise ValueError("reduced-motion preference retained sampled motion")
-    session.input.key(KEY_SPACE, False)
-    session.quiet()
-    results.append("reduced-motion preference during a press switches to immediate settled frames")
+    for name, change, expectation in (
+            ("reduced-motion preference", lambda: session.call("configure", "reduced"),
+             lambda frame: frame["configuration"] == "reduced"),
+            ("availability withdrawal", lambda: session.call("availability", "false"),
+             lambda frame: not frame["state"]["enabled"])):
+        session.reset("motion", True)
+        start = len(motion.frames())
+        before = len(effects(session.events()))
+        session.input.key(KEY_SPACE, True)
+        motion.wait_frames(start, lambda frame: moving(frame) and frame["state"]["hold"], f"press before {name}")
+        index = len(motion.frames())
+        change()
+        after = motion.wait_frames(index, expectation, f"frames after {name}")
+        if any(frame["state"]["hold"] for frame in after):
+            raise ValueError(f"{name} during a press retained the held gesture")
+        if name.startswith("reduced") and any(frame["motion"]["motion"]["policy"] != "reducedMotion"
+                                              or not settled(frame) for frame in after):
+            raise ValueError("reduced-motion preference retained sampled motion")
+        session.input.key(KEY_SPACE, False)
+        expect_effects(session, before, 0, f"Space released after {name}")
+        results.append(f"{name} during a press cancels the gesture and republishes guarded frames")
 
     session.reset("motion", True)
     start = len(motion.frames())
-    session.input.key(KEY_SPACE, True)
-    motion.wait_frames(start, moving, "spring frames before the layout change")
-    origin = session.current()["target"]["x"]
     before = len(effects(session.events()))
+    session.input.key(KEY_SPACE, True)
+    motion.wait_frames(start, lambda frame: moving(frame) and frame["state"]["hold"], "press before the layout change")
+    origin = session.current()["target"]["x"]
     moved = len(motion.frames())
     session.call("setCommandX", "90")
     session.settle(lambda current: current["state"]["hold"] is None, "held gesture cancelled by the layout change")
     session.input.key(KEY_SPACE, False)
     expect_effects(session, before, 0, "Space released after the layout change")
-    session.settle(lambda current: current["ready"] and current["target"]
-                   and abs(current["target"]["x"] - origin - 50) < 1e-6, "target moved with the layout")
-    motion.wait_frames(moved, lambda frame: True, "frames after the layout change")
-    results.append("layout change during motion cancels the gesture and republishes guarded frames")
+    motion.wait_frames(moved, lambda frame: frame["center"] and abs(frame["center"]["x"] - origin - 50) < 1e-6,
+                       "frames published at the moved position")
+    results.append("layout change during a press cancels the gesture and republishes frames at the new position")
     return results
 
 
@@ -202,10 +260,10 @@ def main():
         args.output_dir.mkdir(parents=True, exist_ok=False)
         session = Session(host, module, font, args.output_dir)
         motion = Motion(session)
-        results = []
-        for cases in (spring_cases, interruption_cases, policy_cases):
-            results += cases(session, motion)
         requests = authored_requests()
+        results = spring_cases(session, motion, requests["channels"])
+        for cases in (interruption_cases, policy_cases):
+            results += cases(session, motion)
         recorded = motion.frames()
         for frame in recorded:
             verify_frame(frame, requests)
