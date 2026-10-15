@@ -171,6 +171,7 @@ def main():
             raise ValueError("the GNOME portal backend requires a Wayland compositor session")
         module = args.module_path.resolve(strict=True)
         args.output_dir.mkdir(parents=True, exist_ok=False)
+        args.output_dir = args.output_dir.resolve()
         report = {"cases": []}
 
         environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", DBUS_SESSION_BUS_ADDRESS="unix:path=/nonexistent")
