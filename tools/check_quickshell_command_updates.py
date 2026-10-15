@@ -229,16 +229,17 @@ def verify_version(result):
         raise ValueError("requires released Quickshell 0.3.2 built and running with Qt 6.11.2")
 
 
-def read_reports(log, cases):
+def read_reports(log, cases, component="command"):
+    prefix = "RESINA_" + component.upper()
     if len(log) > 16 * 1024 * 1024:
         raise ValueError("native output exceeds the probe limit")
-    if "RESINA_COMMAND_FAIL" in log:
-        raise ValueError("native command reported an execution failure")
-    done = re.findall(r"RESINA_COMMAND_DONE ([0-9]+)(?:\s|$)", log)
+    if prefix + "_FAIL" in log:
+        raise ValueError(f"native {component} reported an execution failure")
+    done = re.findall(prefix + r"_DONE ([0-9]+)(?:\s|$)", log)
     reports = [json.loads(source, object_pairs_hook=unique_object)
-               for source in re.findall(r"RESINA_COMMAND_CASE (\{[^\n]*\})", log)]
+               for source in re.findall(prefix + r"_CASE (\{[^\n]*\})", log)]
     if done != [str(len(cases))] or [report.get("name") for report in reports] != [case["name"] for case in cases]:
-        raise ValueError("native command omitted, repeated or reordered a case")
+        raise ValueError(f"native {component} omitted, repeated or reordered a case")
     return reports
 
 
