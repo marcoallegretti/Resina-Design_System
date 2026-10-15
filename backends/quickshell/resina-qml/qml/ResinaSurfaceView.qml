@@ -57,7 +57,7 @@ Item {
     }
 
     function prepare() {
-        if (state.executing)
+        if (state.executing || state.destroyed)
             return;
         retire();
         state.awaitingContext = false;
@@ -110,7 +110,7 @@ Item {
     }
 
     function completePreparation() {
-        if (state.executing || !state.pending || !state.body)
+        if (state.executing || state.destroyed || !state.pending || !state.body)
             return;
         if (state.body.paintError.length) {
             const cause = state.body.paintError;
@@ -126,7 +126,9 @@ Item {
             const pending = state.pending;
             const options = context();
             if (options.x !== pending.options.x || options.y !== pending.options.y
-                || options.deviceScale !== pending.options.deviceScale || state.cancelled)
+                || options.deviceScale !== pending.options.deviceScale)
+                state.cancelled = true;
+            if (state.cancelled)
                 throw new Error("Qt surface view native context changed during preparation");
             const geometry = pending.paint.body.geometry;
             const content = geometry.content;
@@ -192,7 +194,10 @@ Item {
     onNativeDeviceScaleChanged: invalidate()
     onNativeWindowChanged: invalidate()
     Component.onCompleted: invalidate()
-    Component.onDestruction: retire()
+    Component.onDestruction: {
+        state.destroyed = true;
+        retire();
+    }
 
     QtObject {
         id: state
@@ -207,6 +212,7 @@ Item {
         property var pending: null
         property var context: null
         property bool awaitingContext: false
+        property bool destroyed: false
     }
     SurfacePaintResolver { id: resolver }
 }

@@ -445,7 +445,9 @@ for focused surfaces withdraw publication and report `paintError`. Clearing
 The view prepares itself. Changes to the request, sampling density, own
 position, scale, rotation, parent, window or pixel density withdraw the current
 publication and prepare again. A GUI-thread `afterAnimating` check withdraws
-and re-prepares when an ancestor moves the scene origin. Scale, rotation, shear
+and re-prepares when an ancestor moves the scene origin, and a preparation whose
+origin moved before its image was ready is discarded and repeated. Work queued
+before destruction or `Loader` unloading does not run. Scale, rotation, shear
 and projective ancestors fail the shared native context guard used by the
 Command view. The view stays withdrawn with a diagnostic, and prepares again once
 the context is translation-only. It is decorative, has no input target or native
@@ -460,11 +462,12 @@ channel. Replacement must withdraw readiness before publishing. The checker also
 covers:
 - invalid and focused-without-surrounding requests;
 - clearing the request;
-- own and ancestor translation, with re-captures at the new origin;
+- own and ancestor translation, with re-captures at the new origin, including an
+  ancestor move while a preparation is pending;
 - ancestor distortion, withdrawn and recovered;
 - a request supplied at creation;
-- destruction while a queued preparation or an incomplete publication is
-  pending, observed past the preparation timeout;
+- destruction, and `Loader` unloading, while a queued preparation or an
+  incomplete publication is pending, observed past the preparation timeout;
 - no Qt or QML warning anywhere in the run;
 - the context guard's precision, type, density and foreign-thread rejection.
 

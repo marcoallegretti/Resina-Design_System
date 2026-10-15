@@ -100,6 +100,16 @@ Window {
         if (component.status !== Component.Ready) throw new Error(component.errorString());
         return component.createObject(host, {x:@@X@@, y:@@Y@@, samplesPerAxis:4, request:source});
     }
+    Loader {
+        id: loader; active: false
+        sourceComponent: Component { Content.ResinaSurfaceView { x: @@X@@; y: @@Y@@; samplesPerAxis: 4 } }
+    }
+    function loadPending(source) {
+        loader.active = true;
+        loader.item.request = source;
+        return startPreparation(loader.item);
+    }
+    function unload() { loader.active = false; }
     function startPreparation(item) {
         item.prepare();
         return JSON.stringify({published:item.publication.length > 0, ready:item.paintReady, error:item.paintError});
@@ -156,6 +166,13 @@ class Fixture:
             raise ValueError("native surface capture failed")
         return Image.open(path)
 
+    def mark(self):
+        return len(self.observe()["transitions"])
+
+    def republished(self, mark, description):
+        return self.settle(lambda current: current["ready"] and current["transitions"][mark:] == [False, True],
+                           description)
+
     def withdrawn(self, observation):
         return not observation["ready"] and not observation["visible"] and not observation["publication"]
 
@@ -184,6 +201,7 @@ def main():
     args = parser.parse_args()
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     os.environ.setdefault("QT_QUICK_BACKEND", "software")
+    warnings = []
     try:
         from PySide6.QtCore import (QCoreApplication, QEvent, QObject, QPluginLoader, QUrl, QtMsgType,
                                     qInstallMessageHandler, qVersion)
@@ -196,7 +214,6 @@ def main():
         scenes = [scene for scene in catalog["scenarios"] if scene["kind"] == "surfacePaint"]
         if len(scenes) != 16 or len({scene["name"] for scene in scenes}) != 16:
             raise ValueError("expected the 16 distinct public complete material paint scenes")
-        warnings = []
         qInstallMessageHandler(lambda kind, context, message: warnings.append(message)
                                if kind != QtMsgType.QtDebugMsg and kind != QtMsgType.QtInfoMsg else None)
         app = QGuiApplication([])
@@ -274,9 +291,9 @@ def main():
         ir = json.loads(run([args.resolver, "-"], valid.encode()))
         window.setRequest(valid)
         fixture.settle(lambda current: current["ready"], "publication before the placement change")
+        mark = fixture.mark()
         window.move(PLACEMENT[0] + 1.7)
-        fixture.settle(lambda current: current["ready"] and current["transitions"][-2:] == [False, True],
-                       "re-preparation at the moved placement")
+        fixture.republished(mark, "re-preparation at the moved placement")
         with fixture.capture() as actual:
             compare_images(expected_image(args.raster, valid.encode(), ir, (PLACEMENT[0] + 1.7, PLACEMENT[1]), scale),
                            actual)
@@ -285,15 +302,30 @@ def main():
 
         window.setRequest(valid)
         fixture.settle(lambda current: current["ready"], "publication before the ancestor change")
+        mark = fixture.mark()
         window.moveParent(2.5)
-        fixture.settle(lambda current: current["ready"] and current["transitions"][-2:] == [False, True],
-                       "re-preparation after an ancestor translation")
+        fixture.republished(mark, "re-preparation after an ancestor translation")
         with fixture.capture() as actual:
             compare_images(expected_image(args.raster, valid.encode(), ir, (PLACEMENT[0] + 2.5, PLACEMENT[1]), scale),
                            actual)
+        mark = fixture.mark()
         window.moveParent(0)
-        fixture.settle(lambda current: current["ready"] and current["transitions"][-2:] == [False, True],
-                       "re-preparation after restoring the ancestor")
+        fixture.republished(mark, "re-preparation after restoring the ancestor")
+
+        pending = json.loads(window.startPreparation(native_view))
+        if pending["published"] or pending["ready"] or pending["error"]:
+            raise ValueError(f"preparation was not pending before the ancestor move: {pending}")
+        window.moveParent(3.5)
+        observation = fixture.settle(lambda current: current["ready"] or current["error"],
+                                     "publication after an ancestor move during preparation")
+        if observation["error"]:
+            raise ValueError("an ancestor move during preparation left the view withdrawn: " + observation["error"])
+        with fixture.capture() as actual:
+            compare_images(expected_image(args.raster, valid.encode(), ir, (PLACEMENT[0] + 3.5, PLACEMENT[1]), scale),
+                           actual)
+        mark = fixture.mark()
+        window.moveParent(0)
+        fixture.republished(mark, "re-preparation after restoring the ancestor again")
 
         window.distort(1.0005)
         observation = fixture.settle(lambda current: current["error"] and not current["ready"],
@@ -337,12 +369,21 @@ def main():
             app.processEvents()
         if sorted(destroyed) != ["queued", "started"]:
             raise ValueError("pending surface views were not destroyed")
+        pending = json.loads(window.loadPending(valid))
+        if pending["published"] or pending["ready"] or pending["error"]:
+            raise ValueError(f"loaded preparation was not pending before unloading: {pending}")
+        window.unload()
+        deadline = time.monotonic() + 6
+        while time.monotonic() < deadline:
+            app.processEvents()
         window.close()
         window.deleteLater()
         app.processEvents()
         if warnings:
             raise ValueError("Qt reported warnings: " + " | ".join(warnings[:5]))
     except Exception as error:
+        if warnings:
+            error = f"{error}; Qt warnings: {' | '.join(warnings[:5])}"
         print("FAIL Qt surface view runtime: " + str(error), file=sys.stderr)
         return 1
     print(f"Live surface paint matched reference IR and CPU raster for 16 scenes on {app.platformName()} at DPR {scale}; "
