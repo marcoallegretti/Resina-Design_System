@@ -19,6 +19,7 @@ fn main() {
     ])
     .qt_module("Quick")
     .qt_module("Gui")
+    .qt_module("DBus")
     .cpp_file("src/command.h")
     .cpp_file("src/command.cpp")
     .cpp_file("src/toggle.h")
@@ -30,7 +31,9 @@ fn main() {
     .cpp_file("src/slider_accessibility.h")
     .cpp_file("src/slider_accessibility.cpp")
     .cpp_file("src/surface.h")
-    .cpp_file("src/surface.cpp");
+    .cpp_file("src/surface.cpp")
+    .cpp_file("src/platform.h")
+    .cpp_file("src/platform.cpp");
     // Rust cdylib export filtering hides C++ symbols, including Qt's plugin entry.
     // Rename the generated entry so the Rust export can forward to it.
     unsafe {
