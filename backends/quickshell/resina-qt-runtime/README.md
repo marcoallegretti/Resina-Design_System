@@ -930,8 +930,8 @@ the lifecycle checker and inspects the actual native tree:
 All eight cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
 English locale and isolated settings and reads its generated presentation.
-After Orca's output settles on the probe's accessible focus target, focusing the
-control must produce consecutive speech for its name, role and
+After focus moves to the probe's accessible focus target and Orca's output stops
+growing, focusing the control must produce consecutive speech for its name, role and
 description and a braille line containing all three. The Orca version and the
 matched output are saved to `screen-reader.json`. Orca 50.3 with
 speech-dispatcher passes locally; CI does not install Orca. With default settings
