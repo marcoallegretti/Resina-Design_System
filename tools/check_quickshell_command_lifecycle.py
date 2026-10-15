@@ -15,6 +15,7 @@ from wayland_virtual_input import KEY_ENTER, KEY_SPACE, KEY_TAB, VirtualInput
 OUTSIDE = (360, 160)
 EVENT = "RESINA_LIFECYCLE "
 NOT_READY = "Not ready to accept queries yet."
+REPLACEMENT = "Riconnetti già"
 QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context")
 
 
@@ -61,7 +62,7 @@ class Session:
         shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", self.config / "controls")
         requests = output / "requests.json"
         requests.write_text(json.dumps({"standard": request_for("light", "Reconnect"),
-                                        "replacement": request_for("light", "Reconnect now")}), encoding="utf-8")
+                                        "replacement": request_for("light", REPLACEMENT)}), encoding="utf-8")
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
                                 QML_IMPORT_PATH=str(module), RESINA_COMMAND_FONT=font.as_uri(),
                                 RESINA_LIFECYCLE_REQUESTS=str(requests))
@@ -162,6 +163,7 @@ class Session:
         for function in ("setWindowed", "setShown", "setMounted"):
             self.call(function, "true")
         self.call("setFocusTaken", "false")
+        self.call("setDisabledFocusable", "false")
         self.call("configure", "standard")
         self.call("availability", "true")
         self.ready()

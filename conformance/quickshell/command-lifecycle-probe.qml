@@ -14,6 +14,7 @@ ShellRoot {
     property bool mounted: true
     property bool focusTaken: false
     property string reaction: ""
+    property bool disabledFocusable: false
     property int effects: 0
     property int publications: 0
     property var reactionResult: null
@@ -131,7 +132,7 @@ ShellRoot {
                         x: 40
                         y: 40
                         configuration: root.configuration
-                        disabledFocusable: false
+                        disabledFocusable: root.disabledFocusable
                         samplesPerAxis: 4
                         activeFocusOnTab: true
                         onActivated: root.activated(command)
@@ -147,6 +148,9 @@ ShellRoot {
                         width: 40
                         height: 40
                         activeFocusOnTab: true
+                        Accessible.role: Accessible.Pane
+                        Accessible.name: "Focus target"
+                        Accessible.focusable: true
                     }
                 }
             }
@@ -190,5 +194,6 @@ ShellRoot {
         function setMounted(value: bool): void { root.mounted = value; }
         function setWindowed(value: bool): void { root.windowed = value; }
         function setReaction(mode: string): void { root.reaction = mode; root.reactionResult = null; }
+        function setDisabledFocusable(value: bool): void { root.disabledFocusable = value; }
     }
 }

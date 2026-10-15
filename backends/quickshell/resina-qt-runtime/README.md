@@ -904,6 +904,41 @@ not covered: a reload after held input in an extended session can leave the
 previous engine generation alive (#189). Physical devices, multiple seats and
 outputs, fractional scale and screen-reader operation are not covered.
 
+### Released Quickshell Command accessibility
+
+[`check_quickshell_command_accessibility.py`](../../../tools/check_quickshell_command_accessibility.py)
+runs the same lifecycle probe in a private D-Bus session with the AT-SPI bus and
+Qt accessibility enabled. It takes the same arguments and compositor session as
+the lifecycle checker and inspects the actual native tree:
+
+- the application exposes exactly one Button, without decorative descendants,
+  with the complete name and description, enabled, sensitive, focusable and
+  focused state, and exactly one `Press` action, which an available or
+  unavailable Command must accept;
+- a real AT-SPI `Press` produces exactly one committed consumer effect;
+- withdrawn availability is published as disabled, unfocusable state and the
+  next `Press` produces no effect;
+- configuration replacement keeps the native node, republishes the current
+  non-ASCII name and acts exactly once;
+- unmounting the control or destroying its surface removes the Button, and a
+  `Press` on the retired node produces no effect;
+- availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
+  the next `Press`;
+- the unsupported discoverable-disabled focus policy fails with its diagnostic
+  and exposes no Button.
+
+All eight cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
+and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
+English locale and isolated settings and reads its generated presentation.
+After focus moves to the probe's accessible focus target and Orca's output stops
+growing, focusing the control must produce consecutive speech for its name, role and
+description and a braille line containing all three. The Orca version and the
+matched output are saved to `screen-reader.json`. Orca 50.3 with
+speech-dispatcher passes locally; CI does not install Orca. With default settings
+Orca announces no change when availability is withdrawn from the focused control,
+so availability announcements are not verified. Audible output, other screen readers and physical input are not
+covered.
+
 ### Integrated sampled command frames
 
 The same control optionally accepts `motionChannels`, a JSON string containing
