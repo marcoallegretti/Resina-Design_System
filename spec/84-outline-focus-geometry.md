@@ -72,8 +72,12 @@ The enclosing bounds are the actual sweep bounds expanded by each disk extent.
 ## Public boundary
 
 `resina-outline-focus <path|->` accepts one UTF-8 request of at most 1 MiB,
-including when read from stdin. The versioned request, analytic IR, result and
-case schemas are `schemas/outline-focus-*.schema.json`. A request supplies
+including when read from stdin. The versioned
+[request](../schemas/outline-focus-request.schema.json),
+[analytic IR](../schemas/outline-focus-ir.schema.json),
+[result](../schemas/outline-focus-result.schema.json) and
+[case](../schemas/outline-focus-case.schema.json) schemas define this boundary.
+A request supplies
 `schemaVersion: 0.1.0`, the existing `focus` color request, the existing `outline`
 request, physical `sideOffset` and an ordered `directions` array. An empty array
 requests the complete IR without support witnesses. Objects must remain objects;
@@ -86,8 +90,9 @@ returns exit 2. Runtime checks supplement schema validity: a finite direction
 can still lose a component during decoding or normalization, and finite geometry
 can lose the positive disk extent. No result may conceal these failures.
 
-`conformance/states/outline-focus-cases.json` composes the established outline
-vectors and focus scenarios. `tools/check_outline_focus_backend.py` verifies
+The [cases](../conformance/states/outline-focus-cases.json) compose the established
+outline vectors and focus scenarios. The
+[external checker](../tools/check_outline_focus_backend.py) verifies
 the public command against those outlines and an independent 100-digit support
 calculation. Backend approximation requires separate evidence.
 

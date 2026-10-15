@@ -3,7 +3,7 @@
 This Shell backend realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as a complete static Qt Quick `Shape`, and complete [body/navigation paint IR](../../../spec/39-surface-paint-ir.md) as prepared Qt Quick image paint. It also supplies native label measurement and drawing for the portable layout policy. It is independent of GUIdo and the Web SVG mapper. The integrated command profiles below connect these foundations to native interaction and accessibility. Calibrated motion and complete Shell conformance remain unqualified.
 
 The separately locked [Qt runtime adapter](../resina-qt-runtime/README.md) supplies
-a Rust-owned command lifecycle QObject and native invocation evidence. The integrated profile now supplies native command input/accessibility in a standalone Qt host. Released Quickshell hosting remains a separate requirement.
+a Rust-owned command lifecycle QObject and native invocation evidence. The integrated profile now supplies native command input/accessibility in a standalone Qt host. Released Quickshell 0.3.2 hosting is verified by the runtime README's [authored updates](../resina-qt-runtime/README.md#released-quickshell-authored-updates), [lifecycle](../resina-qt-runtime/README.md#compositor-delivered-command-lifecycle), [accessibility](../resina-qt-runtime/README.md#released-quickshell-command-accessibility) and [motion](../resina-qt-runtime/README.md#released-quickshell-command-motion) sections.
 
 ## Coherent command drawing
 
@@ -52,8 +52,12 @@ define coherent readiness, cancellation, feedback publication and native
 AT-SPI verification. The default profile realizes static feedback endpoints. Explicit `motionChannels`
 selects the [sampled native profile](../resina-qt-runtime/README.md#integrated-sampled-command-frames),
 with Qt scheduling and Rust-owned trajectory/paint guards. Fixture motion is
-verified separately; calibrated motion and released Quickshell hosting remain
-qualification dependencies.
+verified separately. Released Quickshell hosting is verified in the
+[runtime README](../resina-qt-runtime/README.md#released-quickshell-authored-updates)'s released-host
+sections. The [Lab clock shell](../../../lab/quickshell/clock-shell/README.md)
+samples Command motion with the calibrated Elastomer profiles of
+[material response calibration](../../../spec/80-material-response-calibration.md);
+backend qualification of those profiles remains a separate contract.
 `disabledFocusable: true` is rejected with a diagnostic, preserving the existing
 strict discoverable-disabled fixture and its known Qt mismatch.
 
@@ -169,11 +173,12 @@ each fitted paragraph also matches its isolated native measurement. The probe
 checks complete line heights, contiguous paragraph offsets, wide-word reflow,
 spacing effects, weights with blank paragraphs, fractional line heights and
 13 invalid/unsupported inputs, including failure after a valid paragraph and
-recovery afterward. The extended matrix passed software/offscreen with unmodified
-Quickshell 0.3.1 and Qt 6.11.2. Earlier integer-size evidence passed on
+recovery afterward. Evidence recorded on Quickshell 0.3.1: the extended matrix
+passed software/offscreen with unmodified Quickshell 0.3.1 and Qt 6.11.2. Earlier integer-size evidence passed on
 software in the tested Wayland session; the extended matrix has not been rerun there.
 Runtime CI and other
-fonts/compositors remain unverified. The checker itself is covered by portable
+fonts/compositors remain unverified. This checker is not run in CI and takes the
+host from `PATH` or `--quickshell` without a version check. The checker itself is covered by portable
 CI tests that reject incomplete, duplicate, failed and wrong-scale evidence.
 
 ## Native label drawing
@@ -231,7 +236,8 @@ The checker rejects missing, stale, translucent, incorrectly sized or differing
 captures and requires visible ink outside the `j` advance box. Portable tests
 cover both image inputs and the one-byte channel comparison tolerance.
 
-The extended captures passed software/offscreen and OpenGL RHI on Mesa software
+Evidence recorded on Quickshell 0.3.1: the extended captures passed
+software/offscreen and OpenGL RHI on Mesa software
 graphics on unmodified Quickshell 0.3.1 / Qt 6.11.2 at scales 1, 1.25, 2 and 1.3.
 The probe asserts the actual `GraphicsInfo.api`, rejecting renderer substitution.
 Prior integer-size captures passed
@@ -241,7 +247,8 @@ limited. Software `grabToImage` at 0.5 produces
 an invalid partially black capture and fails the checker when requested.
 Live software presentation at 0.5, hardware GPUs, runtime CI, arbitrary font
 mapping, other fonts and complete component/accessibility conformance remain
-unverified.
+unverified. This checker is not run in CI and takes the host from `PATH` or
+`--quickshell` without a version check.
 
 ## Complete opaque paint
 
@@ -269,14 +276,19 @@ python tools/check_quickshell_paint_runtime.py \
   --output-dir target/quickshell-paint-proof --scales 1 1.25 2
 ```
 
-Generate the catalog using the existing [material scene tooling](../../../tools/material_scenarios.py), install the pinned render-test requirements below, and use a fresh output directory. On local Quickshell 0.3.1 / Qt 6.11.2, all 16 Light/Dark, Cast/Frost/Elastomer/Gel and resting/focused scenes passed software/offscreen captures at scales 1.25 and 2, and graphics/offscreen captures at scales 0.5, 1.25 and 2 using OpenGL on Mesa software graphics (`--scene-graph rhi`). Software `grabToImage` at scale 0.5 clipped the capture and fails the checker; live presentation at that scale remains unverified. The checker retains that failure when explicitly requested. Software captures in the tested Wayland session also passed all 16 scenes at scales 1, 1.25 and 2 (`--platform wayland`). Hardware GPU, compositor diversity and runtime CI remain unverified.
+Generate the catalog using the existing [material scene tooling](../../../tools/material_scenarios.py), install the pinned render-test requirements below, and use a fresh output directory. Evidence recorded on Quickshell 0.3.1: on local Quickshell 0.3.1 / Qt 6.11.2, all 16 Light/Dark, Cast/Frost/Elastomer/Gel and resting/focused scenes passed software/offscreen captures at scales 1.25 and 2, and graphics/offscreen captures at scales 0.5, 1.25 and 2 using OpenGL on Mesa software graphics (`--scene-graph rhi`). Software `grabToImage` at scale 0.5 clipped the capture and fails the checker; live presentation at that scale remains unverified. The checker retains that failure when explicitly requested. Software captures in the tested Wayland session also passed all 16 scenes at scales 1, 1.25 and 2 (`--platform wayland`). Hardware GPU, compositor diversity and runtime CI remain unverified. This checker is not run in CI and runs the `quickshell` found on `PATH` without a version check.
 
 ## Native command accessibility prerequisite
 
 The [Qt availability fixture](../../../conformance/quickshell/availability-probe.qml)
 and [native checker](../../../tools/check_qt_native_availability.py) measure the
 actual Linux AT-SPI tree and invoke its advertised Press actions. The diagnostic
-host uses pinned Qt 6.11.2 through PySide6; it does not run Quickshell. Reports
+host defaults to pinned Qt 6.11.2 through PySide6. Setting
+`RESINA_QUICKSHELL_HOST` together with `RESINA_QT_RUNTIME_MODULE` selects a
+released Quickshell host instead; see the
+[Quickshell hosting boundary](../resina-qt-runtime/README.md#quickshell-hosting-boundary). The
+[`qt-runtime` CI job](../../../.github/workflows/reference.yml) runs both hosts
+with `--report-only`. Reports
 identify the default `reference-protocol` binding. Setting
 `RESINA_QT_RUNTIME_MODULE` to the packaged runtime import root instead runs the
 compiled Rust controller, reported as `rust-qt-runtime`; see its README above.
@@ -325,8 +337,7 @@ attached signal produces a duplicate. These behaviors follow the pinned
 This evidence establishes native AT-SPI invocation through the canonical
 activation protocol and a live-availability guard requirement. It does not
 establish an interactive production binding, complete component conformance,
-keyboard/pointer input, screen-reader operation, Wayland behavior,
-Quickshell hosting or runtime CI. The fixture is diagnostic and supplies no
+keyboard/pointer input, screen-reader operation or Wayland behavior. The fixture is diagnostic and supplies no
 production control or Resina appearance. Complete controls must map existing
 normative snapshots and operations, compose verified paint/text/focus, and obtain
 their own native integration evidence.
@@ -363,7 +374,7 @@ python tools/check_quickshell_focus_runtime.py --image target/quickshell-proof/s
   quickshell --no-color --path conformance/quickshell/focus-probe.qml
 ```
 
-Use a fresh image path for every run. Repeat with `QT_QUICK_BACKEND=rhi QSG_RHI_BACKEND=opengl` for the graphics path and with `QT_QPA_PLATFORM=wayland QT_QUICK_BACKEND=software` on an actual Wayland session. Install Quickshell using its [upstream instructions](https://quickshell.org/docs/v0.3.0/guide/install-setup/), keeping its private Qt ABI aligned with the installed Qt release. Native captures and containment passed locally on Quickshell 0.3.1 with Qt 6.11.2: software/offscreen, curve/OpenGL on Mesa software graphics, and software in the tested Wayland session. Hardware GPU, compositor diversity and runtime CI remain unverified.
+Use a fresh image path for every run. Repeat with `QT_QUICK_BACKEND=rhi QSG_RHI_BACKEND=opengl` for the graphics path and with `QT_QPA_PLATFORM=wayland QT_QUICK_BACKEND=software` on an actual Wayland session. Install Quickshell using its [upstream instructions](https://quickshell.org/docs/v0.3.2/guide/install-setup/), keeping its private Qt ABI aligned with the installed Qt release. Native captures and containment passed locally on Quickshell 0.3.1 with Qt 6.11.2: software/offscreen, curve/OpenGL on Mesa software graphics, and software in the tested Wayland session. Hardware GPU, compositor diversity and runtime CI remain unverified.
 
 The runtime checker requires a fresh, fully decoded 160 by 128 PNG at four capture pixels per logical px. An independent distance-to-rectangle oracle checks 17,696 off-boundary pixels: the ring interior must be opaque, and the hole and exterior must be clear. Every painted pixel must have the baseline's white pigment. A half-logical-px exclusion around each boundary allows native antialiasing and curve approximation; the alpha bounds must still preserve the complete expected footprint, and integrated alpha coverage must be within 1 logical px² of the analytic ring area.
 
@@ -383,8 +394,12 @@ motion or material calibration is introduced.
 Native Switch qualification depends on the Qt build. Standard PySide6 6.11.2
 publishes CheckBox and fails the strict test. An isolated, unmodified Qt 6.11.2
 build against AT-SPI 2.62 headers demonstrated Switch and actual native Toggle
-action through the Rust adapter. This does not qualify released Quickshell's
-separate accessibility-bootstrap defect or make Resina own a toolkit distribution.
+action through the Rust adapter. This does not make Resina own a toolkit
+distribution. Unmodified Quickshell 0.3.2 removes the separate 0.3.1
+accessibility-bootstrap defect; the remaining Switch-role limitation comes from
+the stock Qt 6.11.2 AT-SPI build, not Quickshell.
+[Released-Quickshell Toggle qualification](https://github.com/marcoallegretti/Resina-Design_System/issues/186) accepts the CheckBox role on
+stock Qt as a Qt-owned limitation.
 
 The Toggle's optional explicit `motionChannels` profile connects checked travel
 and independent track/thumb interaction response to the same complete native

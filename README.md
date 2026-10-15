@@ -97,8 +97,10 @@ The independent Shell backend's [native QML focus realization](backends/quickshe
 The separately locked [Qt runtime adapter](backends/quickshell/resina-qt-runtime/README.md)
 owns command activation in a native Rust/QObject binding. Compiled delivery
 matches shared activation cases, and actual Linux AT-SPI invocation verifies live
-availability through that binding. Complete component publication, Quickshell
-hosting and screen-reader qualification remain outstanding.
+availability through that binding. The released Quickshell 0.3.2 Command
+checkers run in CI; screen-reader presentation is verified locally only.
+Complete component publication, including Toggle, Slider and further
+components, remains outstanding.
 
 The application backend's [native Slint focus realization](backends/slint/resina-slint/README.md) maps the same IR to native paths with opposite contour winding. Its command and public checker run on Linux and Windows; Linux CI also verifies released Slint software screenshots against independent ring geometry. Complete application components remain outstanding.
 

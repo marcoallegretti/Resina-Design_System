@@ -620,12 +620,20 @@ the same `conformant: false` disabled-focusability observation.
 
 The [`qt-runtime` CI job](../../../.github/workflows/reference.yml) installs
 the pinned Qt 6.11.2 base/declarative SDK and its bundled ICU through aqtinstall
-3.3.0, together with the pinned Python host. It builds, tests and lints this
-separate workspace and executes the compiled controller, content, snapshot,
-keyboard and pointer checks. Software paint/composition checks run
-at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure. This
-job's AT-SPI step measures real invocation and availability under Xvfb using
-`--report-only`. Malformed/missing native observations and incorrect action
+3.3.0, together with the pinned Python host, and builds unmodified Quickshell
+0.3.2 against that SDK. It builds, tests and lints this separate workspace and
+executes the compiled Command and Toggle controller and runtime checks and the
+Command content, snapshot, keyboard, pointer and control checks. Surface view,
+Command paint, control, motion and view, and Toggle control and motion checks
+run at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure.
+This job's AT-SPI step runs under Xvfb: it measures real invocation and
+availability using `--report-only`, and runs the static and sampled Command
+control accessibility checks and the horizontal and vertical Slider adapter.
+The released Quickshell host then repeats the availability measurement with
+`--report-only` and runs the authored-update checker. In headless Sway it runs
+the lifecycle, accessibility, motion, platform appearance and
+[clock shell](../../../lab/quickshell/clock-shell/README.md) checkers.
+In the availability measurement, malformed/missing native observations and incorrect action
 delivery still fail; the known disabled-focusability discrepancy is recorded as
 `conformant: false` rather than certified as passing accessibility. The strict
 command above remains the qualification gate. A local reproduction does not
@@ -764,9 +772,14 @@ factory is installed by this adapter.
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
-measurement and drawing. Complete reusable-control qualification in released
-Quickshell, physical-device/screen-reader operation and calibrated motion remain
-unverified.
+measurement and drawing. Released-host Command qualification is described in
+[authored updates](#released-quickshell-authored-updates),
+[lifecycle](#compositor-delivered-command-lifecycle),
+[accessibility](#released-quickshell-command-accessibility) and
+[motion](#released-quickshell-command-motion). Physical devices, screen-reader
+presentation in CI, and fractional output scale or multiple outputs remain
+unverified. Orca 50.3 passes locally only; Orca 46.1 hangs at start-up on the
+CI runner ([#165](https://github.com/marcoallegretti/Resina-Design_System/issues/165)).
 The integrated static profile below now verifies composed command input and
 native accessibility in the standalone host. Hosted native runtime checks have
 also passed; the sampled profile section links the executed evidence.
@@ -1201,8 +1214,11 @@ the default static AT profile also passed again. Captures of successive pressed
 samples were inspected. The
 [hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
 also passed. These results apply to the standalone Qt host; GUIdo integration
-and released Quickshell accessibility require their own runtime verification.
-Material calibration and Shell host accessibility remain unverified.
+requires its own runtime verification. Released Quickshell accessibility is
+verified by the eight AT-SPI cases of
+[Released Quickshell Command accessibility](#released-quickshell-command-accessibility).
+Material calibration and screen-reader presentation outside local runs remain
+unverified.
 
 ## Integrated static Toggle control
 
@@ -1311,8 +1327,12 @@ its matching Core/DBus/Gui libraries and used QtQuick/PySide 6.11.2; the strict
 checker, rather than library presence, determines native success. This is
 isolated toolkit evidence, not support claimed for standard binary SDKs.
 
-Quickshell 0.3.1's separate application-bootstrap accessibility defect remains
-on the approved upstream repair route. Full Shell accessibility, calibrated
+Unmodified Quickshell 0.3.2 removes Quickshell 0.3.1's separate
+application-bootstrap accessibility defect; see the
+[Quickshell hosting boundary](#quickshell-hosting-boundary). The Switch-role
+limitation above comes from the stock Qt 6.11.2 AT-SPI build, not Quickshell.
+[Released-Quickshell Toggle qualification](https://github.com/marcoallegretti/Resina-Design_System/issues/186) accepts the CheckBox role on
+stock Qt as a Qt-owned limitation. Full Shell accessibility, calibrated
 Toggle travel/interaction motion, physical/touch/pen input, screen-reader
 operation, GPU realization and production performance are not qualified here.
 The next integrated dependency is Toggle travel and independent track/thumb
@@ -1423,7 +1443,7 @@ checked exactly from the verified returned raw state. Fixtures use explicit
 arithmetic dynamics, not calibrated production defaults. Nested Wayland parent
 XTest remains injected input; actual AT-SPI invocation is a separate executed
 boundary. Native Switch qualification still requires the toolkit build described
-above, and released Quickshell still requires its approved upstream host repair.
+above; Quickshell 0.3.2 removes the 0.3.1 host bootstrap defect.
 Physical devices, screen-reader operation, hardware GPU realization, production
 frame-rate performance and material/style qualification are not certified by
 these checks.
