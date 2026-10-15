@@ -100,6 +100,10 @@ Window {
         if (component.status !== Component.Ready) throw new Error(component.errorString());
         return component.createObject(host, {x:@@X@@, y:@@Y@@, samplesPerAxis:4, request:source});
     }
+    function startPreparation(item) {
+        item.prepare();
+        return JSON.stringify({published:item.publication.length > 0, ready:item.paintReady, error:item.paintError});
+    }
     function contextProbes() {
         const scale = view.nativeDeviceScale;
         return JSON.stringify([
@@ -181,7 +185,8 @@ def main():
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     os.environ.setdefault("QT_QUICK_BACKEND", "software")
     try:
-        from PySide6.QtCore import QCoreApplication, QEvent, QObject, QPluginLoader, QUrl, qVersion
+        from PySide6.QtCore import (QCoreApplication, QEvent, QObject, QPluginLoader, QUrl, QtMsgType,
+                                    qInstallMessageHandler, qVersion)
         from PySide6.QtGui import QGuiApplication
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from PySide6.QtQuick import QQuickWindow
@@ -191,6 +196,9 @@ def main():
         scenes = [scene for scene in catalog["scenarios"] if scene["kind"] == "surfacePaint"]
         if len(scenes) != 16 or len({scene["name"] for scene in scenes}) != 16:
             raise ValueError("expected the 16 distinct public complete material paint scenes")
+        warnings = []
+        qInstallMessageHandler(lambda kind, context, message: warnings.append(message)
+                               if kind != QtMsgType.QtDebugMsg and kind != QtMsgType.QtInfoMsg else None)
         app = QGuiApplication([])
         plugin = QPluginLoader(str(args.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
@@ -284,13 +292,16 @@ def main():
             compare_images(expected_image(args.raster, valid.encode(), ir, (PLACEMENT[0] + 2.5, PLACEMENT[1]), scale),
                            actual)
         window.moveParent(0)
-        fixture.settle(lambda current: current["ready"], "re-preparation after restoring the ancestor")
+        fixture.settle(lambda current: current["ready"] and current["transitions"][-2:] == [False, True],
+                       "re-preparation after restoring the ancestor")
 
         window.distort(1.0005)
         observation = fixture.settle(lambda current: current["error"] and not current["ready"],
                                      "rejection of a non-translation ancestor")
         if not fixture.withdrawn(observation) or "translation-only" not in observation["error"]:
             raise ValueError("a non-translation ancestor did not withdraw publication diagnostically")
+        if observation["foreground"][3] != 0 or observation["content"] != [0, 0, 0, 0]:
+            raise ValueError("withdrawn surface retained its guarded foreground or content region")
         with fixture.capture() as blank:
             if blank.convert("RGBA").getbbox() is not None:
                 raise ValueError("withdrawn surface paint remains visible")
@@ -299,17 +310,38 @@ def main():
         with fixture.capture() as actual:
             compare_images(expected_image(args.raster, valid.encode(), ir, PLACEMENT, scale), actual)
 
-        temporary = window.makeTemporary(valid)
-        destroyed = []
-        temporary.destroyed.connect(lambda: destroyed.append(True))
-        temporary.deleteLater()
+        initial = window.makeTemporary(valid)
+        deadline = time.monotonic() + 8
+        while time.monotonic() < deadline and not initial.property("paintReady"):
+            app.processEvents()
+        if not initial.property("paintReady") or json.loads(initial.property("publication")) != ir:
+            raise ValueError("a request supplied at creation was not published")
+        initial.deleteLater()
         QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
-        fixture.present()
-        if not destroyed:
-            raise ValueError("a pending surface view was not destroyed")
+
+        destroyed = []
+        queued = window.makeTemporary(valid)
+        queued.destroyed.connect(lambda: destroyed.append("queued"))
+        queued.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+        started = window.makeTemporary("")
+        started.destroyed.connect(lambda: destroyed.append("started"))
+        started.setProperty("request", valid)
+        pending = json.loads(window.startPreparation(started))
+        if pending["published"] or pending["ready"] or pending["error"]:
+            raise ValueError(f"preparation was not pending before destruction: {pending}")
+        started.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+        deadline = time.monotonic() + 6
+        while time.monotonic() < deadline:
+            app.processEvents()
+        if sorted(destroyed) != ["queued", "started"]:
+            raise ValueError("pending surface views were not destroyed")
         window.close()
         window.deleteLater()
         app.processEvents()
+        if warnings:
+            raise ValueError("Qt reported warnings: " + " | ".join(warnings[:5]))
     except Exception as error:
         print("FAIL Qt surface view runtime: " + str(error), file=sys.stderr)
         return 1

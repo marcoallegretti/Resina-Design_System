@@ -26,6 +26,8 @@ Item {
         state.pending = null;
         state.context = null;
         state.publication = "";
+        state.content = Qt.rect(0, 0, 0, 0);
+        state.foreground = "transparent";
         if (state.body) {
             state.body.visible = false;
             state.body.destroy();
@@ -93,7 +95,7 @@ Item {
                 candidate.destroy();
             }
             retire();
-            state.error = error.message;
+            state.error = state.cancelled ? "" : error.message;
         } finally {
             state.executing = false;
         }
@@ -140,7 +142,7 @@ Item {
             state.publication = JSON.stringify(pending.paint);
         } catch (error) {
             retire();
-            state.error = error.message;
+            state.error = state.cancelled ? "" : error.message;
         } finally {
             state.executing = false;
         }
@@ -189,6 +191,7 @@ Item {
     onParentChanged: invalidate()
     onNativeDeviceScaleChanged: invalidate()
     onNativeWindowChanged: invalidate()
+    Component.onCompleted: invalidate()
     Component.onDestruction: retire()
 
     QtObject {

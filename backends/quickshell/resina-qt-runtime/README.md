@@ -432,10 +432,13 @@ with the shared CPU raster as one native image.
 
 `publication` carries the complete surface paint IR only once the native image
 is ready; `paintReady` and default visibility become true with it. The view
-exposes the IR's guarded `foreground` color and its `contentBounds`, the content
-region in the view's local logical coordinates, so consumer content inside the
-surface can use the colour the readability guard checked. Its implicit size is
-the IR front. Invalid requests, unsupported states and missing surrounding colour
+exposes the IR's guarded `foreground` color and `contentBounds`, the bounding
+rectangle of the IR content region in the view's local logical coordinates. The
+readability guard applies inside the content contour; for rounded shapes the
+rectangle's corners lie outside it, so consumer content must stay within the
+contour published in `publication`. Its implicit size is
+the IR front and is kept while withdrawn so layouts stay stable; `foreground`
+and `contentBounds` are cleared whenever publication is withdrawn. Invalid requests, unsupported states and missing surrounding colour
 for focused surfaces withdraw publication and report `paintError`. Clearing
 `request` withdraws publication without error.
 
@@ -459,7 +462,10 @@ covers:
 - clearing the request;
 - own and ancestor translation, with re-captures at the new origin;
 - ancestor distortion, withdrawn and recovered;
-- destruction while preparation is pending;
+- a request supplied at creation;
+- destruction while a queued preparation or an incomplete publication is
+  pending, observed past the preparation timeout;
+- no Qt or QML warning anywhere in the run;
 - the context guard's precision, type, density and foreign-thread rejection.
 
 CI runs it with Qt 6.11.2 software rendering offscreen at DPR 1, 1.25, 2 and 1.3:
