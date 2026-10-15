@@ -27,6 +27,8 @@ Item {
     }
 
     function synchronize() {
+        if (nativeState.destroyed)
+            return false;
         if (nativeState.interrupted) {
             if (!deliver({kind:"cancel"})) {
                 Qt.callLater(synchronize);
@@ -111,7 +113,10 @@ Item {
     onParentChanged: interrupt()
     onNativeWindowChanged: interrupt()
     Component.onCompleted: Qt.callLater(synchronize)
-    Component.onDestruction: lifecycle.dispatch('{"kind":"cancel"}')
+    Component.onDestruction: {
+        nativeState.destroyed = true;
+        lifecycle.dispatch('{"kind":"cancel"}');
+    }
 
     Connections {
         target: root.nativeWindow
@@ -132,6 +137,7 @@ Item {
         id: nativeState
         property bool interrupted: false
         property bool focusLost: false
+        property bool destroyed: false
         property string error: ""
     }
     CommandController { id: lifecycle }
