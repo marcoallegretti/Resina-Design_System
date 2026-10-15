@@ -891,8 +891,9 @@ invalid-context errors in the host log and counts every consumer effect:
   activation;
 - Space or pointer held across configuration replacement, unmount, hidden and
   destroyed surfaces, and soft and hard Quickshell reload, delivers no effect; a
-  reload must retire the previous engine generation, and a fresh gesture
-  afterwards delivers exactly one effect from the current generation;
+  reload must retire the previous engine generation, observed through Quickshell
+  0.3.2 IPC, which answers only while exactly one generation exists; a fresh
+  gesture afterwards delivers exactly one effect from the current generation;
 - consumer callbacks that replace the configuration, withdraw availability, invoke
   the control, hide, unmount or destroy its surface observe committed state and
   produce exactly one effect; a callback-time `invoke()` is a separate semantic
@@ -902,8 +903,8 @@ invalid-context errors in the host log and counts every consumer effect:
 When the control is destroyed, its pending prepared frame is retired so deferred
 publication work does not run in the destroyed QML context. The checker sets
 `QS_NO_RELOAD_POPUP`: Quickshell's reload popup runs in its own engine generation
-at the top-left of the output and stays open while the pointer rests over it, and
-Quickshell IPC refuses queries while more than one generation exists. Physical
+at the top-left of the output, and a hover during its fade-out keeps it open until
+it is closed or replaced by another reload. Physical
 devices, multiple seats and outputs, fractional scale and screen-reader operation
 are not covered.
 

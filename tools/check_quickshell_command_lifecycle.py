@@ -78,7 +78,7 @@ class Session:
         shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", self.config / "controls")
         requests = output / "requests.json"
         requests.write_text(json.dumps(authored_requests()), encoding="utf-8")
-        # Quickshell's reload popup is a separate engine generation that stays open while hovered,
+        # Quickshell's reload popup is a separate engine generation that stays open once hovered,
         # and IPC refuses queries while more than one generation exists.
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
                                 QML_IMPORT_PATH=str(module), RESINA_COMMAND_FONT=font.as_uri(),
