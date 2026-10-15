@@ -125,6 +125,7 @@ jobs:
             --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
             --output-dir target/quickshell-command-updates --scales 1 1.25 2
       - name: Check compositor-delivered Command lifecycle in released Quickshell
+        timeout-minutes: 20
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           export XDG_RUNTIME_DIR="$(mktemp -d)"

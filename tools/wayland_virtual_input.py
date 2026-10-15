@@ -20,7 +20,15 @@ class VirtualInput:
     def __init__(self, width, height, runtime_dir, display):
         self.width, self.height = width, height
         self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.socket.connect(os.path.join(runtime_dir, display))
+        self.socket.settimeout(10)
+        try:
+            self.connect(os.path.join(runtime_dir, display))
+        except BaseException:
+            self.socket.close()
+            raise
+
+    def connect(self, path):
+        self.socket.connect(path)
         self.buffer, self.next_id = b"", 2
         registry = self.allocate()
         self.send(1, 1, struct.pack("<I", registry))
@@ -88,8 +96,9 @@ class VirtualInput:
             self.receive(word >> 16)
             body, self.buffer = self.buffer[8:word >> 16], self.buffer[word >> 16:]
             if target == 1 and word & 0xFFFF == 0:
-                failed, code = struct.unpack("<II", body[:8])
-                raise ValueError(f"compositor rejected virtual input: error {code} on object {failed}")
+                failed, code, length = struct.unpack("<III", body[:12])
+                message = body[12:11 + length].decode(errors="replace")
+                raise ValueError(f"compositor rejected virtual input: error {code} on object {failed}: {message}")
             if target == callback:
                 return
             if handler:

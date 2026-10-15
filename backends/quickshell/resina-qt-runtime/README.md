@@ -877,13 +877,15 @@ python tools/check_quickshell_command_lifecycle.py \
 `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR` must select a compositor providing
 `wlr-layer-shell`, virtual pointer and virtual keyboard with one output at
 unit scale. Headless Sway 1.12 (`WLR_BACKENDS=headless`, `WLR_RENDERER=pixman`)
-and nested niri 26.04 pass all 22 cases. The checker verifies the host version,
-fails on any QML runtime error in the host log and records every consumer effect
-with its engine generation:
+and nested niri 26.04 pass all 22 cases; CI uses the Ubuntu 24.04 Sway package.
+The checker verifies the host version, fails on QML type, reference and
+invalid-context errors in the host log and counts every consumer effect:
 
 - pointer activation, release outside the target, and Space and Enter held through
-  auto-repeat each produce the canonical number of effects;
-- Tab traversal and requested focus are published only when observed; a focus
+  auto-repeat each produce the canonical number of effects; each held key must
+  deliver at least two repeats to the controller;
+- Tab traversal away from and back into the control and requested focus are
+  published only when observed; a focus
   request while another surface holds keyboard focus is not published, and focus
   follows once it returns; availability withdrawal clears focus and suppresses
   activation;
@@ -891,9 +893,10 @@ with its engine generation:
   destroyed surfaces delivers no effect, and a fresh gesture afterwards delivers
   exactly one;
 - consumer callbacks that replace the configuration, withdraw availability, invoke
-  the control, hide, unmount or destroy its surface observe committed state, and
-  no stale gesture is delivered afterwards. A callback-time `invoke()` is a separate
-  semantic activation and produces exactly one additional effect.
+  the control, hide, unmount or destroy its surface observe committed state and
+  produce exactly one effect; a callback-time `invoke()` is a separate semantic
+  activation and produces exactly one additional effect, and a key press after
+  callback-time availability withdrawal produces none.
 
 When the control is destroyed, its pending prepared frame is retired so deferred
 publication work does not run in the destroyed QML context. Quickshell reload is

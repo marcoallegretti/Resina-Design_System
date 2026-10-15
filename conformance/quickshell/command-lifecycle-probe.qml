@@ -15,6 +15,7 @@ ShellRoot {
     property bool focusTaken: false
     property string reaction: ""
     property int effects: 0
+    property int publications: 0
     property var reactionResult: null
     readonly property var command: windowLoader.item && windowLoader.item.mount.item
         ? windowLoader.item.mount.item.command : null
@@ -51,7 +52,8 @@ ShellRoot {
             ready:command ? command.ready : false, error:command ? command.preparationError : "",
             state:command ? JSON.parse(command.publication).state : null,
             hovered:command ? command.hovered : false, nativeFocus:nativeFocus(),
-            target:targetCenter(), effects:effects, reactionResult:reactionResult,
+            target:targetCenter(), effects:effects, publications:publications, reactionResult:reactionResult,
+            otherFocused:Boolean(windowLoader.item && windowLoader.item.mount.item && windowLoader.item.mount.item.other.activeFocus),
             screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height} : null};
     }
 
@@ -69,6 +71,11 @@ ShellRoot {
         else if (mode === "unmount") mounted = false;
         else if (mode === "close") windowed = false;
         else if (mode.length) fail("unknown reaction " + mode);
+    }
+
+    Connections {
+        target: root.command ? root.command.controller : null
+        function onPublicationChanged() { ++root.publications; }
     }
 
     FontLoader {

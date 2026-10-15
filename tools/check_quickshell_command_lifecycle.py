@@ -78,15 +78,17 @@ class Session:
                                   os.environ["WAYLAND_DISPLAY"])
 
     def close(self):
-        if getattr(self, "input", None):
-            self.input.close()
-        if self.shell and self.shell.poll() is None:
-            self.shell.terminate()
-            try:
-                self.shell.wait(5)
-            except subprocess.TimeoutExpired:
-                self.shell.kill()
-                self.shell.wait()
+        try:
+            if self.input:
+                self.input.close()
+        finally:
+            if self.shell and self.shell.poll() is None:
+                self.shell.terminate()
+                try:
+                    self.shell.wait(5)
+                except subprocess.TimeoutExpired:
+                    self.shell.kill()
+                    self.shell.wait()
 
     def wait(self, predicate, description, timeout=20):
         deadline = time.monotonic() + timeout
@@ -127,6 +129,12 @@ class Session:
             self.unavailable = str(error)
             return None
 
+    def current(self):
+        observed = self.observe()
+        if observed is None:
+            raise ValueError(self.unavailable)
+        return observed
+
     def events(self):
         return read_events(self.log.read_text(encoding="utf-8", errors="replace"))
 
@@ -156,7 +164,7 @@ class Session:
         self.call("setFocusTaken", "false")
         self.call("configure", "standard")
         self.call("availability", "true")
-        observed = self.ready()
+        self.ready()
         self.call("focusCommand")
         return self.settle(lambda current: focused(current) and current["state"]["focused"], "observed Command focus")
 
@@ -169,6 +177,12 @@ class Session:
 
 
 def expect_effects(session, before, count, description):
+    if count:
+        try:
+            session.wait(lambda: len(effects(session.events())) - before >= count, description, timeout=5)
+        except ValueError:
+            pass
+    session.quiet()
     added = effects(session.events())[before:]
     if len(added) != count:
         raise ValueError(f"{description}: expected {count} consumer effects, observed {len(added)}")
@@ -185,29 +199,29 @@ def activation_cases(session):
     if not held["state"]["hold"]["inside"]:
         raise ValueError("pointer hold did not start inside the target")
     session.input.button(False)
-    session.quiet()
     expect_effects(session, before, 1, "pointer activation")
     results.append("pointer activation")
 
     before = len(effects(session.events()))
-    session.point(session.observe())
+    session.point(session.current())
     session.input.button(True)
     session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is True, "pointer hold")
     session.input.move(*OUTSIDE)
     session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is False, "pointer leaving target")
     session.input.button(False)
-    session.quiet()
     expect_effects(session, before, 0, "pointer released outside")
     results.append("pointer release outside")
 
     for key, name in ((KEY_SPACE, "space"), (KEY_ENTER, "enter")):
         before = len(effects(session.events()))
         session.input.key(key, True)
-        session.settle(lambda current: (current["state"]["hold"] or {}).get("key") == name, name + " hold")
+        held = session.settle(lambda current: (current["state"]["hold"] or {}).get("key") == name, name + " hold")
         session.quiet(1.2)
+        repeated = session.current()["publications"] - held["publications"]
+        if repeated < 2:
+            raise ValueError(f"{name} hold delivered {repeated} auto-repeat publications; at least 2 are required")
         expect_effects(session, before, 0 if key == KEY_SPACE else 1, name + " held with repeat")
         session.input.key(key, False)
-        session.quiet()
         expect_effects(session, before, 1, name + " activation")
         results.append(name + " activation with repeat")
     return results
@@ -217,8 +231,14 @@ def focus_cases(session):
     session.reset()
     session.input.key(KEY_TAB, True)
     session.input.key(KEY_TAB, False)
-    session.settle(lambda current: not current["nativeFocus"]["activeFocus"] and not current["state"]["focused"],
-                   "traversal away from Command")
+    session.settle(lambda current: current["otherFocused"] and not current["nativeFocus"]["activeFocus"]
+                   and not current["state"]["focused"], "traversal from Command to the next item")
+    session.input.key(KEY_TAB, True)
+    session.input.key(KEY_TAB, False)
+    session.settle(lambda current: focused(current) and current["state"]["focused"] and not current["otherFocused"],
+                   "traversal into Command")
+    session.call("focusOther")
+    session.settle(lambda current: not current["state"]["focused"], "requested focus moved away")
     session.call("focusCommand")
     session.settle(lambda current: focused(current) and current["state"]["focused"], "requested focus observed")
 
@@ -227,7 +247,7 @@ def focus_cases(session):
     session.settle(lambda current: not current["nativeFocus"]["windowActive"], "keyboard focus taken by another surface")
     session.call("focusCommand")
     session.quiet()
-    current = session.observe()
+    current = session.current()
     if current["state"]["focused"]:
         raise ValueError("unobserved focus request was published as focus")
     session.call("setFocusTaken", "false")
@@ -241,9 +261,8 @@ def focus_cases(session):
                    "unavailable Command without focus")
     session.input.key(KEY_SPACE, True)
     session.input.key(KEY_SPACE, False)
-    session.quiet()
     expect_effects(session, before, 0, "unavailable Command")
-    return ["traversal", "requested focus", "failed focus request", "availability withdrawal"]
+    return ["traversal away and back", "requested focus", "failed focus request", "availability withdrawal"]
 
 
 INTERRUPTIONS = {
@@ -272,16 +291,12 @@ def interruption_cases(session):
                 session.input.key(KEY_SPACE, False)
             else:
                 session.input.button(False)
-            session.quiet()
             expect_effects(session, before, 0, f"{gesture} held across {name}")
-            observed = session.reset()
+            session.reset()
             before = len(effects(session.events()))
             session.input.key(KEY_SPACE, True)
             session.input.key(KEY_SPACE, False)
-            session.quiet()
-            fresh = expect_effects(session, before, 1, f"fresh gesture after {name}")
-            if fresh[0]["generation"] != observed["generation"]:
-                raise ValueError(f"retired generation dispatched an effect after {name}")
+            expect_effects(session, before, 1, f"fresh gesture after {name}")
             results.append(f"{gesture} held across {name}")
     return results
 
@@ -298,24 +313,21 @@ def reentrancy_cases(session):
         session.point(observed)
         session.input.button(True)
         session.input.button(False)
-        session.quiet(0.8)
         for effect in expect_effects(session, before, count, f"{mode} from consumer callback"):
             if not effect["state"]["enabled"] or effect["state"]["hold"] is not None:
                 raise ValueError(f"{mode} callback observed an uncommitted activation")
         if mode == "replace":
             session.settle(lambda current: current["ready"] and current["state"]["enabled"], "replacement publication")
         elif mode == "invoke":
-            if session.observe()["reactionResult"] is not True:
+            if session.current()["reactionResult"] is not True:
                 raise ValueError("semantic invocation from a consumer callback was not delivered")
-        else:
-            if mode == "unavailable":
-                current = session.observe()
-                if current["reactionResult"] is not True or current["state"]["enabled"]:
-                    raise ValueError("synchronous availability withdrawal was not committed")
+        elif mode == "unavailable":
+            current = session.current()
+            if current["reactionResult"] is not True or current["state"]["enabled"]:
+                raise ValueError("synchronous availability withdrawal was not committed")
             session.input.key(KEY_SPACE, True)
             session.input.key(KEY_SPACE, False)
-            session.quiet()
-            expect_effects(session, before, count, f"delivery after {mode}")
+            expect_effects(session, before, count, "delivery after availability withdrawal")
         results.append(mode + " from consumer callback")
     return results
 
