@@ -192,7 +192,10 @@ void CommandPointerItem::refreshHover() {
 }
 
 void CommandPointerItem::observeHover(const QPointingDevice* device, const QPointF& scenePosition) {
-    if (!device || device->type() != QInputDevice::DeviceType::Mouse
+    // Qt's Wayland client types the seat pointer as a touchpad when the compositor
+    // offers pointer gestures; both device types deliver hover-capable mouse events.
+    if (!device || (device->type() != QInputDevice::DeviceType::Mouse
+                    && device->type() != QInputDevice::DeviceType::TouchPad)
         || !window() || !isVisible() || !window()->isVisible()) return;
     enteringPosition_.reset();
     if (!hoverObservations_.contains(device)) {

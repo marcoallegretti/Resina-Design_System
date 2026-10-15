@@ -952,7 +952,9 @@ reaches the control through the compositor:
 - holding Space publishes several unsettled spring frames; the release retarget
   retains velocity, the sample clock tracks elapsed native time within 0.25 s,
   one channel may settle before the other, both settle, and no frame follows;
-- compositor hover enters and leaves the target through spring frames;
+- compositor hover enters and leaves the target through spring frames. Qt's
+  Wayland client types the seat pointer as a touchpad when the compositor offers
+  pointer gestures, so hover accepts mouse events from mouse and touchpad devices;
 - switching to the reduced-motion preference during a press publishes only
   immediate settled frames;
 - moving the control during motion cancels the held gesture without an effect
