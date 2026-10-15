@@ -72,8 +72,13 @@ class Shell:
         self.input = None
 
     def close(self):
-        if self.input:
-            self.input.close()
+        try:
+            if self.input:
+                self.input.close()
+        finally:
+            self.stop()
+
+    def stop(self):
         if self.process.poll() is None:
             self.process.terminate()
             try:
@@ -139,23 +144,43 @@ class Shell:
 
 
 def closed(observed):
-    return not observed["open"] and observed["showClock"] and observed["targets"]["showClock"]
+    return (not observed["open"] and observed["showClock"] and observed["targets"]["showClock"]
+            and observed["showClock"]["state"]["enabled"])
 
 
 def opened(observed):
-    return observed["open"] and observed["clock"] and observed["close"] and observed["focus"]["close"]
+    return (observed["open"] and observed["clock"] and observed["close"] and observed["focus"]["close"]
+            and observed["showClock"] and not observed["showClock"]["state"]["enabled"])
+
+
+def published(observed, part, request):
+    front = observed[part] and observed[part]["body"]["geometry"]["front"]["bounds"]
+    size = request["body"]["size"]
+    return bool(front) and (front["width"], front["height"]) == (size["width"], size["height"])
+
+
+def settled(shell, parts, timeout=10):
+    deadline = time.monotonic() + timeout
+    while True:
+        requests = {part: json.loads(shell.call("request", part)) for part in parts if shell.call("request", part)}
+        observed = shell.observe()
+        current = {part: json.loads(shell.call("request", part)) for part in parts if shell.call("request", part)}
+        if requests == current and all(observed[part] and published(observed, part, request)
+                                       for part, request in requests.items()):
+            return observed, requests
+        if time.monotonic() > deadline:
+            raise ValueError("surface publications did not settle on their current requests")
+        time.sleep(.1)
 
 
 def verify_surfaces(shell, observed, resolvers):
-    bar = json.loads(shell.call("request", "bar"))
+    observed, requests = settled(shell, ("bar", "clock"))
+    bar = requests["bar"]
     theme = run([resolvers["theme"], "-"], json.dumps(bar["body"]["theme"]))
     backdrop = theme["opaqueColorFallbacks"]["surface.base"]
     if observed["backdrop"] != backdrop:
         raise ValueError("painted backdrop differs from the resolved opaque surface.base colour")
-    checked = {"bar": bar}
-    if observed["clock"]:
-        checked["clock"] = json.loads(shell.call("request", "clock"))
-    for part, request in checked.items():
+    for part, request in requests.items():
         body = request["body"]
         if body["adjacentColor"] != backdrop or body["postTreatmentBackdrop"] != backdrop:
             raise ValueError(f"{part} declares an adjacent colour other than the painted backdrop")
@@ -170,23 +195,52 @@ def verify_surfaces(shell, observed, resolvers):
             raise ValueError(f"{part} declares surroundings other than its surface body")
         control = observed[part]
         source = copy.deepcopy(request)
-        source.update(activation=control["state"], hovered=control["hovered"])
+        source.update(activation=control["state"], hovered=control["hovered"], focusable=control["state"]["enabled"])
         verify_snapshot(control["snapshot"], source, expected_states(control))
     return backdrop
 
 
 def verify_time(shell):
     first = shell.until(lambda observed: observed["time"], "clock time")
+    started = time.monotonic()
     time.sleep(1.3)
     second = shell.observe()
+    elapsed = time.monotonic() - started
     for observed in (first, second):
         date = datetime.fromtimestamp(observed["clockDate"] / 1000)
         if observed["time"] != date.strftime("%H:%M:%S"):
             raise ValueError(f"displayed time {observed['time']} differs from SystemClock {date}")
-    if not 1 <= (second["clockDate"] - first["clockDate"]) / 1000 <= 2:
-        raise ValueError("SystemClock did not advance by about one second")
+    if not 1 <= (second["clockDate"] - first["clockDate"]) / 1000 <= elapsed + 1:
+        raise ValueError("SystemClock did not advance with the elapsed host time")
     if abs(second["clockDate"] / 1000 - time.time()) > 1.5:
         raise ValueError("SystemClock differs from host wall time")
+
+
+def footprint(snapshot, origin):
+    paint = snapshot["paint"]["paint"]
+    if "focus" in paint:
+        outer = paint["focus"]["geometry"]["outer"]
+        bounds = dict(outer["contour"]["bounds"])
+        bounds["x"] += outer["offset"]["x"]
+        bounds["y"] += outer["offset"]["y"]
+    else:
+        bounds = paint["body"]["geometry"]["silhouette"]["bounds"]
+    return (origin["x"] + bounds["x"], origin["y"] + bounds["y"], bounds["width"], bounds["height"])
+
+
+def ring(rectangle, distance=2, step=4):
+    x, y, width, height = rectangle
+    left, top, right, bottom = x - distance, y - distance, x + width + distance, y + height + distance
+    points = []
+    position = left
+    while position <= right:
+        points += [(position, top), (position, bottom)]
+        position += step
+    position = top
+    while position <= bottom:
+        points += [(left, position), (right, position)]
+        position += step
+    return points
 
 
 def pixel(image, point):
@@ -209,6 +263,11 @@ def verify_composition(shell, observed, backdrop, grim, path):
         expect(observed["probes"]["bar"], observed["bar"]["body"]["pigment"]["body"], "bar body")
         if observed["clock"]:
             expect(observed["probes"]["clock"], observed["clock"]["body"]["pigment"]["body"], "clock body")
+        for part, surface in (("showClock", "bar"), ("close", "clock")):
+            if observed[part] and observed[surface] and observed["frames"][part]:
+                color = observed[surface]["body"]["pigment"]["body"]
+                for point in ring(footprint(observed[part]["snapshot"], observed["frames"][part])):
+                    expect(point, color, f"{surface} body around the {part} Command")
 
 
 def press_samples(shell, part, count=8):
@@ -256,6 +315,16 @@ def calibrated_channels():
                         "initial": {"position": 0, "velocity": 0}},
             "depthScale": {"dynamics": json.loads((ROOT / "definitions/motion/elastomer-depth.json").read_text()),
                            "initial": {"position": 1, "velocity": 0}}}
+
+
+def verify_theme_files(shell, theme):
+    bar = json.loads(shell.call("request", "bar"))
+    command = json.loads(shell.call("request", "showClock"))
+    source = (ROOT / f"tokens/themes/{theme}.json").read_bytes().decode("utf-8")
+    appearance = json.loads((ROOT / f"definitions/command-appearance-{theme}.json").read_text(encoding="utf-8"))
+    if bar["body"]["theme"]["themeSource"] != source or command["content"]["themeSource"] != source \
+            or command["body"]["commandAppearance"] != appearance:
+        raise ValueError(f"requests do not use the {theme} theme source and Command appearance")
 
 
 def gsettings(environment, *arguments):
@@ -383,17 +452,35 @@ def main():
             gsettings(platform, "reset", "org.gnome.desktop.a11y.interface", "reduced-motion")
             shell.until(lambda current: not current["preferences"]["reducedMotion"] and closed(current),
                         "platform reduced motion reset")
-            report["cases"].append("the platform reduced-motion setting switches the Commands to immediate settled frames")
+            verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels, "spring")
+            shell.until(opened, "clock surface opened after the reduced-motion reset")
+            shell.key(KEY_ESCAPE)
+            shell.until(lambda current: not current["open"] and not current["clock"], "clock closed after the reset")
+            report["cases"].append("the platform reduced-motion setting switches the Commands to immediate settled "
+                                   "frames and its reset restores calibrated spring frames")
+
+        if portal["highContrast"] is not None:
+            gsettings(platform, "set", "org.gnome.desktop.a11y.interface", "high-contrast", "true")
+            observed = shell.until(lambda current: current["preferences"]["highContrast"] and closed(current),
+                                   "platform high contrast in the shell environment")
+            verify_surfaces(shell, observed, resolvers)
+            gsettings(platform, "reset", "org.gnome.desktop.a11y.interface", "high-contrast")
+            observed = shell.until(lambda current: not current["preferences"]["highContrast"] and closed(current),
+                                   "platform high contrast reset")
+            verify_surfaces(shell, observed, resolvers)
+            report["cases"].append("the platform high-contrast setting reaches every surface and Command")
 
         if not args.theme and portal["colorScheme"] is not None:
             gsettings(platform, "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark")
             observed = shell.until(lambda current: current["theme"] == "dark" and closed(current),
                                    "dark theme from the platform colour scheme")
             verify_surfaces(shell, observed, resolvers)
+            verify_theme_files(shell, "dark")
             gsettings(platform, "reset", "org.gnome.desktop.interface", "color-scheme")
             observed = shell.until(lambda current: current["theme"] == "light" and closed(current),
                                    "light theme after resetting the colour scheme")
             verify_surfaces(shell, observed, resolvers)
+            verify_theme_files(shell, "light")
             report["cases"].append("the platform colour scheme selects the theme")
 
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")

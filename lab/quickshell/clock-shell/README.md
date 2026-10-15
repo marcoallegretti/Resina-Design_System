@@ -26,17 +26,22 @@ focus, layout and preference policy belong to this shell, not to Resina.
 - The environment's `reducedMotion` and `highContrast` come from the platform
   through `PlatformAppearance`. A preference the portal does not provide, or every
   preference when the portal is unavailable, falls back to
-  [`preferences.json`](preferences.json); `reducedTransparency` is always authored
-  because the portal defines no such key.
+  [`preferences.json`](preferences.json) and logs `RESINA_CLOCK_PREFERENCE`;
+  `reducedTransparency` is always authored because the portal defines no such key.
+  Theme files are tagged with the theme they were read for, so a theme change
+  never combines files from both themes.
 - Without `RESINA_CLOCK_THEME`, the platform colour scheme selects the dark theme
   for a dark preference and the light theme otherwise.
 - Both Commands sample motion with the calibrated Elastomer profiles of
   [material response calibration](../../../spec/80-material-response-calibration.md)
   (`elastomer-body`, `elastomer-depth`). Under reduced motion they publish
   immediate settled frames.
-- "Show clock" maps the clock surface. The surface requests exclusive keyboard
-  interactivity and moves keyboard focus to "Close" once it is ready. "Close" and
-  Escape unmap it.
+- "Show clock" maps the clock surface and is unavailable while the surface is
+  open. The surface requests exclusive keyboard interactivity and moves keyboard
+  focus to "Close" once it is ready. "Close" and Escape unmap it.
+- The bar and the clock surface size themselves from their Commands and text, and
+  the clock text follows the authored text scale. Each Command lies inside its
+  surface's content region.
 - `SystemClock` runs at second precision only while the surface is open. The time
   uses the pattern `HH:mm:ss`; the date uses the long date format of the authored
   locale. This text is shell content, not a Resina text contract (#196). It uses
@@ -94,9 +99,12 @@ GSettings. It requires:
   Command snapshot to match its request and state;
 - every declared adjacent and surrounding colour to be the colour actually
   painted next to it; with `--grim`, the composited output is sampled on the
-  backdrop, the bar body and the clock body;
+  backdrop, the bar body and the clock body, and on a ring just outside each
+  Command's complete footprint, including its focus ring;
+- each surface publication to be compared only once it matches its current
+  request;
 - a pointer click on "Show clock" to map the surface with keyboard focus on
-  "Close";
+  "Close", and "Show clock" to be unavailable while the surface is open;
 - the displayed time to match `SystemClock`, advance by one second and agree
   with host wall time within 1.5 s;
 - Space on "Close" and Escape to unmap the surface and pause the clock;
@@ -107,18 +115,21 @@ GSettings. It requires:
   dynamics and match the independent spring equations and complete snapshot,
   with at least one unsettled spring sample;
 - the platform reduced-motion setting, changed through GSettings, to switch the
-  Commands to immediate settled frames, and its reset to restore spring motion;
+  Commands to immediate settled frames, and its reset to restore calibrated
+  spring frames;
+- the platform high-contrast setting to reach every surface and Command, each
+  re-verified against the reference paint, and its reset likewise;
 - without a fixed theme, the platform colour scheme to select the dark and light
-  theme, each re-verified against the reference paint.
+  theme, each re-verified against the reference paint and required to use that
+  theme's source and Command appearance.
 
 With Quickshell 0.3.2 (revision 4f508be), Qt 6.11.2, xdg-desktop-portal 1.22.1
 and xdg-desktop-portal-gnome 50.0:
 
 - all cases pass with the platform-selected theme in headless Sway 1.12, with
-  `grim` composition checks, and in nested niri 26.04, at output scale 1;
-- the fixed light and dark themes pass in headless Sway at output scale 1, and
-  the light theme also at output scale 2 (a 2048×1200 pixel capture of a 1024×600
-  logical output).
+  `grim` composition checks at output scales 1 and 2 (a 2048×1200 pixel capture
+  of a 1024×600 logical output), and in nested niri 26.04 at scale 1;
+- the fixed dark theme passes in headless Sway at output scale 1.
 
 ## Boundaries
 
@@ -127,8 +138,12 @@ and xdg-desktop-portal-gnome 50.0:
   surfaces cannot request activation, so returning focus is compositor policy.
 - xdg-desktop-portal-gnome before 50 does not provide `reduced-motion`; the
   authored value is then used and the reduced-motion case is skipped.
-- One output at integer scales 1 and 2 is verified. Multiple outputs, fractional
+- One output at integer scales 1 and 2, with text scale 1 and the `en-GB` locale,
+  is verified. Larger text scales, other locales, multiple outputs, fractional
   or changing scale, and output hot-plug are not.
+- The composed shell's accessibility tree is not inspected here; the Command's
+  native accessibility evidence is #165, and the integrated retest belongs to
+  #167.
 - The time and date text, its locale handling and its accessible exposure are
   shell content. A clock value changing every second is not announced.
 - Translucent Frost and Gel treatments, hardware renderers and physical input
