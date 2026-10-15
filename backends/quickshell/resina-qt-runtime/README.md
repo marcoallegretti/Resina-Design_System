@@ -939,6 +939,38 @@ Orca announces no change when availability is withdrawn from the focused control
 so availability announcements are not verified. Audible output, other screen readers and physical input are not
 covered.
 
+### Released Quickshell Command motion
+
+[`check_quickshell_command_motion.py`](../../../tools/check_quickshell_command_motion.py)
+runs the lifecycle probe with the explicit motion channels of the
+[motion request](../../../conformance/ir/command-motion-request.json) and authored
+preference variants. The probe logs every published motion sample with its
+snapshot; after the run, each frame keeps the authored dynamics and its complete
+snapshot and motion sample are checked against the request in effect, the
+projected state set and the independent spring equations. Input
+reaches the control through the compositor:
+
+- holding Space publishes several unsettled spring frames; the release retarget continues from the position
+  and velocity the previous trajectory had reached; each sampled epoch's clock
+  advances with elapsed native time within 10 % or 50 ms; one channel settles
+  before the other, both settle, and no frame follows;
+- compositor hover enters and leaves the target through spring frames. Qt's
+  Wayland client types the seat pointer as a touchpad when the compositor offers
+  pointer gestures, so hover accepts mouse events from mouse and touchpad devices;
+- focus loss during motion republishes frames without the focus cue;
+- switching to the reduced-motion preference or withdrawing availability during a
+  press cancels the held gesture without an effect; reduced motion then publishes
+  only immediate settled frames;
+- moving the control during a press cancels the held gesture without an effect
+  and publishes frames at the new position;
+- reduced motion and Cast publish immediate settled frames, and Frost with
+  reduced transparency keeps its family and spring policy.
+
+The motion channels are the conformance fixture, not calibrated material
+dynamics, and preferences are explicit authored inputs: no platform preference
+is discovered. Frame rate, scheduling budgets and fractional or changing output
+scale are not measured.
+
 ### Integrated sampled command frames
 
 The same control optionally accepts `motionChannels`, a JSON string containing
