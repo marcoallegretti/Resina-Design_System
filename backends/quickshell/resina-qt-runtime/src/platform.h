@@ -30,6 +30,7 @@ private slots:
 private:
     void read();
     void apply(const QString& key, const QVariant& value);
+    quint64 reads_ = 0;
     bool ready_ = false;
     QString error_;
     QVariant reducedMotion_;

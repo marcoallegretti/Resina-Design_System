@@ -508,8 +508,9 @@ the accessibility preferences. `PlatformAppearance` reads the platform's
 preferences from the
 [XDG Desktop Portal Settings](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Settings.html)
 `org.freedesktop.appearance` namespace on the session bus. It reads them when
-created and again whenever the portal service appears on the bus, and follows
-the portal's `SettingChanged` signal after a successful read.
+created and again whenever the portal service gains an owner on the bus, and
+follows the portal's `SettingChanged` signal after a successful read. When the
+portal leaves the bus, it withdraws every preference and reports an error.
 
 - `reducedMotion` and `highContrast` are `true` for the `uint32` portal value 1
   (`reduced-motion`, `contrast`) and `false` for any other value, which the
@@ -536,7 +537,8 @@ the GNOME backend and isolated GSettings. It requires:
 - a missing session bus, and a bus without a portal, to report an error with no
   preference;
 - preferences to be read once the portal appears on a bus where the element
-  started first.
+  started first, withdrawn with an error when the portal leaves, and read again
+  when it returns.
 
 `--require` fails when the backend does not provide a listed key.
 xdg-desktop-portal 1.22.1 with xdg-desktop-portal-gnome 50.0 provides and passes

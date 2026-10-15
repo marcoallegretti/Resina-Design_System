@@ -124,6 +124,19 @@ def start_portal(args, environment, processes, log):
         time.sleep(1)
 
 
+def stop(process):
+    for sent in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(process.pid, sent)
+        except ProcessLookupError:
+            break
+        try:
+            process.wait(5)
+            break
+        except subprocess.TimeoutExpired:
+            continue
+
+
 def wait_portal(environment, expected, description, timeout=15):
     deadline = time.monotonic() + timeout
     while True:
@@ -186,6 +199,16 @@ def main():
         expected = wait_portal(environment, None, "portal on the bus without activation")
         late.until(lambda current: matches(current, expected), "preferences once the portal appears")
         report["cases"].append("preferences are read once the portal appears on the bus")
+        frontend = processes.pop()
+        stop(frontend)
+        observed = late.until(lambda current: current["error"], "withdrawal when the portal leaves the bus")
+        if any(observed[name] is not None for name in PROPERTIES.values()):
+            raise ValueError(f"preferences survived the portal leaving the bus: {observed}")
+        processes.append(subprocess.Popen([str(args.portal.resolve(strict=True))], env=environment, stdout=log,
+                                          stderr=subprocess.STDOUT, start_new_session=True))
+        late.until(lambda current: matches(current, wait_portal(environment, None, "restarted portal")),
+                   "preferences once the portal returns")
+        report["cases"].append("preferences are withdrawn when the portal leaves and read again when it returns")
 
         environment = session(["--session"], args.output_dir, processes)
         start_portal(args, environment, processes, log)
@@ -226,11 +249,7 @@ def main():
             if isinstance(process, Host):
                 process.close()
             elif isinstance(process, subprocess.Popen):
-                try:
-                    os.killpg(process.pid, signal.SIGTERM)
-                except ProcessLookupError:
-                    pass
-                process.wait(5)
+                stop(process)
             else:
                 process.close()
     return 0

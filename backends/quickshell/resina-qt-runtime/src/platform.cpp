@@ -40,17 +40,29 @@ PlatformAppearance::PlatformAppearance(QObject* parent) : QObject(parent) {
     }
     bus.connect(service, path, interface, QStringLiteral("SettingChanged"), this,
                 SLOT(settingChanged(QString,QString,QDBusVariant)));
-    auto* watcher = new QDBusServiceWatcher(service, bus, QDBusServiceWatcher::WatchForRegistration, this);
-    connect(watcher, &QDBusServiceWatcher::serviceRegistered, this, &PlatformAppearance::read);
+    auto* watcher = new QDBusServiceWatcher(service, bus, QDBusServiceWatcher::WatchForOwnerChange, this);
+    connect(watcher, &QDBusServiceWatcher::serviceOwnerChanged, this,
+            [this](const QString&, const QString&, const QString& owner) {
+        if (!owner.isEmpty()) {
+            read();
+            return;
+        }
+        ++reads_;
+        reducedMotion_ = highContrast_ = colorScheme_ = QVariant();
+        error_ = QStringLiteral("platform appearance portal left the session bus");
+        emit changed();
+    });
     read();
 }
 
 void PlatformAppearance::read() {
     auto call = QDBusMessage::createMethodCall(service, path, interface, QStringLiteral("ReadAll"));
     call << QStringList{appearance};
+    const quint64 current = ++reads_;
     auto* watcher = new QDBusPendingCallWatcher(QDBusConnection::sessionBus().asyncCall(call), this);
-    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher* finished) {
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, current](QDBusPendingCallWatcher* finished) {
         finished->deleteLater();
+        if (current != reads_) return;
         const QDBusPendingReply<AppearanceSettings> reply = *finished;
         ready_ = true;
         reducedMotion_ = highContrast_ = colorScheme_ = QVariant();
