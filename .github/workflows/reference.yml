@@ -37,7 +37,7 @@ jobs:
             libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
             libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-shm0 \
             libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core \
-            at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth
+            at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth sway
           python -m pip install aqtinstall==3.3.0 -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
           python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu --modules qtshadertools
       - name: Build matching Wayland headers and libraries for Qt 6.11.2
@@ -124,6 +124,23 @@ jobs:
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
             --output-dir target/quickshell-command-updates --scales 1 1.25 2
+      - name: Check compositor-delivered Command lifecycle in released Quickshell
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export XDG_RUNTIME_DIR="$(mktemp -d)"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          echo 'output HEADLESS-1 resolution 1024x600' > target/lifecycle-sway.conf
+          WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER=pixman sway -c target/lifecycle-sway.conf > target/lifecycle-sway.log 2>&1 &
+          for attempt in $(seq 50); do
+            WAYLAND_DISPLAY="$(ls "$XDG_RUNTIME_DIR" | grep -m1 -E '^wayland-[0-9]+$' || true)"
+            [ -n "$WAYLAND_DISPLAY" ] && break
+            sleep 0.2
+          done
+          export WAYLAND_DISPLAY
+          python tools/check_quickshell_command_lifecycle.py \
+            --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+            --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+            --output-dir target/quickshell-command-lifecycle
       - name: Save native Qt captures and accessibility observations
         if: always()
         uses: actions/upload-artifact@v7
@@ -141,6 +158,8 @@ jobs:
             target/qt-native-availability.json
             target/quickshell-native-availability.json
             target/quickshell-command-updates/
+            target/quickshell-command-lifecycle/
+            target/lifecycle-sway.log
           if-no-files-found: warn
   guido:
     runs-on: ubuntu-latest

@@ -854,6 +854,52 @@ publication before recovery. These authored-update tests do not deliver pointer
 or keyboard input, inspect AT-SPI, test reload/closure, sample motion or establish
 screen-reader acceptance.
 
+### Compositor-delivered Command lifecycle
+
+[`check_quickshell_command_lifecycle.py`](../../../tools/check_quickshell_command_lifecycle.py)
+runs [the lifecycle probe](../../../conformance/quickshell/command-lifecycle-probe.qml)
+as a released Quickshell configuration in a live Wayland session. The probe mounts
+the control in a layer-shell `PanelWindow` at the output origin and exposes its
+observations and lifecycle operations through `IpcHandler`. Input reaches Qt
+through the compositor:
+[`wayland_virtual_input.py`](../../../tools/wayland_virtual_input.py) drives
+`zwlr_virtual_pointer_v1` absolute motion and buttons and a persistent
+`zwp_virtual_keyboard_v1` keyboard. Held keys use the compositor's repeat
+information, so Qt produces its own auto-repeat.
+
+```sh
+python tools/check_quickshell_command_lifecycle.py \
+  --host /path/to/quickshell --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/quickshell-command-lifecycle
+```
+
+`WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR` must select a compositor providing
+`wlr-layer-shell`, virtual pointer and virtual keyboard with one output at
+unit scale. Headless Sway 1.12 (`WLR_BACKENDS=headless`, `WLR_RENDERER=pixman`)
+and nested niri 26.04 pass all 22 cases. The checker verifies the host version,
+fails on any QML runtime error in the host log and records every consumer effect
+with its engine generation:
+
+- pointer activation, release outside the target, and Space and Enter held through
+  auto-repeat each produce the canonical number of effects;
+- Tab traversal and requested focus are published only when observed; a focus
+  request while another surface holds keyboard focus is not published, and focus
+  follows once it returns; availability withdrawal clears focus and suppresses
+  activation;
+- Space or pointer held across configuration replacement, unmount, hidden and
+  destroyed surfaces delivers no effect, and a fresh gesture afterwards delivers
+  exactly one;
+- consumer callbacks that replace the configuration, withdraw availability, invoke
+  the control, hide, unmount or destroy its surface observe committed state, and
+  no stale gesture is delivered afterwards. A callback-time `invoke()` is a separate
+  semantic activation and produces exactly one additional effect.
+
+Quickshell reload is
+not covered: a reload after held input in an extended session can leave the
+previous engine generation alive (#189). Physical devices, multiple seats and
+outputs, fractional scale and screen-reader operation are not covered.
+
 ### Integrated sampled command frames
 
 The same control optionally accepts `motionChannels`, a JSON string containing
