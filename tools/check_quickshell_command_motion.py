@@ -122,7 +122,10 @@ class Motion:
 
 def spring_cases(session, motion):
     results = []
+    session.input.move(*OUTSIDE)
     session.reset("motion", True)
+    session.settle(lambda current: not current["hovered"], "pointer outside the Command")
+    motion.settle("motion settled before the press")
     start = len(motion.frames())
     before = len(effects(session.events()))
     session.input.key(KEY_SPACE, True)
