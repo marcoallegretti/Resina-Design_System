@@ -7,6 +7,7 @@ mod label;
 mod pointer;
 mod slider_accessibility;
 mod snapshot;
+mod surface;
 mod toggle;
 mod toggle_snapshot;
 

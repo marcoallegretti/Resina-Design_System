@@ -419,6 +419,76 @@ software client readback. This is not compositor-output or physical-screen captu
 Hardware/graphics-renderer composition, all font/fallback policies, motion and
 complete control qualification remain open.
 
+## Live native surface view
+
+[`ResinaSurfaceView.qml`](../resina-qml/qml/ResinaSurfaceView.qml) realizes one
+complete [surface paint request](../../../spec/39-surface-paint-ir.md) for a
+structural or transient surface that is not a control. Set `request` to the
+request JSON and `samplesPerAxis` to the raster sampling density. The view
+resolves the request with the reference resolver through the compiled
+`SurfacePaintResolver.resolveSurfaceView(request, options)` at its actual scene
+origin and window pixel density, and realizes the body and optional focus ring
+with the shared CPU raster as one native image.
+
+`publication` carries the complete surface paint IR only once the native image
+is ready; `paintReady` and default visibility become true with it. The view
+exposes the IR's guarded `foreground` color and `contentBounds`, the bounding
+rectangle of the IR content region in the view's local logical coordinates. The
+readability guard applies inside the content contour; for rounded shapes the
+rectangle's corners lie outside it, so consumer content must stay within the
+contour published in `publication`. Its implicit size is
+the IR front and is kept while withdrawn so layouts stay stable; `foreground`
+and `contentBounds` are cleared whenever publication is withdrawn. Invalid requests, unsupported states and missing surrounding colour
+for focused surfaces withdraw publication and report `paintError`. Clearing
+`request` withdraws publication without error.
+
+The view prepares itself. Changes to the request, sampling density, own
+position, scale, rotation, parent, window or pixel density withdraw the current
+publication and prepare again. A GUI-thread `afterAnimating` check withdraws
+and re-prepares when an ancestor moves the scene origin, and a preparation whose
+origin moved before its image was ready is discarded and repeated. Work queued
+before destruction or `Loader` unloading does not run. A surface whose
+ancestor keeps moving, such as one sliding in, stays withdrawn until its origin
+settles; animate it only after publication or keep its origin fixed. Scale, rotation, shear
+and projective ancestors fail the shared native context guard used by the
+Command view. The view stays withdrawn with a diagnostic, and prepares again once
+the context is translation-only. It is decorative, has no input target or native
+accessible node, and does not own window, layer or surrounding colour policy.
+
+[`check_qt_surface_view_runtime.py`](../../../tools/check_qt_surface_view_runtime.py)
+renders all 16 public Light/Dark Cast/Frost/Elastomer/Gel rest and focused paint
+scenes. For each scene, the publication must equal the `resina-surface-paint`
+output, the exposed foreground, content region and size must match that IR, and
+the native capture must match the `resina-paint-raster` image within one byte per
+channel. Replacement must withdraw readiness before publishing. The checker also
+covers:
+- invalid and focused-without-surrounding requests;
+- clearing the request;
+- own and ancestor translation, with re-captures at the new origin, including an
+  ancestor move while a preparation is pending;
+- ancestor distortion, withdrawn and recovered;
+- a request supplied at creation;
+- destruction, and `Loader` unloading, while a queued preparation or an
+  incomplete publication is pending, observed past the preparation timeout;
+- no Qt or QML warning anywhere in the run;
+- the context guard's precision, type, density and foreign-thread rejection.
+
+CI runs it with Qt 6.11.2 software rendering offscreen at DPR 1, 1.25, 2 and 1.3:
+
+```sh
+cargo build -p resina-raster --bin resina-paint-raster --locked
+cargo build -p resina-resolver --bin resina-theme-resolve --bin resina-surface-paint --locked
+python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
+QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
+  --module-path target/qt-runtime-import --raster target/debug/resina-paint-raster \
+  --resolver target/debug/resina-surface-paint --scenes target/material-scenes.json \
+  --output-dir target/qt-surface-view-1.25
+```
+
+Released-Quickshell hosting, live output-scale transfer, hardware renderers and
+enhanced Frost or Gel treatments beyond their opaque representation are not
+covered.
+
 ## Build and verification
 
 Install the tested Qt 6.11.2 development SDK with its Core/Qml tools and a C++17

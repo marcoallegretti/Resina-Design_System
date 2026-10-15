@@ -103,18 +103,7 @@ QString ToggleSnapshotResolver::composeToggleRequest(const QString& request, con
 }
 
 bool SnapshotPublication::matchesNativeContext(QObject* object, double x, double y, double deviceScale) const {
-    const auto* application = QCoreApplication::instance();
-    // Reject before inspecting item state unless the call is on the owning UI thread.
-    if (!application || QThread::currentThread() != application->thread()
-        || thread() != application->thread() || !object || object->thread() != application->thread()
-        || !qIsFinite(x) || !qIsFinite(y) || !qIsFinite(deviceScale) || deviceScale <= 0) return false;
-    const auto* item = qobject_cast<QQuickItem*>(object);
-    if (!item || !item->window() || item->window()->thread() != application->thread()) return false;
-    QTransform transform;
-    return translationOnly(item, &transform)
-        && qAbs(transform.dx() - x) <= 1.0 / 1024
-        && qAbs(transform.dy() - y) <= 1.0 / 1024
-        && item->window()->devicePixelRatio() == deviceScale;
+    return nativeContextMatches(this, object, x, y, deviceScale);
 }
 
 bool CommandClock::onUiThread() const {
