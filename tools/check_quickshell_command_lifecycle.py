@@ -162,6 +162,7 @@ class Session:
         for function in ("setWindowed", "setShown", "setMounted"):
             self.call(function, "true")
         self.call("setFocusTaken", "false")
+        self.call("setDisabledFocusable", "false")
         self.call("configure", "standard")
         self.call("availability", "true")
         self.ready()
