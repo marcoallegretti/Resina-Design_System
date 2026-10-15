@@ -1,4 +1,4 @@
-# Qt command runtime (0.1.0)
+# Qt command runtime (0.0.1)
 
 This separately locked native workspace implements the Resina-owned
 Rust/QML runtime boundary. CXX-Qt 0.8.1 packages Rust-owned command activation

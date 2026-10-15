@@ -1,4 +1,4 @@
-# SVG focus realization (0.1.0)
+# SVG focus realization (0.0.1)
 
 `resina-svg` realizes the complete static [focus ring IR](../../../spec/37-focus-indicator-ir.md) as SVG for the Web backend. It consumes validated Rust IR; SVG syntax stays in this backend and does not enter Resina models, resolution or normative definitions. GUIdo remains the high-fidelity reference renderer. This operation does not implement a focused component, keyboard navigation, the component's accessibility semantics, surface body paint, typography or the Web Lab.
 

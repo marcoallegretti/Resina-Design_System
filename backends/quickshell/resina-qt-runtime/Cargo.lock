@@ -501,7 +501,7 @@ checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
 
 [[package]]
 name = "resina-color"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "resina-tokens",
  "serde",
@@ -510,7 +510,7 @@ dependencies = [
 
 [[package]]
 name = "resina-environment"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -518,14 +518,14 @@ dependencies = [
 
 [[package]]
 name = "resina-model"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "resina-motion"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "resina-model",
  "resina-tokens",
@@ -535,7 +535,7 @@ dependencies = [
 
 [[package]]
 name = "resina-qml"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "resina-model",
  "resina-raster",
@@ -544,7 +544,7 @@ dependencies = [
 
 [[package]]
 name = "resina-qt-runtime"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "cxx",
  "cxx-qt",
@@ -562,7 +562,7 @@ dependencies = [
 
 [[package]]
 name = "resina-raster"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "num-bigint 0.5.1",
  "num-rational",
@@ -575,7 +575,7 @@ dependencies = [
 
 [[package]]
 name = "resina-resolver"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "num-bigint 0.5.1",
  "resina-color",
@@ -589,7 +589,7 @@ dependencies = [
 
 [[package]]
 name = "resina-tokens"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "serde",
  "serde_json",

@@ -1,4 +1,4 @@
-# CPU paint realization (0.1.0)
+# CPU paint realization (0.0.1)
 
 `resina-raster` synchronously realizes validated opaque surface and focus indicator IR as bounded row-major, straight RGBA8 sRGB pixels. It uses the canonical point paint evaluators and deterministic regular-grid integration. This is a rendering backend operation; the viewport, sampling grid and output buffer do not enter normative Resina IR.
 
