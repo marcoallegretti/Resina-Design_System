@@ -9,15 +9,29 @@ ShellRoot {
     id: root
     readonly property string generation: Date.now().toString(36) + Math.floor(Math.random() * 1e9).toString(36)
     readonly property string repository: Quickshell.env("RESINA_ROOT")
-    readonly property string theme: Quickshell.env("RESINA_CLOCK_THEME") || "light"
+    readonly property string theme: Quickshell.env("RESINA_CLOCK_THEME")
+        || (platform.colorScheme === "dark" ? "dark" : "light")
     readonly property var screen: Quickshell.screens.length ? Quickshell.screens[0] : null
     readonly property real barHeight: 96
     readonly property real margin: 8
     property var sources: ({})
     property string loadError: ""
     readonly property bool loaded: ["themeSource", "foundation", "appearance", "commandAppearance", "command",
-        "preferences"].every(name => sources[name] !== undefined) && typeface.status === FontLoader.Ready
-    readonly property var themeRequest: loaded && screen ? ({
+        "preferences", "motionBody", "motionDepth"].every(name => sources[name] !== undefined)
+        && typeface.status === FontLoader.Ready && platform.ready
+    readonly property var authored: loaded ? JSON.parse(sources.preferences) : null
+    readonly property var preferences: authored ? ({
+        reducedMotion: platform.reducedMotion !== null && platform.reducedMotion !== undefined
+            ? platform.reducedMotion : authored.accessibilityPreferences.reducedMotion,
+        reducedTransparency: authored.accessibilityPreferences.reducedTransparency,
+        highContrast: platform.highContrast !== null && platform.highContrast !== undefined
+            ? platform.highContrast : authored.accessibilityPreferences.highContrast
+    }) : null
+    readonly property string motionChannels: loaded ? JSON.stringify({
+        bodyMix: {dynamics: JSON.parse(sources.motionBody), initial: {position: 0, velocity: 0}},
+        depthScale: {dynamics: JSON.parse(sources.motionDepth), initial: {position: 1, velocity: 0}}
+    }) : ""
+    readonly property var themeRequest: loaded && screen && preferences ? ({
         schemaVersion: "0.1.0",
         themeSource: sources.themeSource,
         externalSources: {"foundation.json": sources.foundation},
@@ -26,7 +40,7 @@ ShellRoot {
             geometry: {width: screen.width, height: screen.height,
                 safeArea: {start: 0, end: 0, top: 0, bottom: 0}},
             scale: screen.devicePixelRatio
-        }, JSON.parse(sources.preferences))
+        }, authored, {accessibilityPreferences: preferences})
     }) : null
     readonly property var backdrop: {
         if (!themeRequest)
@@ -124,6 +138,8 @@ ShellRoot {
             ["appearance", "definitions/tier0-surface-appearance.json"],
             ["commandAppearance", "definitions/command-appearance-" + root.theme + ".json"],
             ["command", "definitions/components/command.json"],
+            ["motionBody", "definitions/motion/elastomer-body.json"],
+            ["motionDepth", "definitions/motion/elastomer-depth.json"],
             ["preferences", Qt.resolvedUrl("preferences.json").toString().replace("file://", "")]
         ]
         delegate: FileView {
@@ -151,6 +167,7 @@ ShellRoot {
     }
 
     SurfacePaintResolver { id: colors }
+    PlatformAppearance { id: platform }
 
     PanelWindow {
         id: backdropWindow
@@ -191,6 +208,7 @@ ShellRoot {
                 x: barSurface.x + barSurface.contentBounds.x + root.margin
                 y: barSurface.y + barSurface.contentBounds.y + root.margin
                 samplesPerAxis: 4
+                motionChannels: root.motionChannels
                 disabledFocusable: false
                 activeFocusOnTab: true
                 configuration: root.command("Show clock", "Open the clock surface.", barSurface, {
@@ -261,6 +279,7 @@ ShellRoot {
                 x: clockSurface.x + clockSurface.contentBounds.x + 16
                 y: clockSurface.y + clockSurface.contentBounds.y + clockSurface.contentBounds.height - 64
                 samplesPerAxis: 4
+                motionChannels: root.motionChannels
                 disabledFocusable: false
                 activeFocusOnTab: true
                 configuration: root.command("Close", "Close the clock surface.", clockSurface, {
@@ -291,7 +310,10 @@ ShellRoot {
             const show = showClock.control;
             const close = closeClock.control;
             return JSON.stringify({
-                generation: root.generation, open: persisted.open,
+                generation: root.generation, open: persisted.open, theme: root.theme,
+                preferences: root.preferences,
+                platform: {ready: platform.ready, error: platform.error, reducedMotion: platform.reducedMotion,
+                    highContrast: platform.highContrast, colorScheme: platform.colorScheme},
                 outputWidth: root.screen ? root.screen.width : 0, outputHeight: root.screen ? root.screen.height : 0,
                 probes: {
                     bar: [barSurface.x + barSurface.contentBounds.x + barSurface.contentBounds.width - 24,
@@ -305,9 +327,9 @@ ShellRoot {
                 bar: barSurface.publication.length ? JSON.parse(barSurface.publication) : null,
                 clock: clockSurface.publication.length ? JSON.parse(clockSurface.publication) : null,
                 showClock: show && show.ready ? {snapshot: JSON.parse(show.snapshot), hovered: show.hovered,
-                    state: JSON.parse(show.publication).state} : null,
+                    state: JSON.parse(show.publication).state, motion: show.motion.length ? JSON.parse(show.motion) : null} : null,
                 close: close && close.ready ? {snapshot: JSON.parse(close.snapshot), hovered: close.hovered,
-                    state: JSON.parse(close.publication).state} : null,
+                    state: JSON.parse(close.publication).state, motion: close.motion.length ? JSON.parse(close.motion) : null} : null,
                 time: clockSurface.paintReady ? time.text : null,
                 clockDate: clock.date.getTime(), clockEnabled: clock.enabled,
                 focus: {showClock: Boolean(show && show.activeFocus), close: Boolean(close && close.activeFocus)}

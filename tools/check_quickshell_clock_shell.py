@@ -11,7 +11,9 @@ import sys
 import time
 
 from PIL import Image
+from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
+from check_qt_platform_appearance import session, start_portal, stop, wait_portal
 from wayland_virtual_input import KEY_SPACE, VirtualInput
 
 KEY_ESCAPE = 1
@@ -45,7 +47,7 @@ def expected_states(control):
 
 
 class Shell:
-    def __init__(self, host, module, font, theme, output):
+    def __init__(self, host, module, font, theme, output, platform):
         self.host, self.output = host, output
         config = output / "clock-shell"
         config.mkdir(parents=True)
@@ -55,7 +57,13 @@ class Shell:
         self.path = config / "shell.qml"
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
                                 QML_IMPORT_PATH=str(module), RESINA_ROOT=str(ROOT), RESINA_CLOCK_FONT=str(font),
-                                RESINA_CLOCK_THEME=theme, QS_NO_RELOAD_POPUP="1")
+                                QS_NO_RELOAD_POPUP="1")
+        for name in ("DBUS_SESSION_BUS_ADDRESS", "XDG_CONFIG_HOME", "XDG_CURRENT_DESKTOP", "GSETTINGS_BACKEND"):
+            self.environment[name] = platform[name]
+        if theme:
+            self.environment["RESINA_CLOCK_THEME"] = theme
+        else:
+            self.environment.pop("RESINA_CLOCK_THEME", None)
         self.environment.pop("DISPLAY", None)
         self.environment.pop("QT_SCALE_FACTOR", None)
         self.log = output / "shell.log"
@@ -203,6 +211,57 @@ def verify_composition(shell, observed, backdrop, grim, path):
             expect(observed["probes"]["clock"], observed["clock"]["body"]["pigment"]["body"], "clock body")
 
 
+def press_samples(shell, part, count=8):
+    observed = shell.until(lambda current: current[part] and current["targets"][part], f"{part} ready")
+    shell.input.move(observed["targets"][part]["x"], observed["targets"][part]["y"])
+    time.sleep(.2)
+    shell.input.button(True)
+    samples = []
+    deadline = time.monotonic() + 10
+    while len(samples) < count and time.monotonic() < deadline:
+        current = shell.observe()[part]
+        if current and current["motion"] and current["state"]["hold"]:
+            samples.append(current)
+        time.sleep(.05)
+    shell.input.button(False)
+    if len(samples) < count:
+        raise ValueError(f"{part} published too few motion samples while pressed")
+    return samples
+
+
+def verify_motion(shell, part, samples, channels, policy):
+    request = json.loads(shell.call("request", part))
+    for sample in samples:
+        metadata = sample["motion"]
+        if any(metadata["channels"][name]["dynamics"] != channels[name]["dynamics"] for name in channels):
+            raise ValueError(f"{part} motion dynamics differ from the calibrated Elastomer profiles")
+        if metadata["motion"]["policy"] != policy:
+            raise ValueError(f"{part} motion policy {metadata['motion']['policy']} is not {policy}")
+        source = copy.deepcopy(request)
+        source.update(activation=sample["state"], hovered=sample["hovered"], focusable=sample["state"]["enabled"])
+        verify_snapshot(sample["snapshot"], source, expected_states(sample), metadata["motion"])
+        difference = motion_mismatch(metadata["motion"], source, metadata)
+        if difference:
+            raise ValueError(f"{part} motion differs from the independent spring equations at {difference}")
+    settled = [all(sample["motion"]["motion"][name]["settled"] for name in ("bodyMix", "depthScale"))
+               for sample in samples]
+    if policy == "spring" and all(settled):
+        raise ValueError(f"{part} published no unsettled calibrated spring sample")
+    if policy == "reducedMotion" and not all(settled):
+        raise ValueError(f"{part} published sampled motion under reduced motion")
+
+
+def calibrated_channels():
+    return {"bodyMix": {"dynamics": json.loads((ROOT / "definitions/motion/elastomer-body.json").read_text()),
+                        "initial": {"position": 0, "velocity": 0}},
+            "depthScale": {"dynamics": json.loads((ROOT / "definitions/motion/elastomer-depth.json").read_text()),
+                           "initial": {"position": 1, "velocity": 0}}}
+
+
+def gsettings(environment, *arguments):
+    subprocess.run(["gsettings", *arguments], env=environment, check=True, timeout=10)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
@@ -210,11 +269,15 @@ def main():
     parser.add_argument("--font", type=Path, required=True)
     parser.add_argument("--surface-resolver", type=Path, required=True)
     parser.add_argument("--theme-resolver", type=Path, required=True)
-    parser.add_argument("--theme", choices=["light", "dark"], default="light")
+    parser.add_argument("--theme", choices=["light", "dark"],
+                        help="fixed theme; by default the platform colour scheme selects it")
+    parser.add_argument("--portal", type=Path, default=Path("/usr/libexec/xdg-desktop-portal"))
+    parser.add_argument("--backend", type=Path, default=Path("/usr/libexec/xdg-desktop-portal-gnome"))
     parser.add_argument("--grim", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     shell = None
+    processes = []
     try:
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
             raise ValueError("requires a live Wayland compositor session with layer-shell and virtual input")
@@ -222,8 +285,13 @@ def main():
         resolvers = {"surface": str(args.surface_resolver.resolve(strict=True)),
                      "theme": str(args.theme_resolver.resolve(strict=True))}
         args.output_dir.mkdir(parents=True, exist_ok=False)
-        shell = Shell(host, module, font, args.theme, args.output_dir)
-        report = {"theme": args.theme, "cases": []}
+        platform = session(["--session"], args.output_dir, processes)
+        log = (args.output_dir / "portal.log").open("w")
+        processes.append(log)
+        start_portal(args, platform, processes, log)
+        portal = wait_portal(platform, None, "portal Settings interface")
+        shell = Shell(host, module, font, args.theme, args.output_dir, platform)
+        report = {"theme": args.theme or "platform", "cases": []}
 
         observed = shell.until(closed, "published bar with a ready Show clock Command")
         shell.input = VirtualInput(observed["outputWidth"], observed["outputHeight"],
@@ -286,6 +354,48 @@ def main():
                 verify_time(shell)
         report["cases"].append("soft reload keeps the open clock surface; hard reload closes it")
 
+        observed = shell.until(closed, "Show clock ready before the platform cases")
+        authored = json.loads((SHELL / "preferences.json").read_text())["accessibilityPreferences"]
+        expected = {"reducedMotion": portal["reducedMotion"] if portal["reducedMotion"] is not None
+                    else authored["reducedMotion"], "reducedTransparency": authored["reducedTransparency"],
+                    "highContrast": portal["highContrast"] if portal["highContrast"] is not None
+                    else authored["highContrast"]}
+        environment = json.loads(shell.call("request", "showClock"))["content"]["environment"]
+        if observed["preferences"] != expected or environment["accessibilityPreferences"] != expected:
+            raise ValueError(f"platform preferences did not reach the Command environment: {observed['preferences']}")
+        report["cases"].append("platform appearance preferences reach the Command environment")
+
+        channels = calibrated_channels()
+        verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels, "spring")
+        shell.until(opened, "clock surface opened after the sampled press")
+        shell.key(KEY_ESCAPE)
+        shell.until(lambda current: not current["open"] and not current["clock"], "clock closed after the press")
+        report["cases"].append("a held Show clock publishes calibrated Elastomer spring frames that match the equations")
+
+        if portal["reducedMotion"] is not None:
+            gsettings(platform, "set", "org.gnome.desktop.a11y.interface", "reduced-motion", "reduce")
+            shell.until(lambda current: current["preferences"]["reducedMotion"] and closed(current),
+                        "platform reduced motion in the shell environment")
+            verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels, "reducedMotion")
+            shell.until(opened, "clock surface opened under reduced motion")
+            shell.key(KEY_ESCAPE)
+            shell.until(lambda current: not current["open"] and not current["clock"], "clock closed under reduced motion")
+            gsettings(platform, "reset", "org.gnome.desktop.a11y.interface", "reduced-motion")
+            shell.until(lambda current: not current["preferences"]["reducedMotion"] and closed(current),
+                        "platform reduced motion reset")
+            report["cases"].append("the platform reduced-motion setting switches the Commands to immediate settled frames")
+
+        if not args.theme and portal["colorScheme"] is not None:
+            gsettings(platform, "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark")
+            observed = shell.until(lambda current: current["theme"] == "dark" and closed(current),
+                                   "dark theme from the platform colour scheme")
+            verify_surfaces(shell, observed, resolvers)
+            gsettings(platform, "reset", "org.gnome.desktop.interface", "color-scheme")
+            observed = shell.until(lambda current: current["theme"] == "light" and closed(current),
+                                   "light theme after resetting the colour scheme")
+            verify_surfaces(shell, observed, resolvers)
+            report["cases"].append("the platform colour scheme selects the theme")
+
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
         for case in report["cases"]:
             print("PASS " + case)
@@ -296,6 +406,11 @@ def main():
     finally:
         if shell:
             shell.close()
+        for process in reversed(processes):
+            if isinstance(process, subprocess.Popen):
+                stop(process)
+            else:
+                process.close()
     return 0
 
 
