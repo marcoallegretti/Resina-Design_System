@@ -181,8 +181,14 @@ def main():
         isolated.close()
         report["cases"].append("a missing session bus reports an error and no preference")
 
+        services = args.output_dir / "services"
+        services.mkdir()
+        for service in Path("/usr/share/dbus-1/services").glob("*.service"):
+            if service.name != "org.freedesktop.portal.Desktop.service":
+                (services / service.name).write_bytes(service.read_bytes())
         bare = args.output_dir / "bare-bus.conf"
         bare.write_text("<busconfig><type>session</type><listen>unix:tmpdir=/tmp</listen>"
+                        f"<servicedir>{services}</servicedir>"
                         "<policy context=\"default\"><allow send_destination=\"*\"/>"
                         "<allow receive_sender=\"*\"/><allow own=\"*\"/></policy></busconfig>", encoding="utf-8")
         log = (args.output_dir / "portal.log").open("w")

@@ -177,7 +177,7 @@ jobs:
             target/quickshell-command-lifecycle/
             target/quickshell-command-accessibility/
             target/quickshell-command-motion/
-            target/qt-platform-appearance/report.json
+            target/qt-platform-appearance/
             target/lifecycle-sway.log
           if-no-files-found: warn
   guido:
