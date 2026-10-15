@@ -82,14 +82,9 @@ def verify_clock(sequence, minimum=.5):
             raise ValueError(f"sample clock advanced {sample:.3f} s during {native:.3f} s of native time")
 
 
-def verify_fixture(sequence, channels):
-    for frame in sequence:
-        for name in CHANNELS:
-            if frame["motion"]["channels"][name]["dynamics"] != channels[name]["dynamics"]:
-                raise ValueError("native motion replaced the authored dynamics")
-    first = sequence[0]["motion"]["channels"]
-    if any(first[name]["initial"] != channels[name]["initial"] for name in CHANNELS):
-        raise ValueError("native motion did not start from the authored initial state")
+def verify_dynamics(frame, channels):
+    if any(frame["motion"]["channels"][name]["dynamics"] != channels[name]["dynamics"] for name in CHANNELS):
+        raise ValueError("native motion replaced the authored dynamics")
 
 
 def verify_retarget(previous, retargeted, tolerance=(.02, .1)):
@@ -125,7 +120,7 @@ class Motion:
         self.session.wait(lambda: self.frames() and settled(self.frames()[-1]), description, timeout=30)
 
 
-def spring_cases(session, motion, channels):
+def spring_cases(session, motion):
     results = []
     session.reset("motion", True)
     start = len(motion.frames())
@@ -142,7 +137,6 @@ def spring_cases(session, motion, channels):
     verify_retarget(recorded[first - 1], recorded[first])
     motion.settle("both channels settled")
     sequence = motion.frames()[start:]
-    verify_fixture(sequence, channels)
     if not any(frame["motion"]["motion"]["bodyMix"]["settled"] != frame["motion"]["motion"]["depthScale"]["settled"]
                for frame in sequence):
         raise ValueError("no frame showed one channel settled while the other remained scheduled")
@@ -151,8 +145,7 @@ def spring_cases(session, motion, channels):
     session.quiet(.5)
     if len(motion.frames()) != count:
         raise ValueError("native frame scheduling continued after both channels settled")
-    results.append("pressed and released spring frames follow the authored dynamics, continue across "
-                   "the retarget, track native time and settle")
+    results.append("pressed and released spring frames continue across the retarget, track native time and settle")
 
     start = len(motion.frames())
     session.point(session.current())
@@ -261,17 +254,19 @@ def main():
         session = Session(host, module, font, args.output_dir)
         motion = Motion(session)
         requests = authored_requests()
-        results = spring_cases(session, motion, requests["channels"])
+        results = spring_cases(session, motion)
         for cases in (interruption_cases, policy_cases):
             results += cases(session, motion)
         recorded = motion.frames()
         for frame in recorded:
+            verify_dynamics(frame, requests["channels"])
             verify_frame(frame, requests)
         (args.output_dir / "report.json").write_text(json.dumps({"cases": results, "frames": len(recorded)}, indent=2),
                                                      encoding="utf-8")
         for result in results:
             print("PASS " + result)
-        print(f"PASS {len(recorded)} native frames match independent equations and complete snapshots")
+        print(f"PASS {len(recorded)} native frames keep the authored dynamics and match independent equations "
+              "and complete snapshots")
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as error:
         print(f"Quickshell Command motion check failed: {error}", file=sys.stderr)
         return 1

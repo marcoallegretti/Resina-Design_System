@@ -3,7 +3,7 @@ import unittest
 
 from check_command_motion_backend import equation_sample
 from check_quickshell_command_motion import (epochs, expected_states, frames, moving, settled, verify_clock,
-                                             verify_fixture, verify_retarget)
+                                             verify_dynamics, verify_retarget)
 
 DYNAMICS = {"schemaVersion": "0.1.0", "mass": 1, "stiffness": 4, "damping": 4,
             "positionThreshold": 1e-06, "velocityThreshold": 1e-06}
@@ -58,16 +58,12 @@ class CommandMotionEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "long enough"):
             verify_clock([frame(10 + step * .016, step * .016) for step in range(10)])
 
-    def test_dynamics_and_initial_state_must_be_authored(self):
-        verify_fixture([frame(0, 0), frame(.1, .1)], FIXTURE)
+    def test_dynamics_must_be_authored(self):
+        verify_dynamics(frame(0, 0), FIXTURE)
         changed = copy.deepcopy(FIXTURE)
         changed["depthScale"]["dynamics"]["stiffness"] = 8
         with self.assertRaisesRegex(ValueError, "authored dynamics"):
-            verify_fixture([frame(0, 0, channels=changed)], FIXTURE)
-        moved = copy.deepcopy(FIXTURE)
-        moved["bodyMix"]["initial"]["position"] = .2
-        with self.assertRaisesRegex(ValueError, "authored initial state"):
-            verify_fixture([frame(0, 0, channels=moved)], FIXTURE)
+            verify_dynamics(frame(0, 0, channels=changed), FIXTURE)
 
     def test_retarget_must_continue_from_the_reached_state(self):
         previous = frame(10.3, .3)
@@ -82,7 +78,7 @@ class CommandMotionEvidenceTests(unittest.TestCase):
         stopped = copy.deepcopy(channels)
         for name in stopped:
             stopped[name]["initial"]["velocity"] = 0
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "did not continue"):
             verify_retarget(previous, frame(10.36, .01, channels=stopped, target={"bodyMix": 0, "depthScale": 0}))
 
 

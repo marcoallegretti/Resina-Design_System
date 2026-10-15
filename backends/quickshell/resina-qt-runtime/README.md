@@ -944,13 +944,13 @@ covered.
 [`check_quickshell_command_motion.py`](../../../tools/check_quickshell_command_motion.py)
 runs the lifecycle probe with the explicit motion channels of the
 [motion request](../../../conformance/ir/command-motion-request.json) and authored
-preference variants. The probe logs every published frame; after the run, each
-frame's complete snapshot and motion sample is checked against the request in
-effect, the projected state set and the independent spring equations. Input
+preference variants. The probe logs every published motion sample with its
+snapshot; after the run, each frame keeps the authored dynamics and its complete
+snapshot and motion sample are checked against the request in effect, the
+projected state set and the independent spring equations. Input
 reaches the control through the compositor:
 
-- holding Space publishes several unsettled spring frames with the authored
-  dynamics and initial state; the release retarget continues from the position
+- holding Space publishes several unsettled spring frames; the release retarget continues from the position
   and velocity the previous trajectory had reached; each sampled epoch's clock
   advances with elapsed native time within 10 % or 50 ms; one channel settles
   before the other, both settle, and no frame follows;
