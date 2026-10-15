@@ -913,12 +913,13 @@ the lifecycle checker and inspects the actual native tree:
 
 - the application exposes exactly one Button, without decorative descendants,
   with the complete name and description, enabled, sensitive, focusable and
-  focused state, and a `Press` action;
+  focused state, and exactly one `Press` action, which an available or
+  unavailable Command must accept;
 - a real AT-SPI `Press` produces exactly one committed consumer effect;
 - withdrawn availability is published as disabled, unfocusable state and the
   next `Press` produces no effect;
-- configuration replacement republishes the current name, and a `Press` on a
-  replaced node produces no effect;
+- configuration replacement keeps the native node, republishes the current
+  non-ASCII name and acts exactly once;
 - unmounting the control or destroying its surface removes the Button, and a
   `Press` on the retired node produces no effect;
 - availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
@@ -928,11 +929,13 @@ the lifecycle checker and inspects the actual native tree:
 
 All eight cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
-English locale and reads its generated presentation: focusing the control must
-produce speech for its name and a braille line containing its name, role and
-description, and withdrawing availability must produce Orca's unavailable state
-announcement. Orca 50.3 with speech-dispatcher passes both cases locally; CI does
-not install Orca. Audible output, other screen readers and physical input are not
+English locale and isolated settings and reads its generated presentation:
+focusing the control must produce consecutive speech for its name, role and
+description and a braille line containing all three. The Orca version and the
+matched output are saved to `screen-reader.json`. Orca 50.3 with
+speech-dispatcher passes locally; CI does not install Orca. With default settings
+Orca announces no change when availability is withdrawn from the focused control,
+so availability announcements are not verified. Audible output, other screen readers and physical input are not
 covered.
 
 ### Integrated sampled command frames

@@ -9,7 +9,7 @@ import sys
 
 from check_qt_command_snapshot_runtime import ROOT
 from check_qt_native_availability import ACTION, action_names
-from check_quickshell_command_lifecycle import Session, effects, expect_effects
+from check_quickshell_command_lifecycle import REPLACEMENT, Session, effects, expect_effects
 from check_quickshell_command_updates import verify_version
 from check_slint_native_availability import (ACCESSIBLE, BUTTON_ROLE, PROPERTIES, call, integer_values, payload,
                                              references, state_flags, string_value)
@@ -56,32 +56,43 @@ class Tree:
             raise ValueError("the isolated accessibility bus must expose one native application")
         return applications[0]
 
+    def settled(self, predicate, description):
+        def attempt():
+            try:
+                return predicate()
+            except ValueError:
+                return None
+        return self.session.wait(attempt, description, timeout=10)
+
     def command(self, name):
         def single():
             found = buttons(self.address, self.application())
             if len(found) == 1 and text(self.address, found[0], "Name") == name:
                 return found[0]
             return None
-        node = self.session.wait(single, f"one native Button named {name}", timeout=10)
+        node = self.settled(single, f"one native Button named {name}")
         if text(self.address, node, "Description") != DESCRIPTION:
             raise ValueError("native Command lost its complete description")
         return node
 
     def absent(self, description):
-        self.session.wait(lambda: not buttons(self.address, self.application()), description, timeout=10)
+        self.settled(lambda: not buttons(self.address, self.application()), description)
 
     def press(self, node):
+        actions = action_names(call(*node, ACTION + ".GetActions", address=self.address))
+        if payload(call(*node, ACTION + ".DoAction", "int32:" + str(actions.index("Press")),
+                        address=self.address)) != "boolean true":
+            raise ValueError("native Press was not accepted by the live Command")
+
+    def press_retired(self, node):
         try:
-            actions = action_names(call(*node, ACTION + ".GetActions", address=self.address))
-            return payload(call(*node, ACTION + ".DoAction", "int32:" + str(actions.index("Press")),
-                                address=self.address)) == "boolean true"
+            self.press(node)
         except ValueError:
-            return False
+            pass
 
     def expect_state(self, node, enabled, focused):
         expected = {"enabled": enabled, "sensitive": enabled, "focusable": enabled, "focused": focused}
-        self.session.wait(lambda: state(self.address, node) == expected,
-                          f"native state {expected}", timeout=5)
+        self.settled(lambda: state(self.address, node) == expected, f"native state {expected}")
 
 
 def verify(session, tree):
@@ -89,13 +100,10 @@ def verify(session, tree):
     session.reset()
     node = tree.command("Reconnect")
     tree.expect_state(node, True, True)
-    if "Press" not in action_names(call(*node, ACTION + ".GetActions", address=tree.address)):
-        raise ValueError("native Command exposes no Press action")
     results.append("one truthful Button with complete name, description, focus and availability")
 
     before = len(effects(session.events()))
-    if not tree.press(node):
-        raise ValueError("native Press was not accepted")
+    tree.press(node)
     for effect in expect_effects(session, before, 1, "native Press"):
         if not effect["state"]["enabled"] or effect["state"]["hold"] is not None:
             raise ValueError("native Press reached the consumer before committed activation")
@@ -111,15 +119,12 @@ def verify(session, tree):
     session.reset()
     session.call("configure", "replacement")
     session.ready()
-    replaced = tree.command("Reconnect now")
+    if tree.command(REPLACEMENT) != node:
+        raise ValueError("configuration replacement changed the native Command identity")
     before = len(effects(session.events()))
-    if replaced != node:
-        tree.press(node)
-        expect_effects(session, before, 0, "native Press on the replaced node")
-    if not tree.press(replaced):
-        raise ValueError("native Press on the replacement was not accepted")
+    tree.press(node)
     expect_effects(session, before, 1, "native Press after replacement")
-    results.append("replacement republishes the current name and delivers no stale Press")
+    results.append("replacement keeps the native identity, republishes the localized name and acts once")
 
     for operation, description in (("setMounted", "unmounted Command"), ("setWindowed", "closed surface")):
         session.reset()
@@ -127,7 +132,7 @@ def verify(session, tree):
         before = len(effects(session.events()))
         session.call(operation, "false")
         tree.absent(f"native Button removed with the {description}")
-        tree.press(node)
+        tree.press_retired(node)
         expect_effects(session, before, 0, f"native Press after the {description}")
         results.append(f"{description} withdraws the native Button without stale delivery")
 
@@ -135,8 +140,7 @@ def verify(session, tree):
     node = tree.command("Reconnect")
     before = len(effects(session.events()))
     session.call("setReaction", "unavailable")
-    if not tree.press(node):
-        raise ValueError("native Press before callback-time withdrawal was not accepted")
+    tree.press(node)
     expect_effects(session, before, 1, "native Press with callback-time withdrawal")
     tree.expect_state(node, False, False)
     tree.press(node)
@@ -163,29 +167,38 @@ def lines(log):
     return len(log.read_text(encoding="utf-8", errors="replace").splitlines()) if log.exists() else 0
 
 
+def announced(speech, *items):
+    spoken = [item.split("' ", 1)[0] + "'" for item in speech]
+    expected = [f"'{item}'" for item in items]
+    return any(spoken[index:index + len(expected)] == expected for index in range(len(spoken)))
+
+
 def screen_reader(session, output):
     log = output / "orca.debug"
+    home = output / "orca-home"
+    home.mkdir()
+    environment = dict(os.environ, LANGUAGE="en", LC_ALL="C.UTF-8", HOME=str(home),
+                       XDG_CONFIG_HOME=str(home / "config"), XDG_DATA_HOME=str(home / "data"))
+    version = subprocess.run(["orca", "--version"], env=environment, capture_output=True, text=True,
+                             timeout=30).stdout.strip()
     reader = subprocess.Popen(["orca", "--debug-file", str(log)], stdout=(output / "orca.log").open("w"),
-                              stderr=subprocess.STDOUT, env=dict(os.environ, LANGUAGE="en", LC_ALL="C.UTF-8"))
+                              stderr=subprocess.STDOUT, env=environment)
     try:
-        session.wait(lambda: reader.poll() is None and any("Screen reader on" in item
-                     for item in presentation(log, 0)[0]) if log.exists() else False, "Orca start", timeout=30)
+        session.wait(lambda: reader.poll() is None and log.exists()
+                     and any("Screen reader on" in item for item in presentation(log, 0)[0]), "Orca start", timeout=30)
         session.reset()
         session.call("focusOther")
         session.settle(lambda current: not current["state"]["focused"], "focus away from Command")
         start = lines(log)
         session.call("focusCommand")
-        session.wait(lambda: any("Reconnect button Connect using saved settings." in item
-                                 for item in presentation(log, start)[1]), "Orca focus presentation", timeout=10)
-        speech, _ = presentation(log, start)
-        if not any(item.startswith("'Reconnect'") for item in speech):
-            raise ValueError("Orca did not speak the focused Command name: " + repr(speech[-5:]))
-        start = lines(log)
-        session.call("availability", "false")
-        session.wait(lambda: any(item.startswith("'grayed") for item in presentation(log, start)[0]),
-                     "Orca unavailable announcement", timeout=10)
-        return ["Orca speaks the focused Command name and presents name, role and description",
-                "Orca announces the unavailable Command"]
+        session.wait(lambda: announced(presentation(log, start)[0], "Reconnect", "button.", DESCRIPTION) and any(
+            "Reconnect button " + DESCRIPTION in item for item in presentation(log, start)[1]),
+            "Orca focus presentation", timeout=10)
+        focus = presentation(log, start)
+        (output / "screen-reader.json").write_text(json.dumps({
+            "screenReader": version, "focusSpeech": focus[0], "focusBraille": focus[1]},
+            indent=2, ensure_ascii=False), encoding="utf-8")
+        return ["Orca speaks and brailles the focused Command name, role and description"]
     finally:
         if reader.poll() is None:
             reader.terminate()
@@ -243,8 +256,11 @@ def main():
         try:
             output, diagnostics = process.communicate(timeout=300)
         finally:
-            if process.poll() is None:
+            try:
                 os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            if process.poll() is None:
                 process.communicate(timeout=5)
         reports = [line[len(REPORT):] for line in output.splitlines() if line.startswith(REPORT)]
         if process.returncode or len(reports) != 1:
