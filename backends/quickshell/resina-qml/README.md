@@ -248,7 +248,7 @@ Preparation requires the actual destination device scale, available through Qt Q
 cargo run --release -p resina-qml --bin resina-paint-qml -- request.json 1.25 4 44.3 26.1
 ```
 
-The command accepts one strict UTF-8 surface paint request from a file or `-`, up to 1 MiB, followed by device scale, samples per axis and both placement coordinates. Success exits 0 with complete QML and no diagnostics. Input/preparation failure exits 1 with a diagnostic and no QML; usage errors exit 2. It preserves authored theme and capability resolution rather than forcing opacity for unsupported treatments. Package versions remain 0.0.1; no external package or package version was added to the lockfile.
+The command accepts one strict UTF-8 surface paint request from a file or `-`, up to 1 MiB, followed by device scale, samples per axis and both placement coordinates. Success exits 0 with complete QML and no diagnostics. Input/preparation failure exits 1 with a diagnostic and no QML; usage errors exit 2. It preserves authored theme and capability resolution rather than forcing opacity for unsupported treatments. No external package or package version was added to the lockfile.
 
 The [native paint probe](../../../conformance/quickshell/paint-probe.qml) checks actual scale, readiness and decorative semantics before capture. The [runtime checker](../../../tools/check_quickshell_paint_runtime.py) derives the tight prepared viewport from reference IR and compares every captured alpha, opaque RGB and premultiplied RGB channel with the compiled raster result within one byte. Matching the prepared viewport matters at exact boundaries: algebraically equivalent larger viewports can round sample positions differently. This checks native placement/upload/compositing, not independently implemented geometry or accessibility.
 
@@ -339,7 +339,7 @@ cargo run -p resina-qml --bin resina-focus-qml -- conformance/ir/focus-ir-reques
 python tools/check_focus_qml_backend.py -- target/debug/resina-focus-qml -
 ```
 
-The command reads a strict UTF-8 focus IR request from a file or `-` (stdin), up to 1 MiB. It resolves and renders completely before writing QML. Success exits 0 without diagnostics; invalid input or unsupported precision exits 1 with diagnostics and no output; usage errors exit 2. Packages remain at 0.0.1. The external checker compares the full native profile and both translated boundaries against all public focus cases, rejects malformed input, and checks repeated output. These checks run in Linux and Windows CI without a Qt runtime.
+The command reads a strict UTF-8 focus IR request from a file or `-` (stdin), up to 1 MiB. It resolves and renders completely before writing QML. Success exits 0 without diagnostics; invalid input or unsupported precision exits 1 with diagnostics and no output; usage errors exit 2. The external checker compares the full native profile and both translated boundaries against all public focus cases, rejects malformed input, and checks repeated output. These checks run in Linux and Windows CI without a Qt runtime.
 
 The [baseline QML](../../../conformance/quickshell/focus-baseline.qml) represents the public 20 by 14 silhouette with gap 2 and width 2. The [runtime probe](../../../conformance/quickshell/focus-probe.qml) loads either that baseline or generated QML, checks the bounds and decorative semantics, compares 3,197 off-boundary points against an independent distance-to-rectangle oracle, and captures the native item. For example, from the repository root on Linux:
 
