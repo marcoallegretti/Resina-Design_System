@@ -78,9 +78,11 @@ class Session:
         shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", self.config / "controls")
         requests = output / "requests.json"
         requests.write_text(json.dumps(authored_requests()), encoding="utf-8")
+        # Quickshell's reload popup is a separate engine generation that stays open while hovered,
+        # and IPC refuses queries while more than one generation exists.
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
                                 QML_IMPORT_PATH=str(module), RESINA_COMMAND_FONT=font.as_uri(),
-                                RESINA_LIFECYCLE_REQUESTS=str(requests))
+                                RESINA_LIFECYCLE_REQUESTS=str(requests), QS_NO_RELOAD_POPUP="1")
         self.environment.pop("DISPLAY", None)
         self.environment.pop("QT_SCALE_FACTOR", None)
         self.log = output / "shell.log"
@@ -289,6 +291,8 @@ INTERRUPTIONS = {
     "unmount": lambda session: session.call("setMounted", "false"),
     "hidden surface": lambda session: session.call("setShown", "false"),
     "closed surface": lambda session: session.call("setWindowed", "false"),
+    "soft reload": lambda session: session.call("reloadShell", "false"),
+    "hard reload": lambda session: session.call("reloadShell", "true"),
 }
 
 
@@ -305,17 +309,23 @@ def interruption_cases(session):
                 session.input.button(True)
             session.settle(lambda current: current["state"]["hold"] is not None, gesture + " hold")
             interrupt(session)
+            if name.endswith("reload"):
+                retired = observed["generation"]
+                session.settle(lambda current: current["generation"] != retired,
+                               f"previous generation retired after {name}")
             session.quiet()
             if gesture == "space":
                 session.input.key(KEY_SPACE, False)
             else:
                 session.input.button(False)
             expect_effects(session, before, 0, f"{gesture} held across {name}")
-            session.reset()
+            current = session.reset()
             before = len(effects(session.events()))
             session.input.key(KEY_SPACE, True)
             session.input.key(KEY_SPACE, False)
-            expect_effects(session, before, 1, f"fresh gesture after {name}")
+            fresh = expect_effects(session, before, 1, f"fresh gesture after {name}")
+            if fresh[0]["generation"] != current["generation"]:
+                raise ValueError(f"a retired generation delivered the effect after {name}")
             results.append(f"{gesture} held across {name}")
     return results
 
