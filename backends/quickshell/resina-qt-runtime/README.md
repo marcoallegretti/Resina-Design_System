@@ -497,9 +497,11 @@ QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
   --output-dir target/qt-surface-view-1.25
 ```
 
-Released-Quickshell hosting, live output-scale transfer, hardware renderers and
-enhanced Frost or Gel treatments beyond their opaque representation are not
-covered.
+The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
+in released Quickshell 0.3.2 and checks its publications against the reference
+resolver and its composited pixels at output scales 1 and 2. Live output-scale
+transfer, hardware renderers and enhanced Frost or Gel treatments beyond their
+opaque representation are not covered.
 
 ## Platform appearance preferences
 
@@ -1214,8 +1216,8 @@ the default static AT profile also passed again. Captures of successive pressed
 samples were inspected. The
 [hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
 also passed. These results apply to the standalone Qt host; GUIdo integration
-requires its own runtime verification. Released Quickshell accessibility is
-verified by the eight AT-SPI cases of
+requires its own runtime verification. Released Quickshell Command accessibility
+is verified by the eight AT-SPI cases of
 [Released Quickshell Command accessibility](#released-quickshell-command-accessibility).
 Material calibration and screen-reader presentation outside local runs remain
 unverified.
