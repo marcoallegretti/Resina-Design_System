@@ -3021,7 +3021,7 @@ Resina Lab is mandatory.
 
 The principal high-fidelity Lab SHOULD use GUIdo.
 
-Until the Lab exists, visual changes require repeatable reference raster and Shell backend captures.
+Until the Lab boards of §178 exist, visual changes require repeatable reference raster and Shell backend captures.
 
 The Web implementation provides an additional portable Lab.
 

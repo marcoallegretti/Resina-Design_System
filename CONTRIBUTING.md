@@ -55,4 +55,4 @@ Keep published text about the project and concrete evidence. Record separately a
 
 ## Track delivery outcomes
 
-Use the Epic form for an accepted delivery outcome and link executable work as child issues. See [delivery tracking](docs/development/delivery.md) for status meanings, acceptance evidence and the minimal GUIdo shell testbed milestone. AGENTS.md remains the canonical engineering policy.
+Use the Epic form for an accepted delivery outcome and link executable work as child issues. See [delivery tracking](docs/development/delivery.md) for status meanings, acceptance evidence and how milestones follow the release line. AGENTS.md remains the canonical engineering policy.
