@@ -202,7 +202,7 @@ GUIdo is allowed to use advanced capabilities such as:
 
 GUIdo does not define the minimum capabilities of Resina.
 
-GUIdo realizes accepted contracts within the capabilities its upstream runtime provides. A missing upstream capability is recorded with its upstream owner and does not block a Resina release.
+GUIdo realizes accepted contracts within the capabilities its upstream runtime provides. A missing upstream capability is recorded with its upstream owner and does not block a Resina release before 1.0.
 
 ---
 
@@ -216,7 +216,7 @@ Purpose:
 
 > Deliver Resina as a complete, usable Shell backend.
 
-Each release realizes its complete Core component library and Shell Profile in Quickshell. Because it shares no rendering architecture with GUIdo, it also proves that Resina semantics survive:
+From 0.1.0, each release realizes its complete Core component library and Shell Profile in Quickshell. Because it shares no rendering architecture with GUIdo, it also proves that Resina semantics survive:
 
 ```text
 Rust/wgpu/SDF
@@ -2818,7 +2818,7 @@ generic effects
 
 Resina semantics remain outside GUIdo.
 
-Until an upstream capability exists, the affected Resina behaviour is recorded as unsupported in GUIdo's capability matrix. Releases do not wait for it.
+Until an upstream capability exists, the affected Resina behaviour is recorded as unsupported for GUIdo in the backend compatibility matrix (§165). Releases before 1.0 do not wait for it.
 
 ---
 
@@ -3020,6 +3020,8 @@ Do not rely solely on exact pixel matching.
 Resina Lab is mandatory.
 
 The principal high-fidelity Lab SHOULD use GUIdo.
+
+Until the Lab exists, visual changes require repeatable reference raster and Shell backend captures.
 
 The Web implementation provides an additional portable Lab.
 
@@ -3976,7 +3978,7 @@ Slider
 Panel
 ```
 
-Contribute generic missing primitives upstream. Record unsupported behaviour in the capability matrix instead of blocking releases.
+Contribute generic missing primitives upstream. Record unsupported behaviour in the backend compatibility matrix (§165) instead of blocking releases before 1.0.
 
 ---
 
@@ -4156,6 +4158,8 @@ Releases before 0.1.0 are development releases. 0.1.0 is the first release inten
 
 A release is proposed with evidence for each of its requirements and accepted by the maintainer.
 
+A component is qualified in a backend when its contracts are realized in the released host and verified with authored updates, native input, focus, lifetime, motion and accessibility evidence.
+
 ---
 
 # 191. Resina 0.0.x
@@ -4181,7 +4185,7 @@ basic conformance vectors
 0.0.2 — Interactive component proof:
 
 ```text
-Command, Toggle and Slider contracts
+Command (Button), Toggle and Slider contracts
 one component qualified end to end in the Shell backend:
 authored updates, native input, focus, lifetime, motion, accessibility
 ```
@@ -4196,6 +4200,7 @@ production layout and appearance profiles
 iconography
 dynamic colour
 typography and content design
+spatial system, density and state composition
 ```
 
 0.0.4 — Component library and Shell Profile:
@@ -4226,14 +4231,15 @@ Requires:
 
 ```text
 complete Core: tokens, materials, dynamic colour, typography,
-iconography, motion, environment, capabilities and fallback
+iconography, spatial system, density, state composition, motion,
+environment, adaptation, capabilities and fallback
 core component library
 Shell Profile
 complete Quickshell backend
 accessibility modes: high contrast, large text, reduced motion,
 reduced transparency, RTL
 localization and text expansion
-GUIdo capability matrix
+backend compatibility matrix (§165) for Quickshell and GUIdo
 consumer and backend documentation
 ```
 
@@ -4248,7 +4254,9 @@ Portability milestone.
 Requires:
 
 ```text
-GUIdo Shell testbed, as upstream capabilities allow
+GUIdo Shell testbed realizing every 0.1.0 component its upstream runtime supports,
+with the remainder listed in the backend compatibility matrix
+Resina Lab
 Slint backend
 Web documentation
 stable IR candidate
