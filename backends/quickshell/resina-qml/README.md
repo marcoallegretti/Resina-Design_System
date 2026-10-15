@@ -16,6 +16,14 @@ loss. Its API, coordinate/lifetime requirements and executed capture matrix are
 specified in that runtime README. It is decorative, ignored by accessibility and
 has no native gesture handler. It does not implement a Button or animation.
 
+[`ResinaSurfaceView.qml`](qml/ResinaSurfaceView.qml) realizes a complete surface
+paint request live through the same compiled runtime, at its actual scene origin
+and pixel density, and prepares again when either changes. It exposes the guarded
+foreground colour and content region for consumer content placed on the surface.
+Its API and executed capture matrix are in the
+[runtime README](../resina-qt-runtime/README.md#live-native-surface-view). It is
+decorative and owns no input, accessibility, window or layer policy.
+
 [`ResinaCommandKeyboard.qml`](qml/ResinaCommandKeyboard.qml) owns a native focus
 item and the Rust command lifecycle for keyboard delivery. Its
 [runtime contract and evidence](../resina-qt-runtime/README.md#native-command-keyboard-owner)
