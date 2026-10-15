@@ -19,20 +19,19 @@ from check_quickshell_command_updates import (
 
 
 class CommandUpdateEvidenceTests(unittest.TestCase):
-    def test_focus_observation_uses_raw_native_values_instead_of_a_bound_aggregate(self):
+    def test_native_focus_is_the_conjunction_of_raw_native_values(self):
         from check_quickshell_command_updates import verify_native_focus
-        observed = dict(activeFocus=True, windowActive=True, visible=True,
-                        enabled=True, windowVisible=True, boundFocused=False)
+        observed = dict(activeFocus=True, windowActive=True, visible=True, enabled=True, windowVisible=True)
         verify_native_focus({"nativeFocused": True, "nativeFocus": observed})
-        for field in ("activeFocus", "windowActive", "visible", "enabled", "windowVisible"):
-            changed = {**observed, field: False, "boundFocused": True}
+        for field in observed:
+            changed = {**observed, field: False}
             with self.subTest(field=field):
                 verify_native_focus({"nativeFocused": False, "nativeFocus": changed})
-                with self.assertRaisesRegex(ValueError, "native focus observation"):
+                with self.assertRaisesRegex(ValueError, "does not match callback-time native values"):
                     verify_native_focus({"nativeFocused": True, "nativeFocus": changed})
         for changed in ({**observed, "activeFocus": 1}, {**observed, "extra": True},
                         {key: value for key, value in observed.items() if key != "windowActive"}):
-            with self.subTest(observation=changed), self.assertRaisesRegex(ValueError, "native focus observation"):
+            with self.subTest(observation=changed), self.assertRaisesRegex(ValueError, "fields or types differ"):
                 verify_native_focus({"nativeFocused": True, "nativeFocus": changed})
 
     def test_native_focus_matrix_covers_fallback_failure_and_focused_recovery(self):
@@ -61,6 +60,29 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                         original = json.loads(baseline["request"]["content"]["themeSource"])
                         self.assertEqual(theme["opaqueColorAssignments"]["roles"].get("outline.strong"),
                                          original["opaqueColorAssignments"]["roles"].get("outline.strong"))
+
+    def test_focus_matrix_cases_force_their_named_contrast_outcome_in_order(self):
+        from check_quickshell_command_updates import contrast, inline_color
+        cases = authored_cases()
+        names = [case["name"] for case in cases]
+
+        def ratios(name):
+            case = cases[names.index(name)]
+            theme = json.loads(case["request"]["content"]["themeSource"])
+            surrounding = case["request"]["body"]["surroundingColor"]["components"]
+            return [contrast(inline_color(theme, role, "opaqueColorAssignments")["components"], surrounding)
+                    for role in ("focus", "outline.strong")]
+
+        for theme_name in ("light", "dark"):
+            with self.subTest(theme=theme_name):
+                focus, outline = ratios(theme_name + "-focus-fallback")
+                self.assertLess(focus, 3)
+                self.assertGreaterEqual(outline, 3)
+                self.assertTrue(all(ratio < 3 for ratio in ratios(theme_name + "-focus-contrast")))
+                self.assertGreaterEqual(ratios(theme_name + "-focus-recovery")[0], 3)
+                fallback = names.index(theme_name + "-focus-fallback")
+                self.assertEqual(names[fallback + 1:fallback + 3],
+                                 [theme_name + "-focus-contrast", theme_name + "-focus-recovery"])
 
     def test_focus_guard_checks_authored_pigment_and_fallback_independently(self):
         from check_quickshell_command_updates import verify_authored_focus
@@ -219,15 +241,21 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             report["publications"][0]["snapshot"]["paint"]["phase"] = "hover"
             verify_case(case, report, 1)
             self.assertEqual(validate_snapshot.call_args.args[2]["states"], ["hover"])
-            for member, value in (("final", True), ("callback", True), ("callback", 1)):
+            focused = {field: True for field in report["nativeFocus"]}
+            for member, reported, error in (
+                    ("final", True, "native focus observation and committed state disagree"),
+                    ("callback", True, "consumer callback disagrees with native focus observation"),
+                    ("final", False, "does not match callback-time native values"),
+                    ("callback", False, "does not match callback-time native values")):
                 changed = copy.deepcopy(report)
-                if member == "final":
-                    changed["nativeFocused"] = value
-                else:
-                    changed["publications"][0]["nativeFocused"] = value
-                with self.subTest(member=member, value=value), self.assertRaisesRegex(
-                        ValueError, "native focus|native observation"):
+                observation = changed if member == "final" else changed["publications"][0]
+                observation.update(nativeFocus=dict(focused), nativeFocused=reported)
+                with self.subTest(member=member, reported=reported), self.assertRaisesRegex(ValueError, error):
                     verify_case(case, changed, 1)
+            changed = copy.deepcopy(report)
+            changed["publications"][0]["nativeFocused"] = 1
+            with self.assertRaisesRegex(ValueError, "publication native observation is not Boolean"):
+                verify_case(case, changed, 1)
             invalid_final = copy.deepcopy(report)
             invalid_layout = json.loads(invalid_final["snapshot"])
             invalid_layout["label"]["labelBounds"]["x"] = 0
@@ -346,7 +374,7 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                 "hovered": False, "nativeFocused": False, "ignored": True, "deviceScale": 1, "renderer": "software",
                 "publications": [], "measurements": [],
                 "nativeFocus": dict(activeFocus=False, windowActive=True, visible=True,
-                                    enabled=True, windowVisible=True, boundFocused=False)}
+                                    enabled=True, windowVisible=True)}
 
     def test_complete_rejected_replacement_is_reported(self):
         report = self.rejected()

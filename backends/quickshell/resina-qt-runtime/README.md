@@ -823,16 +823,14 @@ context, while interaction paint follows each callback's own state.
 Focused cases request native item focus and independently record actual item/window
 focus alongside final and callback state. Each observation retains the raw item,
 window, visibility and availability values read at that callback or final sample.
-The reported native focus is their conjunction; the bound aggregate is retained
-only as a diagnostic because QML binding notification order can differ. A request
-that does not become observed focus fails within the existing case deadline.
-Focused rest retains both `rest`
-and `focused`; body and navigation bindings and silhouettes must agree. Offscreen
-focus observations do not establish compositor focus policy or physical input.
-Before publishing a prepared frame, the control synchronizes native focus and
-pending interruption, then validates the resulting preparation generation.
-Final natural and fitted native measurements reach
-the independent rational layout checker. These remeasurements verify final
+The reported native focus is their conjunction. A request that does not become
+observed focus fails within the existing case deadline. Focused rest retains both
+`rest` and `focused`; body and navigation bindings and silhouettes must agree.
+Offscreen focus observations do not establish compositor focus policy or physical
+input. Before publishing a prepared frame, the control synchronizes native
+focus and pending interruption, then validates the resulting preparation
+generation. Final natural and fitted native measurements reach the independent
+rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
 
 Each successful case saves a PNG and its complete snapshot. Pixel checks require

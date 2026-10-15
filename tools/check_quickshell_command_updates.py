@@ -257,11 +257,11 @@ def static_authored_states(state, hovered):
 
 def verify_native_focus(report):
     observation = report["nativeFocus"]
-    fields = {"activeFocus", "windowActive", "visible", "enabled", "windowVisible", "boundFocused"}
+    fields = {"activeFocus", "windowActive", "visible", "enabled", "windowVisible"}
     if not isinstance(observation, dict) or set(observation) != fields \
             or any(type(value) is not bool for value in observation.values()):
         raise ValueError("raw native focus observation fields or types differ")
-    focused = all(observation[field] for field in fields - {"boundFocused"})
+    focused = all(observation.values())
     if report["nativeFocused"] != focused:
         raise ValueError("native focus observation does not match callback-time native values")
 

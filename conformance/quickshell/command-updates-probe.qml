@@ -19,7 +19,7 @@ FloatingWindow {
     function observeFocus() {
         return {activeFocus: command.activeFocus, windowActive: command.Window.active,
             visible: command.visible, enabled: command.enabled,
-            windowVisible: root.backingWindowVisible, boundFocused: root.nativeFocused};
+            windowVisible: root.backingWindowVisible};
     }
 
     function focused(observation) {
