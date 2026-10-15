@@ -1132,7 +1132,7 @@ checksum = "19b30a45b0cd0bcca8037f3d0dc3421eaf95327a17cad11964fb8179b4fc4832"
 
 [[package]]
 name = "resina-color"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "resina-tokens",
  "serde",
@@ -1141,7 +1141,7 @@ dependencies = [
 
 [[package]]
 name = "resina-environment"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -1149,7 +1149,7 @@ dependencies = [
 
 [[package]]
 name = "resina-guido"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "guido",
  "resina-environment",
@@ -1160,7 +1160,7 @@ dependencies = [
 
 [[package]]
 name = "resina-lab"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "fontdb",
  "guido",
@@ -1175,14 +1175,14 @@ dependencies = [
 
 [[package]]
 name = "resina-model"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "resina-motion"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "resina-model",
  "resina-tokens",
@@ -1192,7 +1192,7 @@ dependencies = [
 
 [[package]]
 name = "resina-raster"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "num-bigint 0.5.1",
  "num-rational",
@@ -1204,7 +1204,7 @@ dependencies = [
 
 [[package]]
 name = "resina-resolver"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "num-bigint 0.5.1",
  "resina-color",
@@ -1218,7 +1218,7 @@ dependencies = [
 
 [[package]]
 name = "resina-tokens"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "serde",
  "serde_json",

@@ -1,4 +1,4 @@
-# Slint focus realization (0.1.0)
+# Slint focus realization (0.0.1)
 
 This application backend slice realizes validated [focus indicator IR](../../../spec/37-focus-indicator-ir.md) as an exported native Slint `ResinaFocusIndicator` component. It is independent of GUIdo, Qt Quick and the Web mapper. It implements the static navigation cue; component input, body appearance, layout, motion and accessibility behavior remain separate contracts.
 
