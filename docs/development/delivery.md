@@ -2,7 +2,7 @@
 
 [AGENTS.md](../../AGENTS.md) defines engineering policy. The [blueprint](../../RESINA_DESIGN_SYSTEM_BLUEPRINT.md) describes direction; component requirements belong to the normative sources listed in the engineering contract.
 
-The first milestone targets a minimal real Wayland shell using Resina through GUIdo. A separate later milestone covers Canopia adoption. Start from [Epic 1](https://github.com/marcoallegretti/Resina-Design_System/issues/108) and the [shell testbed epic](https://github.com/marcoallegretti/Resina-Design_System/issues/110). An epic issue records a user outcome, normative requirements, scope limits, dependencies and acceptance evidence. Child issues define executable work. Pull requests link to their accepted issue and name any prerequisite PR. Issues and the milestone track delivery status. An optional Project may provide another view; it does not define component behavior.
+Milestones follow the [release line](../../RESINA_DESIGN_SYSTEM_BLUEPRINT.md#190-release-line). The first usable release, 0.1.0, targets a complete Shell through Quickshell; GUIdo realizes what its upstream runtime supports. A separate later milestone covers Canopia adoption. Start from [Epic 7](https://github.com/marcoallegretti/Resina-Design_System/issues/160) and [Epic 7-A](https://github.com/marcoallegretti/Resina-Design_System/issues/185). An epic issue records a user outcome, normative requirements, scope limits, dependencies and acceptance evidence. Child issues define executable work. Pull requests link to their accepted issue and name any prerequisite PR. Issues and the milestone track delivery status. An optional Project may provide another view; it does not define component behavior.
 
 ## Status and acceptance
 
