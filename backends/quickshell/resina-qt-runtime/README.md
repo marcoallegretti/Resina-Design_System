@@ -479,7 +479,10 @@ CI runs it with Qt 6.11.2 software rendering offscreen at DPR 1, 1.25, 2 and 1.3
 cargo build -p resina-raster --bin resina-paint-raster --locked
 cargo build -p resina-resolver --bin resina-theme-resolve --bin resina-surface-paint --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py   --module-path target/qt-runtime-import --raster target/debug/resina-paint-raster   --resolver target/debug/resina-surface-paint --scenes target/material-scenes.json   --output-dir target/qt-surface-view-1.25
+QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
+  --module-path target/qt-runtime-import --raster target/debug/resina-paint-raster \
+  --resolver target/debug/resina-surface-paint --scenes target/material-scenes.json \
+  --output-dir target/qt-surface-view-1.25
 ```
 
 Released-Quickshell hosting, live output-scale transfer, hardware renderers and
