@@ -877,7 +877,7 @@ python tools/check_quickshell_command_lifecycle.py \
 `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR` must select a compositor providing
 `wlr-layer-shell`, virtual pointer and virtual keyboard with one output at
 unit scale. Headless Sway 1.12 (`WLR_BACKENDS=headless`, `WLR_RENDERER=pixman`)
-and nested niri 26.04 pass all 22 cases; CI uses the Ubuntu 24.04 Sway package.
+and nested niri 26.04 pass all 26 cases; CI uses the Ubuntu 24.04 Sway package.
 The checker verifies the host version, fails on QML type, reference and
 invalid-context errors in the host log and counts every consumer effect:
 
@@ -890,8 +890,10 @@ invalid-context errors in the host log and counts every consumer effect:
   follows once it returns; availability withdrawal clears focus and suppresses
   activation;
 - Space or pointer held across configuration replacement, unmount, hidden and
-  destroyed surfaces delivers no effect, and a fresh gesture afterwards delivers
-  exactly one;
+  destroyed surfaces, and soft and hard Quickshell reload, delivers no effect; a
+  reload must retire the previous engine generation, observed through Quickshell
+  0.3.2 IPC, which answers only while exactly one generation exists; a fresh
+  gesture afterwards delivers exactly one effect from the current generation;
 - consumer callbacks that replace the configuration, withdraw availability, invoke
   the control, hide, unmount or destroy its surface observe committed state and
   produce exactly one effect; a callback-time `invoke()` is a separate semantic
@@ -899,10 +901,12 @@ invalid-context errors in the host log and counts every consumer effect:
   callback-time availability withdrawal produces none.
 
 When the control is destroyed, its pending prepared frame is retired so deferred
-publication work does not run in the destroyed QML context. Quickshell reload is
-not covered: a reload after held input in an extended session can leave the
-previous engine generation alive (#189). Physical devices, multiple seats and
-outputs, fractional scale and screen-reader operation are not covered.
+publication work does not run in the destroyed QML context. The checker sets
+`QS_NO_RELOAD_POPUP`: Quickshell's reload popup runs in its own engine generation
+at the top-left of the output, and a hover during its fade-out keeps it open until
+it is closed or replaced by another reload. Physical
+devices, multiple seats and outputs, fractional scale and screen-reader operation
+are not covered.
 
 ### Released Quickshell Command accessibility
 

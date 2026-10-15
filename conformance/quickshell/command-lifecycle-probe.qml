@@ -213,5 +213,6 @@ ShellRoot {
         function setWindowed(value: bool): void { root.windowed = value; }
         function setReaction(mode: string): void { root.reaction = mode; root.reactionResult = null; }
         function setDisabledFocusable(value: bool): void { root.disabledFocusable = value; }
+        function reloadShell(hard: bool): void { Quickshell.reload(hard); }
     }
 }
