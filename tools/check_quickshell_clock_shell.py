@@ -71,6 +71,8 @@ class Shell:
             self.environment.pop("RESINA_CLOCK_THEME", None)
         self.environment.pop("DISPLAY", None)
         self.environment.pop("QT_SCALE_FACTOR", None)
+        self.client_environment = {name: value for name, value in self.environment.items()
+                                   if name != "QT_LINUX_ACCESSIBILITY_ALWAYS_ON"}
         self.log = output / "shell.log"
         self.process = subprocess.Popen([str(host), "--no-color", "--path", str(self.path)], env=self.environment,
                                         stdout=self.log.open("w"), stderr=subprocess.STDOUT)
@@ -97,7 +99,7 @@ class Shell:
         while True:
             try:
                 result = subprocess.run([str(self.host), "ipc", "--path", str(self.path), "call", "clock", function,
-                                         *map(str, arguments)], env=self.environment, capture_output=True,
+                                         *map(str, arguments)], env=self.client_environment, capture_output=True,
                                         text=True, timeout=10)
             except subprocess.TimeoutExpired:
                 if time.monotonic() > deadline:
@@ -399,6 +401,21 @@ class Accessibility:
         except ValueError as error:
             raise ValueError(f"{error}; last native buttons: {last[0]}") from None
 
+    def settled(self, predicate, description):
+        last = [None]
+
+        def attempt():
+            try:
+                last[0] = self.exposed()
+                return last[0] if predicate(last[0]) else None
+            except ValueError as error:
+                last[0] = str(error)
+                return None
+        try:
+            return self.shell.wait_for(attempt, description)
+        except ValueError as error:
+            raise ValueError(f"{error}; last native tree: {last[0]}") from None
+
     def press(self, node):
         actions = action_names(call(*node, ACTION + ".GetActions", address=self.address))
         if payload(call(*node, ACTION + ".DoAction", "int32:" + str(actions.index("Press")),
@@ -425,7 +442,7 @@ def accessibility_cases(shell, report):
     closed_tree = tree.wait(lambda found: found if set(found) == {"Show clock"}
                             and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
                             "one available native Button named Show clock")
-    report["exposedClosed"] = tree.exposed()
+    report["exposedClosed"] = tree.settled(lambda nodes: True, "a readable native tree while closed")
     tree.press(closed_tree["Show clock"][0])
     shell.until(opened, "clock surface opened by a native Press")
     found = tree.wait(lambda found: found if set(found) == {"Show clock", "Close"}
@@ -434,11 +451,11 @@ def accessibility_cases(shell, report):
                       "Show clock unavailable and Close available while open")
     if not state(tree.address, found["Close"][0])["focused"]:
         raise ValueError("native Close is not focused while the clock surface is open")
-    report["exposedOpen"] = tree.exposed()
-    observed = shell.observe()
-    names = [node["name"] for node in report["exposedOpen"]]
-    if observed["date"] not in names or not any(re.fullmatch(r"[0-9]{2}:[0-9]{2}:[0-9]{2}", name) for name in names):
-        raise ValueError(f"the open clock surface does not expose its time and date natively: {report['exposedOpen']}")
+    def readable(nodes):
+        labels = [node["name"] for node in nodes if node["role"] == "label"]
+        return (shell.observe()["date"] in labels
+                and any(re.fullmatch(r"[0-9]{2}:[0-9]{2}:[0-9]{2}", name) for name in labels))
+    report["exposedOpen"] = tree.settled(readable, "the displayed time and date as native static text")
     tree.press(found["Close"][0])
     shell.until(lambda current: not current["open"] and not current["clock"], "clock closed by a native Press")
     tree.wait(lambda found: found if set(found) == {"Show clock"}
