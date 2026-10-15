@@ -445,9 +445,11 @@ and report `paintError`. Clearing `request` withdraws publication without error.
 `SurfacePaintResolver.resolveOpaqueColor(themeRequest, role)` returns the opaque
 sRGB fallback that [theme resolution](../../../spec/13-opaque-color-fallback.md)
 assigns to one semantic colour role, as `{"role", "color"}` or a diagnostic.
-Passing a surface request's own `theme` gives a consumer-painted backdrop, or a
-declared adjacent or surrounding colour, exactly the colour the surface guards
-assume.
+The colour itself guarantees no contrast. The surface guards check the
+`adjacentColor` and, when focused, the `surroundingColor` supplied in each
+request. A consumer that paints its backdrop in this colour, resolved from the
+surface request's own `theme`, must declare the same value as those colours for
+the guards to describe what is actually painted.
 
 The view prepares itself. Changes to the request, sampling density, own
 position, scale, rotation, parent, window or pixel density withdraw the current
