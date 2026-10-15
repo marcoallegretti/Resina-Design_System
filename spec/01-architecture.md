@@ -46,7 +46,7 @@ The [command interaction projection](48-command-states.md) derives supported pai
 
 ## Backend roles
 
-GUIdo is the high-fidelity reference renderer. Its advanced drawing techniques demonstrate Resina but do not raise the minimum capability floor. Quickshell is an independent Shell conformance backend and must be able to realize the semantics without copying GUIdo's rendering architecture. Slint is the application backend for conventional interfaces. Web provides documentation, conformance views and a playground using broadly available web primitives first. Headless conformance is the shared reference for all backends.
+GUIdo is the high-fidelity reference renderer. Its advanced drawing techniques demonstrate Resina but do not raise the minimum capability floor. GUIdo realizes accepted contracts within the capabilities of its upstream runtime; a missing upstream capability is recorded with its owner and does not block a Resina release. Quickshell is the Shell backend and must realize the semantics without copying GUIdo's rendering architecture. Slint is the application backend for conventional interfaces. Web provides documentation, conformance views and a playground using broadly available web primitives first. Headless conformance is the shared reference for all backends.
 
 Backends MUST report unsupported capabilities honestly and apply the specified fallback result. A backend-specific enhancement MAY improve presentation only when it preserves the resolved semantics and does not become a hidden normative requirement. Product-specific features belong in products or profiles rather than Core Resina.
 

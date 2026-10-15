@@ -49,9 +49,9 @@ Rust is the canonical reference implementation.
 
 Rust does not define Resina.
 
-GUIdo is the high-fidelity reference rendering backend.
+GUIdo is the high-fidelity reference rendering backend. It realizes accepted contracts within the capabilities of its upstream runtime and does not gate Resina releases.
 
-Quickshell is the independent Shell conformance backend.
+Quickshell is the Shell backend and the first complete release target.
 
 Slint is the application backend.
 

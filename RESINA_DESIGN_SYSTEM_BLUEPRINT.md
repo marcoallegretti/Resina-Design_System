@@ -5,8 +5,8 @@
 **Status:** Foundation / pre-1.0  
 **Primary implementation language:** Rust  
 **Normative dependency:** DTCG Design Tokens Format 2025.10  
-**Reference rendering backend:** GUIdo  
-**Independent Shell conformance backend:** Quickshell  
+**Shell backend and first release target:** Quickshell  
+**High-fidelity reference rendering backend:** GUIdo  
 **Application backend:** Slint  
 **Documentation / universal backend:** Web  
 **Primary consumer:** Canopia  
@@ -149,8 +149,8 @@ Resina ≠ Canopia
        ▼                ▼       ▼           ▼                ▼
     Headless          GUIdo  Quickshell    Slint             Web
        │                │       │           │                │
- Conformance       Reference Independent Application      Docs /
-                  Rendering  Conformance   Backend       Playground
+ Conformance       Reference    Shell     Application      Docs /
+                  Rendering   Backend     Backend       Playground
 ```
 
 ---
@@ -202,9 +202,11 @@ GUIdo is allowed to use advanced capabilities such as:
 
 GUIdo does not define the minimum capabilities of Resina.
 
+GUIdo realizes accepted contracts within the capabilities its upstream runtime provides. A missing upstream capability is recorded with its upstream owner and does not block a Resina release.
+
 ---
 
-# 4. Independent Shell Conformance Backend
+# 4. Shell Backend
 
 ```text
 resina-quickshell
@@ -212,9 +214,9 @@ resina-quickshell
 
 Purpose:
 
-> Detect accidental architectural coupling between Resina and GUIdo.
+> Deliver Resina as a complete, usable Shell backend.
 
-It should implement enough of the core design system to prove that Resina semantics survive:
+Each release realizes its complete Core component library and Shell Profile in Quickshell. Because it shares no rendering architecture with GUIdo, it also proves that Resina semantics survive:
 
 ```text
 Rust/wgpu/SDF
@@ -222,7 +224,7 @@ Rust/wgpu/SDF
 QtQuick/QML/Qt Scene Graph
 ```
 
-Quickshell does not need to reproduce every Tier 3 rendering effect.
+Quickshell realizes Tier 0 and the enhanced tiers its verified capabilities allow. It does not need to reproduce every Tier 3 rendering effect.
 
 It must preserve semantics.
 
@@ -2816,17 +2818,19 @@ generic effects
 
 Resina semantics remain outside GUIdo.
 
+Until an upstream capability exists, the affected Resina behaviour is recorded as unsupported in GUIdo's capability matrix. Releases do not wait for it.
+
 ---
 
 # 119. Quickshell backend
 
 Purpose:
 
-> Catch GUIdo-specific assumptions.
+> Deliver the complete Resina Core and Shell Profile as a usable Shell backend.
 
-It implements the same semantic subset using QtQuick/QML.
+It implements every released component using QtQuick/QML, with native input, focus, accessibility and lifetime owned by Qt and Quickshell.
 
-It does not need advanced visual parity.
+It does not need advanced visual parity with GUIdo.
 
 Before a foundational concept becomes stable ask:
 
@@ -3635,9 +3639,9 @@ For every new feature:
 8. Add conformance vectors
 9. Implement Rust resolver
 10. Inspect IR
-11. Implement GUIdo representation
-12. Validate in Lab
-13. Perform Quickshell plausibility test
+11. Verify deterministic Tier 0 reference raster
+12. Realize in Quickshell
+13. Realize in GUIdo where upstream capabilities allow
 14. Validate accessibility/localization
 15. Stabilize
 ```
@@ -3914,9 +3918,9 @@ completely headless.
 
 ---
 
-# 177. Phase 4 — GUIdo vertical slice
+# 177. Phase 4 — Shell vertical slice
 
-Implement:
+Implement in Quickshell, with deterministic Tier 0 reference raster evidence:
 
 ```text
 Surface
@@ -3938,7 +3942,7 @@ Gel
 
 Goal:
 
-validate real material expression.
+validate real material expression in a usable Shell backend.
 
 ---
 
@@ -3958,9 +3962,9 @@ The Lab becomes mandatory for visual changes.
 
 ---
 
-# 179. Phase 6 — Quickshell validation
+# 179. Phase 6 — GUIdo high-fidelity realization
 
-Implement only the core subset necessary to expose architectural leakage.
+Realize accepted contracts in GUIdo as its upstream runtime allows.
 
 Initial:
 
@@ -3972,7 +3976,7 @@ Slider
 Panel
 ```
 
-Do not attempt complete parity.
+Contribute generic missing primitives upstream. Record unsupported behaviour in the capability matrix instead of blocking releases.
 
 ---
 
@@ -4144,87 +4148,109 @@ Allow community backends such as Flutter.
 
 ---
 
-# 190. Resina 0.1
+# 190. Release line
 
-Architecture proof.
+Resina releases are tags of this repository. Specifications, schemas and crates keep their own versions (§162).
 
-Requires:
+Releases before 0.1.0 are development releases. 0.1.0 is the first release intended for building a complete product.
 
-1. specification structure;
-2. DTCG tokens;
-3. material schemas;
-4. four material families;
-5. Environment Model;
-6. capability model;
-7. Resina IR;
-8. Rust resolver;
-9. Headless backend;
-10. GUIdo vertical slice;
-11. basic conformance vectors.
+A release is proposed with evidence for each of its requirements and accepted by the maintainer.
 
 ---
 
-# 191. Resina 0.2
+# 191. Resina 0.0.x
 
-Material-language proof.
+Development releases. Each requires its listed evidence; independent requirements may progress in parallel.
 
-Requires:
+0.0.1 — Architecture proof:
 
 ```text
-Resina Lab
-motion
-fallback
-core component states
-basic accessibility
-Quickshell conformance prototype
+specification structure
+DTCG tokens
+material schemas
+four material families
+Environment Model
+capability model
+Resina IR
+Rust resolver
+Headless backend
+deterministic Tier 0 reference raster
+basic conformance vectors
 ```
 
----
-
-# 192. Resina 0.3
-
-Foundation-completeness milestone.
-
-Requires:
+0.0.2 — Interactive component proof:
 
 ```text
-typography
-spatial system
+Command, Toggle and Slider contracts
+one component qualified end to end in the Shell backend:
+authored updates, native input, focus, lifetime, motion, accessibility
+```
+
+0.0.3 — Design-language consolidation:
+
+```text
+shared material lighting
+render-ready Frost with opaque fallback
+emergence and same-object motion
+production layout and appearance profiles
 iconography
-density
-state composition
-localization rules
-content design
+dynamic colour
+typography and content design
 ```
 
----
-
-# 193. Resina 0.5
-
-Usability milestone.
-
-Requires:
+0.0.4 — Component library and Shell Profile:
 
 ```text
-dynamic color
-adaptation
-full accessibility modes
 core component library
 Shell Profile
-Web documentation
-meaningful Quickshell coverage
+focus scopes for overlays and dialogs
+text entry
+```
+
+0.0.5 — Complete Shell backend:
+
+```text
+every 0.1.0 component qualified in Quickshell
+installable, versioned Quickshell module
+explicit environment bridge
+consumer documentation
 ```
 
 ---
 
-# 194. Resina 0.7
+# 192. Resina 0.1.0
+
+First usable release.
+
+Requires:
+
+```text
+complete Core: tokens, materials, dynamic colour, typography,
+iconography, motion, environment, capabilities and fallback
+core component library
+Shell Profile
+complete Quickshell backend
+accessibility modes: high contrast, large text, reduced motion,
+reduced transparency, RTL
+localization and text expansion
+GUIdo capability matrix
+consumer and backend documentation
+```
+
+GUIdo realizes accepted contracts as its upstream runtime allows. Unsupported behaviour is listed with its upstream owner and does not block 0.1.0.
+
+---
+
+# 193. Resina 0.2
 
 Portability milestone.
 
 Requires:
 
 ```text
+GUIdo Shell testbed, as upstream capabilities allow
 Slint backend
+Web documentation
 stable IR candidate
 stable component contracts
 stable conformance tooling
@@ -4233,7 +4259,7 @@ backend authoring documentation
 
 ---
 
-# 195. Resina 0.8
+# 194. Resina 0.3
 
 Architecture freeze candidate.
 
@@ -4251,7 +4277,7 @@ migration tooling
 
 ---
 
-# 196. Resina 0.9
+# 195. Resina 0.4
 
 1.0 qualification.
 
@@ -4268,6 +4294,14 @@ community backend experiment
 ```
 
 A Flutter proof-of-concept MAY make sense here as an external test, but it is not required.
+
+---
+
+# 196. Release evidence
+
+Every release proposal lists, for each requirement, the implementation, its proof and any remaining limitation with its owner.
+
+A requirement without executed evidence is not met. Planned work is not release evidence.
 
 ---
 
@@ -4295,7 +4329,7 @@ Resina 1.0 requires:
 18. Fallback rules are complete.
 19. Headless implementation passes normative vectors.
 20. GUIdo provides production-quality high-fidelity rendering.
-21. Quickshell proves renderer independence.
+21. Quickshell provides a complete Shell backend and proves renderer independence.
 22. Slint proves application portability.
 23. Web provides living documentation.
 24. Tier 0 remains recognizably Resina.
