@@ -88,7 +88,7 @@ jobs:
       - name: Check actual Qt paint and command composition at native scales
         run: |
           for scale in 1 1.25 2 1.3; do
-            QT_SCALE_FACTOR="$scale" python tools/check_qt_surface_view_runtime.py --module-path target/qt-runtime-import --raster target/qt-runtime-build/debug/resina-paint-raster --resolver target/qt-runtime-build/debug/resina-surface-paint --scenes target/material-scenes.json --output-dir "target/qt-surface-view-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_surface_view_runtime.py --module-path target/qt-runtime-import --raster target/qt-runtime-build/debug/resina-paint-raster --resolver target/qt-runtime-build/debug/resina-surface-paint --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve --scenes target/material-scenes.json --output-dir "target/qt-surface-view-$scale"
             QT_SCALE_FACTOR="$scale" python tools/check_qt_command_paint_runtime.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --raster target/qt-runtime-build/debug/resina-command-raster --output-dir "target/qt-paint-$scale"
             QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_motion_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir "target/qt-toggle-motion-$scale"
             QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_control_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-raster --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --output-dir "target/qt-toggle-$scale"

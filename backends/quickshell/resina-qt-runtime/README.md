@@ -436,11 +436,18 @@ exposes the IR's guarded `foreground` color and `contentBounds`, the bounding
 rectangle of the IR content region in the view's local logical coordinates. The
 readability guard applies inside the content contour; for rounded shapes the
 rectangle's corners lie outside it, so consumer content must stay within the
-contour published in `publication`. Its implicit size is
-the IR front and is kept while withdrawn so layouts stay stable; `foreground`
-and `contentBounds` are cleared whenever publication is withdrawn. Invalid requests, unsupported states and missing surrounding colour
-for focused surfaces withdraw publication and report `paintError`. Clearing
-`request` withdraws publication without error.
+contour published in `publication`. Its implicit size is the IR front and is
+kept while withdrawn so layouts stay stable; `foreground` and `contentBounds`
+are cleared whenever publication is withdrawn. Invalid requests, unsupported
+states and missing surrounding colour for focused surfaces withdraw publication
+and report `paintError`. Clearing `request` withdraws publication without error.
+
+`SurfacePaintResolver.resolveOpaqueColor(themeRequest, role)` returns the opaque
+sRGB fallback that [theme resolution](../../../spec/13-opaque-color-fallback.md)
+assigns to one semantic colour role, as `{"role", "color"}` or a diagnostic.
+Passing a surface request's own `theme` gives a consumer-painted backdrop, or a
+declared adjacent or surrounding colour, exactly the colour the surface guards
+assume.
 
 The view prepares itself. Changes to the request, sampling density, own
 position, scale, rotation, parent, window or pixel density withdraw the current
@@ -467,6 +474,8 @@ covers:
 - own and ancestor translation, with re-captures at the new origin, including an
   ancestor move while a preparation is pending;
 - ancestor distortion, withdrawn and recovered;
+- every role's opaque colour for both public theme requests, compared with
+  `resina-theme-resolve`, and rejection of an invalid request and role;
 - a request supplied at creation;
 - destruction, and `Loader` unloading, while a queued preparation or an
   incomplete publication is pending, observed past the preparation timeout;
@@ -481,7 +490,8 @@ cargo build -p resina-resolver --bin resina-theme-resolve --bin resina-surface-p
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
 QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
   --module-path target/qt-runtime-import --raster target/debug/resina-paint-raster \
-  --resolver target/debug/resina-surface-paint --scenes target/material-scenes.json \
+  --resolver target/debug/resina-surface-paint --theme-resolver target/debug/resina-theme-resolve \
+  --scenes target/material-scenes.json \
   --output-dir target/qt-surface-view-1.25
 ```
 

@@ -1,7 +1,7 @@
 use crate::snapshot::RenderOptions;
 use cxx_qt_lib::QString;
-use resina_model::PhysicalVector;
-use resina_resolver::resolve_surface_paint_source;
+use resina_model::{ColorRole, PhysicalVector};
+use resina_resolver::{resolve_surface_paint_source, resolve_theme_request_source};
 use resina_tokens::parse_token_document;
 use serde_json::{Value, json};
 
@@ -14,6 +14,7 @@ mod ffi {
     }
     extern "Rust" {
         fn resolve_surface_view(request: &QString, options: &QString) -> QString;
+        fn resolve_opaque_color(request: &QString, role: &QString) -> QString;
     }
 }
 
@@ -42,6 +43,28 @@ fn prepare(request: &str, options: &str) -> Result<Value, String> {
     )
     .map_err(|error| error.to_string())?;
     Ok(json!({"paint": paint, "paintSource": source}))
+}
+
+fn opaque_color(request: &str, role: &str) -> Result<Value, String> {
+    if request.len() > 1024 * 1024 {
+        return Err("Qt theme request exceeds 1 MiB".to_owned());
+    }
+    let role: ColorRole = serde_json::from_value(Value::String(role.to_owned()))
+        .map_err(|error| error.to_string())?;
+    let resolution = resolve_theme_request_source(request).map_err(|error| error.to_string())?;
+    let color = resolution
+        .opaque_color_fallbacks()
+        .get(&role)
+        .ok_or_else(|| format!("theme resolution has no opaque color for {role:?}"))?;
+    Ok(json!({"role": role, "color": color}))
+}
+
+fn resolve_opaque_color(request: &QString, role: &QString) -> QString {
+    QString::from(
+        opaque_color(&request.to_string(), &role.to_string())
+            .unwrap_or_else(|error| json!({"error": error}))
+            .to_string(),
+    )
 }
 
 fn resolve_surface_view(request: &QString, options: &QString) -> QString {
@@ -84,6 +107,35 @@ mod tests {
         )
         .unwrap();
         assert_eq!(result["paintSource"], Value::String(expected));
+    }
+
+    #[test]
+    fn publishes_the_reference_opaque_role_color() {
+        let theme = request()["body"]["theme"].to_string();
+        let reference = resolve_theme_request_source(&theme).unwrap();
+        for role in ColorRole::ALL {
+            let name = serde_json::to_value(role).unwrap();
+            let result = opaque_color(&theme, name.as_str().unwrap()).unwrap();
+            assert_eq!(result["role"], name);
+            assert_eq!(
+                result["color"],
+                serde_json::to_value(&reference.opaque_color_fallbacks()[&role]).unwrap()
+            );
+        }
+        for (source, role) in [
+            ("{}", "surface.base"),
+            (theme.as_str(), "surface.unknown"),
+            (theme.as_str(), ""),
+        ] {
+            let result: Value = serde_json::from_str(
+                &resolve_opaque_color(&QString::from(source), &QString::from(role)).to_string(),
+            )
+            .unwrap();
+            assert!(
+                result["error"].is_string() && result.get("color").is_none(),
+                "{role}"
+            );
+        }
     }
 
     #[test]

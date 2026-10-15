@@ -110,6 +110,7 @@ Window {
         return startPreparation(loader.item);
     }
     function unload() { loader.active = false; }
+    function opaqueColor(theme, role) { return resolver.resolveOpaqueColor(theme, role); }
     function startPreparation(item) {
         item.prepare();
         return JSON.stringify({published:item.publication.length > 0, ready:item.paintReady, error:item.paintError});
@@ -196,6 +197,7 @@ def main():
     parser.add_argument("--module-path", required=True, type=Path)
     parser.add_argument("--raster", required=True)
     parser.add_argument("--resolver", required=True)
+    parser.add_argument("--theme-resolver", required=True)
     parser.add_argument("--scenes", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     args = parser.parse_args()
@@ -265,6 +267,18 @@ def main():
             with fixture.capture() as actual:
                 compare_images(expected_image(args.raster, request.encode(), ir, PLACEMENT, scale), actual)
             print(f"PASS {scene['name']}", flush=True)
+        themes = {json.dumps(scene["request"]["body"]["theme"], sort_keys=True) for scene in scenes}
+        for theme in sorted(themes):
+            reference = json.loads(run([args.theme_resolver, "-"], theme.encode()))["opaqueColorFallbacks"]
+            for role, color in reference.items():
+                result = json.loads(window.opaqueColor(theme, role))
+                if result != {"role": role, "color": color}:
+                    raise ValueError(f"opaque {role} differs from the reference theme resolution: {result}")
+        for theme, role in (("{}", "surface.base"), (sorted(themes)[0], "surface.unknown")):
+            result = json.loads(window.opaqueColor(theme, role))
+            if set(result) != {"error"}:
+                raise ValueError(f"invalid opaque colour request returned a colour: {result}")
+        print(f"PASS opaque role colours for {len(themes)} theme requests", flush=True)
         if window.property("incoherent"):
             raise ValueError("publication notification preceded complete native readiness")
 
