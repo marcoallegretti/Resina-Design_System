@@ -447,7 +447,9 @@ position, scale, rotation, parent, window or pixel density withdraw the current
 publication and prepare again. A GUI-thread `afterAnimating` check withdraws
 and re-prepares when an ancestor moves the scene origin, and a preparation whose
 origin moved before its image was ready is discarded and repeated. Work queued
-before destruction or `Loader` unloading does not run. Scale, rotation, shear
+before destruction or `Loader` unloading does not run. A surface whose
+ancestor keeps moving, such as one sliding in, stays withdrawn until its origin
+settles; animate it only after publication or keep its origin fixed. Scale, rotation, shear
 and projective ancestors fail the shared native context guard used by the
 Command view. The view stays withdrawn with a diagnostic, and prepares again once
 the context is translation-only. It is decorative, has no input target or native
