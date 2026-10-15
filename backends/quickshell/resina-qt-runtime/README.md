@@ -895,7 +895,8 @@ with its engine generation:
   no stale gesture is delivered afterwards. A callback-time `invoke()` is a separate
   semantic activation and produces exactly one additional effect.
 
-Quickshell reload is
+When the control is destroyed, its pending prepared frame is retired so deferred
+publication work does not run in the destroyed QML context. Quickshell reload is
 not covered: a reload after held input in an extended session can leave the
 previous engine generation alive (#189). Physical devices, multiple seats and
 outputs, fractional scale and screen-reader operation are not covered.
