@@ -159,12 +159,17 @@ def published(observed, part, request):
     return bool(front) and (front["width"], front["height"]) == (size["width"], size["height"])
 
 
+def current_requests(shell, parts):
+    sources = {part: shell.call("request", part) for part in parts}
+    return {part: json.loads(source) for part, source in sources.items() if source}
+
+
 def settled(shell, parts, timeout=10):
     deadline = time.monotonic() + timeout
     while True:
-        requests = {part: json.loads(shell.call("request", part)) for part in parts if shell.call("request", part)}
+        requests = current_requests(shell, parts)
         observed = shell.observe()
-        current = {part: json.loads(shell.call("request", part)) for part in parts if shell.call("request", part)}
+        current = current_requests(shell, parts)
         if requests == current and all(observed[part] and published(observed, part, request)
                                        for part, request in requests.items()):
             return observed, requests
@@ -240,7 +245,7 @@ def ring(rectangle, distance=2, step=4):
     while position <= bottom:
         points += [(left, position), (right, position)]
         position += step
-    return points
+    return points + [(left, top), (right, top), (left, bottom), (right, bottom)]
 
 
 def pixel(image, point):

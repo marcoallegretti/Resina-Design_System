@@ -40,8 +40,9 @@ focus, layout and preference policy belong to this shell, not to Resina.
   open. The surface requests exclusive keyboard interactivity and moves keyboard
   focus to "Close" once it is ready. "Close" and Escape unmap it.
 - The bar and the clock surface size themselves from their Commands and text, and
-  the clock text follows the authored text scale. Each Command lies inside its
-  surface's content region.
+  the clock text follows the authored text scale. Each Command, including its
+  focus ring, is placed within its surface's content region and is surrounded by
+  that surface's body colour.
 - `SystemClock` runs at second precision only while the surface is open. The time
   uses the pattern `HH:mm:ss`; the date uses the long date format of the authored
   locale. This text is shell content, not a Resina text contract (#196). It uses
@@ -78,10 +79,11 @@ device scale come from the first output.
 
 ## Failure diagnostics
 
-- A missing source file, font or opaque backdrop colour logs
-  `RESINA_CLOCK_ERROR` and leaves the shell unpainted.
-- Preparation failures of a surface or Command log `RESINA_CLOCK_PREPARATION`
-  with the Resina diagnostic, and the affected part stays withdrawn; no fallback
+- A missing source file or font logs `RESINA_CLOCK_ERROR` and leaves the shell
+  unpainted.
+- Failures to resolve the backdrop colour, or to prepare a surface or Command,
+  log `RESINA_CLOCK_PREPARATION` with the Resina diagnostic and clear when the
+  input recovers; the affected part stays withdrawn meanwhile, and no fallback
   colour or placeholder is painted.
 - `qs ipc call clock observe` reports the current error of every part, the
   portal state and the preferences in effect.
