@@ -4,6 +4,7 @@
 #include <QDBusMetaType>
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+#include <QDBusServiceWatcher>
 #include <QMap>
 #include <QVariantMap>
 
@@ -17,18 +18,14 @@ const QString path = QStringLiteral("/org/freedesktop/portal/desktop");
 const QString interface = QStringLiteral("org.freedesktop.portal.Settings");
 const QString appearance = QStringLiteral("org.freedesktop.appearance");
 
-// The portal specifies that unknown values mean "no preference".
+// The portal types these keys as uint32 and specifies that any other value means "no preference".
 QVariant preference(const QVariant& value) {
-    bool valid = false;
-    const uint level = value.toUInt(&valid);
-    return QVariant(valid && level == 1);
+    return QVariant(value.metaType() == QMetaType::fromType<uint>() && value.toUInt() == 1);
 }
 
 QVariant scheme(const QVariant& value) {
-    bool valid = false;
-    const uint code = value.toUInt(&valid);
-    if (valid && code == 1) return QStringLiteral("dark");
-    if (valid && code == 2) return QStringLiteral("light");
+    if (value.metaType() == QMetaType::fromType<uint>() && value.toUInt() == 1) return QStringLiteral("dark");
+    if (value.metaType() == QMetaType::fromType<uint>() && value.toUInt() == 2) return QStringLiteral("light");
     return QStringLiteral("none");
 }
 }
@@ -43,16 +40,24 @@ PlatformAppearance::PlatformAppearance(QObject* parent) : QObject(parent) {
     }
     bus.connect(service, path, interface, QStringLiteral("SettingChanged"), this,
                 SLOT(settingChanged(QString,QString,QDBusVariant)));
+    auto* watcher = new QDBusServiceWatcher(service, bus, QDBusServiceWatcher::WatchForRegistration, this);
+    connect(watcher, &QDBusServiceWatcher::serviceRegistered, this, &PlatformAppearance::read);
+    read();
+}
+
+void PlatformAppearance::read() {
     auto call = QDBusMessage::createMethodCall(service, path, interface, QStringLiteral("ReadAll"));
     call << QStringList{appearance};
-    auto* watcher = new QDBusPendingCallWatcher(bus.asyncCall(call), this);
+    auto* watcher = new QDBusPendingCallWatcher(QDBusConnection::sessionBus().asyncCall(call), this);
     connect(watcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher* finished) {
         finished->deleteLater();
         const QDBusPendingReply<AppearanceSettings> reply = *finished;
         ready_ = true;
+        reducedMotion_ = highContrast_ = colorScheme_ = QVariant();
         if (reply.isError()) {
             error_ = QStringLiteral("platform appearance portal is unavailable: ") + reply.error().message();
         } else {
+            error_.clear();
             const auto settings = reply.value().value(appearance);
             for (auto it = settings.cbegin(); it != settings.cend(); ++it) apply(it.key(), it.value());
         }
@@ -67,7 +72,7 @@ void PlatformAppearance::apply(const QString& key, const QVariant& value) {
 }
 
 void PlatformAppearance::settingChanged(const QString& ns, const QString& key, const QDBusVariant& value) {
-    if (ns != appearance) return;
+    if (ns != appearance || !ready_ || !error_.isEmpty()) return;
     apply(key, value.variant());
     emit changed();
 }

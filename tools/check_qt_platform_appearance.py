@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import re
+import signal
 import subprocess
 import sys
 import tempfile
@@ -12,9 +13,9 @@ import time
 
 APPEARANCE = "org.freedesktop.appearance"
 SETTINGS = {
-    "reduced-motion": ("org.gnome.desktop.a11y.interface", "reduced-motion", "reduce", "no-preference"),
-    "contrast": ("org.gnome.desktop.a11y.interface", "high-contrast", "true", "false"),
-    "color-scheme": ("org.gnome.desktop.interface", "color-scheme", "prefer-dark", "prefer-light"),
+    "reduced-motion": ("org.gnome.desktop.a11y.interface", "reduced-motion", "reduce", True),
+    "contrast": ("org.gnome.desktop.a11y.interface", "high-contrast", "true", True),
+    "color-scheme": ("org.gnome.desktop.interface", "color-scheme", "prefer-dark", "dark"),
 }
 PROPERTIES = {"reduced-motion": "reducedMotion", "contrast": "highContrast", "color-scheme": "colorScheme"}
 
@@ -92,13 +93,49 @@ class Host:
         raise ValueError(f"{description} was not reached: {self.current}")
 
     def close(self):
-        self.process.terminate()
-        self.process.wait(5)
+        if self.process.poll() is None:
+            self.process.terminate()
+            try:
+                self.process.wait(5)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+                self.process.wait()
 
 
 def matches(observed, expected):
     return observed["ready"] and not observed["error"] and all(observed[name] == value
                                                                for name, value in expected.items())
+
+
+def session(configuration, output, processes):
+    bus = subprocess.Popen(["dbus-daemon", *configuration, "--nofork", "--print-address=1"],
+                           stdout=subprocess.PIPE, text=True, start_new_session=True)
+    processes.append(bus)
+    address = bus.stdout.readline().strip()
+    bus.stdout.close()
+    return dict(os.environ, DBUS_SESSION_BUS_ADDRESS=address, XDG_CONFIG_HOME=tempfile.mkdtemp(dir=output),
+                XDG_CURRENT_DESKTOP="GNOME", QT_QPA_PLATFORM="offscreen", GSETTINGS_BACKEND="dconf")
+
+
+def start_portal(args, environment, processes, log):
+    for executable in (args.backend, args.portal):
+        processes.append(subprocess.Popen([str(executable.resolve(strict=True))], env=environment,
+                                          stdout=log, stderr=subprocess.STDOUT, start_new_session=True))
+        time.sleep(1)
+
+
+def wait_portal(environment, expected, description, timeout=15):
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            values = portal_values(environment)
+            if expected is None or values == expected:
+                return values
+        except ValueError:
+            values = None
+        if time.monotonic() > deadline:
+            raise ValueError(f"{description} was not reached: {values}")
+        time.sleep(.1)
 
 
 def main():
@@ -133,40 +170,26 @@ def main():
 
         bare = args.output_dir / "bare-bus.conf"
         bare.write_text("<busconfig><type>session</type><listen>unix:tmpdir=/tmp</listen>"
-                        "<policy context=\"default\"><allow send_destination=\"*\"/><allow receive_sender=\"*\"/><allow own=\"*\"/>"
-                        "</policy></busconfig>", encoding="utf-8")
-        for configuration in (["--config-file", str(bare)], ["--session"]):
-            bus = subprocess.Popen(["dbus-daemon", *configuration, "--nofork", "--print-address=1"],
-                                   stdout=subprocess.PIPE, text=True)
-            processes.append(bus)
-            address = bus.stdout.readline().strip()
-            config = tempfile.mkdtemp(dir=args.output_dir)
-            environment = dict(os.environ, DBUS_SESSION_BUS_ADDRESS=address, XDG_CONFIG_HOME=config,
-                               XDG_CURRENT_DESKTOP="GNOME", QT_QPA_PLATFORM="offscreen", GSETTINGS_BACKEND="dconf")
-            if configuration[0] == "--session":
-                break
-            unavailable = Host(module, environment)
-            processes.append(unavailable)
-            observed = unavailable.until(lambda current: current["ready"], "readiness without a portal")
-            if not observed["error"] or any(observed[name] is not None for name in PROPERTIES.values()):
-                raise ValueError(f"an unavailable portal did not withdraw every preference diagnostically: {observed}")
-            unavailable.close()
-            report["cases"].append("an unavailable portal reports an error and no preference")
-
+                        "<policy context=\"default\"><allow send_destination=\"*\"/>"
+                        "<allow receive_sender=\"*\"/><allow own=\"*\"/></policy></busconfig>", encoding="utf-8")
         log = (args.output_dir / "portal.log").open("w")
-        for executable in (args.backend, args.portal):
-            processes.append(subprocess.Popen([str(executable.resolve(strict=True))], env=environment,
-                                              stdout=log, stderr=subprocess.STDOUT))
-            time.sleep(1)
-        deadline = time.monotonic() + 10
-        while True:
-            try:
-                initial = portal_values(environment)
-                break
-            except ValueError:
-                if time.monotonic() > deadline:
-                    raise
-                time.sleep(.2)
+        processes.append(log)
+
+        environment = session(["--config-file", str(bare)], args.output_dir, processes)
+        late = Host(module, environment)
+        processes.append(late)
+        observed = late.until(lambda current: current["ready"], "readiness without a portal")
+        if not observed["error"] or any(observed[name] is not None for name in PROPERTIES.values()):
+            raise ValueError(f"an unavailable portal did not withdraw every preference diagnostically: {observed}")
+        report["cases"].append("an unavailable portal reports an error and no preference")
+        start_portal(args, environment, processes, log)
+        expected = wait_portal(environment, None, "portal on the bus without activation")
+        late.until(lambda current: matches(current, expected), "preferences once the portal appears")
+        report["cases"].append("preferences are read once the portal appears on the bus")
+
+        environment = session(["--session"], args.output_dir, processes)
+        start_portal(args, environment, processes, log)
+        initial = wait_portal(environment, None, "portal Settings interface")
         report["providedKeys"] = [key for key, name in PROPERTIES.items() if initial[name] is not None]
         missing = [key for key in args.require if key not in report["providedKeys"]]
         if missing:
@@ -177,17 +200,18 @@ def main():
         appearance.until(lambda current: matches(current, initial), "initial preferences equal to the portal")
         report["cases"].append("initial preferences equal an independent portal read")
         for key in report["providedKeys"]:
-            schema, setting, changed, restored = SETTINGS[key]
-            for value in (changed, restored):
-                subprocess.run(["gsettings", "set", schema, setting, value], env=environment, check=True, timeout=10)
-                deadline = time.monotonic() + 10
-                while True:
-                    expected = portal_values(environment)
-                    if expected != initial or value == restored or time.monotonic() > deadline:
-                        break
-                    time.sleep(.1)
-                appearance.until(lambda current: matches(current, expected), f"{key} after {setting}={value}")
-            report["cases"].append(f"{key} follows the platform setting through SettingChanged")
+            schema, setting, value, changed = SETTINGS[key]
+            before = wait_portal(environment, None, "portal before the change")
+            target = dict(before, **{PROPERTIES[key]: changed})
+            if target == before:
+                raise ValueError(f"{key} change would not differ from the current portal value")
+            subprocess.run(["gsettings", "set", schema, setting, value], env=environment, check=True, timeout=10)
+            wait_portal(environment, target, f"portal {key} after {setting}={value}")
+            appearance.until(lambda current: matches(current, target), f"{key} after {setting}={value}")
+            subprocess.run(["gsettings", "reset", schema, setting], env=environment, check=True, timeout=10)
+            wait_portal(environment, before, f"portal {key} after resetting {setting}")
+            appearance.until(lambda current: matches(current, before), f"{key} after resetting {setting}")
+            report["cases"].append(f"{key} follows a platform change and its reset through SettingChanged")
         absent = [key for key in PROPERTIES if key not in report["providedKeys"]]
         if absent:
             report["cases"].append("keys absent from the portal stay null: " + ", ".join(absent))
@@ -200,9 +224,15 @@ def main():
     finally:
         for process in reversed(processes):
             if isinstance(process, Host):
-                process.process.terminate()
-            elif process.poll() is None:
-                process.terminate()
+                process.close()
+            elif isinstance(process, subprocess.Popen):
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+                process.wait(5)
+            else:
+                process.close()
     return 0
 
 

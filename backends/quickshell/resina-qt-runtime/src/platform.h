@@ -28,6 +28,7 @@ signals:
 private slots:
     void settingChanged(const QString& ns, const QString& key, const QDBusVariant& value);
 private:
+    void read();
     void apply(const QString& key, const QVariant& value);
     bool ready_ = false;
     QString error_;

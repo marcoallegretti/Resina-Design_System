@@ -507,18 +507,19 @@ An environment producer must supply every environment field (spec/18), including
 the accessibility preferences. `PlatformAppearance` reads the platform's
 preferences from the
 [XDG Desktop Portal Settings](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Settings.html)
-`org.freedesktop.appearance` namespace on the session bus. It reads them once
-and then follows the portal's `SettingChanged` signal.
+`org.freedesktop.appearance` namespace on the session bus. It reads them when
+created and again whenever the portal service appears on the bus, and follows
+the portal's `SettingChanged` signal after a successful read.
 
-- `reducedMotion` and `highContrast` are `true` for the portal value 1
-  (`reduced-motion`, `contrast`) and `false` otherwise; the portal defines
-  unknown values as no preference.
+- `reducedMotion` and `highContrast` are `true` for the `uint32` portal value 1
+  (`reduced-motion`, `contrast`) and `false` for any other value, which the
+  portal defines as no preference.
 - `colorScheme` is `"dark"`, `"light"` or `"none"`.
 - A key the portal does not provide stays `null`, so a consumer can tell an
-  absent preference from a declined one.
-- `ready` becomes true once the first read completes. Without a session bus or a
-  reachable portal, `error` describes the failure and every preference stays
-  `null`.
+  absent preference from one that is not requested.
+- `ready` becomes true once the first read completes. While the session bus or
+  the portal is unavailable, `error` describes the failure and every preference
+  is `null`.
 
 Qt 6.11.2 exposes the colour scheme and contrast preference but no reduced-motion
 preference, and Quickshell 0.3.2 has no portal settings API. The element neither
@@ -529,16 +530,18 @@ decides how they enter its environment.
 starts its own session bus and runs the real `xdg-desktop-portal` frontend with
 the GNOME backend and isolated GSettings. It requires:
 - the element to equal an independent `gdbus` read of the portal for every key;
-- each provided key to follow real GSettings changes and return to its prior
-  value;
+- each provided key to reach a real GSettings change and then its reset, each
+  observed first in the portal;
 - unprovided keys to stay `null`;
 - a missing session bus, and a bus without a portal, to report an error with no
-  preference.
+  preference;
+- preferences to be read once the portal appears on a bus where the element
+  started first.
 
 `--require` fails when the backend does not provide a listed key.
 xdg-desktop-portal 1.22.1 with xdg-desktop-portal-gnome 50.0 provides and passes
 all three keys. xdg-desktop-portal-gnome 46 to 49 do not provide
-`reduced-motion`, so CI, on Ubuntu 24.04's GNOME 46 backend, requires
+`reduced-motion`; CI runs on Ubuntu 24.04's GNOME 46 backend and requires
 `contrast` and `color-scheme`. The checker needs a Wayland session for the GNOME
 backend.
 
