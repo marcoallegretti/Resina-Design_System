@@ -38,7 +38,7 @@ jobs:
             libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-shm0 \
             libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core \
             at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth sway \
-            xdg-desktop-portal xdg-desktop-portal-gnome dconf-service libglib2.0-bin
+            xdg-desktop-portal xdg-desktop-portal-gnome dconf-service libglib2.0-bin grim
           python -m pip install aqtinstall==3.3.0 -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
           python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu --modules qtshadertools
       - name: Build matching Wayland headers and libraries for Qt 6.11.2
@@ -156,6 +156,12 @@ jobs:
             --output-dir target/quickshell-command-motion
           python tools/check_qt_platform_appearance.py --module-path target/qt-runtime-import \
             --output-dir target/qt-platform-appearance --require contrast color-scheme
+          python tools/check_quickshell_clock_shell.py \
+            --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+            --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+            --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
+            --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
+            --grim /usr/bin/grim --output-dir target/quickshell-clock-shell
       - name: Save native Qt captures and accessibility observations
         if: always()
         uses: actions/upload-artifact@v7
@@ -178,6 +184,7 @@ jobs:
             target/quickshell-command-accessibility/
             target/quickshell-command-motion/
             target/qt-platform-appearance/
+            target/quickshell-clock-shell/
             target/lifecycle-sway.log
           if-no-files-found: warn
   guido:
