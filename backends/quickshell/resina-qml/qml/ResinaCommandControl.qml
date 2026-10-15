@@ -224,7 +224,7 @@ ResinaCommandInput {
     }
 
     function finish() {
-        if (state.running) return;
+        if (state.running || !state.pending.length) return;
         if (!synchronize()) {
             Qt.callLater(finish);
             return;
