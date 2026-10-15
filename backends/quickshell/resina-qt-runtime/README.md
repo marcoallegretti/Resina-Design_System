@@ -877,7 +877,7 @@ python tools/check_quickshell_command_lifecycle.py \
 `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR` must select a compositor providing
 `wlr-layer-shell`, virtual pointer and virtual keyboard with one output at
 unit scale. Headless Sway 1.12 (`WLR_BACKENDS=headless`, `WLR_RENDERER=pixman`)
-and nested niri 26.04 pass all 26 cases; CI uses the Ubuntu 24.04 Sway package.
+and nested niri 26.04 pass all 34 cases; CI uses the Ubuntu 24.04 Sway package.
 The checker verifies the host version, fails on QML type, reference and
 invalid-context errors in the host log and counts every consumer effect:
 
@@ -894,14 +894,16 @@ invalid-context errors in the host log and counts every consumer effect:
   reload must retire the previous engine generation, observed through Quickshell
   0.3.2 IPC, which answers only while exactly one generation exists; a fresh
   gesture afterwards delivers exactly one effect from the current generation;
-- consumer callbacks that replace the configuration, withdraw availability, invoke
-  the control, hide, unmount or destroy its surface observe committed state and
+- consumer callbacks, reached by pointer and by Space, that replace the
+  configuration, withdraw availability, invoke the control, hide, unmount, hide
+  and unmount together, or destroy its surface observe committed state and
   produce exactly one effect; a callback-time `invoke()` is a separate semantic
   activation and produces exactly one additional effect, and a key press after
   callback-time availability withdrawal produces none.
 
-When the control is destroyed, its pending prepared frame is retired so deferred
-publication work does not run in the destroyed QML context. The checker sets
+When the control is destroyed, its pending prepared frame is retired and its
+keyboard owner ignores focus synchronization queued before destruction, so
+deferred work does not run in the destroyed QML context. The checker sets
 `QS_NO_RELOAD_POPUP`: Quickshell's reload popup runs in its own engine generation
 at the top-left of the output, and a hover during its fade-out keeps it open until
 it is closed or replaced by another reload. Physical

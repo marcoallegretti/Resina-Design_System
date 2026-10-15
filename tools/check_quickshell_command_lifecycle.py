@@ -330,18 +330,23 @@ def interruption_cases(session):
     return results
 
 
-REACTIONS = {"replace": 1, "invoke": 2, "unavailable": 1, "hide": 1, "unmount": 1, "close": 1}
+REACTIONS = {"replace": 1, "invoke": 2, "unavailable": 1, "hide": 1, "unmount": 1, "hideUnmount": 1, "close": 1}
 
 
 def reentrancy_cases(session):
     results = []
-    for mode, count in REACTIONS.items():
+    for gesture, (mode, count) in ((gesture, reaction) for gesture in ("pointer", "space")
+                                   for reaction in REACTIONS.items()):
         observed = session.reset()
         before = len(effects(session.events()))
         session.call("setReaction", mode)
-        session.point(observed)
-        session.input.button(True)
-        session.input.button(False)
+        if gesture == "space":
+            session.input.key(KEY_SPACE, True)
+            session.input.key(KEY_SPACE, False)
+        else:
+            session.point(observed)
+            session.input.button(True)
+            session.input.button(False)
         for effect in expect_effects(session, before, count, f"{mode} from consumer callback"):
             if not effect["state"]["enabled"] or effect["state"]["hold"] is not None:
                 raise ValueError(f"{mode} callback observed an uncommitted activation")
@@ -357,7 +362,7 @@ def reentrancy_cases(session):
             session.input.key(KEY_SPACE, True)
             session.input.key(KEY_SPACE, False)
             expect_effects(session, before, count, "delivery after availability withdrawal")
-        results.append(mode + " from consumer callback")
+        results.append(f"{mode} from consumer callback after {gesture} activation")
     return results
 
 

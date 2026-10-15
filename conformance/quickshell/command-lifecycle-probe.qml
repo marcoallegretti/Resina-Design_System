@@ -81,6 +81,7 @@ ShellRoot {
         else if (mode === "invoke") reactionResult = control.invoke();
         else if (mode === "hide") shown = false;
         else if (mode === "unmount") mounted = false;
+        else if (mode === "hideUnmount") { shown = false; mounted = false; }
         else if (mode === "close") windowed = false;
         else if (mode.length) fail("unknown reaction " + mode);
     }
