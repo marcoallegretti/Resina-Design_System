@@ -224,8 +224,13 @@ ResinaCommandInput {
     }
 
     function finish() {
+        if (state.running || !state.pending.length) return;
+        if (!synchronize()) {
+            Qt.callLater(finish);
+            return;
+        }
         const candidate = state.pendingView;
-        if (state.running || !state.pending.length || !candidate || !candidate.paintReady) return;
+        if (!state.pending.length || !candidate || !candidate.paintReady) return;
         const pending = JSON.parse(state.pending);
         const current = JSON.parse(publication).state;
         if (canonical(pending.activation) !== canonical(current) || pending.hovered !== root.hovered) {

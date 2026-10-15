@@ -804,10 +804,11 @@ test requirements. The checker validates the actual host before starting the
 scenario sequence. The default software/offscreen path records actual device
 density; `--platform xcb` or `--platform wayland` requires a live display.
 
-The 41 scenarios cover light/dark Latin, expanded German and mixed Arabic/Latin
+The 47 scenarios cover light/dark Latin, expanded German and mixed Arabic/Latin
 paragraphs at four text scales, changed typography and asymmetric LTR/RTL padding,
 an explicitly loaded alternate font, both published Command variants in Light
-and Dark, focused standard/primary variants, unavailable state, malformed configuration,
+and Dark, focused standard/primary variants, authored strong-outline focus fallback,
+failed focus contrast and focused recovery, unavailable state, malformed configuration,
 unsupported focus policy and rotation, and recovery after each rejection.
 Every consumer snapshot observation is checked against its current authored
 source and interaction state, including literal pigment bindings from the current
@@ -820,12 +821,16 @@ does not certify every analytic contour segment. Callback labels and reserved
 targets must equal the independently checked final values in each fixed authored
 context, while interaction paint follows each callback's own state.
 Focused cases request native item focus and independently record actual item/window
-focus alongside final and callback state. A request that does not become observed
-focus fails within the existing case deadline. Focused rest retains both `rest`
-and `focused`; body and navigation bindings and silhouettes must agree. Offscreen
-focus observations do not establish compositor focus policy or physical input.
-Final natural and fitted native measurements reach
-the independent rational layout checker. These remeasurements verify final
+focus alongside final and callback state. Each observation retains the raw item,
+window, visibility and availability values read at that callback or final sample.
+The reported native focus is their conjunction. A request that does not become
+observed focus fails within the existing case deadline. Focused rest retains both
+`rest` and `focused`; body and navigation bindings and silhouettes must agree.
+Offscreen focus observations do not establish compositor focus policy or physical
+input. Before publishing a pending prepared frame, the control synchronizes native
+focus and pending interruption, then validates the resulting preparation
+generation. Final natural and fitted native measurements reach the independent
+rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
 
 Each successful case saves a PNG and its complete snapshot. Pixel checks require

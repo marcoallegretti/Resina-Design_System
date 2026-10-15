@@ -16,6 +16,17 @@ FloatingWindow {
     readonly property bool nativeFocused: command.activeFocus && command.Window.active
         && command.visible && command.enabled && root.backingWindowVisible
 
+    function observeFocus() {
+        return {activeFocus: command.activeFocus, windowActive: command.Window.active,
+            visible: command.visible, enabled: command.enabled,
+            windowVisible: root.backingWindowVisible};
+    }
+
+    function focused(observation) {
+        return observation.activeFocus && observation.windowActive && observation.visible
+            && observation.enabled && observation.windowVisible;
+    }
+
     function start() {
         if (index < 0) next();
     }
@@ -129,12 +140,15 @@ FloatingWindow {
                 disabledFocusable: false
                 samplesPerAxis: 4
                 onSnapshotChanged: {
-                    if (snapshot.length) root.publications.push({
+                    if (!snapshot.length) return;
+                    const observation = root.observeFocus();
+                    root.publications.push({
                         configuration: root.configuration,
                         snapshot: JSON.parse(snapshot),
                         state: JSON.parse(publication).state,
                         hovered: hovered,
-                        nativeFocused: root.nativeFocused
+                        nativeFocused: root.focused(observation),
+                        nativeFocus: observation
                     });
                 }
             }
@@ -163,6 +177,7 @@ FloatingWindow {
         onTriggered: {
             if (root.index < 0 || root.capturing) return;
             const scenario = root.cases[root.index];
+            const observation = root.observeFocus();
             const result = {
                 name: scenario.name,
                 ready: command.ready,
@@ -171,7 +186,8 @@ FloatingWindow {
                 target: command.targetPublication,
                 state: JSON.parse(command.publication).state,
                 hovered: command.hovered,
-                nativeFocused: root.nativeFocused,
+                nativeFocused: root.focused(observation),
+                nativeFocus: observation,
                 ignored: command.Accessible.ignored,
                 deviceScale: capture.Screen.devicePixelRatio,
                 renderer: capture.GraphicsInfo.api === GraphicsInfo.Software ? "software" : "unsupported",
