@@ -6,6 +6,7 @@ from pathlib import Path
 import signal
 import subprocess
 import sys
+import time
 
 from check_qt_command_snapshot_runtime import ROOT
 from check_qt_native_availability import ACTION, action_names
@@ -57,12 +58,18 @@ class Tree:
         return applications[0]
 
     def settled(self, predicate, description):
+        failure = [None]
+
         def attempt():
             try:
                 return predicate()
-            except ValueError:
+            except ValueError as error:
+                failure[0] = error
                 return None
-        return self.session.wait(attempt, description, timeout=10)
+        try:
+            return self.session.wait(attempt, description, timeout=10)
+        except ValueError as error:
+            raise ValueError(f"{error}; last native error: {failure[0]}" if failure[0] else str(error)) from None
 
     def command(self, name):
         def single():
@@ -167,6 +174,18 @@ def lines(log):
     return len(log.read_text(encoding="utf-8", errors="replace").splitlines()) if log.exists() else 0
 
 
+def quiet(session, log, seconds=1.5):
+    previous = [lines(log), time.monotonic()]
+
+    def settled():
+        current = lines(log)
+        if current != previous[0]:
+            previous[:] = [current, time.monotonic()]
+        return time.monotonic() - previous[1] >= seconds
+    session.wait(settled, "quiet screen reader", timeout=30)
+    return lines(log)
+
+
 def announced(speech, *items):
     spoken = [item.split("' ", 1)[0] + "'" for item in speech]
     expected = [f"'{item}'" for item in items]
@@ -189,7 +208,7 @@ def screen_reader(session, output):
         session.reset()
         session.call("focusOther")
         session.settle(lambda current: not current["state"]["focused"], "focus away from Command")
-        start = lines(log)
+        start = quiet(session, log)
         session.call("focusCommand")
         session.wait(lambda: announced(presentation(log, start)[0], "Reconnect", "button.", DESCRIPTION) and any(
             "Reconnect button " + DESCRIPTION in item for item in presentation(log, start)[1]),

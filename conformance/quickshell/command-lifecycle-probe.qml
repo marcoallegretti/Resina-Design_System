@@ -148,6 +148,9 @@ ShellRoot {
                         width: 40
                         height: 40
                         activeFocusOnTab: true
+                        Accessible.role: Accessible.Pane
+                        Accessible.name: "Focus target"
+                        Accessible.focusable: true
                     }
                 }
             }
