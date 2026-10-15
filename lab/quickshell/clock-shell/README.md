@@ -46,7 +46,10 @@ focus, layout and preference policy belong to this shell, not to Resina.
 - `SystemClock` runs at second precision only while the surface is open. The time
   uses the pattern `HH:mm:ss`; the date uses the long date format of the authored
   locale. This text is shell content, not a Resina text contract (#196). It uses
-  the surface's guarded foreground colour inside its content region.
+  the surface's guarded foreground colour inside its content region, and is
+  exposed to assistive technology as static text: it sits beside the decorative
+  surface view rather than inside it, because the view is ignored by
+  accessibility together with its children.
 - The open state is a `PersistentProperties` value: it survives a soft reload and
   is reset by a hard reload or restart.
 - An IPC target `clock` provides `open`, `close`, `reload(hard)`, `observe` and
@@ -123,7 +126,11 @@ GSettings. It requires:
   re-verified against the reference paint, and its reset likewise;
 - without a fixed theme, the platform colour scheme to select the dark and light
   theme, each re-verified against the reference paint and required to use that
-  theme's source and Command appearance.
+  theme's source and Command appearance;
+- on a private AT-SPI bus, the native tree to expose exactly one Button per mapped
+  Command with its complete name and description, "Show clock" unavailable and
+  "Close" available and focused while open, and the displayed time and date as
+  static text; a native Press must open and close the clock surface.
 
 With Quickshell 0.3.2 (revision 4f508be), Qt 6.11.2, xdg-desktop-portal 1.22.1
 and xdg-desktop-portal-gnome 50.0:
@@ -143,10 +150,8 @@ and xdg-desktop-portal-gnome 50.0:
 - One output at integer scales 1 and 2, with text scale 1 and the `en-GB` locale,
   is verified. Larger text scales, other locales, multiple outputs, fractional
   or changing scale, and output hot-plug are not.
-- The composed shell's accessibility tree is not inspected here; the Command's
-  native accessibility evidence is #165, and the integrated retest belongs to
-  #167.
-- The time and date text, its locale handling and its accessible exposure are
-  shell content. A clock value changing every second is not announced.
+- The time and date text and its locale handling are shell content. Its value
+  changes every second without being announced; live-value semantics belong to
+  #196. Screen-reader presentation of the shell is not verified.
 - Translucent Frost and Gel treatments, hardware renderers and physical input
   are not covered.
