@@ -939,6 +939,32 @@ Orca announces no change when availability is withdrawn from the focused control
 so availability announcements are not verified. Audible output, other screen readers and physical input are not
 covered.
 
+### Released Quickshell Command motion
+
+[`check_quickshell_command_motion.py`](../../../tools/check_quickshell_command_motion.py)
+runs the lifecycle probe with the explicit motion channels of the
+[motion request](../../../conformance/ir/command-motion-request.json) and authored
+preference variants. The probe logs every published frame; after the run, each
+frame's complete snapshot and motion sample is checked against the request in
+effect, the projected state set and the independent spring equations. Input
+reaches the control through the compositor:
+
+- holding Space publishes several unsettled spring frames; the release retarget
+  retains velocity, the sample clock tracks elapsed native time within 0.25 s,
+  one channel may settle before the other, both settle, and no frame follows;
+- compositor hover enters and leaves the target through spring frames;
+- switching to the reduced-motion preference during a press publishes only
+  immediate settled frames;
+- moving the control during motion cancels the held gesture without an effect
+  and republishes guarded frames at the new position;
+- reduced motion and Cast publish immediate settled frames, and Frost with
+  reduced transparency keeps its family and spring policy.
+
+The motion channels are the conformance fixture, not calibrated material
+dynamics, and preferences are explicit authored inputs: no platform preference
+is discovered. Frame rate, scheduling budgets and fractional or changing output
+scale are not measured.
+
 ### Integrated sampled command frames
 
 The same control optionally accepts `motionChannels`, a JSON string containing

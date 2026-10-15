@@ -9,6 +9,9 @@ ShellRoot {
     readonly property string generation: Date.now().toString(36) + Math.floor(Math.random() * 1e9).toString(36)
     property var requests: null
     property string configuration: ""
+    property string configurationName: ""
+    property string motionChannels: ""
+    property real commandX: 40
     property bool windowed: true
     property bool shown: true
     property bool mounted: true
@@ -32,6 +35,7 @@ ShellRoot {
     function start() {
         if (!requests || font.status !== FontLoader.Ready) return;
         configuration = JSON.stringify(requests.standard);
+        configurationName = "standard";
         log("started");
     }
 
@@ -56,6 +60,13 @@ ShellRoot {
             target:targetCenter(), effects:effects, publications:publications, reactionResult:reactionResult,
             otherFocused:Boolean(windowLoader.item && windowLoader.item.mount.item && windowLoader.item.mount.item.other.activeFocus),
             screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height} : null};
+    }
+
+    function frame(control) {
+        if (!control.snapshot.length || !control.motion.length) return;
+        log("frame", {time:Date.now() / 1000, configuration:configurationName, snapshot:JSON.parse(control.snapshot),
+            motion:JSON.parse(control.motion), state:JSON.parse(control.publication).state, hovered:control.hovered,
+            target:JSON.parse(control.targetPublication || "null")});
     }
 
     function activated(control) {
@@ -129,13 +140,16 @@ ShellRoot {
 
                     Content.ResinaCommandControl {
                         id: command
-                        x: 40
+                        x: root.commandX
                         y: 40
                         configuration: root.configuration
                         disabledFocusable: root.disabledFocusable
+                        motionChannels: root.motionChannels
                         samplesPerAxis: 4
                         activeFocusOnTab: true
                         onActivated: root.activated(command)
+                        onSnapshotChanged: root.frame(command)
+                        onMotionChanged: root.frame(command)
                         onPreparationErrorChanged: if (preparationError.length && root.configuration.length)
                             root.log("rejected", {error:preparationError})
                         Component.onCompleted: controller.dispatch(JSON.stringify({kind:"availability", enabled:true}))
@@ -183,7 +197,12 @@ ShellRoot {
                 return JSON.stringify({exception:String(error)});
             }
         }
-        function configure(name: string): void { root.configuration = JSON.stringify(root.requests[name]); }
+        function configure(name: string): void {
+            root.configurationName = name;
+            root.configuration = JSON.stringify(root.requests[name]);
+        }
+        function setMotion(enabled: bool): void { root.motionChannels = enabled ? JSON.stringify(root.requests.channels) : ""; }
+        function setCommandX(value: real): void { root.commandX = value; }
         function availability(enabled: bool): bool {
             return root.command ? root.command.controller.dispatch(JSON.stringify({kind:"availability", enabled:enabled})) : false;
         }

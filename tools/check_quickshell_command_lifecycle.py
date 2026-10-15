@@ -45,6 +45,22 @@ def focused(observation):
     return bool(native) and all(native[field] for field in ("activeFocus", "windowActive", "visible", "enabled"))
 
 
+def authored_requests():
+    def variant(reduced_motion, family=None, reduced_transparency=False):
+        source = request_for("light", "Reconnect")
+        preferences = source["content"]["environment"]["accessibilityPreferences"]
+        preferences.update(reducedMotion=reduced_motion, reducedTransparency=reduced_transparency)
+        if family:
+            theme = json.loads(source["content"]["themeSource"])
+            theme["materialAssignments"]["control"]["interactive"] = family
+            source["content"]["themeSource"] = json.dumps(theme)
+        return source
+    return {"standard": request_for("light", "Reconnect"), "replacement": request_for("light", REPLACEMENT),
+            "motion": variant(False), "reduced": variant(True), "cast": variant(False, "cast"),
+            "frost": variant(False, "frost", True),
+            "channels": json.loads((ROOT / "conformance/ir/command-motion-request.json").read_text())["channels"]}
+
+
 class Session:
     def __init__(self, host, module, font, output):
         self.host, self.output = host, output
@@ -61,8 +77,7 @@ class Session:
         shutil.copyfile(ROOT / "conformance/quickshell/command-lifecycle-probe.qml", self.config / "shell.qml")
         shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", self.config / "controls")
         requests = output / "requests.json"
-        requests.write_text(json.dumps({"standard": request_for("light", "Reconnect"),
-                                        "replacement": request_for("light", REPLACEMENT)}), encoding="utf-8")
+        requests.write_text(json.dumps(authored_requests()), encoding="utf-8")
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
                                 QML_IMPORT_PATH=str(module), RESINA_COMMAND_FONT=font.as_uri(),
                                 RESINA_LIFECYCLE_REQUESTS=str(requests))
@@ -158,13 +173,15 @@ class Session:
     def settle(self, predicate, description):
         return self.until(predicate, description, 5)
 
-    def reset(self):
+    def reset(self, configuration="standard", motion=False):
         self.call("setReaction", "")
         for function in ("setWindowed", "setShown", "setMounted"):
             self.call(function, "true")
         self.call("setFocusTaken", "false")
         self.call("setDisabledFocusable", "false")
-        self.call("configure", "standard")
+        self.call("setCommandX", "40")
+        self.call("setMotion", str(motion).lower())
+        self.call("configure", configuration)
         self.call("availability", "true")
         self.ready()
         self.call("focusCommand")
