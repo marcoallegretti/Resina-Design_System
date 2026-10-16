@@ -1077,9 +1077,10 @@ rejections are counted by cause in `report.json`.
 - Focus: Tab traversal, requested focus, a focus request while another surface
   holds keyboard focus, and availability withdrawal follow the Command cases.
   Two cases move native focus into or out of the Toggle while the frame for a
-  checked change is prepared but unpublished. Every published frame in the run
-  must carry the focus Qt observes at publication and the current checked value
-  in its accessibility state and layout.
+  checked change is pending: the previous frame is withdrawn and the new one is
+  not yet published. Every published frame in the run must carry the focus Qt
+  observes at publication and the current checked value in its accessibility
+  state and layout.
 - Interruption: Space or pointer held across window deactivation by an
   exclusive-keyboard surface, a hidden surface, a parent change, availability
   withdrawal, unmount and a destroyed surface produces no effect. For the four
@@ -1094,7 +1095,7 @@ rejections are counted by cause in `report.json`.
 - Lifetime: hiding and unmounting together from a callback reached by Space,
   Enter and pointer; Space or pointer held across soft and hard reload, which
   must retire the previous generation and deliver nothing; unmounting while the
-  frame for a checked or availability change is prepared but unpublished.
+  frame for a checked or availability change is pending.
 
 The checker observes that a hold is cleared, not which native owner clears it:
 the keyboard owner, the control and the native pointer owner each cancel on

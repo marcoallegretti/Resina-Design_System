@@ -232,7 +232,7 @@ ShellRoot {
                 accepted = control.controller.dispatch(JSON.stringify({kind:"availability", enabled:false}));
             else root.fail("unknown pending change " + change);
             root.log("pending", {change:change, then:then, accepted:accepted, published:control.snapshot.length > 0,
-                prepared:control.targetPublication.length > 0, ready:control.ready});
+                ready:control.ready});
             if (then === "unmount") root.mounted = false;
             else if (then === "focus") control.forceActiveFocus();
             else if (then === "blur") root.mountItem.other.forceActiveFocus();

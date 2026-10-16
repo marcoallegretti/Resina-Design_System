@@ -42,8 +42,8 @@ def verify_pending(events, generation, change, then):
     if len(pending) != 1:
         raise ValueError(f"expected one {then} after the {change} change, observed {len(pending)}")
     event = pending[0]
-    if event["accepted"] is not True or event["published"] or event["ready"] or event["prepared"] is not True:
-        raise ValueError(f"the {change} change did not leave a prepared frame pending before {then}")
+    if event["accepted"] is not True or event["published"] or event["ready"]:
+        raise ValueError(f"the {change} change did not leave its frame unpublished before {then}")
 
 
 def outside_target(point, target):

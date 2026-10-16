@@ -17,7 +17,7 @@ def publication(snapshot_focused=True, native_focused=True, snapshot_checked=Fal
 
 def pending(**fields):
     return {"kind": "pending", "generation": "a", "change": "checked", "then": "unmount", "accepted": True,
-            "published": False, "prepared": True, "ready": False, **fields}
+            "published": False, "ready": False, **fields}
 
 
 class ToggleLifecycleEvidenceTests(unittest.TestCase):
@@ -41,13 +41,13 @@ class ToggleLifecycleEvidenceTests(unittest.TestCase):
             with self.subTest(stale=stale), self.assertRaisesRegex(ValueError, "stale checked value"):
                 verify_publications([stale])
 
-    def test_pending_change_requires_one_prepared_unpublished_frame(self):
+    def test_pending_change_requires_one_unpublished_frame(self):
         verify_pending([pending(), pending(then="focus"), pending(generation="b")], "a", "checked", "unmount")
         for events in ([], [pending(), pending()], [pending(generation="b")], [pending(change="availability")]):
             with self.subTest(events=events), self.assertRaisesRegex(ValueError, "expected one unmount"):
                 verify_pending(events, "a", "checked", "unmount")
-        for field, value in (("accepted", False), ("published", True), ("ready", True), ("prepared", False)):
-            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "did not leave a prepared frame"):
+        for field, value in (("accepted", False), ("published", True), ("ready", True)):
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "did not leave its frame unpublished"):
                 verify_pending([pending(**{field: value})], "a", "checked", "unmount")
 
     def test_release_point_lies_outside_the_target_on_either_axis(self):
