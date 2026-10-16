@@ -28,9 +28,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - name: Identify the runner image
+        id: runner-image
+        shell: bash
+        run: |
+          test -n "$ImageOS"
+          echo "name=$ImageOS" >> "$GITHUB_OUTPUT"
       - uses: Swatinem/rust-cache@v2.9.2
         with:
-          key: qt-6.11.2
+          key: ${{ steps.runner-image.outputs.name }}-qt-6.11.2
           workspaces: backends/quickshell/resina-qt-runtime -> ../../../target/qt-runtime-build
       - uses: actions/setup-python@v6
         with:
@@ -68,7 +74,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: target/wayland-sdk
-          key: wayland-sdk-ubuntu-24.04-1.24.0-82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536-libdir-lib-documentation-false-tests-false-dtd_validation-false
+          key: wayland-sdk-${{ steps.runner-image.outputs.name }}-1.24.0-82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536-libdir-lib-documentation-false-tests-false-dtd_validation-false
       - name: Build matching Wayland headers and libraries for Qt 6.11.2
         if: steps.wayland-sdk.outputs.cache-hit != 'true'
         run: |
@@ -89,7 +95,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: target/quickshell-build
-          key: quickshell-ubuntu-24.04-4f508be500dea6e5732cc3d50382a0048b17e7b1-${{ steps.qt-sdk.outputs.cache-primary-key }}-${{ steps.wayland-sdk.outputs.cache-primary-key }}-RelWithDebInfo-off-crash-handler-screencopy-hyprland-i3-pipewire-pam-polkit-greetd-status-notifier-mpris-upower-notifications-bluetooth-network
+          key: quickshell-${{ steps.runner-image.outputs.name }}-4f508be500dea6e5732cc3d50382a0048b17e7b1-${{ steps.qt-sdk.outputs.cache-primary-key }}-${{ steps.wayland-sdk.outputs.cache-primary-key }}-RelWithDebInfo-off-crash-handler-screencopy-hyprland-i3-pipewire-pam-polkit-greetd-status-notifier-mpris-upower-notifications-bluetooth-network
       - name: Build the released Quickshell host with the matching Qt SDK
         if: steps.quickshell-build.outputs.cache-hit != 'true'
         run: |
@@ -235,7 +241,7 @@ jobs:
             target/lifecycle-sway.log
           if-no-files-found: warn
   guido:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
         with:
@@ -243,8 +249,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - name: Identify the runner image
+        id: runner-image
+        shell: bash
+        run: |
+          test -n "$ImageOS"
+          echo "name=$ImageOS" >> "$GITHUB_OUTPUT"
       - uses: Swatinem/rust-cache@v2.9.2
         with:
+          key: ${{ steps.runner-image.outputs.name }}
           workspaces: |
             .
             backends/guido/resina-guido
@@ -282,7 +295,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             executableSuffix: ''
             labelFont: '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
           - os: windows-latest
@@ -295,8 +308,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - name: Identify the runner image
+        id: runner-image
+        shell: bash
+        run: |
+          test -n "$ImageOS"
+          echo "name=$ImageOS" >> "$GITHUB_OUTPUT"
       - uses: Swatinem/rust-cache@v2.9.2
         with:
+          key: ${{ steps.runner-image.outputs.name }}
           workspaces: |
             .
             backends/slint/resina-slint-runtime
