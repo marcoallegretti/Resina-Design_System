@@ -10,7 +10,6 @@ import sys
 import tempfile
 import threading
 import time
-from xml.sax.saxutils import escape
 
 APPEARANCE = "org.freedesktop.appearance"
 SETTINGS = {
@@ -108,8 +107,9 @@ def matches(observed, expected):
                                                                for name, value in expected.items())
 
 
-def session(configuration, output, processes):
-    bus = subprocess.Popen(["dbus-daemon", *configuration, "--nofork", "--print-address=1"],
+def session(output, processes, data_home=None):
+    environment = dict(os.environ, XDG_DATA_HOME=str(data_home)) if data_home else None
+    bus = subprocess.Popen(["dbus-daemon", "--session", "--nofork", "--print-address=1"], env=environment,
                            stdout=subprocess.PIPE, text=True, start_new_session=True)
     processes.append(bus)
     address = bus.stdout.readline().strip()
@@ -183,20 +183,14 @@ def main():
         isolated.close()
         report["cases"].append("a missing session bus reports an error and no preference")
 
-        services = args.output_dir / "services"
-        services.mkdir()
-        for service in Path("/usr/share/dbus-1/services").glob("*.service"):
-            if service.name != "org.freedesktop.portal.Desktop.service":
-                (services / service.name).write_bytes(service.read_bytes())
-        bare = args.output_dir / "bare-bus.conf"
-        bare.write_text("<busconfig><type>session</type><listen>unix:tmpdir=/tmp</listen>"
-                        f"<servicedir>{escape(str(services))}</servicedir>"
-                        "<policy context=\"default\"><allow send_destination=\"*\"/>"
-                        "<allow receive_sender=\"*\"/><allow own=\"*\"/></policy></busconfig>", encoding="utf-8")
+        masked = args.output_dir / "masked"
+        (masked / "dbus-1" / "services").mkdir(parents=True)
+        (masked / "dbus-1" / "services" / "org.freedesktop.portal.Desktop.service").write_text(
+            "[D-BUS Service]\nName=org.freedesktop.portal.Desktop\nExec=/bin/false\n", encoding="utf-8")
         log = (args.output_dir / "portal.log").open("w")
         processes.append(log)
 
-        environment = session(["--config-file", str(bare)], args.output_dir, processes)
+        environment = session(args.output_dir, processes, masked)
         late = Host(module, environment)
         processes.append(late)
         observed = late.until(lambda current: current["ready"], "readiness without a portal")
@@ -218,7 +212,7 @@ def main():
                    "preferences once the portal returns")
         report["cases"].append("preferences are withdrawn when the portal leaves and read again when it returns")
 
-        environment = session(["--session"], args.output_dir, processes)
+        environment = session(args.output_dir, processes)
         start_portal(args, environment, processes, log)
         initial = wait_portal(environment, None, "portal Settings interface")
         report["providedKeys"] = [key for key, name in PROPERTIES.items() if initial[name] is not None]
