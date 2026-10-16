@@ -1,23 +1,16 @@
-import argparse
 import copy
 import json
 import math
-import os
-from pathlib import Path
-import shutil
-import subprocess
-import sys
 
 from jsonschema.exceptions import ValidationError
 from PIL import Image
 
 from check_schemas import validator_for
-from check_qt_command_snapshot_runtime import ROOT
 from check_qt_command_label_runtime import verify_layout
 from check_qt_toggle_control_runtime import request_for
 from check_quickshell_command_updates import (
-    contrast, inline_color, read_reports, unique_object, verify_authored_focus,
-    verify_native_focus, verify_stable_targets, verify_typography, verify_version,
+    contrast, inline_color, run_updates, unique_object, updates_parser, verify_authored_focus,
+    verify_native_focus, verify_typography,
 )
 from check_surface_paint_backend import surface_paint_channel_mismatch
 
@@ -300,65 +293,19 @@ def verify_capture(path, snapshot, scale, background):
                 raise ValueError("native focus indicator is absent, shifted or differs from its snapshot")
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Verify authored Toggle replacements in released Quickshell.")
-    parser.add_argument("--host", type=Path, required=True)
-    parser.add_argument("--module-path", type=Path, required=True)
-    parser.add_argument("--font", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--platform", choices=("offscreen", "xcb", "wayland"), default="offscreen")
-    parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 2])
-    args = parser.parse_args()
+def verify_output(output, case, report, scale):
     try:
-        if not args.scales or any(scale not in (1, 1.25, 2) for scale in args.scales):
-            raise ValueError("requires device scales 1, 1.25 or 2")
-        host, module, font = (path.resolve(strict=True) for path in (args.host, args.module_path, args.font))
-        environment = dict(os.environ, RESINA_QUICKSHELL_HOST=str(host), RESINA_QT_RUNTIME_MODULE=str(module))
-        environment["QT_QPA_PLATFORM"] = args.platform
-        version = subprocess.run([sys.executable, str(ROOT / "tools/run_qt_availability_probe.py"), "--version"],
-                                 env=environment, capture_output=True, text=True, timeout=15)
-        verify_version(version)
-        args.output_dir.mkdir(parents=True, exist_ok=False)
-        cases = authored_cases()
-        for index, scale in enumerate(args.scales):
-            output = args.output_dir / str(index)
-            output.mkdir()
-            shutil.copyfile(ROOT / "conformance/quickshell/toggle-updates-probe.qml", output / "config.qml")
-            shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", output / "controls")
-            case_file = output / "cases.json"
-            case_file.write_text(json.dumps(cases), encoding="utf-8")
-            environment.update(QML_IMPORT_PATH=str(module), QT_QPA_PLATFORM=args.platform,
-                               QT_QUICK_BACKEND="software", QT_SCALE_FACTOR=str(scale),
-                               RESINA_TOGGLE_CASES=str(case_file.resolve()),
-                               RESINA_TOGGLE_FONT=font.as_uri(), RESINA_TOGGLE_OUTPUT=str(output.resolve()))
-            try:
-                result = subprocess.run([str(host), "--no-color", "--path", str((output / "config.qml").resolve())],
-                                        env=environment, capture_output=True, text=True, timeout=10 * len(cases))
-            except subprocess.TimeoutExpired as error:
-                partial = "".join(stream.decode("utf-8", errors="replace") if isinstance(stream, bytes)
-                                  else stream or "" for stream in (error.stdout, error.stderr))
-                (output / "run.log").write_text(partial, encoding="utf-8")
-                raise
-            log = result.stdout + result.stderr
-            (output / "run.log").write_text(log, encoding="utf-8")
-            if result.returncode:
-                raise ValueError(f"native host failed with exit {result.returncode}: {log[-2000:]}")
-            reports = read_reports(log, cases, "toggle")
-            (output / "observations.json").write_text(json.dumps(reports, indent=2), encoding="utf-8")
-            for case, report in zip(cases, reports):
-                try:
-                    verify_case(case, report, scale)
-                    if not case.get("reject"):
-                        verify_capture(output / (case["name"] + ".png"), json.loads(report["snapshot"]), scale,
-                                       case["request"]["background"])
-                except (ValueError, KeyError, TypeError, ValidationError) as error:
-                    raise ValueError(f"{case['name']}: {error}") from error
-            verify_stable_targets(cases, reports)
-            print(f"PASS {len(cases)} authored Toggle cases at device scale {scale}", flush=True)
-    except (OSError, ValueError, KeyError, TypeError, ValidationError, subprocess.TimeoutExpired) as error:
-        print("FAIL Quickshell Toggle updates: " + str(error), file=sys.stderr)
-        return 1
-    return 0
+        verify_case(case, report, scale)
+        if not case.get("reject"):
+            verify_capture(output / (case["name"] + ".png"), json.loads(report["snapshot"]), scale,
+                           case["request"]["background"])
+    except (ValueError, KeyError, TypeError, ValidationError) as error:
+        raise ValueError(f"{case['name']}: {error}") from error
+
+
+def main():
+    args = updates_parser("Verify authored Toggle replacements in released Quickshell.").parse_args()
+    return run_updates("toggle", args, {"FONT": args.font}, authored_cases, verify_output)
 
 
 if __name__ == "__main__":

@@ -1,13 +1,17 @@
 import copy
+from contextlib import redirect_stderr
+import io
 import json
 from pathlib import Path
+from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest.mock import patch
 from PIL import Image
 
+from check_quickshell_command_updates import ROOT, read_reports
 from check_quickshell_toggle_updates import (
-    ROOT, authored_cases, contrast, inline_color, read_reports, static_authored_states,
+    authored_cases, contrast, inline_color, main, static_authored_states,
     verify_capture, verify_case, verify_snapshot,
 )
 
@@ -232,6 +236,37 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
             verify_capture(path, unfocused, 1, background)
             with self.assertRaisesRegex(ValueError, "surroundings"):
                 verify_capture(path, snapshot, 1, {**background, "components": [0, 0, 0]})
+
+    def test_host_qml_runtime_errors_fail_the_run(self):
+        log = "RESINA_TOGGLE_CASE " + json.dumps(self.rejected()) + "\nRESINA_TOGGLE_DONE 1\n"
+        for error in ("TypeError: Property 'synchronize' of object is not a function",
+                      "ReferenceError: root is not defined",
+                      "QQmlVMEMetaObject: Internal error - attempted to evaluate a function in an invalid context"):
+            with self.subTest(error=error), self.assertRaisesRegex(ValueError, "QML runtime error"):
+                read_reports("WARN: " + error + "\n" + log, [{"name": "invalid"}], "toggle")
+
+    def test_shared_runner_uses_the_toggle_probe_and_markers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("host", "font"):
+                (root / name).touch()
+            (root / "module").mkdir()
+            argv = ["check", "--host", str(root / "host"), "--font", str(root / "font"),
+                    "--module-path", str(root / "module"), "--output-dir", str(root / "output"), "--scales", "1"]
+            with patch("sys.argv", argv), redirect_stderr(io.StringIO()) as stderr, \
+                    patch("check_quickshell_command_updates.subprocess.run", side_effect=[
+                        SimpleNamespace(returncode=0, stdout="Quickshell 0.3.2 / Qt Quick 6.11.2\n", stderr=""),
+                        SimpleNamespace(returncode=0, stdout="RESINA_TOGGLE_DONE 0\n", stderr="")]) as run:
+                self.assertEqual(main(), 1)
+            environment = run.call_args.kwargs["env"]
+            output = root / "output/0"
+            self.assertEqual((output / "config.qml").read_bytes(),
+                             (ROOT / "conformance/quickshell/toggle-updates-probe.qml").read_bytes())
+            self.assertEqual(environment["RESINA_TOGGLE_CASES"], str((output / "cases.json").resolve()))
+            self.assertEqual(environment["RESINA_TOGGLE_FONT"], (root / "font").resolve().as_uri())
+            self.assertNotIn("RESINA_COMMAND_CASES", environment)
+            self.assertEqual(run.call_args.kwargs["timeout"], 10 * len(authored_cases()))
+            self.assertIn("FAIL Quickshell Toggle updates: native toggle omitted", stderr.getvalue())
 
     def rejected(self):
         return {"name": "invalid", "ready": False, "error": "invalid configuration",

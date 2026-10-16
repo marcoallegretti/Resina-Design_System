@@ -911,8 +911,9 @@ observed focus fails within the existing case deadline. Focused rest retains bot
 Offscreen focus observations do not establish compositor focus policy or physical
 input. Before publishing a pending prepared frame, the control synchronizes native
 focus and pending interruption, then validates the resulting preparation
-generation. Final natural and fitted native measurements reach the independent
-rational layout checker. These remeasurements verify final
+generation. The run fails when the host log reports a QML type, reference or
+invalid-context error. Final natural and fitted native measurements reach the
+independent rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
 
 Each successful case saves a PNG and its complete snapshot. Pixel checks require
