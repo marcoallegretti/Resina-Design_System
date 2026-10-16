@@ -4211,7 +4211,7 @@ spatial system, density and state composition
 Surface, Container, Divider, ScrollArea, FocusSurface
 IconButton
 Checkbox, Radio, SegmentedControl
-Toggle and Slider completed to anatomy, accessibility and value text
+Toggle and Slider completed to anatomy and accessibility, including Slider value text
 disclosure and standalone text
 ```
 
