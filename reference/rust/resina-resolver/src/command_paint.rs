@@ -1,6 +1,6 @@
 use crate::{
-    CompiledTheme, OpaqueSurfaceError, OpaqueSurfaceIr, SurfacePaintInput, SurfacePaintIr,
-    SurfacePaintResolutionError, bind_surface,
+    CompiledTheme, ImperceptibleResponse, OpaqueSurfaceError, OpaqueSurfaceIr, SurfacePaintInput,
+    SurfacePaintIr, SurfacePaintResolutionError, bind_surface,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
@@ -45,6 +45,7 @@ pub enum CommandPaintError {
     UnsupportedVersion,
     Scope(&'static str),
     Paint(SurfacePaintResolutionError),
+    Imperceptible(ImperceptibleResponse),
     Motion(resina_motion::SpringError),
 }
 impl fmt::Display for CommandPaintError {
@@ -55,6 +56,7 @@ impl fmt::Display for CommandPaintError {
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
             Self::Scope(e) => f.write_str(e),
             Self::Paint(e) => write!(f, "command {e}"),
+            Self::Imperceptible(e) => write!(f, "command {e}"),
             Self::Motion(e) => write!(f, "command motion: {e}"),
         }
     }
@@ -205,6 +207,16 @@ pub(crate) fn resolve_command_paint_with_response<T>(
         .command_appearance
         .response_for(binding.material_family(), phase)
         .map_err(CommandPaintError::Scope)?;
+    if let Some(imperceptible) = crate::control_paint::imperceptible_response(
+        theme,
+        input.surface.body.appearance,
+        surface,
+        &binding,
+        phase,
+        response,
+    )? {
+        return Err(CommandPaintError::Imperceptible(imperceptible));
+    }
     let (response, sampled) = sample(binding.material_family(), response)?;
     let paint = crate::control_paint::resolve_control_paint(
         theme,

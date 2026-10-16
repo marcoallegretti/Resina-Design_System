@@ -1,6 +1,6 @@
 use crate::{
-    CompiledTheme, OpaqueSurfaceError, OpaqueSurfaceInput, SurfacePaintInput, SurfacePaintIr,
-    SurfacePaintResolutionError, bind_surface,
+    CompiledTheme, ImperceptibleResponse, OpaqueSurfaceError, OpaqueSurfaceInput,
+    SurfacePaintInput, SurfacePaintIr, SurfacePaintResolutionError, bind_surface,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
@@ -60,6 +60,7 @@ pub enum TogglePartPaintError {
     UnsupportedVersion,
     Scope(&'static str),
     Paint(SurfacePaintResolutionError),
+    Imperceptible(ImperceptibleResponse),
     Motion(resina_motion::SpringError),
 }
 impl fmt::Display for TogglePartPaintError {
@@ -70,6 +71,7 @@ impl fmt::Display for TogglePartPaintError {
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
             Self::Scope(e) => f.write_str(e),
             Self::Paint(e) => write!(f, "toggle part {e}"),
+            Self::Imperceptible(e) => write!(f, "toggle part {e}"),
             Self::Motion(e) => write!(f, "toggle part motion: {e}"),
         }
     }
@@ -185,6 +187,16 @@ pub(crate) fn resolve_toggle_part_paint_with_response<T>(
         .interaction_appearance
         .response_for(binding.material_family(), phase)
         .map_err(TogglePartPaintError::Scope)?;
+    if let Some(imperceptible) = crate::control_paint::imperceptible_response(
+        theme,
+        input.surface.body.appearance,
+        &selected,
+        &binding,
+        phase,
+        response,
+    )? {
+        return Err(TogglePartPaintError::Imperceptible(imperceptible));
+    }
     let (response, sampled) = sample(binding.material_family(), response)?;
     let b = input.surface.body;
     let paint = crate::control_paint::resolve_control_paint(

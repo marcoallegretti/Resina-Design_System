@@ -8,9 +8,32 @@ use crate::{
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorRole, CommandResponse, InteractionState, OpaqueSurfaceAppearance, SurfaceIntent,
-    SurfaceSize,
+    ColorRole, CommandPhase, CommandResponse, InteractionState, OpaqueSurfaceAppearance,
+    SurfaceIntent, SurfaceSize,
 };
+use std::fmt;
+
+const MINIMUM_STATE_COLOR_DIFFERENCE: f64 = 0.04;
+const MINIMUM_STATE_DEPTH_CHANGE: f64 = 1.0;
+const DEPTH_TOLERANCE: f64 = 1e-12;
+
+/// A selected hover, pressed or disabled response whose body differs from rest by less than
+/// ΔE_OK 0.04 and whose final extrusion differs by less than 1 px.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ImperceptibleResponse {
+    pub phase: CommandPhase,
+    pub color_difference: f64,
+    pub depth_change: f64,
+}
+impl fmt::Display for ImperceptibleResponse {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{:?} response is imperceptible from rest: body ΔE_OK {} is below {MINIMUM_STATE_COLOR_DIFFERENCE} and extrusion change {} px is below {MINIMUM_STATE_DEPTH_CHANGE} px",
+            self.phase, self.color_difference, self.depth_change
+        )
+    }
+}
 
 pub(crate) struct ControlPaintInput<'a> {
     pub surface: &'a SurfaceIntent,
@@ -76,12 +99,7 @@ pub(crate) fn resolve_control_paint_inputs(
     )
     .map_err(|error| SurfacePaintResolutionError::Body(OpaqueSurfaceError::Readability(error)))?;
     let appearance = input.appearance;
-    let depths = resolve_elevation_depth(appearance.depth_assignments(), theme.tokens())
-        .map_err(|error| SurfacePaintResolutionError::Body(OpaqueSurfaceError::Depth(error)))?;
-    let depth = depths[&surface.form().elevation()]["value"]
-        .as_f64()
-        .expect("validated depth is numeric")
-        * response.depth_scale();
+    let depth = semantic_depth(theme, appearance, surface)? * response.depth_scale();
     let size = input.size;
     let body = resolve_opaque_body_geometry(theme, environment, size, appearance, &readable, depth)
         .map_err(SurfacePaintResolutionError::Body)?;
@@ -127,4 +145,57 @@ pub(crate) fn resolve_control_paint_inputs(
         body,
         focus,
     })
+}
+
+fn semantic_depth(
+    theme: &CompiledTheme,
+    appearance: &OpaqueSurfaceAppearance,
+    surface: &SurfaceIntent,
+) -> Result<f64, SurfacePaintResolutionError> {
+    let depths = resolve_elevation_depth(appearance.depth_assignments(), theme.tokens())
+        .map_err(|error| SurfacePaintResolutionError::Body(OpaqueSurfaceError::Depth(error)))?;
+    Ok(depths[&surface.form().elevation()]["value"]
+        .as_f64()
+        .expect("validated depth is numeric"))
+}
+
+fn oklab_difference(first: &crate::SrgbFallback, second: &crate::SrgbFallback) -> f64 {
+    let first = resina_color::srgb_to_oklab(first.components())
+        .expect("bound opaque body has encoded sRGB channels in [0, 1]");
+    let second = resina_color::srgb_to_oklab(second.components())
+        .expect("mixed opaque body has encoded sRGB channels in [0, 1]");
+    first
+        .iter()
+        .zip(second)
+        .map(|(first, second)| (first - second).powi(2))
+        .sum::<f64>()
+        .sqrt()
+}
+
+/// Measures the selected authored response on the opaque body it is applied to.
+pub(crate) fn imperceptible_response(
+    theme: &CompiledTheme,
+    appearance: &OpaqueSurfaceAppearance,
+    surface: &SurfaceIntent,
+    binding: &BoundSurface,
+    phase: CommandPhase,
+    response: CommandResponse,
+) -> Result<Option<ImperceptibleResponse>, SurfacePaintResolutionError> {
+    if phase == CommandPhase::Rest {
+        return Ok(None);
+    }
+    let rest = binding.opaque_color_fallback();
+    let color_difference = oklab_difference(rest, &crate::surface::mix_body_color(rest, response));
+    let depth = semantic_depth(theme, appearance, surface)?;
+    let depth_change = (depth * response.depth_scale() - depth).abs();
+    if color_difference >= MINIMUM_STATE_COLOR_DIFFERENCE
+        || depth_change >= MINIMUM_STATE_DEPTH_CHANGE - DEPTH_TOLERANCE
+    {
+        return Ok(None);
+    }
+    Ok(Some(ImperceptibleResponse {
+        phase,
+        color_difference,
+        depth_change,
+    }))
 }

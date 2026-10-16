@@ -420,5 +420,194 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "imperceptible lifted hover",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0.06,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "imperceptible disabled response",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.02,
+          "depthScale": 0.7
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color below perceivable difference",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.03,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color-only perceivable hover",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.1,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "depth compression below one pixel",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/pressed",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 0.51
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "depth compression of one pixel",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/pressed",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "depth rise of one pixel",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 1.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "deepest authored rise",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 2
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "depth rise above bound",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 2.01
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

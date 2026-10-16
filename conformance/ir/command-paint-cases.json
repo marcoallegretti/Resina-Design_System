@@ -739,5 +739,185 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "imperceptible lifted hover",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0.06,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "imperceptible disabled response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.02,
+          "depthScale": 0.7
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color below perceivable difference",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.03,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color-only perceivable hover",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.1,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "depth compression below one pixel",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/pressed",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 0.51
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "depth compression of one pixel",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/pressed",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "depth rise of one pixel",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 1.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "deepest authored rise",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 2
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "depth rise above bound",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 2.01
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
   }
 ]

@@ -13,6 +13,28 @@ from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
 from check_surface_paint_backend import surface_paint_channel_mismatch
 
+MINIMUM_STATE_COLOR_DIFFERENCE = 0.04
+MINIMUM_STATE_DEPTH_CHANGE = 1
+DEPTH_TOLERANCE = 1e-12
+
+
+def oklab(components):
+    # Ottosson's linear sRGB to LMS and LMS' to Oklab matrices, independent of the reference's XYZ path.
+    linear = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in components]
+    lms = [sum(w * c for w, c in zip(row, linear)) ** (1 / 3) for row in (
+        (0.4122214708, 0.5363325363, 0.0514459929),
+        (0.2119034982, 0.6806995451, 0.1073969566),
+        (0.0883024619, 0.2817188376, 0.6299787005))]
+    return [sum(w * c for w, c in zip(row, lms)) for row in (
+        (0.2104542553, 0.7936177850, -0.0040720468),
+        (1.9779984951, -2.4285922050, 0.4505937099),
+        (0.0259040371, 0.7827717662, -0.8086757660))]
+
+
+def perceivable(rest_color, color, rest_depth, depth):
+    return (math.dist(oklab(rest_color), oklab(color)) >= MINIMUM_STATE_COLOR_DIFFERENCE
+            or abs(depth - rest_depth) >= MINIMUM_STATE_DEPTH_CHANGE - DEPTH_TOLERANCE)
+
 
 def command_mismatch(actual, request, response=None):
     states = request["surface"]["body"]["surface"]["states"]["states"]
@@ -24,7 +46,8 @@ def command_mismatch(actual, request, response=None):
     role = request["surface"]["body"]["surface"]["materialRole"].split(".")[1]
     if family != theme["materialAssignments"]["control"][role]:
         return "/paint/body/materialFamily"
-    if response is None:
+    authored = response is None
+    if authored:
         response = {"bodyMix": 0, "depthScale": 1} if phase == "rest" else request["commandAppearance"]["profiles"][family][phase]
     if actual["phase"] != phase:
         return "/phase"
@@ -50,6 +73,8 @@ def command_mismatch(actual, request, response=None):
     depth = 2 * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
+    if authored and phase != "rest" and not perceivable((0.8, 0.7, 0.6), color, 2, depth):
+        return "/response (imperceptible from rest)"
     if ("focus" in actual["paint"]) != ("focused" in states):
         return "/paint/focus"
     return surface_paint_channel_mismatch(actual["paint"])

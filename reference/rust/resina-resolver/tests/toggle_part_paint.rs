@@ -1,4 +1,7 @@
-use resina_resolver::{resolve_command_paint_source, resolve_toggle_part_paint_source};
+use resina_resolver::{
+    ImperceptibleResponse, TogglePartPaintError, resolve_command_paint_source,
+    resolve_toggle_part_paint_source,
+};
 use serde_json::{Value, json};
 
 fn request() -> Value {
@@ -172,4 +175,35 @@ fn navigation_owner_requires_surroundings_without_losing_thumb_focus_state() {
         serde_json::to_value(ir.paint().body()).unwrap()["states"]["states"],
         json!(["focused", "checked"])
     );
+}
+
+#[test]
+fn embedded_track_responses_are_perceivable_only_through_body_color() {
+    let resolve = |checked: bool, response: Value| {
+        let mut request = request();
+        request["part"] = json!("track");
+        request["surface"]["body"]["surface"]["form"]["elevation"] = json!("embedded");
+        let states = if checked {
+            json!(["hover", "checked"])
+        } else {
+            json!(["hover"])
+        };
+        request["surface"]["body"]["surface"]["states"]["states"] = states;
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] = response;
+        resolve_toggle_part_paint_source(&request.to_string())
+    };
+    for checked in [false, true] {
+        resolve(checked, json!({"bodyMix": -0.1, "depthScale": 1})).unwrap();
+        let Err(TogglePartPaintError::Imperceptible(ImperceptibleResponse {
+            depth_change, ..
+        })) = resolve(checked, json!({"bodyMix": 0, "depthScale": 2}))
+        else {
+            panic!("a depth-only response cannot change an embedded track");
+        };
+        assert_eq!(depth_change, 0.0);
+        assert!(matches!(
+            resolve(checked, json!({"bodyMix": -0.03, "depthScale": 1})),
+            Err(TogglePartPaintError::Imperceptible(_))
+        ));
+    }
 }
