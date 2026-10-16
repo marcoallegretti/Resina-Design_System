@@ -114,7 +114,11 @@ def session(output, processes, data_home=None):
     processes.append(bus)
     address = bus.stdout.readline().strip()
     bus.stdout.close()
-    return dict(os.environ, DBUS_SESSION_BUS_ADDRESS=address, XDG_CONFIG_HOME=tempfile.mkdtemp(dir=output),
+    configuration = Path(tempfile.mkdtemp(dir=output))
+    (configuration / "xdg-desktop-portal").mkdir()
+    (configuration / "xdg-desktop-portal" / "portals.conf").write_text(
+        "[preferred]\norg.freedesktop.impl.portal.Settings=gnome\n", encoding="utf-8")
+    return dict(os.environ, DBUS_SESSION_BUS_ADDRESS=address, XDG_CONFIG_HOME=str(configuration),
                 XDG_CURRENT_DESKTOP="GNOME", QT_QPA_PLATFORM="offscreen", GSETTINGS_BACKEND="dconf")
 
 
