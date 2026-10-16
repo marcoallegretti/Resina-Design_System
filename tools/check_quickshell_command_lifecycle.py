@@ -18,6 +18,10 @@ NOT_READY = "Not ready to accept queries yet."
 REPLACEMENT = "Riconnetti già"
 
 
+def completed(log):
+    return log[:log.rfind("\n") + 1]
+
+
 def read_events(log):
     events = []
     for line in log.splitlines():
@@ -152,7 +156,7 @@ class Session:
         return observed
 
     def events(self):
-        return read_events(self.log.read_text(encoding="utf-8", errors="replace"))
+        return read_events(completed(self.log.read_text(encoding="utf-8", errors="replace")))
 
     def until(self, predicate, description, timeout):
         last = [None]
