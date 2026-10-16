@@ -952,11 +952,16 @@ python tools/check_quickshell_toggle_updates.py \
   --output-dir target/quickshell-toggle-updates --scales 1 1.25 2
 ```
 
-The 35 scenarios cover off and on Toggles in Light/Dark LTR/RTL, expanded German
+The 39 scenarios cover off and on Toggles in Light/Dark LTR/RTL, expanded German
 and mixed Arabic/Latin labels, text scales 1.5 and 2, focused off and on Toggles in
 both themes, authored strong-outline focus fallback, failed focus contrast and
 focused recovery, unavailable state, malformed configuration, unsupported focus
 policy, rotation, insufficient thumb contrast and recovery after each rejection.
+Two cases gain or lose native focus after a replacement has prepared its frame
+and before that frame is published; every callback must carry the new focus.
+Two cases unload a focused Toggle through a `Loader`, one while its prepared
+frame is still pending and one from its own consumer callback, then load a fresh
+Toggle with the same configuration.
 Light track edges already use the strong-outline fallback, so the failed focus
 contrast case assigns the authored strong outline to `outline`; the edge guard
 passes and the rejection comes from the focus guard. Final and callback snapshots
@@ -967,8 +972,11 @@ selection, accessible state and track-only navigation paint. The accessibility
 schema owns the portable role. Callbacks must observe the authored checked value,
 and their labels and targets must equal the final values. Raw focus observations
 and their conjunction follow the Command updates checker. Before publishing a
-pending prepared frame, the control synchronizes native focus and pending
-interruption.
+pending prepared frame, the control synchronizes native focus and any pending
+interruption. These cases change focus only; they do not produce a pending
+interruption. On destruction the control retires its pending frame and the
+keyboard owner ignores synchronization queued before destruction. The run fails
+when the host log reports a QML type, reference or invalid-context error.
 
 Pixel checks sample the background, the thumb center, the uncovered track at the
 opposite thumb endpoint, label ink on every measured line and, when focused, the

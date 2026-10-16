@@ -70,6 +70,13 @@ def authored_cases():
         rejected["request"]["content"]["themeSource"] = json.dumps(theme)
         cases.append(rejected)
         cases.append({**copy.deepcopy(baseline), "name": theme_name + "-focus-recovery"})
+    for name, theme, checked, options in (
+        ("focus-during-preparation", "light", False, {"focused": True, "focusDuringPreparation": True}),
+        ("blur-during-preparation", "dark", True, {"focusDuringPreparation": False}),
+        ("unmount-pending", "light", True, {"focused": True, "unmount": "pending"}),
+        ("unmount-from-callback", "dark", False, {"focused": True, "unmount": "callback"}),
+    ):
+        cases.append({"name": name, "request": request_for(theme), "checked": checked, **options})
     return cases
 
 
@@ -163,7 +170,7 @@ def verify_snapshot(snapshot, request):
 
 def verify_case(case, report, scale):
     fields = {"name", "ready", "error", "snapshot", "target", "state", "checked", "hovered", "ignored",
-              "deviceScale", "renderer", "publications", "measurements", "nativeFocused", "nativeFocus"}
+              "deviceScale", "renderer", "publications", "unmounts", "measurements", "nativeFocused", "nativeFocus"}
     if set(report) != fields or type(report["deviceScale"]) not in (int, float) or report["deviceScale"] != scale:
         raise ValueError("native toggle report fields or actual device scale differ")
     if report["renderer"] != "software":
@@ -171,8 +178,12 @@ def verify_case(case, report, scale):
     if not all(isinstance(report[field], str) for field in ("error", "snapshot", "target")) \
             or not all(type(report[field]) is bool
                        for field in ("ready", "checked", "hovered", "ignored", "nativeFocused")) \
-            or not isinstance(report["publications"], list):
+            or not isinstance(report["publications"], list) or not isinstance(report["unmounts"], list):
         raise ValueError("native toggle report types differ")
+    unmount = case.get("unmount")
+    if report["unmounts"] != ([{"published": unmount == "callback", "prepared": True, "nativeFocused": True}]
+                              if unmount else []):
+        raise ValueError("native toggle was not unloaded focused with the required pending or published frame")
     verify_native_focus(report)
     validator_for("schemas/activation-state.schema.json").validate(report["state"])
     if report["state"]["focused"] != report["nativeFocused"]:
@@ -217,6 +228,8 @@ def verify_case(case, report, scale):
             raise ValueError("consumer callback disagrees with native focus observation")
         if publication["checked"] != checked:
             raise ValueError("consumer callback observed a different checked owner")
+        if publication["state"]["focused"] != case.get("focusDuringPreparation", publication["state"]["focused"]):
+            raise ValueError("consumer callback did not carry the focus changed during preparation")
         source.update(activation=publication["state"], hovered=publication["hovered"],
                       checked=publication["checked"], focusable=publication["state"]["enabled"])
         verify_snapshot(publication["snapshot"], source)

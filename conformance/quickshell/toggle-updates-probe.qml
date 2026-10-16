@@ -13,10 +13,15 @@ FloatingWindow {
     property string configuration: ""
     property var publications: []
     property bool capturing: false
+    property bool disabledFocusable: false
+    property string preparation: ""
+    property string unmount: ""
+    property var unmounts: []
+    readonly property var toggle: mount.item
 
     function observeFocus() {
-        return {activeFocus: toggle.activeFocus, windowActive: toggle.Window.active,
-            visible: toggle.visible, enabled: toggle.enabled,
+        return {activeFocus: root.toggle.activeFocus, windowActive: root.toggle.Window.active,
+            visible: root.toggle.visible, enabled: root.toggle.enabled,
             windowVisible: root.backingWindowVisible};
     }
 
@@ -45,6 +50,7 @@ FloatingWindow {
         }
         other.forceActiveFocus();
         publications = [];
+        unmounts = [];
         const scenario = cases[index];
         if (typeof scenario.request === "object") {
             const color = scenario.request.background;
@@ -54,17 +60,57 @@ FloatingWindow {
             }
         }
         carrier.rotation = scenario.rotation || 0;
-        toggle.disabledFocusable = scenario.disabledFocusable === true;
+        disabledFocusable = scenario.disabledFocusable === true;
+        preparation = scenario.focusDuringPreparation === true ? "focus"
+            : scenario.focusDuringPreparation === false ? "blur" : "";
+        unmount = scenario.unmount || "";
         configuration = typeof scenario.request === "string" ? scenario.request : JSON.stringify(scenario.request);
-        toggle.controller.dispatch(JSON.stringify({kind:"availability", enabled:scenario.enabled !== false}));
-        if (!toggle.setChecked(scenario.checked === true)) {
-            fail("checked replacement was rejected");
-            return;
-        }
-        if (scenario.renewPlacement === true) toggle.reconfigure();
-        if (scenario.focused === true) toggle.forceActiveFocus();
+        if (!apply(scenario)) return;
+        if (scenario.renewPlacement === true) root.toggle.reconfigure();
         deadline.restart();
         capturing = false;
+    }
+
+    function apply(scenario) {
+        root.toggle.controller.dispatch(JSON.stringify({kind:"availability", enabled:scenario.enabled !== false}));
+        if (!root.toggle.setChecked(scenario.checked === true)) {
+            fail("checked replacement was rejected");
+            return false;
+        }
+        if ((scenario.focused === true && preparation !== "focus") || preparation === "blur")
+            root.toggle.forceActiveFocus();
+        return true;
+    }
+
+    function prepared() {
+        if (preparation.length) Qt.callLater(changeFocus);
+        if (unmount === "pending") {
+            unmount = "";
+            Qt.callLater(unload);
+        }
+    }
+
+    function changeFocus() {
+        if (preparation === "focus") root.toggle.forceActiveFocus();
+        else if (preparation === "blur") other.forceActiveFocus();
+        preparation = "";
+    }
+
+    function published() {
+        if (unmount !== "callback") return;
+        unmount = "";
+        unload();
+    }
+
+    function unload() {
+        unmounts.push({published: root.toggle.snapshot.length > 0, prepared: root.toggle.targetPublication.length > 0,
+            nativeFocused: focused(observeFocus())});
+        mount.active = false;
+        Qt.callLater(reload);
+    }
+
+    function reload() {
+        mount.active = true;
     }
 
     FontLoader {
@@ -122,25 +168,30 @@ FloatingWindow {
         Item {
             id: carrier
             anchors.fill: parent
-            Content.ResinaToggleControl {
-                id: toggle
+            Loader {
+                id: mount
                 x: 50
                 y: 50
-                configuration: root.configuration
-                disabledFocusable: false
-                samplesPerAxis: 4
-                onSnapshotChanged: {
-                    if (!snapshot.length) return;
-                    const observation = root.observeFocus();
-                    root.publications.push({
-                        configuration: root.configuration,
-                        snapshot: JSON.parse(snapshot),
-                        state: JSON.parse(publication).state,
-                        checked: checked,
-                        hovered: hovered,
-                        nativeFocused: root.focused(observation),
-                        nativeFocus: observation
-                    });
+                onLoaded: if (root.index >= 0 && root.index < root.cases.length) root.apply(root.cases[root.index])
+                sourceComponent: Content.ResinaToggleControl {
+                    configuration: root.configuration
+                    disabledFocusable: root.disabledFocusable
+                    samplesPerAxis: 4
+                    onTargetPublicationChanged: if (targetPublication.length) root.prepared()
+                    onSnapshotChanged: {
+                        if (!snapshot.length) return;
+                        const observation = root.observeFocus();
+                        root.publications.push({
+                            configuration: root.configuration,
+                            snapshot: JSON.parse(snapshot),
+                            state: JSON.parse(publication).state,
+                            checked: checked,
+                            hovered: hovered,
+                            nativeFocused: root.focused(observation),
+                            nativeFocus: observation
+                        });
+                        root.published();
+                    }
                 }
             }
             Item { id: other; width: 1; height: 1 }
@@ -151,14 +202,15 @@ FloatingWindow {
         id: deadline
         interval: 5000
         onTriggered: {
+            if (!root.toggle) { root.fail("case did not remount: " + root.cases[root.index].name); return; }
             const observation = root.observeFocus();
             root.fail("case did not complete: " + JSON.stringify({
                 name:root.cases[root.index].name, capturing:root.capturing,
-                ready:toggle.ready, error:toggle.preparationError, checked:toggle.checked,
-                snapshotLength:toggle.snapshot.length, targetLength:toggle.targetPublication.length,
-                acceptsNewGestures:toggle.acceptsNewGestures, nativeFocus:observation,
-                frameReady:toggle.currentFrame ? toggle.currentFrame.paintReady : false,
-                frameError:toggle.currentFrame ? toggle.currentFrame.paintError : ""
+                ready:root.toggle.ready, error:root.toggle.preparationError, checked:root.toggle.checked,
+                snapshotLength:root.toggle.snapshot.length, targetLength:root.toggle.targetPublication.length,
+                acceptsNewGestures:root.toggle.acceptsNewGestures, nativeFocus:observation,
+                frameReady:root.toggle.currentFrame ? root.toggle.currentFrame.paintReady : false,
+                frameError:root.toggle.currentFrame ? root.toggle.currentFrame.paintError : ""
             }));
         }
     }
@@ -168,24 +220,25 @@ FloatingWindow {
         running: true
         repeat: true
         onTriggered: {
-            if (root.index < 0 || root.capturing) return;
+            if (root.index < 0 || root.capturing || !root.toggle) return;
             const scenario = root.cases[root.index];
             const observation = root.observeFocus();
             const result = {
                 name: scenario.name,
-                ready: toggle.ready,
-                error: toggle.preparationError,
-                snapshot: toggle.snapshot,
-                target: toggle.targetPublication,
-                state: JSON.parse(toggle.publication).state,
-                checked: toggle.checked,
-                hovered: toggle.hovered,
+                ready: root.toggle.ready,
+                error: root.toggle.preparationError,
+                snapshot: root.toggle.snapshot,
+                target: root.toggle.targetPublication,
+                state: JSON.parse(root.toggle.publication).state,
+                checked: root.toggle.checked,
+                hovered: root.toggle.hovered,
                 nativeFocused: root.focused(observation),
                 nativeFocus: observation,
-                ignored: toggle.Accessible.ignored,
+                ignored: root.toggle.Accessible.ignored,
                 deviceScale: capture.Screen.devicePixelRatio,
                 renderer: capture.GraphicsInfo.api === GraphicsInfo.Software ? "software" : "unsupported",
                 publications: root.publications,
+                unmounts: root.unmounts,
                 measurements: []
             };
             if (scenario.reject) {

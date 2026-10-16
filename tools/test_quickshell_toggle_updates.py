@@ -237,6 +237,38 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "surroundings"):
                 verify_capture(path, snapshot, 1, {**background, "components": [0, 0, 0]})
 
+    def test_destruction_cases_unload_a_focused_toggle_with_a_pending_or_published_frame(self):
+        cases = {case["name"]: case for case in authored_cases()}
+        for name, mode in (("unmount-pending", "pending"), ("unmount-from-callback", "callback")):
+            case = cases[name]
+            with self.subTest(name=name):
+                self.assertEqual((case["unmount"], case["focused"]), (mode, True))
+                report = self.report(case, True)
+                unloaded = {"published": mode == "callback", "prepared": True, "nativeFocused": True}
+                report["unmounts"] = [unloaded]
+                self.verify_unpainted(case, report)
+                for unmounts in ([], [unloaded, unloaded], [{**unloaded, "published": mode != "callback"}],
+                                 [{**unloaded, "prepared": False}], [{**unloaded, "nativeFocused": False}]):
+                    with self.subTest(unmounts=unmounts), self.assertRaisesRegex(ValueError, "not unloaded"):
+                        self.verify_unpainted(case, {**report, "unmounts": unmounts})
+        other = cases["light-ltr-off-focused"]
+        with self.assertRaisesRegex(ValueError, "not unloaded"):
+            self.verify_unpainted(other, {**self.report(other, True), "unmounts": [unloaded]})
+
+    def test_callbacks_carry_the_focus_changed_during_preparation(self):
+        cases = {case["name"]: case for case in authored_cases()}
+        for name, focused in (("focus-during-preparation", True), ("blur-during-preparation", False)):
+            case = cases[name]
+            with self.subTest(name=name):
+                self.assertEqual(case["focusDuringPreparation"], focused)
+                self.assertEqual(case.get("focused", False), focused)
+                report = self.report(case, focused)
+                self.verify_unpainted(case, report)
+                stale = self.report(case, not focused)["publications"][0]
+                report["publications"].insert(0, stale)
+                with self.assertRaisesRegex(ValueError, "focus changed during preparation"):
+                    self.verify_unpainted(case, report)
+
     def test_host_qml_runtime_errors_fail_the_run(self):
         log = "RESINA_TOGGLE_CASE " + json.dumps(self.rejected()) + "\nRESINA_TOGGLE_DONE 1\n"
         for error in ("TypeError: Property 'synchronize' of object is not a function",
@@ -273,7 +305,7 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
                 "snapshot": "", "target": "", "state": {
                     "schemaVersion": "0.1.0", "enabled": True, "focused": False, "hold": None},
                 "checked": False, "hovered": False, "nativeFocused": False, "ignored": True, "deviceScale": 1,
-                "renderer": "software", "publications": [], "measurements": [],
+                "renderer": "software", "publications": [], "unmounts": [], "measurements": [],
                 "nativeFocus": {**FOCUSED, "activeFocus": False}}
 
     def test_complete_rejected_replacement_is_reported_with_toggle_markers(self):

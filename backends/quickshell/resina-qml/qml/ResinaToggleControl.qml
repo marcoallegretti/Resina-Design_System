@@ -305,6 +305,7 @@ ResinaToggleInput {
     onParentChanged: reconfigure()
     onNativeWindowChanged: reconfigure()
     Component.onCompleted: { state.started = true; Qt.callLater(refresh); }
+    Component.onDestruction: { state.started = false; state.pending = ""; state.pendingView = null; }
     onHoveredChanged: { if (state.qualified || !state.error.length) refresh(); }
 
     Connections {
