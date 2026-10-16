@@ -280,32 +280,37 @@ ShellRoot {
                 clockWindow.width - 3 * root.margin, clockWindow.height - 3 * root.margin, root.backdrop) : ""
             onPaintErrorChanged: root.report("clock surface", paintError)
             onPaintReadyChanged: if (paintReady) root.clockInset = implicitHeight - contentBounds.height
+        }
 
-            Column {
-                id: reading
-                x: clockSurface.contentBounds.x + root.gap
-                y: clockSurface.contentBounds.y + root.gap
-                width: clockSurface.contentBounds.width - 2 * root.gap
-                visible: clockSurface.paintReady
-                spacing: 4
-                Text {
-                    id: time
-                    text: Qt.locale(root.themeRequest ? root.themeRequest.environment.locale : "en")
-                        .toString(clock.date, "HH:mm:ss")
-                    color: clockSurface.foreground
-                    font.family: typeface.name
-                    font.pixelSize: 40 * root.textScale
-                    font.features: {"tnum": 1}
-                }
-                Text {
-                    text: clock.date.toLocaleDateString(
-                        Qt.locale(root.themeRequest ? root.themeRequest.environment.locale : "en"), Locale.LongFormat)
-                    color: clockSurface.foreground
-                    font.family: typeface.name
-                    font.pixelSize: 16 * root.textScale
-                    width: parent.width
-                    wrapMode: Text.WordWrap
-                }
+        Column {
+            id: reading
+            x: clockSurface.x + clockSurface.contentBounds.x + root.gap
+            y: clockSurface.y + clockSurface.contentBounds.y + root.gap
+            width: clockSurface.contentBounds.width - 2 * root.gap
+            visible: clockSurface.paintReady
+            spacing: 4
+            Text {
+                id: time
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                text: Qt.locale(root.themeRequest ? root.themeRequest.environment.locale : "en")
+                    .toString(clock.date, "HH:mm:ss")
+                color: clockSurface.foreground
+                font.family: typeface.name
+                font.pixelSize: 40 * root.textScale
+                font.features: {"tnum": 1}
+            }
+            Text {
+                id: date
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                text: clock.date.toLocaleDateString(
+                    Qt.locale(root.themeRequest ? root.themeRequest.environment.locale : "en"), Locale.LongFormat)
+                color: clockSurface.foreground
+                font.family: typeface.name
+                font.pixelSize: 16 * root.textScale
+                width: parent.width
+                wrapMode: Text.WordWrap
             }
         }
 
@@ -372,7 +377,7 @@ ShellRoot {
                     state: JSON.parse(show.publication).state, motion: show.motion.length ? JSON.parse(show.motion) : null} : null,
                 close: close && close.ready ? {snapshot: JSON.parse(close.snapshot), hovered: close.hovered,
                     state: JSON.parse(close.publication).state, motion: close.motion.length ? JSON.parse(close.motion) : null} : null,
-                time: clockSurface.paintReady ? time.text : null,
+                time: clockSurface.paintReady ? time.text : null, date: clockSurface.paintReady ? date.text : null,
                 clockDate: clock.date.getTime(), clockEnabled: clock.enabled,
                 focus: {showClock: Boolean(show && show.activeFocus), close: Boolean(close && close.activeFocus)}
             });

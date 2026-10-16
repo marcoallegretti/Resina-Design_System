@@ -4,6 +4,7 @@ import copy
 from datetime import datetime
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -13,7 +14,11 @@ import time
 from PIL import Image
 from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
+from check_qt_native_availability import ACTION, action_names
 from check_qt_platform_appearance import session, start_portal, stop, wait_portal
+from check_quickshell_command_accessibility import buttons, state, text
+from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payload, references, \
+    string_value
 from wayland_virtual_input import KEY_SPACE, VirtualInput
 
 KEY_ESCAPE = 1
@@ -57,7 +62,7 @@ class Shell:
         self.path = config / "shell.qml"
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
                                 QML_IMPORT_PATH=str(module), RESINA_ROOT=str(ROOT), RESINA_CLOCK_FONT=str(font),
-                                QS_NO_RELOAD_POPUP="1")
+                                QS_NO_RELOAD_POPUP="1", QT_LINUX_ACCESSIBILITY_ALWAYS_ON="1")
         for name in ("DBUS_SESSION_BUS_ADDRESS", "XDG_CONFIG_HOME", "XDG_CURRENT_DESKTOP", "GSETTINGS_BACKEND"):
             self.environment[name] = platform[name]
         if theme:
@@ -66,6 +71,8 @@ class Shell:
             self.environment.pop("RESINA_CLOCK_THEME", None)
         self.environment.pop("DISPLAY", None)
         self.environment.pop("QT_SCALE_FACTOR", None)
+        self.client_environment = {name: value for name, value in self.environment.items()
+                                   if name != "QT_LINUX_ACCESSIBILITY_ALWAYS_ON"}
         self.log = output / "shell.log"
         self.process = subprocess.Popen([str(host), "--no-color", "--path", str(self.path)], env=self.environment,
                                         stdout=self.log.open("w"), stderr=subprocess.STDOUT)
@@ -92,7 +99,7 @@ class Shell:
         while True:
             try:
                 result = subprocess.run([str(self.host), "ipc", "--path", str(self.path), "call", "clock", function,
-                                         *map(str, arguments)], env=self.environment, capture_output=True,
+                                         *map(str, arguments)], env=self.client_environment, capture_output=True,
                                         text=True, timeout=10)
             except subprocess.TimeoutExpired:
                 if time.monotonic() > deadline:
@@ -118,6 +125,17 @@ class Shell:
         for line in self.log.read_text(encoding="utf-8", errors="replace").splitlines():
             if any(marker in line for marker in QML_ERRORS):
                 raise ValueError("clock shell logged an error: " + line.strip()[-400:])
+
+    def wait_for(self, predicate, description, timeout=20):
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            if self.process.poll() is not None:
+                raise ValueError(f"{description}: the shell exited")
+            result = predicate()
+            if result:
+                return result
+            time.sleep(.1)
+        raise ValueError(f"{description} was not reached")
 
     def until(self, predicate, description, timeout=20):
         deadline = time.monotonic() + timeout
@@ -332,6 +350,122 @@ def verify_theme_files(shell, theme):
         raise ValueError(f"requests do not use the {theme} theme source and Command appearance")
 
 
+class Accessibility:
+    def __init__(self, shell):
+        self.shell = shell
+        self.address = string_value(call("org.a11y.Bus", "/org/a11y/bus", "org.a11y.Bus.GetAddress"))
+
+    def applications(self):
+        return references(call("org.a11y.atspi.Registry", "/org/a11y/atspi/accessible/root",
+                               ACCESSIBLE + ".GetChildren", address=self.address))
+
+    def buttons(self):
+        found = {}
+        for application in self.applications():
+            if "quickshell" not in text(self.address, application, "Name").lower():
+                continue
+            for node in buttons(self.address, application):
+                found.setdefault(text(self.address, node, "Name"), []).append(node)
+        return found
+
+    def exposed(self):
+        nodes = []
+        for application in self.applications():
+            if "quickshell" not in text(self.address, application, "Name").lower():
+                continue
+            pending, visited = [application], set()
+            while pending:
+                node = pending.pop(0)
+                if node in visited or len(visited) >= 64:
+                    raise ValueError("cyclic or excessive native tree")
+                visited.add(node)
+                role = payload(call(*node, ACCESSIBLE + ".GetRoleName", address=self.address)).strip('"')
+                name = text(self.address, node, "Name")
+                if node != application:
+                    nodes.append({"role": role.replace("string ", "").strip('"'), "name": name})
+                pending.extend(references(call(*node, ACCESSIBLE + ".GetChildren", address=self.address)))
+        return nodes
+
+    def wait(self, predicate, description):
+        last = [None]
+
+        def attempt():
+            try:
+                last[0] = self.buttons()
+                return predicate(last[0])
+            except ValueError as error:
+                last[0] = str(error)
+                return None
+        try:
+            return self.shell.wait_for(attempt, description)
+        except ValueError as error:
+            raise ValueError(f"{error}; last native buttons: {last[0]}") from None
+
+    def settled(self, predicate, description):
+        last = [None]
+
+        def attempt():
+            try:
+                last[0] = self.exposed()
+                return last[0] if predicate(last[0]) else None
+            except ValueError as error:
+                last[0] = str(error)
+                return None
+        try:
+            return self.shell.wait_for(attempt, description)
+        except ValueError as error:
+            raise ValueError(f"{error}; last native tree: {last[0]}") from None
+
+    def press(self, node):
+        actions = action_names(call(*node, ACTION + ".GetActions", address=self.address))
+        if payload(call(*node, ACTION + ".DoAction", "int32:" + str(actions.index("Press")),
+                        address=self.address)) != "boolean true":
+            raise ValueError("native Press was not accepted")
+
+
+def single(found, name, description, enabled):
+    def check(address):
+        nodes = found.get(name, [])
+        if len(nodes) != 1:
+            return None
+        node = nodes[0]
+        flags = state(address, node)
+        if text(address, node, "Description") != description or flags["enabled"] != enabled \
+                or flags["sensitive"] != enabled:
+            return None
+        return node
+    return check
+
+
+def accessibility_cases(shell, report):
+    tree = Accessibility(shell)
+    closed_tree = tree.wait(lambda found: found if set(found) == {"Show clock"}
+                            and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
+                            "one available native Button named Show clock")
+    report["exposedClosed"] = tree.settled(lambda nodes: True, "a readable native tree while closed")
+    tree.press(closed_tree["Show clock"][0])
+    shell.until(opened, "clock surface opened by a native Press")
+    found = tree.wait(lambda found: found if set(found) == {"Show clock", "Close"}
+                      and single(found, "Show clock", "Open the clock surface.", False)(tree.address)
+                      and single(found, "Close", "Close the clock surface.", True)(tree.address) else None,
+                      "Show clock unavailable and Close available while open")
+    if not state(tree.address, found["Close"][0])["focused"]:
+        raise ValueError("native Close is not focused while the clock surface is open")
+    def readable(nodes):
+        labels = [node["name"] for node in nodes if node["role"] == "label"]
+        return (shell.observe()["date"] in labels
+                and any(re.fullmatch(r"[0-9]{2}:[0-9]{2}:[0-9]{2}", name) for name in labels))
+    report["exposedOpen"] = tree.settled(readable, "the displayed time and date as native static text")
+    tree.press(found["Close"][0])
+    shell.until(lambda current: not current["open"] and not current["clock"], "clock closed by a native Press")
+    tree.wait(lambda found: found if set(found) == {"Show clock"}
+              and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
+              "Show clock available again after closing")
+    report["cases"].append("the native tree exposes exactly the shell's Commands with complete names, descriptions, "
+                           "availability and focus, plus the displayed time and date, and native Press opens and "
+                           "closes the clock surface")
+
+
 def gsettings(environment, *arguments):
     subprocess.run(["gsettings", *arguments], env=environment, check=True, timeout=10)
 
@@ -360,6 +494,10 @@ def main():
                      "theme": str(args.theme_resolver.resolve(strict=True))}
         args.output_dir.mkdir(parents=True, exist_ok=False)
         platform = session(args.output_dir, processes)
+        os.environ["DBUS_SESSION_BUS_ADDRESS"] = platform["DBUS_SESSION_BUS_ADDRESS"]
+        for name in ("IsEnabled", "ScreenReaderEnabled"):
+            call("org.a11y.Bus", "/org/a11y/bus", PROPERTIES + ".Set", "string:org.a11y.Status",
+                 "string:" + name, "variant:boolean:true")
         log = (args.output_dir / "portal.log").open("w")
         processes.append(log)
         start_portal(args, platform, processes, log)
@@ -487,6 +625,9 @@ def main():
             verify_surfaces(shell, observed, resolvers)
             verify_theme_files(shell, "light")
             report["cases"].append("the platform colour scheme selects the theme")
+
+        shell.until(closed, "Show clock ready before the accessibility cases")
+        accessibility_cases(shell, report)
 
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
         for case in report["cases"]:
