@@ -9,21 +9,23 @@ import sys
 import time
 
 from check_qt_command_snapshot_runtime import ROOT, request_for
-from check_quickshell_command_updates import verify_version
+from check_quickshell_command_updates import verify_qml_line, verify_version
 from wayland_virtual_input import KEY_ENTER, KEY_SPACE, KEY_TAB, VirtualInput
 
 OUTSIDE = (360, 160)
 EVENT = "RESINA_LIFECYCLE "
 NOT_READY = "Not ready to accept queries yet."
 REPLACEMENT = "Riconnetti già"
-QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context")
+
+
+def completed(log):
+    return log[:log.rfind("\n") + 1]
 
 
 def read_events(log):
     events = []
     for line in log.splitlines():
-        if any(error in line for error in QML_ERRORS):
-            raise ValueError("host reported a QML runtime error: " + line.strip()[-300:])
+        verify_qml_line(line)
         if EVENT not in line:
             continue
         event = json.loads(line.split(EVENT, 1)[1])
@@ -154,7 +156,7 @@ class Session:
         return observed
 
     def events(self):
-        return read_events(self.log.read_text(encoding="utf-8", errors="replace"))
+        return read_events(completed(self.log.read_text(encoding="utf-8", errors="replace")))
 
     def until(self, predicate, description, timeout):
         last = [None]
