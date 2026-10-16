@@ -31,9 +31,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2.9.2
         with:
           key: qt-6.11.2
-          workspaces: |
-            . -> target/qt-runtime-build
-            backends/quickshell/resina-qt-runtime -> ../../../target/qt-runtime-build
+          workspaces: backends/quickshell/resina-qt-runtime -> ../../../target/qt-runtime-build
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -90,9 +88,7 @@ jobs:
         id: quickshell-build
         uses: actions/cache/restore@v6
         with:
-          path: |
-            target/quickshell-build
-            !target/quickshell-build/**/*.o
+          path: target/quickshell-build
           key: quickshell-ubuntu-24.04-4f508be500dea6e5732cc3d50382a0048b17e7b1-${{ steps.qt-sdk.outputs.cache-primary-key }}-${{ steps.wayland-sdk.outputs.cache-primary-key }}-RelWithDebInfo-off-crash-handler-screencopy-hyprland-i3-pipewire-pam-polkit-greetd-status-notifier-mpris-upower-notifications-bluetooth-network
       - name: Build the released Quickshell host with the matching Qt SDK
         if: steps.quickshell-build.outputs.cache-hit != 'true'
@@ -109,13 +105,12 @@ jobs:
             -DSERVICE_STATUS_NOTIFIER=OFF -DSERVICE_MPRIS=OFF -DSERVICE_UPOWER=OFF \
             -DSERVICE_NOTIFICATIONS=OFF -DBLUETOOTH=OFF -DNETWORK=OFF
           cmake --build target/quickshell-build --parallel 2
+          find target/quickshell-build -name '*.o' -delete
       - name: Save the released Quickshell host
         if: steps.quickshell-build.outputs.cache-hit != 'true'
         uses: actions/cache/save@v6
         with:
-          path: |
-            target/quickshell-build
-            !target/quickshell-build/**/*.o
+          path: target/quickshell-build
           key: ${{ steps.quickshell-build.outputs.cache-primary-key }}
       - name: Build and check the separate Qt workspace
         run: |
