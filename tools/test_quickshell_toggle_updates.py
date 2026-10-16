@@ -12,7 +12,7 @@ from PIL import Image
 from check_quickshell_command_updates import ROOT, read_reports
 from check_quickshell_toggle_updates import (
     authored_cases, contrast, inline_color, main, static_authored_states,
-    verify_capture, verify_case, verify_snapshot,
+    verify_capture, verify_case, verify_part_paint, verify_snapshot,
 )
 
 
@@ -268,6 +268,54 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
                 report["publications"].insert(0, stale)
                 with self.assertRaisesRegex(ValueError, "focus changed during preparation"):
                     self.verify_unpainted(case, report)
+
+    def part_request(self, focused):
+        request = copy.deepcopy(next(case for case in authored_cases() if case["name"] == "light-ltr-on")["request"])
+        request.update(activation={"schemaVersion": "0.1.0", "enabled": True, "focused": focused, "hold": None},
+                       hovered=False, checked=True, focusable=True)
+        return request
+
+    def part(self, request, name, states):
+        theme = json.loads(request["content"]["themeSource"])
+        config = request[name]
+        surface = config["surface"]
+        group, role = surface["materialRole"].split(".")
+        body = {"states": states, "materialFamily": theme["materialAssignments"][group][role],
+                "colorRole": config["checkedColorRole"], "materialRole": surface["materialRole"],
+                "form": surface["form"], "foregroundRole": config["foregroundRole"],
+                "pigment": {"body": inline_color(theme, config["checkedColorRole"])},
+                "geometry": {"front": {"bounds": {"x": 0, "y": 0, **request["layout"][name + "Size"]}}}}
+        paint = {"body": body}
+        if name == "track" and request["activation"]["focused"]:
+            paint["focus"] = {"indicator": {}}
+        return {"part": name, "checked": True, "phase": "rest", "response": {"bodyMix": 0, "depthScale": 1},
+                "paint": paint}
+
+    def test_part_paint_requires_the_selected_pigment_and_track_only_focus(self):
+        with patch("check_quickshell_toggle_updates.surface_paint_channel_mismatch", return_value=None), \
+                patch("check_quickshell_toggle_updates.verify_authored_focus") as focus:
+            for focused in (False, True):
+                request = self.part_request(focused)
+                states = static_authored_states(request["activation"], False, True)
+                theme = json.loads(request["content"]["themeSource"])
+                for name in ("track", "thumb"):
+                    with self.subTest(focused=focused, name=name):
+                        part = self.part(request, name, states)
+                        verify_part_paint(request, name, part, states)
+                        stale = copy.deepcopy(part)
+                        stale["paint"]["body"]["pigment"]["body"] = inline_color(
+                            theme, request[name]["surface"]["colorRole"])
+                        with self.assertRaisesRegex(ValueError, "paint differs"):
+                            verify_part_paint(request, name, stale, states)
+                        changed = copy.deepcopy(part)
+                        if "focus" in changed["paint"]:
+                            del changed["paint"]["focus"]
+                        else:
+                            changed["paint"]["focus"] = {"indicator": {}}
+                        with self.assertRaisesRegex(ValueError, "track-only navigation"):
+                            verify_part_paint(request, name, changed, states)
+            self.assertEqual(focus.call_count, 1)
+            self.assertEqual(focus.call_args.args[1], request["background"])
 
     def test_host_qml_runtime_errors_fail_the_run(self):
         log = "RESINA_TOGGLE_CASE " + json.dumps(self.rejected()) + "\nRESINA_TOGGLE_DONE 1\n"
