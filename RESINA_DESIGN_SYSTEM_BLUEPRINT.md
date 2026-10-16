@@ -216,7 +216,7 @@ Purpose:
 
 > Deliver Resina as a complete, usable Shell backend.
 
-From 0.1.0, each release realizes its complete Core component library and Shell Profile in Quickshell. Because it shares no rendering architecture with GUIdo, it also proves that Resina semantics survive:
+From 0.1.0, each release realizes the core component library of §192 and the Shell Profile in Quickshell. Because it shares no rendering architecture with GUIdo, it also proves that Resina semantics survive:
 
 ```text
 Rust/wgpu/SDF
@@ -4132,6 +4132,8 @@ tables
 trees
 ```
 
+Dialog and Notification enter the 0.1.0 core component library because the Shell Profile needs them (§192). Further dialog and notification forms remain here.
+
 ---
 
 # 189. Phase 16 — Compatible program
@@ -4208,7 +4210,8 @@ spatial system, density and state composition
 ```text
 Surface, Container, Divider, ScrollArea, FocusSurface
 IconButton
-Checkbox, Radio, Segmented Control
+Checkbox, Radio, SegmentedControl
+Toggle and Slider completed to anatomy, accessibility and value text
 disclosure and standalone text
 ```
 
@@ -4263,7 +4266,7 @@ The 0.1.0 core component library is the set a shell built from the Shell Profile
 ```text
 Foundation: Surface, Container, Divider, ScrollArea, FocusSurface
 Actions: Command (Button), IconButton
-Selection: Checkbox, Radio, Toggle, Segmented Control
+Selection: Checkbox, Radio, Toggle, SegmentedControl
 Input: TextField, SearchField, Slider
 Feedback: Progress, Spinner, Tooltip, Popover, Dialog, Notification
 ```
