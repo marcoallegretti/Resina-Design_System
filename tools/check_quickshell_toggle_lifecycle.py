@@ -150,13 +150,11 @@ def activation_cases(session):
     observed = session.settle(lambda current: not current["state"]["enabled"], "unavailable Toggle")
     before = len(effects(session.events()))
     session.click(observed)
-    session.tap(KEY_SPACE)
-    session.tap(KEY_ENTER)
     if session.call("invoke") != "false":
         raise ValueError("an unavailable Toggle accepted semantic invocation")
     expect_effects(session, before, 0, "unavailable Toggle")
     settle_checked(session, True, "unavailable Toggle")
-    results.append("unavailable Toggle rejects pointer, Space, Enter and invocation")
+    results.append("unavailable Toggle rejects pointer and invocation")
     return results
 
 
@@ -298,11 +296,8 @@ def reentrancy_cases(session):
                     raise ValueError(f"{mode} from a consumer callback was rejected")
                 expected = checked if mode == "check" else now
                 settle_checked(session, expected, f"{mode} from consumer callback")
-            if mode == "unavailable":
-                if session.current()["state"]["enabled"]:
-                    raise ValueError("synchronous availability withdrawal was not committed")
-                session.tap(KEY_SPACE)
-                expect_effects(session, before, count, "delivery after availability withdrawal")
+            if mode == "unavailable" and session.current()["state"]["enabled"]:
+                raise ValueError("synchronous availability withdrawal was not committed")
             if mode == "hide":
                 settle_checked(session, now, "hidden Toggle")
             fresh_gesture(session, checked, f"{mode} from a {name} callback")

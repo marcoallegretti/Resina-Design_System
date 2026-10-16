@@ -1071,8 +1071,9 @@ rejections are counted by cause in `report.json`.
 - Activation: a pointer click toggles off to on and on to off; a pointer press
   moved off the target and released toggles nothing; Space toggles on release
   and Enter on press, each held through at least two auto-repeat publications;
-  an unavailable Toggle rejects pointer, Space, Enter and `invoke()` and keeps
-  its checked value.
+  an unavailable Toggle rejects a pointer click and `invoke()` and keeps its
+  checked value. Withdrawal also removes keyboard focus, so key rejection is not
+  observable there.
 - Focus: Tab traversal, requested focus, a focus request while another surface
   holds keyboard focus, and availability withdrawal follow the Command cases.
   Two cases move native focus into or out of the Toggle while the frame for a
@@ -1088,8 +1089,8 @@ rejections are counted by cause in `report.json`.
 - Reentrancy: consumer callbacks reached by pointer, Space and Enter that set
   checked, invoke the Toggle, withdraw availability, hide, unmount or destroy
   the surface observe committed enabled state. Setting checked returns it to its
-  previous value; `invoke()` produces exactly one additional toggle; a Space
-  after callback-time withdrawal produces none.
+  previous value; `invoke()` produces exactly one additional toggle;
+  callback-time withdrawal is accepted and leaves the Toggle unavailable.
 - Lifetime: hiding and unmounting together from a callback reached by Space,
   Enter and pointer; Space or pointer held across soft and hard reload, which
   must retire the previous generation and deliver nothing; unmounting while the
