@@ -376,7 +376,7 @@
     "requestChanges": [
       {
         "path": "/interactionAppearance/profiles/frost/pressed/depthScale",
-        "value": 2
+        "value": 2.01
       }
     ],
     "requestSchemaValid": false,

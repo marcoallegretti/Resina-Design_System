@@ -342,7 +342,8 @@ matrix at three text scales and four device scales, all four command phases
 across Cast, opaque Frost fallback and Elastomer in both schemes, and four sampled
 Elastomer motion times, plus unfocused replacement: 188 first composite frames.
 Every composition consumes a checked snapshot with an explicit test interaction
-state and a reservation derived from the same profile's neutral rest body.
+state and a reservation derived from the same profile's deepest neutral
+silhouette at the projected depth bound.
 Compositions use the authored surrounding color. Subsequent material-only and
 text-only readbacks identify actual glyph coverage. Every covered pixel footprint
 must remain inside the content contour on uniform opaque pigment; solid native

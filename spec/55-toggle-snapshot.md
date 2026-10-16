@@ -20,9 +20,18 @@ label's complete layout slot; its internal label bounds remain unchanged.
 
 Layout owns the target independently of feedback. It must reserve track paint,
 track navigation, complete label slot and both off/on thumb footprints throughout
-the supported state/profile domain. Environment, profile or layout changes may
-require a new reservation and coherent lifecycle update. Do not resize or move
-the target solely because press, hover, selection or availability changed.
+the supported state/profile domain. Responses may raise a part above its rest
+extrusion, so a layout and target certified only at rest can reject a hovered or
+overshooting thumb. Certify them with each part's deepest silhouette, at the
+projected depth bound `depthScale` 2, as for a
+[command](49-command-snapshot.md#stable-interaction-geometry): resolve both parts
+at that bound for the neutral focused state and require the complete snapshot
+checks below to pass, including both thumb footprints inside the track content.
+The Rust reference exposes the part body as
+`resolve_toggle_part_reservation_paint`; it certifies layout and is never a
+published state frame. Environment, profile or layout changes may require a new
+reservation and coherent lifecycle update. Do not resize or move the target
+solely because press, hover, selection or availability changed.
 
 The producer owns common theme/environment/font provenance, scaled native
 measurement, actual focus observation, color-role selection and actual uniform

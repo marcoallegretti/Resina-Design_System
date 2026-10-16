@@ -274,7 +274,7 @@
     "requestChanges": [
       {
         "path": "/commandAppearance/profiles/cast/pressed/depthScale",
-        "value": 1.01
+        "value": 2.01
       }
     ],
     "requestSchemaValid": false,

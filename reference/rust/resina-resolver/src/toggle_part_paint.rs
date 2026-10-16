@@ -101,6 +101,20 @@ pub fn resolve_toggle_part_paint(
     .map(|(paint, ())| paint)
 }
 
+/// Resolves one part at the projected depth bound: the deepest silhouette any static response or
+/// projected motion sample of this part can paint. It certifies a layout and reservation and is
+/// not a publishable state frame.
+pub fn resolve_toggle_part_reservation_paint(
+    theme: &CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    input: TogglePartPaintInput<'_>,
+) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    let deepest = CommandResponse::try_new(0.0, CommandResponse::MAX_DEPTH_SCALE)
+        .expect("the projected depth bound is a valid response");
+    resolve_toggle_part_paint_with_response(theme, environment, input, |_, _| Ok((deepest, ())))
+        .map(|(paint, ())| paint)
+}
+
 pub(crate) fn resolve_toggle_part_paint_with_response<T>(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
@@ -269,6 +283,24 @@ pub(crate) fn checked_color_role_name<'de, D: Deserializer<'de>>(
 pub fn resolve_toggle_part_paint_source(
     source: &str,
 ) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    resolve_source(source, resolve_toggle_part_paint)
+}
+
+/// Source form of [`resolve_toggle_part_reservation_paint`], reading one part paint request.
+pub fn resolve_toggle_part_reservation_paint_source(
+    source: &str,
+) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    resolve_source(source, resolve_toggle_part_reservation_paint)
+}
+
+fn resolve_source(
+    source: &str,
+    resolve: impl FnOnce(
+        &CompiledTheme,
+        &EnvironmentSnapshot,
+        TogglePartPaintInput<'_>,
+    ) -> Result<TogglePartPaintIr, TogglePartPaintError>,
+) -> Result<TogglePartPaintIr, TogglePartPaintError> {
     let document =
         resina_tokens::parse_token_document(source).map_err(TogglePartPaintError::Parse)?;
     let request: Request =
@@ -283,7 +315,7 @@ pub fn resolve_toggle_part_paint_source(
     }
     let (theme, environment, owned) =
         crate::surface_paint::parse_surface_paint_request(request.surface)?;
-    resolve_toggle_part_paint(
+    resolve(
         &theme,
         &environment,
         TogglePartPaintInput {

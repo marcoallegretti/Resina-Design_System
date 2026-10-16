@@ -580,7 +580,7 @@ def main():
                 del missing[part][family][phase]
                 check_case(slider_appearance_schema, "missing slider phase", missing, False)
                 for key, value in (("bodyMix", -1.01), ("bodyMix", 1.01),
-                                   ("depthScale", -0.01), ("depthScale", 1.01),
+                                   ("depthScale", -0.01), ("depthScale", 2.01),
                                    ("unknown", 0)):
                     invalid = copy.deepcopy(slider_appearance)
                     invalid[part][family][phase][key] = value
@@ -633,10 +633,14 @@ def main():
             container = container[key]
         container[member] = "selection"
         check_case(anatomy_schema, "unknown anatomy " + member, invalid, False)
+    command_appearance_schema = validator_for("schemas/command-appearance.schema.json")
     for name in ("light", "dark"):
-        check_case(validator_for("schemas/command-appearance.schema.json"),
-                   "authored command " + name,
+        check_case(command_appearance_schema, "authored command " + name,
                    load_json(ROOT / ("definitions/command-appearance-" + name + ".json")), True)
+    for value, valid in ((0, True), (2, True), (-0.01, False), (2.01, False)):
+        response = load_json(ROOT / "definitions/command-appearance-light.json")
+        response["profiles"]["elastomer"]["hover"]["depthScale"] = value
+        check_case(command_appearance_schema, f"command depthScale {value}", response, valid)
     command_request_schema = validator_for("schemas/command-paint-request.schema.json")
     for case in load_json(ROOT / "conformance/ir/command-paint-cases.json"):
         check_case(validator_for("schemas/command-paint-case.schema.json"), case["name"], case, True)

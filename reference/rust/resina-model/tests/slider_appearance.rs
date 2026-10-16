@@ -91,7 +91,7 @@ fn invalid_unselected_profiles_cannot_enter_the_model() {
                     ("bodyMix", json!(-1.01)),
                     ("bodyMix", json!(1.01)),
                     ("depthScale", json!(-0.01)),
-                    ("depthScale", json!(1.01)),
+                    ("depthScale", json!(2.01)),
                     ("bodyMix", json!(null)),
                     ("depthScale", json!("NaN")),
                     ("unknown", json!(0)),

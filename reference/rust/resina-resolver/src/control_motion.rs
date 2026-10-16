@@ -49,7 +49,11 @@ pub(crate) fn sample_control_response(
         immediate,
     )?;
     let (mix, body_mix_projection) = project(body_mix.state().position(), -1.0, 1.0);
-    let (depth, depth_scale_projection) = project(depth_scale.state().position(), 0.0, 1.0);
+    let (depth, depth_scale_projection) = project(
+        depth_scale.state().position(),
+        0.0,
+        CommandResponse::MAX_DEPTH_SCALE,
+    );
     let response = CommandResponse::try_new(mix, depth)
         .expect("finite samples projected into response bounds");
     Ok(ControlMotionSample {

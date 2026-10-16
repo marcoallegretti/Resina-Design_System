@@ -28,8 +28,9 @@ use resina_resolver::{
     CommandContentError, CommandLabelInput, CommandLabelIr, CommandMotionPolicy, CommandPaintIr,
     CommandSnapshot, CommandSnapshotError, CommandSnapshotInput, PlacedContour,
     SurfaceHitRegionInput, opaque_contrast_ratio, resolve_command_label,
-    resolve_command_motion_source, resolve_command_paint_source, resolve_command_snapshot,
-    resolve_srgb_fallback, resolve_surface_hit_region, resolve_theme_request_source,
+    resolve_command_motion_source, resolve_command_paint_source,
+    resolve_command_reservation_body_source, resolve_command_snapshot, resolve_srgb_fallback,
+    resolve_surface_hit_region, resolve_theme_request_source,
 };
 use serde_json::{Value, json};
 use std::{collections::HashSet, rc::Rc};
@@ -399,7 +400,7 @@ fn snapshot<'a>(
         "commandAppearance": request["commandAppearance"],
     });
     rest["surface"]["body"]["surface"]["states"]["states"] = json!(["rest"]);
-    let rest = resolve_command_paint_source(&rest.to_string()).unwrap();
+    let deepest = resolve_command_reservation_body_source(&rest.to_string()).unwrap();
     let available_bounds = PhysicalBounds {
         x: -1024.0,
         y: -1024.0,
@@ -412,7 +413,7 @@ fn snapshot<'a>(
     };
     let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
         environment: &environment,
-        body: rest.paint().body(),
+        body: &deepest,
         available_bounds,
         component_minimum,
         occupied_regions: &[],

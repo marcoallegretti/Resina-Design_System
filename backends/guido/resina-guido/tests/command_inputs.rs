@@ -242,7 +242,7 @@ fn sampled_publication_retains_unprojected_state_for_continuous_retargeting() {
     let mut channels: resina_resolver::CommandMotionChannels =
         serde_json::from_value(source["channels"].clone()).unwrap();
     channels.body_mix.initial = SpringState::try_new(-0.1, 0.2).unwrap();
-    channels.depth_scale.initial = SpringState::try_new(1.2, -0.4).unwrap();
+    channels.depth_scale.initial = SpringState::try_new(2.2, -0.4).unwrap();
     let state = ActivationState::try_new(true, false, None).unwrap();
     let origin = PhysicalVector { x: 0.0, y: 0.0 };
     let first = requested
@@ -255,7 +255,7 @@ fn sampled_publication_retains_unprojected_state_for_continuous_retargeting() {
         sample.depth_scale_projection(),
         resina_resolver::CommandProjection::UpperBound
     );
-    assert_eq!(first.paint().response().depth_scale(), 1.0);
+    assert_eq!(first.paint().response().depth_scale(), 2.0);
     let moving = requested
         .prepare_motion(&state, false, origin, &channels, 0.03)
         .unwrap();

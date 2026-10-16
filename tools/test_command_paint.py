@@ -47,5 +47,5 @@ class CommandPaintSchemaTests(unittest.TestCase):
             del changed["profiles"][family]["disabled"]
             self.assertTrue(list(validator.iter_errors(changed)))
             changed = copy.deepcopy(profile)
-            changed["profiles"][family]["pressed"]["depthScale"] = 1.01
+            changed["profiles"][family]["pressed"]["depthScale"] = 2.01
             self.assertTrue(list(validator.iter_errors(changed)))

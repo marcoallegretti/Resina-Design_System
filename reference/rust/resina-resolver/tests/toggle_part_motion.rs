@@ -42,12 +42,12 @@ fn public_motion_cases_are_valid_or_diagnostic() {
 fn retargeting_uses_unprojected_state_and_preserves_both_velocities() {
     let mut input = request();
     input["time"] = json!(0);
-    input["channels"]["depthScale"]["initial"] = json!({"position":1.5,"velocity":2});
+    input["channels"]["depthScale"]["initial"] = json!({"position":2.5,"velocity":2});
     input["channels"]["bodyMix"]["initial"] = json!({"position":1.5,"velocity":-3});
     let before = resolve(&input);
-    assert_eq!(before.part_paint().response().depth_scale(), 1.0);
+    assert_eq!(before.part_paint().response().depth_scale(), 2.0);
     assert_eq!(before.part_paint().response().body_mix(), 1.0);
-    assert_eq!(before.depth_scale().state().position(), 1.5);
+    assert_eq!(before.depth_scale().state().position(), 2.5);
     assert_eq!(before.body_mix().state().velocity(), -3.0);
     input["surface"]["body"]["surface"]["states"]["states"] = json!(["rest", "focused", "checked"]);
     input["channels"]["depthScale"]["initial"] =

@@ -1,5 +1,5 @@
 use crate::{
-    CompiledTheme, OpaqueSurfaceError, SurfacePaintInput, SurfacePaintIr,
+    CompiledTheme, OpaqueSurfaceError, OpaqueSurfaceIr, SurfacePaintInput, SurfacePaintIr,
     SurfacePaintResolutionError, bind_surface,
 };
 use resina_environment::EnvironmentSnapshot;
@@ -102,6 +102,24 @@ impl<'de> Deserialize<'de> for Request {
 }
 
 pub fn resolve_command_paint_source(source: &str) -> Result<CommandPaintIr, CommandPaintError> {
+    resolve_source(source, resolve_command_paint)
+}
+
+/// Source form of [`resolve_command_reservation_body`], reading one command paint request.
+pub fn resolve_command_reservation_body_source(
+    source: &str,
+) -> Result<OpaqueSurfaceIr, CommandPaintError> {
+    resolve_source(source, resolve_command_reservation_body)
+}
+
+fn resolve_source<T>(
+    source: &str,
+    resolve: impl FnOnce(
+        &CompiledTheme,
+        &EnvironmentSnapshot,
+        CommandPaintInput<'_>,
+    ) -> Result<T, CommandPaintError>,
+) -> Result<T, CommandPaintError> {
     let document = resina_tokens::parse_token_document(source).map_err(CommandPaintError::Parse)?;
     let request: Request = serde_json::from_value(document).map_err(CommandPaintError::Request)?;
     crate::pigment_source::validate_pigment_source(
@@ -114,7 +132,7 @@ pub fn resolve_command_paint_source(source: &str) -> Result<CommandPaintIr, Comm
     }
     let (theme, environment, owned) =
         crate::surface_paint::parse_surface_paint_request(request.surface)?;
-    resolve_command_paint(
+    resolve(
         &theme,
         &environment,
         CommandPaintInput {
@@ -131,6 +149,20 @@ pub fn resolve_command_paint(
 ) -> Result<CommandPaintIr, CommandPaintError> {
     resolve_command_paint_with_response(theme, environment, input, |_, response| Ok((response, ())))
         .map(|(paint, ())| paint)
+}
+
+/// Resolves the deepest body any static response or projected motion sample can paint for this
+/// command: its surface at the projected depth bound. Layout reserves the target from this
+/// body's silhouette.
+pub fn resolve_command_reservation_body(
+    theme: &CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    input: CommandPaintInput<'_>,
+) -> Result<OpaqueSurfaceIr, CommandPaintError> {
+    let deepest = CommandResponse::try_new(0.0, CommandResponse::MAX_DEPTH_SCALE)
+        .expect("the projected depth bound is a valid response");
+    resolve_command_paint_with_response(theme, environment, input, |_, _| Ok((deepest, ())))
+        .map(|(paint, ())| paint.paint.body().clone())
 }
 
 pub(crate) fn resolve_command_paint_with_response<T>(

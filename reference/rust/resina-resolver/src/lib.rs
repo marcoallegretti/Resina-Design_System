@@ -133,6 +133,7 @@ mod toggle_part_paint;
 pub use toggle_part_paint::{
     TogglePart, TogglePartPaintError, TogglePartPaintInput, TogglePartPaintIr,
     resolve_toggle_part_paint, resolve_toggle_part_paint_source,
+    resolve_toggle_part_reservation_paint, resolve_toggle_part_reservation_paint_source,
 };
 mod control_paint;
 mod toggle_layout;
@@ -185,7 +186,8 @@ pub use command_motion::{
 mod command_paint;
 pub use command_paint::{
     CommandPaintError, CommandPaintInput, CommandPaintIr, resolve_command_paint,
-    resolve_command_paint_source,
+    resolve_command_paint_source, resolve_command_reservation_body,
+    resolve_command_reservation_body_source,
 };
 
 use resina_environment::{AccessibilityPreferences, QualityPolicy, RendererCapabilities};

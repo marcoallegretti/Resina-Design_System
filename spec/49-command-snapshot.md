@@ -62,18 +62,22 @@ spring feedback changes the body's extrusion. Layout/environment changes may
 require a new reservation, with the lifecycle and neighboring controls updated
 coherently. A disabled command still occupies its reserved rectangle.
 
-For the current opaque command profiles, the neutral rest body has the maximum
-extrusion: static depth responses and sampled depth projections remain in
-`[0,1]`. Layout may resolve and reserve a target from that rest body's full
-silhouette before interaction. The same front/form/light/profile and physical
-origin must reach later paint. Each snapshot still checks actual body coverage;
-do not assume the reservation remains valid after a shape/profile change.
+Static depth responses and sampled depth projections both remain in `[0,2]`, so
+a hovered or overshooting body may extrude beyond the rest body. Layout therefore
+reserves the target from the deepest silhouette the command can paint: the
+neutral surface resolved at the projected depth bound, `depthScale` 2. No static
+response or projected motion sample can extrude further. The Rust reference
+exposes this body as `resolve_command_reservation_body`. The same
+front/form/light/profile and physical origin must reach later paint. Each
+snapshot still checks actual body coverage; do not assume the reservation
+remains valid after a shape/profile change.
 
 Deriving a new centered minimum rectangle from every painted frame is unsafe:
-in the [public 64 × 40, depth 2 Elastomer case](../conformance/interaction/command-target-stability.json), a 48 px target spans y = -3..45 at
-rest and -3.75..44.25 when pressed. A stationary pointer at y = 44.5 would cease
-to belong merely because of feedback. Keeping the rest reservation allows the
-press/release lifecycle to use one stable region while still containing every
+in the [public 64 × 40, depth 2 Elastomer case](../conformance/interaction/command-target-stability.json), a 48 px target centered on
+each painted body spans y = -3..45 at rest and -3.8..44.2 when pressed. A
+stationary pointer at y = 44.5 would cease to belong merely because of feedback.
+The deepest-silhouette reservation spans y = -2..46 and stays fixed, so the
+press/release lifecycle uses one stable region while still containing every
 body. This policy is portable component anatomy, not native pointer capture.
 
 ## Reference and conformance
