@@ -531,7 +531,9 @@ decides how they enter its environment.
 
 [`check_qt_platform_appearance.py`](../../../tools/check_qt_platform_appearance.py)
 starts its own session bus and runs the real `xdg-desktop-portal` frontend with
-the GNOME backend and isolated GSettings. It requires:
+the GNOME backend and isolated GSettings. Its `portals.conf` selects the GNOME
+backend for Settings; xdg-desktop-portal 1.18 provides no Settings portal without
+such a selection. It requires:
 - the element to equal an independent `gdbus` read of the portal for every key;
 - each provided key to reach a real GSettings change and then its reset, each
   observed first in the portal;
