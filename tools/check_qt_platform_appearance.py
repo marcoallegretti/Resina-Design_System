@@ -108,17 +108,18 @@ def matches(observed, expected):
 
 
 def session(output, processes, data_home=None):
-    output = Path(output).resolve()
-    environment = dict(os.environ, XDG_DATA_HOME=str(Path(data_home).resolve())) if data_home else None
+    configuration = Path(tempfile.mkdtemp(dir=Path(output).resolve()))
+    (configuration / "xdg-desktop-portal").mkdir()
+    (configuration / "xdg-desktop-portal" / "portals.conf").write_text(
+        "[preferred]\norg.freedesktop.impl.portal.Settings=gnome\n", encoding="utf-8")
+    environment = dict(os.environ, XDG_CONFIG_HOME=str(configuration))
+    if data_home:
+        environment["XDG_DATA_HOME"] = str(Path(data_home).resolve())
     bus = subprocess.Popen(["dbus-daemon", "--session", "--nofork", "--print-address=1"], env=environment,
                            stdout=subprocess.PIPE, text=True, start_new_session=True)
     processes.append(bus)
     address = bus.stdout.readline().strip()
     bus.stdout.close()
-    configuration = Path(tempfile.mkdtemp(dir=output))
-    (configuration / "xdg-desktop-portal").mkdir()
-    (configuration / "xdg-desktop-portal" / "portals.conf").write_text(
-        "[preferred]\norg.freedesktop.impl.portal.Settings=gnome\n", encoding="utf-8")
     return dict(os.environ, DBUS_SESSION_BUS_ADDRESS=address, XDG_CONFIG_HOME=str(configuration),
                 XDG_CURRENT_DESKTOP="GNOME", QT_QPA_PLATFORM="offscreen", GSETTINGS_BACKEND="dconf")
 
