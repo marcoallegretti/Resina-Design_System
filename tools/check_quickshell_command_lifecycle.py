@@ -19,6 +19,10 @@ REPLACEMENT = "Riconnetti già"
 QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context")
 
 
+def completed(log):
+    return log[:log.rfind("\n") + 1]
+
+
 def read_events(log):
     events = []
     for line in log.splitlines():
@@ -154,7 +158,7 @@ class Session:
         return observed
 
     def events(self):
-        return read_events(self.log.read_text(encoding="utf-8", errors="replace"))
+        return read_events(completed(self.log.read_text(encoding="utf-8", errors="replace")))
 
     def until(self, predicate, description, timeout):
         last = [None]
