@@ -64,6 +64,9 @@ def authored_requests():
 
 
 class Session:
+    component = "command"
+    outside = OUTSIDE
+
     def __init__(self, host, module, font, output):
         self.host, self.output = host, output
         self.shell = self.input = None
@@ -76,15 +79,16 @@ class Session:
     def start(self, module, font, output):
         self.config = output / "config"
         self.config.mkdir()
-        shutil.copyfile(ROOT / "conformance/quickshell/command-lifecycle-probe.qml", self.config / "shell.qml")
+        probe = ROOT / f"conformance/quickshell/{self.component}-lifecycle-probe.qml"
+        shutil.copyfile(probe, self.config / "shell.qml")
         shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", self.config / "controls")
         requests = output / "requests.json"
-        requests.write_text(json.dumps(authored_requests()), encoding="utf-8")
+        requests.write_text(json.dumps(self.requests()), encoding="utf-8")
         # Quickshell's reload popup is a separate engine generation that stays open once hovered,
         # and IPC refuses queries while more than one generation exists.
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
-                                QML_IMPORT_PATH=str(module), RESINA_COMMAND_FONT=font.as_uri(),
-                                RESINA_LIFECYCLE_REQUESTS=str(requests), QS_NO_RELOAD_POPUP="1")
+                                QML_IMPORT_PATH=str(module), RESINA_LIFECYCLE_REQUESTS=str(requests),
+                                QS_NO_RELOAD_POPUP="1", **{f"RESINA_{self.component.upper()}_FONT": font.as_uri()})
         self.environment.pop("DISPLAY", None)
         self.environment.pop("QT_SCALE_FACTOR", None)
         self.log = output / "shell.log"
@@ -92,10 +96,13 @@ class Session:
                                       env=self.environment, stdout=self.log.open("w"), stderr=subprocess.STDOUT)
         observed = self.ready()
         screen = observed["screen"]
-        if not screen or screen["width"] <= OUTSIDE[0] or screen["height"] <= OUTSIDE[1]:
+        if not screen or screen["width"] <= self.outside[0] or screen["height"] <= self.outside[1]:
             raise ValueError("requires one output large enough for the lifecycle surface")
         self.input = VirtualInput(screen["width"], screen["height"], os.environ["XDG_RUNTIME_DIR"],
                                   os.environ["WAYLAND_DISPLAY"])
+
+    def requests(self):
+        return authored_requests()
 
     def close(self):
         try:
@@ -172,7 +179,7 @@ class Session:
 
     def ready(self):
         return self.until(lambda observed: observed["ready"] and observed["target"] and observed["state"]["enabled"],
-                          "ready Command publication", 20)
+                          f"ready {self.component.capitalize()} publication", 20)
 
     def settle(self, predicate, description):
         return self.until(predicate, description, 5)
