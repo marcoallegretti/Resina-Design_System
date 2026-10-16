@@ -359,7 +359,7 @@ def main():
         resolvers = {"surface": str(args.surface_resolver.resolve(strict=True)),
                      "theme": str(args.theme_resolver.resolve(strict=True))}
         args.output_dir.mkdir(parents=True, exist_ok=False)
-        platform = session(["--session"], args.output_dir, processes)
+        platform = session(args.output_dir, processes)
         log = (args.output_dir / "portal.log").open("w")
         processes.append(log)
         start_portal(args, platform, processes, log)
