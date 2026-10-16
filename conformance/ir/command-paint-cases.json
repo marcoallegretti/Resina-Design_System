@@ -919,5 +919,45 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "rest validates an imperceptible hover response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0.06,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "pressed validates an imperceptible disabled response",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.02,
+          "depthScale": 0.7
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
   }
 ]

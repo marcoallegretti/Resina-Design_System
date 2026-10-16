@@ -207,13 +207,12 @@ pub(crate) fn resolve_command_paint_with_response<T>(
         .command_appearance
         .response_for(binding.material_family(), phase)
         .map_err(CommandPaintError::Scope)?;
-    if let Some(imperceptible) = crate::control_paint::imperceptible_response(
+    if let Some(imperceptible) = crate::control_paint::imperceptible_profile(
         theme,
         input.surface.body.appearance,
         surface,
         &binding,
-        phase,
-        response,
+        input.command_appearance,
     )? {
         return Err(CommandPaintError::Imperceptible(imperceptible));
     }

@@ -322,3 +322,29 @@ fn selected_responses_must_change_body_color_or_depth_perceivably() {
         .to_string();
     assert!(error.contains("imperceptible from rest"), "{error}");
 }
+
+#[test]
+fn every_authored_response_of_the_bound_family_is_validated_in_any_state() {
+    for (state, phase, response) in [
+        ("rest", "hover", json!({"bodyMix": 0.06, "depthScale": 1})),
+        ("hover", "pressed", json!({"bodyMix": 0, "depthScale": 0.7})),
+        (
+            "pressed",
+            "disabled",
+            json!({"bodyMix": -0.02, "depthScale": 0.7}),
+        ),
+    ] {
+        let mut request = request();
+        request["surface"]["body"]["surface"]["states"]["states"] = json!([state]);
+        request["commandAppearance"]["profiles"]["elastomer"][phase] = response;
+        let Err(CommandPaintError::Imperceptible(ImperceptibleResponse {
+            phase: measured, ..
+        })) = resolve_command_paint_source(&request.to_string())
+        else {
+            panic!("{state} must reject the imperceptible {phase} response");
+        };
+        assert_eq!(serde_json::to_value(measured).unwrap(), phase);
+        request["commandAppearance"] = self::request()["commandAppearance"].clone();
+        resolve_command_paint_source(&request.to_string()).unwrap();
+    }
+}

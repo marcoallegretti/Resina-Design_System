@@ -8,8 +8,8 @@ use crate::{
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    ColorRole, CommandPhase, CommandResponse, InteractionState, OpaqueSurfaceAppearance,
-    SurfaceIntent, SurfaceSize,
+    ColorRole, CommandAppearance, CommandPhase, CommandResponse, InteractionState,
+    OpaqueSurfaceAppearance, SurfaceIntent, SurfaceSize,
 };
 use std::fmt;
 
@@ -172,30 +172,48 @@ fn oklab_difference(first: &crate::SrgbFallback, second: &crate::SrgbFallback) -
         .sqrt()
 }
 
-/// Measures the selected authored response on the opaque body it is applied to.
-pub(crate) fn imperceptible_response(
+/// Measures every authored hover, pressed and disabled response of the bound family on the opaque
+/// body it is applied to, whichever state is being resolved.
+pub(crate) fn imperceptible_profile(
     theme: &CompiledTheme,
     appearance: &OpaqueSurfaceAppearance,
     surface: &SurfaceIntent,
     binding: &BoundSurface,
+    profile: &CommandAppearance,
+) -> Result<Option<ImperceptibleResponse>, SurfacePaintResolutionError> {
+    let depth = semantic_depth(theme, appearance, surface)?;
+    for phase in [
+        CommandPhase::Hover,
+        CommandPhase::Pressed,
+        CommandPhase::Disabled,
+    ] {
+        let response = profile
+            .response_for(binding.material_family(), phase)
+            .expect("a bound command family has an authored profile");
+        if let Some(imperceptible) = imperceptible_response(binding, depth, phase, response) {
+            return Ok(Some(imperceptible));
+        }
+    }
+    Ok(None)
+}
+
+fn imperceptible_response(
+    binding: &BoundSurface,
+    depth: f64,
     phase: CommandPhase,
     response: CommandResponse,
-) -> Result<Option<ImperceptibleResponse>, SurfacePaintResolutionError> {
-    if phase == CommandPhase::Rest {
-        return Ok(None);
-    }
+) -> Option<ImperceptibleResponse> {
     let rest = binding.opaque_color_fallback();
     let color_difference = oklab_difference(rest, &crate::surface::mix_body_color(rest, response));
-    let depth = semantic_depth(theme, appearance, surface)?;
     let depth_change = (depth * response.depth_scale() - depth).abs();
     if color_difference >= MINIMUM_STATE_COLOR_DIFFERENCE
         || depth_change >= MINIMUM_STATE_DEPTH_CHANGE - DEPTH_TOLERANCE
     {
-        return Ok(None);
+        return None;
     }
-    Ok(Some(ImperceptibleResponse {
+    Some(ImperceptibleResponse {
         phase,
         color_difference,
         depth_change,
-    }))
+    })
 }

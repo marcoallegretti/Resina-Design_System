@@ -31,9 +31,22 @@ def oklab(components):
         (0.0259040371, 0.7827717662, -0.8086757660))]
 
 
+def mix_body(components, mix):
+    return [c * (1 + mix) if mix < 0 else c + (1 - c) * mix for c in components]
+
+
 def perceivable(rest_color, color, rest_depth, depth):
     return (math.dist(oklab(rest_color), oklab(color)) >= MINIMUM_STATE_COLOR_DIFFERENCE
             or abs(depth - rest_depth) >= MINIMUM_STATE_DEPTH_CHANGE - DEPTH_TOLERANCE)
+
+
+def imperceptible_phase(rest_color, rest_depth, profile):
+    for phase in ("hover", "pressed", "disabled"):
+        response = profile[phase]
+        if not perceivable(rest_color, mix_body(rest_color, response["bodyMix"]), rest_depth,
+                           rest_depth * response["depthScale"]):
+            return phase
+    return None
 
 
 def command_mismatch(actual, request, response=None):
@@ -73,8 +86,8 @@ def command_mismatch(actual, request, response=None):
     depth = 2 * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
-    if authored and phase != "rest" and not perceivable((0.8, 0.7, 0.6), color, 2, depth):
-        return "/response (imperceptible from rest)"
+    if authored and imperceptible_phase((0.8, 0.7, 0.6), 2, request["commandAppearance"]["profiles"][family]):
+        return "/commandAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != ("focused" in states):
         return "/paint/focus"
     return surface_paint_channel_mismatch(actual["paint"])

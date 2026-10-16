@@ -187,13 +187,12 @@ pub(crate) fn resolve_toggle_part_paint_with_response<T>(
         .interaction_appearance
         .response_for(binding.material_family(), phase)
         .map_err(TogglePartPaintError::Scope)?;
-    if let Some(imperceptible) = crate::control_paint::imperceptible_response(
+    if let Some(imperceptible) = crate::control_paint::imperceptible_profile(
         theme,
         input.surface.body.appearance,
         &selected,
         &binding,
-        phase,
-        response,
+        input.interaction_appearance,
     )? {
         return Err(TogglePartPaintError::Imperceptible(imperceptible));
     }

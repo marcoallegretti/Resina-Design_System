@@ -12,7 +12,7 @@ from check_color_guard_backend import check_failure
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
 from check_surface_paint_backend import surface_paint_channel_mismatch
-from check_command_paint_backend import perceivable
+from check_command_paint_backend import imperceptible_phase
 
 
 def toggle_part_mismatch(actual, request, sampled_response=None):
@@ -62,8 +62,8 @@ def toggle_part_mismatch(actual, request, sampled_response=None):
     depth = 2 * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
-    if sampled_response is None and phase != "rest" and not perceivable(rest_color, color, 2, depth):
-        return "/response (imperceptible from rest)"
+    if sampled_response is None and imperceptible_phase(rest_color, 2, request["interactionAppearance"]["profiles"][family]):
+        return "/interactionAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != (request["part"] == "track" and "focused" in states):
         return "/paint/focus"
     return surface_paint_channel_mismatch(actual["paint"])

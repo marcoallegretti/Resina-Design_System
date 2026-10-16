@@ -207,3 +207,21 @@ fn embedded_track_responses_are_perceivable_only_through_body_color() {
         ));
     }
 }
+
+#[test]
+fn every_authored_response_of_the_bound_family_is_validated_in_any_state() {
+    for part in ["track", "thumb"] {
+        let mut request = request();
+        request["part"] = json!(part);
+        request["surface"]["body"]["surface"]["states"]["states"] = json!(["rest", "checked"]);
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] =
+            json!({"bodyMix": 0.06, "depthScale": 1});
+        assert!(matches!(
+            resolve_toggle_part_paint_source(&request.to_string()),
+            Err(TogglePartPaintError::Imperceptible(ImperceptibleResponse {
+                phase: resina_model::CommandPhase::Hover,
+                ..
+            }))
+        ));
+    }
+}
