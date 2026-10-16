@@ -108,7 +108,8 @@ def matches(observed, expected):
 
 
 def session(output, processes, data_home=None):
-    environment = dict(os.environ, XDG_DATA_HOME=str(data_home)) if data_home else None
+    output = Path(output).resolve()
+    environment = dict(os.environ, XDG_DATA_HOME=str(Path(data_home).resolve())) if data_home else None
     bus = subprocess.Popen(["dbus-daemon", "--session", "--nofork", "--print-address=1"], env=environment,
                            stdout=subprocess.PIPE, text=True, start_new_session=True)
     processes.append(bus)
