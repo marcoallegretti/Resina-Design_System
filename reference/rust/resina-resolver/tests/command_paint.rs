@@ -172,8 +172,8 @@ fn source_rejects_duplicate_profiles_and_cli_publishes_no_partial_paint() {
     };
     let source = request().to_string();
     let duplicate = source.replacen(
-        "\"bodyMix\":-0.035",
-        "\"bodyMix\":-0.035,\"bodyMix\":-0.035",
+        "\"bodyMix\":-0.075",
+        "\"bodyMix\":-0.075,\"bodyMix\":-0.075",
         1,
     );
     assert_ne!(source, duplicate);
