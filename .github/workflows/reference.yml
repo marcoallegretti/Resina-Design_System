@@ -249,6 +249,9 @@ jobs:
             .
             backends/guido/resina-guido
             lab/guido
+      - name: Keep only Cargo profiles in the restored target directory
+        shell: bash
+        run: if [ -d target ]; then find target -mindepth 1 -maxdepth 1 ! -name debug ! -name release -exec rm -rf {} +; fi
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -297,6 +300,9 @@ jobs:
           workspaces: |
             .
             backends/slint/resina-slint-runtime
+      - name: Keep only Cargo profiles in the restored target directory
+        shell: bash
+        run: if [ -d target ]; then find target -mindepth 1 -maxdepth 1 ! -name debug ! -name release -exec rm -rf {} +; fi
       - run: cargo fmt --all -- --check
       - run: cargo test --workspace --locked
         env:
