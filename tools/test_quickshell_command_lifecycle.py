@@ -5,7 +5,7 @@ import struct
 from types import SimpleNamespace
 import unittest
 
-from check_quickshell_command_lifecycle import effects, expect_effects, focused, read_events
+from check_quickshell_command_lifecycle import completed, effects, expect_effects, focused, read_events
 from wayland_virtual_input import VirtualInput, encode_string
 
 
@@ -19,6 +19,13 @@ class CommandLifecycleEvidenceTests(unittest.TestCase):
                          line({"kind": "effect", "generation": "a", "effects": 1})))
         self.assertEqual([event["kind"] for event in read_events(log)], ["started", "effect"])
         self.assertEqual(len(effects(read_events(log))), 1)
+
+    def test_a_partially_written_event_is_read_once_complete(self):
+        complete = line({"kind": "started", "generation": "a"}) + "\n"
+        pending = line({"kind": "effect", "generation": "a", "effects": 1, "snapshot": "x" * 8192})
+        self.assertEqual([event["kind"] for event in read_events(completed(complete + pending[:5000]))], ["started"])
+        self.assertEqual([event["kind"] for event in read_events(completed(complete + pending + "\n"))],
+                         ["started", "effect"])
 
     def test_qml_runtime_errors_fail_the_run(self):
         for message in ("  WARN scene: @controls/ResinaCommandControl.qml[228:-1]: TypeError: Property 'synchronize'",
