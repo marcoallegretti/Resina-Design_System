@@ -40,7 +40,7 @@ def verify_pending(events, generation, change, then):
     pending = [event for event in events if event["kind"] == "pending" and event["generation"] == generation
                and event["change"] == change and event["then"] == then]
     if len(pending) != 1:
-        raise ValueError(f"expected one {then} after a {change} change, observed {len(pending)}")
+        raise ValueError(f"expected one {then} after the {change} change, observed {len(pending)}")
     event = pending[0]
     if event["accepted"] is not True or event["published"] or event["ready"] or event["prepared"] is not True:
         raise ValueError(f"the {change} change did not leave a prepared frame pending before {then}")
@@ -345,9 +345,9 @@ def lifetime_cases(session):
             raise ValueError(f"the {change} change before unmounting was rejected")
         session.quiet()
         verify_pending(session.events(), observed["generation"], change, "unmount")
-        expect_effects(session, before, 0, f"unmount with a pending frame after a {change} change")
-        fresh_gesture(session, False, f"unmount with a pending frame after a {change} change")
-        results.append(f"unmount with a pending frame after a {change} change")
+        expect_effects(session, before, 0, f"unmount with a pending frame after the {change} change")
+        fresh_gesture(session, False, f"unmount with a pending frame after the {change} change")
+        results.append(f"unmount with a pending frame after the {change} change")
     return results
 
 
@@ -375,6 +375,7 @@ def main():
                             ("lifetime", lifetime_cases)):
             report[name] = cases(session)
             verify_publications(session.events())
+            report["rejections"] = session.rejections()
             print(f"PASS {name}: {len(report[name])} cases", flush=True)
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as error:

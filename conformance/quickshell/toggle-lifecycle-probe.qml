@@ -156,7 +156,8 @@ ShellRoot {
                             onActivated: checked => root.activated(toggle, checked)
                             onSnapshotChanged: root.published(toggle)
                             onPreparationErrorChanged: if (preparationError.length && root.configuration.length)
-                                root.log("rejected", {error:preparationError})
+                                root.log("rejected", {error:preparationError, shown:root.shown, windowed:root.windowed,
+                                    mounted:root.mounted, attached:Boolean(toggle.Window.window && toggle.Window.window.visible)})
                             Component.onCompleted: controller.dispatch(JSON.stringify({kind:"availability", enabled:true}))
                         }
                     }
@@ -221,7 +222,7 @@ ShellRoot {
         function setWindowed(value: bool): void { root.windowed = value; }
         function setParented(value: bool): void { root.parented = value; }
         function setReaction(mode: string): void { root.reaction = mode; root.reactionResult = null; }
-        function reloadShell(hard: bool): void { Quickshell.reload(hard); }
+        function reloadShell(hard: bool): void { root.log("reload", {hard:hard}); Quickshell.reload(hard); }
         function changePending(change: string, then: string): bool {
             const control = root.toggle;
             if (!control) return false;

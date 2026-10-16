@@ -42,6 +42,29 @@ def effects(events):
     return [event for event in events if event["kind"] == "effect"]
 
 
+WITHDRAWN = {"shown": "hidden surface", "windowed": "closed surface", "mounted": "unmounted control",
+             "attached": "control without a visible native window"}
+
+
+def expected_rejections(events):
+    reloading, expected = set(), {}
+    for event in events:
+        if event["kind"] == "reload":
+            reloading.add(event["generation"])
+        if event["kind"] != "rejected":
+            continue
+        if not isinstance(event.get("error"), str) or any(type(event.get(field)) is not bool for field in WITHDRAWN):
+            raise ValueError("malformed rejection event")
+        reasons = [reason for field, reason in WITHDRAWN.items() if not event[field]]
+        if event["generation"] in reloading:
+            reasons.append("reload")
+        if not reasons:
+            raise ValueError("preparation was rejected while the surface was presented: " + event["error"])
+        key = reasons[0] + ": " + event["error"]
+        expected[key] = expected.get(key, 0) + 1
+    return expected
+
+
 def focused(observation):
     native = observation["nativeFocus"]
     return bool(native) and all(native[field] for field in ("activeFocus", "windowActive", "visible", "enabled"))
@@ -164,6 +187,9 @@ class Session:
 
     def events(self):
         return read_events(completed(self.log.read_text(encoding="utf-8", errors="replace")))
+
+    def rejections(self):
+        return expected_rejections(self.events())
 
     def until(self, predicate, description, timeout):
         last = [None]
@@ -397,6 +423,7 @@ def main():
         for name, cases in (("activation", activation_cases), ("focus", focus_cases),
                             ("interruption", interruption_cases), ("reentrancy", reentrancy_cases)):
             report[name] = cases(session)
+            report["rejections"] = session.rejections()
             print(f"PASS {name}: {len(report[name])} cases", flush=True)
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as error:

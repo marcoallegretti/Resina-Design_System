@@ -1025,6 +1025,11 @@ invalid-context errors in the host log and counts every consumer effect:
   reload must retire the previous engine generation, observed through Quickshell
   0.3.2 IPC, which answers only while exactly one generation exists; a fresh
   gesture afterwards delivers exactly one effect from the current generation;
+- a preparation rejection fails the run unless it is logged while the surface
+  is hidden or closed, the control is unmounted or has no visible native
+  window, as while a closed surface is recreated, or after a reload request in
+  the same engine generation; the expected rejections are counted by cause in
+  `report.json`;
 - consumer callbacks, reached by pointer and by Space, that replace the
   configuration, withdraw availability, invoke the control, hide, unmount, hide
   and unmount together, or destroy its surface observe committed state and
@@ -1059,7 +1064,9 @@ Headless Sway 1.12 and nested niri 26.04 pass all 52 cases. Every consumer effec
 is counted exactly and must invert the checked value committed before it; the
 probe fails when a callback observes a checked value or activation that is not
 yet committed. The run fails on QML type, reference and invalid-context errors
-anywhere in the host log.
+anywhere in the host log, and on preparation rejections outside the withdrawn
+surfaces and reloads allowed by the Command lifecycle checker; expected
+rejections are counted by cause in `report.json`.
 
 - Activation: a pointer click toggles off to on and on to off; a pointer press
   moved off the target and released toggles nothing; Space toggles on release
