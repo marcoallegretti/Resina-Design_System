@@ -2,7 +2,12 @@ name: Reference checks
 
 "on":
   push:
+    branches: [master]
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -23,9 +28,21 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2.9.2
+        with:
+          key: qt-6.11.2
+          workspaces: |
+            . -> target/qt-runtime-build
+            backends/quickshell/resina-qt-runtime -> ../../../target/qt-runtime-build
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Restore the Qt 6.11.2 SDK
+        id: qt-sdk
+        uses: actions/cache/restore@v6
+        with:
+          path: target/qt-sdk
+          key: qt-sdk-linux-6.11.2-linux_gcc_64-aqtinstall-3.3.0-qtbase-qtdeclarative-icu-qtshadertools
       - name: Install Qt build, font and native AT-SPI dependencies
         run: |
           sudo apt-get update
@@ -39,8 +56,23 @@ jobs:
             libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core \
             at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth sway
           python -m pip install aqtinstall==3.3.0 -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
-          python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu --modules qtshadertools
+      - name: Install the Qt 6.11.2 SDK
+        if: steps.qt-sdk.outputs.cache-hit != 'true'
+        run: python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu --modules qtshadertools
+      - name: Save the Qt 6.11.2 SDK
+        if: steps.qt-sdk.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: target/qt-sdk
+          key: ${{ steps.qt-sdk.outputs.cache-primary-key }}
+      - name: Restore matching Wayland headers and libraries
+        id: wayland-sdk
+        uses: actions/cache/restore@v6
+        with:
+          path: target/wayland-sdk
+          key: wayland-sdk-ubuntu-24.04-1.24.0-82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536-libdir-lib-documentation-false-tests-false-dtd_validation-false
       - name: Build matching Wayland headers and libraries for Qt 6.11.2
+        if: steps.wayland-sdk.outputs.cache-hit != 'true'
         run: |
           curl --fail --location https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.24.0/downloads/wayland-1.24.0.tar.xz --output target/wayland-1.24.0.tar.xz
           printf '%s\n' '82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536  target/wayland-1.24.0.tar.xz' | sha256sum -c
@@ -48,7 +80,22 @@ jobs:
           meson setup target/wayland-build target/wayland-1.24.0 --prefix "$PWD/target/wayland-sdk" --libdir lib -Ddocumentation=false -Dtests=false -Ddtd_validation=false
           meson compile -C target/wayland-build -j 2
           meson install -C target/wayland-build
+      - name: Save matching Wayland headers and libraries
+        if: steps.wayland-sdk.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: target/wayland-sdk
+          key: ${{ steps.wayland-sdk.outputs.cache-primary-key }}
+      - name: Restore the released Quickshell host
+        id: quickshell-build
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            target/quickshell-build
+            !target/quickshell-build/**/*.o
+          key: quickshell-ubuntu-24.04-4f508be500dea6e5732cc3d50382a0048b17e7b1-${{ steps.qt-sdk.outputs.cache-primary-key }}-${{ steps.wayland-sdk.outputs.cache-primary-key }}-RelWithDebInfo-off-crash-handler-screencopy-hyprland-i3-pipewire-pam-polkit-greetd-status-notifier-mpris-upower-notifications-bluetooth-network
       - name: Build the released Quickshell host with the matching Qt SDK
+        if: steps.quickshell-build.outputs.cache-hit != 'true'
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           export PKG_CONFIG_PATH="$PWD/target/wayland-sdk/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
@@ -62,6 +109,14 @@ jobs:
             -DSERVICE_STATUS_NOTIFIER=OFF -DSERVICE_MPRIS=OFF -DSERVICE_UPOWER=OFF \
             -DSERVICE_NOTIFICATIONS=OFF -DBLUETOOTH=OFF -DNETWORK=OFF
           cmake --build target/quickshell-build --parallel 2
+      - name: Save the released Quickshell host
+        if: steps.quickshell-build.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            target/quickshell-build
+            !target/quickshell-build/**/*.o
+          key: ${{ steps.quickshell-build.outputs.cache-primary-key }}
       - name: Build and check the separate Qt workspace
         run: |
           export LD_LIBRARY_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -193,6 +248,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2.9.2
+        with:
+          workspaces: |
+            .
+            backends/guido/resina-guido
+            lab/guido
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -236,6 +297,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2.9.2
+        with:
+          workspaces: |
+            .
+            backends/slint/resina-slint-runtime
       - run: cargo fmt --all -- --check
       - run: cargo test --workspace --locked
         env:
