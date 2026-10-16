@@ -128,6 +128,13 @@ jobs:
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
             --output-dir target/quickshell-command-updates --scales 1 1.25 2
+      - name: Check authored Toggle updates in released Quickshell
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          python tools/check_quickshell_toggle_updates.py \
+            --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+            --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+            --output-dir target/quickshell-toggle-updates --scales 1 1.25 2
       - name: Check compositor-delivered Command lifecycle, accessibility and motion and platform appearance
         timeout-minutes: 35
         run: |
@@ -180,6 +187,7 @@ jobs:
             target/qt-native-availability.json
             target/quickshell-native-availability.json
             target/quickshell-command-updates/
+            target/quickshell-toggle-updates/
             target/quickshell-command-lifecycle/
             target/quickshell-command-accessibility/
             target/quickshell-command-motion/

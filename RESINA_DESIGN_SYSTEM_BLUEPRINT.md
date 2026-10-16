@@ -216,7 +216,7 @@ Purpose:
 
 > Deliver Resina as a complete, usable Shell backend.
 
-From 0.1.0, each release realizes its complete Core component library and Shell Profile in Quickshell. Because it shares no rendering architecture with GUIdo, it also proves that Resina semantics survive:
+From 0.1.0, each release realizes the core component library of §192 and the Shell Profile in Quickshell. Because it shares no rendering architecture with GUIdo, it also proves that Resina semantics survive:
 
 ```text
 Rust/wgpu/SDF
@@ -4132,6 +4132,8 @@ tables
 trees
 ```
 
+Dialog and Notification enter the 0.1.0 core component library because the Shell Profile needs them (§192). Further dialog and notification forms remain here.
+
 ---
 
 # 189. Phase 16 — Compatible program
@@ -4203,16 +4205,32 @@ typography and content design
 spatial system, density and state composition
 ```
 
-0.0.4 — Component library and Shell Profile:
+0.0.4 — Foundation and selection components:
 
 ```text
-core component library
-Shell Profile
-focus scopes for overlays and dialogs
-text entry
+Surface, Container, Divider, ScrollArea, FocusSurface
+IconButton
+Checkbox, Radio, SegmentedControl
+Toggle and Slider completed to anatomy and accessibility, including Slider value text
+disclosure and standalone text
 ```
 
-0.0.5 — Complete Shell backend:
+0.0.5 — Overlays, feedback and text entry:
+
+```text
+focus scopes for overlays and dialogs
+TextField, SearchField
+Progress, Spinner, Tooltip, Popover, Dialog, Notification
+```
+
+0.0.6 — Shell Profile:
+
+```text
+Panel, Applet, TaskItem, WorkspaceItem, LauncherItem,
+SystemStatus, QuickSetting, Drawer, OSD
+```
+
+0.0.7 — Complete Shell backend:
 
 ```text
 every 0.1.0 component qualified in Quickshell
@@ -4242,6 +4260,18 @@ localization and text expansion
 backend compatibility matrix (§165) for Quickshell and GUIdo
 consumer and backend documentation
 ```
+
+The 0.1.0 core component library is the set a shell built from the Shell Profile needs:
+
+```text
+Foundation: Surface, Container, Divider, ScrollArea, FocusSurface
+Actions: Command (Button), IconButton
+Selection: Checkbox, Radio, Toggle, SegmentedControl
+Input: TextField, SearchField, Slider
+Feedback: Progress, Spinner, Tooltip, Popover, Dialog, Notification
+```
+
+SplitButton, Chip, RangeSlider, Stepper, ComboBox, Toast and Banner follow in later releases. Navigation components follow Phase 15 (§188).
 
 GUIdo realizes accepted contracts as its upstream runtime allows. Unsupported behaviour is listed with its upstream owner and does not block 0.1.0.
 

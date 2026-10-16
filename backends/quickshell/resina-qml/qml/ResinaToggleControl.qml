@@ -234,8 +234,13 @@ ResinaToggleInput {
     }
 
     function finish() {
+        if (state.running || !state.pending.length) return;
+        if (!synchronize()) {
+            Qt.callLater(finish);
+            return;
+        }
         const candidate = state.pendingView;
-        if (state.running || !state.pending.length || !candidate || !candidate.paintReady) return;
+        if (!state.pending.length || !candidate || !candidate.paintReady) return;
         const pending = JSON.parse(state.pending);
         const current = JSON.parse(publication).state;
         if (canonical(pending.activation) !== canonical(current) || pending.hovered !== root.hovered || pending.checked !== root.checked) {
@@ -300,6 +305,7 @@ ResinaToggleInput {
     onParentChanged: reconfigure()
     onNativeWindowChanged: reconfigure()
     Component.onCompleted: { state.started = true; Qt.callLater(refresh); }
+    Component.onDestruction: { state.started = false; state.pending = ""; state.pendingView = null; }
     onHoveredChanged: { if (state.qualified || !state.error.length) refresh(); }
 
     Connections {

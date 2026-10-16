@@ -229,16 +229,27 @@ def verify_version(result):
         raise ValueError("requires released Quickshell 0.3.2 built and running with Qt 6.11.2")
 
 
-def read_reports(log, cases):
+QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context")
+
+
+def verify_qml_line(line):
+    if any(error in line for error in QML_ERRORS):
+        raise ValueError("host reported a QML runtime error: " + line.strip()[-300:])
+
+
+def read_reports(log, cases, component="command"):
+    prefix = "RESINA_" + component.upper()
     if len(log) > 16 * 1024 * 1024:
         raise ValueError("native output exceeds the probe limit")
-    if "RESINA_COMMAND_FAIL" in log:
-        raise ValueError("native command reported an execution failure")
-    done = re.findall(r"RESINA_COMMAND_DONE ([0-9]+)(?:\s|$)", log)
+    for line in log.splitlines():
+        verify_qml_line(line)
+    if prefix + "_FAIL" in log:
+        raise ValueError(f"native {component} reported an execution failure")
+    done = re.findall(prefix + r"_DONE ([0-9]+)(?:\s|$)", log)
     reports = [json.loads(source, object_pairs_hook=unique_object)
-               for source in re.findall(r"RESINA_COMMAND_CASE (\{[^\n]*\})", log)]
+               for source in re.findall(prefix + r"_CASE (\{[^\n]*\})", log)]
     if done != [str(len(cases))] or [report.get("name") for report in reports] != [case["name"] for case in cases]:
-        raise ValueError("native command omitted, repeated or reordered a case")
+        raise ValueError(f"native {component} omitted, repeated or reordered a case")
     return reports
 
 
@@ -408,40 +419,41 @@ def verify_stable_targets(cases, reports):
             raise ValueError("availability or recovery changed the same authored target")
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Verify authored Command replacements in released Quickshell.")
+def updates_parser(description):
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--module-path", type=Path, required=True)
     parser.add_argument("--font", type=Path, required=True)
-    parser.add_argument("--alternate-font", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--platform", choices=("offscreen", "xcb", "wayland"), default="offscreen")
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 2])
-    args = parser.parse_args()
+    return parser
+
+
+def run_updates(component, args, fonts, authored, verify):
+    prefix = "RESINA_" + component.upper()
     try:
         if not args.scales or any(scale not in (1, 1.25, 2) for scale in args.scales):
             raise ValueError("requires device scales 1, 1.25 or 2")
-        host, module, font = (path.resolve(strict=True) for path in (args.host, args.module_path, args.font))
-        alternate_font = args.alternate_font.resolve(strict=True)
+        host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
+        fonts = {f"{prefix}_{name}": path.resolve(strict=True).as_uri() for name, path in fonts.items()}
         environment = dict(os.environ, RESINA_QUICKSHELL_HOST=str(host), RESINA_QT_RUNTIME_MODULE=str(module))
         environment["QT_QPA_PLATFORM"] = args.platform
         version = subprocess.run([sys.executable, str(ROOT / "tools/run_qt_availability_probe.py"), "--version"],
                                  env=environment, capture_output=True, text=True, timeout=15)
         verify_version(version)
         args.output_dir.mkdir(parents=True, exist_ok=False)
-        cases = authored_cases()
+        cases = authored()
         for index, scale in enumerate(args.scales):
             output = args.output_dir / str(index)
             output.mkdir()
-            shutil.copyfile(ROOT / "conformance/quickshell/command-updates-probe.qml", output / "config.qml")
+            shutil.copyfile(ROOT / f"conformance/quickshell/{component}-updates-probe.qml", output / "config.qml")
             shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", output / "controls")
             case_file = output / "cases.json"
             case_file.write_text(json.dumps(cases), encoding="utf-8")
-            environment.update(QML_IMPORT_PATH=str(module), QT_QPA_PLATFORM=args.platform,
-                               QT_QUICK_BACKEND="software", QT_SCALE_FACTOR=str(scale),
-                               RESINA_COMMAND_CASES=str(case_file.resolve()),
-                               RESINA_COMMAND_FONT=font.as_uri(), RESINA_COMMAND_OUTPUT=str(output.resolve()))
-            environment["RESINA_COMMAND_ALTERNATE_FONT"] = alternate_font.as_uri()
+            environment.update(fonts, QML_IMPORT_PATH=str(module), QT_QPA_PLATFORM=args.platform,
+                               QT_QUICK_BACKEND="software", QT_SCALE_FACTOR=str(scale))
+            environment.update({prefix + "_CASES": str(case_file.resolve()), prefix + "_OUTPUT": str(output.resolve())})
             try:
                 result = subprocess.run([str(host), "--no-color", "--path", str((output / "config.qml").resolve())],
                                         env=environment, capture_output=True, text=True, timeout=10 * len(cases))
@@ -454,19 +466,31 @@ def main():
             (output / "run.log").write_text(log, encoding="utf-8")
             if result.returncode:
                 raise ValueError(f"native host failed with exit {result.returncode}: {log[-2000:]}")
-            reports = read_reports(log, cases)
-            for case, report in zip(cases, reports):
-                verify_case(case, report, scale)
-                if not case.get("reject"):
-                    verify_capture(output / (case["name"] + ".png"), json.loads(report["snapshot"]), scale,
-                                   case["request"]["body"]["surroundingColor"])
-            verify_stable_targets(cases, reports)
+            reports = read_reports(log, cases, component)
             (output / "observations.json").write_text(json.dumps(reports, indent=2), encoding="utf-8")
-            print(f"PASS {len(cases)} authored Command cases at device scale {scale}", flush=True)
+            for case, report in zip(cases, reports):
+                verify(output, case, report, scale)
+            verify_stable_targets(cases, reports)
+            print(f"PASS {len(cases)} authored {component.capitalize()} cases at device scale {scale}", flush=True)
     except (OSError, ValueError, KeyError, TypeError, ValidationError, subprocess.TimeoutExpired) as error:
-        print("FAIL Quickshell Command updates: " + str(error), file=sys.stderr)
+        print(f"FAIL Quickshell {component.capitalize()} updates: " + str(error), file=sys.stderr)
         return 1
     return 0
+
+
+def verify_output(output, case, report, scale):
+    verify_case(case, report, scale)
+    if not case.get("reject"):
+        verify_capture(output / (case["name"] + ".png"), json.loads(report["snapshot"]), scale,
+                       case["request"]["body"]["surroundingColor"])
+
+
+def main():
+    parser = updates_parser("Verify authored Command replacements in released Quickshell.")
+    parser.add_argument("--alternate-font", type=Path, required=True)
+    args = parser.parse_args()
+    return run_updates("command", args, {"FONT": args.font, "ALTERNATE_FONT": args.alternate_font},
+                       authored_cases, verify_output)
 
 
 if __name__ == "__main__":
