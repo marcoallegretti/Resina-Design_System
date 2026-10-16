@@ -960,8 +960,9 @@ observed focus fails within the existing case deadline. Focused rest retains bot
 Offscreen focus observations do not establish compositor focus policy or physical
 input. Before publishing a pending prepared frame, the control synchronizes native
 focus and pending interruption, then validates the resulting preparation
-generation. Final natural and fitted native measurements reach the independent
-rational layout checker. These remeasurements verify final
+generation. The run fails when the host log reports a QML type, reference or
+invalid-context error. Final natural and fitted native measurements reach the
+independent rational layout checker. These remeasurements verify final
 layout arithmetic; they do not observe the control's internal measurement calls.
 
 Each successful case saves a PNG and its complete snapshot. Pixel checks require
@@ -984,6 +985,54 @@ and diagnostics together. Invalid cases must withdraw paint, target and accessib
 publication before recovery. These authored-update tests do not deliver pointer
 or keyboard input, inspect AT-SPI, test reload/closure, sample motion or establish
 screen-reader acceptance.
+
+### Released Quickshell Toggle authored updates
+
+The [Toggle probe](../../../conformance/quickshell/toggle-updates-probe.qml)
+mounts `ResinaToggleControl`, replaces its complete authored configuration and
+sets the checked owner through the Rust controller. Run it against the same host
+and module pair:
+
+```sh
+python tools/check_quickshell_toggle_updates.py \
+  --host target/quickshell-build/src/quickshell \
+  --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/quickshell-toggle-updates --scales 1 1.25 2
+```
+
+The 39 scenarios cover off and on Toggles in Light/Dark LTR/RTL, expanded German
+and mixed Arabic/Latin labels, text scales 1.5 and 2, focused off and on Toggles in
+both themes, authored strong-outline focus fallback, failed focus contrast and
+focused recovery, unavailable state, malformed configuration, unsupported focus
+policy, rotation, insufficient thumb contrast and recovery after each rejection.
+Two cases gain or lose native focus after a replacement has prepared its frame
+and before that frame is published; every callback must carry the new focus.
+Two cases unload a focused Toggle through a `Loader`, one while its prepared
+frame is still pending and one from its own consumer callback, then load a fresh
+Toggle with the same configuration.
+Light track edges already use the strong-outline fallback, so the failed focus
+contrast case assigns the authored strong outline to `outline`; the edge guard
+passes and the rejection comes from the focus guard. Final and callback snapshots
+are checked against their own observed activation and checked state: track and
+thumb states, phase and response, checked color role, literal pigment from the
+current inline theme, label colors and contrast, thumb contrast minimum, layout
+selection, accessible state and track-only navigation paint. The accessibility
+schema owns the portable role. Callbacks must observe the authored checked value,
+and their labels and targets must equal the final values. Raw focus observations
+and their conjunction follow the Command updates checker. Before publishing a
+pending prepared frame, the control synchronizes native focus and any pending
+interruption. These cases change focus only; they do not produce a pending
+interruption. On destruction the control retires its pending frame and the
+keyboard owner ignores synchronization queued before destruction. The run fails
+when the host log reports a QML type, reference or invalid-context error.
+
+Pixel checks sample the background, the thumb center, the uncovered track at the
+opposite thumb endpoint, label ink on every measured line and, when focused, the
+midpoint of each exterior side of the track focus indicator. They do not certify
+rounded corners, the complete perimeter, glyph shapes or product styling. These
+tests do not deliver pointer or keyboard input, inspect AT-SPI, test reload or
+closure, or sample motion.
 
 ### Compositor-delivered Command lifecycle
 
