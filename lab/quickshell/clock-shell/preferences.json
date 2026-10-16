@@ -1,0 +1,30 @@
+{
+  "textScale": 1,
+  "inputCapabilities": ["finePointer", "hover", "keyboard"],
+  "viewingProfile": "desk",
+  "densityPreference": "standard",
+  "accessibilityPreferences": {
+    "reducedMotion": false,
+    "reducedTransparency": false,
+    "highContrast": false
+  },
+  "locale": "en-GB",
+  "layoutDirection": "ltr",
+  "rendererCapabilities": {
+    "gradients": false,
+    "translucentSurfaces": false,
+    "innerShadow": false,
+    "advancedShadow": false,
+    "sdfShapes": false,
+    "backdropEffect": false,
+    "backdropBlur": false,
+    "shapedBackdrop": false,
+    "dynamicLighting": false,
+    "deformation": false,
+    "masks": false,
+    "customShader": false,
+    "wideGamut": false,
+    "hdr": false
+  },
+  "qualityPolicy": "full"
+}
