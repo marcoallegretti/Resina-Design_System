@@ -254,7 +254,7 @@ fn command_cli_paints_pressed_body_and_independent_focus_without_partial_failure
     let frame = reader.next_frame(&mut rgba).unwrap();
     assert_eq!((frame.width, frame.height), (40, 32));
     for (x, y, expected) in [
-        (18, 14, [177, 155, 133, 255]),
+        (18, 14, [188, 164, 141, 255]),
         (18, 4, [255; 4]),
         (18, 6, [0; 4]),
         (0, 0, [0; 4]),

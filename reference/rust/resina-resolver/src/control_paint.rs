@@ -17,11 +17,13 @@ const MINIMUM_STATE_COLOR_DIFFERENCE: f64 = 0.04;
 const MINIMUM_STATE_DEPTH_CHANGE: f64 = 1.0;
 const DEPTH_TOLERANCE: f64 = 1e-12;
 
-/// A selected hover, pressed or disabled response whose body differs from rest by less than
-/// ΔE_OK 0.04 and whose final extrusion differs by less than 1 px.
+/// An authored response whose body differs from the reference phase's body by less than
+/// ΔE_OK 0.04 and whose final extrusion differs by less than 1 px. The reference is rest, or
+/// pressed for the disabled response.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ImperceptibleResponse {
     pub phase: CommandPhase,
+    pub reference: CommandPhase,
     pub color_difference: f64,
     pub depth_change: f64,
 }
@@ -29,8 +31,11 @@ impl fmt::Display for ImperceptibleResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{:?} response is imperceptible from rest: body ΔE_OK {} is below {MINIMUM_STATE_COLOR_DIFFERENCE} and extrusion change {} px is below {MINIMUM_STATE_DEPTH_CHANGE} px",
-            self.phase, self.color_difference, self.depth_change
+            "{:?} response is imperceptible from {}: body ΔE_OK {} is below {MINIMUM_STATE_COLOR_DIFFERENCE} and extrusion change {} px is below {MINIMUM_STATE_DEPTH_CHANGE} px",
+            self.phase,
+            format!("{:?}", self.reference).to_lowercase(),
+            self.color_difference,
+            self.depth_change
         )
     }
 }
@@ -172,8 +177,9 @@ fn oklab_difference(first: &crate::SrgbFallback, second: &crate::SrgbFallback) -
         .sqrt()
 }
 
-/// Measures every authored hover, pressed and disabled response of the bound family on the opaque
-/// body it is applied to, whichever state is being resolved.
+/// Measures every authored hover, pressed and disabled response of the bound family against rest,
+/// and the disabled response against pressed, on the opaque body the responses are applied to,
+/// whichever state is being resolved.
 pub(crate) fn imperceptible_profile(
     theme: &CompiledTheme,
     appearance: &OpaqueSurfaceAppearance,
@@ -182,38 +188,34 @@ pub(crate) fn imperceptible_profile(
     profile: &CommandAppearance,
 ) -> Result<Option<ImperceptibleResponse>, SurfacePaintResolutionError> {
     let depth = semantic_depth(theme, appearance, surface)?;
-    for phase in [
-        CommandPhase::Hover,
-        CommandPhase::Pressed,
-        CommandPhase::Disabled,
-    ] {
-        let response = profile
+    let response = |phase| {
+        profile
             .response_for(binding.material_family(), phase)
-            .expect("a bound command family has an authored profile");
-        if let Some(imperceptible) = imperceptible_response(binding, depth, phase, response) {
-            return Ok(Some(imperceptible));
+            .expect("a bound command family has an authored profile")
+    };
+    for (phase, reference) in [
+        (CommandPhase::Hover, CommandPhase::Rest),
+        (CommandPhase::Pressed, CommandPhase::Rest),
+        (CommandPhase::Disabled, CommandPhase::Rest),
+        (CommandPhase::Disabled, CommandPhase::Pressed),
+    ] {
+        let rest = binding.opaque_color_fallback();
+        let [first, second] = [reference, phase].map(response);
+        let color_difference = oklab_difference(
+            &crate::surface::mix_body_color(rest, first),
+            &crate::surface::mix_body_color(rest, second),
+        );
+        let depth_change = (depth * second.depth_scale() - depth * first.depth_scale()).abs();
+        if color_difference < MINIMUM_STATE_COLOR_DIFFERENCE
+            && depth_change < MINIMUM_STATE_DEPTH_CHANGE - DEPTH_TOLERANCE
+        {
+            return Ok(Some(ImperceptibleResponse {
+                phase,
+                reference,
+                color_difference,
+                depth_change,
+            }));
         }
     }
     Ok(None)
-}
-
-fn imperceptible_response(
-    binding: &BoundSurface,
-    depth: f64,
-    phase: CommandPhase,
-    response: CommandResponse,
-) -> Option<ImperceptibleResponse> {
-    let rest = binding.opaque_color_fallback();
-    let color_difference = oklab_difference(rest, &crate::surface::mix_body_color(rest, response));
-    let depth_change = (depth * response.depth_scale() - depth).abs();
-    if color_difference >= MINIMUM_STATE_COLOR_DIFFERENCE
-        || depth_change >= MINIMUM_STATE_DEPTH_CHANGE - DEPTH_TOLERANCE
-    {
-        return None;
-    }
-    Some(ImperceptibleResponse {
-        phase,
-        color_difference,
-        depth_change,
-    })
 }

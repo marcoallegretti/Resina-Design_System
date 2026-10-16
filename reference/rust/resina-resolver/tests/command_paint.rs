@@ -303,6 +303,7 @@ fn selected_responses_must_change_body_color_or_depth_perceivably() {
     ] {
         let Err(CommandPaintError::Imperceptible(ImperceptibleResponse {
             phase: measured,
+            reference: CommandPhase::Rest,
             color_difference,
             depth_change: measured_depth,
         })) = resolve(elevation, phase, response.clone())
@@ -345,6 +346,28 @@ fn every_authored_response_of_the_bound_family_is_validated_in_any_state() {
         };
         assert_eq!(serde_json::to_value(measured).unwrap(), phase);
         request["commandAppearance"] = self::request()["commandAppearance"].clone();
+        resolve_command_paint_source(&request.to_string()).unwrap();
+    }
+}
+
+#[test]
+fn disabled_must_differ_perceivably_from_pressed() {
+    for state in ["rest", "pressed", "disabled"] {
+        let mut request = request();
+        request["surface"]["body"]["surface"]["states"]["states"] = json!([state]);
+        let pressed = request["commandAppearance"]["profiles"]["elastomer"]["pressed"].clone();
+        request["commandAppearance"]["profiles"]["elastomer"]["disabled"] =
+            json!({"bodyMix": pressed["bodyMix"], "depthScale": 0.3});
+        let Err(CommandPaintError::Imperceptible(imperceptible)) =
+            resolve_command_paint_source(&request.to_string())
+        else {
+            panic!("{state}: disabled within 1 px of pressed must fail");
+        };
+        assert_eq!(imperceptible.phase, CommandPhase::Disabled);
+        assert_eq!(imperceptible.reference, CommandPhase::Pressed);
+        assert_eq!(imperceptible.color_difference, 0.0);
+        assert!((imperceptible.depth_change - 0.4).abs() < 1e-12);
+        request["commandAppearance"]["profiles"]["elastomer"]["disabled"]["depthScale"] = json!(0);
         resolve_command_paint_source(&request.to_string()).unwrap();
     }
 }

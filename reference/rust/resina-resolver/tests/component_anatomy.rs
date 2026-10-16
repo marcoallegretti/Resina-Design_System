@@ -254,7 +254,7 @@ fn channels(body: &resina_resolver::OpaqueSurfaceIr) -> (SrgbFallback, f64) {
 }
 
 /// Measures every authored hover, pressed and disabled body against the rest body of the
-/// same part, for each body the shipped Command and Toggle anatomy bind in both themes and
+/// same part, and the disabled body against the pressed body, for each body the shipped Command and Toggle anatomy bind in both themes and
 /// under every family a theme may assign to each control role. A state is perceivable when
 /// its body colour differs by at least ΔE_OK 0.04 or its final depth by at least 1 px.
 #[test]
@@ -315,15 +315,15 @@ fn authored_state_responses_differ_perceivably_from_rest() {
             }
         }
         for (label, painted) in bodies {
-            let (rest, rest_depth) = &painted[0];
-            for (phase, (body, depth)) in PHASES.iter().zip(&painted).skip(1) {
-                let difference = oklab_difference(rest, body);
-                let depth_change = (depth - rest_depth).abs();
+            for (from, to) in [(0, 1), (0, 2), (0, 3), (2, 3)] {
+                let ((first, first_depth), (second, second_depth)) = (&painted[from], &painted[to]);
+                let difference = oklab_difference(first, second);
+                let depth_change = (second_depth - first_depth).abs();
                 measured += 1;
                 if difference < 0.04 && depth_change < 1.0 - 1e-12 {
                     failures.push(format!(
-                        "{} {:?} {label} {phase}: ΔE_OK {difference:.4}, depth {rest_depth} -> {depth} px",
-                        theme.name, theme.assignment
+                        "{} {:?} {label} {} -> {}: ΔE_OK {difference:.4}, depth {first_depth} -> {second_depth} px",
+                        theme.name, theme.assignment, PHASES[from], PHASES[to]
                     ));
                 }
             }

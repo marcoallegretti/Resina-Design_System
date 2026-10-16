@@ -62,9 +62,9 @@ fn assert_bounds(hit: &HitRegionIr, x: f64, y: f64, width: f64, height: f64) {
 #[test]
 fn static_targets_include_material_depth_and_exclude_independent_focus() {
     for (family, [hover, pressed, disabled]) in [
-        ("cast", [3.1, 0.9, 0.6]),
-        ("frost", [3.2, 0.8, 0.6]),
-        ("elastomer", [3.5, 0.4, 0.6]),
+        ("cast", [3.1, 1.0, 0.0]),
+        ("frost", [3.2, 1.0, 0.0]),
+        ("elastomer", [3.5, 1.0, 0.0]),
     ] {
         for (phase, depth) in [
             ("rest", 2.0),
@@ -93,7 +93,10 @@ fn static_targets_include_material_depth_and_exclude_independent_focus() {
                 assert_eq!(paint.paint().focus().is_some(), focused);
                 let hit = resolve_surface_hit_region(input(&env, paint.paint().body())).unwrap();
                 assert_bounds(&hit, 0.0, 0.0, 64.0, 40.0 + depth);
-                assert!(hit.contains(PhysicalVector { x: 32.0, y: 40.0 }).unwrap());
+                assert_eq!(
+                    hit.contains(PhysicalVector { x: 32.0, y: 40.0 }).unwrap(),
+                    depth > 0.0
+                );
                 assert!(!hit.contains(PhysicalVector { x: -0.5, y: 20.0 }).unwrap());
                 targets.push(hit);
             }
@@ -317,9 +320,9 @@ fn sampled_motion_targets_follow_actual_depth_with_immediate_reduced_motion() {
             let hit =
                 resolve_surface_hit_region(input(&env, motion.command().paint().body())).unwrap();
             let depth_scale = if reduced {
-                0.2
+                0.5
             } else {
-                0.2 + 0.8 * (1.0 + 2.0 * time) * (-2.0 * time).exp()
+                0.5 + 0.5 * (1.0 + 2.0 * time) * (-2.0 * time).exp()
             };
             assert_bounds(&hit, 0.0, -4.0 + depth_scale, 64.0, 48.0);
             assert!(hit.contains(PhysicalVector { x: 32.0, y: 40.0 }).unwrap());

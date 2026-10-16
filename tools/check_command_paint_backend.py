@@ -41,11 +41,13 @@ def perceivable(rest_color, color, rest_depth, depth):
 
 
 def imperceptible_phase(rest_color, rest_depth, profile):
-    for phase in ("hover", "pressed", "disabled"):
-        response = profile[phase]
-        if not perceivable(rest_color, mix_body(rest_color, response["bodyMix"]), rest_depth,
-                           rest_depth * response["depthScale"]):
-            return phase
+    responses = {"rest": {"bodyMix": 0, "depthScale": 1}, **profile}
+    for phase, reference in (("hover", "rest"), ("pressed", "rest"), ("disabled", "rest"),
+                             ("disabled", "pressed")):
+        first, second = responses[reference], responses[phase]
+        if not perceivable(mix_body(rest_color, first["bodyMix"]), mix_body(rest_color, second["bodyMix"]),
+                           rest_depth * first["depthScale"], rest_depth * second["depthScale"]):
+            return phase if reference == "rest" else phase + " from " + reference
     return None
 
 

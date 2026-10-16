@@ -73,3 +73,11 @@ class PerceivableResponseTests(unittest.TestCase):
         changed = copy.deepcopy(profile)
         changed["pressed"] = {"bodyMix": 0, "depthScale": 0.5}
         self.assertIsNone(imperceptible_phase((0.8, 0.7, 0.6), 2, changed))
+
+    def test_disabled_is_measured_against_pressed(self):
+        from check_command_paint_backend import imperceptible_phase
+        profile = copy.deepcopy(load_json(ROOT / "conformance/ir/command-paint-request.json")["commandAppearance"]["profiles"]["elastomer"])
+        profile["disabled"] = {"bodyMix": profile["pressed"]["bodyMix"], "depthScale": 0.3}
+        self.assertEqual(imperceptible_phase((0.8, 0.7, 0.6), 2, profile), "disabled from pressed")
+        profile["disabled"]["depthScale"] = 0
+        self.assertIsNone(imperceptible_phase((0.8, 0.7, 0.6), 2, profile))

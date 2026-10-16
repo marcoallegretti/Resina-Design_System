@@ -693,5 +693,68 @@
     ],
     "requestSchemaValid": true,
     "expectedPhase": "hover"
+  },
+  {
+    "name": "disabled indistinguishable from pressed",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.08,
+          "depthScale": 0.3
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "disabled one pixel flatter than pressed",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.08,
+          "depthScale": 0
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "disabled colored apart from pressed",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.165,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
   }
 ]
