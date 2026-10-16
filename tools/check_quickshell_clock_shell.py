@@ -493,7 +493,7 @@ def main():
         resolvers = {"surface": str(args.surface_resolver.resolve(strict=True)),
                      "theme": str(args.theme_resolver.resolve(strict=True))}
         args.output_dir.mkdir(parents=True, exist_ok=False)
-        platform = session(["--session"], args.output_dir, processes)
+        platform = session(args.output_dir, processes)
         os.environ["DBUS_SESSION_BUS_ADDRESS"] = platform["DBUS_SESSION_BUS_ADDRESS"]
         for name in ("IsEnabled", "ScreenReaderEnabled"):
             call("org.a11y.Bus", "/org/a11y/bus", PROPERTIES + ".Set", "string:org.a11y.Status",
