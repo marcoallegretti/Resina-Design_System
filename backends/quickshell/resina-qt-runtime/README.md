@@ -1041,6 +1041,61 @@ it is closed or replaced by another reload. Physical
 devices, multiple seats and outputs, fractional scale and screen-reader operation
 are not covered.
 
+### Released Quickshell Toggle lifecycle
+
+[`check_quickshell_toggle_lifecycle.py`](../../../tools/check_quickshell_toggle_lifecycle.py)
+runs [the Toggle lifecycle probe](../../../conformance/quickshell/toggle-lifecycle-probe.qml)
+with the session, IPC, virtual input and log reading of the Command lifecycle
+checker. It takes the same arguments and compositor session:
+
+```sh
+python tools/check_quickshell_toggle_lifecycle.py \
+  --host /path/to/quickshell --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/quickshell-toggle-lifecycle
+```
+
+Headless Sway 1.12 and nested niri 26.04 pass all 52 cases. Every consumer effect
+is counted exactly and must invert the checked value committed before it; the
+probe fails when a callback observes a checked value or activation that is not
+yet committed. The run fails on QML type, reference and invalid-context errors
+anywhere in the host log.
+
+- Activation: a pointer click toggles off to on and on to off; a pointer press
+  moved off the target and released toggles nothing; Space toggles on release
+  and Enter on press, each held through at least two auto-repeat publications;
+  an unavailable Toggle rejects pointer, Space, Enter and `invoke()` and keeps
+  its checked value.
+- Focus: Tab traversal, requested focus, a focus request while another surface
+  holds keyboard focus, and availability withdrawal follow the Command cases.
+  Two cases move native focus into or out of the Toggle while the frame for a
+  checked change is prepared but unpublished. Every published frame in the run
+  must carry the focus Qt observes at publication and the current checked value
+  in its accessibility state and layout.
+- Interruption: Space or pointer held across window deactivation by an
+  exclusive-keyboard surface, a hidden surface, a parent change, availability
+  withdrawal, unmount and a destroyed surface produces no effect. For the four
+  cases that keep the Toggle, the hold must be cleared and the checked value
+  kept. A fresh Space afterwards toggles exactly once from the current
+  generation.
+- Reentrancy: consumer callbacks reached by pointer, Space and Enter that set
+  checked, invoke the Toggle, withdraw availability, hide, unmount or destroy
+  the surface observe committed enabled state. Setting checked returns it to its
+  previous value; `invoke()` produces exactly one additional toggle; a Space
+  after callback-time withdrawal produces none.
+- Lifetime: hiding and unmounting together from a callback reached by Space,
+  Enter and pointer; Space or pointer held across soft and hard reload, which
+  must retire the previous generation and deliver nothing; unmounting while the
+  frame for a checked or availability change is prepared but unpublished.
+
+The checker observes that a hold is cleared, not which native owner clears it:
+the keyboard owner, the control and the native pointer owner each cancel on
+parent and window changes. A Space released after window deactivation reaches
+the other surface, so the cleared hold, not the effect count, proves that case.
+Configuration replacement during a gesture, AT-SPI delivery, motion, physical
+devices, multiple seats and outputs, fractional scale and screen-reader
+operation are not covered.
+
 ### Released Quickshell Command accessibility
 
 [`check_quickshell_command_accessibility.py`](../../../tools/check_quickshell_command_accessibility.py)
