@@ -76,8 +76,10 @@ guarded content region and independently certify any newly exposed background.
 
 ## Public boundary and evidence
 
-`resina-material-light <path|->` accepts one UTF-8 request up to 1 MiB. Success
-exits 0 with one result and no diagnostic; invalid input exits 1 with a diagnostic
+`resina-material-light <path|->` accepts one UTF-8
+[request](../schemas/material-light-request.schema.json) up to 1 MiB. Success
+exits 0 with one [result](../schemas/material-light-result.schema.json) and no
+diagnostic; invalid input exits 1 with a diagnostic
 and no result; usage exits 2. Require named objects, all fields, supported version
 0.1.0 and recursively unique decoded JSON names. Reject unknown, positional,
 missing, nonfinite, out-of-range and invalid unit-normal inputs without partial
@@ -86,7 +88,9 @@ channels, two source-color ranges and ordered signed weights and opaque colors.
 Numeric channels, directions and weights use absolute tolerance 1e-12 without
 relative tolerance; structure and exact-body invariants remain exact.
 
-Proof requires authored vectors and an independent external protocol checker for
+Proof requires [authored vectors](../conformance/lighting/material-light-vectors.json),
+validated by the [case schema](../schemas/material-light-case.schema.json), and an
+independent [external protocol checker](../tools/check_material_light_backend.py) for
 every material family, changed physical direction, RTL invariance, absent data,
 policy suppression, valid zeros and invalid unused inputs. Complete paint and
 accepted scenes in two independent realizations are subsequent integration

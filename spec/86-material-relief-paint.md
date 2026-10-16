@@ -59,9 +59,12 @@ boundary and status 0/1/2 convention. Derived numbers retain the applicable
 geometry/light tolerance; input body, exact flat colors, classification, structure
 and versions remain exact.
 
-Proof includes absent-channel compatibility with authored relief vectors,
+Proof includes [authored vectors](../conformance/ir/material-relief-paint-vectors.json),
+validated by the [case schema](../schemas/material-relief-paint-case.schema.json),
+covering absent-channel compatibility with authored relief vectors,
 independent rectangular normal/modulation arithmetic, active and suppressed
 channels, rotations, RTL, invalid original source and unchanged edge/content
-guards. The public checker is required in addition to reference tests. Raster,
+guards. The [public checker](../tools/check_material_relief_paint_backend.py) is
+required in addition to reference tests. Raster,
 GPU, complete native content/focus and independently evaluated fractional-scale
 scene evidence remain separate requirements before complete appearance is accepted.
