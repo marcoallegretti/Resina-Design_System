@@ -160,6 +160,24 @@ jobs:
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --output-dir target/quickshell-command-motion
+      - name: Check compositor-delivered Toggle lifecycle in released Quickshell
+        timeout-minutes: 15
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          export XDG_RUNTIME_DIR="$(mktemp -d)"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          echo 'output HEADLESS-1 resolution 1024x600' > target/toggle-lifecycle-sway.conf
+          WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER=pixman sway -c target/toggle-lifecycle-sway.conf > target/toggle-lifecycle-sway.log 2>&1 &
+          for attempt in $(seq 50); do
+            WAYLAND_DISPLAY="$(ls "$XDG_RUNTIME_DIR" | grep -m1 -E '^wayland-[0-9]+$' || true)"
+            [ -n "$WAYLAND_DISPLAY" ] && break
+            sleep 0.2
+          done
+          export WAYLAND_DISPLAY
+          python tools/check_quickshell_toggle_lifecycle.py \
+            --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+            --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+            --output-dir target/quickshell-toggle-lifecycle
       - name: Save native Qt captures and accessibility observations
         if: always()
         uses: actions/upload-artifact@v7
@@ -183,6 +201,8 @@ jobs:
             target/quickshell-command-accessibility/
             target/quickshell-command-motion/
             target/lifecycle-sway.log
+            target/quickshell-toggle-lifecycle/
+            target/toggle-lifecycle-sway.log
           if-no-files-found: warn
   guido:
     runs-on: ubuntu-latest
