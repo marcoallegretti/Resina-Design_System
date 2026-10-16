@@ -959,5 +959,45 @@
     ],
     "requestSchemaValid": true,
     "failure": true
+  },
+  {
+    "name": "color difference just below threshold",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.065,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color difference just above threshold",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0701,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
   }
 ]

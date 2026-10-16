@@ -46,6 +46,7 @@
     "insufficient state contrast": "contrast is insufficient",
     "nonfinite-scale domain": "depthScale",
     "imperceptible lifted hover": "imperceptible from rest",
+    "color difference just below threshold": "imperceptible from rest",
     "rest validates an imperceptible hover response": "imperceptible from rest",
     "pressed validates an imperceptible disabled response": "imperceptible from rest",
     "imperceptible disabled response": "imperceptible from rest",
