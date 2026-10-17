@@ -52,8 +52,11 @@ focus, layout and preference policy belong to this shell, not to Resina.
   accessibility together with its children.
 - The open state is a `PersistentProperties` value: it survives a soft reload and
   is reset by a hard reload or restart.
-- An IPC target `clock` provides `open`, `close`, `reload(hard)`, `observe` and
-  `request(part)`.
+- An IPC target `clock` provides `open`, `close`, `reload(hard)`, `observe`,
+  `request(part)`, `record(enabled)` and `frames`. `record` discards the
+  recorded frames and starts or stops recording; while recording, the shell
+  keeps every motion frame of either Command as it is published, and `frames`
+  returns them.
 
 ## Prerequisites
 
@@ -116,9 +119,10 @@ GSettings. It requires:
 - a soft reload to keep the surface open in a new engine generation, and a hard
   reload to close it;
 - the portal's preferences to reach the Command environment;
-- every motion sample of a held "Show clock" to use the calibrated Elastomer
-  dynamics and match the independent spring equations and complete snapshot,
-  with at least one unsettled spring sample;
+- every motion frame published while "Show clock" is held, recorded by the
+  shell as it is published until a settled frame, to use the calibrated
+  Elastomer dynamics and match the independent spring equations and complete
+  snapshot, with at least one unsettled spring frame;
 - the platform reduced-motion setting, changed through GSettings, to switch the
   Commands to immediate settled frames, and its reset to restore calibrated
   spring frames;
@@ -137,7 +141,10 @@ and xdg-desktop-portal-gnome 50.0:
 
 - all cases pass with the platform-selected theme in headless Sway 1.12, with
   `grim` composition checks at output scales 1 and 2 (a 2048×1200 pixel capture
-  of a 1024×600 logical output), and in nested niri 26.04 at scale 1;
+  of a 1024×600 logical output), and in nested niri 26.04 at scales 1 and 2;
+- with the software renderer, a frame at scale 2 lasted about as long as the
+  spring takes to settle, so a held "Show clock" published one or two unsettled
+  frames before settling, against three at scale 1;
 - the fixed dark theme passes in headless Sway at output scale 1.
 
 ## Boundaries

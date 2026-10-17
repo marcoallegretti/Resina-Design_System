@@ -29,6 +29,8 @@ ShellRoot {
         ["preferences", decodeURIComponent(Qt.resolvedUrl("preferences.json").toString().replace("file://", "")), ""]
     ]
     property var sources: ({})
+    property bool recording: false
+    property var recorded: []
     property string loadError: ""
     readonly property bool loaded: sourceFiles.every(file => sources[file[0]] !== undefined
         && sources[file[0]].tag === file[2]) && typeface.status === FontLoader.Ready && platform.ready
@@ -88,6 +90,12 @@ ShellRoot {
     function report(part, message) {
         if (message.length)
             console.warn("RESINA_CLOCK_PREPARATION " + part + ": " + message);
+    }
+
+    function recordFrame(part, control) {
+        if (recording && control.snapshot.length && control.motion.length)
+            recorded.push({part: part, snapshot: control.snapshot, motion: control.motion,
+                publication: control.publication, hovered: control.hovered});
     }
 
     function target(control, originX, originY) {
@@ -243,6 +251,7 @@ ShellRoot {
                     x: -Math.max(root.margin, inset), y: -inset,
                     width: barSurface.contentBounds.width, height: barSurface.contentBounds.height})
                 onActivated: persisted.open = true
+                onMotionChanged: root.recordFrame("showClock", showControl)
                 onImplicitHeightChanged: if (implicitHeight > 0) root.showHeight = implicitHeight
                 onPreparationErrorChanged: root.report("Show clock", preparationError)
                 Component.onCompleted: controller.dispatch(JSON.stringify({kind: "availability",
@@ -319,6 +328,7 @@ ShellRoot {
             active: clockSurface.paintReady
             readonly property var control: item
             sourceComponent: Resina.ResinaCommandControl {
+                id: closeControl
                 readonly property real offset: root.gap + reading.implicitHeight + root.gap
                 x: clockSurface.x + clockSurface.contentBounds.x + root.gap
                 y: clockSurface.y + clockSurface.contentBounds.y + offset
@@ -330,6 +340,7 @@ ShellRoot {
                     x: -root.gap, y: -offset,
                     width: clockSurface.contentBounds.width, height: clockSurface.contentBounds.height})
                 onActivated: persisted.open = false
+                onMotionChanged: root.recordFrame("close", closeControl)
                 onImplicitHeightChanged: if (implicitHeight > 0) root.closeHeight = implicitHeight
                 onReadyChanged: if (ready) forceActiveFocus()
                 onPreparationErrorChanged: root.report("Close", preparationError)
@@ -344,6 +355,14 @@ ShellRoot {
         function open(): void { persisted.open = true; }
         function close(): void { persisted.open = false; }
         function reload(hard: bool): void { Quickshell.reload(hard); }
+        function record(enabled: bool): void {
+            root.recording = enabled;
+            root.recorded = [];
+        }
+        function frames(): string {
+            return JSON.stringify(root.recorded.map(frame => ({part: frame.part, snapshot: JSON.parse(frame.snapshot),
+                motion: JSON.parse(frame.motion), state: JSON.parse(frame.publication).state, hovered: frame.hovered})));
+        }
         function request(part: string): string {
             if (part === "bar") return barSurface.request;
             if (part === "clock") return clockSurface.request;

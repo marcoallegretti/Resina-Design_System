@@ -293,22 +293,25 @@ def verify_composition(shell, observed, backdrop, grim, path):
                     expect(point, color, f"{surface} body around the {part} Command")
 
 
-def press_samples(shell, part, count=8):
+def held_frames(shell, part):
+    frames = [frame for frame in json.loads(shell.call("frames")) if frame["part"] == part and frame["state"]["hold"]]
+    return frames if frames and all(frames[-1]["motion"]["motion"][name]["settled"]
+                                    for name in ("bodyMix", "depthScale")) else None
+
+
+def press_samples(shell, part):
     observed = shell.until(lambda current: current[part] and current["targets"][part], f"{part} ready")
     shell.input.move(observed["targets"][part]["x"], observed["targets"][part]["y"])
     time.sleep(.2)
+    # The shell records frames as it publishes them: a polled observation misses
+    # every unsettled frame when one frame lasts as long as the spring takes to settle.
+    shell.call("record", "true")
     shell.input.button(True)
-    samples = []
-    deadline = time.monotonic() + 10
-    while len(samples) < count and time.monotonic() < deadline:
-        current = shell.observe()[part]
-        if current and current["motion"] and current["state"]["hold"]:
-            samples.append(current)
-        time.sleep(.05)
-    shell.input.button(False)
-    if len(samples) < count:
-        raise ValueError(f"{part} published too few motion samples while pressed")
-    return samples
+    try:
+        return shell.wait_for(lambda: held_frames(shell, part), f"settled {part} motion while pressed", timeout=10)
+    finally:
+        shell.input.button(False)
+        shell.call("record", "false")
 
 
 def verify_motion(shell, part, samples, channels, policy):
@@ -331,6 +334,7 @@ def verify_motion(shell, part, samples, channels, policy):
         raise ValueError(f"{part} published no unsettled calibrated spring sample")
     if policy == "reducedMotion" and not all(settled):
         raise ValueError(f"{part} published sampled motion under reduced motion")
+    return {"policy": policy, "heldFrames": len(samples), "unsettled": settled.count(False)}
 
 
 def calibrated_channels():
@@ -578,7 +582,7 @@ def main():
         report["cases"].append("platform appearance preferences reach the Command environment")
 
         channels = calibrated_channels()
-        verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels, "spring")
+        report["motion"] = [verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels, "spring")]
         shell.until(opened, "clock surface opened after the sampled press")
         shell.key(KEY_ESCAPE)
         shell.until(lambda current: not current["open"] and not current["clock"], "clock closed after the press")
@@ -588,14 +592,16 @@ def main():
             gsettings(platform, "set", "org.gnome.desktop.a11y.interface", "reduced-motion", "reduce")
             shell.until(lambda current: current["preferences"]["reducedMotion"] and closed(current),
                         "platform reduced motion in the shell environment")
-            verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels, "reducedMotion")
+            report["motion"].append(verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels,
+                                                  "reducedMotion"))
             shell.until(opened, "clock surface opened under reduced motion")
             shell.key(KEY_ESCAPE)
             shell.until(lambda current: not current["open"] and not current["clock"], "clock closed under reduced motion")
             gsettings(platform, "reset", "org.gnome.desktop.a11y.interface", "reduced-motion")
             shell.until(lambda current: not current["preferences"]["reducedMotion"] and closed(current),
                         "platform reduced motion reset")
-            verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels, "spring")
+            report["motion"].append(verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels,
+                                                  "spring"))
             shell.until(opened, "clock surface opened after the reduced-motion reset")
             shell.key(KEY_ESCAPE)
             shell.until(lambda current: not current["open"] and not current["clock"], "clock closed after the reset")
@@ -633,6 +639,8 @@ def main():
         for case in report["cases"]:
             print("PASS " + case)
         print(f"INFO Space after closing activates Show clock: {report['spaceActivatesShowClockAfterClose']}")
+        for press in report["motion"]:
+            print(f"INFO {press['policy']} press: {press['heldFrames']} held frames, {press['unsettled']} unsettled")
     except (OSError, ValueError, KeyError, subprocess.SubprocessError, json.JSONDecodeError) as error:
         print(f"Quickshell clock shell check failed: {error}", file=sys.stderr)
         return 1
