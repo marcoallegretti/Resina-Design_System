@@ -38,9 +38,12 @@ focus, layout and preference policy belong to this shell, not to Resina.
   immediate settled frames.
 - "Show clock" maps the clock surface and is unavailable while the surface is
   open. The surface requests exclusive keyboard interactivity and moves keyboard
-  focus to "Close" once it is ready, on the next event-loop turn: Qt 6.11.2
-  publishes no AT-SPI focus event for focus requested directly from the
-  readiness change. "Close" and Escape unmap it.
+  focus to "Close" once it is ready, on the next event-loop turn. The control is
+  still `Accessible.ignored` while its `ready` change is delivered, and Qt sends
+  no accessibility focus event for an ignored item, so focus requested directly
+  from that change reaches no assistive technology. The deferral is a
+  consumer-side measure until the control exposes itself before announcing
+  readiness. "Close" and Escape unmap it.
 - The bar and the clock surface size themselves from their Commands and text, and
   the clock text follows the authored text scale. Each Command, including its
   focus ring, is placed within its surface's content region and is surrounded by
