@@ -87,8 +87,9 @@ permission to substitute approximate font metrics in production.
    When the activation is disabled, first require the supplied minimum against
    the supplied foreground, exactly as for an enabled label, then publish the
    [disabled label](43-command-paint.md#disabled-label): that foreground mixed
-   toward the uniform backdrop down to its bound. This is the same
-   guard-then-dim order as a Command. Enabled labels keep the supplied
+   toward the uniform backdrop down to its bound, 3:1, or 4.5:1 under the
+   environment's high-contrast preference. This is the same guard-then-dim
+   order as a Command. Enabled labels keep the supplied
    foreground.
 8. Resolve [binary semantics](52-toggle-accessibility.md) from the exact complete
    label and current activation/checked signals, description and focusability.

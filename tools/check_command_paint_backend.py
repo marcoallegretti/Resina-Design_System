@@ -41,6 +41,12 @@ def perceivable(rest_color, color, rest_depth, depth):
 
 
 DISABLED_LABEL_CONTRAST = 3
+HIGH_CONTRAST_DISABLED_LABEL_CONTRAST = 4.5
+
+
+def disabled_label_bound(environment):
+    return HIGH_CONTRAST_DISABLED_LABEL_CONTRAST if environment["accessibilityPreferences"]["highContrast"] \
+        else DISABLED_LABEL_CONTRAST
 
 
 def decode(c):
@@ -56,14 +62,14 @@ def contrast_ratio(first, second):
     return (high + 0.05) / (low + 0.05)
 
 
-def disabled_label_mismatch(label, background, undimmed):
+def disabled_label_mismatch(label, background, undimmed, bound):
     """Checks a published disabled label against the linear-light dimming law independently."""
     ratio = contrast_ratio(label, background)
-    if contrast_ratio(undimmed, background) <= DISABLED_LABEL_CONTRAST + 1e-9:
+    if contrast_ratio(undimmed, background) <= bound + 1e-9:
         return None if label == list(undimmed) else "undimmed label changed"
     # Independent rounding may land within the 1e-12 conformance tolerance of the bound.
-    if not DISABLED_LABEL_CONTRAST - 1e-12 <= ratio < DISABLED_LABEL_CONTRAST + 1e-9:
-        return f"disabled label contrast {ratio} is not the {DISABLED_LABEL_CONTRAST}:1 bound"
+    if not bound - 1e-12 <= ratio < bound + 1e-9:
+        return f"disabled label contrast {ratio} is not the {bound}:1 bound"
     start, end, actual = ([decode(c) for c in color] for color in (undimmed, background, label))
     fractions = [(a - s) / (e - s) for a, s, e in zip(actual, start, end) if abs(e - s) > 1e-6]
     if not fractions or max(fractions) - min(fractions) > 1e-9 or not 0 <= fractions[0] <= 1:
@@ -129,7 +135,8 @@ def command_mismatch(actual, request, response=None):
     if foreground["colorSpace"] != "srgb" or foreground["alpha"] != 1:
         return "/paint/body/foreground"
     if phase == "disabled":
-        if disabled_label_mismatch(foreground["components"], color, guarded):
+        if disabled_label_mismatch(foreground["components"], color, guarded,
+                                   disabled_label_bound(request["surface"]["body"]["theme"]["environment"])):
             return "/paint/body/foreground (disabled label)"
     elif foreground["components"] != guarded:
         return "/paint/body/foreground"

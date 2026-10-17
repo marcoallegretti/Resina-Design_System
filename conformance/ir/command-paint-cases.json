@@ -1123,5 +1123,86 @@
     ],
     "requestSchemaValid": true,
     "expectedPhase": "pressed"
+  },
+  {
+    "name": "disabled label dims to 3:1 without high contrast",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "disabled label between bounds dims without high contrast",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/foregroundRole",
+        "value": "surface.low"
+      },
+      {
+        "path": "/surface/body/minimumContentContrast",
+        "value": 3
+      },
+      {
+        "path": "/commandAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.3,
+          "depthScale": 0
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "disabled label between bounds stays under high contrast",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": true
+      },
+      {
+        "path": "/surface/body/foregroundRole",
+        "value": "surface.low"
+      },
+      {
+        "path": "/surface/body/minimumContentContrast",
+        "value": 3
+      },
+      {
+        "path": "/commandAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.3,
+          "depthScale": 0
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
   }
 ]

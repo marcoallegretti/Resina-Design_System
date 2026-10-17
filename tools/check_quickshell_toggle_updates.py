@@ -6,7 +6,7 @@ from jsonschema.exceptions import ValidationError
 from PIL import Image
 
 from check_schemas import validator_for
-from check_command_paint_backend import disabled_label_mismatch
+from check_command_paint_backend import disabled_label_bound, disabled_label_mismatch
 from check_qt_command_label_runtime import verify_layout
 from check_qt_toggle_control_runtime import request_for
 from check_quickshell_command_updates import (
@@ -151,7 +151,8 @@ def verify_snapshot(snapshot, request):
         label_differs = published != foreground
     else:
         label_differs = published["alpha"] != 1 or disabled_label_mismatch(
-            published["components"], request["background"]["components"], foreground["components"]) is not None
+            published["components"], request["background"]["components"], foreground["components"],
+            disabled_label_bound(request["content"]["environment"])) is not None
     ratio = contrast(published["components"], request["background"]["components"])
     guarded = contrast(foreground["components"], request["background"]["components"])
     if snapshot["labelOrigin"] != request["labelOrigin"] or snapshot["labelBackground"] != request["background"] \

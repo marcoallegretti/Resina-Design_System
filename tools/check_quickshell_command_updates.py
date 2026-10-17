@@ -17,7 +17,7 @@ from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
 from check_qt_command_label_runtime import verify_layout
 from check_surface_paint_backend import surface_paint_channel_mismatch
 from check_focus_indicator_backend import contrast
-from check_command_paint_backend import disabled_label_mismatch
+from check_command_paint_backend import disabled_label_bound, disabled_label_mismatch
 
 
 def authored_cases():
@@ -162,7 +162,8 @@ def verify_authored_paint(request, snapshot):
     foreground = body["foreground"]
     if paint["phase"] == "disabled":
         if foreground["alpha"] != 1 or disabled_label_mismatch(
-                foreground["components"], color["components"], authored["components"]):
+                foreground["components"], color["components"], authored["components"],
+                disabled_label_bound(request["content"]["environment"])):
             raise ValueError("native disabled label is not the bounded dimming of the authored role")
     elif foreground != authored:
         raise ValueError("native label differs from the authored foreground role")

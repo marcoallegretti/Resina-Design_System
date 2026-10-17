@@ -3,6 +3,17 @@ use resina_color::{linear_srgb_to_srgb, srgb_to_linear_srgb};
 
 /// The bounded minimum contrast a disabled label is dimmed to against its background.
 pub const DISABLED_LABEL_CONTRAST: f64 = 3.0;
+/// The disabled label bound under the high-contrast preference: WCAG 2.2 AA text contrast.
+pub const HIGH_CONTRAST_DISABLED_LABEL_CONTRAST: f64 = 4.5;
+
+/// The disabled label bound for the actual environment.
+pub fn disabled_label_bound(environment: &resina_environment::EnvironmentSnapshot) -> f64 {
+    if environment.accessibility_preferences().high_contrast {
+        HIGH_CONTRAST_DISABLED_LABEL_CONTRAST
+    } else {
+        DISABLED_LABEL_CONTRAST
+    }
+}
 
 /// A label already this close above the bound is published unchanged.
 const BOUND_TOLERANCE: f64 = 1e-9;
@@ -29,26 +40,30 @@ fn mixed(label: [f64; 3], background: [f64; 3], fraction: f64, alpha: f64) -> Sr
 }
 
 /// Mixes the label toward the background in linear light by the largest fraction whose contrast
-/// against the background is not below [`DISABLED_LABEL_CONTRAST`]. Relative luminance is linear
-/// in that mix, so the fraction has a closed form; a label at or below the bound is unchanged.
-pub(crate) fn dim_disabled_label(label: &SrgbFallback, background: &SrgbFallback) -> SrgbFallback {
+/// against the background is not below `bound`. Relative luminance is linear in that mix, so the
+/// fraction has a closed form; a label at or below the bound is unchanged.
+pub(crate) fn dim_disabled_label(
+    label: &SrgbFallback,
+    background: &SrgbFallback,
+    bound: f64,
+) -> SrgbFallback {
     let contrast = |color: &SrgbFallback| {
         opaque_contrast_ratio(color, background).expect("disabled label colors are opaque")
     };
-    if contrast(label) <= DISABLED_LABEL_CONTRAST + BOUND_TOLERANCE {
+    if contrast(label) <= bound + BOUND_TOLERANCE {
         return label.clone();
     }
     let (from, to) = (linear(label), linear(background));
     let (label_luminance, background_luminance) = (luminance(from), luminance(to));
     let target = if label_luminance > background_luminance {
-        DISABLED_LABEL_CONTRAST * (background_luminance + 0.05) - 0.05
+        bound * (background_luminance + 0.05) - 0.05
     } else {
-        (background_luminance + 0.05) / DISABLED_LABEL_CONTRAST - 0.05
+        (background_luminance + 0.05) / bound - 0.05
     };
     let mut fraction = (label_luminance - target) / (label_luminance - background_luminance);
     let mut dimmed = mixed(from, to, fraction, label.alpha());
     // Encoding rounding can leave the closed-form mix a few ulps below the bound.
-    while contrast(&dimmed) < DISABLED_LABEL_CONTRAST {
+    while contrast(&dimmed) < bound {
         fraction -= 1e-12;
         if fraction <= 0.0 {
             return label.clone();
@@ -83,7 +98,7 @@ mod tests {
             if contrast <= DISABLED_LABEL_CONTRAST {
                 continue;
             }
-            let dimmed = dim_disabled_label(&label, &white);
+            let dimmed = dim_disabled_label(&label, &white, DISABLED_LABEL_CONTRAST);
             assert!(opaque_contrast_ratio(&dimmed, &white).unwrap() >= DISABLED_LABEL_CONTRAST);
             if contrast <= DISABLED_LABEL_CONTRAST + BOUND_TOLERANCE {
                 assert_eq!(dimmed, label);

@@ -459,7 +459,11 @@ pub fn resolve_toggle_snapshot<'a>(
     let label_foreground = if input.activation.enabled() {
         input.label_foreground.clone()
     } else {
-        crate::disabled_label::dim_disabled_label(input.label_foreground, input.label_background)
+        crate::disabled_label::dim_disabled_label(
+            input.label_foreground,
+            input.label_background,
+            crate::disabled_label::disabled_label_bound(input.environment),
+        )
     };
     let label_contrast_ratio = opaque_contrast_ratio(&label_foreground, input.label_background)
         .map_err(ToggleSnapshotError::LabelColor)?;

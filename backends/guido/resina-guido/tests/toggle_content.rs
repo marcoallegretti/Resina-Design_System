@@ -530,9 +530,9 @@ fn check_commands(
     if f.activation.enabled() {
         assert_eq!(published, &f.foreground);
     } else {
+        let bound = resina_resolver::disabled_label_bound(&f.environment);
         assert!(
-            (resina_resolver::DISABLED_LABEL_CONTRAST
-                ..resina_resolver::DISABLED_LABEL_CONTRAST + 1e-9)
+            (bound..bound + 1e-9)
                 .contains(&opaque_contrast_ratio(published, &f.background).unwrap()),
             "{name}: disabled label is not dimmed to its bound"
         );

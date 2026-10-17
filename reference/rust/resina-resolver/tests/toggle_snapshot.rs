@@ -906,10 +906,17 @@ fn deepest_part_paint_certifies_a_layout_that_the_rest_body_cannot() {
 }
 
 #[test]
-fn disabled_label_mixes_toward_its_background_down_to_three_to_one() {
+fn disabled_label_mixes_toward_its_background_down_to_its_bound() {
     let mut dimmed = 0;
-    for case in cases().iter().filter(|case| case.coherent) {
-        let f = Fixture::new("cast", LayoutDirection::Ltr, case);
+    for (case, (high_contrast, bound)) in cases()
+        .iter()
+        .filter(|case| case.coherent)
+        .flat_map(|case| [(false, 3.0), (true, 4.5)].map(|mode| (case, mode)))
+    {
+        let mut f = Fixture::new("cast", LayoutDirection::Ltr, case);
+        let mut environment = serde_json::to_value(&f.environment).unwrap();
+        environment["accessibilityPreferences"]["highContrast"] = json!(high_contrast);
+        f.environment = serde_json::from_value(environment).unwrap();
         let snapshot = resolve_toggle_snapshot(f.input()).unwrap();
         let undimmed = opaque_contrast_ratio(&f.label_foreground, &f.label_background).unwrap();
         assert!(undimmed > 4.5);
@@ -921,11 +928,15 @@ fn disabled_label_mixes_toward_its_background_down_to_three_to_one() {
                 opaque_contrast_ratio(snapshot.label_foreground(), snapshot.label_background())
                     .unwrap();
             assert_eq!(snapshot.label_contrast_ratio(), ratio);
-            assert!((3.0..3.0 + 1e-9).contains(&ratio), "{}: {ratio}", case.name);
+            assert!(
+                (bound..bound + 1e-9).contains(&ratio),
+                "{}: {ratio}",
+                case.name
+            );
             dimmed += 1;
         }
     }
-    assert!(dimmed >= 2);
+    assert!(dimmed >= 4);
 }
 
 #[test]
@@ -946,5 +957,34 @@ fn disabled_labels_meet_the_supplied_minimum_before_dimming() {
             "{}: a label below the supplied minimum must fail before any dimming: {result:?}",
             case.name
         );
+    }
+}
+
+#[test]
+fn disabled_labels_between_bounds_dim_only_without_high_contrast() {
+    let case = cases()
+        .into_iter()
+        .find(|case| case.coherent && !case.activation.enabled())
+        .unwrap();
+    for (high_contrast, dims) in [(false, true), (true, false)] {
+        let mut f = Fixture::new("cast", LayoutDirection::Ltr, &case);
+        let mut environment = serde_json::to_value(&f.environment).unwrap();
+        environment["accessibilityPreferences"]["highContrast"] = json!(high_contrast);
+        f.environment = serde_json::from_value(environment).unwrap();
+        f.label_foreground = resolve_srgb_fallback(
+            &json!({"colorSpace": "srgb", "components": [0.5, 0.5, 0.5], "alpha": 1}),
+        )
+        .unwrap();
+        let undimmed = opaque_contrast_ratio(&f.label_foreground, &f.label_background).unwrap();
+        assert!(undimmed > 3.0 && undimmed < 4.5, "{undimmed}");
+        let mut input = f.input();
+        input.minimum_label_contrast = 3.0;
+        let snapshot = resolve_toggle_snapshot(input).unwrap();
+        if dims {
+            assert!((3.0..3.0 + 1e-9).contains(&snapshot.label_contrast_ratio()));
+        } else {
+            assert_eq!(snapshot.label_foreground(), &f.label_foreground);
+            assert_eq!(snapshot.label_contrast_ratio(), undimmed);
+        }
     }
 }

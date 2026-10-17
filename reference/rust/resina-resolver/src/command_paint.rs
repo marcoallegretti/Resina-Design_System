@@ -227,7 +227,9 @@ pub(crate) fn resolve_command_paint_with_response<T>(
         true,
     )?;
     if phase == CommandPhase::Disabled {
-        paint.body.dim_disabled_label();
+        paint
+            .body
+            .dim_disabled_label(crate::disabled_label::disabled_label_bound(environment));
     }
     Ok((
         CommandPaintIr {

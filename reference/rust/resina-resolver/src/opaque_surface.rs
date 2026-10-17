@@ -153,9 +153,9 @@ pub struct OpaqueSurfaceIr {
     content_fallback_applied: bool,
 }
 impl OpaqueSurfaceIr {
-    pub(crate) fn dim_disabled_label(&mut self) {
+    pub(crate) fn dim_disabled_label(&mut self, bound: f64) {
         self.foreground =
-            crate::disabled_label::dim_disabled_label(&self.foreground, self.pigment.body());
+            crate::disabled_label::dim_disabled_label(&self.foreground, self.pigment.body(), bound);
         self.content_contrast_ratio =
             crate::opaque_contrast_ratio(&self.foreground, self.pigment.body())
                 .expect("the dimmed label and resolved body are opaque");
