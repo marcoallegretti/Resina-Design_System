@@ -1216,7 +1216,8 @@ projected state set and the independent spring equations. Input
 reaches the control through the compositor:
 
 - holding Space publishes several unsettled spring frames; the release retarget continues from the position
-  and velocity the previous trajectory had reached; each sampled epoch's clock
+  and velocity the previous trajectory had reached at the published `retargetTime`,
+  which does not precede its last sample; each sampled epoch's clock
   advances with elapsed native time within 10 % or 50 ms; one channel settles
   before the other, both settle, and no frame follows;
 - compositor hover enters and leaves the target through spring frames. Qt's

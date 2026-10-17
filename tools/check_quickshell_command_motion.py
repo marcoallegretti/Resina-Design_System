@@ -88,11 +88,12 @@ def verify_dynamics(frame, channels):
 
 
 def verify_retarget(previous, retargeted, tolerance=(.02, .1)):
-    begun = retargeted["time"] - retargeted["motion"]["time"]
-    elapsed = previous["motion"]["time"] + begun - previous["time"]
+    instant = retargeted["motion"].get("retargetTime")
+    if type(instant) not in (int, float) or not previous["motion"]["time"] <= instant < float("inf"):
+        raise ValueError(f"retarget instant {instant!r} does not follow the previous sample")
     for name in CHANNELS:
         expected = equation_sample(previous["motion"]["channels"][name],
-                                   previous["motion"]["motion"]["target"][name], elapsed, False)["state"]
+                                   previous["motion"]["motion"]["target"][name], instant, False)["state"]
         initial = retargeted["motion"]["channels"][name]["initial"]
         if abs(initial["position"] - expected["position"]) > tolerance[0] \
                 or abs(initial["velocity"] - expected["velocity"]) > tolerance[1]:
