@@ -347,8 +347,10 @@ silhouette at the projected depth bound.
 Compositions use the authored surrounding color. Subsequent material-only and
 text-only readbacks identify actual glyph coverage. Every covered pixel footprint
 must remain inside the content contour on uniform opaque pigment; solid native
-foreground/background pairs must retain at least 4.5 contrast, or, for the
-dimmed disabled label, its 3:1 bound less 3% for 8-bit quantization. Missing lines,
+foreground/background pairs must retain at least 4.5 contrast; the dimmed disabled
+label sits exactly at its contrast bound, which 8-bit quantization can undercut, so
+its solid glyph pixels must instead match the quantized published color within one
+level per channel. Missing lines,
 material changes outside coverage and diagnostic failures are checked. These
 fixtures do not establish all fonts/scripts, capability tiers or full component
 conformance. Set `RESINA_COMMAND_CAPTURE_DIR` to save PPM captures for visual

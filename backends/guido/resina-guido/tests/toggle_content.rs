@@ -379,13 +379,27 @@ fn color(value: &SrgbFallback) -> Color {
 fn pixel_color(pixel: &[u8]) -> SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":pixel[..3].iter().map(|v|f64::from(*v)/255.0).collect::<Vec<_>>(),"alpha":1})).unwrap()
 }
-/// Solid glyph pixels are 8-bit quantizations of the published label and body colors, so a label
-/// published at the 3:1 disabled bound can measure up to 3% below it.
-fn glyph_minimum(disabled: bool) -> f64 {
-    if disabled {
-        resina_resolver::DISABLED_LABEL_CONTRAST * 0.97
-    } else {
-        4.5
+/// A dimmed disabled label is published at its contrast bound, which 8-bit quantization can
+/// undercut; its solid glyph pixels must instead reproduce the quantized published color.
+fn assert_solid_glyph(
+    name: &str,
+    pixel: &[u8],
+    background: &[u8],
+    disabled_label: Option<&resina_resolver::SrgbFallback>,
+) {
+    match disabled_label {
+        Some(published) => {
+            for (channel, value) in published.components().iter().enumerate() {
+                assert!(
+                    pixel[channel].abs_diff((value * 255.0).round() as u8) <= 1,
+                    "{name}: solid disabled glyph differs from the published label"
+                );
+            }
+        }
+        None => assert!(
+            opaque_contrast_ratio(&pixel_color(pixel), &pixel_color(background)).unwrap() >= 4.5,
+            "{name}: solid native glyph contrast is insufficient"
+        ),
     }
 }
 fn check_frame(
@@ -585,14 +599,11 @@ fn check_commands(
                 &parts[at..at + 3],
                 "{name}: native glyph disappeared"
             );
-            assert!(
-                opaque_contrast_ratio(
-                    &pixel_color(&combined[at..at + 4]),
-                    &pixel_color(&parts[at..at + 4])
-                )
-                .unwrap()
-                    >= glyph_minimum(!f.activation.enabled()),
-                "{name}: native glyph contrast failed"
+            assert_solid_glyph(
+                name,
+                &combined[at..at + 4],
+                &parts[at..at + 4],
+                (!f.activation.enabled()).then_some(published),
             );
         }
     }
