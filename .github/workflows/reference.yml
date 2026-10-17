@@ -33,10 +33,12 @@ jobs:
         shell: bash
         run: |
           test -n "$ImageOS"
+          test -n "$ImageVersion"
           echo "name=$ImageOS" >> "$GITHUB_OUTPUT"
+          echo "version=$ImageVersion" >> "$GITHUB_OUTPUT"
       - uses: Swatinem/rust-cache@v2.9.2
         with:
-          key: ${{ steps.runner-image.outputs.name }}-qt-6.11.2
+          key: ${{ steps.runner-image.outputs.name }}-${{ hashFiles('tools/ci/install_qt_sdk.sh') }}-${{ hashFiles('Cargo.lock') }}
           workspaces: backends/quickshell/resina-qt-runtime -> ../../../target/qt-runtime-build
       - uses: actions/setup-python@v6
         with:
@@ -46,7 +48,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: target/qt-sdk
-          key: qt-sdk-linux-6.11.2-linux_gcc_64-aqtinstall-3.3.0-qtbase-qtdeclarative-icu-qtshadertools
+          key: qt-sdk-linux-${{ hashFiles('tools/ci/install_qt_sdk.sh') }}
       - name: Install Qt build, font and native AT-SPI dependencies
         run: |
           sudo apt-get update
@@ -59,10 +61,10 @@ jobs:
             libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-shm0 \
             libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core \
             at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth sway
-          python -m pip install aqtinstall==3.3.0 -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
+          python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
       - name: Install the Qt 6.11.2 SDK
         if: steps.qt-sdk.outputs.cache-hit != 'true'
-        run: python -m aqt install-qt linux desktop 6.11.2 linux_gcc_64 --outputdir target/qt-sdk --archives qtbase qtdeclarative icu --modules qtshadertools
+        run: tools/ci/install_qt_sdk.sh
       - name: Save the Qt 6.11.2 SDK
         if: steps.qt-sdk.outputs.cache-hit != 'true'
         uses: actions/cache/save@v6
@@ -74,16 +76,10 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: target/wayland-sdk
-          key: wayland-sdk-${{ steps.runner-image.outputs.name }}-1.24.0-82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536-libdir-lib-documentation-false-tests-false-dtd_validation-false
+          key: wayland-sdk-${{ steps.runner-image.outputs.name }}-${{ steps.runner-image.outputs.version }}-${{ hashFiles('tools/ci/build_wayland_sdk.sh') }}
       - name: Build matching Wayland headers and libraries for Qt 6.11.2
         if: steps.wayland-sdk.outputs.cache-hit != 'true'
-        run: |
-          curl --fail --location https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.24.0/downloads/wayland-1.24.0.tar.xz --output target/wayland-1.24.0.tar.xz
-          printf '%s\n' '82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536  target/wayland-1.24.0.tar.xz' | sha256sum -c
-          tar -xf target/wayland-1.24.0.tar.xz -C target
-          meson setup target/wayland-build target/wayland-1.24.0 --prefix "$PWD/target/wayland-sdk" --libdir lib -Ddocumentation=false -Dtests=false -Ddtd_validation=false
-          meson compile -C target/wayland-build -j 2
-          meson install -C target/wayland-build
+        run: tools/ci/build_wayland_sdk.sh
       - name: Save matching Wayland headers and libraries
         if: steps.wayland-sdk.outputs.cache-hit != 'true'
         uses: actions/cache/save@v6
@@ -95,23 +91,10 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: target/quickshell-build
-          key: quickshell-${{ steps.runner-image.outputs.name }}-4f508be500dea6e5732cc3d50382a0048b17e7b1-${{ steps.qt-sdk.outputs.cache-primary-key }}-${{ steps.wayland-sdk.outputs.cache-primary-key }}-RelWithDebInfo-off-crash-handler-screencopy-hyprland-i3-pipewire-pam-polkit-greetd-status-notifier-mpris-upower-notifications-bluetooth-network
+          key: quickshell-${{ steps.runner-image.outputs.name }}-${{ steps.runner-image.outputs.version }}-${{ hashFiles('tools/ci/build_quickshell.sh') }}-${{ steps.qt-sdk.outputs.cache-primary-key }}-${{ steps.wayland-sdk.outputs.cache-primary-key }}
       - name: Build the released Quickshell host with the matching Qt SDK
         if: steps.quickshell-build.outputs.cache-hit != 'true'
-        run: |
-          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          export PKG_CONFIG_PATH="$PWD/target/wayland-sdk/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
-          export PATH="$PWD/target/wayland-sdk/bin:$PATH"
-          git clone --branch v0.3.2 --depth 1 https://github.com/quickshell-mirror/quickshell.git target/quickshell-source
-          test "$(git -C target/quickshell-source rev-parse HEAD)" = 4f508be500dea6e5732cc3d50382a0048b17e7b1
-          cmake -S target/quickshell-source -B target/quickshell-build -G Ninja \
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_PREFIX_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64;$PWD/target/wayland-sdk" \
-            -DCRASH_HANDLER=OFF -DSCREENCOPY=OFF -DHYPRLAND=OFF -DI3=OFF \
-            -DSERVICE_PIPEWIRE=OFF -DSERVICE_PAM=OFF -DSERVICE_POLKIT=OFF -DSERVICE_GREETD=OFF \
-            -DSERVICE_STATUS_NOTIFIER=OFF -DSERVICE_MPRIS=OFF -DSERVICE_UPOWER=OFF \
-            -DSERVICE_NOTIFICATIONS=OFF -DBLUETOOTH=OFF -DNETWORK=OFF
-          cmake --build target/quickshell-build --parallel 2
-          find target/quickshell-build -name '*.o' -delete
+        run: tools/ci/build_quickshell.sh
       - name: Save the released Quickshell host
         if: steps.quickshell-build.outputs.cache-hit != 'true'
         uses: actions/cache/save@v6
