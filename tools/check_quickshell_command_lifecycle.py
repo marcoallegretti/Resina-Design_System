@@ -16,6 +16,7 @@ OUTSIDE = (360, 160)
 EVENT = "RESINA_LIFECYCLE "
 NOT_READY = "Not ready to accept queries yet."
 REPLACEMENT = "Riconnetti già"
+REPLACEMENT_DESCRIPTION = "Connetti con le impostazioni già salvate."
 
 
 def completed(log):
@@ -80,7 +81,9 @@ def authored_requests():
             theme["materialAssignments"]["control"]["interactive"] = family
             source["content"]["themeSource"] = json.dumps(theme)
         return source
-    return {"standard": request_for("light", "Reconnect"), "replacement": request_for("light", REPLACEMENT),
+    replacement = request_for("light", REPLACEMENT)
+    replacement["description"] = REPLACEMENT_DESCRIPTION
+    return {"standard": request_for("light", "Reconnect"), "replacement": replacement,
             "motion": variant(False), "reduced": variant(True), "cast": variant(False, "cast"),
             "frost": variant(False, "frost", True),
             "channels": json.loads((ROOT / "conformance/ir/command-motion-request.json").read_text())["channels"]}

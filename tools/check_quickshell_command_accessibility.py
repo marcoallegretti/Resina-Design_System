@@ -10,7 +10,7 @@ import time
 
 from check_qt_command_snapshot_runtime import ROOT
 from check_qt_native_availability import ACTION, action_names
-from check_quickshell_command_lifecycle import REPLACEMENT, Session, effects, expect_effects
+from check_quickshell_command_lifecycle import REPLACEMENT, REPLACEMENT_DESCRIPTION, Session, effects, expect_effects
 from check_quickshell_command_updates import verify_version
 from check_slint_native_availability import (ACCESSIBLE, BUTTON_ROLE, PROPERTIES, call, integer_values, payload,
                                              references, state_flags, string_value)
@@ -72,14 +72,14 @@ class Tree:
         except ValueError as error:
             raise ValueError(f"{error}; last native error: {failure[0]}" if failure[0] else str(error)) from None
 
-    def command(self, name):
+    def command(self, name, description=DESCRIPTION):
         def single():
             found = buttons(self.address, self.application())
             if len(found) == 1 and text(self.address, found[0], "Name") == name:
                 return found[0]
             return None
         node = self.settled(single, f"one native Button named {name}")
-        if text(self.address, node, "Description") != DESCRIPTION:
+        if text(self.address, node, "Description") != description:
             raise ValueError("native Command lost its complete description")
         return node
 
@@ -131,12 +131,13 @@ def verify(session, tree):
     session.reset()
     session.call("configure", "replacement")
     session.ready()
-    if tree.command(REPLACEMENT) != node:
+    if tree.command(REPLACEMENT, REPLACEMENT_DESCRIPTION) != node:
         raise ValueError("configuration replacement changed the native Command identity")
     before = len(effects(session.events()))
     tree.press(node)
     expect_effects(session, before, 1, "native Press after replacement")
-    results.append("replacement keeps the native identity, republishes the localized name and acts once")
+    results.append("replacement keeps the native identity, republishes the localized name and description "
+                   "and acts once")
 
     for operation, description in (("setMounted", "unmounted Command"), ("setWindowed", "closed surface")):
         session.reset()

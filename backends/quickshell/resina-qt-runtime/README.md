@@ -1184,7 +1184,8 @@ the lifecycle checker and inspects the actual native tree:
 - withdrawn availability is published as disabled, unfocusable state and the
   next `Press` produces no effect;
 - configuration replacement keeps the native node, republishes the current
-  non-ASCII name and acts exactly once;
+  non-ASCII name and the replacement's own localized description, and acts
+  exactly once;
 - unmounting the control or destroying its surface removes the Button, and a
   `Press` on the retired node fails with `org.freedesktop.DBus.Error.UnknownObject`
   and produces no effect;
