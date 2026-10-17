@@ -18,6 +18,7 @@ from check_slint_native_availability import (ACCESSIBLE, BUTTON_ROLE, PROPERTIES
 FOCUSED = 12
 DESCRIPTION = "Connect using saved settings."
 REPORT = "RESINA_ACCESSIBILITY_REPORT "
+UNKNOWN_OBJECT = "org.freedesktop.DBus.Error.UnknownObject"
 
 
 def buttons(address, application):
@@ -94,8 +95,12 @@ class Tree:
     def press_retired(self, node):
         try:
             self.press(node)
-        except ValueError:
-            pass
+        except ValueError as error:
+            if UNKNOWN_OBJECT in str(error):
+                return
+            raise ValueError("native Press on a retired Command did not fail as an unknown object: "
+                             + str(error)) from None
+        raise ValueError("a retired native Command accepted Press")
 
     def expect_state(self, node, enabled, focused):
         expected = {"enabled": enabled, "sensitive": enabled, "focusable": enabled, "focused": focused}
@@ -142,6 +147,25 @@ def verify(session, tree):
         tree.press_retired(node)
         expect_effects(session, before, 0, f"native Press after the {description}")
         results.append(f"{description} withdraws the native Button without stale delivery")
+
+    for hard, description in ((False, "soft reload"), (True, "hard reload")):
+        retired = session.reset()["generation"]
+        node = tree.command("Reconnect")
+        before = len(effects(session.events()))
+        session.call("reloadShell", str(hard).lower())
+        session.until(lambda current: current["generation"] != retired, f"generation replaced by the {description}", 20)
+        generation = session.reset()["generation"]
+        fresh = tree.command("Reconnect")
+        if fresh == node:
+            raise ValueError(f"the {description} kept the retired native Button path")
+        tree.press_retired(node)
+        expect_effects(session, before, 0, f"native Press on the Button retired by the {description}")
+        tree.press(fresh)
+        for effect in expect_effects(session, before, 1, f"native Press after the {description}"):
+            if effect["generation"] != generation:
+                raise ValueError(f"the effect after the {description} came from a retired generation")
+        results.append(f"{description} retires the native Button: a Press held from before fails without an effect "
+                       "and the new generation's Button acts once")
 
     session.reset()
     node = tree.command("Reconnect")

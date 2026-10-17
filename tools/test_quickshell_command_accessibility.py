@@ -70,8 +70,19 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
                     patch.object(accessibility, "call", action_bus(names, reply)), \
                     self.assertRaisesRegex(ValueError, message):
                 tree.press((":1.0", "/button"))
-        with patch.object(accessibility, "call", action_bus(("Press",), "boolean false")):
+
+    def test_retired_press_must_fail_as_an_unknown_object(self):
+        tree = accessibility.Tree(None, "unix:test")
+
+        def retired(*arguments, address=None):
+            raise ValueError("D-Bus call failed: Error org.freedesktop.DBus.Error.UnknownObject: "
+                             "No such object path '/button'")
+        with patch.object(accessibility, "call", retired):
             tree.press_retired((":1.0", "/button"))
+        for reply, message in (("boolean true", "accepted Press"), ("boolean false", "unknown object")):
+            with self.subTest(reply=reply), patch.object(accessibility, "call", action_bus(("Press",), reply)), \
+                    self.assertRaisesRegex(ValueError, message):
+                tree.press_retired((":1.0", "/button"))
 
     def test_native_state_decodes_availability_and_focus_bits(self):
         words = (1 << 8) | (1 << 11) | (1 << 12)
