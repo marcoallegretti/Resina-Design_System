@@ -374,3 +374,74 @@ fn forced_workers_reset_when_a_render_panics() {
     assert!(panicked.is_err());
     assert_eq!(FORCED_WORKERS.with(std::cell::Cell::get), None);
 }
+
+#[test]
+fn alternating_sample_colors_match_uncached_decoding_across_workers() {
+    let colors: Vec<_> = [[0.9, 0.1, 0.2], [0.1, 0.8, 0.3], [0.2, 0.3, 0.95]]
+        .into_iter()
+        .map(|components| {
+            resina_color::resolve_srgb_fallback(&json!({
+                "colorSpace": "srgb", "components": components, "alpha": 1
+            }))
+            .unwrap()
+        })
+        .collect();
+    let viewport = Viewport {
+        origin: PhysicalVector { x: 0.0, y: 0.0 },
+        width: 9,
+        height: 7,
+        pixels_per_unit: 1.0,
+    };
+    for samples in [2, 3] {
+        let grid = f64::from(samples);
+        let color_at = |point: PhysicalVector| {
+            let cell = (point.x * grid) as usize + 2 * (point.y * grid) as usize;
+            colors.get(cell % 4).cloned()
+        };
+        let mut expected = Vec::new();
+        for y in 0..viewport.height {
+            for x in 0..viewport.width {
+                let mut sum = [0.0; 3];
+                let mut covered = 0_u32;
+                for sy in 0..samples {
+                    for sx in 0..samples {
+                        let point = PhysicalVector {
+                            x: f64::from(x) + (f64::from(sx) + 0.5) / grid,
+                            y: f64::from(y) + (f64::from(sy) + 0.5) / grid,
+                        };
+                        if let Some(color) = color_at(point) {
+                            covered += 1;
+                            let linear = srgb_to_linear_srgb(color.components()).unwrap();
+                            for (sum, channel) in sum.iter_mut().zip(linear) {
+                                *sum += channel;
+                            }
+                        }
+                    }
+                }
+                if covered == 0 {
+                    expected.extend([0; 4]);
+                } else {
+                    let rgb = linear_srgb_to_srgb(sum.map(|sum| sum / f64::from(covered))).unwrap();
+                    expected.extend(rgb.map(quantize));
+                    expected.push(quantize(f64::from(covered) / (grid * grid)));
+                }
+            }
+        }
+        for workers in [1, 8] {
+            let image = with_workers(workers, || {
+                render(
+                    viewport,
+                    samples,
+                    &colors[0],
+                    |_| UniformRegion::Sample,
+                    |point| Ok(color_at(point)),
+                )
+            })
+            .unwrap();
+            assert!(
+                image.rgba() == expected,
+                "{samples} samples with {workers} workers differ from uncached decoding"
+            );
+        }
+    }
+}
