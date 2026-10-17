@@ -172,6 +172,7 @@ ResinaCommandInput {
         state.running = true;
         state.revision = {};
         state.dirty = false;
+        state.frameDue = false;
         try {
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
@@ -264,7 +265,16 @@ ResinaCommandInput {
         state.armed = true;
         if (state.revision !== revision) return;
         if (!ready) fail("native command publication was invalidated");
+        else if (state.frameDue) Qt.callLater(resume);
     }
+
+    function advance() {
+        // A tick during preparation starts the next frame at publication, not one tick later.
+        if (state.running || state.pending.length) state.frameDue = true;
+        else refresh(true);
+    }
+
+    function resume() { if (state.frameDue && frames.running) advance(); }
 
     function reconfigure() {
         if (!state.started) return;
@@ -343,9 +353,10 @@ ResinaCommandInput {
         function onNativeDeviceScaleChanged() { root.reconfigure(); }
     }
     FrameAnimation {
-        running: state.motionActive && motionChannels.length > 0 && !state.pending.length
+        id: frames
+        running: state.motionActive && motionChannels.length > 0
             && root.visible && root.nativeWindow && root.nativeWindow.visible && !state.error.length
-        onTriggered: root.refresh(true)
+        onTriggered: root.advance()
     }
     ResinaCommandView { id: view; visible: root.ready && root.currentFrame === view && paintReady }
     CommandClock { id: clock }
@@ -371,6 +382,7 @@ ResinaCommandInput {
         property bool armed: false
         property bool running: false
         property bool dirty: false
+        property bool frameDue: false
         property string target: ""
         property var reservation: null
         property string pending: ""
