@@ -850,9 +850,10 @@ placement and density updates keep that node exposed with its previous complete
 semantics until the next complete semantics replace them in place. An
 unavailable control is never exposed as focusable, even before its retained
 semantics are replaced. Until a requalified publication arms input again, the
-retained node refuses `Press`. Hiding or unmounting the control, closing its
-surface and failure withdraw the node. Snapshot existence alone is not action authorization. `preparationError`
-reports failure.
+retained node refuses `Press`. Hiding the control or its window and failure
+make the node ignored. Unmounting the control or destroying its surface deletes
+the object, and its node goes with it. Snapshot existence alone is not action
+authorization. `preparationError` reports failure.
 `invoke()` routes the semantic action only through an armed available lifecycle;
 its Boolean describes accepted delivery, not a product outcome. `activated` is
 emitted from the committed Rust activation transition. `reconfigure()` cancels
