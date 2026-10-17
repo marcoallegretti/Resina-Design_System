@@ -1,21 +1,23 @@
 import copy
 import unittest
 
-from check_quickshell_command_motion_budget import FLOOR_INTERVAL, continuations, evaluate, summary, verify_scale
+from check_quickshell_command_motion_budget import (FLOOR_INTERVAL, GAP_BOUND, TICK, continuations, evaluate, summary,
+                                                     verify_scale)
 from test_quickshell_command_motion import FIXTURE, REST, frame
 
 RETARGETED = {"bodyMix": {**REST, "initial": {"position": .4, "velocity": 1}}, "depthScale": copy.deepcopy(REST)}
 RELEASED = {"bodyMix": 0, "depthScale": 0}
 
 
-def timed(sample_time, preparation=.01, **changes):
+def timed(sample_time, preparation=.01, delay=.001, **changes):
     result = frame(0, sample_time, **changes)
     result["motion"]["preparationDuration"] = preparation
+    result["motion"]["publicationDelay"] = delay
     return result
 
 
-def measured(interval, preparation=.005, count=20):
-    return [{"interval": interval, "preparation": preparation}] * count
+def measured(interval, preparation=.005, count=20, delay=None):
+    return [{"interval": interval, "preparation": preparation, "publicationDelay": delay}] * count
 
 
 class CommandMotionBudgetTests(unittest.TestCase):
@@ -64,6 +66,31 @@ class CommandMotionBudgetTests(unittest.TestCase):
         del missing["motion"]["preparationDuration"]
         with self.assertRaisesRegex(ValueError, "preparation duration"):
             continuations([timed(.1), missing])
+
+    def test_publication_delay_is_kept_only_within_a_clock_epoch(self):
+        sequence = [timed(.1), timed(.13, delay=.002), timed(.2, delay=None)]
+        self.assertEqual([item["publicationDelay"] for item in continuations(sequence)], [.002, None])
+        sequence = [timed(.5), timed(.004, channels=RETARGETED, target=RELEASED, retarget=.52, delay=.003)]
+        self.assertEqual([item["publicationDelay"] for item in continuations(sequence)], [None])
+        for delay in (False, "0.001", -.001, float("nan"), float("inf")):
+            with self.subTest(delay=delay), self.assertRaisesRegex(ValueError, "publication delay"):
+                continuations([timed(.1), timed(.2, delay=delay)])
+
+    def test_publication_gap_bounds_the_upper_quartile_after_a_spanned_tick(self):
+        spanned = TICK + .02
+        self.assertTrue(evaluate(measured(spanned, count=15, delay=GAP_BOUND)
+                                 + measured(spanned, count=5, delay=.016))["gap"]["met"])
+        self.assertFalse(evaluate(measured(spanned, count=14, delay=GAP_BOUND)
+                                  + measured(spanned, count=6, delay=.016))["gap"]["met"])
+        self.assertFalse(evaluate(measured(spanned, delay=GAP_BOUND + 1e-4))["gap"]["met"])
+        # A predecessor published within one tick may correctly wait for the next tick.
+        self.assertTrue(evaluate(measured(spanned, delay=.001) + measured(TICK, count=40, delay=.016))["gap"]["met"])
+
+    def test_publication_gap_requires_enough_frames_that_spanned_a_tick(self):
+        result = evaluate(measured(.02, count=19, delay=.001) + measured(.01, count=30, delay=.009)
+                          + measured(.03, count=30))
+        self.assertEqual(result["gap"], {"frames": 19, "bound": GAP_BOUND, "evaluated": False})
+        self.assertTrue(evaluate(measured(.02, delay=.001))["gap"]["evaluated"])
 
     def test_summary_uses_nearest_rank_percentiles(self):
         self.assertEqual(summary(list(range(10, 0, -1))), {"median": 5.5, "p90": 9, "max": 10})

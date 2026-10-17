@@ -1305,29 +1305,39 @@ was still moving:
   fails the check. Log timestamps are not used;
 - its synchronous preparation cost is the published `preparationDuration`. That
   is a lower bound on the frame's main-thread time: the software scene-graph
-  render and the publication that follows are not included.
+  render and the publication that follows are not included;
+- within one clock epoch, its publication delay is the published
+  `publicationDelay`: the time from its predecessor's publication to the start
+  of its own refresh.
 
 At least 20 frames are required. The floor is a median published interval of at
 most 1/30 s (30 Hz); a longer median fails the check. The target is a median
 `preparationDuration` of at most 8 ms and a median published interval of at most
-17 ms. The target is reported but not enforced, because each Command frame still
-waits for the next animation tick after its predecessor is published. CI runs
-the check at output scales 1 and 2 and keeps each `report.json` with every
-measured frame.
+17 ms. The target is reported but not enforced. CI runs the check at output
+scales 1 and 2 and keeps each `report.json` with every measured frame.
+
+The check also bounds the publication gap. The headless output refreshes at
+60 Hz, so a predecessor whose refresh start to publication spanned at least
+1/60 s, its published interval less the publication delay, saw an animation tick
+while it was prepared. For those frames the 75th percentile publication delay
+must be at most 4 ms. A predecessor published within one tick may correctly wait
+for the next tick and is not counted. With fewer than 20 such frames the gap is
+reported as not evaluated.
 
 Measured locally in headless Sway 1.12 with the pixman renderer, Quickshell 0.3.2
 and the Qt 6.11.2 software backend:
 
-| Module and scale | Median interval | Median preparation |
-| --- | ---: | ---: |
-| release, scale 1 | 35.3 ms | 13.4 ms |
-| release, scale 2 | 45.0 ms | 22.3 ms |
-| debug, scale 1 | 92.8 ms | 67.8 ms |
-| debug, scale 2 | 178.1 ms | 152.5 ms |
+| Release module, scale | Median interval | Median preparation | Publication gap (75th percentile) |
+| --- | ---: | ---: | ---: |
+| 1 | 19.3–21.2 ms | 13.5–14.4 ms | 0.9–1.1 ms |
+| 2 | 25.7–26.3 ms | 19.7–20.1 ms | 0.6–0.7 ms |
 
-About 22 ms of each release interval is spent after preparation: image decoding,
-publication, scene-graph rendering and the wait for the next animation tick. The release module does
-not yet meet the floor at either scale.
+These are three runs at each scale. When the next preparation instead waited for
+the next animation tick after publication, the release median interval was
+38.8–42.0 ms at scale 1 and 46.4–49.0 ms at scale 2, failing the floor, and the
+publication gap was about 17.5 ms. When the driver ticked through preparation but
+the next preparation still waited for a tick, the gap was 9.8–11.4 ms and the
+scale 2 median interval was 33.2–33.7 ms, at the floor.
 
 ### Integrated sampled command frames
 
