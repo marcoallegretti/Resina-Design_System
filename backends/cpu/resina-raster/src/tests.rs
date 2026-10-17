@@ -207,11 +207,18 @@ fn uniform_color_preserves_rounding_at_every_rgba8_threshold() {
     }
 }
 
+struct ForcedWorkers;
+
+impl Drop for ForcedWorkers {
+    fn drop(&mut self) {
+        FORCED_WORKERS.with(|forced| forced.set(None));
+    }
+}
+
 fn with_workers<T>(workers: usize, render: impl FnOnce() -> T) -> T {
     FORCED_WORKERS.with(|forced| forced.set(Some(workers)));
-    let result = render();
-    FORCED_WORKERS.with(|forced| forced.set(None));
-    result
+    let _reset = ForcedWorkers;
+    render()
 }
 
 fn assert_workers_reproduce_single_worker(
@@ -350,4 +357,11 @@ fn row_workers_report_the_first_row_major_failure() {
             "{workers} workers reported {error}"
         );
     }
+}
+
+#[test]
+fn forced_workers_reset_when_a_render_panics() {
+    let panicked = std::panic::catch_unwind(|| with_workers(3, || panic!("render failed")));
+    assert!(panicked.is_err());
+    assert_eq!(FORCED_WORKERS.with(std::cell::Cell::get), None);
 }
