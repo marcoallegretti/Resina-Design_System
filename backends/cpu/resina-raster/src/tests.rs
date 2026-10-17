@@ -267,6 +267,15 @@ fn row_workers_reproduce_single_worker_rasters() {
             |viewport, samples| render_surface_paint(command.paint(), viewport, samples),
         );
     }
+    let surface = resolve_opaque_surface_source(include_str!(
+        "../../../../conformance/ir/opaque-surface-request.json"
+    ))
+    .unwrap();
+    assert_workers_reproduce_single_worker(
+        "opaque surface",
+        [-4.0, -4.0, 28.0, 20.0],
+        |viewport, samples| render_surface(&surface, viewport, samples),
+    );
     let focus = resolve_focus_ir_source(include_str!(
         "../../../../conformance/ir/focus-ir-request.json"
     ))
