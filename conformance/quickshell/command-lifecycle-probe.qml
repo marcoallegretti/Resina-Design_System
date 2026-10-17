@@ -151,7 +151,8 @@ ShellRoot {
                         onActivated: root.activated(command)
                         onMotionChanged: root.frame(command)
                         onPreparationErrorChanged: if (preparationError.length && root.configuration.length)
-                            root.log("rejected", {error:preparationError})
+                            root.log("rejected", {error:preparationError, shown:root.shown, windowed:root.windowed,
+                                mounted:root.mounted, attached:Boolean(command.Window.window && command.Window.window.visible)})
                         Component.onCompleted: controller.dispatch(JSON.stringify({kind:"availability", enabled:true}))
                     }
 
@@ -214,6 +215,6 @@ ShellRoot {
         function setWindowed(value: bool): void { root.windowed = value; }
         function setReaction(mode: string): void { root.reaction = mode; root.reactionResult = null; }
         function setDisabledFocusable(value: bool): void { root.disabledFocusable = value; }
-        function reloadShell(hard: bool): void { Quickshell.reload(hard); }
+        function reloadShell(hard: bool): void { root.log("reload", {hard:hard}); Quickshell.reload(hard); }
     }
 }

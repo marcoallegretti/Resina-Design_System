@@ -497,9 +497,60 @@ QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
   --output-dir target/qt-surface-view-1.25
 ```
 
-Released-Quickshell hosting, live output-scale transfer, hardware renderers and
-enhanced Frost or Gel treatments beyond their opaque representation are not
-covered.
+The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
+in released Quickshell 0.3.2 and checks its publications against the reference
+resolver and its composited pixels at output scales 1 and 2. Live output-scale
+transfer, hardware renderers and enhanced Frost or Gel treatments beyond their
+opaque representation are not covered.
+
+## Platform appearance preferences
+
+An environment producer must supply every environment field (spec/18), including
+the accessibility preferences. `PlatformAppearance` reads the platform's
+preferences from the
+[XDG Desktop Portal Settings](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Settings.html)
+`org.freedesktop.appearance` namespace on the session bus. It reads them when
+created and again whenever the portal service gains an owner on the bus, and
+follows the portal's `SettingChanged` signal after a successful read. When the
+portal leaves the bus, it withdraws every preference and reports an error.
+
+- `reducedMotion` and `highContrast` are `true` for the `uint32` portal value 1
+  (`reduced-motion`, `contrast`) and `false` for any other value, which the
+  portal defines as no preference.
+- `colorScheme` is `"dark"`, `"light"` or `"none"`.
+- A key the portal does not provide stays `null`, so a consumer can tell an
+  absent preference from one that is not requested.
+- `ready` becomes true once the first read completes. While the session bus or
+  the portal is unavailable, `error` describes the failure and every preference
+  is `null`.
+
+Qt 6.11.2 exposes the colour scheme and contrast preference but no reduced-motion
+preference, and Quickshell 0.3.2 has no portal settings API. The element neither
+substitutes defaults nor sets Resina environment fields itself; the consumer
+decides how they enter its environment.
+
+[`check_qt_platform_appearance.py`](../../../tools/check_qt_platform_appearance.py)
+starts its own session bus and runs the real `xdg-desktop-portal` frontend with
+the GNOME backend and isolated GSettings. The session's `portals.conf` selects the
+GNOME backend for Settings; in this isolated session, xdg-desktop-portal 1.18.4
+with xdg-desktop-portal-gnome 46.2 exported no Settings portal without it. It
+requires:
+- the element to equal an independent `gdbus` read of the portal for every key;
+- each provided key to reach a real GSettings change and then its reset, each
+  observed first in the portal;
+- unprovided keys to stay `null`;
+- a missing session bus, and a bus without a portal, to report an error with no
+  preference;
+- preferences to be read once the portal appears on a bus where the element
+  started first, withdrawn with an error when the portal leaves, and read again
+  when it returns.
+
+`--require` fails when the backend does not provide a listed key.
+xdg-desktop-portal 1.22.1 with xdg-desktop-portal-gnome 50.0 provides and passes
+all three keys. xdg-desktop-portal-gnome 46 to 49 do not provide
+`reduced-motion`; CI runs on Ubuntu 24.04's GNOME 46 backend and requires
+`contrast` and `color-scheme`. The checker needs a Wayland session for the GNOME
+backend.
 
 ## Build and verification
 
@@ -574,12 +625,20 @@ the same `conformant: false` disabled-focusability observation.
 
 The [`qt-runtime` CI job](../../../.github/workflows/reference.yml) installs
 the pinned Qt 6.11.2 base/declarative SDK and its bundled ICU through aqtinstall
-3.3.0, together with the pinned Python host. It builds, tests and lints this
-separate workspace and executes the compiled controller, content, snapshot,
-keyboard and pointer checks. Software paint/composition checks run
-at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure. This
-job's AT-SPI step measures real invocation and availability under Xvfb using
-`--report-only`. Malformed/missing native observations and incorrect action
+3.3.0, together with the pinned Python host, and builds unmodified Quickshell
+0.3.2 against that SDK. It builds, tests and lints this separate workspace and
+executes the compiled Command and Toggle controller and runtime checks and the
+Command content, snapshot, keyboard, pointer and control checks. Surface view,
+Command paint, control, motion and view, and Toggle control and motion checks
+run at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure.
+This job's AT-SPI step runs under Xvfb: it measures real invocation and
+availability using `--report-only`, and runs the static and sampled Command
+control accessibility checks and the horizontal and vertical Slider adapter.
+The released Quickshell host then repeats the availability measurement with
+`--report-only` and runs the authored-update checker. In headless Sway it runs
+the lifecycle, accessibility, motion, platform appearance and
+[clock shell](../../../lab/quickshell/clock-shell/README.md) checkers.
+In the availability measurement, malformed/missing native observations and incorrect action
 delivery still fail; the known disabled-focusability discrepancy is recorded as
 `conformant: false` rather than certified as passing accessibility. The strict
 command above remains the qualification gate. A local reproduction does not
@@ -718,9 +777,14 @@ factory is installed by this adapter.
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
-measurement and drawing. Complete reusable-control qualification in released
-Quickshell, physical-device/screen-reader operation and calibrated motion remain
-unverified.
+measurement and drawing. Released-host Command qualification is described in
+[authored updates](#released-quickshell-authored-updates),
+[lifecycle](#compositor-delivered-command-lifecycle),
+[accessibility](#released-quickshell-command-accessibility) and
+[motion](#released-quickshell-command-motion). Physical devices, screen-reader
+presentation in CI, and fractional output scale or multiple outputs remain
+unverified. Orca 50.3 passes locally only; Orca 46.1 hangs at start-up on the
+CI runner ([#165](https://github.com/marcoallegretti/Resina-Design_System/issues/165)).
 The integrated static profile below now verifies composed command input and
 native accessibility in the standalone host. Hosted native runtime checks have
 also passed; the sampled profile section links the executed evidence.
@@ -1025,6 +1089,11 @@ invalid-context errors in the host log and counts every consumer effect:
   reload must retire the previous engine generation, observed through Quickshell
   0.3.2 IPC, which answers only while exactly one generation exists; a fresh
   gesture afterwards delivers exactly one effect from the current generation;
+- a preparation rejection fails the run unless it is logged while the surface
+  is hidden or closed, the control is unmounted or has no visible native
+  window, as while a closed surface is recreated, or after a reload request in
+  the same engine generation; the expected rejections are counted by cause in
+  `report.json`;
 - consumer callbacks, reached by pointer and by Space, that replace the
   configuration, withdraw availability, invoke the control, hide, unmount, hide
   and unmount together, or destroy its surface observe committed state and
@@ -1040,6 +1109,65 @@ at the top-left of the output, and a hover during its fade-out keeps it open unt
 it is closed or replaced by another reload. Physical
 devices, multiple seats and outputs, fractional scale and screen-reader operation
 are not covered.
+
+### Released Quickshell Toggle lifecycle
+
+[`check_quickshell_toggle_lifecycle.py`](../../../tools/check_quickshell_toggle_lifecycle.py)
+runs [the Toggle lifecycle probe](../../../conformance/quickshell/toggle-lifecycle-probe.qml)
+with the session, IPC, virtual input and log reading of the Command lifecycle
+checker. It takes the same arguments and compositor session:
+
+```sh
+python tools/check_quickshell_toggle_lifecycle.py \
+  --host /path/to/quickshell --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/quickshell-toggle-lifecycle
+```
+
+Headless Sway 1.12 and nested niri 26.04 pass all 52 cases. Every consumer effect
+is counted exactly and must invert the checked value committed before it; the
+probe fails when a callback observes a checked value or activation that is not
+yet committed. The run fails on QML type, reference and invalid-context errors
+anywhere in the host log, and on preparation rejections outside the withdrawn
+surfaces and reloads allowed by the Command lifecycle checker; expected
+rejections are counted by cause in `report.json`.
+
+- Activation: a pointer click toggles off to on and on to off; a pointer press
+  moved off the target and released toggles nothing; Space toggles on release
+  and Enter on press, each held through at least two auto-repeat publications;
+  an unavailable Toggle rejects a pointer click and `invoke()` and keeps its
+  checked value. Withdrawal also removes keyboard focus, so key rejection is not
+  observable there.
+- Focus: Tab traversal, requested focus, a focus request while another surface
+  holds keyboard focus, and availability withdrawal follow the Command cases.
+  Two cases move native focus into or out of the Toggle while the frame for a
+  checked change is pending: the previous frame is withdrawn and the new one is
+  not yet published. Every published frame in the run must carry the focus Qt
+  observes at publication and the current checked value in its accessibility
+  state and layout.
+- Interruption: Space or pointer held across window deactivation by an
+  exclusive-keyboard surface, a hidden surface, a parent change, availability
+  withdrawal, unmount and a destroyed surface produces no effect. For the four
+  cases that keep the Toggle, the hold must be cleared and the checked value
+  kept. A fresh Space afterwards toggles exactly once from the current
+  generation.
+- Reentrancy: consumer callbacks reached by pointer, Space and Enter that set
+  checked, invoke the Toggle, withdraw availability, hide, unmount or destroy
+  the surface observe committed enabled state. Setting checked returns it to its
+  previous value; `invoke()` produces exactly one additional toggle;
+  callback-time withdrawal is accepted and leaves the Toggle unavailable.
+- Lifetime: hiding and unmounting together from a callback reached by Space,
+  Enter and pointer; Space or pointer held across soft and hard reload, which
+  must retire the previous generation and deliver nothing; unmounting while the
+  frame for a checked or availability change is pending.
+
+The checker observes that a hold is cleared, not which native owner clears it:
+the keyboard owner, the control and the native pointer owner each cancel on
+parent and window changes. A Space released after window deactivation reaches
+the other surface, so the cleared hold, not the effect count, proves that case.
+Configuration replacement during a gesture, AT-SPI delivery, motion, physical
+devices, multiple seats and outputs, fractional scale and screen-reader
+operation are not covered.
 
 ### Released Quickshell Command accessibility
 
@@ -1204,8 +1332,11 @@ the default static AT profile also passed again. Captures of successive pressed
 samples were inspected. The
 [hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
 also passed. These results apply to the standalone Qt host; GUIdo integration
-and released Quickshell accessibility require their own runtime verification.
-Material calibration and Shell host accessibility remain unverified.
+requires its own runtime verification. Released Quickshell Command accessibility
+is verified by the eight AT-SPI cases of
+[Released Quickshell Command accessibility](#released-quickshell-command-accessibility).
+Material calibration and screen-reader presentation outside local runs remain
+unverified.
 
 ## Integrated static Toggle control
 
@@ -1314,8 +1445,12 @@ its matching Core/DBus/Gui libraries and used QtQuick/PySide 6.11.2; the strict
 checker, rather than library presence, determines native success. This is
 isolated toolkit evidence, not support claimed for standard binary SDKs.
 
-Quickshell 0.3.1's separate application-bootstrap accessibility defect remains
-on the approved upstream repair route. Full Shell accessibility, calibrated
+Unmodified Quickshell 0.3.2 removes Quickshell 0.3.1's separate
+application-bootstrap accessibility defect; see the
+[Quickshell hosting boundary](#quickshell-hosting-boundary). The Switch-role
+limitation above comes from the stock Qt 6.11.2 AT-SPI build, not Quickshell.
+[Released-Quickshell Toggle qualification](https://github.com/marcoallegretti/Resina-Design_System/issues/186) accepts the CheckBox role on
+stock Qt as a Qt-owned limitation. Full Shell accessibility, calibrated
 Toggle travel/interaction motion, physical/touch/pen input, screen-reader
 operation, GPU realization and production performance are not qualified here.
 The next integrated dependency is Toggle travel and independent track/thumb
@@ -1426,7 +1561,7 @@ checked exactly from the verified returned raw state. Fixtures use explicit
 arithmetic dynamics, not calibrated production defaults. Nested Wayland parent
 XTest remains injected input; actual AT-SPI invocation is a separate executed
 boundary. Native Switch qualification still requires the toolkit build described
-above, and released Quickshell still requires its approved upstream host repair.
+above; Quickshell 0.3.2 removes the 0.3.1 host bootstrap defect.
 Physical devices, screen-reader operation, hardware GPU realization, production
 frame-rate performance and material/style qualification are not certified by
 these checks.
