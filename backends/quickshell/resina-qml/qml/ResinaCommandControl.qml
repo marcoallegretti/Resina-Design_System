@@ -32,7 +32,8 @@ ResinaCommandInput {
     Accessible.role: Accessible.Button
     Accessible.name: state.semantics ? state.semantics.name : ""
     Accessible.description: state.semantics && state.semantics.description !== null ? state.semantics.description : ""
-    Accessible.focusable: state.semantics ? state.semantics.focusable : false
+    // Retained semantics must not keep an unavailable Command focusable before its next publication.
+    Accessible.focusable: state.semantics ? state.semantics.focusable && enabled : false
     Accessible.pressed: false
     function accessiblePressAction() { invoke(); }
 
