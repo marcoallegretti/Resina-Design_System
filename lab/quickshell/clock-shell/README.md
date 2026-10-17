@@ -38,7 +38,9 @@ focus, layout and preference policy belong to this shell, not to Resina.
   immediate settled frames.
 - "Show clock" maps the clock surface and is unavailable while the surface is
   open. The surface requests exclusive keyboard interactivity and moves keyboard
-  focus to "Close" once it is ready. "Close" and Escape unmap it.
+  focus to "Close" once it is ready, on the next event-loop turn: Qt 6.11.2
+  publishes no AT-SPI focus event for focus requested directly from the
+  readiness change. "Close" and Escape unmap it.
 - The bar and the clock surface size themselves from their Commands and text, and
   the clock text follows the authored text scale. Each Command, including its
   focus ring, is placed within its surface's content region and is surrounded by
@@ -130,7 +132,17 @@ GSettings. It requires:
 - on a private AT-SPI bus, the native tree to expose exactly one Button per mapped
   Command with its complete name and description, "Show clock" unavailable and
   "Close" available and focused while open, and the displayed time and date as
-  static text; a native Press must open and close the clock surface.
+  static text; a native Press must open and close the clock surface;
+- with an AT-SPI focus listener registered, a native focus event for "Close" when
+  the surface opens, and for "Show clock" when, after closing, a click on the bar
+  body and Tab move keyboard focus to it;
+- with `--screen-reader`, run in the same way as for
+  [Command accessibility](../../../backends/quickshell/resina-qt-runtime/README.md#released-quickshell-command-accessibility),
+  Orca's speech "Close", "button.", "Close the clock surface." with the braille
+  line "quickshell application frame Close button Close the clock surface." when
+  the surface opens, and "Show clock", "button.", "Open the clock surface." with
+  "quickshell application frame Show clock button Open the clock surface." after
+  Tab.
 
 With Quickshell 0.3.2 (revision 4f508be), Qt 6.11.2, xdg-desktop-portal 1.22.1
 and xdg-desktop-portal-gnome 50.0:
@@ -138,13 +150,19 @@ and xdg-desktop-portal-gnome 50.0:
 - all cases pass with the platform-selected theme in headless Sway 1.12, with
   `grim` composition checks at output scales 1 and 2 (a 2048×1200 pixel capture
   of a 1024×600 logical output), and in nested niri 26.04 at scale 1;
-- the fixed dark theme passes in headless Sway at output scale 1.
+- the fixed dark theme passes in headless Sway at output scale 1;
+- the native focus-event cases have been run at output scale 1, in headless Sway
+  with the platform-selected theme and in nested niri 26.04;
+- `--screen-reader` passes with Orca 50.3 in nested niri 26.04 locally. CI does
+  not install Orca.
 
 ## Boundaries
 
-- Keyboard focus does not return to the bar when the clock surface closes. In
-  both compositors, Space after closing did not activate "Show clock". Layer
-  surfaces cannot request activation, so returning focus is compositor policy.
+- No Command is focused when the clock surface closes. In headless Sway keyboard
+  focus does not return to the bar; in nested niri the bar was observed to regain
+  keyboard focus without a focused item. In both compositors, Space after closing did not
+  activate "Show clock". Layer surfaces cannot request activation, so returning
+  focus is compositor policy.
 - xdg-desktop-portal-gnome before 50 does not provide `reduced-motion`; the
   authored value is then used and the reduced-motion case is skipped.
 - One output at integer scales 1 and 2, with text scale 1 and the `en-GB` locale,
@@ -152,6 +170,7 @@ and xdg-desktop-portal-gnome 50.0:
   or changing scale, and output hot-plug are not.
 - The time and date text and its locale handling are shell content. Its value
   changes every second without being announced; live-value semantics belong to
-  #196. Screen-reader presentation of the shell is not verified.
+  #196. Screen-reader presentation is verified only for the focused Commands,
+  locally.
 - Translucent Frost and Gel treatments, hardware renderers and physical input
   are not covered.

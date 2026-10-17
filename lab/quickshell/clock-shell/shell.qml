@@ -331,7 +331,9 @@ ShellRoot {
                     width: clockSurface.contentBounds.width, height: clockSurface.contentBounds.height})
                 onActivated: persisted.open = false
                 onImplicitHeightChanged: if (implicitHeight > 0) root.closeHeight = implicitHeight
-                onReadyChanged: if (ready) forceActiveFocus()
+                // Qt 6.11.2 publishes no AT-SPI focus event for focus requested from this
+                // readiness change; request it on the next event-loop turn.
+                onReadyChanged: if (ready) Qt.callLater(() => { if (ready) forceActiveFocus(); })
                 onPreparationErrorChanged: root.report("Close", preparationError)
                 Keys.onEscapePressed: persisted.open = false
                 Component.onCompleted: controller.dispatch(JSON.stringify({kind: "availability", enabled: true}))
