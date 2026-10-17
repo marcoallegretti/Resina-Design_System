@@ -87,10 +87,15 @@ def verify_dynamics(frame, channels):
         raise ValueError("native motion replaced the authored dynamics")
 
 
-def verify_retarget(previous, retargeted, tolerance=(.02, .1)):
+def verify_retarget(earlier, previous, retargeted, tolerance=(.02, .1)):
     instant = retargeted["motion"].get("retargetTime")
     if type(instant) not in (int, float) or not previous["motion"]["time"] <= instant < float("inf"):
         raise ValueError(f"retarget instant {instant!r} does not follow the previous sample")
+    # A frame is sampled only after the frame before it was published and logged, and logged only after its
+    # own sample, so log lag can loosen this bound but never tighten it. Date.now() truncates to milliseconds.
+    reached = retargeted["time"] - retargeted["motion"]["time"] - earlier["time"] + .002
+    if instant - previous["motion"]["time"] > reached:
+        raise ValueError(f"retarget instant {instant!r} lies beyond the {reached:.3f} s logged after the earlier frame")
     for name in CHANNELS:
         expected = equation_sample(previous["motion"]["channels"][name],
                                    previous["motion"]["motion"]["target"][name], instant, False)["state"]
@@ -138,7 +143,7 @@ def spring_cases(session, motion):
     expect_effects(session, before, 1, "sampled Command activation")
     first = motion.index(release, lambda frame: not frame["state"]["hold"], "retargeted release frame")
     recorded = motion.frames()
-    verify_retarget(recorded[first - 1], recorded[first])
+    verify_retarget(*recorded[first - 2:first + 1])
     motion.settle("both channels settled")
     sequence = motion.frames()[start:]
     if not any(frame["motion"]["motion"]["bodyMix"]["settled"] != frame["motion"]["motion"]["depthScale"]["settled"]
