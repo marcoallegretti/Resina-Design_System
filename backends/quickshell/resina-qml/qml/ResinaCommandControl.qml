@@ -26,13 +26,17 @@ ResinaCommandInput {
     activeFocusOnTab: activeFocus || (acceptsNewGestures && enabled)
     implicitWidth: state.reservation ? state.reservation.width : 0
     implicitHeight: state.reservation ? state.reservation.height : 0
-    Accessible.ignored: !state.published
+    // Refreshes keep the previous complete semantics exposed until the next
+    // complete semantics replace them; withdrawal clears them.
+    Accessible.ignored: !state.semantics || !presented()
     Accessible.role: Accessible.Button
     Accessible.name: state.semantics ? state.semantics.name : ""
     Accessible.description: state.semantics && state.semantics.description !== null ? state.semantics.description : ""
     Accessible.focusable: state.semantics ? state.semantics.focusable : false
     Accessible.pressed: false
     function accessiblePressAction() { invoke(); }
+
+    function presented() { return visible && Boolean(nativeWindow) && nativeWindow.visible; }
 
     function invoke() {
         if (!acceptsNewGestures || !enabled) return false;
@@ -170,7 +174,6 @@ ResinaCommandInput {
         try {
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
-                state.semantics = null;
                 retireViews();
             }
             if (disabledFocusable)
@@ -277,7 +280,8 @@ ResinaCommandInput {
             state.armed = false;
             resolver.publishSnapshot("");
             state.pending = "";
-            state.semantics = null;
+            // Read live values: a binding on the same change signal may not have updated yet.
+            if (!presented()) state.semantics = null;
             state.error = "";
             invalidateTarget();
             retireViews();
