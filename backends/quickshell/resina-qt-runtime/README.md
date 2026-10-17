@@ -841,8 +841,11 @@ snapshot and checks the current preparation revision after observer delivery.
 `snapshot` is the coherent four-channel publication; `ready` additionally
 requires native paint, target and armed input readiness. The decorative view and
 accessible node become visible only with that complete readiness, including
-first publication and requalification. Snapshot existence alone is not action
-authorization. `preparationError` reports failure.
+first publication and requalification. The accessible node, with its complete
+name and description, is exposed before `ready` becomes true, so focus requested
+from `onReadyChanged` reaches assistive technology: Qt sends no focus event for
+an ignored item and none when it stops being ignored. Snapshot existence alone
+is not action authorization. `preparationError` reports failure.
 `invoke()` routes the semantic action only through an armed available lifecycle;
 its Boolean describes accepted delivery, not a product outcome. `activated` is
 emitted from the committed Rust activation transition. `reconfigure()` cancels
@@ -1194,12 +1197,14 @@ the lifecycle checker and inspects the actual native tree:
 - after a soft and after a hard reload, a `Press` on the Button held from before
   the reload fails the same way without an effect, and the new generation's
   Button produces exactly one effect from that generation;
+- a control that its consumer focuses synchronously from `onReadyChanged` after
+  being mounted emits a native AT-SPI focus event on its complete Button;
 - availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
   the next `Press`;
 - the unsupported discoverable-disabled focus policy fails with its diagnostic
   and exposes no Button.
 
-All ten cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
+All eleven cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
 English locale and isolated settings and reads its generated presentation.
 After focus moves to the probe's accessible focus target and Orca's output stops
