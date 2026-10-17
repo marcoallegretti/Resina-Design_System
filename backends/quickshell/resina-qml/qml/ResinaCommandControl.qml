@@ -12,8 +12,9 @@ ResinaCommandInput {
     // Alias the native read-only property: a consumer can reenter publication
     // without recursively mutating a QML string binding.
     property alias snapshot: resolver.publication
-    readonly property bool ready: acceptsNewGestures && pointerOwner && pointerOwner.acceptsNewGestures
-        && snapshot.length > 0 && currentFrame && currentFrame.paintReady
+    // Qt sends no focus event for an ignored item, nor when it stops being
+    // ignored: expose the complete node before consumers observe readiness.
+    readonly property bool ready: state.published && !Accessible.ignored
     readonly property string preparationError: state.error
     signal activated()
 
@@ -25,7 +26,7 @@ ResinaCommandInput {
     activeFocusOnTab: activeFocus || (acceptsNewGestures && enabled)
     implicitWidth: state.reservation ? state.reservation.width : 0
     implicitHeight: state.reservation ? state.reservation.height : 0
-    Accessible.ignored: !ready
+    Accessible.ignored: !state.published
     Accessible.role: Accessible.Button
     Accessible.name: state.semantics ? state.semantics.name : ""
     Accessible.description: state.semantics && state.semantics.description !== null ? state.semantics.description : ""
@@ -347,6 +348,9 @@ ResinaCommandInput {
     CommandSnapshotResolver { id: resolver }
     QtObject {
         id: state
+        readonly property bool published: root.acceptsNewGestures && root.pointerOwner
+            && root.pointerOwner.acceptsNewGestures && root.snapshot.length > 0
+            && root.currentFrame && root.currentFrame.paintReady
         property var revision: ({})
         property var pendingView: null
         property var alternate: null

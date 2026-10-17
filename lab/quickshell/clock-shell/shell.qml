@@ -342,10 +342,7 @@ ShellRoot {
                 onActivated: persisted.open = false
                 onMotionChanged: root.recordFrame("close", closeControl)
                 onImplicitHeightChanged: if (implicitHeight > 0) root.closeHeight = implicitHeight
-                // The control is still Accessible.ignored while its ready change is delivered,
-                // and an ignored item gets no accessibility focus event. Deferring the request
-                // is a consumer-side measure until the control exposes itself first.
-                onReadyChanged: if (ready) Qt.callLater(() => { if (ready) forceActiveFocus(); })
+                onReadyChanged: if (ready) forceActiveFocus()
                 onPreparationErrorChanged: root.report("Close", preparationError)
                 Keys.onEscapePressed: persisted.open = false
                 Component.onCompleted: controller.dispatch(JSON.stringify({kind: "availability", enabled: true}))
