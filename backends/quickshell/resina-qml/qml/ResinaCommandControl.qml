@@ -280,7 +280,7 @@ ResinaCommandInput {
         else refresh(true);
     }
 
-    function resume() { if (state.frameDue && frames.running) advance(); }
+    function resume() { if (state.started && state.frameDue && frames.running) advance(); }
 
     function reconfigure() {
         if (!state.started) return;
@@ -319,7 +319,7 @@ ResinaCommandInput {
     onParentChanged: reconfigure()
     onNativeWindowChanged: reconfigure()
     Component.onCompleted: { state.started = true; Qt.callLater(refresh); }
-    Component.onDestruction: { state.started = false; state.pending = ""; state.pendingView = null; }
+    Component.onDestruction: { state.started = false; state.frameDue = false; state.pending = ""; state.pendingView = null; }
     onHoveredChanged: { if (state.qualified || !state.error.length) refresh(); }
 
     Connections {
