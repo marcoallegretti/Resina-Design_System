@@ -1,6 +1,7 @@
 use super::*;
 use resina_resolver::{
-    resolve_focus_ir_source, resolve_opaque_surface_source, resolve_surface_paint_source,
+    resolve_command_paint_source, resolve_focus_ir_source, resolve_material_relief_paint_source,
+    resolve_opaque_surface_source, resolve_relief_paint_source, resolve_surface_paint_source,
 };
 use serde_json::{Value, json};
 
@@ -203,5 +204,150 @@ fn uniform_color_preserves_rounding_at_every_rgba8_threshold() {
                 assert_eq!(actual.rgba(), expected.rgba(), "{value} {samples}");
             }
         }
+    }
+}
+
+fn with_workers<T>(workers: usize, render: impl FnOnce() -> T) -> T {
+    FORCED_WORKERS.with(|forced| forced.set(Some(workers)));
+    let result = render();
+    FORCED_WORKERS.with(|forced| forced.set(None));
+    result
+}
+
+fn assert_workers_reproduce_single_worker(
+    name: &str,
+    bounds: [f64; 4],
+    render: impl Fn(Viewport, u8) -> Result<RasterImage, RasterError>,
+) {
+    let [x, y, width, height] = bounds;
+    for (scale, samples) in [
+        (1.0, 1),
+        (1.0, 4),
+        (1.25, 2),
+        (1.25, 3),
+        (2.0, 4),
+        (0.75, 8),
+    ] {
+        let viewport = Viewport {
+            origin: PhysicalVector { x, y },
+            width: (width * scale).ceil() as u32,
+            height: (height * scale).ceil() as u32,
+            pixels_per_unit: scale,
+        };
+        let expected = with_workers(1, || render(viewport, samples)).unwrap();
+        for workers in [2, 3, 8] {
+            let actual = with_workers(workers, || render(viewport, samples)).unwrap();
+            assert!(
+                actual.rgba() == expected.rgba(),
+                "{name} at scale {scale} with {samples} samples differs with {workers} workers"
+            );
+        }
+    }
+}
+
+#[test]
+fn row_workers_reproduce_single_worker_rasters() {
+    let mut command: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-paint-request.json"
+    ))
+    .unwrap();
+    for states in [json!(["rest"]), json!(["pressed", "focused"])] {
+        command["surface"]["body"]["surface"]["states"]["states"] = states.clone();
+        let command = resolve_command_paint_source(&command.to_string()).unwrap();
+        assert_workers_reproduce_single_worker(
+            &format!("command {states}"),
+            [-6.0, -6.0, 132.0, 60.0],
+            |viewport, samples| render_surface_paint(command.paint(), viewport, samples),
+        );
+    }
+    let focus = resolve_focus_ir_source(include_str!(
+        "../../../../conformance/ir/focus-ir-request.json"
+    ))
+    .unwrap();
+    assert_workers_reproduce_single_worker(
+        "focus indicator",
+        [-6.125, -6.375, 34.0, 28.0],
+        |viewport, samples| render_focus(&focus, viewport, samples),
+    );
+    let relief: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/relief-paint-vectors.json"
+    ))
+    .unwrap();
+    let material: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/material-relief-paint-vectors.json"
+    ))
+    .unwrap();
+    let request = |cases: &[Value], name: &str| {
+        let case = cases.iter().find(|case| case["name"] == name).unwrap();
+        let size = &case["request"]["outline"]["size"];
+        let bounds = [
+            -2.0,
+            -2.0,
+            (size["width"].as_f64().unwrap() + 4.0).min(36.0),
+            (size["height"].as_f64().unwrap() + 4.0).min(28.0),
+        ];
+        (case["request"].to_string(), bounds)
+    };
+    for name in ["cast-convex-opaque-face", "circular-closed-edge-18"] {
+        let (source, bounds) = request(&relief, name);
+        let paint = resolve_relief_paint_source(&source).unwrap().paint;
+        assert_workers_reproduce_single_worker(name, bounds, |viewport, samples| {
+            render_relief_paint(&paint, viewport, samples)
+        });
+    }
+    for name in [
+        "gel-recessed-opaque-face-active-light",
+        "frost-convex-opaque-face-ambient-only",
+        "static-quartic-closed-edge-120",
+    ] {
+        let (source, bounds) = request(&material, name);
+        let paint = resolve_material_relief_paint_source(&source).unwrap().paint;
+        assert_workers_reproduce_single_worker(name, bounds, |viewport, samples| {
+            render_material_relief_paint(&paint, viewport, samples)
+        });
+    }
+}
+
+#[test]
+fn row_workers_report_the_first_row_major_failure() {
+    const FAILURES: [&str; 3] = ["row 3 column 7", "row 3 column 9", "row 40 column 1"];
+    let color = resina_color::resolve_srgb_fallback(&json!({
+        "colorSpace": "srgb", "components": [0.2, 0.4, 0.6], "alpha": 1
+    }))
+    .unwrap();
+    let viewport = Viewport {
+        origin: PhysicalVector { x: 0.0, y: 0.0 },
+        width: 12,
+        height: 48,
+        pixels_per_unit: 1.0,
+    };
+    for workers in 1..=8 {
+        let error = with_workers(workers, || {
+            render(
+                viewport,
+                1,
+                &color,
+                |_| UniformRegion::Sample,
+                |point| {
+                    let failure = match (point.y as u32, point.x as u32) {
+                        (3, 7) => FAILURES[0],
+                        (3, 9) => FAILURES[1],
+                        (40, 1) => FAILURES[2],
+                        (3, _) => {
+                            // Delays the earliest failing row behind later rows.
+                            std::thread::sleep(std::time::Duration::from_millis(5));
+                            return Ok(Some(color.clone()));
+                        }
+                        _ => return Ok(Some(color.clone())),
+                    };
+                    Err(RasterError::FocusPrecision(failure))
+                },
+            )
+        })
+        .unwrap_err();
+        assert!(
+            matches!(error, RasterError::FocusPrecision(failure) if failure == FAILURES[0]),
+            "{workers} workers reported {error}"
+        );
     }
 }
