@@ -47,5 +47,37 @@ class CommandPaintSchemaTests(unittest.TestCase):
             del changed["profiles"][family]["disabled"]
             self.assertTrue(list(validator.iter_errors(changed)))
             changed = copy.deepcopy(profile)
-            changed["profiles"][family]["pressed"]["depthScale"] = 1.01
+            changed["profiles"][family]["pressed"]["depthScale"] = 2.01
             self.assertTrue(list(validator.iter_errors(changed)))
+
+
+class PerceivableResponseTests(unittest.TestCase):
+    def test_checker_oklab_matches_public_conversion_vectors(self):
+        from check_command_paint_backend import oklab
+        vectors = [v for v in load_json(ROOT / "conformance/color/oklab-conversion-vectors.json") if "srgb" in v and "oklab" in v]
+        self.assertGreaterEqual(len(vectors), 7)
+        for vector in vectors:
+            for actual, expected in zip(oklab(vector["srgb"]), vector["oklab"]):
+                self.assertAlmostEqual(actual, expected, delta=1e-6, msg=vector["name"])
+
+    def test_every_phase_of_the_profile_is_measured(self):
+        from check_command_paint_backend import imperceptible_phase
+        profile = copy.deepcopy(load_json(ROOT / "conformance/ir/command-paint-request.json")["commandAppearance"]["profiles"]["elastomer"])
+        self.assertIsNone(imperceptible_phase((0.8, 0.7, 0.6), 2, profile))
+        for phase, response in (("hover", {"bodyMix": 0.06, "depthScale": 1}),
+                                ("pressed", {"bodyMix": 0, "depthScale": 0.51}),
+                                ("disabled", {"bodyMix": -0.02, "depthScale": 0.7})):
+            changed = copy.deepcopy(profile)
+            changed[phase] = response
+            self.assertEqual(imperceptible_phase((0.8, 0.7, 0.6), 2, changed), phase)
+        changed = copy.deepcopy(profile)
+        changed["pressed"] = {"bodyMix": 0, "depthScale": 0.5}
+        self.assertIsNone(imperceptible_phase((0.8, 0.7, 0.6), 2, changed))
+
+    def test_disabled_is_measured_against_pressed(self):
+        from check_command_paint_backend import imperceptible_phase
+        profile = copy.deepcopy(load_json(ROOT / "conformance/ir/command-paint-request.json")["commandAppearance"]["profiles"]["elastomer"])
+        profile["disabled"] = {"bodyMix": profile["pressed"]["bodyMix"], "depthScale": 0.3}
+        self.assertEqual(imperceptible_phase((0.8, 0.7, 0.6), 2, profile), "disabled from pressed")
+        profile["disabled"]["depthScale"] = 0
+        self.assertIsNone(imperceptible_phase((0.8, 0.7, 0.6), 2, profile))

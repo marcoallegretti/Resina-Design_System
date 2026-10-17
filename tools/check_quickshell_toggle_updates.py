@@ -6,6 +6,7 @@ from jsonschema.exceptions import ValidationError
 from PIL import Image
 
 from check_schemas import validator_for
+from check_command_paint_backend import DISABLED_LABEL_CONTRAST, disabled_label_mismatch
 from check_qt_command_label_runtime import verify_layout
 from check_qt_toggle_control_runtime import request_for
 from check_quickshell_command_updates import (
@@ -145,11 +146,19 @@ def verify_snapshot(snapshot, request):
         raise ValueError("native layout disagrees with the checked owner")
     theme = json.loads(request["content"]["themeSource"], object_pairs_hook=unique_object)
     foreground = inline_color(theme, request["labelForegroundRole"])
-    ratio = contrast(foreground["components"], request["background"]["components"])
+    published = snapshot["labelForeground"]
+    minimum = request["minimumLabelContrast"]
+    if activation["enabled"]:
+        label_differs = published != foreground
+    else:
+        minimum = min(minimum, DISABLED_LABEL_CONTRAST)
+        label_differs = published["alpha"] != 1 or disabled_label_mismatch(
+            published["components"], request["background"]["components"], foreground["components"]) is not None
+    ratio = contrast(published["components"], request["background"]["components"])
     if snapshot["labelOrigin"] != request["labelOrigin"] or snapshot["labelBackground"] != request["background"] \
-            or snapshot["labelForeground"] != foreground \
+            or label_differs \
             or not math.isclose(snapshot["labelContrastRatio"], ratio, rel_tol=0, abs_tol=1e-12) \
-            or ratio < request["minimumLabelContrast"]:
+            or ratio < minimum:
         raise ValueError("native label colors differ from the authored theme or contrast guard")
     if type(snapshot["thumbContrastRatio"]) not in (int, float) \
             or not request["minimumThumbContrast"] <= snapshot["thumbContrastRatio"] <= 21:

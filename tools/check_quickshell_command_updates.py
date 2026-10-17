@@ -17,6 +17,7 @@ from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
 from check_qt_command_label_runtime import verify_layout
 from check_surface_paint_backend import surface_paint_channel_mismatch
 from check_focus_indicator_backend import contrast
+from check_command_paint_backend import disabled_label_mismatch
 
 
 def authored_cases():
@@ -155,9 +156,16 @@ def verify_authored_paint(request, snapshot):
             or any(body[field] != surface[field] for field in ("materialRole", "colorRole", "form")) \
             or body["foregroundRole"] != request["body"]["foregroundRole"] \
             or body["pigment"]["body"] != color \
-            or body["foreground"] != inline_color(theme, request["body"]["foregroundRole"]) \
             or body["edge"]["color"] != inline_color(theme, "outline"):
         raise ValueError("native paint differs from the authored theme, form or response")
+    authored = inline_color(theme, request["body"]["foregroundRole"])
+    foreground = body["foreground"]
+    if paint["phase"] == "disabled":
+        if foreground["alpha"] != 1 or disabled_label_mismatch(
+                foreground["components"], color["components"], authored["components"]):
+            raise ValueError("native disabled label is not the bounded dimming of the authored role")
+    elif foreground != authored:
+        raise ValueError("native label differs from the authored foreground role")
     verify_authored_geometry(request, snapshot)
     if surface_paint_channel_mismatch(paint["paint"]):
         raise ValueError("native focus binding or silhouette differs from the current body")

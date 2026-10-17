@@ -28,8 +28,9 @@ use resina_resolver::{
     CommandContentError, CommandLabelInput, CommandLabelIr, CommandMotionPolicy, CommandPaintIr,
     CommandSnapshot, CommandSnapshotError, CommandSnapshotInput, PlacedContour,
     SurfaceHitRegionInput, opaque_contrast_ratio, resolve_command_label,
-    resolve_command_motion_source, resolve_command_paint_source, resolve_command_snapshot,
-    resolve_srgb_fallback, resolve_surface_hit_region, resolve_theme_request_source,
+    resolve_command_motion_source, resolve_command_paint_source,
+    resolve_command_reservation_body_source, resolve_command_snapshot, resolve_srgb_fallback,
+    resolve_surface_hit_region, resolve_theme_request_source,
 };
 use serde_json::{Value, json};
 use std::{collections::HashSet, rc::Rc};
@@ -399,7 +400,7 @@ fn snapshot<'a>(
         "commandAppearance": request["commandAppearance"],
     });
     rest["surface"]["body"]["surface"]["states"]["states"] = json!(["rest"]);
-    let rest = resolve_command_paint_source(&rest.to_string()).unwrap();
+    let deepest = resolve_command_reservation_body_source(&rest.to_string()).unwrap();
     let available_bounds = PhysicalBounds {
         x: -1024.0,
         y: -1024.0,
@@ -412,7 +413,7 @@ fn snapshot<'a>(
     };
     let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
         environment: &environment,
-        body: rest.paint().body(),
+        body: &deepest,
         available_bounds,
         component_minimum,
         occupied_regions: &[],
@@ -516,6 +517,15 @@ fn in_content(contour: &PlacedContour, point: PhysicalVector) -> bool {
 fn pixel_color(pixel: &[u8]) -> resina_resolver::SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb", "components":pixel[..3].iter().map(|v| f64::from(*v)/255.0).collect::<Vec<_>>(), "alpha":1})).unwrap()
 }
+/// Solid glyph pixels are 8-bit quantizations of the published label and body colors, so a label
+/// published at the 3:1 disabled bound can measure up to 3% below it.
+fn glyph_minimum(disabled: bool) -> f64 {
+    if disabled {
+        resina_resolver::DISABLED_LABEL_CONTRAST * 0.97
+    } else {
+        4.5
+    }
+}
 fn check_frame(
     frames: &mut NativeFrames,
     snapshot: &CommandSnapshot<'_>,
@@ -526,6 +536,7 @@ fn check_frame(
 ) {
     let paint = snapshot.paint();
     let label = snapshot.label();
+    let glyph_minimum = glyph_minimum(paint.phase() == resina_model::CommandPhase::Disabled);
     assert_eq!(snapshot.accessibility().name(), label.text());
     assert!(
         snapshot
@@ -695,7 +706,7 @@ fn check_frame(
             if checked_colors.insert(pair) {
                 assert!(
                     opaque_contrast_ratio(&pixel_color(actual), &pixel_color(baseline)).unwrap()
-                        >= 4.5,
+                        >= glyph_minimum,
                     "{name}: solid native glyph contrast is insufficient"
                 );
             }

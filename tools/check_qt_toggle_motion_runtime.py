@@ -43,7 +43,7 @@ def verify_motion(snapshot,metadata,source):
         phase=next((state for state in ('disabled','pressed','hover') if state in snapshot[part]['paint']['body']['states']['states']),'rest')
         target={'bodyMix':0,'depthScale':1} if phase=='rest' else source[part]['interactionAppearance']['profiles'][family][phase]
         if value['target'] != target or value['policy'] != policy:raise ValueError('motion target/policy differs from existing contract')
-        for name,lower,upper in (('bodyMix',-1,1),('depthScale',0,1)):
+        for name,lower,upper in (('bodyMix',-1,1),('depthScale',0,2)):
             expected=equation_sample(channels[part][name],target[name],time,policy!='spring')
             if trajectory_mismatch(value[name],expected):raise ValueError('independent part trajectory disagrees')
             position=value[name]['state']['position']

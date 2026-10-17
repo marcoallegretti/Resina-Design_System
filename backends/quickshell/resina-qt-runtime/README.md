@@ -286,7 +286,8 @@ Supply every field explicitly:
   share the command-front origin; consumers account for scene placement.
 
 Rust resolves complete content first, uses its front size for the neutral and
-current body, reserves the target against the neutral maximum extrusion, then
+current body, reserves the target from the neutral body's deepest silhouette at
+the projected depth bound, then
 runs the existing snapshot validator. This checks state/direction coherence,
 complete label-box containment in the uniform body contour, current silhouette
 coverage, available/occupied target bounds and complete accessibility semantics.

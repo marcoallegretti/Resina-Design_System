@@ -99,7 +99,12 @@ fn sampled_command_motion_uses_complete_paint_on_the_first_native_frame() {
                 json!(false);
             let request = json!({"schemaVersion":"0.1.0", "surface":surface_request, "commandAppearance":profile, "channels":motion_template["channels"], "time":time});
             let command = resolve_command_motion_source(&request.to_string()).unwrap();
-            assert!(command.command().paint().body().content_contrast_ratio() >= 4.5);
+            let minimum = if phase == "disabled" {
+                resina_resolver::DISABLED_LABEL_CONTRAST
+            } else {
+                4.5
+            };
+            assert!(command.command().paint().body().content_contrast_ratio() >= minimum);
             for scale in [1.0, 1.25, 2.0, 3.0] {
                 app.configure(surface, 204, 96, scale);
                 let paint = prepare_surface_paint(command.command().paint(), scale, 4).unwrap();

@@ -79,6 +79,9 @@ addition residuals for containment and overlap. This check does not recenter a
 target around a moving thumb or shrink paint to fit an undersized target.
 
 The owner reserves enough space for all authored response and motion states.
+The shared response domain lets `depthScale` reach 2, so a raised part can
+extrude up to twice its rest depth; reserve from that deepest silhouette, as for
+a [command](49-command-snapshot.md#stable-interaction-geometry), not from rest.
 This snapshot verifies the current resolved shape across its full travel; it
 does not claim coverage for a future deformation or different response depth.
 Every subsequent pose must retain and revalidate the same reservation.

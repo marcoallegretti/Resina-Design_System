@@ -39,7 +39,7 @@ enters motion resolution.
 
 Sample both channels with spec44. Preserve each complete unprojected trajectory,
 including velocity and settled status. For paint only, project bodyMix to [-1,1]
-and depthScale to [0,1], recording lowerBound, upperBound or none for each as in
+and depthScale to [0,2], recording lowerBound, upperBound or none for each as in
 spec45. A projection is not a collision or evidence of settling. Continue from
 unprojected returned states on retargeting; reset elapsed time to zero. Never
 manufacture zero velocity or feed projected paint coefficients back into motion.
