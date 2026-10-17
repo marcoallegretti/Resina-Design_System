@@ -16,7 +16,7 @@ from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_qt_native_availability import ACTION, action_names
 from check_qt_platform_appearance import session, start_portal, stop, wait_portal
-from check_quickshell_command_accessibility import ScreenReader, buttons, state, text
+from check_quickshell_command_accessibility import NativeEvents, ScreenReader, buttons, state, text
 from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payload, references, \
     string_value
 from wayland_virtual_input import KEY_SPACE, KEY_TAB, VirtualInput
@@ -26,8 +26,6 @@ NOT_READY = "Not ready to accept queries yet."
 STARTING = "No running instances"
 SHELL = ROOT / "lab/quickshell/clock-shell"
 QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context", "RESINA_CLOCK_ERROR")
-FOCUS_EVENT = re.compile(r"path=(/org/a11y/atspi/accessible/\w+); "
-                         r"interface=org\.a11y\.atspi\.Event\.Focus; member=Focus")
 
 
 def run(command, source):
@@ -425,67 +423,6 @@ class Accessibility:
             raise ValueError("native Press was not accepted")
 
 
-def listen_for_focus(address):
-    from PySide6.QtCore import QCoreApplication
-    from PySide6.QtDBus import QDBusConnection, QDBusMessage
-    application = QCoreApplication([])
-    bus = QDBusConnection.connectToBus(address, "resina-focus-listener")
-    message = QDBusMessage.createMethodCall("org.a11y.atspi.Registry", "/org/a11y/atspi/registry",
-                                            "org.a11y.atspi.Registry", "RegisterEvent")
-    message.setArguments(["focus:"])
-    reply = bus.call(message)
-    if reply.type() == QDBusMessage.MessageType.ErrorMessage:
-        print("focus listener registration failed: " + reply.errorMessage(), flush=True)
-        return 1
-    print("focus listener registered", flush=True)
-    return application.exec()
-
-
-class FocusEvents:
-    def __init__(self, shell, address):
-        self.shell, self.log = shell, shell.output / "atspi-focus.log"
-        self.processes = []
-        try:
-            self.processes.append(subprocess.Popen(["dbus-monitor", "--address", address,
-                                                    "type='signal',interface='org.a11y.atspi.Event.Focus'"],
-                                                   stdout=self.log.open("w"), stderr=subprocess.STDOUT))
-            shell.wait_for(lambda: "NameAcquired" in self.read(), "AT-SPI focus event monitor", 10)
-            # Qt's AT-SPI bridge emits focus events only while a listener is registered for them.
-            listener = shell.output / "atspi-focus-listener.log"
-            self.processes.append(subprocess.Popen(
-                [sys.executable, "-c", "import sys; sys.path.insert(0, sys.argv[1]); "
-                 "from check_quickshell_clock_shell import listen_for_focus; sys.exit(listen_for_focus(sys.argv[2]))",
-                 str(Path(__file__).resolve().parent), address],
-                stdout=listener.open("w"), stderr=subprocess.STDOUT))
-            shell.wait_for(lambda: "registered" in listener.read_text(encoding="utf-8", errors="replace")
-                           or self.processes[-1].poll() is not None, "AT-SPI focus listener", 15)
-            if self.processes[-1].poll() is not None:
-                raise ValueError(listener.read_text(encoding="utf-8", errors="replace").strip()[-500:])
-        except BaseException:
-            self.close()
-            raise
-
-    def read(self):
-        return self.log.read_text(encoding="utf-8", errors="replace")
-
-    def mark(self):
-        return len(FOCUS_EVENT.findall(self.read()))
-
-    def expect(self, start, node, name):
-        self.shell.wait_for(lambda: node[1] in FOCUS_EVENT.findall(self.read())[start:],
-                            f"native focus event for {name}", 10)
-
-    def close(self):
-        for process in self.processes:
-            if process.poll() is None:
-                process.terminate()
-                try:
-                    process.wait(5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait()
-
-
 def single(found, name, description, enabled):
     def check(address):
         nodes = found.get(name, [])
@@ -502,7 +439,7 @@ def single(found, name, description, enabled):
 
 def accessibility_cases(shell, report, reader=None):
     tree = Accessibility(shell)
-    focus = FocusEvents(shell, tree.address)
+    focus = NativeEvents(shell.wait_for, tree.address, shell.output)
     try:
         closed_tree = tree.wait(lambda found: found if set(found) == {"Show clock"}
                                 and single(found, "Show clock", "Open the clock surface.", True)(tree.address)
@@ -517,7 +454,7 @@ def accessibility_cases(shell, report, reader=None):
                           "Show clock unavailable and Close available while open")
         if not state(tree.address, found["Close"][0])["focused"]:
             raise ValueError("native Close is not focused while the clock surface is open")
-        focus.expect(events, found["Close"][0], "Close")
+        focus.focused(events, found["Close"][0], "Close")
         if reader:
             report["screenReader"] = {"version": reader.version, "close": reader.expect(
                 spoken, ("Close", "button.", "Close the clock surface."),
@@ -548,7 +485,7 @@ def accessibility_cases(shell, report, reader=None):
                     "Tab moving focus to Show clock after a click on the bar")
         if not state(tree.address, show)["focused"]:
             raise ValueError("native Show clock is not focused after Tab")
-        focus.expect(events, show, "Show clock")
+        focus.focused(events, show, "Show clock")
         report["cases"].append("native focus events reach Close when the surface opens and Show clock when a click "
                                "on the bar and Tab move keyboard focus to it")
         if reader:
