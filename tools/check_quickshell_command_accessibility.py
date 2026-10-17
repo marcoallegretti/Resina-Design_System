@@ -241,12 +241,14 @@ def stable_updates(session, tree):
            lambda current: not current["state"]["enabled"],
            events=(("enabled", 0), ("sensitive", 0)))
     tree.expect_state(node, False, False)
+    session.events()
     update("availability restoration", lambda: session.call("availability", "true"),
            lambda current: current["state"]["enabled"],
            events=(("enabled", 1), ("sensitive", 1)))
     tree.expect_state(node, True, False)
     update("label replacement", lambda: session.call("configure", "replacement"),
            lambda current: True, REPLACEMENT, REPLACEMENT_DESCRIPTION)
+    tree.expect_state(node, True, False)
     return ["feedback, availability withdrawal and restoration, and label replacement update the same native "
             "Button in place: no empty name or description, no tree removal, and state-change events on that node"]
 
