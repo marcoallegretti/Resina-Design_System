@@ -1218,7 +1218,9 @@ reaches the control through the compositor:
 - holding Space publishes several unsettled spring frames; the release retarget continues from the position
   and velocity the previous trajectory had reached at the published `retargetTime`,
   which does not precede its last published sample or exceed the log time elapsed since the frame before
-  it; each sampled epoch's clock
+  it. That log bound is only as tight as one frame's preparation time; the precision of the restart
+  instant itself comes from the Qt runtime clock check, which compares `CommandClock.restart()` with
+  monotonic time. Each sampled epoch's clock
   advances with elapsed native time within 10 % or 50 ms; one channel settles
   before the other, both settle, and no frame follows;
 - compositor hover enters and leaves the target through spring frames. Qt's
