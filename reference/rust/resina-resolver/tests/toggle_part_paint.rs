@@ -225,3 +225,29 @@ fn every_authored_response_of_the_bound_family_is_validated_in_any_state() {
         ));
     }
 }
+
+#[test]
+fn profiles_are_validated_against_both_role_bodies_in_either_selection() {
+    for checked in [false, true] {
+        let mut request = request();
+        request["part"] = json!("track");
+        request["surface"]["body"]["surface"]["form"]["elevation"] = json!("embedded");
+        request["surface"]["body"]["surface"]["states"]["states"] = if checked {
+            json!(["rest", "checked"])
+        } else {
+            json!(["rest"])
+        };
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] =
+            json!({"bodyMix": -0.0701, "depthScale": 1});
+        assert!(
+            matches!(
+                resolve_toggle_part_paint_source(&request.to_string()),
+                Err(TogglePartPaintError::Imperceptible(_))
+            ),
+            "checked={checked}: the checked role body perceives too little of the hover"
+        );
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] =
+            json!({"bodyMix": -0.0783, "depthScale": 1});
+        resolve_toggle_part_paint_source(&request.to_string()).unwrap();
+    }
+}

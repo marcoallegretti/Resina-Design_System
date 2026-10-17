@@ -32,8 +32,9 @@ apply authored encoded-sRGB body mix and depth scale, then rerun content and
 adjacent-edge guards. Every authored hover, pressed and disabled response of the
 bound family MUST be
 [perceivable from rest](43-command-paint.md#perceivable-state-responses), and the
-disabled response perceivable from the pressed response, on the selected role's
-opaque body, whichever state is being resolved; otherwise
+disabled response perceivable from the pressed response, on the opaque bodies of
+both the unchecked role and checkedColorRole, whichever state and selection is
+being resolved, so a profile that only one selection perceives fails in both; otherwise
 resolution fails with a diagnostic and no partial IR. A track at the `embedded` elevation has zero semantic depth, so its
 responses, including disabled against pressed, are perceivable only through body
 color. Preserve every input signal

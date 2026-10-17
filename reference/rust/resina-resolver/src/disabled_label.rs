@@ -72,7 +72,8 @@ mod tests {
     #[test]
     fn labels_a_few_ulps_above_the_bound_terminate_unchanged_or_at_the_bound() {
         let white = gray(1.0);
-        let at_bound = linear_srgb_to_srgb([(1.05 / DISABLED_LABEL_CONTRAST) - 0.05; 3]).unwrap()[0];
+        let at_bound =
+            linear_srgb_to_srgb([(1.05 / DISABLED_LABEL_CONTRAST) - 0.05; 3]).unwrap()[0];
         let mut channel = at_bound;
         let mut checked = 0;
         for _ in 0..64 {

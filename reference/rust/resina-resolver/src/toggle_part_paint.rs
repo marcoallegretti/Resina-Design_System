@@ -178,23 +178,30 @@ pub(crate) fn resolve_toggle_part_paint_with_response<T>(
     let snapshot = theme.resolve(environment).map_err(|error| {
         SurfacePaintResolutionError::Theme(crate::ThemeResolutionError::Resolve(error))
     })?;
-    let binding = bind_surface(&selected, &snapshot).map_err(|e| {
-        SurfacePaintResolutionError::Body(OpaqueSurfaceError::Readability(
-            crate::SurfaceReadabilityError::Binding(e),
-        ))
-    })?;
+    let bind = |surface| {
+        bind_surface(surface, &snapshot).map_err(|e| {
+            SurfacePaintResolutionError::Body(OpaqueSurfaceError::Readability(
+                crate::SurfaceReadabilityError::Binding(e),
+            ))
+        })
+    };
+    let binding = bind(&selected)?;
     let response = input
         .interaction_appearance
         .response_for(binding.material_family(), phase)
         .map_err(TogglePartPaintError::Scope)?;
-    if let Some(imperceptible) = crate::control_paint::imperceptible_profile(
-        theme,
-        input.surface.body.appearance,
-        &selected,
-        &binding,
-        input.interaction_appearance,
-    )? {
-        return Err(TogglePartPaintError::Imperceptible(imperceptible));
+    let unchecked = original.clone();
+    let checked_role = original.clone().with_color_role(input.checked_color_role);
+    for role in [&unchecked, &checked_role] {
+        if let Some(imperceptible) = crate::control_paint::imperceptible_profile(
+            theme,
+            input.surface.body.appearance,
+            role,
+            &bind(role)?,
+            input.interaction_appearance,
+        )? {
+            return Err(TogglePartPaintError::Imperceptible(imperceptible));
+        }
     }
     let (response, sampled) = sample(binding.material_family(), response)?;
     let b = input.surface.body;

@@ -12,7 +12,7 @@ from check_color_guard_backend import check_failure
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
 from check_surface_paint_backend import surface_paint_channel_mismatch
-from check_command_paint_backend import imperceptible_phase
+from check_command_paint_backend import fixture_color, fixture_depth, imperceptible_phase
 
 
 def toggle_part_mismatch(actual, request, sampled_response=None):
@@ -50,7 +50,9 @@ def toggle_part_mismatch(actual, request, sampled_response=None):
     if body["foreground"] != {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1}:
         return "/paint/body/foreground"
     mix = response["bodyMix"]
-    rest_color = (0.35, 0.65, 0.85) if checked else (0.8, 0.7, 0.6)
+    role_colors = [fixture_color(request, role) for role in
+                   (request["surface"]["body"]["surface"]["colorRole"], request["checkedColorRole"])]
+    rest_color = role_colors[1] if checked else role_colors[0]
     color = [c * (1 + mix) if mix < 0 else c + (1 - c) * mix for c in rest_color]
     if mismatch(body["pigment"]["body"], {"colorSpace": "srgb", "components": color, "alpha": 1}):
         return "/paint/body/pigment/body"
@@ -59,10 +61,13 @@ def toggle_part_mismatch(actual, request, sampled_response=None):
     if not math.isclose(body["contentContrastRatio"], ratio, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/contentContrastRatio"
     offset = body["lighting"]["sideOffset"]
-    depth = 2 * response["depthScale"]
+    semantic_depth = fixture_depth(request)
+    depth = semantic_depth * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
-    if sampled_response is None and imperceptible_phase(rest_color, 2, request["interactionAppearance"]["profiles"][family]):
+    profile = request["interactionAppearance"]["profiles"][family]
+    if sampled_response is None and any(imperceptible_phase(role_color, semantic_depth, profile)
+                                        for role_color in role_colors):
         return "/interactionAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != (request["part"] == "track" and "focused" in states):
         return "/paint/focus"

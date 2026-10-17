@@ -756,5 +756,90 @@
     ],
     "requestSchemaValid": true,
     "expectedPhase": "disabled"
+  },
+  {
+    "name": "unchecked rest validates the checked role body",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/form/elevation",
+        "value": "embedded"
+      },
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0701,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "checked rest validates the unchecked role body",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/form/elevation",
+        "value": "embedded"
+      },
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0701,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "both role bodies perceive the hover response",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/form/elevation",
+        "value": "embedded"
+      },
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0783,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
   }
 ]

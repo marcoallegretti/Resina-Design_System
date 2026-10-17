@@ -78,6 +78,14 @@ def fixture_color(request, role):
     return theme["tokens"][group][name]["$value"]["components"]
 
 
+def fixture_depth(request):
+    """Resolves the semantic elevation depth of the public arithmetic fixture in logical px."""
+    body = request["surface"]["body"]
+    theme = parse_json(body["theme"]["themeSource"], "command fixture theme")
+    group, name = body["appearance"]["depthAssignments"]["roles"][body["surface"]["form"]["elevation"]].split(".")
+    return theme["tokens"][group][name]["$value"]["value"]
+
+
 def imperceptible_phase(rest_color, rest_depth, profile):
     responses = {"rest": {"bodyMix": 0, "depthScale": 1}, **profile}
     for phase, reference in (("hover", "rest"), ("pressed", "rest"), ("disabled", "rest"),
