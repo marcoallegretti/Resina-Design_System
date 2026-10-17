@@ -1359,9 +1359,11 @@ context requalification retains raw state when the explicit channel profile is
 unchanged; replacing that profile uses its new explicit initial state. Scheduling
 stops only after both channels settle. A frame request that arrives while the
 previous frame is still being prepared starts the next preparation as soon as that
-frame is published, rather than one animation tick later. Reduced motion and
-Cast resolve immediately through the existing reference policy, without
-toolkit-specific semantics.
+frame is published, rather than one animation tick later. The driver therefore
+keeps the window's render loop ticking while a frame is prepared and decoded,
+until both channels settle or the motion fails. Reduced motion and Cast resolve
+immediately through the existing reference policy, without toolkit-specific
+semantics.
 
 Two complete decorative views alternate for motion. While decoding another
 sample of the same state/source/context, the last complete frame remains visible
