@@ -1089,6 +1089,11 @@ invalid-context errors in the host log and counts every consumer effect:
   reload must retire the previous engine generation, observed through Quickshell
   0.3.2 IPC, which answers only while exactly one generation exists; a fresh
   gesture afterwards delivers exactly one effect from the current generation;
+- a preparation rejection fails the run unless it is logged while the surface
+  is hidden or closed, the control is unmounted or has no visible native
+  window, as while a closed surface is recreated, or after a reload request in
+  the same engine generation; the expected rejections are counted by cause in
+  `report.json`;
 - consumer callbacks, reached by pointer and by Space, that replace the
   configuration, withdraw availability, invoke the control, hide, unmount, hide
   and unmount together, or destroy its surface observe committed state and
@@ -1104,6 +1109,65 @@ at the top-left of the output, and a hover during its fade-out keeps it open unt
 it is closed or replaced by another reload. Physical
 devices, multiple seats and outputs, fractional scale and screen-reader operation
 are not covered.
+
+### Released Quickshell Toggle lifecycle
+
+[`check_quickshell_toggle_lifecycle.py`](../../../tools/check_quickshell_toggle_lifecycle.py)
+runs [the Toggle lifecycle probe](../../../conformance/quickshell/toggle-lifecycle-probe.qml)
+with the session, IPC, virtual input and log reading of the Command lifecycle
+checker. It takes the same arguments and compositor session:
+
+```sh
+python tools/check_quickshell_toggle_lifecycle.py \
+  --host /path/to/quickshell --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/quickshell-toggle-lifecycle
+```
+
+Headless Sway 1.12 and nested niri 26.04 pass all 52 cases. Every consumer effect
+is counted exactly and must invert the checked value committed before it; the
+probe fails when a callback observes a checked value or activation that is not
+yet committed. The run fails on QML type, reference and invalid-context errors
+anywhere in the host log, and on preparation rejections outside the withdrawn
+surfaces and reloads allowed by the Command lifecycle checker; expected
+rejections are counted by cause in `report.json`.
+
+- Activation: a pointer click toggles off to on and on to off; a pointer press
+  moved off the target and released toggles nothing; Space toggles on release
+  and Enter on press, each held through at least two auto-repeat publications;
+  an unavailable Toggle rejects a pointer click and `invoke()` and keeps its
+  checked value. Withdrawal also removes keyboard focus, so key rejection is not
+  observable there.
+- Focus: Tab traversal, requested focus, a focus request while another surface
+  holds keyboard focus, and availability withdrawal follow the Command cases.
+  Two cases move native focus into or out of the Toggle while the frame for a
+  checked change is pending: the previous frame is withdrawn and the new one is
+  not yet published. Every published frame in the run must carry the focus Qt
+  observes at publication and the current checked value in its accessibility
+  state and layout.
+- Interruption: Space or pointer held across window deactivation by an
+  exclusive-keyboard surface, a hidden surface, a parent change, availability
+  withdrawal, unmount and a destroyed surface produces no effect. For the four
+  cases that keep the Toggle, the hold must be cleared and the checked value
+  kept. A fresh Space afterwards toggles exactly once from the current
+  generation.
+- Reentrancy: consumer callbacks reached by pointer, Space and Enter that set
+  checked, invoke the Toggle, withdraw availability, hide, unmount or destroy
+  the surface observe committed enabled state. Setting checked returns it to its
+  previous value; `invoke()` produces exactly one additional toggle;
+  callback-time withdrawal is accepted and leaves the Toggle unavailable.
+- Lifetime: hiding and unmounting together from a callback reached by Space,
+  Enter and pointer; Space or pointer held across soft and hard reload, which
+  must retire the previous generation and deliver nothing; unmounting while the
+  frame for a checked or availability change is pending.
+
+The checker observes that a hold is cleared, not which native owner clears it:
+the keyboard owner, the control and the native pointer owner each cancel on
+parent and window changes. A Space released after window deactivation reaches
+the other surface, so the cleared hold, not the effect count, proves that case.
+Configuration replacement during a gesture, AT-SPI delivery, motion, physical
+devices, multiple seats and outputs, fractional scale and screen-reader
+operation are not covered.
 
 ### Released Quickshell Command accessibility
 

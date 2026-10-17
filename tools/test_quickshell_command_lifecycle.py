@@ -5,7 +5,9 @@ import struct
 from types import SimpleNamespace
 import unittest
 
-from check_quickshell_command_lifecycle import completed, effects, expect_effects, focused, read_events
+from check_quickshell_command_lifecycle import (
+    completed, effects, expect_effects, expected_rejections, focused, read_events,
+)
 from wayland_virtual_input import VirtualInput, encode_string
 
 
@@ -41,6 +43,27 @@ class CommandLifecycleEvidenceTests(unittest.TestCase):
         for event in ({"kind": "effect"}, {"generation": "a"}, ["effect"], {"kind": 1, "generation": "a"}):
             with self.subTest(event=event), self.assertRaisesRegex(ValueError, "malformed lifecycle event"):
                 read_events(line(event))
+
+    def test_rejections_are_expected_only_while_withdrawn_or_reloading(self):
+        def rejected(generation="a", **surface):
+            return {"kind": "rejected", "generation": generation, "error": "lost frame",
+                    **{"shown": True, "windowed": True, "mounted": True, "attached": True, **surface}}
+        events = [rejected(shown=False), rejected(windowed=False), rejected(mounted=False), rejected(attached=False),
+                  rejected(shown=False, mounted=False), {"kind": "reload", "generation": "b", "hard": False},
+                  rejected("b"), rejected("c", mounted=False)]
+        self.assertEqual(expected_rejections(events), {"hidden surface: lost frame": 2,
+                                                       "closed surface: lost frame": 1,
+                                                       "unmounted control: lost frame": 2,
+                                                       "control without a visible native window: lost frame": 1,
+                                                       "reload: lost frame": 1})
+        for events in ([rejected()], [rejected("b"), {"kind": "reload", "generation": "b", "hard": True}],
+                       [{"kind": "reload", "generation": "b", "hard": True}, rejected("a")]):
+            with self.subTest(events=events), self.assertRaisesRegex(ValueError, "while the surface was presented"):
+                expected_rejections(events)
+        for event in ({"kind": "rejected", "generation": "a", "error": "x"}, rejected(shown=None), rejected(attached=1),
+                      {**rejected(shown=False), "error": None}):
+            with self.subTest(event=event), self.assertRaisesRegex(ValueError, "malformed rejection event"):
+                expected_rejections([event])
 
     def test_native_focus_requires_every_observed_condition(self):
         observed = {"activeFocus": True, "windowActive": True, "visible": True, "enabled": True}
