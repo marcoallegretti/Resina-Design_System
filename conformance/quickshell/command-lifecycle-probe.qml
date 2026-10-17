@@ -92,6 +92,17 @@ ShellRoot {
         function onPublicationChanged() { ++root.publications; }
     }
 
+    function checkFocusable() {
+        if (command && !command.enabled && command.Accessible.focusable)
+            fail("an unavailable Command was exposed as focusable");
+    }
+
+    Connections {
+        target: root.command
+        // Bindings depending on enabled may not have updated yet in this handler.
+        function onEnabledChanged() { Qt.callLater(root.checkFocusable); }
+    }
+
     FontLoader {
         id: font
         source: Quickshell.env("RESINA_COMMAND_FONT")

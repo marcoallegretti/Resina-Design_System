@@ -839,13 +839,21 @@ recursive QML string bindings when a consumer changes availability/configuration
 from its publication callback. The owner commits only a validated complete view
 snapshot and checks the current preparation revision after observer delivery.
 `snapshot` is the coherent four-channel publication; `ready` additionally
-requires native paint, target and armed input readiness. The decorative view and
-accessible node become visible only with that complete readiness, including
-first publication and requalification. The accessible node, with its complete
-name and description, is exposed before `ready` becomes true, so focus requested
-from `onReadyChanged` reaches assistive technology: Qt sends no focus event for
-an ignored item and none when it stops being ignored. Snapshot existence alone
-is not action authorization. `preparationError` reports failure.
+requires native paint, target and armed input readiness. The decorative view
+becomes visible only with that complete readiness, including first publication
+and requalification. The accessible node is first exposed with its complete
+name and description before `ready` becomes true, so focus requested from
+`onReadyChanged` reaches assistive technology: Qt sends no focus event for an
+ignored item and none when it stops being ignored. While the control stays
+visible in a visible native window, feedback, availability, authored-property,
+placement and density updates keep that node exposed with its previous complete
+semantics until the next complete semantics replace them in place. An
+unavailable control is never exposed as focusable, even before its retained
+semantics are replaced. Until a requalified publication arms input again, the
+retained node refuses `Press`. Hiding the control or its window and failure
+make the node ignored. Unmounting the control or destroying its surface deletes
+the object, and its node goes with it. Snapshot existence alone is not action
+authorization. `preparationError` reports failure.
 `invoke()` routes the semantic action only through an armed available lifecycle;
 its Boolean describes accepted delivery, not a product outcome. `activated` is
 emitted from the committed Rust activation transition. `reconfigure()` cancels
@@ -854,12 +862,13 @@ context. Authored-property, visibility, native-window, placement and density
 changes automatically retire the publication and schedule requalification.
 Unsupported contexts stay diagnostically withdrawn until repaired.
 
-A feedback update withdraws old paint and semantics while preparing the latest
-complete snapshot. It retains its already qualified native target and armed
-input owner: image decoding is not authorization for a new gesture. This allows
-rapid hover/down/up to reach the lifecycle without waiting for an event-loop
-turn between events. Multiple feedback events can coalesce before a frame; no
-stale snapshot is retained as current. Existing pointer/key releases remain
+A feedback update withdraws old paint and the snapshot while preparing the latest
+complete snapshot; the accessible node keeps its previous complete semantics.
+It retains its already qualified native target and armed input owner: image
+decoding is not authorization for a new gesture. This allows rapid hover/down/up
+to reach the lifecycle without waiting for an event-loop turn between events.
+Multiple feedback events can coalesce before a frame; no stale snapshot is
+retained as current. Existing pointer/key releases remain
 routable if the new-gesture gate closes. A configuration/context failure
 withdraws input as well, cancels held gestures, publishes no partial channels
 and requires successful requalification before arming again.
@@ -1202,23 +1211,26 @@ the lifecycle checker and inspects the actual native tree:
 - availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
   the next `Press`;
 - the unsupported discoverable-disabled focus policy fails with its diagnostic
-  and exposes no Button.
+  and exposes no Button;
+- starting from a focused Command, hover and press feedback, availability
+  withdrawal and restoration and label replacement keep the same Button path in
+  the tree. The registered listener records no `ChildrenChanged` removal or
+  addition of that node and no empty name or description, and each availability
+  change arrives as `enabled` and `sensitive` `StateChanged` events on that node.
 
-All eleven cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
+All twelve cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
-English locale and isolated settings and reads its generated presentation.
-After focus moves to the probe's accessible focus target and Orca's output stops
+English locale and isolated settings and reads its generated presentation
+through a pseudo-terminal: Orca block-buffers a regular debug file and never
+flushes it. After focus moves to the probe's accessible focus target and Orca's output stops
 growing, focusing the control must produce the consecutive speech "Reconnect",
 "button.", "Connect using saved settings." and the braille line
 "quickshell application frame Reconnect button Connect using saved settings.".
 Orca 50.3 does not present a sensitivity change on its own, so spoken
 presentation of availability withdrawal is unverified. Orca's output after the
 withdrawal is recorded under `unavailableUnverified` in `screen-reader.json`
-without being asserted. Locally it was "Reconnect", "grayed.", produced only
-because the withdrawal briefly clears the native name and description before
-republishing them. That transient empty name is a known runtime defect pending
-its own issue, not intended behaviour. The Orca version and the matched focus
-output are saved in the same file. Orca 50.3 with speech-dispatcher passes
+without being asserted; locally it is empty. The Orca version and the matched
+focus output are saved in the same file. Orca 50.3 with speech-dispatcher passes
 locally; CI does not install Orca. Audible output, other screen readers and
 physical input are not covered.
 
