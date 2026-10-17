@@ -174,6 +174,7 @@ ResinaCommandInput {
         state.dirty = false;
         state.frameDue = false;
         try {
+            clockValue(preparationClock.restart());
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
                 retireViews();
@@ -208,7 +209,8 @@ ResinaCommandInput {
             state.pendingView = candidate;
             candidate.invalidate();
             if (motionChannels.length)
-                candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime);
+                candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime,
+                    preparationClock);
             else
                 candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
@@ -360,6 +362,7 @@ ResinaCommandInput {
     }
     ResinaCommandView { id: view; visible: root.ready && root.currentFrame === view && paintReady }
     CommandClock { id: clock }
+    CommandClock { id: preparationClock }
     ResinaLabelMeasure { id: measurement }
     CommandSnapshotResolver { id: resolver }
     QtObject {
