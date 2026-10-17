@@ -1181,28 +1181,41 @@ the lifecycle checker and inspects the actual native tree:
   focused state, and exactly one `Press` action, which an available or
   unavailable Command must accept;
 - a real AT-SPI `Press` produces exactly one committed consumer effect;
-- withdrawn availability is published as disabled, unfocusable state and the
-  next `Press` produces no effect;
+- withdrawn availability clears `enabled` and `sensitive` on the same node, each
+  observed as an AT-SPI `StateChanged` event through a registered event listener,
+  leaves a disabled, unfocusable final state, and the next `Press` produces no
+  effect;
 - configuration replacement keeps the native node, republishes the current
-  non-ASCII name and acts exactly once;
+  non-ASCII name and the replacement's own localized description, and acts
+  exactly once;
 - unmounting the control or destroying its surface removes the Button, and a
-  `Press` on the retired node produces no effect;
+  `Press` on the retired node fails with `org.freedesktop.DBus.Error.UnknownObject`
+  and produces no effect;
+- after a soft and after a hard reload, a `Press` on the Button held from before
+  the reload fails the same way without an effect, and the new generation's
+  Button produces exactly one effect from that generation;
 - availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
   the next `Press`;
 - the unsupported discoverable-disabled focus policy fails with its diagnostic
   and exposes no Button.
 
-All eight cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
+All ten cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
 English locale and isolated settings and reads its generated presentation.
 After focus moves to the probe's accessible focus target and Orca's output stops
-growing, focusing the control must produce consecutive speech for its name, role and
-description and a braille line containing all three. The Orca version and the
-matched output are saved to `screen-reader.json`. Orca 50.3 with
-speech-dispatcher passes locally; CI does not install Orca. With default settings
-Orca announces no change when availability is withdrawn from the focused control,
-so availability announcements are not verified. Audible output, other screen readers and physical input are not
-covered.
+growing, focusing the control must produce the consecutive speech "Reconnect",
+"button.", "Connect using saved settings." and the braille line
+"quickshell application frame Reconnect button Connect using saved settings.".
+Orca 50.3 does not present a sensitivity change on its own, so spoken
+presentation of availability withdrawal is unverified. Orca's output after the
+withdrawal is recorded under `unavailableUnverified` in `screen-reader.json`
+without being asserted. Locally it was "Reconnect", "grayed.", produced only
+because the withdrawal briefly clears the native name and description before
+republishing them. That transient empty name is a known runtime defect pending
+its own issue, not intended behaviour. The Orca version and the matched focus
+output are saved in the same file. Orca 50.3 with speech-dispatcher passes
+locally; CI does not install Orca. Audible output, other screen readers and
+physical input are not covered.
 
 ### Released Quickshell Command motion
 
@@ -1343,7 +1356,7 @@ samples were inspected. The
 [hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
 also passed. These results apply to the standalone Qt host; GUIdo integration
 requires its own runtime verification. Released Quickshell Command accessibility
-is verified by the eight AT-SPI cases of
+is verified by the ten AT-SPI cases of
 [Released Quickshell Command accessibility](#released-quickshell-command-accessibility).
 Material calibration and screen-reader presentation outside local runs remain
 unverified.

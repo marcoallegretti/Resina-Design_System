@@ -70,8 +70,31 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
                     patch.object(accessibility, "call", action_bus(names, reply)), \
                     self.assertRaisesRegex(ValueError, message):
                 tree.press((":1.0", "/button"))
-        with patch.object(accessibility, "call", action_bus(("Press",), "boolean false")):
+
+    def test_retired_press_must_fail_as_an_unknown_object(self):
+        tree = accessibility.Tree(None, "unix:test")
+
+        def retired(*arguments, address=None):
+            raise ValueError("D-Bus call failed: Error org.freedesktop.DBus.Error.UnknownObject: "
+                             "No such object path '/button'")
+        with patch.object(accessibility, "call", retired):
             tree.press_retired((":1.0", "/button"))
+        for reply, message in (("boolean true", "accepted Press"), ("boolean false", "unknown object")):
+            with self.subTest(reply=reply), patch.object(accessibility, "call", action_bus(("Press",), reply)), \
+                    self.assertRaisesRegex(ValueError, message):
+                tree.press_retired((":1.0", "/button"))
+
+    def test_native_events_are_read_from_monitored_signals(self):
+        log = "\n".join((
+            "signal time=1.0 sender=:1.1 -> destination=(null destination) serial=4 "
+            "path=/org/a11y/atspi/accessible/21; interface=org.a11y.atspi.Event.Object; member=StateChanged",
+            '   string "sensitive"', "   int32 0", "   int32 0", "   variant       int32 0",
+            "signal time=1.1 sender=:1.1 -> destination=(null destination) serial=5 "
+            "path=/org/a11y/atspi/accessible/22; interface=org.a11y.atspi.Event.Focus; member=Focus",
+            '   string ""', "   int32 0", "   int32 0"))
+        self.assertEqual(accessibility.signals(log), [
+            ("/org/a11y/atspi/accessible/21", "Object.StateChanged", "sensitive", 0),
+            ("/org/a11y/atspi/accessible/22", "Focus.Focus", "", 0)])
 
     def test_native_state_decodes_availability_and_focus_bits(self):
         words = (1 << 8) | (1 << 11) | (1 << 12)

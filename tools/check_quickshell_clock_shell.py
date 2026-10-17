@@ -16,10 +16,10 @@ from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_qt_native_availability import ACTION, action_names
 from check_qt_platform_appearance import session, start_portal, stop, wait_portal
-from check_quickshell_command_accessibility import buttons, state, text
+from check_quickshell_command_accessibility import NativeEvents, ScreenReader, buttons, state, text
 from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payload, references, \
     string_value
-from wayland_virtual_input import KEY_SPACE, VirtualInput
+from wayland_virtual_input import KEY_SPACE, KEY_TAB, VirtualInput
 
 KEY_ESCAPE = 1
 NOT_READY = "Not ready to accept queries yet."
@@ -441,33 +441,66 @@ def single(found, name, description, enabled):
     return check
 
 
-def accessibility_cases(shell, report):
+def accessibility_cases(shell, report, reader=None):
     tree = Accessibility(shell)
-    closed_tree = tree.wait(lambda found: found if set(found) == {"Show clock"}
-                            and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
-                            "one available native Button named Show clock")
-    report["exposedClosed"] = tree.settled(lambda nodes: True, "a readable native tree while closed")
-    tree.press(closed_tree["Show clock"][0])
-    shell.until(opened, "clock surface opened by a native Press")
-    found = tree.wait(lambda found: found if set(found) == {"Show clock", "Close"}
-                      and single(found, "Show clock", "Open the clock surface.", False)(tree.address)
-                      and single(found, "Close", "Close the clock surface.", True)(tree.address) else None,
-                      "Show clock unavailable and Close available while open")
-    if not state(tree.address, found["Close"][0])["focused"]:
-        raise ValueError("native Close is not focused while the clock surface is open")
-    def readable(nodes):
-        labels = [node["name"] for node in nodes if node["role"] == "label"]
-        return (shell.observe()["date"] in labels
-                and any(re.fullmatch(r"[0-9]{2}:[0-9]{2}:[0-9]{2}", name) for name in labels))
-    report["exposedOpen"] = tree.settled(readable, "the displayed time and date as native static text")
-    tree.press(found["Close"][0])
-    shell.until(lambda current: not current["open"] and not current["clock"], "clock closed by a native Press")
-    tree.wait(lambda found: found if set(found) == {"Show clock"}
-              and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
-              "Show clock available again after closing")
-    report["cases"].append("the native tree exposes exactly the shell's Commands with complete names, descriptions, "
-                           "availability and focus, plus the displayed time and date, and native Press opens and "
-                           "closes the clock surface")
+    focus = NativeEvents(shell.wait_for, tree.address, shell.output)
+    try:
+        closed_tree = tree.wait(lambda found: found if set(found) == {"Show clock"}
+                                and single(found, "Show clock", "Open the clock surface.", True)(tree.address)
+                                else None, "one available native Button named Show clock")
+        report["exposedClosed"] = tree.settled(lambda nodes: True, "a readable native tree while closed")
+        events, spoken = focus.mark(), reader.mark() if reader else None
+        tree.press(closed_tree["Show clock"][0])
+        shell.until(opened, "clock surface opened by a native Press")
+        found = tree.wait(lambda found: found if set(found) == {"Show clock", "Close"}
+                          and single(found, "Show clock", "Open the clock surface.", False)(tree.address)
+                          and single(found, "Close", "Close the clock surface.", True)(tree.address) else None,
+                          "Show clock unavailable and Close available while open")
+        if not state(tree.address, found["Close"][0])["focused"]:
+            raise ValueError("native Close is not focused while the clock surface is open")
+        focus.focused(events, found["Close"][0], "Close")
+        if reader:
+            report["screenReader"] = {"version": reader.version, "close": reader.expect(
+                spoken, ("Close", "button.", "Close the clock surface."),
+                "quickshell application frame Close button Close the clock surface.", "Orca presentation of Close")}
+
+        def readable(nodes):
+            labels = [node["name"] for node in nodes if node["role"] == "label"]
+            return (shell.observe()["date"] in labels
+                    and any(re.fullmatch(r"[0-9]{2}:[0-9]{2}:[0-9]{2}", name) for name in labels))
+        report["exposedOpen"] = tree.settled(readable, "the displayed time and date as native static text")
+        tree.press(found["Close"][0])
+        shell.until(lambda current: not current["open"] and not current["clock"], "clock closed by a native Press")
+        show = tree.wait(lambda found: found if set(found) == {"Show clock"}
+                         and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
+                         "Show clock available again after closing")["Show clock"][0]
+        report["cases"].append("the native tree exposes exactly the shell's Commands with complete names, "
+                               "descriptions, availability and focus, plus the displayed time and date, and native "
+                               "Press opens and closes the clock surface")
+
+        x, y = shell.observe()["probes"]["bar"]
+        shell.click({"x": x, "y": y})
+        time.sleep(.5)
+        if shell.observe()["focus"]["showClock"]:
+            raise ValueError("a click on the bar body focused Show clock before Tab")
+        events, spoken = focus.mark(), reader.mark() if reader else None
+        shell.key(KEY_TAB)
+        shell.until(lambda current: current["focus"]["showClock"] and not current["open"],
+                    "Tab moving focus to Show clock after a click on the bar")
+        if not state(tree.address, show)["focused"]:
+            raise ValueError("native Show clock is not focused after Tab")
+        focus.focused(events, show, "Show clock")
+        report["cases"].append("native focus events reach Close when the surface opens and Show clock when a click "
+                               "on the bar and Tab move keyboard focus to it")
+        if reader:
+            report["screenReader"]["showClock"] = reader.expect(
+                spoken, ("Show clock", "button.", "Open the clock surface."),
+                "quickshell application frame Show clock button Open the clock surface.",
+                "Orca presentation of Show clock")
+            report["cases"].append("Orca speaks and brailles the focused Close and Show clock with name, role "
+                                   "and description")
+    finally:
+        focus.close()
 
 
 def gsettings(environment, *arguments):
@@ -486,9 +519,11 @@ def main():
     parser.add_argument("--portal", type=Path, default=Path("/usr/libexec/xdg-desktop-portal"))
     parser.add_argument("--backend", type=Path, default=Path("/usr/libexec/xdg-desktop-portal-gnome"))
     parser.add_argument("--grim", type=Path)
+    parser.add_argument("--screen-reader", action="store_true",
+                        help="also verify Orca presentation of the focused Close and Show clock")
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
-    shell = None
+    shell = reader = None
     processes = []
     try:
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
@@ -633,7 +668,9 @@ def main():
             report["cases"].append("the platform colour scheme selects the theme")
 
         shell.until(closed, "Show clock ready before the accessibility cases")
-        accessibility_cases(shell, report)
+        if args.screen_reader:
+            reader = ScreenReader(shell.wait_for, args.output_dir)
+        accessibility_cases(shell, report, reader)
 
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
         for case in report["cases"]:
@@ -645,6 +682,8 @@ def main():
         print(f"Quickshell clock shell check failed: {error}", file=sys.stderr)
         return 1
     finally:
+        if reader:
+            reader.close()
         if shell:
             shell.close()
         for process in reversed(processes):
