@@ -1267,8 +1267,67 @@ reaches the control through the compositor:
 
 The motion channels are the conformance fixture, not calibrated material
 dynamics, and preferences are explicit authored inputs: no platform preference
-is discovered. Frame rate, scheduling budgets and fractional or changing output
-scale are not measured.
+is discovered. Fractional or changing output scale is not measured. These cases,
+like every other functional, lifecycle and accessibility check, run against the
+debug runtime module; frame timing is qualified separately against the release
+module.
+
+### Released Quickshell Command motion frame budget
+
+Motion timing and budgets are qualified only against the release runtime module.
+Debug builds remain functional evidence. CI builds the same workspace with
+`cargo build --release` into the same target directory and packages it as a
+separate import root:
+
+```sh
+cargo build --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --release --locked
+python tools/prepare_qt_runtime_module.py \
+  --library target/qt-runtime/release/libresina_qt_runtime.so \
+  --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime \
+  --output-dir target/qt-runtime-release-import
+```
+
+[`check_quickshell_command_motion_budget.py`](../../../tools/check_quickshell_command_motion_budget.py)
+runs the lifecycle probe in headless Sway at the output scale given by `--scale`
+and first requires the device pixel ratio of the Command's screen, which its
+views use as their native device scale, to equal it. Space is
+held and released through the compositor ten times, and each phase lasts six
+spring frames. With the release module a hold therefore ends before Sway's
+default 600 ms key-repeat delay, so repeated key presses add no work to the
+measured frames. A spring frame is measured when the frame published before it
+was still moving:
+
+- its published interval is the native clock time between the motion samples of
+  the two frames. Within one clock epoch that is the difference of their `time`;
+  across a retarget it is the previous epoch's `retargetTime` less the previous
+  `time`, plus the new `time`. Epochs started without a `retargetTime` are not
+  joined, and a clock restart that leaves the channels and target unchanged
+  fails the check. Log timestamps are not used;
+- its synchronous preparation cost is the published `preparationDuration`. That
+  is a lower bound on the frame's main-thread time: the software scene-graph
+  render and the publication that follows are not included.
+
+At least 20 frames are required. The floor is a median published interval of at
+most 1/30 s (30 Hz); a longer median fails the check. The target is a median
+`preparationDuration` of at most 8 ms and a median published interval of at most
+17 ms. The target is reported but not enforced, because each Command frame still
+waits for the next animation tick after its predecessor is published. CI runs
+the check at output scales 1 and 2 and keeps each `report.json` with every
+measured frame.
+
+Measured locally in headless Sway 1.12 with the pixman renderer, Quickshell 0.3.2
+and the Qt 6.11.2 software backend:
+
+| Module and scale | Median interval | Median preparation |
+| --- | ---: | ---: |
+| release, scale 1 | 35.3 ms | 13.4 ms |
+| release, scale 2 | 45.0 ms | 22.3 ms |
+| debug, scale 1 | 92.8 ms | 67.8 ms |
+| debug, scale 2 | 178.1 ms | 152.5 ms |
+
+About 22 ms of each release interval is spent after preparation: image decoding,
+publication, scene-graph rendering and the wait for the next animation tick. The release module does
+not yet meet the floor at either scale.
 
 ### Integrated sampled command frames
 
