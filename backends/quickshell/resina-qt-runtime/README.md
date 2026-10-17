@@ -1206,8 +1206,9 @@ the lifecycle checker and inspects the actual native tree:
 
 All eleven cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
-English locale and isolated settings and reads its generated presentation.
-After focus moves to the probe's accessible focus target and Orca's output stops
+English locale and isolated settings and reads its generated presentation
+through a pseudo-terminal: Orca block-buffers a regular debug file and never
+flushes it. After focus moves to the probe's accessible focus target and Orca's output stops
 growing, focusing the control must produce the consecutive speech "Reconnect",
 "button.", "Connect using saved settings." and the braille line
 "quickshell application frame Reconnect button Connect using saved settings.".

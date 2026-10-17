@@ -7,6 +7,7 @@ import re
 import signal
 import subprocess
 import sys
+import threading
 import time
 
 from check_qt_command_snapshot_runtime import ROOT
@@ -392,15 +393,35 @@ class ScreenReader:
                            XDG_CONFIG_HOME=str(home / "config"), XDG_DATA_HOME=str(home / "data"))
         self.version = subprocess.run(["orca", "--version"], env=environment, capture_output=True, text=True,
                                       timeout=30).stdout.strip()
-        self.process = subprocess.Popen(["orca", "--debug-file", str(self.log)],
-                                        stdout=(output / "orca.log").open("w"), stderr=subprocess.STDOUT,
-                                        env=environment)
+        import pty
+        import tty
+        # Orca block-buffers a regular debug file and never flushes it; a terminal makes it line-buffered.
+        self.master, self.terminal = pty.openpty()
+        self.process = None
+        self.copier = threading.Thread(target=self.copy, daemon=True)
+        self.copier.start()
         try:
+            tty.setraw(self.terminal)
+            self.process = subprocess.Popen(["orca", "--debug-file", os.ttyname(self.terminal)],
+                                            stdout=(output / "orca.log").open("w"), stderr=subprocess.STDOUT,
+                                            env=environment)
             wait(lambda: self.process.poll() is None and self.log.exists()
                  and any("Screen reader on" in item for item in presentation(self.log, 0)[0]), "Orca start", timeout=30)
         except BaseException:
             self.close()
             raise
+
+    def copy(self):
+        with self.log.open("wb") as log:
+            while True:
+                try:
+                    data = os.read(self.master, 65536)
+                except OSError:
+                    return
+                if not data:
+                    return
+                log.write(data)
+                log.flush()
 
     def mark(self):
         return quiet(self.wait, self.log)
@@ -412,13 +433,19 @@ class ScreenReader:
         return {"speech": spoken, "braille": shown}
 
     def close(self):
-        if self.process.poll() is None:
-            self.process.terminate()
-            try:
-                self.process.wait(5)
-            except subprocess.TimeoutExpired:
-                self.process.kill()
-                self.process.wait()
+        try:
+            if self.process and self.process.poll() is None:
+                self.process.terminate()
+                try:
+                    self.process.wait(5)
+                except subprocess.TimeoutExpired:
+                    self.process.kill()
+                    self.process.wait()
+        finally:
+            # Reading the master fails once no terminal descriptor remains open.
+            os.close(self.terminal)
+            self.copier.join(5)
+            os.close(self.master)
 
 
 def screen_reader(session, output):
