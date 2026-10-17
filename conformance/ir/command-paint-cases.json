@@ -1204,5 +1204,45 @@
     ],
     "requestSchemaValid": true,
     "expectedPhase": "disabled"
+  },
+  {
+    "name": "disabled color just below pressed threshold",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.145,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "disabled color just above pressed threshold",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.155,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
   }
 ]
