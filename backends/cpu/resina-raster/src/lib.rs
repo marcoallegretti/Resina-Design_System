@@ -426,8 +426,8 @@ where
     S: Fn(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
 {
     fn paint(&mut self, row: &mut [u8], y: u32) -> Result<(), RasterError> {
-        for (pixel, x) in row.chunks_exact_mut(4).zip(0..) {
-            pixel.copy_from_slice(&self.pixel(x, y)?);
+        for (pixel, x) in row.as_chunks_mut::<4>().0.iter_mut().zip(0..) {
+            *pixel = self.pixel(x, y)?;
         }
         Ok(())
     }
