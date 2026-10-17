@@ -1268,8 +1268,11 @@ the current activation state and never wait for body motion to settle.
 
 The native read-only `snapshot`, `motion` and `currentFrame` aliases expose a
 coherent selected frame. `motion` is backend observation metadata containing
-elapsed `time`, retained `channels` and the complete existing motion IR; it is
-not a new portable IR or action authorization. `CommandSnapshotResolver` commits
+elapsed `time`, retained `channels`, `retargetTime` and the complete existing
+motion IR; it is not a new portable IR or action authorization. `retargetTime`
+is the previous trajectory's elapsed clock time at which the native clock
+restarted and the retained `channels` were sampled from it, or `null` when the
+clock started without sampling a previous trajectory. `CommandSnapshotResolver` commits
 these fields together before notification and clears them when the selected
 QObject is destroyed. Component publication is deferred beyond the controller's
 publication guard, including when a cached image decodes synchronously, so a
