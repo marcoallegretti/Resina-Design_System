@@ -927,3 +927,24 @@ fn disabled_label_mixes_toward_its_background_down_to_three_to_one() {
     }
     assert!(dimmed >= 2);
 }
+
+#[test]
+fn disabled_labels_meet_the_supplied_minimum_before_dimming() {
+    for case in cases().iter().filter(|case| case.coherent) {
+        let mut f = Fixture::new("cast", LayoutDirection::Ltr, case);
+        f.label_foreground = resolve_srgb_fallback(
+            &json!({"colorSpace": "srgb", "components": [0.45, 0.45, 0.45], "alpha": 1}),
+        )
+        .unwrap();
+        let undimmed = opaque_contrast_ratio(&f.label_foreground, &f.label_background).unwrap();
+        assert!(undimmed > 3.5 && undimmed < 20.0);
+        let mut input = f.input();
+        input.minimum_label_contrast = undimmed + 0.5;
+        let result = resolve_toggle_snapshot(input);
+        assert!(
+            matches!(result, Err(ToggleSnapshotError::LabelContrast { .. })),
+            "{}: a label below the supplied minimum must fail before any dimming: {result:?}",
+            case.name
+        );
+    }
+}

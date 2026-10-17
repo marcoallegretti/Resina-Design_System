@@ -448,27 +448,21 @@ pub fn resolve_toggle_snapshot<'a>(
     if !minimum.is_finite() || !(1.0..=21.0).contains(&minimum) {
         return Err(ToggleSnapshotError::InvalidLabelContrast);
     }
-    opaque_contrast_ratio(input.label_foreground, input.label_background)
+    let guarded = opaque_contrast_ratio(input.label_foreground, input.label_background)
         .map_err(ToggleSnapshotError::LabelColor)?;
-    let (label_foreground, minimum) = if input.activation.enabled() {
-        (input.label_foreground.clone(), minimum)
-    } else {
-        (
-            crate::disabled_label::dim_disabled_label(
-                input.label_foreground,
-                input.label_background,
-            ),
-            minimum.min(crate::DISABLED_LABEL_CONTRAST),
-        )
-    };
-    let label_contrast_ratio = opaque_contrast_ratio(&label_foreground, input.label_background)
-        .map_err(ToggleSnapshotError::LabelColor)?;
-    if label_contrast_ratio < minimum {
+    if guarded < minimum {
         return Err(ToggleSnapshotError::LabelContrast {
-            actual: label_contrast_ratio,
+            actual: guarded,
             minimum,
         });
     }
+    let label_foreground = if input.activation.enabled() {
+        input.label_foreground.clone()
+    } else {
+        crate::disabled_label::dim_disabled_label(input.label_foreground, input.label_background)
+    };
+    let label_contrast_ratio = opaque_contrast_ratio(&label_foreground, input.label_background)
+        .map_err(ToggleSnapshotError::LabelColor)?;
     let accessibility = resolve_toggle_accessibility(ToggleAccessibilityInput {
         label: input.label,
         activation: input.activation,
