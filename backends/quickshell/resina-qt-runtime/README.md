@@ -1272,8 +1272,11 @@ coherent selected frame. `motion` is backend observation metadata containing
 elapsed `time`, retained `channels`, `retargetTime` and the complete existing
 motion IR; it is not a new portable IR or action authorization. `retargetTime`
 is the previous trajectory's elapsed clock time at which the native clock
-restarted and the retained `channels` were sampled from it, or `null` when the
-clock started without sampling a previous trajectory. `CommandSnapshotResolver` commits
+restarted and the retained `channels` were sampled from it. Every frame of that
+clock epoch repeats it. It is `null` for the first epoch and after a failure or
+reconfiguration; after a reconfiguration with an unchanged profile the resumed
+`channels` were still sampled from the running trajectory before the clock was
+invalidated. `CommandSnapshotResolver` commits
 these fields together before notification and clears them when the selected
 QObject is destroyed. Component publication is deferred beyond the controller's
 publication guard, including when a cached image decodes synchronously, so a
