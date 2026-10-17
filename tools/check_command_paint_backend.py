@@ -59,7 +59,7 @@ def contrast_ratio(first, second):
 def disabled_label_mismatch(label, background, undimmed):
     """Checks a published disabled label against the linear-light dimming law independently."""
     ratio = contrast_ratio(label, background)
-    if contrast_ratio(undimmed, background) <= DISABLED_LABEL_CONTRAST:
+    if contrast_ratio(undimmed, background) <= DISABLED_LABEL_CONTRAST + 1e-9:
         return None if label == list(undimmed) else "undimmed label changed"
     # Independent rounding may land within the 1e-12 conformance tolerance of the bound.
     if not DISABLED_LABEL_CONTRAST - 1e-12 <= ratio < DISABLED_LABEL_CONTRAST + 1e-9:
