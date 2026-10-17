@@ -64,11 +64,13 @@ ResinaCommandInput {
             JSON.stringify({schemaVersion:"0.1.0",channels:retained,time:0}),false)).motion;
         if (!state.motionTarget) {
             clockValue(clock.restart());
+            state.retargetTime = null;
         } else if (canonical(probe.target) !== canonical(state.motionTarget) || probe.policy !== state.policy) {
             const previousTime = clockValue(clock.restart()).previousTime;
             const previous = clockValue(resolver.retargetMotion(JSON.stringify({channels:state.channels,
                 target:state.motionTarget,policy:state.policy,time:previousTime})));
             state.channels = previous.channels;
+            state.retargetTime = previousTime;
         }
         state.motionTarget = probe.target;
         state.policy = probe.policy;
@@ -200,7 +202,7 @@ ResinaCommandInput {
             state.pendingView = candidate;
             candidate.invalidate();
             if (motionChannels.length)
-                candidate.prepare(state.pending,options,motionSource(state.pending,options));
+                candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime);
             else
                 candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
@@ -351,6 +353,7 @@ ResinaCommandInput {
         property var channels: null
         property var resumeChannels: null
         property var motionTarget: null
+        property var retargetTime: null
         property string profile: ""
         property string policy: ""
         property bool motionActive: false

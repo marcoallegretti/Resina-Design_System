@@ -1216,7 +1216,11 @@ projected state set and the independent spring equations. Input
 reaches the control through the compositor:
 
 - holding Space publishes several unsettled spring frames; the release retarget continues from the position
-  and velocity the previous trajectory had reached; each sampled epoch's clock
+  and velocity the previous trajectory had reached at the published `retargetTime`,
+  which does not precede its last published sample or exceed the log time elapsed since the frame before
+  it. That log bound is only as tight as one frame's preparation time; the precision of the restart
+  instant itself comes from the Qt runtime clock check, which compares `CommandClock.restart()` with
+  monotonic time. Each sampled epoch's clock
   advances with elapsed native time within 10 % or 50 ms; one channel settles
   before the other, both settle, and no frame follows;
 - compositor hover enters and leaves the target through spring frames. Qt's
@@ -1268,8 +1272,14 @@ the current activation state and never wait for body motion to settle.
 
 The native read-only `snapshot`, `motion` and `currentFrame` aliases expose a
 coherent selected frame. `motion` is backend observation metadata containing
-elapsed `time`, retained `channels` and the complete existing motion IR; it is
-not a new portable IR or action authorization. `CommandSnapshotResolver` commits
+elapsed `time`, retained `channels`, `retargetTime` and the complete existing
+motion IR; it is not a new portable IR or action authorization. `retargetTime`
+is the previous trajectory's elapsed clock time at which the native clock
+restarted and the retained `channels` were sampled from it. Every frame of that
+clock epoch repeats it. It is `null` for the first epoch and after a failure or
+reconfiguration; after a reconfiguration with an unchanged profile the resumed
+`channels` were still sampled from the running trajectory before the clock was
+invalidated. `CommandSnapshotResolver` commits
 these fields together before notification and clears them when the selected
 QObject is destroyed. Component publication is deferred beyond the controller's
 publication guard, including when a cached image decodes synchronously, so a
