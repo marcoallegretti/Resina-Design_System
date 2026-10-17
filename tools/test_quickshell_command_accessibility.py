@@ -84,6 +84,18 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
                     self.assertRaisesRegex(ValueError, message):
                 tree.press_retired((":1.0", "/button"))
 
+    def test_native_events_are_read_from_monitored_signals(self):
+        log = "\n".join((
+            "signal time=1.0 sender=:1.1 -> destination=(null destination) serial=4 "
+            "path=/org/a11y/atspi/accessible/21; interface=org.a11y.atspi.Event.Object; member=StateChanged",
+            '   string "sensitive"', "   int32 0", "   int32 0", "   variant       int32 0",
+            "signal time=1.1 sender=:1.1 -> destination=(null destination) serial=5 "
+            "path=/org/a11y/atspi/accessible/22; interface=org.a11y.atspi.Event.Focus; member=Focus",
+            '   string ""', "   int32 0", "   int32 0"))
+        self.assertEqual(accessibility.signals(log), [
+            ("/org/a11y/atspi/accessible/21", "Object.StateChanged", "sensitive", 0),
+            ("/org/a11y/atspi/accessible/22", "Focus.Focus", "", 0)])
+
     def test_native_state_decodes_availability_and_focus_bits(self):
         words = (1 << 8) | (1 << 11) | (1 << 12)
         reply = REPLY + f"array [\n      uint32 {words}\n      uint32 0\n   ]"

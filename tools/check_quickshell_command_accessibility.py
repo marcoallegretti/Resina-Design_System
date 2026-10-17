@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import signal
 import subprocess
 import sys
@@ -19,6 +20,9 @@ FOCUSED = 12
 DESCRIPTION = "Connect using saved settings."
 REPORT = "RESINA_ACCESSIBILITY_REPORT "
 UNKNOWN_OBJECT = "org.freedesktop.DBus.Error.UnknownObject"
+SIGNAL = re.compile(r"signal .* path=(\S+); interface=org\.a11y\.atspi\.Event\.(\w+); member=(\w+)")
+SIGNAL_TEXT = re.compile(r'\s+string "(.*)"')
+SIGNAL_DETAIL = re.compile(r"\s+int32 (-?\d+)")
 
 
 def buttons(address, application):
@@ -47,9 +51,88 @@ def state(address, node):
     return {**state_flags(reply), "focused": bool(integer_values(reply, array=True)[0] & (1 << FOCUSED))}
 
 
+def listen_for_events(address, *events):
+    from PySide6.QtCore import QCoreApplication
+    from PySide6.QtDBus import QDBusConnection, QDBusMessage
+    application = QCoreApplication([])
+    bus = QDBusConnection.connectToBus(address, "resina-event-listener")
+    for event in events:
+        message = QDBusMessage.createMethodCall("org.a11y.atspi.Registry", "/org/a11y/atspi/registry",
+                                                "org.a11y.atspi.Registry", "RegisterEvent")
+        message.setArguments([event])
+        reply = bus.call(message)
+        if reply.type() == QDBusMessage.MessageType.ErrorMessage:
+            print(f"event listener registration for {event} failed: " + reply.errorMessage(), flush=True)
+            return 1
+    print("event listener registered", flush=True)
+    return application.exec()
+
+
+def signals(log):
+    found = []
+    for line in log.splitlines():
+        if match := SIGNAL.match(line):
+            found.append([match[1], match[2] + "." + match[3], None, None])
+        elif found and found[-1][2] is None and (match := SIGNAL_TEXT.fullmatch(line)):
+            found[-1][2] = match[1]
+        elif found and found[-1][2] is not None and found[-1][3] is None \
+                and (match := SIGNAL_DETAIL.fullmatch(line)):
+            found[-1][3] = int(match[1])
+    return [tuple(item) for item in found]
+
+
+class NativeEvents:
+    def __init__(self, wait, address, output):
+        self.wait, self.log = wait, output / "atspi-events.log"
+        self.processes = []
+        try:
+            self.processes.append(subprocess.Popen(
+                ["dbus-monitor", "--address", address, "type='signal',interface='org.a11y.atspi.Event.Focus'",
+                 "type='signal',interface='org.a11y.atspi.Event.Object',member='StateChanged'"],
+                stdout=self.log.open("w"), stderr=subprocess.STDOUT))
+            wait(lambda: "NameAcquired" in self.read(), "AT-SPI event monitor", timeout=10)
+            # Qt's AT-SPI bridge emits these events only while a listener is registered for them.
+            listener = output / "atspi-listener.log"
+            self.processes.append(subprocess.Popen(
+                [sys.executable, "-c", "import sys; sys.path.insert(0, sys.argv[1]); "
+                 "from check_quickshell_command_accessibility import listen_for_events; "
+                 "sys.exit(listen_for_events(*sys.argv[2:]))",
+                 str(Path(__file__).resolve().parent), address, "Focus:", "Object:StateChanged:"],
+                stdout=listener.open("w"), stderr=subprocess.STDOUT))
+            wait(lambda: "registered" in listener.read_text(encoding="utf-8", errors="replace")
+                 or self.processes[-1].poll() is not None, "AT-SPI event listener", timeout=15)
+            if self.processes[-1].poll() is not None:
+                raise ValueError(listener.read_text(encoding="utf-8", errors="replace").strip()[-500:])
+        except BaseException:
+            self.close()
+            raise
+
+    def read(self):
+        return self.log.read_text(encoding="utf-8", errors="replace")
+
+    def mark(self):
+        return len(signals(self.read()))
+
+    def expect(self, start, expected, description):
+        self.wait(lambda: all(item in signals(self.read())[start:] for item in expected), description, timeout=10)
+
+    def focused(self, start, node, name):
+        self.expect(start, [(node[1], "Focus.Focus", "", 0)], f"native focus event for {name}")
+
+    def close(self):
+        for process in self.processes:
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+
+
 class Tree:
-    def __init__(self, session, address):
-        self.session, self.address = session, address
+    def __init__(self, session, address, events=None):
+        self.session, self.address, self.events = session, address, events
 
     def application(self):
         applications = references(call("org.a11y.atspi.Registry", "/org/a11y/atspi/accessible/root",
@@ -121,12 +204,16 @@ def verify(session, tree):
             raise ValueError("native Press reached the consumer before committed activation")
     results.append("native Press produces exactly one committed effect")
 
+    start = tree.events.mark()
     session.call("availability", "false")
+    tree.events.expect(start, [(node[1], "Object.StateChanged", flag, 0) for flag in ("enabled", "sensitive")],
+                       "native enabled and sensitive state cleared on the Command")
     tree.expect_state(node, False, False)
     before = len(effects(session.events()))
     tree.press(node)
     expect_effects(session, before, 0, "native Press while unavailable")
-    results.append("unavailable Command rejects native Press")
+    results.append("withdrawn availability clears enabled and sensitive through native state-change events, "
+                   "and the unavailable Command rejects native Press")
 
     session.reset()
     session.call("configure", "replacement")
@@ -199,7 +286,7 @@ def lines(log):
     return len(log.read_text(encoding="utf-8", errors="replace").splitlines()) if log.exists() else 0
 
 
-def quiet(session, log, seconds=1.5):
+def quiet(wait, log, seconds=1.5):
     previous = [lines(log), time.monotonic()]
 
     def settled():
@@ -207,7 +294,7 @@ def quiet(session, log, seconds=1.5):
         if current != previous[0]:
             previous[:] = [current, time.monotonic()]
         return time.monotonic() - previous[1] >= seconds
-    session.wait(settled, "quiet screen reader", timeout=30)
+    wait(settled, "quiet screen reader", timeout=30)
     return lines(log)
 
 
@@ -217,40 +304,65 @@ def announced(speech, *items):
     return any(spoken[index:index + len(expected)] == expected for index in range(len(spoken)))
 
 
+class ScreenReader:
+    def __init__(self, wait, output):
+        self.wait, self.log = wait, output / "orca.debug"
+        home = output / "orca-home"
+        home.mkdir()
+        environment = dict(os.environ, LANGUAGE="en", LC_ALL="C.UTF-8", HOME=str(home),
+                           XDG_CONFIG_HOME=str(home / "config"), XDG_DATA_HOME=str(home / "data"))
+        self.version = subprocess.run(["orca", "--version"], env=environment, capture_output=True, text=True,
+                                      timeout=30).stdout.strip()
+        self.process = subprocess.Popen(["orca", "--debug-file", str(self.log)],
+                                        stdout=(output / "orca.log").open("w"), stderr=subprocess.STDOUT,
+                                        env=environment)
+        try:
+            wait(lambda: self.process.poll() is None and self.log.exists()
+                 and any("Screen reader on" in item for item in presentation(self.log, 0)[0]), "Orca start", timeout=30)
+        except BaseException:
+            self.close()
+            raise
+
+    def mark(self):
+        return quiet(self.wait, self.log)
+
+    def expect(self, start, speech, braille, description):
+        self.wait(lambda: announced(presentation(self.log, start)[0], *speech)
+                  and f"'{braille}'" in presentation(self.log, start)[1], description, timeout=10)
+        spoken, shown = presentation(self.log, start)
+        return {"speech": spoken, "braille": shown}
+
+    def close(self):
+        if self.process.poll() is None:
+            self.process.terminate()
+            try:
+                self.process.wait(5)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+                self.process.wait()
+
+
 def screen_reader(session, output):
-    log = output / "orca.debug"
-    home = output / "orca-home"
-    home.mkdir()
-    environment = dict(os.environ, LANGUAGE="en", LC_ALL="C.UTF-8", HOME=str(home),
-                       XDG_CONFIG_HOME=str(home / "config"), XDG_DATA_HOME=str(home / "data"))
-    version = subprocess.run(["orca", "--version"], env=environment, capture_output=True, text=True,
-                             timeout=30).stdout.strip()
-    reader = subprocess.Popen(["orca", "--debug-file", str(log)], stdout=(output / "orca.log").open("w"),
-                              stderr=subprocess.STDOUT, env=environment)
+    reader = ScreenReader(session.wait, output)
     try:
-        session.wait(lambda: reader.poll() is None and log.exists()
-                     and any("Screen reader on" in item for item in presentation(log, 0)[0]), "Orca start", timeout=30)
         session.reset()
         session.call("focusOther")
         session.settle(lambda current: not current["state"]["focused"], "focus away from Command")
-        start = quiet(session, log)
+        start = reader.mark()
         session.call("focusCommand")
-        session.wait(lambda: announced(presentation(log, start)[0], "Reconnect", "button.", DESCRIPTION) and any(
-            "Reconnect button " + DESCRIPTION in item for item in presentation(log, start)[1]),
-            "Orca focus presentation", timeout=10)
-        focus = presentation(log, start)
+        braille = "quickshell application frame Reconnect button " + DESCRIPTION
+        focus = reader.expect(start, ("Reconnect", "button.", DESCRIPTION), braille, "Orca focus presentation")
+        start = reader.mark()
+        session.call("availability", "false")
+        session.settle(lambda current: not current["state"]["enabled"], "unavailable Command")
+        reader.mark()
+        unavailable = dict(zip(("speech", "braille"), presentation(reader.log, start)))
         (output / "screen-reader.json").write_text(json.dumps({
-            "screenReader": version, "focusSpeech": focus[0], "focusBraille": focus[1]},
+            "screenReader": reader.version, "focus": focus, "unavailableUnverified": unavailable},
             indent=2, ensure_ascii=False), encoding="utf-8")
         return ["Orca speaks and brailles the focused Command name, role and description"]
     finally:
-        if reader.poll() is None:
-            reader.terminate()
-            try:
-                reader.wait(5)
-            except subprocess.TimeoutExpired:
-                reader.kill()
-                reader.wait()
+        reader.close()
 
 
 def run(args):
@@ -259,14 +371,19 @@ def run(args):
         call("org.a11y.Bus", "/org/a11y/bus", PROPERTIES + ".Set", "string:org.a11y.Status",
              "string:" + name, "variant:boolean:true")
     os.environ["QT_LINUX_ACCESSIBILITY_ALWAYS_ON"] = "1"
-    session = Session(args.host, args.module_path, args.font, args.output_dir)
+    session = events = None
     try:
-        results = verify(session, Tree(session, address))
+        session = Session(args.host, args.module_path, args.font, args.output_dir)
+        events = NativeEvents(session.wait, address, args.output_dir)
+        results = verify(session, Tree(session, address, events))
         if args.screen_reader:
             results += screen_reader(session, args.output_dir)
         return results
     finally:
-        session.close()
+        if events:
+            events.close()
+        if session:
+            session.close()
 
 
 def main():
@@ -276,7 +393,7 @@ def main():
     parser.add_argument("--font", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--screen-reader", action="store_true",
-                        help="also verify Orca presentation of the focused and unavailable Command")
+                        help="also verify Orca presentation of the focused Command")
     parser.add_argument("--session", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     try:
