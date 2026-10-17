@@ -217,7 +217,7 @@ pub(crate) fn resolve_command_paint_with_response<T>(
         return Err(CommandPaintError::Imperceptible(imperceptible));
     }
     let (response, sampled) = sample(binding.material_family(), response)?;
-    let paint = crate::control_paint::resolve_control_paint(
+    let mut paint = crate::control_paint::resolve_control_paint(
         theme,
         environment,
         &snapshot,
@@ -226,6 +226,9 @@ pub(crate) fn resolve_command_paint_with_response<T>(
         response,
         true,
     )?;
+    if phase == CommandPhase::Disabled {
+        paint.body.dim_disabled_label();
+    }
     Ok((
         CommandPaintIr {
             schema_version: "0.1.0",

@@ -1059,5 +1059,69 @@
     ],
     "requestSchemaValid": true,
     "expectedPhase": "disabled"
+  },
+  {
+    "name": "disabled label at or below the bound stays unchanged",
+    "requestChanges": [
+      {
+        "path": "/surface/body/foregroundRole",
+        "value": "surface.low"
+      },
+      {
+        "path": "/surface/body/minimumContentContrast",
+        "value": 1
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "disabled light label dims toward a dark body",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/colorRole",
+        "value": "content.primary"
+      },
+      {
+        "path": "/surface/body/foregroundRole",
+        "value": "surface.low"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "pressed light label on a dark body stays guarded",
+    "requestChanges": [
+      {
+        "path": "/surface/body/surface/colorRole",
+        "value": "content.primary"
+      },
+      {
+        "path": "/surface/body/foregroundRole",
+        "value": "surface.low"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
   }
 ]

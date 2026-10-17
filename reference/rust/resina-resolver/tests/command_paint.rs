@@ -3,8 +3,8 @@ mod diagnostics;
 
 use resina_model::CommandPhase;
 use resina_resolver::{
-    CommandPaintError, ImperceptibleResponse, opaque_contrast_ratio, resolve_command_paint_source,
-    resolve_surface_paint_source,
+    CommandPaintError, ImperceptibleResponse, SrgbFallback, opaque_contrast_ratio,
+    resolve_command_paint_source, resolve_surface_paint_source,
 };
 use serde_json::{Value, json};
 
@@ -370,4 +370,40 @@ fn disabled_must_differ_perceivably_from_pressed() {
         request["commandAppearance"]["profiles"]["elastomer"]["disabled"]["depthScale"] = json!(0);
         resolve_command_paint_source(&request.to_string()).unwrap();
     }
+}
+
+fn linear(color: &SrgbFallback) -> [f64; 3] {
+    color.components().map(|channel| {
+        if channel <= 0.04045 {
+            channel / 12.92
+        } else {
+            ((channel + 0.055) / 1.055).powf(2.4)
+        }
+    })
+}
+
+#[test]
+fn disabled_label_mixes_toward_the_body_down_to_three_to_one() {
+    let mut request = request();
+    for state in ["rest", "hover", "pressed"] {
+        request["surface"]["body"]["surface"]["states"]["states"] = json!([state]);
+        let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+        assert_eq!(paint.paint().body().foreground().components(), [0.0; 3]);
+        assert!(paint.paint().body().content_contrast_ratio() > 4.5);
+    }
+    request["surface"]["body"]["surface"]["states"]["states"] = json!(["disabled", "focused"]);
+    let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+    let body = paint.paint().body();
+    let ratio = opaque_contrast_ratio(body.foreground(), body.pigment().body()).unwrap();
+    assert_eq!(body.content_contrast_ratio(), ratio);
+    assert!((3.0..3.0 + 1e-9).contains(&ratio), "{ratio}");
+    let label = linear(body.foreground());
+    let background = linear(body.pigment().body());
+    let fraction = label[0] / background[0];
+    for channel in 0..3 {
+        assert!((label[channel] - fraction * background[channel]).abs() < 1e-12);
+    }
+    request["surface"]["body"]["minimumContentContrast"] = json!(2);
+    let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+    assert!((3.0..3.0 + 1e-9).contains(&paint.paint().body().content_contrast_ratio()));
 }

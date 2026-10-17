@@ -379,6 +379,15 @@ fn color(value: &SrgbFallback) -> Color {
 fn pixel_color(pixel: &[u8]) -> SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":pixel[..3].iter().map(|v|f64::from(*v)/255.0).collect::<Vec<_>>(),"alpha":1})).unwrap()
 }
+/// Solid glyph pixels are 8-bit quantizations of the published label and body colors, so a label
+/// published at the 3:1 disabled bound can measure up to 3% below it.
+fn glyph_minimum(disabled: bool) -> f64 {
+    if disabled {
+        resina_resolver::DISABLED_LABEL_CONTRAST * 0.97
+    } else {
+        4.5
+    }
+}
 fn check_frame(
     frames: &mut Frames,
     f: &Fixture,
@@ -516,7 +525,19 @@ fn check_commands(
     let label = f.label.label_bounds();
     assert!((f64::from(rect.x) - f.origin.x - label.x).abs() <= 1.0 / 1024.0);
     assert!((f64::from(rect.y) - f.origin.y - label.y).abs() <= 1.0 / 1024.0);
-    let expected = color(&f.foreground);
+    let snapshot = f.snapshot();
+    let published = snapshot.label_foreground();
+    if f.activation.enabled() {
+        assert_eq!(published, &f.foreground);
+    } else {
+        assert!(
+            (resina_resolver::DISABLED_LABEL_CONTRAST
+                ..resina_resolver::DISABLED_LABEL_CONTRAST + 1e-9)
+                .contains(&opaque_contrast_ratio(published, &f.background).unwrap()),
+            "{name}: disabled label is not dimmed to its bound"
+        );
+    }
+    let expected = color(published);
     assert_eq!(
         [foreground.r, foreground.g, foreground.b, foreground.a],
         [expected.r, expected.g, expected.b, expected.a]
@@ -570,7 +591,7 @@ fn check_commands(
                     &pixel_color(&parts[at..at + 4])
                 )
                 .unwrap()
-                    >= 4.5,
+                    >= glyph_minimum(!f.activation.enabled()),
                 "{name}: native glyph contrast failed"
             );
         }

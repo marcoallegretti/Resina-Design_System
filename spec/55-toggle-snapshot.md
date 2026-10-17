@@ -84,6 +84,11 @@ permission to substitute approximate font metrics in production.
    flat color here. A readable track foreground does not establish an external
    label's contrast. Do not infer label colors from track or thumb paint, apply
    an unrequested inverse color, or weaken the minimum using numeric tolerance.
+   When the activation is disabled, publish the
+   [disabled label](43-command-paint.md#disabled-label): the supplied foreground
+   mixed toward the uniform backdrop down to 3:1, and require the smaller of the
+   supplied minimum and 3:1 against it. Enabled labels keep the supplied
+   foreground.
 8. Resolve [binary semantics](52-toggle-accessibility.md) from the exact complete
    label and current activation/checked signals, description and focusability.
 9. Publish all members only after every check succeeds. On failure publish no

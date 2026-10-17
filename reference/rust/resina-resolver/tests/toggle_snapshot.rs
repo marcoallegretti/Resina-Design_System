@@ -6,10 +6,10 @@ use resina_model::{
 use resina_resolver::{
     CommandLabelInput, CommandLabelIr, HitRegionError, HitRegionInput, HitRegionIr, SrgbFallback,
     ToggleAccessibilityError, ToggleLayoutInput, ToggleLayoutIr, TogglePart, TogglePartPaintIr,
-    ToggleSnapshotError, ToggleSnapshotInput, compile_theme_source, resolve_activation,
-    resolve_command_label, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
-    resolve_toggle_part_paint_source, resolve_toggle_part_reservation_paint_source,
-    resolve_toggle_snapshot,
+    ToggleSnapshotError, ToggleSnapshotInput, compile_theme_source, opaque_contrast_ratio,
+    resolve_activation, resolve_command_label, resolve_hit_region, resolve_srgb_fallback,
+    resolve_toggle_layout, resolve_toggle_part_paint_source,
+    resolve_toggle_part_reservation_paint_source, resolve_toggle_snapshot,
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -903,4 +903,27 @@ fn deepest_part_paint_certifies_a_layout_that_the_rest_body_cannot() {
     }
     assert!(certify(12.0, &deepest_track, &deepest_thumb, false).is_ok());
     assert!(certify(12.0, &hover_track, &hover_thumb, true).is_ok());
+}
+
+#[test]
+fn disabled_label_mixes_toward_its_background_down_to_three_to_one() {
+    let mut dimmed = 0;
+    for case in cases().iter().filter(|case| case.coherent) {
+        let f = Fixture::new("cast", LayoutDirection::Ltr, case);
+        let snapshot = resolve_toggle_snapshot(f.input()).unwrap();
+        let undimmed = opaque_contrast_ratio(&f.label_foreground, &f.label_background).unwrap();
+        assert!(undimmed > 4.5);
+        if case.activation.enabled() {
+            assert_eq!(snapshot.label_foreground(), &f.label_foreground);
+            assert_eq!(snapshot.label_contrast_ratio(), undimmed);
+        } else {
+            let ratio =
+                opaque_contrast_ratio(snapshot.label_foreground(), snapshot.label_background())
+                    .unwrap();
+            assert_eq!(snapshot.label_contrast_ratio(), ratio);
+            assert!((3.0..3.0 + 1e-9).contains(&ratio), "{}: {ratio}", case.name);
+            dimmed += 1;
+        }
+    }
+    assert!(dimmed >= 2);
 }

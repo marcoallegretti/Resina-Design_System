@@ -448,9 +448,21 @@ pub fn resolve_toggle_snapshot<'a>(
     if !minimum.is_finite() || !(1.0..=21.0).contains(&minimum) {
         return Err(ToggleSnapshotError::InvalidLabelContrast);
     }
-    let label_contrast_ratio =
-        opaque_contrast_ratio(input.label_foreground, input.label_background)
-            .map_err(ToggleSnapshotError::LabelColor)?;
+    opaque_contrast_ratio(input.label_foreground, input.label_background)
+        .map_err(ToggleSnapshotError::LabelColor)?;
+    let (label_foreground, minimum) = if input.activation.enabled() {
+        (input.label_foreground.clone(), minimum)
+    } else {
+        (
+            crate::disabled_label::dim_disabled_label(
+                input.label_foreground,
+                input.label_background,
+            ),
+            minimum.min(crate::DISABLED_LABEL_CONTRAST),
+        )
+    };
+    let label_contrast_ratio = opaque_contrast_ratio(&label_foreground, input.label_background)
+        .map_err(ToggleSnapshotError::LabelColor)?;
     if label_contrast_ratio < minimum {
         return Err(ToggleSnapshotError::LabelContrast {
             actual: label_contrast_ratio,
@@ -468,7 +480,7 @@ pub fn resolve_toggle_snapshot<'a>(
     Ok(ToggleSnapshot {
         label: input.label,
         label_origin: input.label_origin,
-        label_foreground: input.label_foreground.clone(),
+        label_foreground,
         label_background: input.label_background.clone(),
         label_contrast_ratio,
         layout: input.layout,

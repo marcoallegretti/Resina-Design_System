@@ -136,7 +136,9 @@ pub use toggle_part_paint::{
     resolve_toggle_part_reservation_paint, resolve_toggle_part_reservation_paint_source,
 };
 mod control_paint;
+mod disabled_label;
 pub use control_paint::ImperceptibleResponse;
+pub use disabled_label::DISABLED_LABEL_CONTRAST;
 mod toggle_layout;
 pub use toggle_layout::{
     ToggleLayoutError, ToggleLayoutInput, ToggleLayoutIr, resolve_toggle_layout,

@@ -86,7 +86,12 @@ fn command_endpoints_use_portable_paint_on_the_first_native_frame() {
             };
             let request = json!({"schemaVersion":"0.1.0", "surface":surface_request, "commandAppearance":profile});
             let command = resolve_command_paint_source(&request.to_string()).unwrap();
-            assert!(command.paint().body().content_contrast_ratio() >= 4.5);
+            let minimum = if phase == "disabled" {
+                resina_resolver::DISABLED_LABEL_CONTRAST
+            } else {
+                4.5
+            };
+            assert!(command.paint().body().content_contrast_ratio() >= minimum);
             for scale in [1.0, 1.25, 2.0, 3.0] {
                 app.configure(surface, 204, 96, scale);
                 let paint = prepare_surface_paint(command.paint(), scale, 4).unwrap();
