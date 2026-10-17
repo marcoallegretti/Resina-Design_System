@@ -556,6 +556,10 @@ RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT="$RESINA_LABE
 cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
 
+The workspace builds its dev profile at `opt-level = 1`; debug assertions and
+overflow checks stay enabled. Set `CARGO_PROFILE_DEV_OPT_LEVEL=0` for an
+unoptimized build when debugging.
+
 The public scenes cover Light and Dark, all four material families, opaque bodies
 and focus rings. Tests check their first rendered frame at scales 1, 1.25, 2 and
 3 while decoding is held, then replace sources in the same surface.
