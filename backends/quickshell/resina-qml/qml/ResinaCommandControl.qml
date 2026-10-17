@@ -94,6 +94,7 @@ ResinaCommandInput {
         state.motionActive = false;
         state.channels = null;
         state.motionTarget = null;
+        state.publishedSpan = null;
         clock.invalidate();
         root.focus = false;
         const running = state.running;
@@ -174,7 +175,9 @@ ResinaCommandInput {
         state.dirty = false;
         state.frameDue = false;
         try {
-            clockValue(preparationClock.restart());
+            const cycle = clockValue(preparationClock.restart()).previousTime;
+            const publicationDelay = state.publishedSpan === null ? null : cycle - state.publishedSpan;
+            state.publishedSpan = null;
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
                 retireViews();
@@ -210,7 +213,7 @@ ResinaCommandInput {
             candidate.invalidate();
             if (motionChannels.length)
                 candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime,
-                    preparationClock);
+                    preparationClock,publicationDelay);
             else
                 candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
@@ -259,6 +262,7 @@ ResinaCommandInput {
         if (state.revision !== revision) return;
         resolver.publishFrame(candidate.snapshot,candidate.motion,candidate);
         if (state.revision !== revision) return;
+        state.publishedSpan = candidate.motion.length ? clockValue(preparationClock.sample()).time : null;
         if (candidate.motion.length) {
             const sample = JSON.parse(candidate.motion).motion;
             state.motionActive = !(sample.bodyMix.settled && sample.depthScale.settled);
@@ -288,6 +292,7 @@ ResinaCommandInput {
             state.resumeChannels = next && !next.error && canonical(next.channels) === state.profile ? captureMotion() : null;
             state.motionActive = false;
             state.motionTarget = null;
+            state.publishedSpan = null;
             clock.invalidate();
             state.qualified = false;
             state.armed = false;
@@ -386,6 +391,7 @@ ResinaCommandInput {
         property bool running: false
         property bool dirty: false
         property bool frameDue: false
+        property var publishedSpan: null
         property string target: ""
         property var reservation: null
         property string pending: ""
