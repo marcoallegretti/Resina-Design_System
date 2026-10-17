@@ -36,6 +36,8 @@ mod geometry;
 pub use geometry::{
     ContourSegment, CornerRadius, LogicalCornerRadii, PhysicalBounds, PhysicalVector, SurfaceSize,
 };
+mod icon;
+pub use icon::{IconBounds, IconContent, IconDirection, IconKind, IconLayerRole};
 mod key_light;
 pub use key_light::KeyLight;
 mod material_light;

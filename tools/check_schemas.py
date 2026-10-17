@@ -478,6 +478,8 @@ def main():
         "schemas/surface-scenario.schema.json",
         "schemas/treatment-stack.schema.json",
         "schemas/typography-assignments.schema.json",
+        "schemas/icon-content.schema.json",
+        "schemas/icon-content-case.schema.json",
         "schemas/theme-source.schema.json",
         "schemas/theme-source-case.schema.json",
         "schemas/theme-resolution-case.schema.json",
@@ -1375,6 +1377,17 @@ def main():
         ("schemas/theme-resolution-request.schema.json", "conformance/themes/request-vectors.json"),
     ):
         checked += check_vectors(schema, vectors)
+
+    icon_validator = validator_for("schemas/icon-content.schema.json")
+    icon_case_validator = validator_for("schemas/icon-content-case.schema.json")
+    icon_names = set()
+    for case in load_json(ROOT / "conformance/content/icon-content-vectors.json"):
+        if case["name"] in icon_names:
+            raise ValueError(f"duplicate icon content case: {case['name']}")
+        icon_names.add(case["name"])
+        check_case(icon_case_validator, f"icon content case: {case['name']}", case, True)
+        check_case(icon_validator, f"icon content: {case['name']}", case["document"], case["schemaValid"])
+        checked += 2
 
     size_case_schema = validator_for("schemas/surface-size-case.schema.json")
     for case in load_json(ROOT / "conformance/geometry/surface-size-vectors.json"):
