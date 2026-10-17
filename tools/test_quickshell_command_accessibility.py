@@ -93,8 +93,40 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
             "path=/org/a11y/atspi/accessible/22; interface=org.a11y.atspi.Event.Focus; member=Focus",
             '   string ""', "   int32 0", "   int32 0"))
         self.assertEqual(accessibility.signals(log), [
-            ("/org/a11y/atspi/accessible/21", "Object.StateChanged", "sensitive", 0),
-            ("/org/a11y/atspi/accessible/22", "Focus.Focus", "", 0)])
+            ("/org/a11y/atspi/accessible/21", "Object.StateChanged", "sensitive", 0, None),
+            ("/org/a11y/atspi/accessible/22", "Focus.Focus", "", 0, None)])
+
+    def test_updates_must_keep_a_named_node_in_the_tree(self):
+        def signal(path, member, kind, *value):
+            return "\n".join((
+                "signal time=1.0 sender=:1.1 -> destination=(null destination) serial=4 "
+                f"path={path}; interface=org.a11y.atspi.Event.Object; member={member}",
+                f'   string "{kind}"', "   int32 0", "   int32 0", *value, "   array [", "   ]"))
+
+        def child(path):
+            return ("   variant       struct {", '         string ":1.1"', f'         object path "{path}"', "      }")
+        name = signal("/node", "PropertyChange", "accessible-name", '   variant       string "Reconnect"')
+        unnamed = signal("/node", "PropertyChange", "accessible-name", '   variant       string ""')
+        undescribed = signal("/node", "PropertyChange", "accessible-description", '   variant       string ""')
+        removed = signal("/frame", "ChildrenChanged", "remove", *child("/node"))
+        added = signal("/frame", "ChildrenChanged", "add", *child("/node"))
+        other = (signal("/frame", "ChildrenChanged", "add", *child("/other")) + "\n"
+                 + signal("/other", "PropertyChange", "accessible-name", '   variant       string ""'))
+        with tempfile.TemporaryDirectory() as directory:
+            events = accessibility.NativeEvents.__new__(accessibility.NativeEvents)
+            events.log = Path(directory) / "events.log"
+            events.log.write_text(name + "\n" + other, encoding="utf-8")
+            events.retained(0, (":1.1", "/node"), "update")
+            for log, message in ((name + "\n" + undescribed, "cleared the native Command description"),
+                                 (unnamed + "\n" + name, "cleared the native Command name"),
+                                 (removed + "\n" + name, r"withdrew the native Command from the tree \(remove\)"),
+                                 (name + "\n" + added, r"withdrew the native Command from the tree \(add\)")):
+                with self.subTest(message=message):
+                    events.log.write_text(log, encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, message):
+                        events.retained(0, (":1.1", "/node"), "update")
+            events.log.write_text(removed + "\n" + name, encoding="utf-8")
+            events.retained(1, (":1.1", "/node"), "update")
 
     def test_native_state_decodes_availability_and_focus_bits(self):
         words = (1 << 8) | (1 << 11) | (1 << 12)

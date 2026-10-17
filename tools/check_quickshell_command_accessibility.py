@@ -24,6 +24,7 @@ UNKNOWN_OBJECT = "org.freedesktop.DBus.Error.UnknownObject"
 SIGNAL = re.compile(r"signal .* path=(\S+); interface=org\.a11y\.atspi\.Event\.(\w+); member=(\w+)")
 SIGNAL_TEXT = re.compile(r'\s+string "(.*)"')
 SIGNAL_DETAIL = re.compile(r"\s+int32 (-?\d+)")
+SIGNAL_VALUE = re.compile(r'\s+(?:variant\s+string|object path) "(.*)"')
 
 
 def buttons(address, application):
@@ -73,12 +74,15 @@ def signals(log):
     found = []
     for line in log.splitlines():
         if match := SIGNAL.match(line):
-            found.append([match[1], match[2] + "." + match[3], None, None])
+            found.append([match[1], match[2] + "." + match[3], None, None, None])
         elif found and found[-1][2] is None and (match := SIGNAL_TEXT.fullmatch(line)):
             found[-1][2] = match[1]
         elif found and found[-1][2] is not None and found[-1][3] is None \
                 and (match := SIGNAL_DETAIL.fullmatch(line)):
             found[-1][3] = int(match[1])
+        elif found and found[-1][3] is not None and found[-1][4] is None \
+                and (match := SIGNAL_VALUE.fullmatch(line)):
+            found[-1][4] = match[1]
     return [tuple(item) for item in found]
 
 
@@ -89,7 +93,7 @@ class NativeEvents:
         try:
             self.processes.append(subprocess.Popen(
                 ["dbus-monitor", "--address", address, "type='signal',interface='org.a11y.atspi.Event.Focus'",
-                 "type='signal',interface='org.a11y.atspi.Event.Object',member='StateChanged'"],
+                 "type='signal',interface='org.a11y.atspi.Event.Object'"],
                 stdout=self.log.open("w"), stderr=subprocess.STDOUT))
             wait(lambda: "NameAcquired" in self.read(), "AT-SPI event monitor", timeout=10)
             # Qt's AT-SPI bridge emits these events only while a listener is registered for them.
@@ -98,7 +102,8 @@ class NativeEvents:
                 [sys.executable, "-c", "import sys; sys.path.insert(0, sys.argv[1]); "
                  "from check_quickshell_command_accessibility import listen_for_events; "
                  "sys.exit(listen_for_events(*sys.argv[2:]))",
-                 str(Path(__file__).resolve().parent), address, "Focus:", "Object:StateChanged:"],
+                 str(Path(__file__).resolve().parent), address, "Focus:", "Object:StateChanged:",
+                 "Object:PropertyChange:", "Object:ChildrenChanged:"],
                 stdout=listener.open("w"), stderr=subprocess.STDOUT))
             wait(lambda: "registered" in listener.read_text(encoding="utf-8", errors="replace")
                  or self.processes[-1].poll() is not None, "AT-SPI event listener", timeout=15)
@@ -115,7 +120,16 @@ class NativeEvents:
         return len(signals(self.read()))
 
     def expect(self, start, expected, description):
-        self.wait(lambda: all(item in signals(self.read())[start:] for item in expected), description, timeout=10)
+        self.wait(lambda: all(item in [found[:4] for found in signals(self.read())[start:]] for item in expected),
+                  description, timeout=10)
+
+    def retained(self, start, node, description):
+        for path, event, kind, _, value in signals(self.read())[start:]:
+            if event == "Object.ChildrenChanged" and value == node[1]:
+                raise ValueError(f"{description} withdrew the native Command from the tree ({kind})")
+            if path == node[1] and event == "Object.PropertyChange" \
+                    and kind in ("accessible-name", "accessible-description") and not value:
+                raise ValueError(f"{description} cleared the native Command {kind.split('-')[1]}")
 
     def focused(self, start, node, name):
         self.expect(start, [(node[1], "Focus.Focus", "", 0)], f"native focus event for {name}")
@@ -193,6 +207,47 @@ class Tree:
 
 def ready_focus_requests(session):
     return [event for event in session.events() if event["kind"] == "readyFocus"]
+
+
+def stable_updates(session, tree):
+    session.reset()
+    node = tree.command("Reconnect")
+
+    def update(description, perform, settled, name="Reconnect", text=DESCRIPTION, events=()):
+        start = tree.events.mark()
+        perform()
+        session.until(lambda current: current["ready"] and settled(current), description, 10)
+        if tree.command(name, text) != node:
+            raise ValueError(f"{description} changed the native Command path")
+        tree.events.expect(start, [(node[1], "Object.StateChanged", flag, detail) for flag, detail in events],
+                           f"native state-change events on the Command for {description}")
+        session.quiet()
+        tree.events.retained(start, node, description)
+
+    def feedback():
+        # A pointer already resting on the target delivers no motion, hence no hover.
+        session.input.move(*session.outside)
+        session.point(session.current())
+        session.settle(lambda current: current["hovered"], "hovered Command")
+        session.input.button(True)
+        session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is True, "pointer hold")
+        session.input.move(*session.outside)
+        session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is False, "pointer leaving")
+        session.input.button(False)
+    update("hover and press feedback", feedback,
+           lambda current: not current["hovered"] and current["state"]["hold"] is None)
+    update("availability withdrawal", lambda: session.call("availability", "false"),
+           lambda current: not current["state"]["enabled"],
+           events=(("enabled", 0), ("sensitive", 0)))
+    tree.expect_state(node, False, False)
+    update("availability restoration", lambda: session.call("availability", "true"),
+           lambda current: current["state"]["enabled"],
+           events=(("enabled", 1), ("sensitive", 1)))
+    tree.expect_state(node, True, False)
+    update("label replacement", lambda: session.call("configure", "replacement"),
+           lambda current: True, REPLACEMENT, REPLACEMENT_DESCRIPTION)
+    return ["feedback, availability withdrawal and restoration, and label replacement update the same native "
+            "Button in place: no empty name or description, no tree removal, and state-change events on that node"]
 
 
 def verify(session, tree):
@@ -296,7 +351,7 @@ def verify(session, tree):
                   and not current["ready"], "unsupported disabled-focus diagnostic", 10)
     tree.absent("native Button withdrawn for the unsupported disabled-focus policy")
     results.append("unsupported disabled-focus policy fails diagnostically without a native Button")
-    return results
+    return results + stable_updates(session, tree)
 
 
 def presentation(log, start):
