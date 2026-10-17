@@ -307,10 +307,11 @@ def press_samples(shell, part):
     # every unsettled frame when one frame lasts as long as the spring takes to settle.
     shell.call("record", "true")
     shell.input.button(True)
-    frames = shell.wait_for(lambda: held_frames(shell, part), f"settled {part} motion while pressed", timeout=10)
-    shell.input.button(False)
-    shell.call("record", "false")
-    return frames
+    try:
+        return shell.wait_for(lambda: held_frames(shell, part), f"settled {part} motion while pressed", timeout=10)
+    finally:
+        shell.input.button(False)
+        shell.call("record", "false")
 
 
 def verify_motion(shell, part, samples, channels, policy):
