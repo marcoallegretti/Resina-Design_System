@@ -192,7 +192,7 @@ class Tree:
 
 
 def ready_focus_requests(session):
-    return sum(event["kind"] == "readyFocus" for event in session.events())
+    return [event for event in session.events() if event["kind"] == "readyFocus"]
 
 
 def verify(session, tree):
@@ -263,15 +263,18 @@ def verify(session, tree):
     session.reset()
     session.call("setMounted", "false")
     tree.absent("native Button removed with the unmounted Command")
-    start, requests = tree.events.mark(), ready_focus_requests(session)
+    start, requests = tree.events.mark(), len(ready_focus_requests(session))
     session.call("focusOnReady")
     session.call("setMounted", "true")
     session.until(lambda current: current["ready"] and focused(current) and current["state"]["focused"],
                   "Command focused by its consumer when it became ready", 20)
-    if ready_focus_requests(session) != requests + 1:
+    focus_requests = ready_focus_requests(session)[requests:]
+    if len(focus_requests) != 1:
         raise ValueError("the consumer did not focus the Command from its ready notification")
     node = tree.command("Reconnect")
     tree.events.focused(start, node, "the Command focused when it became ready")
+    if focus_requests[0].get("ignored") is not False:
+        raise ValueError("the Command was ignored by accessibility when it announced readiness")
     tree.expect_state(node, True, True)
     results.append("a Command focused from its consumer's ready notification emits a native focus event "
                    "on its complete Button")
