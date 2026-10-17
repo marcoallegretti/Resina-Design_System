@@ -11,7 +11,8 @@ import time
 
 from check_qt_command_snapshot_runtime import ROOT
 from check_qt_native_availability import ACTION, action_names
-from check_quickshell_command_lifecycle import REPLACEMENT, REPLACEMENT_DESCRIPTION, Session, effects, expect_effects
+from check_quickshell_command_lifecycle import (REPLACEMENT, REPLACEMENT_DESCRIPTION, Session, effects, expect_effects,
+                                                focused)
 from check_quickshell_command_updates import verify_version
 from check_slint_native_availability import (ACCESSIBLE, BUTTON_ROLE, PROPERTIES, call, integer_values, payload,
                                              references, state_flags, string_value)
@@ -190,6 +191,10 @@ class Tree:
         self.settled(lambda: state(self.address, node) == expected, f"native state {expected}")
 
 
+def ready_focus_requests(session):
+    return sum(event["kind"] == "readyFocus" for event in session.events())
+
+
 def verify(session, tree):
     results = []
     session.reset()
@@ -254,6 +259,22 @@ def verify(session, tree):
                 raise ValueError(f"the effect after the {description} came from a retired generation")
         results.append(f"{description} retires the native Button: a Press held from before fails without an effect "
                        "and the new generation's Button acts once")
+
+    session.reset()
+    session.call("setMounted", "false")
+    tree.absent("native Button removed with the unmounted Command")
+    start, requests = tree.events.mark(), ready_focus_requests(session)
+    session.call("focusOnReady")
+    session.call("setMounted", "true")
+    session.until(lambda current: current["ready"] and focused(current) and current["state"]["focused"],
+                  "Command focused by its consumer when it became ready", 20)
+    if ready_focus_requests(session) != requests + 1:
+        raise ValueError("the consumer did not focus the Command from its ready notification")
+    node = tree.command("Reconnect")
+    tree.events.focused(start, node, "the Command focused when it became ready")
+    tree.expect_state(node, True, True)
+    results.append("a Command focused from its consumer's ready notification emits a native focus event "
+                   "on its complete Button")
 
     session.reset()
     node = tree.command("Reconnect")
