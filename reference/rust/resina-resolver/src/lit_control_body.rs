@@ -229,7 +229,7 @@ pub fn resolve_lit_control_body(
             )));
         }
         let shoulder = input.relief.shoulder_width;
-        let tau = 4.0 * shoulder / corner.x;
+        let tau = 2.0 * (shoulder / corner.x + shoulder / corner.x);
         if corner.x > 0.0 && shoulder > 0.0 && (tau >= 1.0 || tau.is_nan()) {
             return Err(fail(format!(
                 "{name} corner radius {} px cannot carry shoulderWidth {shoulder} px: tau must be below 1",

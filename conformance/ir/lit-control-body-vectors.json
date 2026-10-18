@@ -23225,7 +23225,7 @@
    }
   ],
   "sourceSchemaValid": true,
-  "errorContains": "tau"
+  "errorContains": "topLeft corner radius 8 px cannot carry shoulderWidth 2 px"
  },
  {
   "name": "shoulder-tau-exceeds-one",
@@ -23239,7 +23239,7 @@
    }
   ],
   "sourceSchemaValid": true,
-  "errorContains": "tau"
+  "errorContains": "topRight corner radius 6 px cannot carry shoulderWidth 2 px"
  },
  {
   "name": "elliptical-corner",
@@ -23253,7 +23253,7 @@
    }
   ],
   "sourceSchemaValid": true,
-  "errorContains": "circular"
+  "errorContains": "topLeft corner must be circular with equal extents"
  },
  {
   "name": "negative-depth",
@@ -23327,7 +23327,7 @@
    }
   ],
   "sourceSchemaValid": true,
-  "errorContains": "plateau"
+  "errorContains": "content plateau must have representable positive area"
  },
  {
   "name": "unsupported-state",
@@ -23341,7 +23341,7 @@
    }
   ],
   "sourceSchemaValid": false,
-  "errorContains": "state"
+  "errorContains": "support only rest, hover, pressed, disabled, focused and checked states"
  },
  {
   "name": "unsupported-family",

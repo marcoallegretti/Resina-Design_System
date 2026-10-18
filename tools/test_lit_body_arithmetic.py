@@ -21,8 +21,9 @@ class LitBodyVectorTests(unittest.TestCase):
             source = apply_changes(SOURCE, case["sourceChanges"])
             with self.subTest(case=case["name"]):
                 if "errorContains" in case:
-                    with self.assertRaises((ValueError, KeyError)):
+                    with self.assertRaises(ValueError) as raised:
                         samples(source)
+                    self.assertIn(case["errorContains"], str(raised.exception))
                     continue
                 body, actual = samples(source)
                 expected = case["expected"]
@@ -135,7 +136,7 @@ class LitBodyGeometryTests(unittest.TestCase):
         source = copy.deepcopy(SOURCE)
         for radius in (8, 6, 1):
             source["radii"] = {name: {"x": radius, "y": radius} for name in source["radii"]}
-            with self.subTest(radius=radius), self.assertRaisesRegex(ValueError, f"radius {float(radius)} px cannot carry shoulderWidth 2 px"):
+            with self.subTest(radius=radius), self.assertRaisesRegex(ValueError, f"topLeft corner radius {radius} px cannot carry shoulderWidth 2 px"):
                 Body(source)
         source["radii"] = {name: {"x": 8.0001, "y": 8.0001} for name in source["radii"]}
         Body(source)

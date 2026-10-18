@@ -35,9 +35,11 @@ For one part in physical part-local `px`:
 The face carries the [bounded relief](82-surface-relief.md) over F. Its profile
 is selected by part from authored data alone: neither state, material family
 nor depth scale selects or scales it, so hover, pressed and disabled change D,
-never the relief. A nonzero corner of radius r with shoulder width w requires
-`tau = 4*w/r < 1`; otherwise resolution fails with a diagnostic naming the
-corner, the radius and the shoulder width. No shoulder clamp is applied.
+never the relief. A nonzero corner of radius r with shoulder width w requires the spec/82
+`tau = 2*(w/r + w/r) < 1`; otherwise resolution fails with a diagnostic naming
+the physical corner, the radius and the shoulder width. Component contracts
+that select the profile by part prefix that diagnostic with the part name.
+No shoulder clamp is applied.
 
 ## Region law
 

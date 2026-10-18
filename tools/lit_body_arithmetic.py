@@ -18,7 +18,7 @@ STATES = {"rest", "hover", "pressed", "disabled", "focused", "checked"}
 def phase(states):
     unsupported = set(states) - STATES
     if unsupported:
-        raise ValueError(f"unsupported lit control state {sorted(unsupported)[0]}")
+        raise ValueError("lit control bodies support only rest, hover, pressed, disabled, focused and checked states")
     for name in ("disabled", "pressed", "hover"):
         if name in states:
             return name
@@ -36,14 +36,19 @@ def physical_radii(source):
     )
     factor = min([1.0] + [limit / total for total, limit in sums if total > 0])
     result = []
-    for name in LOGICAL[source["environment"]["layoutDirection"]]:
+    for corner, name in zip(PHYSICAL, LOGICAL[source["environment"]["layoutDirection"]]):
         x, y = radii[name]["x"] * factor, radii[name]["y"] * factor
         if x == 0 or y == 0:
             x = y = 0.0
         if x != y:
-            raise ValueError("lit control bodies require circular corners with equal extents")
+            raise ValueError(f"{corner} corner must be circular with equal extents")
         result.append(x)
     return result
+
+
+def number(value):
+    """Shortest decimal form, without a fraction for integral values."""
+    return str(int(value)) if float(value).is_integer() else repr(float(value))
 
 
 def relief_profile_violation(profile):
@@ -101,9 +106,9 @@ class Body:
             raise ValueError(violation)
         if self.kind != "flat":
             for name, radius in zip(PHYSICAL, self.radii):
-                if radius > 0 and 4 * self.shoulder / radius >= 1:
+                if radius > 0 and 2 * (self.shoulder / radius + self.shoulder / radius) >= 1:
                     raise ValueError(
-                        f"{name} corner radius {radius} px cannot carry shoulderWidth {self.shoulder} px: tau must be below 1"
+                        f"{name} corner radius {number(radius)} px cannot carry shoulderWidth {number(self.shoulder)} px: tau must be below 1"
                     )
         self.pigment = pigment_result({
             "materialFamily": identity["materialFamily"],
@@ -341,6 +346,8 @@ class Body:
                 horizontal, vertical = ((0, 2), (1, 2), (1, 3), (0, 3))[index]
                 relief_pads[horizontal] = max(relief_pads[horizontal], pad)
                 relief_pads[vertical] = max(relief_pads[vertical], pad)
+            if not (self.width - relief_pads[1] > relief_pads[0] and self.height - relief_pads[3] > relief_pads[2]):
+                raise ValueError("content plateau must have representable positive area")
         diagonal = 1 - math.sqrt(0.5) + 8 * EPSILON
 
         def edge_pad(axis):
