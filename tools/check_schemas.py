@@ -1910,6 +1910,16 @@ def main():
         raise AssertionError(f"{duplicate_spatial}: duplicate role was accepted")
     checked += 1
 
+    duplicate_icon = ROOT / "conformance/content/invalid-duplicate-icon-member.json"
+    try:
+        load_json(duplicate_icon)
+    except ValueError as error:
+        if "duplicate JSON member" not in str(error):
+            raise
+    else:
+        raise AssertionError(f"{duplicate_icon}: duplicate member was accepted")
+    checked += 1
+
     duplicate_typography = ROOT / "conformance/typography/invalid-duplicate-role.json"
     try:
         load_json(duplicate_typography)

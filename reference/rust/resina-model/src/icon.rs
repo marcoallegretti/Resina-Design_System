@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -48,7 +48,6 @@ pub enum IconDirection {
 pub struct IconContent {
     reference: String,
     kind: IconKind,
-    grid: u32,
     ink_bounds: IconBounds,
     optical_bounds: IconBounds,
     direction: IconDirection,
@@ -63,10 +62,6 @@ impl IconContent {
 
     pub fn kind(&self) -> IconKind {
         self.kind
-    }
-
-    pub fn grid(&self) -> u32 {
-        self.grid
     }
 
     pub fn ink_bounds(&self) -> IconBounds {
@@ -102,9 +97,17 @@ enum DirectionBehavior {
 #[serde(deny_unknown_fields)]
 struct DirectionInput {
     behavior: DirectionBehavior,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "present",
+        skip_serializing_if = "Option::is_none"
+    )]
     ltr: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "present",
+        skip_serializing_if = "Option::is_none"
+    )]
     rtl: Option<String>,
 }
 
@@ -120,14 +123,28 @@ struct IconContentInput {
     schema_version: String,
     reference: String,
     kind: IconKind,
-    grid: f64,
     ink_bounds: IconBounds,
     optical_bounds: IconBounds,
     direction: DirectionInput,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "present",
+        skip_serializing_if = "Option::is_none"
+    )]
     layers: Option<Vec<LayerInput>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "present",
+        skip_serializing_if = "Option::is_none"
+    )]
     baked_light: Option<bool>,
+}
+
+// An explicit null is not an absent member.
+fn present<'de, D: Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 
 impl TryFrom<IconContentInput> for IconContent {
@@ -138,11 +155,8 @@ impl TryFrom<IconContentInput> for IconContent {
             return Err("unsupported icon content version".into());
         }
         validate_reference(&input.reference)?;
-        if !(input.grid >= 1.0 && input.grid.fract() == 0.0 && input.grid <= f64::from(u32::MAX)) {
-            return Err("icon grid must be a positive integer".into());
-        }
-        validate_bounds("inkBounds", input.ink_bounds, input.grid)?;
-        validate_bounds("opticalBounds", input.optical_bounds, input.grid)?;
+        validate_bounds("inkBounds", input.ink_bounds)?;
+        validate_bounds("opticalBounds", input.optical_bounds)?;
         let direction = direction(input.direction, &input.reference)?;
         let (layers, baked_light) = match input.kind {
             IconKind::Symbolic => {
@@ -165,7 +179,6 @@ impl TryFrom<IconContentInput> for IconContent {
         Ok(Self {
             reference: input.reference,
             kind: input.kind,
-            grid: input.grid as u32,
             ink_bounds: input.ink_bounds,
             optical_bounds: input.optical_bounds,
             direction,
@@ -189,7 +202,6 @@ impl From<IconContent> for IconContentInput {
             schema_version: "0.1.0".into(),
             reference: content.reference,
             kind: content.kind,
-            grid: f64::from(content.grid),
             ink_bounds: content.ink_bounds,
             optical_bounds: content.optical_bounds,
             direction: DirectionInput { behavior, ltr, rtl },
@@ -226,15 +238,15 @@ fn validate_reference(reference: &str) -> Result<(), String> {
     }
 }
 
-fn validate_bounds(field: &str, bounds: IconBounds, grid: f64) -> Result<(), String> {
+fn validate_bounds(field: &str, bounds: IconBounds) -> Result<(), String> {
     if bounds.x < 0.0 || bounds.y < 0.0 {
         return Err(format!("{field} must have a nonnegative origin"));
     }
     if bounds.width <= 0.0 || bounds.height <= 0.0 {
         return Err(format!("{field} must have a positive extent"));
     }
-    if bounds.x + bounds.width > grid || bounds.y + bounds.height > grid {
-        return Err(format!("{field} exceeds the icon grid"));
+    if bounds.x + bounds.width > 1.0 || bounds.y + bounds.height > 1.0 {
+        return Err(format!("{field} exceeds the icon box"));
     }
     Ok(())
 }
@@ -323,18 +335,17 @@ mod tests {
     #[test]
     fn symbolic_icon_exposes_its_metadata() {
         let content: IconContent = serde_json::from_str(
-            r#"{"schemaVersion":"0.1.0","reference":"resina.fixture:undo","kind":"symbolic","grid":24,
-            "inkBounds":{"x":3,"y":4,"width":18,"height":16},
-            "opticalBounds":{"x":2.5,"y":3,"width":19,"height":18},
+            r#"{"schemaVersion":"0.1.0","reference":"resina.fixture:undo","kind":"symbolic",
+            "inkBounds":{"x":0.125,"y":0.1875,"width":0.75,"height":0.625},
+            "opticalBounds":{"x":0.1,"y":0.125,"width":0.8,"height":0.75},
             "direction":{"behavior":"directionalVariants","ltr":"resina.fixture:undo-ltr","rtl":"resina.fixture:undo-rtl"},
             "layers":[{"role":"content"},{"role":"status.warning"}]}"#,
         )
         .unwrap();
         assert_eq!(content.reference(), "resina.fixture:undo");
         assert_eq!(content.kind(), IconKind::Symbolic);
-        assert_eq!(content.grid(), 24);
-        assert_eq!(content.ink_bounds().width, 18.0);
-        assert_eq!(content.optical_bounds().x, 2.5);
+        assert_eq!(content.ink_bounds().width, 0.75);
+        assert_eq!(content.optical_bounds().x, 0.1);
         assert_eq!(
             content.direction(),
             &IconDirection::DirectionalVariants {
@@ -351,12 +362,25 @@ mod tests {
 
     #[test]
     fn duplicate_members_are_rejected() {
-        for source in [
-            r#"{"schemaVersion":"0.1.0","reference":"resina.fixture:clock","reference":"resina.fixture:other","kind":"symbolic","grid":24,"inkBounds":{"x":0,"y":0,"width":24,"height":24},"opticalBounds":{"x":0,"y":0,"width":24,"height":24},"direction":{"behavior":"invariant"},"layers":[{"role":"content"}]}"#,
-            r#"{"schemaVersion":"0.1.0","reference":"resina.fixture:clock","kind":"symbolic","grid":24,"inkBounds":{"x":0,"x":1,"y":0,"width":20,"height":24},"opticalBounds":{"x":0,"y":0,"width":24,"height":24},"direction":{"behavior":"invariant"},"layers":[{"role":"content"}]}"#,
-            r#"{"schemaVersion":"0.1.0","reference":"resina.fixture:clock","kind":"symbolic","grid":24,"inkBounds":{"x":0,"y":0,"width":24,"height":24},"opticalBounds":{"x":0,"y":0,"width":24,"height":24},"direction":{"behavior":"invariant","behavior":"mirror"},"layers":[{"role":"content"}]}"#,
-        ] {
-            let error = serde_json::from_str::<IconContent>(source).unwrap_err();
+        let source =
+            include_str!("../../../../conformance/content/invalid-duplicate-icon-member.json");
+        let nested = [
+            source.replacen(r#""x": 0,"#, r#""x": 0, "x": 0.5,"#, 1),
+            source.replacen(
+                r#""behavior": "invariant""#,
+                r#""behavior": "invariant", "behavior": "mirror""#,
+                1,
+            ),
+            source.replacen(
+                r#"{"role": "content"}"#,
+                r#"{"role": "content", "role": "content"}"#,
+                1,
+            ),
+        ];
+        let unique = source.replacen(r#""reference": "resina.fixture:other","#, "", 1);
+        assert!(serde_json::from_str::<IconContent>(&unique).is_ok());
+        for source in std::iter::once(source.to_owned()).chain(nested) {
+            let error = serde_json::from_str::<IconContent>(&source).unwrap_err();
             assert!(error.to_string().contains("duplicate field"), "{error}");
         }
     }

@@ -4,12 +4,11 @@
   "title": "Resina Icon Content",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "reference", "kind", "grid", "inkBounds", "opticalBounds", "direction"],
+  "required": ["schemaVersion", "reference", "kind", "inkBounds", "opticalBounds", "direction"],
   "properties": {
     "schemaVersion": { "const": "0.1.0" },
     "reference": { "$ref": "#/$defs/reference" },
     "kind": { "enum": ["symbolic", "color"] },
-    "grid": { "type": "integer", "minimum": 1 },
     "inkBounds": { "$ref": "#/$defs/bounds" },
     "opticalBounds": { "$ref": "#/$defs/bounds" },
     "direction": {
@@ -78,10 +77,10 @@
   "$defs": {
     "reference": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*:[a-z0-9]+(-[a-z0-9]+)*$"
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*:[a-z0-9]+(-[a-z0-9]+)*(?![\\s\\S])"
     },
-    "coordinate": { "type": "number", "minimum": 0 },
-    "extent": { "type": "number", "exclusiveMinimum": 0 },
+    "coordinate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "extent": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
     "bounds": {
       "type": "object",
       "additionalProperties": false,
