@@ -121,6 +121,56 @@
     "schemaValid": true
   },
   {
+    "name": "every declared layer role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        },
+        {
+          "role": "accent.primary"
+        },
+        {
+          "role": "accent.secondary"
+        },
+        {
+          "role": "accent.tertiary"
+        },
+        {
+          "role": "status.error"
+        },
+        {
+          "role": "status.warning"
+        },
+        {
+          "role": "status.success"
+        },
+        {
+          "role": "status.info"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
     "name": "single-segment namespace with digits in the name",
     "document": {
       "schemaVersion": "0.1.0",
@@ -905,6 +955,36 @@
     },
     "schemaValid": false,
     "error": "inkBounds must have a nonnegative origin"
+  },
+  {
+    "name": "negative optical origin",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": -0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "opticalBounds must have a nonnegative origin"
   },
   {
     "name": "zero ink width",
