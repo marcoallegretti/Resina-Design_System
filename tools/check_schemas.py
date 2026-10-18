@@ -949,6 +949,12 @@ def main():
         ("lit body misplaced edge interior", "/geometry/edgeInterior/offset", {"x": 0, "y": 0}),
         ("lit body content outside plateau", "/face/contentBounds/x", 1),
         ("lit body inexact edge range", "/face/colorRanges/2/upper", lit_body["face"]["pigment"]["body"]),
+        ("lit body truncated silhouette", "/geometry/silhouette/segments", lit_body["geometry"]["silhouette"]["segments"][:1]),
+        ("lit body unswept silhouette segments", "/geometry/silhouette/segments/4/center", {"x": 72, "y": 24}),
+        ("lit body edge interior with silhouette segments", "/geometry/edgeInterior/contour/segments", lit_body["geometry"]["silhouette"]["segments"]),
+        ("lit body corner contradicting the silhouette", "/face/surface/outline/corners/topLeft", {"x": 4, "y": 4}),
+        ("lit body outline reserved without the edge inset", "/face/surface/outline/contentBounds/x", 6),
+        ("lit body contrast of another foreground", "/face/contentContrastRatio", 3),
     ):
         invalid = apply_changes(lit_body, [{"path": pointer, "value": value}])
         check_case(lit_body_schema, name, invalid, True)
@@ -1419,7 +1425,7 @@ def main():
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
-        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 6 + 7
+        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 12 + 7
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)

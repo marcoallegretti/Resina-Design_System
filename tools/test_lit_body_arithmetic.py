@@ -3,7 +3,9 @@ import math
 import unittest
 
 from check_schemas import ROOT, apply_changes, load_json
-from lit_body_arithmetic import PHYSICAL, Body, body_invariants, physical_radii, pixels, samples
+from lit_body_arithmetic import (
+    LOGICAL, PHYSICAL, Body, body_invariants, contour_difference, physical_radii, pixels, samples, swept_contour,
+)
 from material_relief_arithmetic import rectangular_samples
 
 SOURCE = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
@@ -122,6 +124,28 @@ class LitBodyGeometryTests(unittest.TestCase):
                         found = any(body.contains((point[0] - t * dx, point[1] - t * dy), inset) for t in (k / 200 for k in range(201)))
                         with self.subTest(case=name, inset=inset, point=point):
                             self.assertEqual(decided, found)
+
+    def test_swept_contours_reproduce_the_public_circular_extrusion_vectors(self):
+        cases = load_json(ROOT / "conformance/geometry/extruded-contour-vectors.json")
+        checked = 0
+        for case in cases:
+            request = case["request"]
+            segments = (case.get("expected") or {}).get("segments")
+            if not segments or request.get("layoutDirection") not in LOGICAL:
+                continue
+            corners = [request["radii"][name] for name in LOGICAL[request["layoutDirection"]]]
+            if any(corner["x"] != corner["y"] for corner in corners):
+                continue
+            width, height = request["size"]["width"], request["size"]["height"]
+            sums = ((corners[0]["x"] + corners[1]["x"], width), (corners[3]["x"] + corners[2]["x"], width),
+                    (corners[0]["x"] + corners[3]["x"], height), (corners[1]["x"] + corners[2]["x"], height))
+            factor = min([1.0] + [limit / total for total, limit in sums if total > 0])
+            radii = [corner["x"] * factor for corner in corners]
+            offset = (request["offset"]["x"], request["offset"]["y"])
+            with self.subTest(case=case["name"]):
+                self.assertIsNone(contour_difference(segments, swept_contour(width, height, radii, offset)))
+            checked += 1
+        self.assertGreaterEqual(checked, 9)
 
     def test_layout_direction_maps_logical_corners_without_mirroring_light(self):
         ltr, rtl = case_source("asymmetric-corners-ltr"), case_source("asymmetric-corners-rtl")

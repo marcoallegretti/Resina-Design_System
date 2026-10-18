@@ -13,6 +13,8 @@ LOGICAL = {
 }
 SIGNS = ((-1, -1), (1, -1), (1, 1), (-1, 1))
 STATES = {"rest", "hover", "pressed", "disabled", "focused", "checked"}
+QUARTERS = (((-1.0, 0.0), (0.0, -1.0)), ((0.0, -1.0), (1.0, 0.0)), ((1.0, 0.0), (0.0, 1.0)), ((0.0, 1.0), (-1.0, 0.0)))
+EDGE_NORMALS = ((0.0, -1.0), (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0))
 
 
 def phase(states):
@@ -438,6 +440,88 @@ def pixels(source, width, height, origin, scale, samples_per_axis, band=None):
     return result
 
 
+def swept_contour(width, height, radii, offset):
+    """Canonical spec/35 segments of a circular rounded rectangle swept by offset."""
+    dx, dy = offset
+    centers = ((radii[0], radii[0]), (width - radii[1], radii[1]),
+               (width - radii[2], height - radii[2]), (radii[3], height - radii[3]))
+    corners = ((0.0, 0.0), (width, 0.0), (width, height), (0.0, height))
+
+    def place(p, moved):
+        return {"x": p[0] + dx, "y": p[1] + dy} if moved else {"x": p[0], "y": p[1]}
+
+    def on_arc(index, radial):
+        return (centers[index][0] + radii[index] * radial[0], centers[index][1] + radii[index] * radial[1])
+
+    portions = []
+    length = math.hypot(dx, dy)
+    for index in range(4):
+        radius = radii[index]
+        if radius > 0:
+            start, end = QUARTERS[index]
+            radials = [start]
+            if length:
+                for candidate in ((dy / length, -dx / length), (-dy / length, dx / length)):
+                    if all(c != 0 and math.copysign(1, c) == math.copysign(1, s + e)
+                           for c, s, e in zip(candidate, start, end)):
+                        radials.append(candidate)
+            radials.append(end)
+            for first, second in zip(radials, radials[1:]):
+                moved = (first[0] + second[0]) * dx + (first[1] + second[1]) * dy > 0
+                portions.append((moved, on_arc(index, first), on_arc(index, second), {
+                    "kind": "arc", "center": place(centers[index], moved), "radii": {"x": radius, "y": radius},
+                    "start": {"x": first[0], "y": first[1]}, "end": {"x": second[0], "y": second[1]}}))
+        normal = EDGE_NORMALS[index]
+        following = (index + 1) % 4
+        begin = corners[index] if radius == 0 else on_arc(index, normal)
+        finish = corners[following] if radii[following] == 0 else on_arc(following, normal)
+        moved = normal[0] * dx + normal[1] * dy > 0
+        if begin != finish:
+            portions.append((moved, begin, finish, {"kind": "line", "from": place(begin, moved), "to": place(finish, moved)}))
+        elif radius == 0 and radii[following] == 0:
+            raise ValueError("a square edge cannot collapse")
+    segments = []
+    for index, (moved, _, finish, segment) in enumerate(portions):
+        segments.append(segment)
+        following = portions[(index + 1) % len(portions)]
+        if following[0] != moved:
+            segments.append({"kind": "line", "from": place(finish, moved), "to": place(following[1], following[0])})
+    return segments
+
+
+def contour_difference(actual, expected, path=""):
+    """First path where a published contour differs beyond the spec/35 tolerances, or None."""
+    if isinstance(expected, dict):
+        if not isinstance(actual, dict) or actual.keys() != expected.keys():
+            return path or "/"
+        return next((found for name in expected
+                     if (found := contour_difference(actual[name], expected[name], f"{path}/{name}"))), None)
+    if isinstance(expected, list):
+        if not isinstance(actual, list) or len(actual) != len(expected):
+            return path or "/"
+        return next((found for index, value in enumerate(expected)
+                     if (found := contour_difference(actual[index], value, f"{path}/{index}"))), None)
+    if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        radial = path.rpartition("/")[0].rpartition("/")[2] in ("start", "end")
+        if (isinstance(actual, bool) or not isinstance(actual, (int, float))
+                or not math.isclose(actual, expected, rel_tol=0 if radial else 1e-12, abs_tol=1e-12)):
+            return path
+        return None
+    return None if actual == expected else (path or "/")
+
+
+def outline_content_bounds(size, radii, minimum_inset):
+    """spec/81 circular content reservation with the reference padding of g."""
+    g = 1 - 2 ** -0.5 + 4 * EPSILON
+    tl, tr, br, bl = radii
+
+    def pad(*extents):
+        return max([minimum_inset] + [math.nextafter(g * extent, math.inf) for extent in extents if extent])
+
+    left, right, top, bottom = pad(tl, bl), pad(tr, br), pad(tl, tr), pad(bl, br)
+    return {"x": left, "y": top, "width": size["width"] - left - right, "height": size["height"] - top - bottom}
+
+
 def body_invariants(ir):
     """Return the first violated cross-member invariant of a lit control body IR, or None."""
     face, lighting = ir["face"], ir["lighting"]
@@ -457,14 +541,29 @@ def body_invariants(ir):
                     "height": size["height"] - 2 * inset + abs(offset["y"])}
         return all(abs(bounds[name] - value) <= 1e-12 * max(1.0, abs(value)) for name, value in expected.items())
 
-    if not swept(ir["geometry"]["silhouette"]["bounds"], 0):
-        return "silhouette must sweep the outline by the side offset"
-    interior = ir["geometry"]["edgeInterior"]
-    if interior["offset"] != {"x": edge, "y": edge} or not swept(interior["contour"]["bounds"], edge):
-        return "edge interior must sweep the inset outline by the side offset"
     outline = face["surface"]["outline"]
     if outline["curvature"] != "circular" or any(outline["corners"][name]["x"] != outline["corners"][name]["y"] for name in PHYSICAL):
         return "lit control bodies use circular outlines"
+    radii = [outline["corners"][name]["x"] for name in PHYSICAL]
+    profile = face["surface"]["profile"]
+    if profile["kind"] != "flat" and any(
+            radius > 0 and not 2 * (profile["shoulderWidth"] / radius + profile["shoulderWidth"] / radius) < 1 for radius in radii):
+        return "every rounded corner must carry the shoulder with tau below 1"
+    if contour_difference(outline["contentBounds"], outline_content_bounds(size, radii, edge)):
+        return "the outline content reservation must use the exterior edge width as minimum inset"
+    sweep = (offset["x"], offset["y"])
+    silhouette = ir["geometry"]["silhouette"]
+    if not swept(silhouette["bounds"], 0) or contour_difference(
+            silhouette["segments"], swept_contour(size["width"], size["height"], radii, sweep)):
+        return "silhouette must sweep the outline by the side offset"
+    interior = ir["geometry"]["edgeInterior"]
+    inset = swept_contour(size["width"] - 2 * edge, size["height"] - 2 * edge, [max(radius - edge, 0.0) for radius in radii], sweep)
+    if (interior["offset"] != {"x": edge, "y": edge} or not swept(interior["contour"]["bounds"], edge)
+            or contour_difference(interior["contour"]["segments"], inset)):
+        return "edge interior must sweep the inset outline by the side offset"
+    expected_contrast = contrast(face["foreground"]["components"], face["pigment"]["body"]["components"])
+    if not math.isclose(face["contentContrastRatio"], expected_contrast, rel_tol=1e-12, abs_tol=1e-12):
+        return "contentContrastRatio must be the contrast of the face foreground against the body"
     content, plateau = face["contentBounds"], face["surface"]["contentBounds"]
     if (content["x"] < plateau["x"] or content["y"] < plateau["y"]
             or content["x"] + content["width"] > plateau["x"] + plateau["width"]

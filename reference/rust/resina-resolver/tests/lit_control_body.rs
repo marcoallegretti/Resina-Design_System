@@ -302,6 +302,22 @@ fn published_invariants_hold_for_every_resolved_body() {
             body.geometry().edge_interior().offset(),
             PhysicalVector { x: edge, y: edge }
         );
+        let outline = &ir["face"]["surface"]["outline"];
+        if ["topLeft", "topRight", "bottomRight", "bottomLeft"]
+            .iter()
+            .all(|corner| outline["corners"][corner]["x"] == json!(0.0))
+        {
+            assert_eq!(
+                outline["contentBounds"],
+                json!({
+                    "x": edge,
+                    "y": edge,
+                    "width": size["width"].as_f64().unwrap() - 2.0 * edge,
+                    "height": size["height"].as_f64().unwrap() - 2.0 * edge
+                }),
+                "{name}"
+            );
+        }
         let content = body.face().content_bounds();
         let plateau = body.face().surface().content_bounds();
         assert!(content.x >= plateau.x && content.y >= plateau.y, "{name}");

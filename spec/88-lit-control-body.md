@@ -154,9 +154,12 @@ this body from the spec/36 body by its enclosing envelope.
 Semantic invariants beyond structural validation: `face.light.keyDirection`
 equals `lighting.direction`; interaction light appears only in the hover or
 pressed phase; `lighting.sideOffset` is `-direction*depth`; the silhouette and
-swept edge interior are the sweeps of F and `F(e)` by that offset, the latter
-placed at `(e,e)`; the outline is circular with equal corner extents; C lies in
-E and in the relief plateau; the third range is the exact edge color.
+swept edge interior are the canonical spec/35 records, segments and bounds, of
+F and `F(e)` swept by that offset, the latter placed at `(e,e)`; the outline is
+circular with equal corner extents, every nonzero corner has `tau < 1` for the
+face profile and the outline content reservation uses `minimumInset` e; C lies
+in E and in the relief plateau; `face.contentContrastRatio` is the contrast of
+`face.foreground` against the body; the third range is the exact edge color.
 Derived numbers use absolute or relative tolerance 1e-12, whichever is larger;
 the exact body, side and edge colors, null classification, structure and
 versions remain exact.
@@ -181,11 +184,12 @@ The [independent arithmetic](../tools/lit_body_arithmetic.py) evaluates the
 vectors without the reference: circular per-corner relief gates and normals,
 exact rational F and E membership, sweep membership by intersecting the
 parameter intervals of `{p - t*d : t in [0,1]}` with each convex constraint, the
-signed law, guards, content reservation, the published IR invariants and
-supersampled pixels with tie-bracketed bounds. Its
+signed law, guards, content reservation, the published IR invariants with
+independently derived canonical swept contours, and supersampled pixels with
+tie-bracketed bounds. Its
 [tests](../tools/test_lit_body_arithmetic.py) also check normals against height
 differences, E against an independently inset contour, sweeps against a dense
-parameter search and depth-zero equivalence with the spec/86 rectangular
+parameter search, its contours against the public circular extrusion vectors and depth-zero equivalence with the spec/86 rectangular
 arithmetic. The Rust reference `LitControlBodyIr::sample_paint` reproduces the
 vectors, equals the spec/86 result at depth zero under the stated mapping
 (`enabled` true, `interactionActive` exactly for hover or pressed), equals the
