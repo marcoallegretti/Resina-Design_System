@@ -275,12 +275,12 @@ def activation_cases(session):
         before = len(effects(session.events()))
         session.input.key(key, True)
         held = session.settle(lambda current: (current["state"]["hold"] or {}).get("key") == name
-                              and current["ready"], name + " hold with a published frame")
+                                              and current["ready"], name + " hold with a published frame")
         session.quiet(1.2)
-        repeated = session.current()["publications"] - held["publications"]
+        current = session.current()
+        repeated = current["publications"] - held["publications"]
         if repeated < 2:
             raise ValueError(f"{name} hold delivered {repeated} auto-repeat publications; at least 2 are required")
-        current = session.current()
         retracted = current["retractions"] - held["retractions"]
         if not current["ready"]:
             raise ValueError(f"{name} hold left no published frame after auto-repeat")

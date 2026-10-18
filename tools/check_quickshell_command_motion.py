@@ -169,8 +169,9 @@ def spring_cases(session, motion):
     if current["retractions"] != held["retractions"] or not current["ready"]:
         raise ValueError("auto-repeat during a held press with motion retracted or unpublished the Command frame")
     held_frames = [frame for frame in motion.frames()[start:] if frame["state"]["hold"]]
-    if not held_frames or not (settled(held_frames[-1]) or held_frames[-1]["time"] - held_frames[0]["time"] >= 1):
-        raise ValueError("held spring frames stopped before settling while auto-repeat continued")
+    # The authored test profile is still moving after the compositor's repeat delay, so held frames span repeats.
+    if not held_frames or held_frames[-1]["time"] - held_frames[0]["time"] < 1:
+        raise ValueError("held spring frames stopped while auto-repeat continued")
     if len(epochs(held_frames)) != 1:
         raise ValueError("auto-repeat restarted the motion clock during a held press")
     session.input.key(KEY_SPACE, False)
