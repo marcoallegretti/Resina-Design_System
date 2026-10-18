@@ -12,8 +12,9 @@ ResinaCommandInput {
     // Alias the native read-only property: a consumer can reenter publication
     // without recursively mutating a QML string binding.
     property alias snapshot: resolver.publication
-    readonly property bool ready: acceptsNewGestures && pointerOwner && pointerOwner.acceptsNewGestures
-        && snapshot.length > 0 && currentFrame && currentFrame.paintReady
+    // Qt sends no focus event for an ignored item, nor when it stops being
+    // ignored: expose the complete node before consumers observe readiness.
+    readonly property bool ready: state.published && !Accessible.ignored
     readonly property string preparationError: state.error
     signal activated()
 
@@ -25,13 +26,18 @@ ResinaCommandInput {
     activeFocusOnTab: activeFocus || (acceptsNewGestures && enabled)
     implicitWidth: state.reservation ? state.reservation.width : 0
     implicitHeight: state.reservation ? state.reservation.height : 0
-    Accessible.ignored: !ready
+    // Refreshes keep the previous complete semantics exposed until the next
+    // complete semantics replace them; withdrawal clears them.
+    Accessible.ignored: !state.semantics || !presented()
     Accessible.role: Accessible.Button
     Accessible.name: state.semantics ? state.semantics.name : ""
     Accessible.description: state.semantics && state.semantics.description !== null ? state.semantics.description : ""
-    Accessible.focusable: state.semantics ? state.semantics.focusable : false
+    // Retained semantics must not keep an unavailable Command focusable before its next publication.
+    Accessible.focusable: state.semantics ? state.semantics.focusable && enabled : false
     Accessible.pressed: false
     function accessiblePressAction() { invoke(); }
+
+    function presented() { return visible && Boolean(nativeWindow) && nativeWindow.visible; }
 
     function invoke() {
         if (!acceptsNewGestures || !enabled) return false;
@@ -64,11 +70,13 @@ ResinaCommandInput {
             JSON.stringify({schemaVersion:"0.1.0",channels:retained,time:0}),false)).motion;
         if (!state.motionTarget) {
             clockValue(clock.restart());
+            state.retargetTime = null;
         } else if (canonical(probe.target) !== canonical(state.motionTarget) || probe.policy !== state.policy) {
             const previousTime = clockValue(clock.restart()).previousTime;
             const previous = clockValue(resolver.retargetMotion(JSON.stringify({channels:state.channels,
                 target:state.motionTarget,policy:state.policy,time:previousTime})));
             state.channels = previous.channels;
+            state.retargetTime = previousTime;
         }
         state.motionTarget = probe.target;
         state.policy = probe.policy;
@@ -86,6 +94,8 @@ ResinaCommandInput {
         state.motionActive = false;
         state.channels = null;
         state.motionTarget = null;
+        state.publishedSpan = null;
+        state.frameDue = false;
         clock.invalidate();
         root.focus = false;
         const running = state.running;
@@ -164,10 +174,14 @@ ResinaCommandInput {
         state.running = true;
         state.revision = {};
         state.dirty = false;
+        state.frameDue = false;
         try {
+            const cycle = clockValue(preparationClock.restart()).previousTime;
+            const predecessorSpan = state.publishedSpan;
+            const publicationDelay = predecessorSpan === null ? null : cycle - predecessorSpan;
+            state.publishedSpan = null;
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
-                state.semantics = null;
                 retireViews();
             }
             if (disabledFocusable)
@@ -200,7 +214,8 @@ ResinaCommandInput {
             state.pendingView = candidate;
             candidate.invalidate();
             if (motionChannels.length)
-                candidate.prepare(state.pending,options,motionSource(state.pending,options));
+                candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime,
+                    preparationClock,publicationDelay,predecessorSpan);
             else
                 candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
@@ -249,6 +264,7 @@ ResinaCommandInput {
         if (state.revision !== revision) return;
         resolver.publishFrame(candidate.snapshot,candidate.motion,candidate);
         if (state.revision !== revision) return;
+        state.publishedSpan = candidate.motion.length ? clockValue(preparationClock.sample()).time : null;
         if (candidate.motion.length) {
             const sample = JSON.parse(candidate.motion).motion;
             state.motionActive = !(sample.bodyMix.settled && sample.depthScale.settled);
@@ -257,7 +273,16 @@ ResinaCommandInput {
         state.armed = true;
         if (state.revision !== revision) return;
         if (!ready) fail("native command publication was invalidated");
+        else if (state.frameDue) Qt.callLater(resume);
     }
+
+    function advance() {
+        // A tick during preparation starts the next frame at publication, not one tick later.
+        if (state.running || state.pending.length) state.frameDue = true;
+        else refresh(true);
+    }
+
+    function resume() { if (state.started && state.frameDue && frames.running) advance(); }
 
     function reconfigure() {
         if (!state.started) return;
@@ -269,12 +294,15 @@ ResinaCommandInput {
             state.resumeChannels = next && !next.error && canonical(next.channels) === state.profile ? captureMotion() : null;
             state.motionActive = false;
             state.motionTarget = null;
+            state.publishedSpan = null;
+            state.frameDue = false;
             clock.invalidate();
             state.qualified = false;
             state.armed = false;
             resolver.publishSnapshot("");
             state.pending = "";
-            state.semantics = null;
+            // Read live values: a binding on the same change signal may not have updated yet.
+            if (!presented()) state.semantics = null;
             state.error = "";
             invalidateTarget();
             retireViews();
@@ -294,7 +322,7 @@ ResinaCommandInput {
     onParentChanged: reconfigure()
     onNativeWindowChanged: reconfigure()
     Component.onCompleted: { state.started = true; Qt.callLater(refresh); }
-    Component.onDestruction: { state.started = false; state.pending = ""; state.pendingView = null; }
+    Component.onDestruction: { state.started = false; state.frameDue = false; state.pending = ""; state.pendingView = null; }
     onHoveredChanged: { if (state.qualified || !state.error.length) refresh(); }
 
     Connections {
@@ -335,22 +363,28 @@ ResinaCommandInput {
         function onNativeDeviceScaleChanged() { root.reconfigure(); }
     }
     FrameAnimation {
-        running: state.motionActive && motionChannels.length > 0 && !state.pending.length
+        id: frames
+        running: state.motionActive && motionChannels.length > 0
             && root.visible && root.nativeWindow && root.nativeWindow.visible && !state.error.length
-        onTriggered: root.refresh(true)
+        onTriggered: root.advance()
     }
     ResinaCommandView { id: view; visible: root.ready && root.currentFrame === view && paintReady }
     CommandClock { id: clock }
+    CommandClock { id: preparationClock }
     ResinaLabelMeasure { id: measurement }
     CommandSnapshotResolver { id: resolver }
     QtObject {
         id: state
+        readonly property bool published: root.acceptsNewGestures && root.pointerOwner
+            && root.pointerOwner.acceptsNewGestures && root.snapshot.length > 0
+            && root.currentFrame && root.currentFrame.paintReady
         property var revision: ({})
         property var pendingView: null
         property var alternate: null
         property var channels: null
         property var resumeChannels: null
         property var motionTarget: null
+        property var retargetTime: null
         property string profile: ""
         property string policy: ""
         property bool motionActive: false
@@ -359,6 +393,8 @@ ResinaCommandInput {
         property bool armed: false
         property bool running: false
         property bool dirty: false
+        property bool frameDue: false
+        property var publishedSpan: null
         property string target: ""
         property var reservation: null
         property string pending: ""

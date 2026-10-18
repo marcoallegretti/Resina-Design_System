@@ -2,7 +2,7 @@ import copy
 import unittest
 
 from check_command_motion_backend import equation_sample
-from check_quickshell_command_motion import (epochs, expected_states, frames, moving, settled, verify_clock,
+from check_quickshell_command_motion import (CHANNELS, epochs, expected_states, frames, moving, settled, verify_clock,
                                              verify_dynamics, verify_retarget)
 
 DYNAMICS = {"schemaVersion": "0.1.0", "mass": 1, "stiffness": 4, "damping": 4,
@@ -12,13 +12,19 @@ FIXTURE = {"bodyMix": copy.deepcopy(REST), "depthScale": copy.deepcopy(REST)}
 
 
 def frame(time, sample_time, settled_channels=(False, False), policy="spring", target=None, channels=None,
-          hovered=False, focused=True, enabled=True, hold=None):
+          hovered=False, focused=True, enabled=True, hold=None, retarget=None):
     return {"kind": "frame", "time": time, "hovered": hovered,
             "state": {"enabled": enabled, "focused": focused, "hold": hold},
-            "motion": {"time": sample_time, "channels": copy.deepcopy(channels or FIXTURE),
+            "motion": {"time": sample_time, "retargetTime": retarget, "channels": copy.deepcopy(channels or FIXTURE),
                        "motion": {"policy": policy, "target": target or {"bodyMix": 1, "depthScale": .5},
                                   "bodyMix": {"settled": settled_channels[0]},
                                   "depthScale": {"settled": settled_channels[1]}}}}
+
+
+def continued(previous, elapsed):
+    return {name: {"dynamics": DYNAMICS,
+                   "initial": dict(equation_sample(FIXTURE[name], previous["motion"]["motion"]["target"][name],
+                                                   elapsed, False)["state"])} for name in CHANNELS}
 
 
 class CommandMotionEvidenceTests(unittest.TestCase):
@@ -66,21 +72,44 @@ class CommandMotionEvidenceTests(unittest.TestCase):
             verify_dynamics(frame(0, 0, channels=changed), FIXTURE)
 
     def test_retarget_must_continue_from_the_reached_state(self):
-        previous = frame(10.3, .3)
-        reached = {name: equation_sample(FIXTURE[name], previous["motion"]["motion"]["target"][name], .35, False)["state"]
-                   for name in ("bodyMix", "depthScale")}
-        channels = {name: {"dynamics": DYNAMICS, "initial": dict(reached[name])} for name in reached}
-        verify_retarget(previous, frame(10.36, .01, channels=channels, target={"bodyMix": 0, "depthScale": 0}))
-        jumped = copy.deepcopy(channels)
-        jumped["bodyMix"]["initial"]["position"] += .2
-        with self.assertRaisesRegex(ValueError, "did not continue"):
-            verify_retarget(previous, frame(10.36, .01, channels=jumped, target={"bodyMix": 0, "depthScale": 0}))
+        earlier, previous = frame(10, .1), frame(10.3, .3)
+        released = {"bodyMix": 0, "depthScale": 0}
+        channels = continued(previous, .35)
+        # Log time lags the runtime clock by unrelated main-thread work.
+        verify_retarget(earlier, previous, frame(10.6, .01, channels=channels, target=released, retarget=.35))
+        for name in CHANNELS:
+            jumped = copy.deepcopy(channels)
+            jumped[name]["initial"]["position"] += .04
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, "did not continue"):
+                verify_retarget(earlier, previous, frame(10.36, .01, channels=jumped, target=released, retarget=.35))
         stopped = copy.deepcopy(channels)
         for name in stopped:
             stopped[name]["initial"]["velocity"] = 0
         with self.assertRaisesRegex(ValueError, "did not continue"):
-            verify_retarget(previous, frame(10.36, .01, channels=stopped, target={"bodyMix": 0, "depthScale": 0}))
+            verify_retarget(earlier, previous, frame(10.36, .01, channels=stopped, target=released, retarget=.35))
+        with self.assertRaisesRegex(ValueError, "did not continue"):
+            verify_retarget(earlier, previous, frame(10.36, .01, channels=channels, target=released, retarget=.39))
 
+    def test_retarget_instant_must_be_published_after_the_previous_sample(self):
+        earlier, previous = frame(10, .1), frame(10.3, .3)
+        for instant in (None, True, .29, float("inf"), float("nan"), "0.35"):
+            with self.subTest(instant=instant), self.assertRaisesRegex(ValueError, "retarget instant"):
+                verify_retarget(earlier, previous, frame(10.36, .01, target={"bodyMix": 0, "depthScale": 0},
+                                                         retarget=instant))
+
+    def test_retarget_instant_is_bounded_by_the_earlier_log(self):
+        earlier, released = frame(10, .1), {"bodyMix": 0, "depthScale": 0}
+        # The previous frame logged .19 s after its sample, later than the retarget it precedes.
+        lagging = frame(10.5, .3)
+        verify_retarget(earlier, lagging, frame(10.52, .01, channels=continued(lagging, .5), target=released,
+                                                retarget=.5))
+        previous = frame(10.3, .3)
+        for instant in (.9, 1.1):
+            with self.subTest(instant=instant), self.assertRaisesRegex(ValueError, "beyond"):
+                verify_retarget(earlier, previous, frame(10.6, .01, channels=continued(previous, instant),
+                                                         target=released, retarget=instant))
+        verify_retarget(earlier, previous, frame(10.6, .01, channels=continued(previous, .89), target=released,
+                                                 retarget=.89))
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,7 +4,15 @@ use resina_resolver::{
     FocusIndicatorIr, MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError,
     SurfacePaintError, SurfacePaintIr,
 };
-use std::{collections::TryReserveError, fmt};
+use std::{
+    collections::TryReserveError,
+    fmt,
+    num::NonZeroUsize,
+    panic,
+    sync::{Mutex, OnceLock, PoisonError},
+    thread,
+    time::{Duration, Instant},
+};
 mod uniform;
 use uniform::SampleBox;
 mod placement;
@@ -251,7 +259,7 @@ fn render_relief_face(
     body: &SrgbFallback,
     viewport: Viewport,
     samples_per_axis: u8,
-    sample: impl Fn(PhysicalVector) -> Result<Option<SrgbFallback>, ReliefPaintError>,
+    sample: impl Fn(PhysicalVector) -> Result<Option<SrgbFallback>, ReliefPaintError> + Sync,
 ) -> Result<RasterImage, RasterError> {
     render(
         viewport,
@@ -282,95 +290,213 @@ fn render(
     viewport: Viewport,
     samples_per_axis: u8,
     solid_color: &SrgbFallback,
-    uniform: impl Fn(SampleBox) -> UniformRegion,
-    mut sample: impl FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
+    uniform: impl Fn(SampleBox) -> UniformRegion + Sync,
+    sample: impl Fn(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError> + Sync,
 ) -> Result<RasterImage, RasterError> {
     let byte_count = validate(viewport, samples_per_axis)?;
     let mut rgba = Vec::new();
     rgba.try_reserve_exact(byte_count)
         .map_err(RasterError::Allocation)?;
-    let grid = f64::from(samples_per_axis);
-    let sample_count = grid * grid;
-    let mut decoded_color = None;
-    let mut solid_pixel = None;
-    for y in 0..viewport.height {
-        for x in 0..viewport.width {
-            if samples_per_axis >= 3 {
-                let at = |x: u32, y: u32, sample: f64| PhysicalVector {
-                    x: viewport.origin.x
-                        + (f64::from(x) + (sample + 0.5) / grid) / viewport.pixels_per_unit,
-                    y: viewport.origin.y
-                        + (f64::from(y) + (sample + 0.5) / grid) / viewport.pixels_per_unit,
-                };
-                let region = SampleBox {
-                    min: at(x, y, 0.0),
-                    max: at(x, y, grid - 1.0),
-                };
-                match uniform(region) {
-                    UniformRegion::Clear => {
-                        rgba.extend_from_slice(&[0; 4]);
-                        continue;
-                    }
-                    UniformRegion::Solid => {
-                        let pixel = match solid_pixel {
-                            Some(pixel) => pixel,
-                            None => {
-                                let pixel = constant_pixel(solid_color, samples_per_axis)?;
-                                solid_pixel = Some(pixel);
-                                pixel
-                            }
-                        };
-                        rgba.extend_from_slice(&pixel);
-                        continue;
-                    }
-                    UniformRegion::Sample => {}
-                }
+    rgba.resize(byte_count, 0);
+    let queue = Mutex::new(RowQueue {
+        rows: rgba.chunks_exact_mut(viewport.width as usize * 4).zip(0..),
+        failure: None,
+    });
+    let paint_rows = |budget: Option<Duration>| {
+        let started = Instant::now();
+        let mut painter = RowPainter {
+            viewport,
+            samples_per_axis,
+            solid_color,
+            uniform: &uniform,
+            sample: &sample,
+            decoded_color: None,
+            solid_pixel: None,
+        };
+        while let Some((row, y)) = RowQueue::next(&queue) {
+            if let Err(error) = painter.paint(row, y) {
+                RowQueue::fail(&queue, y, error);
             }
-            let mut linear_sum = [0.0; 3];
-            let mut covered = 0_u32;
-            for sy in 0..samples_per_axis {
-                for sx in 0..samples_per_axis {
-                    let point = PhysicalVector {
-                        x: viewport.origin.x
-                            + (f64::from(x) + (f64::from(sx) + 0.5) / grid)
-                                / viewport.pixels_per_unit,
-                        y: viewport.origin.y
-                            + (f64::from(y) + (f64::from(sy) + 0.5) / grid)
-                                / viewport.pixels_per_unit,
-                    };
-                    if let Some(color) = sample(point)? {
-                        covered += 1;
-                        let components = color.components();
-                        let linear = match decoded_color {
-                            Some((previous, linear)) if previous == components => linear,
-                            _ => {
-                                let linear =
-                                    srgb_to_linear_srgb(components).map_err(RasterError::Color)?;
-                                decoded_color = Some((components, linear));
-                                linear
-                            }
-                        };
-                        for (sum, channel) in linear_sum.iter_mut().zip(linear) {
-                            *sum += channel;
-                        }
-                    }
-                }
-            }
-            if covered == 0 {
-                rgba.extend_from_slice(&[0; 4]);
-            } else {
-                let rgb = linear_srgb_to_srgb(linear_sum.map(|sum| sum / f64::from(covered)))
-                    .map_err(RasterError::Color)?;
-                rgba.extend(rgb.map(quantize));
-                rgba.push(quantize(f64::from(covered) / sample_count));
+            if budget.is_some_and(|budget| started.elapsed() >= budget) {
+                return false;
             }
         }
+        true
+    };
+    let (workers, serial_budget) = schedule(viewport.height);
+    if workers <= 1 {
+        paint_rows(None);
+    } else if !paint_rows(Some(serial_budget)) {
+        thread::scope(|scope| {
+            // A worker that cannot be spawned leaves its rows to the remaining workers.
+            let helpers: Vec<_> = (1..workers)
+                .filter_map(|_| {
+                    thread::Builder::new()
+                        .spawn_scoped(scope, move || paint_rows(None))
+                        .ok()
+                })
+                .collect();
+            paint_rows(None);
+            for helper in helpers {
+                if let Err(payload) = helper.join() {
+                    panic::resume_unwind(payload);
+                }
+            }
+        });
     }
-    Ok(RasterImage {
-        width: viewport.width,
-        height: viewport.height,
-        rgba,
-    })
+    let failure = queue
+        .into_inner()
+        .unwrap_or_else(PoisonError::into_inner)
+        .failure;
+    match failure {
+        Some((_, error)) => Err(error),
+        None => Ok(RasterImage {
+            width: viewport.width,
+            height: viewport.height,
+            rgba,
+        }),
+    }
+}
+
+const MAX_RASTER_WORKERS: usize = 8;
+const SERIAL_RASTER_BUDGET: Duration = Duration::from_micros(500);
+
+#[cfg(test)]
+thread_local! {
+    static FORCED_WORKERS: std::cell::Cell<Option<usize>> = const { std::cell::Cell::new(None) };
+}
+
+/// Workers for a raster, and the time the calling thread paints alone before
+/// helpers are worth their start-up cost.
+fn schedule(rows: u32) -> (usize, Duration) {
+    #[cfg(test)]
+    if let Some(workers) = FORCED_WORKERS.with(std::cell::Cell::get) {
+        return (workers, Duration::ZERO);
+    }
+    static AVAILABLE: OnceLock<usize> = OnceLock::new();
+    let available = *AVAILABLE.get_or_init(|| {
+        thread::available_parallelism()
+            .map_or(1, NonZeroUsize::get)
+            .min(MAX_RASTER_WORKERS)
+    });
+    (
+        available.min(usize::try_from(rows).unwrap_or(usize::MAX)),
+        SERIAL_RASTER_BUDGET,
+    )
+}
+
+struct RowQueue<I> {
+    rows: I,
+    failure: Option<(u32, RasterError)>,
+}
+
+impl<'a, I: Iterator<Item = (&'a mut [u8], u32)>> RowQueue<I> {
+    fn next(queue: &Mutex<Self>) -> Option<(&'a mut [u8], u32)> {
+        let mut queue = queue.lock().unwrap_or_else(PoisonError::into_inner);
+        if queue.failure.is_some() {
+            return None;
+        }
+        queue.rows.next()
+    }
+
+    // Rows are handed out in ascending order, so every row above a failure is
+    // already claimed and the lowest failing row is the one a row-major pass
+    // would report.
+    fn fail(queue: &Mutex<Self>, y: u32, error: RasterError) {
+        let mut queue = queue.lock().unwrap_or_else(PoisonError::into_inner);
+        if queue.failure.as_ref().is_none_or(|(first, _)| y < *first) {
+            queue.failure = Some((y, error));
+        }
+    }
+}
+
+struct RowPainter<'a, U, S> {
+    viewport: Viewport,
+    samples_per_axis: u8,
+    solid_color: &'a SrgbFallback,
+    uniform: &'a U,
+    sample: &'a S,
+    decoded_color: Option<([f64; 3], [f64; 3])>,
+    solid_pixel: Option<[u8; 4]>,
+}
+
+impl<U, S> RowPainter<'_, U, S>
+where
+    U: Fn(SampleBox) -> UniformRegion,
+    S: Fn(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
+{
+    fn paint(&mut self, row: &mut [u8], y: u32) -> Result<(), RasterError> {
+        for (pixel, x) in row.as_chunks_mut::<4>().0.iter_mut().zip(0..) {
+            *pixel = self.pixel(x, y)?;
+        }
+        Ok(())
+    }
+
+    fn pixel(&mut self, x: u32, y: u32) -> Result<[u8; 4], RasterError> {
+        let viewport = self.viewport;
+        let samples_per_axis = self.samples_per_axis;
+        let grid = f64::from(samples_per_axis);
+        let sample_count = grid * grid;
+        if samples_per_axis >= 3 {
+            let at = |x: u32, y: u32, sample: f64| PhysicalVector {
+                x: viewport.origin.x
+                    + (f64::from(x) + (sample + 0.5) / grid) / viewport.pixels_per_unit,
+                y: viewport.origin.y
+                    + (f64::from(y) + (sample + 0.5) / grid) / viewport.pixels_per_unit,
+            };
+            let region = SampleBox {
+                min: at(x, y, 0.0),
+                max: at(x, y, grid - 1.0),
+            };
+            match (self.uniform)(region) {
+                UniformRegion::Clear => return Ok([0; 4]),
+                UniformRegion::Solid => {
+                    if let Some(pixel) = self.solid_pixel {
+                        return Ok(pixel);
+                    }
+                    let pixel = constant_pixel(self.solid_color, samples_per_axis)?;
+                    self.solid_pixel = Some(pixel);
+                    return Ok(pixel);
+                }
+                UniformRegion::Sample => {}
+            }
+        }
+        let mut linear_sum = [0.0; 3];
+        let mut covered = 0_u32;
+        for sy in 0..samples_per_axis {
+            for sx in 0..samples_per_axis {
+                let point = PhysicalVector {
+                    x: viewport.origin.x
+                        + (f64::from(x) + (f64::from(sx) + 0.5) / grid) / viewport.pixels_per_unit,
+                    y: viewport.origin.y
+                        + (f64::from(y) + (f64::from(sy) + 0.5) / grid) / viewport.pixels_per_unit,
+                };
+                if let Some(color) = (self.sample)(point)? {
+                    covered += 1;
+                    let components = color.components();
+                    let linear = match self.decoded_color {
+                        Some((previous, linear)) if previous == components => linear,
+                        _ => {
+                            let linear =
+                                srgb_to_linear_srgb(components).map_err(RasterError::Color)?;
+                            self.decoded_color = Some((components, linear));
+                            linear
+                        }
+                    };
+                    for (sum, channel) in linear_sum.iter_mut().zip(linear) {
+                        *sum += channel;
+                    }
+                }
+            }
+        }
+        if covered == 0 {
+            return Ok([0; 4]);
+        }
+        let [r, g, b] = linear_srgb_to_srgb(linear_sum.map(|sum| sum / f64::from(covered)))
+            .map_err(RasterError::Color)?
+            .map(quantize);
+        Ok([r, g, b, quantize(f64::from(covered) / sample_count)])
+    }
 }
 
 fn constant_pixel(color: &SrgbFallback, samples_per_axis: u8) -> Result<[u8; 4], RasterError> {

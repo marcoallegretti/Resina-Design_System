@@ -498,9 +498,60 @@ QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
   --output-dir target/qt-surface-view-1.25
 ```
 
-Released-Quickshell hosting, live output-scale transfer, hardware renderers and
-enhanced Frost or Gel treatments beyond their opaque representation are not
-covered.
+The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
+in released Quickshell 0.3.2 and checks its publications against the reference
+resolver and its composited pixels at output scales 1 and 2. Live output-scale
+transfer, hardware renderers and enhanced Frost or Gel treatments beyond their
+opaque representation are not covered.
+
+## Platform appearance preferences
+
+An environment producer must supply every environment field (spec/18), including
+the accessibility preferences. `PlatformAppearance` reads the platform's
+preferences from the
+[XDG Desktop Portal Settings](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Settings.html)
+`org.freedesktop.appearance` namespace on the session bus. It reads them when
+created and again whenever the portal service gains an owner on the bus, and
+follows the portal's `SettingChanged` signal after a successful read. When the
+portal leaves the bus, it withdraws every preference and reports an error.
+
+- `reducedMotion` and `highContrast` are `true` for the `uint32` portal value 1
+  (`reduced-motion`, `contrast`) and `false` for any other value, which the
+  portal defines as no preference.
+- `colorScheme` is `"dark"`, `"light"` or `"none"`.
+- A key the portal does not provide stays `null`, so a consumer can tell an
+  absent preference from one that is not requested.
+- `ready` becomes true once the first read completes. While the session bus or
+  the portal is unavailable, `error` describes the failure and every preference
+  is `null`.
+
+Qt 6.11.2 exposes the colour scheme and contrast preference but no reduced-motion
+preference, and Quickshell 0.3.2 has no portal settings API. The element neither
+substitutes defaults nor sets Resina environment fields itself; the consumer
+decides how they enter its environment.
+
+[`check_qt_platform_appearance.py`](../../../tools/check_qt_platform_appearance.py)
+starts its own session bus and runs the real `xdg-desktop-portal` frontend with
+the GNOME backend and isolated GSettings. The session's `portals.conf` selects the
+GNOME backend for Settings; in this isolated session, xdg-desktop-portal 1.18.4
+with xdg-desktop-portal-gnome 46.2 exported no Settings portal without it. It
+requires:
+- the element to equal an independent `gdbus` read of the portal for every key;
+- each provided key to reach a real GSettings change and then its reset, each
+  observed first in the portal;
+- unprovided keys to stay `null`;
+- a missing session bus, and a bus without a portal, to report an error with no
+  preference;
+- preferences to be read once the portal appears on a bus where the element
+  started first, withdrawn with an error when the portal leaves, and read again
+  when it returns.
+
+`--require` fails when the backend does not provide a listed key.
+xdg-desktop-portal 1.22.1 with xdg-desktop-portal-gnome 50.0 provides and passes
+all three keys. xdg-desktop-portal-gnome 46 to 49 do not provide
+`reduced-motion`; CI runs on Ubuntu 24.04's GNOME 46 backend and requires
+`contrast` and `color-scheme`. The checker needs a Wayland session for the GNOME
+backend.
 
 ## Build and verification
 
@@ -575,12 +626,20 @@ the same `conformant: false` disabled-focusability observation.
 
 The [`qt-runtime` CI job](../../../.github/workflows/reference.yml) installs
 the pinned Qt 6.11.2 base/declarative SDK and its bundled ICU through aqtinstall
-3.3.0, together with the pinned Python host. It builds, tests and lints this
-separate workspace and executes the compiled controller, content, snapshot,
-keyboard and pointer checks. Software paint/composition checks run
-at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure. This
-job's AT-SPI step measures real invocation and availability under Xvfb using
-`--report-only`. Malformed/missing native observations and incorrect action
+3.3.0, together with the pinned Python host, and builds unmodified Quickshell
+0.3.2 against that SDK. It builds, tests and lints this separate workspace and
+executes the compiled Command and Toggle controller and runtime checks and the
+Command content, snapshot, keyboard, pointer and control checks. Surface view,
+Command paint, control, motion and view, and Toggle control and motion checks
+run at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure.
+This job's AT-SPI step runs under Xvfb: it measures real invocation and
+availability using `--report-only`, and runs the static and sampled Command
+control accessibility checks and the horizontal and vertical Slider adapter.
+The released Quickshell host then repeats the availability measurement with
+`--report-only` and runs the authored-update checker. In headless Sway it runs
+the lifecycle, accessibility, motion, platform appearance and
+[clock shell](../../../lab/quickshell/clock-shell/README.md) checkers.
+In the availability measurement, malformed/missing native observations and incorrect action
 delivery still fail; the known disabled-focusability discrepancy is recorded as
 `conformant: false` rather than certified as passing accessibility. The strict
 command above remains the qualification gate. A local reproduction does not
@@ -719,9 +778,14 @@ factory is installed by this adapter.
 This verifies a runtime dependency, not a complete Command/Button, Toggle or
 Slider. The [native label pair](../resina-qml/README.md#native-label-measurement)
 separately verifies fractional sizing and authored tracking through native
-measurement and drawing. Complete reusable-control qualification in released
-Quickshell, physical-device/screen-reader operation and calibrated motion remain
-unverified.
+measurement and drawing. Released-host Command qualification is described in
+[authored updates](#released-quickshell-authored-updates),
+[lifecycle](#compositor-delivered-command-lifecycle),
+[accessibility](#released-quickshell-command-accessibility) and
+[motion](#released-quickshell-command-motion). Physical devices, screen-reader
+presentation in CI, and fractional output scale or multiple outputs remain
+unverified. Orca 50.3 passes locally only; Orca 46.1 hangs at start-up on the
+CI runner ([#165](https://github.com/marcoallegretti/Resina-Design_System/issues/165)).
 The integrated static profile below now verifies composed command input and
 native accessibility in the standalone host. Hosted native runtime checks have
 also passed; the sampled profile section links the executed evidence.
@@ -776,9 +840,20 @@ recursive QML string bindings when a consumer changes availability/configuration
 from its publication callback. The owner commits only a validated complete view
 snapshot and checks the current preparation revision after observer delivery.
 `snapshot` is the coherent four-channel publication; `ready` additionally
-requires native paint, target and armed input readiness. The decorative view and
-accessible node become visible only with that complete readiness, including
-first publication and requalification. Snapshot existence alone is not action
+requires native paint, target and armed input readiness. The decorative view
+becomes visible only with that complete readiness, including first publication
+and requalification. The accessible node is first exposed with its complete
+name and description before `ready` becomes true, so focus requested from
+`onReadyChanged` reaches assistive technology: Qt sends no focus event for an
+ignored item and none when it stops being ignored. While the control stays
+visible in a visible native window, feedback, availability, authored-property,
+placement and density updates keep that node exposed with its previous complete
+semantics until the next complete semantics replace them in place. An
+unavailable control is never exposed as focusable, even before its retained
+semantics are replaced. Until a requalified publication arms input again, the
+retained node refuses `Press`. Hiding the control or its window and failure
+make the node ignored. Unmounting the control or destroying its surface deletes
+the object, and its node goes with it. Snapshot existence alone is not action
 authorization. `preparationError` reports failure.
 `invoke()` routes the semantic action only through an armed available lifecycle;
 its Boolean describes accepted delivery, not a product outcome. `activated` is
@@ -788,12 +863,13 @@ context. Authored-property, visibility, native-window, placement and density
 changes automatically retire the publication and schedule requalification.
 Unsupported contexts stay diagnostically withdrawn until repaired.
 
-A feedback update withdraws old paint and semantics while preparing the latest
-complete snapshot. It retains its already qualified native target and armed
-input owner: image decoding is not authorization for a new gesture. This allows
-rapid hover/down/up to reach the lifecycle without waiting for an event-loop
-turn between events. Multiple feedback events can coalesce before a frame; no
-stale snapshot is retained as current. Existing pointer/key releases remain
+A feedback update withdraws old paint and the snapshot while preparing the latest
+complete snapshot; the accessible node keeps its previous complete semantics.
+It retains its already qualified native target and armed input owner: image
+decoding is not authorization for a new gesture. This allows rapid hover/down/up
+to reach the lifecycle without waiting for an event-loop turn between events.
+Multiple feedback events can coalesce before a frame; no stale snapshot is
+retained as current. Existing pointer/key releases remain
 routable if the new-gesture gate closes. A configuration/context failure
 withdraws input as well, cancels held gestures, publishes no partial channels
 and requires successful requalification before arming again.
@@ -1026,6 +1102,11 @@ invalid-context errors in the host log and counts every consumer effect:
   reload must retire the previous engine generation, observed through Quickshell
   0.3.2 IPC, which answers only while exactly one generation exists; a fresh
   gesture afterwards delivers exactly one effect from the current generation;
+- a preparation rejection fails the run unless it is logged while the surface
+  is hidden or closed, the control is unmounted or has no visible native
+  window, as while a closed surface is recreated, or after a reload request in
+  the same engine generation; the expected rejections are counted by cause in
+  `report.json`;
 - consumer callbacks, reached by pointer and by Space, that replace the
   configuration, withdraw availability, invoke the control, hide, unmount, hide
   and unmount together, or destroy its surface observe committed state and
@@ -1042,6 +1123,65 @@ it is closed or replaced by another reload. Physical
 devices, multiple seats and outputs, fractional scale and screen-reader operation
 are not covered.
 
+### Released Quickshell Toggle lifecycle
+
+[`check_quickshell_toggle_lifecycle.py`](../../../tools/check_quickshell_toggle_lifecycle.py)
+runs [the Toggle lifecycle probe](../../../conformance/quickshell/toggle-lifecycle-probe.qml)
+with the session, IPC, virtual input and log reading of the Command lifecycle
+checker. It takes the same arguments and compositor session:
+
+```sh
+python tools/check_quickshell_toggle_lifecycle.py \
+  --host /path/to/quickshell --module-path target/qt-runtime-import \
+  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --output-dir target/quickshell-toggle-lifecycle
+```
+
+Headless Sway 1.12 and nested niri 26.04 pass all 52 cases. Every consumer effect
+is counted exactly and must invert the checked value committed before it; the
+probe fails when a callback observes a checked value or activation that is not
+yet committed. The run fails on QML type, reference and invalid-context errors
+anywhere in the host log, and on preparation rejections outside the withdrawn
+surfaces and reloads allowed by the Command lifecycle checker; expected
+rejections are counted by cause in `report.json`.
+
+- Activation: a pointer click toggles off to on and on to off; a pointer press
+  moved off the target and released toggles nothing; Space toggles on release
+  and Enter on press, each held through at least two auto-repeat publications;
+  an unavailable Toggle rejects a pointer click and `invoke()` and keeps its
+  checked value. Withdrawal also removes keyboard focus, so key rejection is not
+  observable there.
+- Focus: Tab traversal, requested focus, a focus request while another surface
+  holds keyboard focus, and availability withdrawal follow the Command cases.
+  Two cases move native focus into or out of the Toggle while the frame for a
+  checked change is pending: the previous frame is withdrawn and the new one is
+  not yet published. Every published frame in the run must carry the focus Qt
+  observes at publication and the current checked value in its accessibility
+  state and layout.
+- Interruption: Space or pointer held across window deactivation by an
+  exclusive-keyboard surface, a hidden surface, a parent change, availability
+  withdrawal, unmount and a destroyed surface produces no effect. For the four
+  cases that keep the Toggle, the hold must be cleared and the checked value
+  kept. A fresh Space afterwards toggles exactly once from the current
+  generation.
+- Reentrancy: consumer callbacks reached by pointer, Space and Enter that set
+  checked, invoke the Toggle, withdraw availability, hide, unmount or destroy
+  the surface observe committed enabled state. Setting checked returns it to its
+  previous value; `invoke()` produces exactly one additional toggle;
+  callback-time withdrawal is accepted and leaves the Toggle unavailable.
+- Lifetime: hiding and unmounting together from a callback reached by Space,
+  Enter and pointer; Space or pointer held across soft and hard reload, which
+  must retire the previous generation and deliver nothing; unmounting while the
+  frame for a checked or availability change is pending.
+
+The checker observes that a hold is cleared, not which native owner clears it:
+the keyboard owner, the control and the native pointer owner each cancel on
+parent and window changes. A Space released after window deactivation reaches
+the other surface, so the cleared hold, not the effect count, proves that case.
+Configuration replacement during a gesture, AT-SPI delivery, motion, physical
+devices, multiple seats and outputs, fractional scale and screen-reader
+operation are not covered.
+
 ### Released Quickshell Command accessibility
 
 [`check_quickshell_command_accessibility.py`](../../../tools/check_quickshell_command_accessibility.py)
@@ -1054,28 +1194,46 @@ the lifecycle checker and inspects the actual native tree:
   focused state, and exactly one `Press` action, which an available or
   unavailable Command must accept;
 - a real AT-SPI `Press` produces exactly one committed consumer effect;
-- withdrawn availability is published as disabled, unfocusable state and the
-  next `Press` produces no effect;
+- withdrawn availability clears `enabled` and `sensitive` on the same node, each
+  observed as an AT-SPI `StateChanged` event through a registered event listener,
+  leaves a disabled, unfocusable final state, and the next `Press` produces no
+  effect;
 - configuration replacement keeps the native node, republishes the current
-  non-ASCII name and acts exactly once;
+  non-ASCII name and the replacement's own localized description, and acts
+  exactly once;
 - unmounting the control or destroying its surface removes the Button, and a
-  `Press` on the retired node produces no effect;
+  `Press` on the retired node fails with `org.freedesktop.DBus.Error.UnknownObject`
+  and produces no effect;
+- after a soft and after a hard reload, a `Press` on the Button held from before
+  the reload fails the same way without an effect, and the new generation's
+  Button produces exactly one effect from that generation;
+- a control that its consumer focuses synchronously from `onReadyChanged` after
+  being mounted emits a native AT-SPI focus event on its complete Button;
 - availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
   the next `Press`;
 - the unsupported discoverable-disabled focus policy fails with its diagnostic
-  and exposes no Button.
+  and exposes no Button;
+- starting from a focused Command, hover and press feedback, availability
+  withdrawal and restoration and label replacement keep the same Button path in
+  the tree. The registered listener records no `ChildrenChanged` removal or
+  addition of that node and no empty name or description, and each availability
+  change arrives as `enabled` and `sensitive` `StateChanged` events on that node.
 
-All eight cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
+All twelve cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
-English locale and isolated settings and reads its generated presentation.
-After focus moves to the probe's accessible focus target and Orca's output stops
-growing, focusing the control must produce consecutive speech for its name, role and
-description and a braille line containing all three. The Orca version and the
-matched output are saved to `screen-reader.json`. Orca 50.3 with
-speech-dispatcher passes locally; CI does not install Orca. With default settings
-Orca announces no change when availability is withdrawn from the focused control,
-so availability announcements are not verified. Audible output, other screen readers and physical input are not
-covered.
+English locale and isolated settings and reads its generated presentation
+through a pseudo-terminal: Orca block-buffers a regular debug file and never
+flushes it. After focus moves to the probe's accessible focus target and Orca's output stops
+growing, focusing the control must produce the consecutive speech "Reconnect",
+"button.", "Connect using saved settings." and the braille line
+"quickshell application frame Reconnect button Connect using saved settings.".
+Orca 50.3 does not present a sensitivity change on its own, so spoken
+presentation of availability withdrawal is unverified. Orca's output after the
+withdrawal is recorded under `unavailableUnverified` in `screen-reader.json`
+without being asserted; locally it is empty. The Orca version and the matched
+focus output are saved in the same file. Orca 50.3 with speech-dispatcher passes
+locally; CI does not install Orca. Audible output, other screen readers and
+physical input are not covered.
 
 ### Released Quickshell Command motion
 
@@ -1089,7 +1247,11 @@ projected state set and the independent spring equations. Input
 reaches the control through the compositor:
 
 - holding Space publishes several unsettled spring frames; the release retarget continues from the position
-  and velocity the previous trajectory had reached; each sampled epoch's clock
+  and velocity the previous trajectory had reached at the published `retargetTime`,
+  which does not precede its last published sample or exceed the log time elapsed since the frame before
+  it. That log bound is only as tight as one frame's preparation time; the precision of the restart
+  instant itself comes from the Qt runtime clock check, which compares `CommandClock.restart()` with
+  monotonic time. Each sampled epoch's clock
   advances with elapsed native time within 10 % or 50 ms; one channel settles
   before the other, both settle, and no frame follows;
 - compositor hover enters and leaves the target through spring frames. Qt's
@@ -1106,8 +1268,88 @@ reaches the control through the compositor:
 
 The motion channels are the conformance fixture, not calibrated material
 dynamics, and preferences are explicit authored inputs: no platform preference
-is discovered. Frame rate, scheduling budgets and fractional or changing output
-scale are not measured.
+is discovered. Fractional or changing output scale is not measured. These cases,
+like every other functional, lifecycle and accessibility check, run against the
+debug runtime module; frame timing is qualified separately against the release
+module.
+
+### Released Quickshell Command motion frame budget
+
+Motion timing and budgets are qualified only against the release runtime module.
+Debug builds remain functional evidence. The release library is built with
+`cargo build --release` and packaged as a separate import root. Locally, with
+the `target/qt-runtime` target directory used above:
+
+```sh
+cargo build --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --release --locked
+python tools/prepare_qt_runtime_module.py \
+  --library target/qt-runtime/release/libresina_qt_runtime.so \
+  --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime \
+  --output-dir target/qt-runtime-release-import
+```
+
+CI sets `CARGO_TARGET_DIR` to `target/qt-runtime-build`, so its library is
+`target/qt-runtime-build/release/libresina_qt_runtime.so`.
+
+[`check_quickshell_command_motion_budget.py`](../../../tools/check_quickshell_command_motion_budget.py)
+runs the lifecycle probe in headless Sway at the output scale given by `--scale`
+and first requires the device pixel ratio of the Command's screen, which its
+views use as their native device scale, to equal it. Space is
+held and released through the compositor ten times, and each phase lasts six
+spring frames. With the release module a hold therefore ends before Sway's
+default 600 ms key-repeat delay, so repeated key presses add no work to the
+measured frames. A spring frame is measured when the frame published before it
+was still moving:
+
+- its published interval is the native clock time between the motion samples of
+  the two frames. Within one clock epoch that is the difference of their `time`;
+  across a retarget it is the previous epoch's `retargetTime` less the previous
+  `time`, plus the new `time`. Epochs started without a `retargetTime` are not
+  joined, and a clock restart that leaves the channels and target unchanged
+  fails the check. Log timestamps are not used;
+- its synchronous preparation cost is the published `preparationDuration`. That
+  is a lower bound on the frame's main-thread time: the software scene-graph
+  render and the publication that follows are not included;
+- within one clock epoch, its publication delay is the published
+  `publicationDelay`: the time from its predecessor's publication to the start
+  of its own refresh, and its predecessor span is the published
+  `predecessorSpan`: the time from the start of the predecessor's refresh to
+  that publication. The two are published together or not at all.
+
+At least 20 frames are required. The floor is a median published interval of at
+most 1/30 s (30 Hz); a longer median fails the check unless `--floor report`
+is given, which prints the result without failing. The target is a median
+`preparationDuration` of at most 8 ms and a median published interval of at most
+17 ms. The target is reported but not enforced. CI runs the check at output
+scales 1 and 2 with `--floor report --require-gap` and keeps each `report.json`
+with every measured frame. Its shared runners measured a median interval of 41.4 ms at
+scale 1 and 50.0 ms at scale 2, with median preparation of 9.1 ms and 17.8 ms.
+Most of each interval there is asynchronous decoding and software rendering, so
+runner timing does not qualify the floor. The floor is qualified by running the
+check without `--floor report` on the qualifying machine.
+
+The check also bounds the publication gap, on every host. The headless output
+refreshes at 60 Hz, so a predecessor whose `predecessorSpan` is at least 1/60 s
+saw an animation tick while it was prepared. For those frames the 75th
+percentile publication delay must be at most 4 ms. A predecessor published
+within one tick may correctly wait for the next tick and is not counted. With
+fewer than 20 such frames the gap is reported as not evaluated: the host rarely
+used the path the bound protects. `--require-gap` makes that a failure. CI
+requires it, so a runner that stops exercising the path fails rather than
+leaving the bound unchecked.
+
+Measured locally in headless Sway 1.12 with the pixman renderer, Quickshell 0.3.2
+and the Qt 6.11.2 software backend:
+
+| Release module, scale | Median interval | Median preparation | Publication gap (75th percentile) |
+| --- | ---: | ---: | ---: |
+| 1 | 15.7–16.0 ms | 10.4–11.4 ms | 0.60 ms, not evaluated in one run |
+| 2 | 21.9–23.1 ms | 17.8–18.8 ms | 0.40 ms |
+
+These are three runs at each scale. At scale 1, 15, 69 and 56 frames had a
+predecessor that spanned a tick. With the call that resumes a due frame after
+publication removed, the publication gap was 12.27 ms at scale 1 and 11.49 ms
+at scale 2, failing the check, and the scale 2 median interval was 31.9 ms.
 
 ### Integrated sampled command frames
 
@@ -1127,8 +1369,13 @@ Both channels share one clock origin. Retargeting samples the previous trajector
 at the new clock origin and retains unprojected position and velocity. Native
 context requalification retains raw state when the explicit channel profile is
 unchanged; replacing that profile uses its new explicit initial state. Scheduling
-stops only after both channels settle. Reduced motion and Cast resolve immediately
-through the existing reference policy, without toolkit-specific semantics.
+stops only after both channels settle. A frame request that arrives while the
+previous frame is still being prepared starts the next preparation as soon as that
+frame is published, rather than one animation tick later. The driver therefore
+keeps the window's render loop ticking while a frame is prepared and decoded,
+until both channels settle or the motion fails. Reduced motion and Cast resolve
+immediately through the existing reference policy, without toolkit-specific
+semantics.
 
 Two complete decorative views alternate for motion. While decoding another
 sample of the same state/source/context, the last complete frame remains visible
@@ -1141,8 +1388,23 @@ the current activation state and never wait for body motion to settle.
 
 The native read-only `snapshot`, `motion` and `currentFrame` aliases expose a
 coherent selected frame. `motion` is backend observation metadata containing
-elapsed `time`, retained `channels` and the complete existing motion IR; it is
-not a new portable IR or action authorization. `CommandSnapshotResolver` commits
+elapsed `time`, retained `channels`, `retargetTime`, `preparationDuration`,
+`publicationDelay`, `predecessorSpan` and the
+complete existing motion IR; it is not a new portable IR or action authorization. `retargetTime`
+is the previous trajectory's elapsed clock time at which the native clock
+restarted and the retained `channels` were sampled from it. Every frame of that
+clock epoch repeats it. It is `null` for the first epoch and after a failure or
+reconfiguration; after a reconfiguration with an unchanged profile the resumed
+`channels` were still sampled from the running trajectory before the clock was
+invalidated. `preparationDuration` is the main-thread time, in seconds from a
+separate `CommandClock`, from the start of the refresh that prepared the frame to
+the end of its synchronous snapshot, paint and label preparation. It excludes
+asynchronous image decoding and the later publication. `publicationDelay` is the
+time on that clock from the publication of the previous frame to the start of
+this frame's refresh, and `predecessorSpan` is the time on that clock from the
+start of the previous frame's refresh to its publication. Both are `null` when
+no frame was published since the previous refresh started, and after a failure
+or reconfiguration. `CommandSnapshotResolver` commits
 these fields together before notification and clears them when the selected
 QObject is destroyed. Component publication is deferred beyond the controller's
 publication guard, including when a cached image decodes synchronously, so a
@@ -1205,8 +1467,11 @@ the default static AT profile also passed again. Captures of successive pressed
 samples were inspected. The
 [hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
 also passed. These results apply to the standalone Qt host; GUIdo integration
-and released Quickshell accessibility require their own runtime verification.
-Material calibration and Shell host accessibility remain unverified.
+requires its own runtime verification. Released Quickshell Command accessibility
+is verified by the ten AT-SPI cases of
+[Released Quickshell Command accessibility](#released-quickshell-command-accessibility).
+Material calibration and screen-reader presentation outside local runs remain
+unverified.
 
 ## Integrated static Toggle control
 
@@ -1315,8 +1580,12 @@ its matching Core/DBus/Gui libraries and used QtQuick/PySide 6.11.2; the strict
 checker, rather than library presence, determines native success. This is
 isolated toolkit evidence, not support claimed for standard binary SDKs.
 
-Quickshell 0.3.1's separate application-bootstrap accessibility defect remains
-on the approved upstream repair route. Full Shell accessibility, calibrated
+Unmodified Quickshell 0.3.2 removes Quickshell 0.3.1's separate
+application-bootstrap accessibility defect; see the
+[Quickshell hosting boundary](#quickshell-hosting-boundary). The Switch-role
+limitation above comes from the stock Qt 6.11.2 AT-SPI build, not Quickshell.
+[Released-Quickshell Toggle qualification](https://github.com/marcoallegretti/Resina-Design_System/issues/186) accepts the CheckBox role on
+stock Qt as a Qt-owned limitation. Full Shell accessibility, calibrated
 Toggle travel/interaction motion, physical/touch/pen input, screen-reader
 operation, GPU realization and production performance are not qualified here.
 The next integrated dependency is Toggle travel and independent track/thumb
@@ -1427,7 +1696,7 @@ checked exactly from the verified returned raw state. Fixtures use explicit
 arithmetic dynamics, not calibrated production defaults. Nested Wayland parent
 XTest remains injected input; actual AT-SPI invocation is a separate executed
 boundary. Native Switch qualification still requires the toolkit build described
-above, and released Quickshell still requires its approved upstream host repair.
+above; Quickshell 0.3.2 removes the 0.3.1 host bootstrap defect.
 Physical devices, screen-reader operation, hardware GPU realization, production
 frame-rate performance and material/style qualification are not certified by
 these checks.

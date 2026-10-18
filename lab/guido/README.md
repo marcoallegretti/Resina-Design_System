@@ -100,6 +100,10 @@ cargo clippy --manifest-path lab/guido/Cargo.toml --all-targets --locked -- -D w
 cargo fmt --manifest-path lab/guido/Cargo.toml -- --check
 ```
 
+The workspace builds its dev profile at `opt-level = 1`; debug assertions and
+overflow checks stay enabled. Set `CARGO_PROFILE_DEV_OPT_LEVEL=0` for an
+unoptimized build when debugging.
+
 Required GPU readback checks every placed opaque specimen pixel, complete text
 coverage and opaque canvas output across fractional/device and text scales.
 Command tests decode the PNG and verify that an existing output is preserved.

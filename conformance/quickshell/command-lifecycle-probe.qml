@@ -16,6 +16,7 @@ ShellRoot {
     property bool shown: true
     property bool mounted: true
     property bool focusTaken: false
+    property bool focusOnReady: false
     property string reaction: ""
     property bool disabledFocusable: false
     property int effects: 0
@@ -59,7 +60,8 @@ ShellRoot {
             hovered:command ? command.hovered : false, nativeFocus:nativeFocus(),
             target:targetCenter(), effects:effects, publications:publications, reactionResult:reactionResult,
             otherFocused:Boolean(windowLoader.item && windowLoader.item.mount.item && windowLoader.item.mount.item.other.activeFocus),
-            screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height} : null};
+            screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height,
+                deviceScale:command.Screen.devicePixelRatio} : null};
     }
 
     function frame(control) {
@@ -89,6 +91,17 @@ ShellRoot {
     Connections {
         target: root.command ? root.command.controller : null
         function onPublicationChanged() { ++root.publications; }
+    }
+
+    function checkFocusable() {
+        if (command && !command.enabled && command.Accessible.focusable)
+            fail("an unavailable Command was exposed as focusable");
+    }
+
+    Connections {
+        target: root.command
+        // Bindings depending on enabled may not have updated yet in this handler.
+        function onEnabledChanged() { Qt.callLater(root.checkFocusable); }
     }
 
     FontLoader {
@@ -150,8 +163,14 @@ ShellRoot {
                         activeFocusOnTab: true
                         onActivated: root.activated(command)
                         onMotionChanged: root.frame(command)
+                        onReadyChanged: if (ready && root.focusOnReady) {
+                            root.focusOnReady = false;
+                            root.log("readyFocus", {ignored:Accessible.ignored});
+                            forceActiveFocus();
+                        }
                         onPreparationErrorChanged: if (preparationError.length && root.configuration.length)
-                            root.log("rejected", {error:preparationError})
+                            root.log("rejected", {error:preparationError, shown:root.shown, windowed:root.windowed,
+                                mounted:root.mounted, attached:Boolean(command.Window.window && command.Window.window.visible)})
                         Component.onCompleted: controller.dispatch(JSON.stringify({kind:"availability", enabled:true}))
                     }
 
@@ -209,11 +228,12 @@ ShellRoot {
         function focusCommand(): void { if (root.command) root.command.forceActiveFocus(); }
         function focusOther(): void { if (windowLoader.item && windowLoader.item.mount.item) windowLoader.item.mount.item.other.forceActiveFocus(); }
         function setFocusTaken(value: bool): void { root.focusTaken = value; }
+        function focusOnReady(): void { root.focusOnReady = true; }
         function setShown(value: bool): void { root.shown = value; }
         function setMounted(value: bool): void { root.mounted = value; }
         function setWindowed(value: bool): void { root.windowed = value; }
         function setReaction(mode: string): void { root.reaction = mode; root.reactionResult = null; }
         function setDisabledFocusable(value: bool): void { root.disabledFocusable = value; }
-        function reloadShell(hard: bool): void { Quickshell.reload(hard); }
+        function reloadShell(hard: bool): void { root.log("reload", {hard:hard}); Quickshell.reload(hard); }
     }
 }

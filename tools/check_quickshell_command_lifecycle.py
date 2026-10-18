@@ -16,6 +16,7 @@ OUTSIDE = (360, 160)
 EVENT = "RESINA_LIFECYCLE "
 NOT_READY = "Not ready to accept queries yet."
 REPLACEMENT = "Riconnetti già"
+REPLACEMENT_DESCRIPTION = "Connetti con le impostazioni già salvate."
 
 
 def completed(log):
@@ -42,6 +43,29 @@ def effects(events):
     return [event for event in events if event["kind"] == "effect"]
 
 
+WITHDRAWN = {"shown": "hidden surface", "windowed": "closed surface", "mounted": "unmounted control",
+             "attached": "control without a visible native window"}
+
+
+def expected_rejections(events):
+    reloading, expected = set(), {}
+    for event in events:
+        if event["kind"] == "reload":
+            reloading.add(event["generation"])
+        if event["kind"] != "rejected":
+            continue
+        if not isinstance(event.get("error"), str) or any(type(event.get(field)) is not bool for field in WITHDRAWN):
+            raise ValueError("malformed rejection event")
+        reasons = [reason for field, reason in WITHDRAWN.items() if not event[field]]
+        if event["generation"] in reloading:
+            reasons.append("reload")
+        if not reasons:
+            raise ValueError("preparation was rejected while the surface was presented: " + event["error"])
+        key = reasons[0] + ": " + event["error"]
+        expected[key] = expected.get(key, 0) + 1
+    return expected
+
+
 def focused(observation):
     native = observation["nativeFocus"]
     return bool(native) and all(native[field] for field in ("activeFocus", "windowActive", "visible", "enabled"))
@@ -57,13 +81,18 @@ def authored_requests():
             theme["materialAssignments"]["control"]["interactive"] = family
             source["content"]["themeSource"] = json.dumps(theme)
         return source
-    return {"standard": request_for("light", "Reconnect"), "replacement": request_for("light", REPLACEMENT),
+    replacement = request_for("light", REPLACEMENT)
+    replacement["description"] = REPLACEMENT_DESCRIPTION
+    return {"standard": request_for("light", "Reconnect"), "replacement": replacement,
             "motion": variant(False), "reduced": variant(True), "cast": variant(False, "cast"),
             "frost": variant(False, "frost", True),
             "channels": json.loads((ROOT / "conformance/ir/command-motion-request.json").read_text())["channels"]}
 
 
 class Session:
+    component = "command"
+    outside = OUTSIDE
+
     def __init__(self, host, module, font, output):
         self.host, self.output = host, output
         self.shell = self.input = None
@@ -76,15 +105,16 @@ class Session:
     def start(self, module, font, output):
         self.config = output / "config"
         self.config.mkdir()
-        shutil.copyfile(ROOT / "conformance/quickshell/command-lifecycle-probe.qml", self.config / "shell.qml")
+        probe = ROOT / f"conformance/quickshell/{self.component}-lifecycle-probe.qml"
+        shutil.copyfile(probe, self.config / "shell.qml")
         shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", self.config / "controls")
         requests = output / "requests.json"
-        requests.write_text(json.dumps(authored_requests()), encoding="utf-8")
+        requests.write_text(json.dumps(self.requests()), encoding="utf-8")
         # Quickshell's reload popup is a separate engine generation that stays open once hovered,
         # and IPC refuses queries while more than one generation exists.
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
-                                QML_IMPORT_PATH=str(module), RESINA_COMMAND_FONT=font.as_uri(),
-                                RESINA_LIFECYCLE_REQUESTS=str(requests), QS_NO_RELOAD_POPUP="1")
+                                QML_IMPORT_PATH=str(module), RESINA_LIFECYCLE_REQUESTS=str(requests),
+                                QS_NO_RELOAD_POPUP="1", **{f"RESINA_{self.component.upper()}_FONT": font.as_uri()})
         self.environment.pop("DISPLAY", None)
         self.environment.pop("QT_SCALE_FACTOR", None)
         self.log = output / "shell.log"
@@ -92,10 +122,13 @@ class Session:
                                       env=self.environment, stdout=self.log.open("w"), stderr=subprocess.STDOUT)
         observed = self.ready()
         screen = observed["screen"]
-        if not screen or screen["width"] <= OUTSIDE[0] or screen["height"] <= OUTSIDE[1]:
+        if not screen or screen["width"] <= self.outside[0] or screen["height"] <= self.outside[1]:
             raise ValueError("requires one output large enough for the lifecycle surface")
         self.input = VirtualInput(screen["width"], screen["height"], os.environ["XDG_RUNTIME_DIR"],
                                   os.environ["WAYLAND_DISPLAY"])
+
+    def requests(self):
+        return authored_requests()
 
     def close(self):
         try:
@@ -158,6 +191,9 @@ class Session:
     def events(self):
         return read_events(completed(self.log.read_text(encoding="utf-8", errors="replace")))
 
+    def rejections(self):
+        return expected_rejections(self.events())
+
     def until(self, predicate, description, timeout):
         last = [None]
 
@@ -172,7 +208,7 @@ class Session:
 
     def ready(self):
         return self.until(lambda observed: observed["ready"] and observed["target"] and observed["state"]["enabled"],
-                          "ready Command publication", 20)
+                          f"ready {self.component.capitalize()} publication", 20)
 
     def settle(self, predicate, description):
         return self.until(predicate, description, 5)
@@ -390,6 +426,7 @@ def main():
         for name, cases in (("activation", activation_cases), ("focus", focus_cases),
                             ("interruption", interruption_cases), ("reentrancy", reentrancy_cases)):
             report[name] = cases(session)
+            report["rejections"] = session.rejections()
             print(f"PASS {name}: {len(report[name])} cases", flush=True)
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as error:
