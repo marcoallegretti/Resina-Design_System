@@ -77,7 +77,7 @@
   "$defs": {
     "reference": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*:[a-z0-9]+(-[a-z0-9]+)*(?![\\s\\S])"
+      "pattern": "^[a-z]+(\\.[a-z]+)*:[a-z0-9]+(-[a-z0-9]+)*(?![\\s\\S])"
     },
     "coordinate": { "type": "number", "minimum": 0, "maximum": 1 },
     "extent": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },

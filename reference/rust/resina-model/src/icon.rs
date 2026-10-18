@@ -219,17 +219,15 @@ impl From<IconContent> for IconContentInput {
 
 fn validate_reference(reference: &str) -> Result<(), String> {
     let valid = reference.split_once(':').is_some_and(|(namespace, name)| {
-        namespace.split('.').all(|segment| {
-            segment.starts_with(|c: char| c.is_ascii_lowercase())
-                && segment
-                    .bytes()
-                    .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit())
-        }) && name.split('-').all(|segment| {
-            !segment.is_empty()
-                && segment
-                    .bytes()
-                    .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit())
-        })
+        namespace
+            .split('.')
+            .all(|segment| !segment.is_empty() && segment.bytes().all(|b| b.is_ascii_lowercase()))
+            && name.split('-').all(|segment| {
+                !segment.is_empty()
+                    && segment
+                        .bytes()
+                        .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit())
+            })
     });
     if valid {
         Ok(())

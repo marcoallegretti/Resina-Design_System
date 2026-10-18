@@ -121,6 +121,35 @@
     "schemaValid": true
   },
   {
+    "name": "single-segment namespace with digits in the name",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:2x-volume-3",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
     "name": "bounds reach the box edge",
     "document": {
       "schemaVersion": "0.1.0",
@@ -521,6 +550,126 @@
     "document": {
       "schemaVersion": "0.1.0",
       "reference": "resina.fixture:chevron-",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "namespace with a digit",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor2.apps:mail",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "namespace starting with a digit",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "2vendor:mail",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference with two colons",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail:open",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference without a name",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:",
       "kind": "symbolic",
       "inkBounds": {
         "x": 0.3125,
