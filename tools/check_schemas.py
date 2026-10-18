@@ -451,6 +451,7 @@ def main():
         "schemas/material-relief-paint-request.schema.json",
         "schemas/material-relief-paint-result.schema.json",
         "schemas/material-relief-paint-case.schema.json",
+        "schemas/lit-control-body-case.schema.json",
         "schemas/key-light.schema.json",
         "schemas/key-light-request.schema.json",
         "schemas/key-light-result.schema.json",
@@ -900,6 +901,19 @@ def main():
         check_case(material_paint_request_schema, case["name"], case["request"], case["requestSchemaValid"])
         if "expected" in case:
             check_case(material_paint_result_schema, case["name"], case["expected"], True)
+    lit_body_source = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
+    lit_body_case_schema = validator_for("schemas/lit-control-body-case.schema.json")
+    lit_body_source_schema = Draft202012Validator(
+        {"$ref": "urn:resina:schema:lit-control-body-case:0.1.0#/$defs/source"}, registry=schema_registry())
+    check_case(lit_body_source_schema, "lit control body source", lit_body_source, True)
+    lit_body_cases = load_json(ROOT / "conformance/ir/lit-control-body-vectors.json")
+    lit_body_names = set()
+    for case in lit_body_cases:
+        if case["name"] in lit_body_names:
+            raise ValueError(f"duplicate lit control body case: {case['name']}")
+        lit_body_names.add(case["name"])
+        check_case(lit_body_case_schema, case["name"], case, True)
+        check_case(lit_body_source_schema, case["name"], apply_changes(lit_body_source, case["sourceChanges"]), case["sourceSchemaValid"])
     relief_paint_cases = load_json(ROOT / "conformance/ir/relief-paint-vectors.json")
     relief_paint_case_schema = validator_for("schemas/relief-paint-case.schema.json")
     relief_paint_request_schema = validator_for("schemas/relief-paint-request.schema.json")
@@ -1352,6 +1366,7 @@ def main():
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
+        + 1 + 2 * len(lit_body_cases)
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)

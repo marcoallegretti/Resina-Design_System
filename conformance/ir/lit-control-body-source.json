@@ -1,0 +1,62 @@
+{
+  "identity": {
+    "materialRole": "control.interactive",
+    "colorRole": "surface.high",
+    "materialFamily": "cast",
+    "form": {"schemaVersion": "0.1.0", "shape": "rounded", "elevation": "raised"},
+    "states": {"schemaVersion": "0.1.0", "states": ["hover"]},
+    "foregroundRole": "content.primary",
+    "contentFallbackApplied": false
+  },
+  "size": {"width": 96, "height": 48},
+  "radii": {
+    "topStart": {"x": 24, "y": 24},
+    "topEnd": {"x": 24, "y": 24},
+    "bottomEnd": {"x": 24, "y": 24},
+    "bottomStart": {"x": 24, "y": 24}
+  },
+  "relief": {"kind": "convex", "bodyThickness": 2, "amplitude": 1, "shoulderWidth": 2},
+  "body": {"colorSpace": "srgb", "components": [0.5, 0.4, 0.3], "alpha": 1},
+  "pigmentProfiles": {
+    "schemaVersion": "0.1.0",
+    "profiles": {
+      "cast": {"sideShade": 0.1, "highlightLift": 0.08},
+      "frost": {"sideShade": 0.14, "highlightLift": 0.18},
+      "elastomer": {"sideShade": 0.25, "highlightLift": 0.14},
+      "gel": {"sideShade": 0.18, "highlightLift": 0.2}
+    }
+  },
+  "keyLight": {"schemaVersion": "0.1.0", "direction": {"x": -1, "y": -1}},
+  "light": {"ambient": 0.25, "interaction": {"direction": {"x": 1, "y": 0.5}, "strength": 0.5}},
+  "environment": {
+    "schemaVersion": "0.2.0",
+    "geometry": {"width": 480, "height": 320, "safeArea": {"start": 16, "end": 16, "top": 8, "bottom": 8}},
+    "scale": 1,
+    "textScale": 1,
+    "inputCapabilities": [],
+    "viewingProfile": "unknown",
+    "densityPreference": "standard",
+    "accessibilityPreferences": {"reducedMotion": false, "reducedTransparency": false, "highContrast": false},
+    "locale": "en",
+    "layoutDirection": "ltr",
+    "rendererCapabilities": {
+      "gradients": false, "translucentSurfaces": false, "innerShadow": false, "advancedShadow": false,
+      "sdfShapes": false, "backdropEffect": false, "backdropBlur": false, "shapedBackdrop": false,
+      "dynamicLighting": true, "deformation": false, "masks": false, "customShader": false,
+      "wideGamut": false, "hdr": false
+    },
+    "qualityPolicy": "balanced"
+  },
+  "edge": {
+    "schemaVersion": "0.1.0",
+    "outline": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1},
+    "outlineStrong": {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1},
+    "adjacentColor": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1},
+    "minimumContrast": 3
+  },
+  "edgeWidth": 1,
+  "foreground": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1},
+  "minimumContentContrast": 3,
+  "depth": 2,
+  "points": []
+}
