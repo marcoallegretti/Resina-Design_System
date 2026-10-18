@@ -20,6 +20,11 @@ thread_local! {
     static THEME: RefCell<Option<ThemeEntry>> = const { RefCell::new(None) };
 }
 
+#[cfg(test)]
+thread_local! {
+    pub(crate) static THEME_COMPILES: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+}
+
 #[cxx::bridge(namespace = "resina::qt")]
 pub(crate) mod ffi {
     unsafe extern "C++" {
@@ -144,24 +149,32 @@ pub(crate) fn compiled_theme(
     source: &str,
     external_sources: &BTreeMap<String, String>,
 ) -> Result<Rc<CompiledTheme>, String> {
-    let cached = THEME.with_borrow(|entry| {
-        entry
-            .as_ref()
-            .filter(|(cached, sources, _)| cached == source && sources == external_sources)
-            .map(|(_, _, theme)| Rc::clone(theme))
-    });
+    let cached = THEME
+        .try_with(|entry| {
+            entry
+                .borrow()
+                .as_ref()
+                .filter(|(cached, sources, _)| cached == source && sources == external_sources)
+                .map(|(_, _, theme)| Rc::clone(theme))
+        })
+        .ok()
+        .flatten();
     if let Some(theme) = cached {
         return Ok(theme);
     }
+    #[cfg(test)]
+    THEME_COMPILES.set(THEME_COMPILES.get() + 1);
     let theme = Rc::new(
         compile_theme_source_with_sources(source, external_sources)
             .map_err(|error| error.to_string())?,
     );
-    THEME.set(Some((
-        source.to_owned(),
-        external_sources.clone(),
-        Rc::clone(&theme),
-    )));
+    let _ = THEME.try_with(|entry| {
+        *entry.borrow_mut() = Some((
+            source.to_owned(),
+            external_sources.clone(),
+            Rc::clone(&theme),
+        ))
+    });
     Ok(theme)
 }
 
@@ -216,8 +229,10 @@ mod theme_cache_tests {
         let (theme, external) = sources();
         let kept = compiled_theme(&theme, &external).unwrap();
         let broken = theme.replacen('{', "{\"unknownMember\": 1, ", 1);
+        let compiles = THEME_COMPILES.get();
         let first = compiled_theme(&broken, &external).err().unwrap();
         assert_eq!(compiled_theme(&broken, &external).err().unwrap(), first);
+        assert_eq!(THEME_COMPILES.get(), compiles + 2);
         assert!(Rc::ptr_eq(
             &kept,
             &compiled_theme(&theme, &external).unwrap()
