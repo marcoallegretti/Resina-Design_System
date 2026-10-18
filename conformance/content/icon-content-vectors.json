@@ -1,5 +1,4 @@
 [
-
   {
     "name": "mirrored symbolic icon",
     "document": {
@@ -601,6 +600,126 @@
     "document": {
       "schemaVersion": "0.1.0",
       "reference": "resina.fixture:chevron-",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "namespace with an uppercase letter",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "Vendor:mail",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "name with an underscore",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail_open",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "name with a dot",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail.open",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "name with a non-ASCII digit",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail-\u0663",
       "kind": "symbolic",
       "inkBounds": {
         "x": 0.3125,
