@@ -1,0 +1,2184 @@
+[
+  {
+    "name": "mirrored symbolic icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "invariant symbolic icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:clock",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "invariant"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "directional variants",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:undo",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "directionalVariants",
+        "ltr": "resina.fixture:undo-ltr",
+        "rtl": "resina.fixture:undo-rtl"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "declared status layer",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        },
+        {
+          "role": "status.error"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "every declared layer role",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        },
+        {
+          "role": "accent.primary"
+        },
+        {
+          "role": "accent.secondary"
+        },
+        {
+          "role": "accent.tertiary"
+        },
+        {
+          "role": "status.error"
+        },
+        {
+          "role": "status.warning"
+        },
+        {
+          "role": "status.success"
+        },
+        {
+          "role": "status.info"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "single-segment namespace with digits in the name",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:2x-volume-3",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "bounds reach the box edge",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "bounds end at the far edge",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.5,
+        "width": 0.75,
+        "height": 0.5
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "integral bounds written as decimals",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.0,
+        "height": 1.0
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "color icon with baked light",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "invariant"
+      },
+      "bakedLight": true
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "color icon without baked light mirrors",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "bakedLight": false
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "color icon with baked light uses variants",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "directionalVariants",
+        "ltr": "vendor.apps:mail-ltr",
+        "rtl": "vendor.apps:mail-rtl"
+      },
+      "bakedLight": true
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "unsupported version",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "unsupported icon content version"
+  },
+  {
+    "name": "unknown member",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ],
+      "label": "Back"
+    },
+    "schemaValid": false,
+    "error": "unknown field"
+  },
+  {
+    "name": "missing direction",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "missing field `direction`"
+  },
+  {
+    "name": "missing ink bounds",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "missing field `inkBounds`"
+  },
+  {
+    "name": "unknown kind",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "bitmap",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "unknown variant"
+  },
+  {
+    "name": "reference without namespace",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference with uppercase",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:Chevron",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference with empty name segment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron--back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference with trailing dash",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "namespace with an uppercase letter",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "Vendor:mail",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "name with an underscore",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail_open",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "name with a dot",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail.open",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "name with a non-ASCII digit",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail-\u0663",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "namespace with a digit",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor2.apps:mail",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "namespace starting with a digit",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "2vendor:mail",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference with two colons",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:mail:open",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference without a name",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor:",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference with path",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina/fixture:chevron",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "reference with empty namespace segment",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina..fixture:chevron",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "design grid member",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ],
+      "grid": 24
+    },
+    "schemaValid": false,
+    "error": "unknown field"
+  },
+  {
+    "name": "reference with trailing newline",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron\n",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "nonstring reference",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": 5,
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid type"
+  },
+  {
+    "name": "null reference",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": null,
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid type"
+  },
+  {
+    "name": "negative ink origin",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": -1,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "inkBounds must have a nonnegative origin"
+  },
+  {
+    "name": "bounds that fit only in binary64",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.48193,
+        "y": 0.1875,
+        "width": 0.51807000000000001,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "bounds that exceed the box in binary64 but not binary32",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.05956,
+        "y": 0.1875,
+        "width": 0.9404400000009999,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true,
+    "error": "inkBounds exceeds the icon box"
+  },
+  {
+    "name": "extent that underflows to zero",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 1e-400,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "opticalBounds must have a positive extent"
+  },
+  {
+    "name": "negative optical origin",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": -0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "opticalBounds must have a nonnegative origin"
+  },
+  {
+    "name": "zero ink width",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "inkBounds must have a positive extent"
+  },
+  {
+    "name": "zero optical height",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "opticalBounds must have a positive extent"
+  },
+  {
+    "name": "ink exceeds the box",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.75,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true,
+    "error": "inkBounds exceeds the icon box"
+  },
+  {
+    "name": "optical exceeds the box",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.3,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true,
+    "error": "opticalBounds exceeds the icon box"
+  },
+  {
+    "name": "coordinate beyond the box",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 1.5,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "inkBounds exceeds the icon box"
+  },
+  {
+    "name": "extent beyond the box",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 1.25
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "opticalBounds exceeds the icon box"
+  },
+  {
+    "name": "boolean coordinate",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": true,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid type"
+  },
+  {
+    "name": "null extent",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": null,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid type"
+  },
+  {
+    "name": "unknown bounds member",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625,
+        "unit": "px"
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "unknown field"
+  },
+  {
+    "name": "unknown direction behavior",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "auto"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "unknown variant"
+  },
+  {
+    "name": "mirror with variants",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror",
+        "ltr": "resina.fixture:a",
+        "rtl": "resina.fixture:b"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "mirror and invariant directions take no variants"
+  },
+  {
+    "name": "mirror with null variant",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror",
+        "rtl": null
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid type: null"
+  },
+  {
+    "name": "null variant",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "directionalVariants",
+        "ltr": null,
+        "rtl": "resina.fixture:undo-rtl"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid type: null"
+  },
+  {
+    "name": "variants without rtl",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "directionalVariants",
+        "ltr": "resina.fixture:undo-ltr"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "directional variants require ltr and rtl"
+  },
+  {
+    "name": "identical variants",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "directionalVariants",
+        "ltr": "resina.fixture:undo",
+        "rtl": "resina.fixture:undo"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true,
+    "error": "directional variants must be distinct"
+  },
+  {
+    "name": "variant repeats the icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "directionalVariants",
+        "ltr": "resina.fixture:chevron-back",
+        "rtl": "resina.fixture:chevron-forward"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true,
+    "error": "directional variant must not repeat the icon reference"
+  },
+  {
+    "name": "invalid variant reference",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "directionalVariants",
+        "ltr": "undo-ltr",
+        "rtl": "resina.fixture:undo-rtl"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "symbolic icon without layers",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      }
+    },
+    "schemaValid": false,
+    "error": "symbolic icon requires layers"
+  },
+  {
+    "name": "empty layers",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": []
+    },
+    "schemaValid": false,
+    "error": "symbolic icon requires layers"
+  },
+  {
+    "name": "first layer is not content",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "status.error"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "first icon layer must use the content role"
+  },
+  {
+    "name": "second content layer",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        },
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "content role is only valid for the first layer"
+  },
+  {
+    "name": "duplicate additional layer",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        },
+        {
+          "role": "status.info"
+        },
+        {
+          "role": "status.info"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "duplicate icon layer role"
+  },
+  {
+    "name": "surface role layer",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        },
+        {
+          "role": "surface.base"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "unknown variant"
+  },
+  {
+    "name": "unknown layer member",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content",
+          "opacity": 0.5
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "unknown field"
+  },
+  {
+    "name": "null layers",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": null
+    },
+    "schemaValid": false,
+    "error": "invalid type: null"
+  },
+  {
+    "name": "symbolic icon with null baked light",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ],
+      "bakedLight": null
+    },
+    "schemaValid": false,
+    "error": "invalid type: null"
+  },
+  {
+    "name": "color icon with null layers",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "invariant"
+      },
+      "bakedLight": true,
+      "layers": null
+    },
+    "schemaValid": false,
+    "error": "invalid type: null"
+  },
+  {
+    "name": "color icon with null baked light",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "invariant"
+      },
+      "bakedLight": null
+    },
+    "schemaValid": false,
+    "error": "invalid type: null"
+  },
+  {
+    "name": "symbolic icon with baked light",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ],
+      "bakedLight": false
+    },
+    "schemaValid": false,
+    "error": "symbolic icon must not declare bakedLight"
+  },
+  {
+    "name": "color icon with layers",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "invariant"
+      },
+      "bakedLight": true,
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "color icon must not declare layers"
+  },
+  {
+    "name": "color icon without baked light",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "invariant"
+      }
+    },
+    "schemaValid": false,
+    "error": "color icon requires bakedLight"
+  },
+  {
+    "name": "color icon with baked light mirrors",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "bakedLight": true
+    },
+    "schemaValid": false,
+    "error": "color icon with baked light must not mirror"
+  },
+  {
+    "name": "nonboolean baked light",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "vendor.apps:mail",
+      "kind": "color",
+      "inkBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "opticalBounds": {
+        "x": 0.0625,
+        "y": 0.0625,
+        "width": 0.875,
+        "height": 0.875
+      },
+      "direction": {
+        "behavior": "invariant"
+      },
+      "bakedLight": "yes"
+    },
+    "schemaValid": false,
+    "error": "invalid type"
+  }
+]

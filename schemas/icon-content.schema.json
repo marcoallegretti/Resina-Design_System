@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:icon-content:0.1.0",
+  "title": "Resina Icon Content",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "reference", "kind", "inkBounds", "opticalBounds", "direction"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "reference": { "$ref": "#/$defs/reference" },
+    "kind": { "enum": ["symbolic", "color"] },
+    "inkBounds": { "$ref": "#/$defs/bounds" },
+    "opticalBounds": { "$ref": "#/$defs/bounds" },
+    "direction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["behavior"],
+          "properties": { "behavior": { "enum": ["mirror", "invariant"] } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["behavior", "ltr", "rtl"],
+          "properties": {
+            "behavior": { "const": "directionalVariants" },
+            "ltr": { "$ref": "#/$defs/reference" },
+            "rtl": { "$ref": "#/$defs/reference" }
+          }
+        }
+      ]
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "prefixItems": [{ "$ref": "#/$defs/contentLayer" }],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role"],
+        "properties": {
+          "role": {
+            "enum": [
+              "accent.primary",
+              "accent.secondary",
+              "accent.tertiary",
+              "status.error",
+              "status.warning",
+              "status.success",
+              "status.info"
+            ]
+          }
+        }
+      }
+    },
+    "bakedLight": { "type": "boolean" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "symbolic" } } },
+      "then": { "required": ["layers"], "not": { "required": ["bakedLight"] } },
+      "else": { "required": ["bakedLight"], "not": { "required": ["layers"] } }
+    },
+    {
+      "if": {
+        "properties": {
+          "bakedLight": { "const": true },
+          "direction": { "properties": { "behavior": { "const": "mirror" } } }
+        },
+        "required": ["bakedLight"]
+      },
+      "then": false
+    }
+  ],
+  "$defs": {
+    "reference": {
+      "type": "string",
+      "pattern": "^[a-z]+(\\.[a-z]+)*:[a-z0-9]+(-[a-z0-9]+)*(?![\\s\\S])"
+    },
+    "coordinate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "extent": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "$ref": "#/$defs/coordinate" },
+        "y": { "$ref": "#/$defs/coordinate" },
+        "width": { "$ref": "#/$defs/extent" },
+        "height": { "$ref": "#/$defs/extent" }
+      }
+    },
+    "contentLayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role"],
+      "properties": { "role": { "const": "content" } }
+    }
+  }
+}
