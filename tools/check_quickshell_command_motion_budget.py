@@ -1,4 +1,4 @@
-"""Measure Command spring frame cost in released Quickshell and enforce the motion frame-rate floor and publication gap."""
+"""Measure Command spring frame cost in released Quickshell and check the motion frame-rate floor and publication gap."""
 import argparse
 import json
 import math
@@ -50,6 +50,10 @@ def continuations(sequence):
             interval = after - before
             delay = frame["motion"].get("publicationDelay")
             delay = None if delay is None else seconds(delay, "publication delay")
+            span = frame["motion"].get("predecessorSpan")
+            span = None if span is None else seconds(span, "predecessor span")
+            if (delay is None) != (span is None):
+                raise ValueError("publication delay and predecessor span must be published together")
         elif frame["motion"]["retargetTime"] is None:
             continue
         else:
@@ -57,10 +61,10 @@ def continuations(sequence):
             if instant < before:
                 raise ValueError(f"retarget instant {instant!r} precedes the previous sample {before!r}")
             interval = instant - before + after
-            delay = None
+            delay = span = None
         measured.append({"interval": interval,
                          "preparation": seconds(frame["motion"].get("preparationDuration"), "preparation duration"),
-                         "publicationDelay": delay})
+                         "publicationDelay": delay, "predecessorSpan": span})
     return measured
 
 
@@ -77,7 +81,7 @@ def evaluate(measured, minimum=MINIMUM_FRAMES):
     preparation = summary([item["preparation"] for item in measured])
     floor = interval["median"] <= FLOOR_INTERVAL
     delays = sorted(item["publicationDelay"] for item in measured if item["publicationDelay"] is not None
-                    and item["interval"] - item["publicationDelay"] >= TICK)
+                    and item["predecessorSpan"] >= TICK)
     gap = {"frames": len(delays), "bound": GAP_BOUND, "evaluated": len(delays) >= minimum}
     if gap["evaluated"]:
         gap["delay"] = delays[math.ceil(GAP_PERCENTILE * len(delays)) - 1]
@@ -119,6 +123,10 @@ def main():
     parser.add_argument("--scale", type=float, required=True, help="Output scale the compositor presents")
     parser.add_argument("--presses", type=int, default=10)
     parser.add_argument("--frames-per-phase", type=int, default=6)
+    parser.add_argument("--floor", choices=("enforce", "report"), default="enforce",
+                        help="Report the 30 Hz floor without failing, for hosts that do not qualify frame timing")
+    parser.add_argument("--require-gap", action="store_true",
+                        help="Fail when too few frames exercise the publication path to bound its gap")
     args = parser.parse_args()
     session = None
     try:
@@ -149,16 +157,23 @@ def main():
         if gap["evaluated"]:
             print(f"MEASURED publication gap: 75th percentile {gap['delay'] * 1000:.2f} ms from publication to the "
                   f"next preparation over {gap['frames']} frames whose predecessor spanned an animation tick")
+        elif args.require_gap:
+            raise ValueError(f"only {gap['frames']} frames had a predecessor that spanned an animation tick; "
+                             f"{MINIMUM_FRAMES} are required to bound the publication gap")
         else:
             print(f"NOT EVALUATED publication gap: only {gap['frames']} frames had a predecessor that spanned an "
                   f"animation tick; {MINIMUM_FRAMES} are required")
-        if not result["floor"]["met"]:
-            raise ValueError(f"median published interval {result['interval']['median'] * 1000:.1f} ms exceeds the "
-                             f"{FLOOR_INTERVAL * 1000:.1f} ms (30 Hz) motion floor")
         if gap["evaluated"] and not gap["met"]:
             raise ValueError(f"the next preparation started {gap['delay'] * 1000:.2f} ms after publication at the "
                              f"75th percentile, beyond {GAP_BOUND * 1000:g} ms; frames wait for another animation tick")
-        print(f"PASS median published interval meets the {FLOOR_INTERVAL * 1000:.1f} ms (30 Hz) motion floor")
+        floor = (f"median published interval {result['interval']['median'] * 1000:.1f} ms against the "
+                 f"{FLOOR_INTERVAL * 1000:.1f} ms (30 Hz) motion floor")
+        if result["floor"]["met"]:
+            print(f"PASS {floor}")
+        elif args.floor == "report":
+            print(f"NOT MET {floor} (reported, not enforced on this host)")
+        else:
+            raise ValueError(f"{floor} is not met")
     except (OSError, ValueError, KeyError, subprocess.SubprocessError, json.JSONDecodeError) as error:
         print(f"Quickshell Command motion budget check failed: {error}", file=sys.stderr)
         return 1

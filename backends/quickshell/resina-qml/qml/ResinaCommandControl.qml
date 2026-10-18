@@ -177,7 +177,8 @@ ResinaCommandInput {
         state.frameDue = false;
         try {
             const cycle = clockValue(preparationClock.restart()).previousTime;
-            const publicationDelay = state.publishedSpan === null ? null : cycle - state.publishedSpan;
+            const predecessorSpan = state.publishedSpan;
+            const publicationDelay = predecessorSpan === null ? null : cycle - predecessorSpan;
             state.publishedSpan = null;
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
@@ -214,7 +215,7 @@ ResinaCommandInput {
             candidate.invalidate();
             if (motionChannels.length)
                 candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime,
-                    preparationClock,publicationDelay);
+                    preparationClock,publicationDelay,predecessorSpan);
             else
                 candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.

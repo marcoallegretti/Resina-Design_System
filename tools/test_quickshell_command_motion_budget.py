@@ -9,15 +9,19 @@ RETARGETED = {"bodyMix": {**REST, "initial": {"position": .4, "velocity": 1}}, "
 RELEASED = {"bodyMix": 0, "depthScale": 0}
 
 
-def timed(sample_time, preparation=.01, delay=.001, **changes):
+def timed(sample_time, preparation=.01, delay=.001, span=.02, **changes):
     result = frame(0, sample_time, **changes)
     result["motion"]["preparationDuration"] = preparation
     result["motion"]["publicationDelay"] = delay
+    result["motion"]["predecessorSpan"] = None if delay is None else span
     return result
 
 
-def measured(interval, preparation=.005, count=20, delay=None):
-    return [{"interval": interval, "preparation": preparation, "publicationDelay": delay}] * count
+def measured(interval, preparation=.005, count=20, delay=None, span=None):
+    if delay is not None and span is None:
+        span = interval - delay
+    return [{"interval": interval, "preparation": preparation, "publicationDelay": delay,
+             "predecessorSpan": span}] * count
 
 
 class CommandMotionBudgetTests(unittest.TestCase):
@@ -76,6 +80,19 @@ class CommandMotionBudgetTests(unittest.TestCase):
             with self.subTest(delay=delay), self.assertRaisesRegex(ValueError, "publication delay"):
                 continuations([timed(.1), timed(.2, delay=delay)])
 
+    def test_predecessor_span_is_published_with_the_delay(self):
+        self.assertEqual([item["predecessorSpan"] for item in continuations([timed(.1), timed(.13, span=.012)])],
+                         [.012])
+        for span in (False, "0.02", -.001, float("nan"), float("inf")):
+            with self.subTest(span=span), self.assertRaisesRegex(ValueError, "predecessor span"):
+                continuations([timed(.1), timed(.2, span=span)])
+        for delay, span in ((.001, None), (None, .02)):
+            unpaired = timed(.2)
+            unpaired["motion"]["publicationDelay"] = delay
+            unpaired["motion"]["predecessorSpan"] = span
+            with self.subTest(delay=delay), self.assertRaisesRegex(ValueError, "published together"):
+                continuations([timed(.1), unpaired])
+
     def test_publication_gap_bounds_the_upper_quartile_after_a_spanned_tick(self):
         spanned = TICK + .02
         self.assertTrue(evaluate(measured(spanned, count=15, delay=GAP_BOUND)
@@ -84,7 +101,13 @@ class CommandMotionBudgetTests(unittest.TestCase):
                                   + measured(spanned, count=6, delay=.016))["gap"]["met"])
         self.assertFalse(evaluate(measured(spanned, delay=GAP_BOUND + 1e-4))["gap"]["met"])
         # A predecessor published within one tick may correctly wait for the next tick.
-        self.assertTrue(evaluate(measured(spanned, delay=.001) + measured(TICK, count=40, delay=.016))["gap"]["met"])
+        self.assertTrue(evaluate(measured(spanned, delay=.001)
+                                 + measured(TICK, count=40, delay=.016, span=TICK - .001))["gap"]["met"])
+
+    def test_publication_gap_selects_frames_by_the_published_span(self):
+        # The interval suggests a spanned tick; the published span shows the predecessor did not span one.
+        result = evaluate(measured(.04, delay=.016, span=.01) + measured(.04, delay=.001, span=TICK))
+        self.assertEqual((result["gap"]["frames"], result["gap"]["met"]), (20, True))
 
     def test_publication_gap_requires_enough_frames_that_spanned_a_tick(self):
         result = evaluate(measured(.02, count=19, delay=.001) + measured(.01, count=30, delay=.009)

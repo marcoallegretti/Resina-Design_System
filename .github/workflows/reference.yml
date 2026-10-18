@@ -255,7 +255,7 @@ jobs:
             python tools/check_quickshell_command_motion_budget.py \
               --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-release-import \
               --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
-              --output-dir "target/quickshell-command-motion-budget-$scale" --scale "$scale" || status=1
+              --output-dir "target/quickshell-command-motion-budget-$scale" --scale "$scale" --floor report --require-gap || status=1
             kill "$sway_pid" || true
             wait "$sway_pid" || true
           done

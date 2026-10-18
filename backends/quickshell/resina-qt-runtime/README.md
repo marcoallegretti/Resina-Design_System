@@ -1275,9 +1275,9 @@ module.
 ### Released Quickshell Command motion frame budget
 
 Motion timing and budgets are qualified only against the release runtime module.
-Debug builds remain functional evidence. CI builds the same workspace with
-`cargo build --release` into the same target directory and packages it as a
-separate import root:
+Debug builds remain functional evidence. The release library is built with
+`cargo build --release` and packaged as a separate import root. Locally, with
+the `target/qt-runtime` target directory used above:
 
 ```sh
 cargo build --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --release --locked
@@ -1286,6 +1286,9 @@ python tools/prepare_qt_runtime_module.py \
   --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime \
   --output-dir target/qt-runtime-release-import
 ```
+
+CI sets `CARGO_TARGET_DIR` to `target/qt-runtime-build`, so its library is
+`target/qt-runtime-build/release/libresina_qt_runtime.so`.
 
 [`check_quickshell_command_motion_budget.py`](../../../tools/check_quickshell_command_motion_budget.py)
 runs the lifecycle probe in headless Sway at the output scale given by `--scale`
@@ -1308,36 +1311,44 @@ was still moving:
   render and the publication that follows are not included;
 - within one clock epoch, its publication delay is the published
   `publicationDelay`: the time from its predecessor's publication to the start
-  of its own refresh.
+  of its own refresh, and its predecessor span is the published
+  `predecessorSpan`: the time from the start of the predecessor's refresh to
+  that publication. The two are published together or not at all.
 
 At least 20 frames are required. The floor is a median published interval of at
-most 1/30 s (30 Hz); a longer median fails the check. The target is a median
+most 1/30 s (30 Hz); a longer median fails the check unless `--floor report`
+is given, which prints the result without failing. The target is a median
 `preparationDuration` of at most 8 ms and a median published interval of at most
 17 ms. The target is reported but not enforced. CI runs the check at output
-scales 1 and 2 and keeps each `report.json` with every measured frame.
+scales 1 and 2 with `--floor report --require-gap` and keeps each `report.json`
+with every measured frame. Its shared runners measured a median interval of 41.4 ms at
+scale 1 and 50.0 ms at scale 2, with median preparation of 9.1 ms and 17.8 ms.
+Most of each interval there is asynchronous decoding and software rendering, so
+runner timing does not qualify the floor. The floor is qualified by running the
+check without `--floor report` on the qualifying machine.
 
-The check also bounds the publication gap. The headless output refreshes at
-60 Hz, so a predecessor whose refresh start to publication spanned at least
-1/60 s, its published interval less the publication delay, saw an animation tick
-while it was prepared. For those frames the 75th percentile publication delay
-must be at most 4 ms. A predecessor published within one tick may correctly wait
-for the next tick and is not counted. With fewer than 20 such frames the gap is
-reported as not evaluated.
+The check also bounds the publication gap, on every host. The headless output
+refreshes at 60 Hz, so a predecessor whose `predecessorSpan` is at least 1/60 s
+saw an animation tick while it was prepared. For those frames the 75th
+percentile publication delay must be at most 4 ms. A predecessor published
+within one tick may correctly wait for the next tick and is not counted. With
+fewer than 20 such frames the gap is reported as not evaluated: the host rarely
+used the path the bound protects. `--require-gap` makes that a failure. CI
+requires it, so a runner that stops exercising the path fails rather than
+leaving the bound unchecked.
 
 Measured locally in headless Sway 1.12 with the pixman renderer, Quickshell 0.3.2
 and the Qt 6.11.2 software backend:
 
 | Release module, scale | Median interval | Median preparation | Publication gap (75th percentile) |
 | --- | ---: | ---: | ---: |
-| 1 | 19.3–21.2 ms | 13.5–14.4 ms | 0.9–1.1 ms |
-| 2 | 25.7–26.3 ms | 19.7–20.1 ms | 0.6–0.7 ms |
+| 1 | 15.7–16.0 ms | 10.4–11.4 ms | 0.60 ms, not evaluated in one run |
+| 2 | 21.9–23.1 ms | 17.8–18.8 ms | 0.40 ms |
 
-These are three runs at each scale. When the next preparation instead waited for
-the next animation tick after publication, the release median interval was
-38.8–42.0 ms at scale 1 and 46.4–49.0 ms at scale 2, failing the floor, and the
-publication gap was about 17.5 ms. When the driver ticked through preparation but
-the next preparation still waited for a tick, the gap was 9.8–11.4 ms and the
-scale 2 median interval was 33.2–33.7 ms, at the floor.
+These are three runs at each scale. At scale 1, 15, 69 and 56 frames had a
+predecessor that spanned a tick. With the call that resumes a due frame after
+publication removed, the publication gap was 12.27 ms at scale 1 and 11.49 ms
+at scale 2, failing the check, and the scale 2 median interval was 31.9 ms.
 
 ### Integrated sampled command frames
 
@@ -1377,7 +1388,7 @@ the current activation state and never wait for body motion to settle.
 The native read-only `snapshot`, `motion` and `currentFrame` aliases expose a
 coherent selected frame. `motion` is backend observation metadata containing
 elapsed `time`, retained `channels`, `retargetTime`, `preparationDuration`,
-`publicationDelay` and the
+`publicationDelay`, `predecessorSpan` and the
 complete existing motion IR; it is not a new portable IR or action authorization. `retargetTime`
 is the previous trajectory's elapsed clock time at which the native clock
 restarted and the retained `channels` were sampled from it. Every frame of that
@@ -1389,8 +1400,10 @@ separate `CommandClock`, from the start of the refresh that prepared the frame t
 the end of its synchronous snapshot, paint and label preparation. It excludes
 asynchronous image decoding and the later publication. `publicationDelay` is the
 time on that clock from the publication of the previous frame to the start of
-this frame's refresh. It is `null` when no frame was published since the
-previous refresh started, and after a failure or reconfiguration. `CommandSnapshotResolver` commits
+this frame's refresh, and `predecessorSpan` is the time on that clock from the
+start of the previous frame's refresh to its publication. Both are `null` when
+no frame was published since the previous refresh started, and after a failure
+or reconfiguration. `CommandSnapshotResolver` commits
 these fields together before notification and clears them when the selected
 QObject is destroyed. Component publication is deferred beyond the controller's
 publication guard, including when a cached image decodes synchronously, so a
