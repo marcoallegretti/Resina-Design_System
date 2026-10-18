@@ -8,6 +8,7 @@ exist, describes the process that produced it, or repeats an existing title.
 
 import argparse
 import http.client
+import html
 import json
 import os
 import re
@@ -53,7 +54,7 @@ PROCESS_TERMS = [
     (
         re.compile(
             r"\b(?:copilot|claude|anthropic|openai|chatgpt|gpt-?\d[\w.-]*|gpt|gemini|bard|sonnet|opus|haiku|codex"
-            r"|llama|mistral|deepseek|grok|qwen|perplexity|cohere|tabnine|codeium|windsurf)\b",
+            r"|llama|mistral|deepseek|grok|qwen|perplexity|tabnine|codeium|windsurf)\b",
             re.IGNORECASE,
         ),
         "model or vendor name",
@@ -63,7 +64,7 @@ PROCESS_TERMS = [
     (
         re.compile(
             r"\bautomation\b|\bautomated (?:issue|report|review|run|scan|finding)s?\b"
-            r"|\bauto-?generated\b|\bgenerated (?:automatically|by|with|using)\b"
+            r"|\bauto-?generated\b|\bgenerated automatically\b"
             r"|\bautomatically (?:generated|filed|created|opened|reported|detected|found|written|drafted)\b",
             re.IGNORECASE,
         ),
@@ -236,9 +237,12 @@ def cited_paths(text, root):
 
 
 def scan_text(text):
-    """Drop invisible format characters and fold compatibility forms and Latin look-alikes before scanning."""
-    text = "".join(char for char in text if unicodedata.category(char) != "Cf")
-    return unicodedata.normalize("NFKC", text).translate(CONFUSABLES)
+    """Reduce text to what GitHub renders as letters, then fold compatibility forms and Latin look-alikes."""
+    text = re.sub(r"<!--.*?-->", "", html.unescape(text), flags=re.DOTALL)
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(char for char in text if unicodedata.category(char) not in {"Cf", "Mn"})
+    text = unicodedata.normalize("NFKC", text).translate(CONFUSABLES)
+    return re.sub(r"(?<=\w)[*_~]+(?=\w)", "", text)
 
 
 def process_term_errors(text):
