@@ -3,7 +3,6 @@ name: Architecture Debt Scout
 description: Find one concrete architectural debt and record it as an issue.
 on:
   workflow_dispatch:
-  schedule: weekly
   skip-if-match: 'is:issue is:open label:architecture-debt-scout'
 permissions:
   contents: read

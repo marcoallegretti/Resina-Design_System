@@ -3,7 +3,6 @@ name: Continuous Refactoring
 description: Propose one concrete structural refactoring as an issue.
 on:
   workflow_dispatch:
-  schedule: weekly
   skip-if-match: 'is:issue is:open label:continuous-refactoring'
 permissions:
   contents: read

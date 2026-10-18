@@ -3,7 +3,6 @@ name: Continuous Simplicity
 description: Propose one evidence-backed simplification as an issue.
 on:
   workflow_dispatch:
-  schedule: weekly
   skip-if-match: 'is:issue is:open label:continuous-simplicity'
 permissions:
   contents: read
