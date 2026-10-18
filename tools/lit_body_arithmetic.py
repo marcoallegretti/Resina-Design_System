@@ -152,8 +152,23 @@ class Body:
             result.append((center, (sx, sy), radius - inset))
         return result
 
+    def outline_contains(self, point):
+        """spec/81 membership in normalized binary64 corner coordinates."""
+        x, y = point
+        if x < 0 or y < 0 or x > self.width or y > self.height:
+            return False
+        local = ((x, y), (self.width - x, y), (self.width - x, self.height - y), (x, self.height - y))
+        for radius, (lx, ly) in zip(self.radii, local):
+            if radius and lx < radius and ly < radius:
+                u, v = (radius - lx) / radius, (radius - ly) / radius
+                if u * u + v * v > 1:
+                    return False
+        return True
+
     def contains(self, point, inset):
-        """Closed membership: binary64 slack decides clear cases, exact rationals decide the rest."""
+        """F by spec/81 for inset zero; otherwise the closed spec/83 interior, exact near its boundary."""
+        if inset == 0:
+            return self.outline_contains(point)
         x, y = point
         scale = max(self.width, self.height, abs(x), abs(y))
         guard = 1e-9 * scale

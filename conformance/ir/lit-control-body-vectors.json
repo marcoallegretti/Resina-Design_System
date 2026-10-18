@@ -23200,6 +23200,1112 @@
   }
  },
  {
+  "name": "circular-arc-boundaries",
+  "sourceChanges": [
+   {
+    "path": "/size",
+    "value": {
+     "width": 96,
+     "height": 64
+    }
+   },
+   {
+    "path": "/radii",
+    "value": {
+     "topStart": {
+      "x": 26,
+      "y": 26
+     },
+     "topEnd": {
+      "x": 26,
+      "y": 26
+     },
+     "bottomEnd": {
+      "x": 26,
+      "y": 26
+     },
+     "bottomStart": {
+      "x": 26,
+      "y": 26
+     }
+    }
+   },
+   {
+    "path": "/points",
+    "value": [
+     {
+      "x": 80,
+      "y": 62
+     },
+     {
+      "x": 80,
+      "y": 61.99999999999909
+     },
+     {
+      "x": 80,
+      "y": 62.00000000000091
+     },
+     {
+      "x": 85,
+      "y": 58
+     },
+     {
+      "x": 85,
+      "y": 57.99999999999909
+     },
+     {
+      "x": 85,
+      "y": 58.00000000000091
+     },
+     {
+      "x": 11,
+      "y": 6
+     },
+     {
+      "x": 11,
+      "y": 6.0000000000009095
+     },
+     {
+      "x": 16,
+      "y": 2.0000000000009095
+     }
+    ]
+   }
+  ],
+  "sourceSchemaValid": true,
+  "expected": {
+   "light": {
+    "keyDirection": {
+     "x": -0.7071067811865475,
+     "y": -0.7071067811865475
+    },
+    "ambient": 0.25,
+    "interaction": {
+     "direction": {
+      "x": 0.8944271909999159,
+      "y": 0.4472135954999579
+     },
+     "strength": 0.5
+    }
+   },
+   "sideOffset": {
+    "x": 1.414213562373095,
+    "y": 1.414213562373095
+   },
+   "contentBounds": {
+    "x": 10.702941459221693,
+    "y": 10.702941459221693,
+    "width": 74.59411708155662,
+    "height": 42.59411708155662
+   },
+   "colorRanges": [
+    {
+     "lower": {
+      "colorSpace": "srgb",
+      "components": [
+       0.49999999999999906,
+       0.3999999999999991,
+       0.29999999999999905
+      ],
+      "alpha": 1
+     },
+     "upper": {
+      "colorSpace": "srgb",
+      "components": [
+       0.540000000000001,
+       0.44800000000000095,
+       0.3560000000000009
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "lower": {
+      "colorSpace": "srgb",
+      "components": [
+       0.44999999999999907,
+       0.3599999999999991,
+       0.2699999999999991
+      ],
+      "alpha": 1
+     },
+     "upper": {
+      "colorSpace": "srgb",
+      "components": [
+       0.500000000000001,
+       0.40000000000000097,
+       0.30000000000000093
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "lower": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     },
+     "upper": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    }
+   ],
+   "samples": [
+    {
+     "point": {
+      "x": 80,
+      "y": 62
+     },
+     "rule": 5,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.45,
+       0.36000000000000004,
+       0.27
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 80,
+      "y": 61.99999999999909
+     },
+     "rule": 3,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 80,
+      "y": 62.00000000000091
+     },
+     "rule": 5,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.45,
+       0.36000000000000004,
+       0.27
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 85,
+      "y": 58
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.49957050336230496,
+       0.399656402689844,
+       0.29974230201738294
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 85,
+      "y": 57.99999999999909
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.49957050336230463,
+       0.3996564026898437,
+       0.2997423020173828
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 85,
+      "y": 58.00000000000091
+     },
+     "rule": 3,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.4995705033623053,
+       0.39965640268984426,
+       0.29974230201738317
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 11,
+      "y": 6
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.500343597310156,
+       0.40041231677218725,
+       0.30048103623421846
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 11,
+      "y": 6.0000000000009095
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5003435973101563,
+       0.4004123167721876,
+       0.30048103623421885
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 16,
+      "y": 2.0000000000009095
+     },
+     "rule": 4,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    }
+   ]
+  }
+ },
+ {
+  "name": "rich-capabilities-change-no-light",
+  "sourceChanges": [
+   {
+    "path": "/environment/rendererCapabilities/gradients",
+    "value": true
+   },
+   {
+    "path": "/environment/rendererCapabilities/customShader",
+    "value": true
+   },
+   {
+    "path": "/environment/rendererCapabilities/masks",
+    "value": true
+   },
+   {
+    "path": "/environment/rendererCapabilities/sdfShapes",
+    "value": true
+   },
+   {
+    "path": "/points",
+    "value": [
+     {
+      "x": 48,
+      "y": 24
+     },
+     {
+      "x": 48,
+      "y": 1.5
+     },
+     {
+      "x": 48,
+      "y": 46.5
+     },
+     {
+      "x": 1.5,
+      "y": 24
+     },
+     {
+      "x": 94.5,
+      "y": 24
+     },
+     {
+      "x": 48,
+      "y": 1
+     },
+     {
+      "x": 48,
+      "y": 0.5
+     },
+     {
+      "x": 48,
+      "y": 0
+     },
+     {
+      "x": 48,
+      "y": 48
+     },
+     {
+      "x": 48,
+      "y": 47.5
+     },
+     {
+      "x": 95.5,
+      "y": 24
+     },
+     {
+      "x": 96,
+      "y": 24
+     },
+     {
+      "x": 0.5,
+      "y": 24
+     },
+     {
+      "x": 0,
+      "y": 24
+     },
+     {
+      "x": 48,
+      "y": 48.3
+     },
+     {
+      "x": 96.2,
+      "y": 24
+     },
+     {
+      "x": 48,
+      "y": 48.45
+     },
+     {
+      "x": 48,
+      "y": 49.3
+     },
+     {
+      "x": 97,
+      "y": 24
+     },
+     {
+      "x": 48,
+      "y": 49.5
+     },
+     {
+      "x": 98,
+      "y": 24
+     },
+     {
+      "x": -0.5,
+      "y": 24
+     },
+     {
+      "x": 1,
+      "y": 1
+     },
+     {
+      "x": 8.090097,
+      "y": 8.090097
+     },
+     {
+      "x": 87.909903,
+      "y": 8.090097
+     },
+     {
+      "x": 87.909903,
+      "y": 39.909903
+     },
+     {
+      "x": 8.090097,
+      "y": 39.909903
+     },
+     {
+      "x": 88.617009,
+      "y": 40.617009
+     },
+     {
+      "x": 89.465537,
+      "y": 41.465537
+     },
+     {
+      "x": 90.031223,
+      "y": 42.031223
+     },
+     {
+      "x": 90.73833,
+      "y": 42.73833
+     },
+     {
+      "x": 7.382991,
+      "y": 7.382991
+     },
+     {
+      "x": 10.143593539449023,
+      "y": 10.143593539449023
+     },
+     {
+      "x": 10.143593539449023,
+      "y": 37.85640646055098
+     },
+     {
+      "x": 85.85640646055097,
+      "y": 10.143593539449023
+     },
+     {
+      "x": 85.85640646055097,
+      "y": 37.85640646055098
+     }
+    ]
+   }
+  ],
+  "sourceSchemaValid": true,
+  "expected": {
+   "light": {
+    "keyDirection": {
+     "x": -0.7071067811865475,
+     "y": -0.7071067811865475
+    },
+    "ambient": 0.25,
+    "interaction": {
+     "direction": {
+      "x": 0.8944271909999159,
+      "y": 0.4472135954999579
+     },
+     "strength": 0.5
+    }
+   },
+   "sideOffset": {
+    "x": 1.414213562373095,
+    "y": 1.414213562373095
+   },
+   "contentBounds": {
+    "x": 10.143593539449023,
+    "y": 10.143593539449023,
+    "width": 75.71281292110194,
+    "height": 27.712812921101957
+   },
+   "colorRanges": [
+    {
+     "lower": {
+      "colorSpace": "srgb",
+      "components": [
+       0.49999999999999906,
+       0.3999999999999991,
+       0.29999999999999905
+      ],
+      "alpha": 1
+     },
+     "upper": {
+      "colorSpace": "srgb",
+      "components": [
+       0.540000000000001,
+       0.44800000000000095,
+       0.3560000000000009
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "lower": {
+      "colorSpace": "srgb",
+      "components": [
+       0.44999999999999907,
+       0.3599999999999991,
+       0.2699999999999991
+      ],
+      "alpha": 1
+     },
+     "upper": {
+      "colorSpace": "srgb",
+      "components": [
+       0.500000000000001,
+       0.40000000000000097,
+       0.30000000000000093
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "lower": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     },
+     "upper": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    }
+   ],
+   "samples": [
+    {
+     "point": {
+      "x": 48,
+      "y": 24
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 1.5
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5007915677869984,
+       0.4009498813443981,
+       0.30110819490179774
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 46.5
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.499010540266252,
+       0.3992084322130016,
+       0.2994063241597512
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 1.5,
+      "y": 24
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.4992868377740269,
+       0.39942947021922154,
+       0.2995721026644161
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 94.5,
+      "y": 24
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5005705297807785,
+       0.40068463573693425,
+       0.3007987416930899
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 1
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5001290413219692,
+       0.4001548495863631,
+       0.30018065785075687
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 0.5
+     },
+     "rule": 4,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 0
+     },
+     "rule": 4,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 48
+     },
+     "rule": 3,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 47.5
+     },
+     "rule": 3,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.49999801842522257,
+       0.39999841474017805,
+       0.29999881105513354
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 95.5,
+      "y": 24
+     },
+     "rule": 3,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5000011425906329,
+       0.40000137110875944,
+       0.300001599626886
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 96,
+      "y": 24
+     },
+     "rule": 3,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 0.5,
+      "y": 24
+     },
+     "rule": 4,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 0,
+      "y": 24
+     },
+     "rule": 4,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 48.3
+     },
+     "rule": 5,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.45,
+       0.36000000000000004,
+       0.27
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 96.2,
+      "y": 24
+     },
+     "rule": 5,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.45,
+       0.36000000000000004,
+       0.27
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 48.45
+     },
+     "rule": 6,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 49.3
+     },
+     "rule": 6,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 97,
+      "y": 24
+     },
+     "rule": 6,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 48,
+      "y": 49.5
+     },
+     "rule": 7,
+     "color": null
+    },
+    {
+     "point": {
+      "x": 98,
+      "y": 24
+     },
+     "rule": 7,
+     "color": null
+    },
+    {
+     "point": {
+      "x": -0.5,
+      "y": 24
+     },
+     "rule": 7,
+     "color": null
+    },
+    {
+     "point": {
+      "x": 1,
+      "y": 1
+     },
+     "rule": 7,
+     "color": null
+    },
+    {
+     "point": {
+      "x": 8.090097,
+      "y": 8.090097
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5002710324542655,
+       0.4003252389451187,
+       0.3003794454359717
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 87.909903,
+      "y": 8.090097
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.501670177238101,
+       0.4020042126857213,
+       0.3023382481333415
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 87.909903,
+      "y": 39.909903
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.4996612094321681,
+       0.3997289675457345,
+       0.2997967256593008
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 8.090097,
+      "y": 39.909903
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.4979122784523737,
+       0.398329822761899,
+       0.2987473670714242
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 88.617009,
+      "y": 40.617009
+     },
+     "rule": 3,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.4999172819517614,
+       0.39993382556140916,
+       0.29995036917105683
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 89.465537,
+      "y": 41.465537
+     },
+     "rule": 5,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.45,
+       0.36000000000000004,
+       0.27
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 90.031223,
+      "y": 42.031223
+     },
+     "rule": 6,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 90.73833,
+      "y": 42.73833
+     },
+     "rule": 7,
+     "color": null
+    },
+    {
+     "point": {
+      "x": 7.382991,
+      "y": 7.382991
+     },
+     "rule": 4,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0,
+       0,
+       0
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 10.143593539449023,
+      "y": 10.143593539449023
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 10.143593539449023,
+      "y": 37.85640646055098
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 85.85640646055097,
+      "y": 10.143593539449023
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    },
+    {
+     "point": {
+      "x": 85.85640646055097,
+      "y": 37.85640646055098
+     },
+     "rule": 2,
+     "color": {
+      "colorSpace": "srgb",
+      "components": [
+       0.5,
+       0.4,
+       0.3
+      ],
+      "alpha": 1
+     }
+    }
+   ]
+  }
+ },
+ {
   "name": "shoulder-tau-reaches-one",
   "sourceChanges": [
    {

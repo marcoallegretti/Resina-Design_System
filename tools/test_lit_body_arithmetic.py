@@ -45,8 +45,13 @@ class LitBodyVectorTests(unittest.TestCase):
             "reduced-transparency-keeps-light", "full-quality-keeps-authored-strength", "steep-key-direction",
             "frost-opaque-dimensional-body", "elastomer-body", "strong-edge-candidate", "recessed-toggle-track",
             "convex-toggle-thumb", "asymmetric-corners-ltr", "asymmetric-corners-rtl", "flat-relief-keeps-projection",
-            "square-corners", "hover-depth-zero-is-the-face",
+            "square-corners", "hover-depth-zero-is-the-face", "circular-arc-boundaries",
+            "rich-capabilities-change-no-light",
         })
+
+    def test_capabilities_beyond_dynamic_lighting_change_no_paint(self):
+        expected = {case["name"]: case["expected"] for case in CASES if "expected" in case}
+        self.assertEqual(expected["rich-capabilities-change-no-light"], expected["hover-admits-interaction"])
 
     def test_content_plateau_and_flat_normals_return_the_exact_body(self):
         for case in CASES:
@@ -59,6 +64,14 @@ class LitBodyVectorTests(unittest.TestCase):
                 for x in (bounds["x"], bounds["x"] + bounds["width"] / 3, bounds["x"] + bounds["width"]):
                     for y in (bounds["y"], bounds["y"] + bounds["height"] / 2, bounds["y"] + bounds["height"]):
                         self.assertEqual(body.sample({"x": x, "y": y})[1], source["body"])
+
+    def test_arc_boundaries_follow_normalized_outline_and_exact_edge_interior(self):
+        body = Body(case_source("circular-arc-boundaries"))
+        tiny = 2.0 ** -40
+        self.assertGreater((10 / 26) ** 2 + (24 / 26) ** 2, 1)
+        self.assertEqual([body.sample({"x": 80, "y": y})[0] for y in (62 - tiny, 62, 62 + tiny)], [3, 5, 5])
+        self.assertEqual([body.sample({"x": 85, "y": y})[0] for y in (58 - tiny, 58, 58 + tiny)], [2, 2, 3])
+        self.assertEqual([body.sample({"x": 11, "y": y})[0] for y in (6, 6 + tiny)], [2, 2])
 
     def test_shadow_boundary_of_the_front_takes_face_paint(self):
         body = Body(case_source("hover-admits-interaction"))
