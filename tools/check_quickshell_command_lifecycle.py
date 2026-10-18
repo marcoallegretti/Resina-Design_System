@@ -15,6 +15,9 @@ from wayland_virtual_input import KEY_ENTER, KEY_SPACE, KEY_TAB, VirtualInput
 OUTSIDE = (360, 160)
 EVENT = "RESINA_LIFECYCLE "
 NOT_READY = "Not ready to accept queries yet."
+# Quickshell 0.3.2 exits 0 after this message when the socket closes before a reply arrives.
+LOST_REPLY = "Error occurred while waiting for response."
+QUERIES = {"observe"}
 REPLACEMENT = "Riconnetti già"
 REPLACEMENT_DESCRIPTION = "Connetti con le impostazioni già salvate."
 
@@ -161,10 +164,12 @@ class Session:
                                      "resina", function, *map(str, arguments)],
                                     env=self.environment, capture_output=True, text=True, timeout=10)
             output = (result.stdout + result.stderr).strip()
-            if NOT_READY not in output or time.monotonic() > deadline:
+            lost = function in QUERIES and LOST_REPLY in output
+            if NOT_READY not in output and not lost or time.monotonic() > deadline:
                 break
             time.sleep(0.1)
-        if result.returncode or NOT_READY in output or function == "observe" and not result.stdout.strip():
+        if result.returncode or NOT_READY in output or LOST_REPLY in output \
+                or function == "observe" and not result.stdout.strip():
             raise ValueError(f"probe call {function} failed: " + output[-500:])
         return result.stdout.strip()
 

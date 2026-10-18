@@ -17,6 +17,7 @@ from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_qt_native_availability import ACTION, action_names
 from check_qt_platform_appearance import session, start_portal, stop, wait_portal
 from check_quickshell_command_accessibility import NativeEvents, ScreenReader, buttons, state, text
+from check_quickshell_command_lifecycle import LOST_REPLY
 from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payload, references, \
     string_value
 from wayland_virtual_input import KEY_SPACE, KEY_TAB, VirtualInput
@@ -24,6 +25,7 @@ from wayland_virtual_input import KEY_SPACE, KEY_TAB, VirtualInput
 KEY_ESCAPE = 1
 NOT_READY = "Not ready to accept queries yet."
 STARTING = "No running instances"
+QUERIES = {"frames", "request", "observe"}
 SHELL = ROOT / "lab/quickshell/clock-shell"
 QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context", "RESINA_CLOCK_ERROR")
 
@@ -106,10 +108,11 @@ class Shell:
                     raise
                 continue
             output = (result.stdout + result.stderr).strip()
-            if (NOT_READY not in output and STARTING not in output) or time.monotonic() > deadline:
+            lost = function in QUERIES and LOST_REPLY in output
+            if (NOT_READY not in output and STARTING not in output and not lost) or time.monotonic() > deadline:
                 break
             time.sleep(.1)
-        if result.returncode or NOT_READY in output or STARTING in output:
+        if result.returncode or NOT_READY in output or STARTING in output or LOST_REPLY in output:
             raise ValueError(f"clock shell call {function} failed: {output[-500:]}")
         return result.stdout.strip()
 
