@@ -1074,9 +1074,11 @@ through the compositor:
 `zwlr_virtual_pointer_v1` absolute motion and buttons and a persistent
 `zwp_virtual_keyboard_v1` keyboard. Held keys use the compositor's repeat
 information, so Qt produces its own auto-repeat.
-Each held Space or Enter must deliver at least two repeat publications while the
-published frame stays in place: a repeat that leaves the activation state
-unchanged does not retract or re-prepare the Command or Toggle.
+Each held Space or Enter must deliver at least two repeat publications, keep a
+published frame and never retract it. The Toggle lifecycle check applies the same
+rule. The motion check holds Space through auto-repeat with sampled motion and
+requires one clock epoch, frames that continue until the spring settles or for
+at least one second, and no retraction.
 
 ```sh
 python tools/check_quickshell_command_lifecycle.py \
