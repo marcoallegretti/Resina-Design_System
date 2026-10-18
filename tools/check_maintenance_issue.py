@@ -12,6 +12,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -38,20 +39,35 @@ URL = re.compile(r"https?://\S+")
 HEADING = re.compile(r"^ {0,3}(#{1,6})[ \t]+(.*?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(```|~~~)")
 
+CONFUSABLES = str.maketrans(
+    "авеіјкмнорстухѕԁɡ" "АВЕІЈКМНОРСТУХЅ" "αικνορυχ" "ΑΒΕΖΗΙΚΜΝΟΡΤΥΧ",
+    "abeijkmhopctyxsdg" "ABEIJKMHOPCTYXS" "aikvopux" "ABEZHIKMNOPTYX",
+)
+
 PROCESS_TERMS = [
     (re.compile(r"\bagents?\b|\bagentic\b", re.IGNORECASE), "agent"),
-    (re.compile(r"\bAI\b"), "AI"),
+    (re.compile(r"\bAI\b|\bA\.I\.|(?i:\bartificial intelligence\b|\bmachine learning\b)"), "AI"),
     (re.compile(r"\bLLMs?\b", re.IGNORECASE), "LLM"),
     (re.compile(r"\b(?:language|AI|ML|LLM|foundation|frontier)[ -]models?\b", re.IGNORECASE), "language model"),
     (
         re.compile(
-            r"\b(?:copilot|claude|anthropic|openai|chatgpt|gpt-?\d[\w.-]*|gpt|gemini|sonnet|opus|haiku|codex|llama|mistral)\b",
+            r"\b(?:copilot|claude|anthropic|openai|chatgpt|gpt-?\d[\w.-]*|gpt|gemini|bard|sonnet|opus|haiku|codex"
+            r"|llama|mistral|deepseek|grok|qwen|perplexity|cohere|tabnine|codeium|windsurf)\b",
             re.IGNORECASE,
         ),
         "model or vendor name",
     ),
     (re.compile(r"\bgh[- ]aw\b", re.IGNORECASE), "gh-aw"),
-    (re.compile(r"\bautomation\b|\bautomated (?:issue|report|review|run|scan|finding)s?\b", re.IGNORECASE), "automation"),
+    (re.compile(r"\b(?:chat)?bots?\b|\bassistants?\b", re.IGNORECASE), "bot or assistant"),
+    (
+        re.compile(
+            r"\bautomation\b|\bautomated (?:issue|report|review|run|scan|finding)s?\b"
+            r"|\bauto-?generated\b|\bgenerated (?:automatically|by|with|using)\b"
+            r"|\bautomatically (?:generated|filed|created|opened|reported|detected|found|written|drafted)\b",
+            re.IGNORECASE,
+        ),
+        "automation",
+    ),
     (
         re.compile(
             r"\b(?:this|workflow|maintenance|scheduled) run\b"
@@ -196,7 +212,14 @@ def cited_paths(text, root):
     return citations, remaining, errors
 
 
+def scan_text(text):
+    """Drop invisible format characters and fold compatibility forms and Latin look-alikes before scanning."""
+    text = "".join(char for char in text if unicodedata.category(char) != "Cf")
+    return unicodedata.normalize("NFKC", text).translate(CONFUSABLES)
+
+
 def process_term_errors(text):
+    text = scan_text(text)
     errors = []
     for pattern, name in PROCESS_TERMS:
         match = pattern.search(text)

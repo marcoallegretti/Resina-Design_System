@@ -152,11 +152,26 @@ class MaintenanceIssueGateTests(unittest.TestCase):
             "Reported by this run.",
             "The maintenance workflow found it.",
             "Claude reviewed it.",
+            "Generated automatically.",
+            "A bot filed it.",
+            "An assistant drafted it.",
+            "An A.I. drafted it.",
+            "Artificial intelligence drafted it.",
+            "DeepSeek agrees.",
+            "Grok agrees.",
+            "Clаude reviewed it.",
+            "Cl​aude reviewed it.",
+            "Ｃlaude reviewed it.",
+            "Checked by self-review.",
         ]
         for phrase in phrases:
             with self.subTest(phrase=phrase):
                 result = errors(sections=replace("Observed", phrase))
                 self.assertTrue(any(error.startswith("mentions ") for error in result), result)
+
+    def test_ordinary_uses_of_nearby_words_are_allowed(self):
+        text = "Consumers must not upgrade the schema version automatically; generated output is never normative."
+        self.assertEqual(errors(sections=replace("Observed", text)), [])
 
     def test_process_terms_in_the_title_are_rejected(self):
         self.assertTrue(any(error.startswith("mentions ") for error in errors(title="Agent duplicates resolver IO")))

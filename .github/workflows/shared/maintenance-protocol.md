@@ -90,8 +90,8 @@ claim stays unverified, call `noop` instead.
 ## Language
 
 Describe only the repository problem and its evidence. Never describe how the
-issue was produced: no mention of agents, models, AI, Copilot, LLMs, gh-aw,
-automation, this run or this review process. Repository files such as AGENTS.md,
+issue was produced: no mention of agents, models, AI, Copilot, LLMs, bots,
+assistants, gh-aw, automation, this run or this review process. Repository files such as AGENTS.md,
 `.agents/` or `.github/workflows/reference.yml` may be cited by path when they are evidence.
 
 Before publication, `tools/check_maintenance_issue.py` rejects an issue that
