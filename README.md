@@ -72,6 +72,14 @@ to analytic full normals. `python tools/check_material_relief_paint_backend.py -
 command uses the existing relief raster arguments to write bounded RGBA8 PNG
 output. Native content/focus and accepted scene evidence remain separate requirements.
 
+The [lit control body](spec/88-lit-control-body.md) embeds that face as the front
+plane of a Command or Toggle part body, projected by the existing side plane and
+swept edge, and admits interaction light only in the hover or pressed phase. The
+Rust `LitControlBodyIr::sample_paint` API evaluates its region law;
+`python -m unittest discover -s tools -p test_lit_body_arithmetic.py` checks the
+authored point vectors against independent arithmetic. Component paint versions,
+raster and native realization remain separate work.
+
 Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for an [extruded contour request](schemas/extruded-contour-request.schema.json). It resolves the swept silhouette as portable lines and elliptical arcs, including physical corner mapping and split curves. `python tools/check_extruded_contour_backend.py -- <backend-command> -` checks the public geometry protocol.
 
 Run `cargo run -p resina-resolver --bin resina-opaque-surface -- <path>` for an [opaque base-state surface request](schemas/opaque-surface-request.schema.json). It resolves one complete static opaque surface appearance from a theme, actual environment and surroundings, and explicit appearance profile. `python tools/check_opaque_surface_backend.py -- <backend-command> -` checks its portable IR and diagnostic failures. The Rust `resolve_opaque_surface` API reuses a compiled theme across surfaces.
