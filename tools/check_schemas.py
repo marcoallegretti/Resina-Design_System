@@ -284,6 +284,7 @@ def main():
         "schemas/command-label-arithmetic.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-relief-containment.schema.json",
+        "schemas/control-relief.schema.json",
         "schemas/command-accessibility-ir.schema.json",
         "schemas/toggle-snapshot-cases.schema.json",
         "schemas/toggle-travel-cases.schema.json",
@@ -2324,6 +2325,30 @@ def main():
                         ("/cases/0/contained", "yes")]:
         check_case(relief_content_validator, f"relief content invalid {path}",
                    apply_changes(relief_content, [{"path": path, "value": value}]), False)
+        checked += 1
+    control_relief = load_json(ROOT / "definitions/control-relief.json")
+    control_relief_validator = validator_for("schemas/control-relief.schema.json")
+    check_case(control_relief_validator, "reference control relief", control_relief, True)
+    checked += 1
+    for name, changes in [
+        ("unsupported control relief version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+        ("unknown relief kind", [{"path": "/commandBody/kind", "value": "negative-extrusion"}]),
+        ("flat relief with amplitude", [{"path": "/toggleThumb/kind", "value": "flat"}]),
+        ("relief without shoulder", [{"path": "/toggleTrack/shoulderWidth", "value": 0}]),
+        ("relief without amplitude", [{"path": "/commandBody/amplitude", "value": 0}]),
+        ("zero body thickness", [{"path": "/toggleThumb/bodyThickness", "value": 0}]),
+        ("positional profile", [{"path": "/commandBody", "value": ["convex", 2, 1, 2]}]),
+        ("textual extent", [{"path": "/commandBody/shoulderWidth", "value": "2px"}]),
+    ]:
+        check_case(control_relief_validator, name, apply_changes(control_relief, changes), False)
+        checked += 1
+    for name in ("commandBody", "toggleTrack", "toggleThumb"):
+        missing = copy.deepcopy(control_relief)
+        del missing[name]
+        check_case(control_relief_validator, f"missing control relief {name}", missing, False)
+        checked += 1
+    for name, value in (("sliderTrack", control_relief["toggleTrack"]), ("renderer", "native")):
+        check_case(control_relief_validator, f"unknown control relief {name}", dict(control_relief, **{name: value}), False)
         checked += 1
     expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
     checked += check_label_expansion(expansion)
