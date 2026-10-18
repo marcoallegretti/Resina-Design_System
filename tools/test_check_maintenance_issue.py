@@ -72,6 +72,10 @@ class MaintenanceIssueGateTests(unittest.TestCase):
                 result = issue_errors(issue, labels=MAINTENANCE_LABELS, prefix="", root=ROOT, existing_titles=[])
                 self.assertIn(f"issue sets {field}; only title and body may be proposed", result)
 
+    def test_empty_optional_fields_are_accepted(self):
+        issue = {"type": "create_issue", "title": "Declare the test matrix once", "body": body(valid_sections()), "labels": [], "repo": ""}
+        self.assertEqual(issue_errors(issue, labels=MAINTENANCE_LABELS, prefix="", root=ROOT, existing_titles=[]), [])
+
     def test_forms_supply_the_required_headings(self):
         self.assertEqual(
             MAINTENANCE_LABELS,
@@ -220,6 +224,33 @@ class MaintenanceIssueGateTests(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()) as printed:
                 self.assertEqual(main(["--agent-output", str(output), "--workflow-ref", "", "--repository", ""]), 1)
             self.assertIn("2 issues proposed", printed.getvalue())
+
+    def run_main(self, issue, fetch):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "agent_output.json"
+            output.write_text(json.dumps({"items": [issue]}), encoding="utf-8")
+            ref = "owner/repo/.github/workflows/continuous-simplicity.lock.yml@refs/heads/master"
+            with mock.patch("check_maintenance_issue.fetch_issue_titles", fetch), contextlib.redirect_stdout(io.StringIO()) as printed:
+                code = main(["--agent-output", str(output), "--workflow-ref", ref, "--repository", "owner/repo"])
+            return code, printed.getvalue()
+
+    def test_main_accepts_a_conforming_issue_and_rejects_a_nonconforming_one(self):
+        issue = {"type": "create_issue", "title": "[simplicity] Declare the test matrix once", "body": body(valid_sections())}
+        self.assertEqual(self.run_main(issue, mock.Mock(return_value=[]))[0], 0)
+        issue = dict(issue, body=body(valid_sections()[:-1]))
+        code, printed = self.run_main(issue, mock.Mock(return_value=[]))
+        self.assertEqual(code, 1)
+        self.assertIn("::error::headings must be exactly", printed)
+
+    def test_main_fails_when_existing_issues_cannot_be_listed(self):
+        issue = {"type": "create_issue", "title": "[simplicity] Declare the test matrix once", "body": body(valid_sections())}
+        with self.assertRaises(RuntimeError):
+            self.run_main(issue, mock.Mock(side_effect=RuntimeError("cannot list existing issues")))
+
+    def test_urls_are_scanned_but_not_checked_as_paths(self):
+        self.assertEqual(errors(sections=replace("Evidence", "See https://example.org/spec/missing-contract.md.")), [])
+        result = errors(sections=replace("Evidence", "See https://example.org/claude/notes."))
+        self.assertTrue(any(error.startswith("mentions ") for error in result), result)
 
     def test_issue_listing_follows_pages_and_skips_pull_requests(self):
         pages = [
