@@ -95,6 +95,7 @@ ResinaCommandInput {
         state.channels = null;
         state.motionTarget = null;
         state.publishedSpan = null;
+        state.frameDue = false;
         clock.invalidate();
         root.focus = false;
         const running = state.running;
@@ -293,6 +294,7 @@ ResinaCommandInput {
             state.motionActive = false;
             state.motionTarget = null;
             state.publishedSpan = null;
+            state.frameDue = false;
             clock.invalidate();
             state.qualified = false;
             state.armed = false;
