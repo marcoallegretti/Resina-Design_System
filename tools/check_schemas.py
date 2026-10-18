@@ -955,6 +955,7 @@ def main():
         ("lit body corner contradicting the silhouette", "/face/surface/outline/corners/topLeft", {"x": 4, "y": 4}),
         ("lit body outline reserved without the edge inset", "/face/surface/outline/contentBounds/x", 6),
         ("lit body contrast of another foreground", "/face/contentContrastRatio", 3),
+        ("lit body shoulder reaching tau 1", "/face/surface/profile/shoulderWidth", 6),
     ):
         invalid = apply_changes(lit_body, [{"path": pointer, "value": value}])
         check_case(lit_body_schema, name, invalid, True)
@@ -1425,7 +1426,7 @@ def main():
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
-        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 12 + 7
+        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 13 + 7
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)
