@@ -1,6 +1,6 @@
 use crate::{
-    CompiledTheme, OpaqueSurfaceError, OpaqueSurfaceInput, SurfacePaintInput, SurfacePaintIr,
-    SurfacePaintResolutionError, bind_surface,
+    CompiledTheme, ImperceptibleResponse, OpaqueSurfaceError, OpaqueSurfaceInput,
+    SurfacePaintInput, SurfacePaintIr, SurfacePaintResolutionError, bind_surface,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
@@ -60,6 +60,7 @@ pub enum TogglePartPaintError {
     UnsupportedVersion,
     Scope(&'static str),
     Paint(SurfacePaintResolutionError),
+    Imperceptible(ImperceptibleResponse),
     Motion(resina_motion::SpringError),
 }
 impl fmt::Display for TogglePartPaintError {
@@ -70,6 +71,7 @@ impl fmt::Display for TogglePartPaintError {
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
             Self::Scope(e) => f.write_str(e),
             Self::Paint(e) => write!(f, "toggle part {e}"),
+            Self::Imperceptible(e) => write!(f, "toggle part {e}"),
             Self::Motion(e) => write!(f, "toggle part motion: {e}"),
         }
     }
@@ -99,6 +101,20 @@ pub fn resolve_toggle_part_paint(
         Ok((response, ()))
     })
     .map(|(paint, ())| paint)
+}
+
+/// Resolves one part at the projected depth bound: the deepest silhouette any static response or
+/// projected motion sample of this part can paint. It certifies a layout and reservation and is
+/// not a publishable state frame.
+pub fn resolve_toggle_part_reservation_paint(
+    theme: &CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    input: TogglePartPaintInput<'_>,
+) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    let deepest = CommandResponse::try_new(0.0, CommandResponse::MAX_DEPTH_SCALE)
+        .expect("the projected depth bound is a valid response");
+    resolve_toggle_part_paint_with_response(theme, environment, input, |_, _| Ok((deepest, ())))
+        .map(|(paint, ())| paint)
 }
 
 pub(crate) fn resolve_toggle_part_paint_with_response<T>(
@@ -162,15 +178,31 @@ pub(crate) fn resolve_toggle_part_paint_with_response<T>(
     let snapshot = theme.resolve(environment).map_err(|error| {
         SurfacePaintResolutionError::Theme(crate::ThemeResolutionError::Resolve(error))
     })?;
-    let binding = bind_surface(&selected, &snapshot).map_err(|e| {
-        SurfacePaintResolutionError::Body(OpaqueSurfaceError::Readability(
-            crate::SurfaceReadabilityError::Binding(e),
-        ))
-    })?;
+    let bind = |surface| {
+        bind_surface(surface, &snapshot).map_err(|e| {
+            SurfacePaintResolutionError::Body(OpaqueSurfaceError::Readability(
+                crate::SurfaceReadabilityError::Binding(e),
+            ))
+        })
+    };
+    let binding = bind(&selected)?;
     let response = input
         .interaction_appearance
         .response_for(binding.material_family(), phase)
         .map_err(TogglePartPaintError::Scope)?;
+    let unchecked = original.clone();
+    let checked_role = original.clone().with_color_role(input.checked_color_role);
+    for role in [&unchecked, &checked_role] {
+        if let Some(imperceptible) = crate::control_paint::imperceptible_profile(
+            theme,
+            input.surface.body.appearance,
+            role,
+            &bind(role)?,
+            input.interaction_appearance,
+        )? {
+            return Err(TogglePartPaintError::Imperceptible(imperceptible));
+        }
+    }
     let (response, sampled) = sample(binding.material_family(), response)?;
     let b = input.surface.body;
     let paint = crate::control_paint::resolve_control_paint(
@@ -269,6 +301,24 @@ pub(crate) fn checked_color_role_name<'de, D: Deserializer<'de>>(
 pub fn resolve_toggle_part_paint_source(
     source: &str,
 ) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    resolve_source(source, resolve_toggle_part_paint)
+}
+
+/// Source form of [`resolve_toggle_part_reservation_paint`], reading one part paint request.
+pub fn resolve_toggle_part_reservation_paint_source(
+    source: &str,
+) -> Result<TogglePartPaintIr, TogglePartPaintError> {
+    resolve_source(source, resolve_toggle_part_reservation_paint)
+}
+
+fn resolve_source(
+    source: &str,
+    resolve: impl FnOnce(
+        &CompiledTheme,
+        &EnvironmentSnapshot,
+        TogglePartPaintInput<'_>,
+    ) -> Result<TogglePartPaintIr, TogglePartPaintError>,
+) -> Result<TogglePartPaintIr, TogglePartPaintError> {
     let document =
         resina_tokens::parse_token_document(source).map_err(TogglePartPaintError::Parse)?;
     let request: Request =
@@ -283,7 +333,7 @@ pub fn resolve_toggle_part_paint_source(
     }
     let (theme, environment, owned) =
         crate::surface_paint::parse_surface_paint_request(request.surface)?;
-    resolve_toggle_part_paint(
+    resolve(
         &theme,
         &environment,
         TogglePartPaintInput {

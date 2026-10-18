@@ -17,8 +17,8 @@ Frost capability, preference and legibility fallbacks; unresolved translucency
 fails the opaque paint contract. Never force an environment flag or drop states.
 
 Apply depthScale to the selected elevation before body and focus geometry.
-Reuse existing shape, physical lighting, pigment and opaque region laws. Response
-depth compression is not in-plane elastic deformation, and no value, target,
+Reuse existing shape, physical lighting, pigment and opaque region laws. A response
+depth change is not in-plane elastic deformation, and no value, target,
 layout, color role or physical direction changes through response selection.
 
 The thumb owns navigation paint, consistent with the value handle described in

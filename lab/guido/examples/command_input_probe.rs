@@ -9,8 +9,8 @@ use resina_model::{
 use resina_resolver::{
     CommandLabelInput, CommandSnapshotInput, HitRegionIr, SurfaceHitRegionInput,
     resolve_activation, resolve_command_label, resolve_command_paint_source,
-    resolve_command_snapshot, resolve_command_states, resolve_surface_hit_region,
-    resolve_theme_request_source,
+    resolve_command_reservation_body_source, resolve_command_snapshot, resolve_command_states,
+    resolve_surface_hit_region, resolve_theme_request_source,
 };
 use serde_json::{Value, json};
 use std::{
@@ -112,9 +112,10 @@ fn prepare(root: &str, scenes: &str, family: FontFamily) -> Result<Frames, Box<d
                 json!({"schemaVersion":"0.1.0","surface":surface,"commandAppearance":appearance});
             let paint = resolve_command_paint_source(&request.to_string())?;
             if target.is_none() {
+                let deepest = resolve_command_reservation_body_source(&request.to_string())?;
                 target = Some(resolve_surface_hit_region(SurfaceHitRegionInput {
                     environment: &environment,
-                    body: paint.paint().body(),
+                    body: &deepest,
                     available_bounds: available,
                     component_minimum: minimum,
                     occupied_regions: &[],

@@ -28,7 +28,7 @@ def motion_mismatch(actual, source, metadata):
     target = {'bodyMix': 0, 'depthScale': 1} if phase == 'rest' else source['body']['commandAppearance']['profiles'][family][phase]
     if actual['policy'] != policy or actual['target'] != target:
         return '/policy/target'
-    for name, lower, upper in (('bodyMix', -1, 1), ('depthScale', 0, 1)):
+    for name, lower, upper in (('bodyMix', -1, 1), ('depthScale', 0, 2)):
         expected = equation_sample(metadata['channels'][name], target[name], metadata['time'], policy != 'spring')
         difference = trajectory_mismatch(actual[name], expected)
         if difference:
@@ -401,7 +401,7 @@ def main():
         QCoreApplication.sendEvent(window, QKeyEvent(QEvent.KeyPress, Qt.Key_Space, Qt.NoModifier))
         wait(app, lambda: observation()['ready'], 'overshoot retarget publication')
         metadata = json.loads(observation()['motion'])
-        if any(metadata['channels'][name]['initial']['position'] <= 1 or metadata['channels'][name]['initial']['velocity'] == 0 for name in ('bodyMix','depthScale')):
+        if any(metadata['channels'][name]['initial']['position'] <= upper or metadata['channels'][name]['initial']['velocity'] == 0 for name, upper in (('bodyMix', 1), ('depthScale', 2))):
             raise ValueError('native target change clipped overshoot or discarded velocity: ' + str(metadata['channels']))
         QCoreApplication.sendEvent(window, QKeyEvent(QEvent.KeyRelease, Qt.Key_Space, Qt.NoModifier))
         wait(app, lambda: observation()['ready'], 'raw release publication')

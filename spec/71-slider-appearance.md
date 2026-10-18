@@ -23,8 +23,10 @@ requirement in the command appearance contract.
 
 Responses use the checked bodyMix and depthScale domains and mathematics of
 [command appearance](43-command-paint.md#authored-responses). Sharing those
-coefficient laws does not share command state precedence. Depth compression is
-not in-plane elastic deformation. These responses MUST NOT modify numeric value,
+coefficient laws does not share command state precedence, and the
+[perceivable state rule](43-command-paint.md#perceivable-state-responses) applies
+to Command and Toggle responses only. A depth change is not in-plane elastic
+deformation. These responses MUST NOT modify numeric value,
 part allocation, hit regions, semantic roles or state observations.
 
 Gel MUST NOT be selected as a persistent track or thumb material in this profile,

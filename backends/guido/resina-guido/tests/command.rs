@@ -86,7 +86,23 @@ fn command_endpoints_use_portable_paint_on_the_first_native_frame() {
             };
             let request = json!({"schemaVersion":"0.1.0", "surface":surface_request, "commandAppearance":profile});
             let command = resolve_command_paint_source(&request.to_string()).unwrap();
-            assert!(command.paint().body().content_contrast_ratio() >= 4.5);
+            let ratio = command.paint().body().content_contrast_ratio();
+            if phase == "disabled" {
+                let bound = if surface_request["body"]["theme"]["environment"]["accessibilityPreferences"]
+                    ["highContrast"]
+                    == json!(true)
+                {
+                    resina_resolver::HIGH_CONTRAST_DISABLED_LABEL_CONTRAST
+                } else {
+                    resina_resolver::DISABLED_LABEL_CONTRAST
+                };
+                assert!(
+                    (bound..bound + 1e-9).contains(&ratio),
+                    "disabled label contrast {ratio} is not dimmed to {bound}:1"
+                );
+            } else {
+                assert!(ratio >= 4.5);
+            }
             for scale in [1.0, 1.25, 2.0, 3.0] {
                 app.configure(surface, 204, 96, scale);
                 let paint = prepare_surface_paint(command.paint(), scale, 4).unwrap();

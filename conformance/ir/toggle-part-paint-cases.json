@@ -376,7 +376,7 @@
     "requestChanges": [
       {
         "path": "/interactionAppearance/profiles/frost/pressed/depthScale",
-        "value": 2
+        "value": 2.01
       }
     ],
     "requestSchemaValid": false,
@@ -420,5 +420,468 @@
     ],
     "requestSchemaValid": false,
     "failure": true
+  },
+  {
+    "name": "imperceptible lifted hover",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0.06,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "imperceptible disabled response",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.02,
+          "depthScale": 0.7
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color below perceivable difference",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.03,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color-only perceivable hover",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.1,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "depth compression below one pixel",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/pressed",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 0.51
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "depth compression of one pixel",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/pressed",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "pressed"
+  },
+  {
+    "name": "depth rise of one pixel",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 1.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "deepest authored rise",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 2
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "depth rise above bound",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 2.01
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "failure": true
+  },
+  {
+    "name": "rest validates an imperceptible hover response",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0.06,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "pressed validates an imperceptible disabled response",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.02,
+          "depthScale": 0.7
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color difference just below threshold",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0726,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "color difference just above threshold",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0783,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "disabled indistinguishable from pressed",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.08,
+          "depthScale": 0.3
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "disabled one pixel flatter than pressed",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.08,
+          "depthScale": 0
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "disabled colored apart from pressed",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.165,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
+  },
+  {
+    "name": "unchecked rest validates the checked role body",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/form/elevation",
+        "value": "embedded"
+      },
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0701,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "checked rest validates the unchecked role body",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/form/elevation",
+        "value": "embedded"
+      },
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0701,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "both role bodies perceive the hover response",
+    "requestChanges": [
+      {
+        "path": "/part",
+        "value": "track"
+      },
+      {
+        "path": "/surface/body/surface/form/elevation",
+        "value": "embedded"
+      },
+      {
+        "path": "/interactionAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": -0.0783,
+          "depthScale": 1
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "rest"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "rest"
+  },
+  {
+    "name": "disabled color just below pressed threshold",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.152,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "disabled color just above pressed threshold",
+    "requestChanges": [
+      {
+        "path": "/interactionAppearance/profiles/elastomer/disabled",
+        "value": {
+          "bodyMix": -0.158,
+          "depthScale": 0.5
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "checked"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "disabled"
   }
 ]

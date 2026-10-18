@@ -1,14 +1,17 @@
 use resina_environment::{EnvironmentSnapshot, InputCapability, LayoutDirection, SafeArea};
 use resina_model::{
-    ActivationEvent, ActivationState, InteractionState, PhysicalBounds, PhysicalVector,
-    SurfaceIntent, SurfaceSize, TypographyRole,
+    ActivationEvent, ActivationState, ColorRole, CommandAppearance, InteractionState,
+    OpaqueSurfaceAppearance, PhysicalBounds, PhysicalVector, SurfaceIntent, SurfaceSize,
+    TypographyRole,
 };
 use resina_resolver::{
     CommandAccessibilityError, CommandContentError, CommandLabelInput, CommandLabelIr,
-    CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, HitRegionError, HitRegionInput,
-    SurfaceHitRegionInput, compile_theme_source, resolve_activation, resolve_command_label,
-    resolve_command_motion_source, resolve_command_paint_source, resolve_command_snapshot,
-    resolve_command_states, resolve_hit_region, resolve_surface_hit_region,
+    CommandPaintInput, CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, HitRegionError,
+    HitRegionInput, HitRegionIr, OpaqueSurfaceInput, OpaqueSurfaceIr, SurfaceHitRegionInput,
+    SurfacePaintInput, compile_theme_source, resolve_activation, resolve_command_label,
+    resolve_command_motion_source, resolve_command_paint_source, resolve_command_reservation_body,
+    resolve_command_snapshot, resolve_command_states, resolve_hit_region, resolve_srgb_fallback,
+    resolve_surface_hit_region,
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -61,6 +64,65 @@ fn label(request: &Value, width: f64, padding: f64, direction: LayoutDirection) 
     .unwrap()
 }
 
+/// The deepest neutral body the request's command can paint, from which layout reserves.
+fn reservation_body(request: &Value) -> OpaqueSurfaceIr {
+    let body = &request["surface"]["body"];
+    let theme = compile_theme_source(body["theme"]["themeSource"].as_str().unwrap()).unwrap();
+    let neutral = ActivationState::try_new(true, false, None).unwrap();
+    let surface = serde_json::from_value::<SurfaceIntent>(body["surface"].clone())
+        .unwrap()
+        .with_states(resolve_command_states(&neutral, false));
+    let appearance: OpaqueSurfaceAppearance =
+        serde_json::from_value(body["appearance"].clone()).unwrap();
+    let responses: CommandAppearance =
+        serde_json::from_value(request["commandAppearance"].clone()).unwrap();
+    let foreground_role: ColorRole =
+        serde_json::from_value(body["foregroundRole"].clone()).unwrap();
+    let backdrop = resolve_srgb_fallback(&body["postTreatmentBackdrop"]).unwrap();
+    let adjacent = resolve_srgb_fallback(&body["adjacentColor"]).unwrap();
+    let surrounding = resolve_srgb_fallback(&request["surface"]["surroundingColor"]).unwrap();
+    resolve_command_reservation_body(
+        &theme,
+        &environment(request),
+        CommandPaintInput {
+            surface: SurfacePaintInput {
+                body: OpaqueSurfaceInput {
+                    surface: &surface,
+                    size: serde_json::from_value(body["size"].clone()).unwrap(),
+                    appearance: &appearance,
+                    foreground_role,
+                    post_treatment_backdrop: Some(&backdrop),
+                    adjacent_color: &adjacent,
+                    minimum_content_contrast: body["minimumContentContrast"].as_f64().unwrap(),
+                    minimum_edge_contrast: body["minimumEdgeContrast"].as_f64().unwrap(),
+                },
+                surrounding_color: Some(&surrounding),
+            },
+            command_appearance: &responses,
+        },
+    )
+    .unwrap()
+}
+
+fn reserve(env: &EnvironmentSnapshot, body: &OpaqueSurfaceIr, minimum: f64) -> HitRegionIr {
+    resolve_surface_hit_region(SurfaceHitRegionInput {
+        environment: env,
+        body,
+        available_bounds: PhysicalBounds {
+            x: -100.0,
+            y: -100.0,
+            width: 400.0,
+            height: 400.0,
+        },
+        component_minimum: SurfaceSize {
+            width: minimum,
+            height: minimum,
+        },
+        occupied_regions: &[],
+    })
+    .unwrap()
+}
+
 fn input<'a, 'context>(
     env: &'context EnvironmentSnapshot,
     label: &'a CommandLabelIr,
@@ -70,23 +132,7 @@ fn input<'a, 'context>(
 ) -> CommandSnapshotInput<'a, 'context> {
     let mut baseline = request();
     baseline["surface"]["body"]["theme"]["environment"] = serde_json::to_value(env).unwrap();
-    let baseline = resolve_command_paint_source(&baseline.to_string()).unwrap();
-    let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
-        environment: env,
-        body: baseline.paint().body(),
-        available_bounds: PhysicalBounds {
-            x: -100.0,
-            y: -100.0,
-            width: 400.0,
-            height: 400.0,
-        },
-        component_minimum: SurfaceSize {
-            width: 48.0,
-            height: 48.0,
-        },
-        occupied_regions: &[],
-    })
-    .unwrap();
+    let hit_region = reserve(env, &reservation_body(&baseline), 48.0);
     CommandSnapshotInput {
         label,
         paint,
@@ -491,10 +537,61 @@ fn sampled_motion_publishes_checked_members_without_rewriting_the_sample() {
             snapshot.hit_region().bounds(),
             PhysicalBounds {
                 x: 0.0,
-                y: -3.0,
+                y: -2.0,
                 width: 64.0,
                 height: 48.0,
             }
         );
     }
+}
+
+#[test]
+fn raised_and_projected_bodies_need_the_deepest_reservation() {
+    let mut request = request();
+    request["commandAppearance"]["profiles"]["elastomer"]["hover"] =
+        json!({"bodyMix": 0, "depthScale": 1.75});
+    let env = environment(&request);
+    let label = label(&request, 64.0, 8.0, env.layout_direction());
+    let neutral = ActivationState::try_new(true, false, None).unwrap();
+    let rest = resolve_command_paint_source(&request.to_string()).unwrap();
+    let rest_target = reserve(&env, rest.paint().body(), 24.0);
+    let deepest_target = reserve(&env, &reservation_body(&request), 24.0);
+    request["surface"]["body"]["surface"]["states"]["states"] = json!(["hover"]);
+    let hover = resolve_command_paint_source(&request.to_string()).unwrap();
+    let snapshot = |paint, target, hovered| {
+        let mut input = input(&env, &label, paint, &neutral, hovered);
+        input.hit_region = target;
+        input.component_minimum = SurfaceSize {
+            width: 24.0,
+            height: 24.0,
+        };
+        resolve_command_snapshot(input).map(|snapshot| *snapshot.hit_region())
+    };
+    assert!(matches!(
+        snapshot(&hover, rest_target, true),
+        Err(CommandSnapshotError::TargetDoesNotContainBody)
+    ));
+    assert_eq!(
+        snapshot(&hover, deepest_target, true).unwrap(),
+        deepest_target
+    );
+    assert_eq!(
+        snapshot(&rest, deepest_target, false).unwrap(),
+        deepest_target
+    );
+    let mut motion: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-motion-request.json"
+    ))
+    .unwrap();
+    motion["surface"] = request["surface"].clone();
+    motion["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["reducedMotion"] =
+        json!(false);
+    motion["time"] = json!(0);
+    motion["channels"]["depthScale"]["initial"] = json!({"position": 4, "velocity": 1});
+    let projected = resolve_command_motion_source(&motion.to_string()).unwrap();
+    assert_eq!(projected.command().response().depth_scale(), 2.0);
+    assert_eq!(
+        snapshot(projected.command(), deepest_target, true).unwrap(),
+        deepest_target
+    );
 }

@@ -66,7 +66,7 @@ def motion_mismatch(actual, request):
         if mismatch(actual.get(field), expected):
             return "/" + field
     response = {}
-    for name, lower, upper in (("bodyMix", -1, 1), ("depthScale", 0, 1)):
+    for name, lower, upper in (("bodyMix", -1, 1), ("depthScale", 0, 2)):
         expected = equation_sample(request["channels"][name], target[name], request["time"], policy != "spring")
         difference = trajectory_mismatch(actual.get(name), expected)
         if difference:

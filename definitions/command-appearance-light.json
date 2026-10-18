@@ -3,44 +3,44 @@
   "profiles": {
     "cast": {
       "hover": {
-        "bodyMix": -0.035,
-        "depthScale": 1
+        "bodyMix": -0.07,
+        "depthScale": 1.55
       },
       "pressed": {
-        "bodyMix": -0.05,
-        "depthScale": 0.9
+        "bodyMix": -0.07,
+        "depthScale": 0.5
       },
       "disabled": {
         "bodyMix": -0.16,
-        "depthScale": 0.7
+        "depthScale": 0
       }
     },
     "frost": {
       "hover": {
-        "bodyMix": -0.05,
-        "depthScale": 1
+        "bodyMix": -0.075,
+        "depthScale": 1.6
       },
       "pressed": {
-        "bodyMix": -0.06,
-        "depthScale": 0.85
+        "bodyMix": -0.075,
+        "depthScale": 0.5
       },
       "disabled": {
-        "bodyMix": -0.14,
-        "depthScale": 0.7
+        "bodyMix": -0.16,
+        "depthScale": 0
       }
     },
     "elastomer": {
       "hover": {
-        "bodyMix": 0.06,
-        "depthScale": 1
+        "bodyMix": -0.08,
+        "depthScale": 1.75
       },
       "pressed": {
-        "bodyMix": -0.09,
-        "depthScale": 0.25
+        "bodyMix": -0.08,
+        "depthScale": 0.5
       },
       "disabled": {
-        "bodyMix": 0.16,
-        "depthScale": 0.7
+        "bodyMix": -0.165,
+        "depthScale": 0
       }
     }
   }

@@ -80,7 +80,10 @@ impl BoundSurface {
     }
 }
 
-fn mix_body_color(color: &SrgbFallback, response: resina_model::CommandResponse) -> SrgbFallback {
+pub(crate) fn mix_body_color(
+    color: &SrgbFallback,
+    response: resina_model::CommandResponse,
+) -> SrgbFallback {
     let mix = response.body_mix();
     let components = color.components().map(|channel| {
         if mix < 0.0 {

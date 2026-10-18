@@ -496,7 +496,7 @@
     "requestChanges": [
       {
         "path": "/interactionAppearance/thumb/elastomer/dragging/depthScale",
-        "value": 2
+        "value": 2.01
       }
     ],
     "requestSchemaValid": false,
