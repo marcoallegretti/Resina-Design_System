@@ -3,7 +3,7 @@ import math
 import unittest
 
 from check_schemas import ROOT, apply_changes, load_json
-from lit_body_arithmetic import Body, physical_radii, pixels, samples
+from lit_body_arithmetic import PHYSICAL, Body, body_invariants, physical_radii, pixels, samples
 from material_relief_arithmetic import rectangular_samples
 
 SOURCE = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
@@ -165,6 +165,50 @@ class LitBodyEquivalenceTests(unittest.TestCase):
             with self.subTest(states=states):
                 self.assertEqual({s["rule"] for s in lit}, {1, 7})
                 self.assertEqual([s["color"] for s in lit], [s["color"] for s in face])
+
+
+class LitBodyIrTests(unittest.TestCase):
+    def test_published_ir_fixture_agrees_with_independent_arithmetic(self):
+        ir = load_json(ROOT / "conformance/ir/lit-control-body-ir.json")
+        body = Body(case_source("hover-admits-interaction"))
+        self.assertIsNone(body_invariants(ir))
+
+        def close(actual, expected, path=""):
+            if isinstance(expected, dict):
+                self.assertEqual(set(actual), set(expected), path)
+                for name in expected:
+                    close(actual[name], expected[name], f"{path}/{name}")
+            elif isinstance(expected, list):
+                self.assertEqual(len(actual), len(expected), path)
+                for index, (a, e) in enumerate(zip(actual, expected)):
+                    close(a, e, f"{path}/{index}")
+            elif isinstance(expected, (int, float)) and not isinstance(expected, bool):
+                self.assertLessEqual(abs(actual - expected), max(1e-12, 1e-12 * abs(expected)), path)
+            else:
+                self.assertEqual(actual, expected, path)
+
+        close(ir["face"]["light"], {name: body.light[name] for name in ("keyDirection", "ambient", "interaction")})
+        close(ir["face"]["pigment"], body.pigment)
+        close(ir["face"]["contentBounds"], body.content_bounds)
+        close(ir["face"]["colorRanges"], body.color_ranges())
+        close(ir["face"]["contentContrastRatio"], body.content_contrast)
+        close(ir["lighting"]["sideOffset"], {"x": body.offset[0], "y": body.offset[1]})
+        close(ir["face"]["surface"]["outline"]["corners"], {name: {"x": r, "y": r} for name, r in zip(PHYSICAL, body.radii)})
+        self.assertEqual(ir["depth"], body.depth)
+        self.assertNotIn("highlightWidth", ir)
+
+    def test_invariants_reject_competing_or_inconsistent_members(self):
+        ir = load_json(ROOT / "conformance/ir/lit-control-body-ir.json")
+        for pointer, value in (
+            ("/face/light/keyDirection", {"x": -1, "y": 0}),
+            ("/states/states", ["disabled", "hover"]),
+            ("/depth", 3),
+            ("/geometry/edgeInterior/contour/bounds/height", 48),
+            ("/face/surface/outline/curvature", "quartic"),
+            ("/face/contentBounds/width", 94),
+        ):
+            with self.subTest(pointer=pointer):
+                self.assertIsNotNone(body_invariants(apply_changes(ir, [{"path": pointer, "value": value}])))
 
 
 class LitBodyPixelTests(unittest.TestCase):

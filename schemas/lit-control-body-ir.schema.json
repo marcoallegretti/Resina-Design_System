@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:lit-control-body-ir:0.1.0",
+  "title": "Resina Lit Control Body IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "representation",
+    "materialRole",
+    "colorRole",
+    "materialFamily",
+    "form",
+    "states",
+    "face",
+    "lighting",
+    "depth",
+    "geometry",
+    "foregroundRole",
+    "contentFallbackApplied"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "representation": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/representation"
+    },
+    "materialRole": {
+      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/materialRole"
+    },
+    "colorRole": {
+      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/colorRole"
+    },
+    "materialFamily": {
+      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/materialFamily"
+    },
+    "form": {
+      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/form"
+    },
+    "states": {
+      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/states"
+    },
+    "frostRepresentation": {
+      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/frostRepresentation"
+    },
+    "face": {
+      "$ref": "urn:resina:schema:material-relief-paint-result:0.1.0#/properties/paint"
+    },
+    "lighting": {
+      "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/lighting"
+    },
+    "depth": {
+      "type": "number",
+      "minimum": 0
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "silhouette",
+        "edgeInterior"
+      ],
+      "properties": {
+        "silhouette": {
+          "$ref": "urn:resina:schema:filled-contour:0.1.0"
+        },
+        "edgeInterior": {
+          "$ref": "urn:resina:schema:placed-contour:0.1.0"
+        }
+      }
+    },
+    "foregroundRole": {
+      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/foregroundRole"
+    },
+    "contentFallbackApplied": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "materialFamily": {
+            "const": "cast"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "face": {
+            "properties": {
+              "pigment": {
+                "properties": {
+                  "materialFamily": {
+                    "const": "cast"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "materialFamily": {
+            "const": "frost"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "face": {
+            "properties": {
+              "pigment": {
+                "properties": {
+                  "materialFamily": {
+                    "const": "frost"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "materialFamily": {
+            "const": "elastomer"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "face": {
+            "properties": {
+              "pigment": {
+                "properties": {
+                  "materialFamily": {
+                    "const": "elastomer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "materialFamily": {
+            "const": "frost"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "frostRepresentation"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "frostRepresentation"
+          ]
+        },
+        "properties": {
+          "contentFallbackApplied": {
+            "const": false
+          }
+        }
+      }
+    }
+  ]
+}

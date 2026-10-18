@@ -15,6 +15,11 @@ pub use relief_paint::{
     ReliefPaintPoint, ReliefPaintResult, resolve_material_relief_paint_source,
     resolve_relief_paint, resolve_relief_paint_source,
 };
+mod lit_control_body;
+pub use lit_control_body::{
+    ControlRelief, LitControlBodyError, LitControlBodyGeometry, LitControlBodyInput,
+    LitControlBodyIr, LitControlIdentity, parse_control_relief_source, resolve_lit_control_body,
+};
 mod surface_relief;
 pub use surface_relief::{
     FaceNormal, ReliefKind, ReliefPointSample, ReliefSample, SurfaceRelief, SurfaceReliefError,

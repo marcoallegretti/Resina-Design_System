@@ -6,6 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from command_label_arithmetic import check_cases as check_label_arithmetic
+from lit_body_arithmetic import body_invariants
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -452,6 +453,8 @@ def main():
         "schemas/material-relief-paint-result.schema.json",
         "schemas/material-relief-paint-case.schema.json",
         "schemas/lit-control-body-case.schema.json",
+        "schemas/lit-control-body-ir.schema.json",
+        "schemas/lit-control-paint-ir.schema.json",
         "schemas/key-light.schema.json",
         "schemas/key-light-request.schema.json",
         "schemas/key-light-result.schema.json",
@@ -914,6 +917,56 @@ def main():
         lit_body_names.add(case["name"])
         check_case(lit_body_case_schema, case["name"], case, True)
         check_case(lit_body_source_schema, case["name"], apply_changes(lit_body_source, case["sourceChanges"]), case["sourceSchemaValid"])
+    lit_body = load_json(ROOT / "conformance/ir/lit-control-body-ir.json")
+    lit_body_schema = validator_for("schemas/lit-control-body-ir.schema.json")
+    check_case(lit_body_schema, "lit control body IR", lit_body, True)
+    if body_invariants(lit_body):
+        raise ValueError(f"lit control body IR: {body_invariants(lit_body)}")
+    invalid_lit_bodies = (
+        ("lit body highlight band", {"highlightWidth": 2}),
+        ("lit body spec/36 band contour", {"geometry": dict(lit_body["geometry"], highlightOuter=lit_body["geometry"]["edgeInterior"])}),
+        ("lit body unswept geometry", {"geometry": {"silhouette": lit_body["geometry"]["silhouette"]}}),
+        ("lit body second key light", {"face": dict(lit_body["face"], keyLight={"schemaVersion": "0.1.0", "direction": {"x": 1, "y": 0}})}),
+        ("lit body Frost representation on Cast", {"frostRepresentation": "opaqueDimensional"}),
+    )
+    for name, members in invalid_lit_bodies:
+        check_case(lit_body_schema, name, dict(lit_body, **members), False)
+    for name, pointer, value in (
+        ("lit body translucent representation", "/representation", "translucent"),
+        ("lit body two color ranges", "/face/colorRanges", lit_body["face"]["colorRanges"][:2]),
+        ("lit body unsupported state", "/states/states", ["dragging"]),
+        ("lit body Gel family", "/materialFamily", "gel"),
+        ("lit body inconsistent face family", "/face/pigment/materialFamily", "frost"),
+        ("lit body negative depth", "/depth", -1),
+        ("lit body sampled normals", "/lighting/normalHighlightWeights", [0.5]),
+        ("lit body version", "/schemaVersion", "0.2.0"),
+    ):
+        check_case(lit_body_schema, name, apply_changes(lit_body, [{"path": pointer, "value": value}]), False)
+    for name, pointer, value in (
+        ("lit body competing key direction", "/face/light/keyDirection", {"x": 1, "y": 0}),
+        ("lit body interaction outside hover or pressed", "/states/states", ["rest"]),
+        ("lit body unswept silhouette", "/geometry/silhouette/bounds/width", lit_body["face"]["surface"]["outline"]["size"]["width"]),
+        ("lit body misplaced edge interior", "/geometry/edgeInterior/offset", {"x": 0, "y": 0}),
+        ("lit body content outside plateau", "/face/contentBounds/x", 1),
+        ("lit body inexact edge range", "/face/colorRanges/2/upper", lit_body["face"]["pigment"]["body"]),
+    ):
+        invalid = apply_changes(lit_body, [{"path": pointer, "value": value}])
+        check_case(lit_body_schema, name, invalid, True)
+        if body_invariants(invalid) is None:
+            raise ValueError(f"{name}: invariant violation was not detected")
+    lit_paint_schema = validator_for("schemas/lit-control-paint-ir.schema.json")
+    focus = load_json(ROOT / "conformance/ir/focus-ir-expected.json")
+    focused = apply_changes(lit_body, [{"path": "/states/states", "value": ["hover", "focused"]}])
+    for name, document, valid in (
+        ("lit paint unfocused", {"schemaVersion": "0.1.0", "body": lit_body}, True),
+        ("lit paint focused", {"schemaVersion": "0.1.0", "body": focused, "focus": focus}, True),
+        ("lit paint focus without focused state", {"schemaVersion": "0.1.0", "body": lit_body, "focus": focus}, False),
+        ("lit paint focused without focus", {"schemaVersion": "0.1.0", "body": focused}, False),
+        ("lit paint version", {"schemaVersion": "0.2.0", "body": lit_body}, False),
+        ("lit paint spec/36 body", {"schemaVersion": "0.1.0", "body": load_json(ROOT / "conformance/ir/opaque-surface-expected.json")}, False),
+        ("lit paint unknown member", {"schemaVersion": "0.1.0", "body": lit_body, "raster": "native"}, False),
+    ):
+        check_case(lit_paint_schema, name, document, valid)
     relief_paint_cases = load_json(ROOT / "conformance/ir/relief-paint-vectors.json")
     relief_paint_case_schema = validator_for("schemas/relief-paint-case.schema.json")
     relief_paint_request_schema = validator_for("schemas/relief-paint-request.schema.json")
@@ -1366,7 +1419,7 @@ def main():
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
-        + 1 + 2 * len(lit_body_cases)
+        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 6 + 7
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)

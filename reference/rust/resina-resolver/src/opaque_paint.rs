@@ -142,7 +142,7 @@ pub(crate) fn placed_contains(
     contains(contour.contour(), subtract(point, contour.offset()))
 }
 
-fn contains(
+pub(crate) fn contains(
     contour: &ExtrudedContourResult,
     point: PhysicalVector,
 ) -> Result<bool, SurfacePaintError> {

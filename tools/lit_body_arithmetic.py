@@ -418,3 +418,48 @@ def pixels(source, width, height, origin, scale, samples_per_axis, band=None):
             upper = tuple(max(o[i] for o in outcomes) for i in range(4))
             result.append((lower, upper))
     return result
+
+
+def body_invariants(ir):
+    """Return the first violated cross-member invariant of a lit control body IR, or None."""
+    face, lighting = ir["face"], ir["lighting"]
+    if face["light"]["keyDirection"] != lighting["direction"]:
+        return "face light keyDirection must equal lighting direction"
+    if face["light"]["interaction"] is not None and phase(ir["states"]["states"]) not in ("hover", "pressed"):
+        return "interaction light requires the hover or pressed phase"
+    depth, offset = ir["depth"], lighting["sideOffset"]
+    for axis in ("x", "y"):
+        if abs(offset[axis] + lighting["direction"][axis] * depth) > 1e-12 * max(1.0, depth):
+            return "side offset must follow the key direction and final depth"
+    size, edge = face["surface"]["outline"]["size"], face["edgeWidth"]
+
+    def swept(bounds, inset):
+        expected = {"x": min(0.0, offset["x"]), "y": min(0.0, offset["y"]),
+                    "width": size["width"] - 2 * inset + abs(offset["x"]),
+                    "height": size["height"] - 2 * inset + abs(offset["y"])}
+        return all(abs(bounds[name] - value) <= 1e-12 * max(1.0, abs(value)) for name, value in expected.items())
+
+    if not swept(ir["geometry"]["silhouette"]["bounds"], 0):
+        return "silhouette must sweep the outline by the side offset"
+    interior = ir["geometry"]["edgeInterior"]
+    if interior["offset"] != {"x": edge, "y": edge} or not swept(interior["contour"]["bounds"], edge):
+        return "edge interior must sweep the inset outline by the side offset"
+    outline = face["surface"]["outline"]
+    if outline["curvature"] != "circular" or any(outline["corners"][name]["x"] != outline["corners"][name]["y"] for name in PHYSICAL):
+        return "lit control bodies use circular outlines"
+    content, plateau = face["contentBounds"], face["surface"]["contentBounds"]
+    if (content["x"] < plateau["x"] or content["y"] < plateau["y"]
+            or content["x"] + content["width"] > plateau["x"] + plateau["width"]
+            or content["y"] + content["height"] > plateau["y"] + plateau["height"]):
+        return "content must lie inside the relief plateau"
+    probe = Body.__new__(Body)
+    probe.width, probe.height = size["width"], size["height"]
+    probe.radii = [outline["corners"][name]["x"] for name in PHYSICAL]
+    for x in (content["x"], content["x"] + content["width"]):
+        for y in (content["y"], content["y"] + content["height"]):
+            if not probe.contains((x, y), edge):
+                return "content must lie inside the edge interior"
+    color = face["edge"]["color"]
+    if face["colorRanges"][2] != {"lower": color, "upper": color}:
+        return "the third color range must be the exact edge"
+    return None

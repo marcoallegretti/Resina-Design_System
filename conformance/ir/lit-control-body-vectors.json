@@ -23353,5 +23353,38 @@
   ],
   "sourceSchemaValid": false,
   "errorContains": "family"
+ },
+ {
+  "name": "non-control-role",
+  "sourceChanges": [
+   {
+    "path": "/identity/materialRole",
+    "value": "surface.base"
+   }
+  ],
+  "sourceSchemaValid": false,
+  "errorContains": "control material role"
+ },
+ {
+  "name": "frost-without-representation",
+  "sourceChanges": [
+   {
+    "path": "/identity/materialFamily",
+    "value": "frost"
+   }
+  ],
+  "sourceSchemaValid": false,
+  "errorContains": "Frost"
+ },
+ {
+  "name": "cast-content-fallback",
+  "sourceChanges": [
+   {
+    "path": "/identity/contentFallbackApplied",
+    "value": true
+   }
+  ],
+  "sourceSchemaValid": false,
+  "errorContains": "Frost"
  }
 ]
