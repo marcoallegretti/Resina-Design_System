@@ -116,10 +116,11 @@ interaction suppression responds to capabilities.
 
 The face keeps every spec/86 guard: the reserved content rectangle C inside E
 and the uniform relief plateau is the exact body color for every admitted light,
-boundary included; the foreground must meet the minimum content contrast
-against the exact body; the edge candidate is selected against the supplied
-adjacent color. Light never changes the body, edge or foreground. Component
-contracts own label containment against C and disabled label dimming.
+boundary included; outside the disabled dimming below, the foreground must
+meet the minimum content contrast against the exact body; the edge candidate is
+selected against the supplied adjacent color. Light never changes the body,
+edge or foreground. Component contracts own label containment against C and
+disabled label dimming.
 
 The body never dims on its own. Under the `disabled` phase, and only there, a
 component contract may replace exactly `face.foreground` and
@@ -188,8 +189,8 @@ closed boundary of E and the content rectangle corners, points `2^-40` px
 either side of a circular arc of F and points on and either side of circular
 arcs of E, all at offsets forming Pythagorean triples; every phase with light
 admitted and suppressed; every environment condition of the policy; absent,
-ambient-only and zero-strength channels; renderer capabilities other than
-`dynamicLighting` enabled without any paint change; a steep key direction; Cast, Frost and
+ambient-only and zero-strength channels; `gradients`, `customShader`, `masks`
+and `sdfShapes` enabled without any paint change; a steep key direction; Cast, Frost and
 Elastomer; Command, Toggle track and Toggle thumb profiles; flat and square
 bodies; asymmetric corners in both layout directions at the same physical
 points; and diagnostic rejection of `tau >= 1`, elliptical corners, negative
