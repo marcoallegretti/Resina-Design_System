@@ -58,9 +58,11 @@ Every set is closed. Each point takes the first rule that applies:
 7. **Otherwise** null.
 
 F is tested first, so a point of F's boundary on the shadow side takes rule 3.
-F uses the spec/81 normalized corner membership, evaluated in binary64 as
-spec/81 states it, and E the exact spec/83 predicate; S and E_d use the
-closed-set spec/36 contour membership. For d ≠ 0 the two kinds of predicate can
+F uses the spec/81 normalized corner membership and E the exact spec/83
+predicate; S and E_d use the closed-set spec/36 contour membership. spec/81
+fixes no arithmetic for its membership, so conformance does not pin a point
+exactly on a circular arc of F; vectors bracket such an arc from both sides
+instead. For d ≠ 0 the two kinds of predicate can
 disagree only within the spec/36 arithmetic tie band near the boundaries of S
 and E_d; on the lit side these coincide with the boundaries of F and E.
 Raster evidence brackets those samples instead of treating either color as
@@ -182,9 +184,9 @@ The [authored source](../conformance/ir/lit-control-body-source.json) and
 [point vectors](../conformance/ir/lit-control-body-vectors.json), validated by
 the [case schema](../schemas/lit-control-body-case.schema.json), cover every
 region rule and its boundaries, including the shadow-side boundary of F, the
-closed boundary of E and the content rectangle corners, and points on and
-`2^-40` px either side of circular arcs of F and E whose offsets form
-Pythagorean triples; every phase with light
+closed boundary of E and the content rectangle corners, points `2^-40` px
+either side of a circular arc of F and points on and either side of circular
+arcs of E, all at offsets forming Pythagorean triples; every phase with light
 admitted and suppressed; every environment condition of the policy; absent,
 ambient-only and zero-strength channels; renderer capabilities other than
 `dynamicLighting` enabled without any paint change; a steep key direction; Cast, Frost and
@@ -197,8 +199,8 @@ wrong family.
 
 The [independent arithmetic](../tools/lit_body_arithmetic.py) evaluates the
 vectors without the reference: circular per-corner relief gates and normals,
-spec/81 F membership, exact rational E membership near its boundary, sweep
-membership by intersecting the
+exact rational F and E membership near their boundaries, sweep membership by
+intersecting the
 parameter intervals of `{p - t*d : t in [0,1]}` with each convex constraint, the
 signed law, guards, content reservation, the published IR invariants with
 independently derived canonical swept contours, and supersampled pixels with
