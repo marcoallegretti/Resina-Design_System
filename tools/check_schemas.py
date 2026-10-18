@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from command_label_arithmetic import check_cases as check_label_arithmetic
-from lit_body_arithmetic import body_invariants
+from lit_body_arithmetic import body_invariants, relief_profile_violation
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -2417,6 +2417,18 @@ def main():
         checked += 1
     for name, value in (("sliderTrack", control_relief["toggleTrack"]), ("renderer", "native")):
         check_case(control_relief_validator, f"unknown control relief {name}", dict(control_relief, **{name: value}), False)
+        checked += 1
+    for part in ("commandBody", "toggleTrack", "toggleThumb"):
+        if relief_profile_violation(control_relief[part]):
+            raise ValueError(f"reference control relief {part}: {relief_profile_violation(control_relief[part])}")
+    for name, pointer, value in (
+        ("relief amplitude above half shoulder", "/commandBody/amplitude", 1.5),
+        ("recessed amplitude at body thickness", "/toggleTrack/bodyThickness", 0.75),
+    ):
+        invalid = apply_changes(control_relief, [{"path": pointer, "value": value}])
+        check_case(control_relief_validator, name, invalid, True)
+        if relief_profile_violation(invalid[pointer.split("/")[1]]) is None:
+            raise ValueError(f"{name}: relief violation was not detected")
         checked += 1
     expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
     checked += check_label_expansion(expansion)

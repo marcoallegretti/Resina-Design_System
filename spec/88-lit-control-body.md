@@ -129,7 +129,10 @@ convex, shoulder width 2 and amplitude 1; Toggle track recessed, shoulder
 width 1.5 and amplitude 0.75; Toggle thumb convex, shoulder width 1 and
 amplitude 0.5; each with nominal body thickness 2, which only validates the
 recessed amplitude and has no paint effect. These are reference authoring
-choices subject to visual acceptance, not universal values.
+choices subject to visual acceptance, not universal values. Loading the
+document applies the spec/82 profile rules to every part, including the
+amplitude bound of half the shoulder width and a positive recessed thickness
+that JSON Schema cannot express, and the diagnostic names the failing part.
 
 ## Published IR
 

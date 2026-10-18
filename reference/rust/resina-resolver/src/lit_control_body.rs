@@ -74,6 +74,14 @@ pub fn parse_control_relief_source(source: &str) -> Result<ControlRelief, LitCon
     if members.schema_version != "0.1.0" {
         return Err(fail("control relief schemaVersion must be 0.1.0"));
     }
+    for (part, profile) in [
+        ("commandBody", members.command_body),
+        ("toggleTrack", members.toggle_track),
+        ("toggleThumb", members.toggle_thumb),
+    ] {
+        crate::surface_relief::validate_relief_profile(profile)
+            .map_err(|error| fail(format!("control relief {part}: {error}")))?;
+    }
     Ok(ControlRelief {
         command_body: members.command_body,
         toggle_track: members.toggle_track,

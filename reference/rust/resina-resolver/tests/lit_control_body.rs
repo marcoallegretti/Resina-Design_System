@@ -434,4 +434,45 @@ fn reference_control_relief_profiles_certify_their_illustrative_parts() {
     ] {
         assert!(parse_control_relief_source(source).is_err(), "{source}");
     }
+    let reference: Value =
+        serde_json::from_str(include_str!("../../../../definitions/control-relief.json")).unwrap();
+    for (pointer, value, fragment) in [
+        (
+            "/toggleThumb/kind",
+            json!("flat"),
+            "toggleThumb: surface relief: flat requires zero amplitude and shoulderWidth",
+        ),
+        (
+            "/toggleTrack/shoulderWidth",
+            json!(0),
+            "toggleTrack: surface relief: relief requires positive amplitude",
+        ),
+        (
+            "/commandBody/amplitude",
+            json!(0),
+            "commandBody: surface relief: relief requires positive amplitude",
+        ),
+        (
+            "/toggleThumb/bodyThickness",
+            json!(0),
+            "toggleThumb: surface relief: bodyThickness must be finite and positive",
+        ),
+        (
+            "/commandBody/amplitude",
+            json!(1.5),
+            "commandBody: surface relief: relief requires positive amplitude no greater than shoulderWidth/2",
+        ),
+        (
+            "/toggleTrack/bodyThickness",
+            json!(0.75),
+            "toggleTrack: surface relief: relieved thickness must be representable and positive",
+        ),
+    ] {
+        let mut source = reference.clone();
+        *source.pointer_mut(pointer).unwrap() = value;
+        let error = parse_control_relief_source(&source.to_string())
+            .expect_err(pointer)
+            .to_string();
+        assert!(error.contains(fragment), "{pointer}: {error}");
+    }
 }

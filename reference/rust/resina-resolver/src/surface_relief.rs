@@ -122,10 +122,9 @@ pub fn resolve_surface_relief_source(
     })
 }
 
-pub fn resolve_surface_relief(
-    outline: SurfaceOutline,
+pub(crate) fn validate_relief_profile(
     profile: SurfaceReliefProfile,
-) -> Result<SurfaceRelief, SurfaceReliefError> {
+) -> Result<(), SurfaceReliefError> {
     let fail = |s: &str| SurfaceReliefError(s.into());
     if !profile.body_thickness.is_finite() || profile.body_thickness <= 0.0 {
         return Err(fail("bodyThickness must be finite and positive"));
@@ -139,16 +138,11 @@ pub fn resolve_surface_relief(
             "amplitude and shoulderWidth must be finite and nonnegative",
         ));
     }
-    let mut result = SurfaceRelief {
-        content_bounds: outline.content_bounds(),
-        outline,
-        profile,
-    };
     if profile.kind == ReliefKind::Flat {
         if profile.amplitude != 0.0 || profile.shoulder_width != 0.0 {
             return Err(fail("flat requires zero amplitude and shoulderWidth"));
         }
-        return Ok(result);
+        return Ok(());
     }
     if profile.amplitude == 0.0
         || profile.shoulder_width == 0.0
@@ -170,6 +164,23 @@ pub fn resolve_surface_relief(
         return Err(fail(
             "relieved thickness must be representable and positive",
         ));
+    }
+    Ok(())
+}
+
+pub fn resolve_surface_relief(
+    outline: SurfaceOutline,
+    profile: SurfaceReliefProfile,
+) -> Result<SurfaceRelief, SurfaceReliefError> {
+    let fail = |s: &str| SurfaceReliefError(s.into());
+    validate_relief_profile(profile)?;
+    let mut result = SurfaceRelief {
+        content_bounds: outline.content_bounds(),
+        outline,
+        profile,
+    };
+    if profile.kind == ReliefKind::Flat {
+        return Ok(result);
     }
     let content = result.content_bounds;
     let size = result.outline.size();

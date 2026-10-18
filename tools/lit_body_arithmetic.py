@@ -46,6 +46,21 @@ def physical_radii(source):
     return result
 
 
+def relief_profile_violation(profile):
+    """Return the first semantic violation of one spec/82 relief profile, or None."""
+    kind, thickness = profile["kind"], profile["bodyThickness"]
+    amplitude, shoulder = profile["amplitude"], profile["shoulderWidth"]
+    if not (math.isfinite(thickness) and thickness > 0):
+        return "bodyThickness must be finite and positive"
+    if kind == "flat":
+        return None if amplitude == 0 and shoulder == 0 else "flat requires zero amplitude and shoulderWidth"
+    if not (0 < amplitude and 0 < shoulder and 2 * amplitude <= shoulder):
+        return "relief requires positive amplitude no greater than shoulderWidth/2"
+    if kind == "recessed" and amplitude >= thickness:
+        return "relieved thickness must be representable and positive"
+    return None
+
+
 def smooth(t):
     if t <= 0:
         return 0.0, 0.0
@@ -81,13 +96,9 @@ class Body:
         self.kind = profile["kind"]
         self.amplitude = profile["amplitude"]
         self.shoulder = profile["shoulderWidth"]
-        if self.kind == "flat":
-            if self.amplitude != 0 or self.shoulder != 0:
-                raise ValueError("flat requires zero amplitude and shoulderWidth")
-        elif not (0 < self.amplitude <= self.shoulder / 2):
-            raise ValueError("relief requires positive amplitude no greater than shoulderWidth/2")
-        elif self.kind == "recessed" and self.amplitude >= profile["bodyThickness"]:
-            raise ValueError("recessed amplitude must stay below bodyThickness")
+        violation = relief_profile_violation(profile)
+        if violation:
+            raise ValueError(violation)
         if self.kind != "flat":
             for name, radius in zip(PHYSICAL, self.radii):
                 if radius > 0 and 4 * self.shoulder / radius >= 1:
