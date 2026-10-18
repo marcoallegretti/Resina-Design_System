@@ -204,7 +204,7 @@ jobs:
           python tools/check_quickshell_command_motion.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
-            --output-dir target/quickshell-command-motion
+            --output-dir target/quickshell-command-motion --scale 1
           python tools/check_qt_platform_appearance.py --module-path target/qt-runtime-import \
             --output-dir target/qt-platform-appearance --require contrast color-scheme
           python tools/check_quickshell_clock_shell.py \
@@ -212,7 +212,7 @@ jobs:
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
             --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
-            --grim /usr/bin/grim --output-dir target/quickshell-clock-shell
+            --grim /usr/bin/grim --output-dir target/quickshell-clock-shell --scale 1
       - name: Check compositor-delivered Toggle lifecycle in released Quickshell
         timeout-minutes: 15
         run: |
@@ -231,6 +231,46 @@ jobs:
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --output-dir target/quickshell-toggle-lifecycle
+      - name: Check compositor-delivered Command motion and the clock shell at output scales 1.25 and 2 with a live scale change
+        timeout-minutes: 30
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          status=0
+          for scales in "1.25 2" "2 1.25"; do
+            set -- $scales
+            scale=$1
+            live=$2
+            XDG_RUNTIME_DIR="$(mktemp -d)"
+            export XDG_RUNTIME_DIR
+            chmod 700 "$XDG_RUNTIME_DIR"
+            echo "output HEADLESS-1 resolution 1280x720 scale $scale" > "target/scale-sway-$scale.conf"
+            WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER=pixman sway -c "target/scale-sway-$scale.conf" > "target/scale-sway-$scale.log" 2>&1 &
+            sway_pid=$!
+            WAYLAND_DISPLAY=
+            for _ in $(seq 50); do
+              for socket in "$XDG_RUNTIME_DIR"/wayland-*; do
+                if [ -S "$socket" ]; then WAYLAND_DISPLAY="${socket##*/}"; fi
+              done
+              [ -n "$WAYLAND_DISPLAY" ] && break
+              sleep 0.2
+            done
+            export WAYLAND_DISPLAY
+            python tools/check_quickshell_command_motion.py \
+              --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+              --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+              --output-dir "target/quickshell-command-motion-$scale" --scale "$scale" --live-scale "$live" || status=1
+            swaymsg -s "$(ls "$XDG_RUNTIME_DIR"/sway-ipc.*.sock)" output HEADLESS-1 scale "$scale" || status=1
+            python tools/check_quickshell_clock_shell.py \
+              --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+              --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+              --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
+              --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
+              --grim /usr/bin/grim --output-dir "target/quickshell-clock-shell-$scale" \
+              --scale "$scale" --live-scale "$live" || status=1
+            kill "$sway_pid" || true
+            wait "$sway_pid" || true
+          done
+          exit "$status"
       - name: Qualify Command motion frame timing with the release module in released Quickshell
         timeout-minutes: 10
         run: |
@@ -282,10 +322,13 @@ jobs:
             target/quickshell-command-lifecycle/
             target/quickshell-command-accessibility/
             target/quickshell-command-motion/
+            target/quickshell-command-motion-*/
+            target/scale-sway-*.log
             target/quickshell-command-motion-budget-*/
             target/budget-sway-*.log
             target/qt-platform-appearance/
             target/quickshell-clock-shell/
+            target/quickshell-clock-shell-*/
             target/lifecycle-sway.log
             target/quickshell-toggle-lifecycle/
             target/toggle-lifecycle-sway.log

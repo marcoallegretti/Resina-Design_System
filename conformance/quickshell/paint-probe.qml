@@ -24,7 +24,8 @@ FloatingWindow {
             running: true
             onTriggered: {
                 if (paint.status !== Loader.Ready || !paint.item.paintReady
-                    || paint.item.preparedDeviceScale !== capture.Screen.devicePixelRatio
+                    || !capture.Window.window
+                    || paint.item.preparedDeviceScale !== capture.Window.window.devicePixelRatio
                     || paint.item.focus || paint.item.activeFocusOnTab
                     || !paint.item.Accessible.ignored) {
                     console.error("RESINA_PAINT_FAIL: component profile or device scale");

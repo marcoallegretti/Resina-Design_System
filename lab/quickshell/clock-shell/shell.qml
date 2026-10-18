@@ -51,23 +51,50 @@ ShellRoot {
         bodyMix: {dynamics: JSON.parse(text("motionBody")), initial: {position: 0, velocity: 0}},
         depthScale: {dynamics: JSON.parse(text("motionDepth")), initial: {position: 1, velocity: 0}}
     }) : ""
-    readonly property var themeRequest: loaded && screen && preferences ? ({
-        schemaVersion: "0.1.0",
-        themeSource: text("themeSource"),
-        externalSources: {"foundation.json": text("foundation")},
-        environment: Object.assign({
-            schemaVersion: "0.2.0",
-            geometry: {width: screen.width, height: screen.height,
-                safeArea: {start: 0, end: 0, top: 0, bottom: 0}},
-            scale: screen.devicePixelRatio
-        }, authored, {accessibilityPreferences: preferences})
-    }) : null
-    readonly property var backdropResult: themeRequest
-        ? JSON.parse(colors.resolveOpaqueColor(JSON.stringify(themeRequest), "surface.base")) : null
-    readonly property var backdrop: backdropResult && !backdropResult.error ? backdropResult.color : null
-    readonly property string backdropError: backdropResult && backdropResult.error ? backdropResult.error : ""
+    readonly property bool ready: loaded && screen !== null && preferences !== null
+    readonly property var publications: ({})
 
-    onBackdropErrorChanged: report("backdrop", backdropError)
+    component WindowEnvironment: Item {
+        readonly property real deviceScale: Window.window ? Window.window.devicePixelRatio : 0
+        readonly property var theme: root.themeRequest(deviceScale)
+        readonly property var resolved: theme
+            ? JSON.parse(colors.resolveOpaqueColor(JSON.stringify(theme), "surface.base")) : null
+        readonly property var backdrop: resolved && !resolved.error ? resolved.color : null
+        readonly property string error: resolved && resolved.error ? resolved.error : ""
+        readonly property color painted: backdrop ? root.hex(backdrop) : "transparent"
+        visible: false
+        onErrorChanged: root.report("backdrop", error)
+    }
+
+    function themeRequest(scale) {
+        if (!ready || !(scale > 0))
+            return null;
+        return {
+            schemaVersion: "0.1.0",
+            themeSource: text("themeSource"),
+            externalSources: {"foundation.json": text("foundation")},
+            environment: Object.assign({
+                schemaVersion: "0.2.0",
+                geometry: {width: screen.width, height: screen.height,
+                    safeArea: {start: 0, end: 0, top: 0, bottom: 0}},
+                scale: scale
+            }, authored, {accessibilityPreferences: preferences})
+        };
+    }
+
+    function deviceScale(item) {
+        return item && item.Window.window ? item.Window.window.devicePixelRatio : null;
+    }
+
+    function published(part, item) {
+        const scale = deviceScale(item);
+        const runs = publications[part] || [];
+        if (runs.length && runs[runs.length - 1][0] === scale)
+            ++runs[runs.length - 1][1];
+        else
+            runs.push([scale, 1]);
+        publications[part] = runs;
+    }
     onPreferenceSourcesChanged: {
         if (!preferenceSources)
             return;
@@ -95,7 +122,8 @@ ShellRoot {
     function recordFrame(part, control) {
         if (recording && control.snapshot.length && control.motion.length)
             recorded.push({part: part, snapshot: control.snapshot, motion: control.motion,
-                publication: control.publication, hovered: control.hovered});
+                publication: control.publication, hovered: control.hovered,
+                deviceScale: deviceScale(control)});
     }
 
     function target(control, originX, originY) {
@@ -117,14 +145,15 @@ ShellRoot {
         return Qt.rgba(color.components[0], color.components[1], color.components[2], color.alpha);
     }
 
-    function surface(materialRole, colorRole, shape, elevation, width, height, adjacent) {
-        if (!themeRequest || !adjacent || width <= 0 || height <= 0)
+    function surface(environment, materialRole, colorRole, shape, elevation, width, height) {
+        const adjacent = environment.backdrop;
+        if (!environment.theme || !adjacent || width <= 0 || height <= 0)
             return "";
         return JSON.stringify({
             schemaVersion: "0.1.0",
             body: {
                 schemaVersion: "0.1.0",
-                theme: themeRequest,
+                theme: environment.theme,
                 surface: {schemaVersion: "0.2.0", materialRole: materialRole, colorRole: colorRole,
                     form: {schemaVersion: "0.1.0", shape: shape, elevation: elevation},
                     states: {schemaVersion: "0.1.0", states: ["rest"]},
@@ -140,14 +169,14 @@ ShellRoot {
         });
     }
 
-    function command(label, description, surroundingView, bounds) {
-        if (!themeRequest || !surroundingView.paintReady)
+    function command(environment, label, description, surroundingView, bounds) {
+        if (!environment.theme || !surroundingView.paintReady)
             return "";
         const body = JSON.parse(surroundingView.publication).body.pigment.body;
         const definition = JSON.parse(text("command")).variants.standard.body;
         return JSON.stringify({
             content: {themeSource: text("themeSource"), externalSources: {"foundation.json": text("foundation")},
-                environment: themeRequest.environment, text: label,
+                environment: environment.theme.environment, text: label,
                 fontFamily: {role: "sans", name: typeface.name},
                 minimumSize: {width: 96, height: 48}, maximumSize: {width: 320, height: 200},
                 padding: {start: 20, end: 20, top: 12, bottom: 12}},
@@ -205,32 +234,37 @@ ShellRoot {
     PanelWindow {
         id: backdropWindow
         screen: root.screen
-        visible: root.backdrop !== null
+        visible: root.ready
         anchors { top: true; bottom: true; left: true; right: true }
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Background
         WlrLayershell.namespace: "resina-clock-backdrop"
-        color: root.backdrop ? root.hex(root.backdrop) : "transparent"
+        color: backdropEnvironment.painted
+
+        WindowEnvironment { id: backdropEnvironment }
     }
 
     PanelWindow {
         id: bar
         screen: root.screen
-        visible: root.backdrop !== null
+        visible: root.ready
         anchors { top: true; left: true; right: true }
         implicitHeight: root.barHeight
         WlrLayershell.namespace: "resina-clock-bar"
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-        color: root.backdrop ? root.hex(root.backdrop) : "transparent"
+        color: barEnvironment.painted
+
+        WindowEnvironment { id: barEnvironment }
 
         Resina.ResinaSurfaceView {
             id: barSurface
             x: root.margin
             y: root.margin
             samplesPerAxis: 2
-            request: root.surface("surface.chrome", "surface.chrome", "structural", "floating",
-                bar.width - 2 * root.margin, root.barHeight - 3 * root.margin, root.backdrop)
+            request: root.surface(barEnvironment, "surface.chrome", "surface.chrome", "structural", "floating",
+                bar.width - 2 * root.margin, root.barHeight - 3 * root.margin)
             onPaintErrorChanged: root.report("bar", paintError)
+            onPublicationChanged: if (publication.length) root.published("bar", barSurface)
         }
 
         Loader {
@@ -247,11 +281,12 @@ ShellRoot {
                 motionChannels: root.motionChannels
                 disabledFocusable: false
                 activeFocusOnTab: true
-                configuration: root.command("Show clock", "Open the clock surface.", barSurface, {
+                configuration: root.command(barEnvironment, "Show clock", "Open the clock surface.", barSurface, {
                     x: -Math.max(root.margin, inset), y: -inset,
                     width: barSurface.contentBounds.width, height: barSurface.contentBounds.height})
                 onActivated: persisted.open = true
                 onMotionChanged: root.recordFrame("showClock", showControl)
+                onSnapshotChanged: if (snapshot.length) root.published("showClock", showControl)
                 onImplicitHeightChanged: if (implicitHeight > 0) root.showHeight = implicitHeight
                 onPreparationErrorChanged: root.report("Show clock", preparationError)
                 Component.onCompleted: controller.dispatch(JSON.stringify({kind: "availability",
@@ -269,7 +304,7 @@ ShellRoot {
     PanelWindow {
         id: clockWindow
         screen: root.screen
-        visible: persisted.open && root.backdrop !== null
+        visible: persisted.open && root.ready
         anchors { top: true; left: true }
         margins.top: root.barHeight
         implicitWidth: 360 * root.textScale
@@ -278,16 +313,19 @@ ShellRoot {
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "resina-clock-surface"
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-        color: root.backdrop ? root.hex(root.backdrop) : "transparent"
+        color: clockEnvironment.painted
+
+        WindowEnvironment { id: clockEnvironment }
 
         Resina.ResinaSurfaceView {
             id: clockSurface
             x: root.margin
             y: root.margin
             samplesPerAxis: 2
-            request: clockWindow.visible ? root.surface("surface.transient", "surface.high", "rounded", "overlay",
-                clockWindow.width - 3 * root.margin, clockWindow.height - 3 * root.margin, root.backdrop) : ""
+            request: clockWindow.visible ? root.surface(clockEnvironment, "surface.transient", "surface.high", "rounded",
+                "overlay", clockWindow.width - 3 * root.margin, clockWindow.height - 3 * root.margin) : ""
             onPaintErrorChanged: root.report("clock surface", paintError)
+            onPublicationChanged: if (publication.length) root.published("clock", clockSurface)
             onPaintReadyChanged: if (paintReady) root.clockInset = implicitHeight - contentBounds.height
         }
 
@@ -302,7 +340,7 @@ ShellRoot {
                 id: time
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
-                text: Qt.locale(root.themeRequest ? root.themeRequest.environment.locale : "en")
+                text: Qt.locale(clockEnvironment.theme ? clockEnvironment.theme.environment.locale : "en")
                     .toString(clock.date, "HH:mm:ss")
                 color: clockSurface.foreground
                 font.family: typeface.name
@@ -314,7 +352,7 @@ ShellRoot {
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
                 text: clock.date.toLocaleDateString(
-                    Qt.locale(root.themeRequest ? root.themeRequest.environment.locale : "en"), Locale.LongFormat)
+                    Qt.locale(clockEnvironment.theme ? clockEnvironment.theme.environment.locale : "en"), Locale.LongFormat)
                 color: clockSurface.foreground
                 font.family: typeface.name
                 font.pixelSize: 16 * root.textScale
@@ -336,11 +374,12 @@ ShellRoot {
                 motionChannels: root.motionChannels
                 disabledFocusable: false
                 activeFocusOnTab: true
-                configuration: root.command("Close", "Close the clock surface.", clockSurface, {
+                configuration: root.command(clockEnvironment, "Close", "Close the clock surface.", clockSurface, {
                     x: -root.gap, y: -offset,
                     width: clockSurface.contentBounds.width, height: clockSurface.contentBounds.height})
                 onActivated: persisted.open = false
                 onMotionChanged: root.recordFrame("close", closeControl)
+                onSnapshotChanged: if (snapshot.length) root.published("close", closeControl)
                 onImplicitHeightChanged: if (implicitHeight > 0) root.closeHeight = implicitHeight
                 onReadyChanged: if (ready) forceActiveFocus()
                 onPreparationErrorChanged: root.report("Close", preparationError)
@@ -359,10 +398,13 @@ ShellRoot {
             root.recording = enabled;
             root.recorded = [];
         }
-        function frames(): string {
-            return JSON.stringify(root.recorded.map(frame => ({part: frame.part, snapshot: JSON.parse(frame.snapshot),
-                motion: JSON.parse(frame.motion), state: JSON.parse(frame.publication).state, hovered: frame.hovered})));
+        function frame(index: int): string {
+            const frame = root.recorded[index];
+            return frame ? JSON.stringify({part: frame.part, snapshot: JSON.parse(frame.snapshot),
+                motion: JSON.parse(frame.motion), state: JSON.parse(frame.publication).state, hovered: frame.hovered,
+                deviceScale: frame.deviceScale}) : "null";
         }
+        function publications(): string { return JSON.stringify(root.publications); }
         function request(part: string): string {
             if (part === "bar") return barSurface.request;
             if (part === "clock") return clockSurface.request;
@@ -387,8 +429,10 @@ ShellRoot {
                 },
                 targets: {showClock: root.target(show, 0, 0), close: root.target(close, 0, root.barHeight)},
                 frames: {showClock: root.frame(show, 0, 0), close: root.frame(close, 0, root.barHeight)},
-                loadError: root.loadError, backdrop: root.backdrop,
-                errors: {backdrop: root.backdropError, bar: barSurface.paintError, clock: clockSurface.paintError,
+                deviceScale: {showClock: root.deviceScale(show), close: root.deviceScale(close)},
+                loadError: root.loadError, backdrop: backdropEnvironment.backdrop,
+                errors: {backdrop: backdropEnvironment.error || barEnvironment.error || clockEnvironment.error,
+                    bar: barSurface.paintError, clock: clockSurface.paintError,
                     showClock: show ? show.preparationError : "", close: close ? close.preparationError : ""},
                 bar: barSurface.publication.length ? JSON.parse(barSurface.publication) : null,
                 clock: clockSurface.publication.length ? JSON.parse(clockSurface.publication) : null,

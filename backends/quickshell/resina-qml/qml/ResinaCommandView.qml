@@ -8,7 +8,8 @@ Item {
     readonly property bool paintReady: snapshot.length > 0 && state.body !== null
         && state.body.paintReady && label.paintReady
     readonly property string paintError: state.error
-    readonly property real nativeDeviceScale: Screen.devicePixelRatio
+    // The attached Screen ratio is the output's integer scale and does not notify its changes.
+    readonly property real nativeDeviceScale: nativeWindow ? nativeWindow.devicePixelRatio : 0
     readonly property var nativeWindow: Window.window
     implicitWidth: state.size ? state.size.width : 0
     implicitHeight: state.size ? state.size.height : 0
@@ -45,6 +46,10 @@ Item {
             state.preparing = false;
         retire();
         state.error = "Qt command view requires preparation after its native context changes";
+    }
+
+    function presentsNativeWindow() {
+        return Boolean(nativeWindow) && resolver.presentsNativeWindow(root);
     }
 
     function checkContext(options) {

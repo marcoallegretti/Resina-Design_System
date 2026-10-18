@@ -134,6 +134,9 @@ def main():
         args.output_dir.mkdir(parents=True,exist_ok=True)
         window.requestActivate()
         wait(app,lambda:window.isActive() and window.isExposed(),"exposed native Toggle window")
+        views=[child for child in control.childItems() if child.metaObject().indexOfProperty("nativeDeviceScale")>=0]
+        if not views or any(view.property("nativeDeviceScale") != window.effectiveDevicePixelRatio() for view in views):
+            raise ValueError("Toggle view density is not its window's device pixel ratio")
         current_source=[None]
         def observe():return json.loads(window.observation())
         def check():

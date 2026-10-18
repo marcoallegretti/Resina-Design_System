@@ -106,6 +106,10 @@ bool SnapshotPublication::matchesNativeContext(QObject* object, double x, double
     return nativeContextMatches(this, object, x, y, deviceScale);
 }
 
+bool SnapshotPublication::presentsNativeWindow(QObject* object) const {
+    return exposedNativeWindow(this, object) != nullptr;
+}
+
 bool CommandClock::onUiThread() const {
     const auto* application = QCoreApplication::instance();
     return application && QThread::currentThread() == application->thread() && thread() == application->thread();

@@ -3,7 +3,8 @@ import unittest
 
 from check_command_motion_backend import equation_sample
 from check_quickshell_command_motion import (CHANNELS, epochs, expected_states, frames, moving, settled, verify_clock,
-                                             verify_dynamics, verify_retarget)
+                                             verify_dynamics, verify_frame_scales, verify_publication_scales,
+                                             verify_retarget, verify_scale)
 
 DYNAMICS = {"schemaVersion": "0.1.0", "mass": 1, "stiffness": 4, "damping": 4,
             "positionThreshold": 1e-06, "velocityThreshold": 1e-06}
@@ -110,6 +111,62 @@ class CommandMotionEvidenceTests(unittest.TestCase):
                                                          target=released, retarget=instant))
         verify_retarget(earlier, previous, frame(10.6, .01, channels=continued(previous, .89), target=released,
                                                  retarget=.89))
+
+    def test_the_command_must_be_presented_at_the_requested_device_scale(self):
+        verify_scale({"width": 819, "height": 480, "deviceScale": 1.25}, 1.25)
+        for screen, expected in ((None, 1.25), ({"width": 819, "height": 480}, 1.25), ({"deviceScale": 2}, 1.25),
+                                 ({"deviceScale": True}, 1.0), ({"deviceScale": "1.25"}, 1.25)):
+            with self.subTest(screen=screen), self.assertRaisesRegex(ValueError, "device scale"):
+                verify_scale(screen, expected)
+
+    @staticmethod
+    def scaled(*scales):
+        result = []
+        for scale in scales:
+            item = frame(0, 0)
+            if scale is not None:
+                item["deviceScale"] = scale
+            result.append(item)
+        return result
+
+    def test_every_frame_is_published_at_the_requested_device_scale(self):
+        verify_frame_scales(self.scaled(1.25, 1.25), 1.25)
+        verify_frame_scales([], 2)
+        for scales, message in (((1.25, 2), "device scale 2, not 1.25"), ((1.25, None), "does not publish"),
+                                ((1.25, True), "does not publish"), ((1.25, "1.25"), "does not publish")):
+            with self.subTest(scales=scales), self.assertRaisesRegex(ValueError, message):
+                verify_frame_scales(self.scaled(*scales), 1.25)
+
+    def test_a_live_scale_change_moves_frames_once_to_the_new_device_scale(self):
+        verify_frame_scales(self.scaled(1.25, 1.25, 2, 2), 1.25, 2, 2)
+        verify_frame_scales(self.scaled(2, 2, 1.25), 2, 2, 1.25)
+        # A frame prepared before the compositor's change may still be logged after it was requested.
+        verify_frame_scales(self.scaled(1.25, 1.25, 1.25, 2), 1.25, 2, 2)
+        for scales, message in (((1.25, 2, 2), "device scale 2, not 1.25"),
+                                ((1.25, 1.25, 1.25), "no native frame was published at device scale 2"),
+                                ((1.25, 1.25, 2, 1.25), "did not move once"),
+                                ((1.25, 1.25, 1, 2), "did not move once")):
+            with self.subTest(scales=scales), self.assertRaisesRegex(ValueError, message):
+                verify_frame_scales(self.scaled(*scales), 1.25, 2, 2)
+
+    @staticmethod
+    def logged(*entries):
+        return [{"kind": kind, "deviceScale": scale} for kind, scale in entries]
+
+    def test_publications_from_startup_use_the_window_device_scale(self):
+        verify_publication_scales(self.logged(("published", 1.25), ("frame", 1.25)), 1.25)
+        verify_publication_scales(self.logged(("published", 1.25), ("frame", 1.25), ("published", 1.25),
+                                              ("frame", 2), ("published", 2)), 1.25, 3, 2)
+        for entries, change, message in (
+                ((("published", 2), ("published", 1.25), ("frame", 1.25)), None, "static publication was published "
+                                                                                 "at device scale 2"),
+                ((("frame", 1.25),), None, "no static publication"),
+                ((("published", 1.25), ("frame", 1.25), ("published", 1.25), ("published", 1.25)), 2,
+                 "no native frame was published at device scale 2"),
+                ((("published", 1.25), ("frame", 1.25), ("frame", 2), ("published", 1.25)), 2,
+                 "no static publication was published at device scale 2")):
+            with self.subTest(entries=entries), self.assertRaisesRegex(ValueError, message):
+                verify_publication_scales(self.logged(*entries), 1.25, change, 2 if change else None)
 
 if __name__ == "__main__":
     unittest.main()

@@ -84,6 +84,7 @@ ResinaCommandInput {
     }
 
     function fail(cause) {
+        state.awaitingWindow = false;
         state.revision = {};
         state.prepared = "";
         state.qualified = false;
@@ -175,6 +176,7 @@ ResinaCommandInput {
         state.running = true;
         state.revision = {};
         state.dirty = false;
+        state.awaitingWindow = false;
         state.frameDue = false;
         try {
             const cycle = clockValue(preparationClock.restart()).previousTime;
@@ -187,6 +189,11 @@ ResinaCommandInput {
             }
             if (disabledFocusable)
                 throw new Error("Qt command control does not support discoverable disabled focus; choose an explicit excluding policy");
+            if (!view.presentsNativeWindow()) {
+                state.pending = "";
+                state.awaitingWindow = true;
+                return;
+            }
             if (!state.qualified) qualify();
             const activation = JSON.parse(publication).state;
             if (!activation.enabled && activation.focused) {
@@ -331,6 +338,12 @@ ResinaCommandInput {
     Connections {
         target: root.nativeWindow
         function onVisibleChanged() { root.reconfigure(); }
+        function onAfterAnimating() {
+            if (state.awaitingWindow && view.presentsNativeWindow()) {
+                state.awaitingWindow = false;
+                Qt.callLater(root.refresh);
+            }
+        }
     }
     Connections {
         target: root.controller
@@ -353,8 +366,10 @@ ResinaCommandInput {
         target: state.pendingView
         function onSnapshotChanged() { if (state.pendingView && state.pendingView.snapshot.length) Qt.callLater(root.finish); }
         function onPaintErrorChanged() {
-            if (!state.running && state.pending.length && state.pendingView && state.pendingView.paintError.length)
-                root.fail(state.pendingView.paintError);
+            if (!state.running && state.pending.length && state.pendingView && state.pendingView.paintError.length) {
+                if (view.presentsNativeWindow()) root.fail(state.pendingView.paintError);
+                else root.reconfigure();
+            }
         }
     }
     Connections {
@@ -399,6 +414,7 @@ ResinaCommandInput {
         property bool armed: false
         property bool running: false
         property bool dirty: false
+        property bool awaitingWindow: false
         property bool frameDue: false
         property var publishedSpan: null
         property string target: ""

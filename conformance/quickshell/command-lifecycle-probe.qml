@@ -61,15 +61,20 @@ ShellRoot {
             hovered:command ? command.hovered : false, nativeFocus:nativeFocus(),
             target:targetCenter(), effects:effects, publications:publications, retractions:retractions, reactionResult:reactionResult,
             otherFocused:Boolean(windowLoader.item && windowLoader.item.mount.item && windowLoader.item.mount.item.other.activeFocus),
-            screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height,
-                deviceScale:command.Screen.devicePixelRatio} : null};
+            screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height} : null,
+            deviceScale:deviceScale(command)};
+    }
+
+    function deviceScale(control) {
+        return control && control.Window.window ? control.Window.window.devicePixelRatio : null;
     }
 
     function frame(control) {
         if (!control.snapshot.length || !control.motion.length) return;
         log("frame", {time:Date.now() / 1000, configuration:configurationName, snapshot:JSON.parse(control.snapshot),
             motion:JSON.parse(control.motion), state:JSON.parse(control.publication).state, hovered:control.hovered,
-            target:JSON.parse(control.targetPublication || "null"), center:targetCenter()});
+            target:JSON.parse(control.targetPublication || "null"), center:targetCenter(),
+            deviceScale:deviceScale(control)});
     }
 
     function activated(control) {
@@ -95,7 +100,10 @@ ShellRoot {
     }
     Connections {
         target: root.command
-        function onSnapshotChanged() { if (!root.command.snapshot.length) ++root.retractions; }
+        function onSnapshotChanged() {
+            if (!root.command.snapshot.length) ++root.retractions;
+            else if (!root.command.motion.length) root.log("published", {deviceScale:root.deviceScale(root.command)});
+        }
     }
 
     function checkFocusable() {

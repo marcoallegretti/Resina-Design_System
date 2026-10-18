@@ -54,11 +54,21 @@ focus, layout and preference policy belong to this shell, not to Resina.
   accessibility together with its children.
 - The open state is a `PersistentProperties` value: it survives a soft reload and
   is reset by a hard reload or restart.
+- Each window resolves its own environment: its `scale` is the device pixel
+  ratio of that window, and the backdrop colour each window paints is resolved
+  from that environment. A change of a window's ratio, including the change from
+  the fallback ratio a window reports before it is exposed, resolves its
+  environment, surface requests and Command requests again.
 - An IPC target `clock` provides `open`, `close`, `reload(hard)`, `observe`,
-  `request(part)`, `record(enabled)` and `frames`. `record` discards the
-  recorded frames and starts or stops recording; while recording, the shell
-  keeps every motion frame of either Command as it is published, and `frames`
-  returns them.
+  `request(part)`, `record(enabled)`, `frame(index)` and `publications`.
+  `record` discards the recorded frames and starts or stops recording; while
+  recording, the shell keeps every motion frame of either Command as it is
+  published, with the device pixel ratio of the Command's window, and
+  `frame(index)` returns one of them, or `null` past the last. One frame per
+  reply keeps each reply within what the Quickshell 0.3.2 IPC client reliably
+  receives. `publications` returns, for the bar, the clock surface and each
+  Command, the device pixel ratio of every publication since the shell started,
+  as runs of `[scale, count]`.
 
 ## Prerequisites
 
@@ -82,8 +92,8 @@ quickshell --path lab/quickshell/clock-shell/shell.qml
 ```
 
 `RESINA_ROOT` selects the repository whose theme tokens and definitions are read
-at runtime. `RESINA_CLOCK_THEME=light` or `dark` fixes the theme. Geometry and
-device scale come from the first output.
+at runtime. `RESINA_CLOCK_THEME=light` or `dark` fixes the theme. Geometry comes
+from the first output; each window's device scale comes from that window.
 
 ## Failure diagnostics
 
@@ -94,7 +104,7 @@ device scale come from the first output.
   input recovers; the affected part stays withdrawn meanwhile, and no fallback
   colour or placeholder is painted.
 - `qs ipc call clock observe` reports the current error of every part, the
-  portal state and the preferences in effect.
+  portal state, the preferences in effect and each Command's device scale.
 
 ## Verification
 
@@ -102,15 +112,23 @@ device scale come from the first output.
 runs the shell in a caller-provided compositor session and drives it with
 compositor-delivered pointer and keyboard input. It starts a private session bus
 with the real `xdg-desktop-portal` frontend and GNOME backend, with isolated
-GSettings. It requires:
+GSettings. It runs at the output scale given by `--scale` and requires:
 
+- every surface and Command request environment, the device pixel ratio of each
+  Command's window and every recorded motion frame to use that scale;
+- every publication of the bar, the clock surface and each Command from startup
+  on, checked before each reload and at the end, to use its window's scale, and
+  with `--live-scale` to move once from the old scale to the new one;
 - the backdrop to equal `resina-theme-resolve`'s opaque `surface.base`, every
   surface publication to equal `resina-surface-paint` for its request, and each
   Command snapshot to match its request and state;
 - every declared adjacent and surrounding colour to be the colour actually
-  painted next to it; with `--grim`, the composited output is sampled on the
-  backdrop, the bar body and the clock body, and on a ring just outside each
-  Command's complete footprint, including its focus ring;
+  painted next to it; with `--grim`, the capture to be exactly the logical
+  output at the checked scale, so the output's logical size must be whole at
+  that scale, and the composited output to be sampled on the backdrop, at every
+  corner and edge midpoint of the capture, on the bar body and the clock body,
+  and on a ring just outside each Command's complete footprint, including its
+  focus ring;
 - each surface publication to be compared only once it matches its current
   request;
 - a pointer click on "Show clock" to map the surface with keyboard focus on
@@ -120,7 +138,9 @@ GSettings. It requires:
 - Space on "Close" and Escape to unmap the surface and pause the clock;
 - a soft reload to keep the surface open in a new engine generation, and a hard
   reload to close it;
-- the portal's preferences to reach the Command environment;
+- the portal's preferences to reach the Command environment, the shell's
+  platform values to equal an independent portal read, and each preference the
+  portal provides to be taken from the platform rather than the authored file;
 - every motion frame published while "Show clock" is held, recorded by the
   shell as it is published until a settled frame, to use the calibrated
   Elastomer dynamics and match the independent spring equations and complete
@@ -133,6 +153,12 @@ GSettings. It requires:
 - without a fixed theme, the platform colour scheme to select the dark and light
   theme, each re-verified against the reference paint and required to use that
   theme's source and Command appearance;
+- with `--live-scale`, after a change of the single active Sway output's scale
+  through the only `sway-ipc.*.sock` in `XDG_RUNTIME_DIR` (a set `SWAYSOCK`
+  must name that socket), the bar and "Show clock" to be republished at the new
+  device scale with the same target, the reference paint, the composited pixels
+  with `--grim`, one available native "Show clock" Button and calibrated spring
+  frames while held; the accessibility cases below then run at the new scale;
 - on a private AT-SPI bus, the native tree to expose exactly one Button per mapped
   Command with its complete name and description, "Show clock" unavailable and
   "Close" available and focused while open, and the displayed time and date as
@@ -152,8 +178,18 @@ With Quickshell 0.3.2 (revision 4f508be), Qt 6.11.2, xdg-desktop-portal 1.22.1
 and xdg-desktop-portal-gnome 50.0:
 
 - all cases pass with the platform-selected theme in headless Sway 1.12, with
-  `grim` composition checks at output scales 1 and 2 (a 2048×1200 pixel capture
-  of a 1024×600 logical output), and in nested niri 26.04 at scales 1 and 2;
+  `grim` composition checks at output scales 1 and 2 on a 1024×600 output, 1.25
+  on a 1280×720 output and 1.5 on a 1920×1080 output, and in nested niri 26.04
+  at scales 1 and 2;
+- in headless Sway 1.12 the live changes from 1 to 2 and 2 to 1 on a 1024×600
+  output, 2 to 1.25 and 1.25 to 2 on a 1280×720 output and 1.25 to 1.5 on a
+  1920×1080 output pass, including the `grim` checks after the change. The
+  `grim` checks sample flat body and backdrop colour within one 8-bit step; they
+  do not compare complete captures byte for byte;
+- a 1024×600 output at scale 1.25 or 1.5 is 819.2 or 682.67 logical pixels
+  wide. Its layer surfaces cover 819 or 682 logical pixels, so the last device
+  column is not covered by the backdrop; the capture size check rejects such an
+  output;
 - with the software renderer, a frame at scale 2 lasted about as long as the
   spring takes to settle, so a held "Show clock" published one or two unsettled
   frames before settling, against three at scale 1;
@@ -170,11 +206,21 @@ and xdg-desktop-portal-gnome 50.0:
   keyboard focus without a focused item. In both compositors, Space after closing did not
   activate "Show clock". Layer surfaces cannot request activation, so returning
   focus is compositor policy.
+- Each window is mapped once the shell's sources and preferences have loaded,
+  before its theme is resolved, because its environment needs that window's
+  device scale. If a window's theme resolution fails, the window stays mapped,
+  transparent and without content, and the bar keeps its exclusive zone; the
+  error is logged as `RESINA_CLOCK_PREPARATION backdrop:` and reported by
+  `observe` under `errors.backdrop`.
 - xdg-desktop-portal-gnome before 50 does not provide `reduced-motion`; the
-  authored value is then used and the reduced-motion case is skipped.
-- One output at integer scales 1 and 2, with text scale 1 and the `en-GB` locale,
-  is verified. Larger text scales, other locales, multiple outputs, fractional
-  or changing scale, and output hot-plug are not.
+  authored value is then used. Every platform case that cannot run, because the
+  portal does not provide its key or `--theme` fixes the theme, is printed as a
+  `SKIP` line with its reason and kept under `skips` in `report.json`.
+- One output, with text scale 1 and the `en-GB` locale, is verified. CI runs the
+  check in headless Sway at output scale 1 on a 1024×600 output, and at 1.25
+  and 2 on a 1280×720 output with live changes from 1.25 to 2 and from 2 to
+  1.25. Larger text scales, other locales,
+  multiple outputs and output hot-plug are not covered.
 - The time and date text and its locale handling are shell content. Its value
   changes every second without being announced; live-value semantics belong to
   #196. Screen-reader presentation is verified only for the focused Commands,

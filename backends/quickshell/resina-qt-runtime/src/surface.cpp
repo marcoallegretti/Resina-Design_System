@@ -14,4 +14,8 @@ QString SurfacePaintResolver::resolveOpaqueColor(const QString& themeRequest, co
 bool SurfacePaintResolver::matchesNativeContext(QObject* item, double x, double y, double deviceScale) const {
     return nativeContextMatches(this, item, x, y, deviceScale);
 }
+
+bool SurfacePaintResolver::presentsNativeWindow(QObject* item) const {
+    return exposedNativeWindow(this, item) != nullptr;
+}
 }

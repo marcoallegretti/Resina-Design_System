@@ -10,7 +10,8 @@ Item {
     readonly property string paintError: state.error
     readonly property color foreground: state.foreground
     readonly property rect contentBounds: state.content
-    readonly property real nativeDeviceScale: Screen.devicePixelRatio
+    // The attached Screen ratio is the output's integer scale and does not notify its changes.
+    readonly property real nativeDeviceScale: nativeWindow ? nativeWindow.devicePixelRatio : 0
     readonly property var nativeWindow: Window.window
     implicitWidth: state.front.width
     implicitHeight: state.front.height
@@ -49,7 +50,11 @@ Item {
     function context() {
         const origin = mapToItem(null, 0, 0);
         const options = {x:origin.x, y:origin.y, deviceScale:nativeDeviceScale, samplesPerAxis:samplesPerAxis};
-        if (!nativeWindow || !resolver.matchesNativeContext(root, options.x, options.y, options.deviceScale)) {
+        if (!nativeWindow || !resolver.presentsNativeWindow(root)) {
+            state.awaitingContext = true;
+            return null;
+        }
+        if (!resolver.matchesNativeContext(root, options.x, options.y, options.deviceScale)) {
             state.awaitingContext = true;
             throw new Error("Qt surface view requires a translation-only native placement and its window pixel density");
         }
@@ -69,6 +74,8 @@ Item {
         let candidate = null;
         try {
             const options = context();
+            if (!options)
+                return;
             const result = JSON.parse(resolver.resolveSurfaceView(request, JSON.stringify(options)));
             if (result.error)
                 throw new Error(result.error);
@@ -125,7 +132,7 @@ Item {
         try {
             const pending = state.pending;
             const options = context();
-            if (options.x !== pending.options.x || options.y !== pending.options.y
+            if (!options || options.x !== pending.options.x || options.y !== pending.options.y
                 || options.deviceScale !== pending.options.deviceScale)
                 state.cancelled = true;
             if (state.cancelled)
@@ -155,13 +162,15 @@ Item {
         target: root.nativeWindow
         function onAfterAnimating() {
             if (state.awaitingContext) {
-                try { root.context(); }
-                catch (error) { return; }
+                try {
+                    if (!root.context())
+                        return;
+                } catch (error) { return; }
                 root.invalidate();
             } else if (state.context) {
                 try {
                     const current = root.context();
-                    if (current.x !== state.context.x || current.y !== state.context.y
+                    if (!current || current.x !== state.context.x || current.y !== state.context.y
                         || current.deviceScale !== state.context.deviceScale)
                         root.invalidate();
                 } catch (error) {

@@ -41,6 +41,7 @@ public:
     Q_INVOKABLE void publishSnapshot(const QString& publication);
     Q_INVOKABLE void publishFrame(const QString& publication, const QString& motion, QObject* frame);
     Q_INVOKABLE bool matchesNativeContext(QObject* item, double x, double y, double deviceScale) const;
+    Q_INVOKABLE bool presentsNativeWindow(QObject* item) const;
 signals:
     void publicationChanged();
     void motionChanged();

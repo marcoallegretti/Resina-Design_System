@@ -14,6 +14,7 @@ public:
     Q_INVOKABLE QString resolveSurfaceView(const QString& request, const QString& options) const;
     Q_INVOKABLE QString resolveOpaqueColor(const QString& themeRequest, const QString& role) const;
     Q_INVOKABLE bool matchesNativeContext(QObject* item, double x, double y, double deviceScale) const;
+    Q_INVOKABLE bool presentsNativeWindow(QObject* item) const;
 };
 }
 #endif

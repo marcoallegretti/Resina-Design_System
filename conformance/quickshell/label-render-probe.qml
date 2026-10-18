@@ -10,6 +10,7 @@ FloatingWindow {
     property int frameIndex: 0
     property var oracle: null
     property bool showOracle: false
+    readonly property real nativeDeviceScale: capture.Window.window ? capture.Window.window.devicePixelRatio : 0
     readonly property string renderer: capture.GraphicsInfo.api === GraphicsInfo.Software ? "software"
         : capture.GraphicsInfo.api === GraphicsInfo.OpenGL ? "opengl" : "unsupported"
 
@@ -115,7 +116,7 @@ FloatingWindow {
                     if (!rendered.item.paintReady || rendered.item.paintError)
                         fail(new Error("native drawing did not recover after failure"));
                     else {
-                        console.log("RESINA_LABEL_RENDER_PASS", frames.length, invalid.length, window.screen.devicePixelRatio, renderer);
+                        console.log("RESINA_LABEL_RENDER_PASS", frames.length, invalid.length, window.nativeDeviceScale, renderer);
                         Qt.quit();
                     }
                 });
@@ -176,7 +177,7 @@ FloatingWindow {
                 const expectedRenderer = Quickshell.env("RESINA_LABEL_SCENE_GRAPH") === "rhi" ? "opengl" : "software";
                 if (fontAsset.status !== FontLoader.Ready || fontAsset.name !== "DejaVu Sans"
                     || measure.status !== Loader.Ready || rendered.status !== Loader.Ready
-                    || Math.abs(window.screen.devicePixelRatio - scale) > 0.00001 || renderer !== expectedRenderer)
+                    || Math.abs(window.nativeDeviceScale - scale) > 0.00001 || renderer !== expectedRenderer)
                     throw new Error("font, components, actual device scale or renderer differ");
                 frames = [{text:"j", pixelSize:60, spacing:0, ink:true}];
                 for (const textScale of [1, 1.5, 2]) {
