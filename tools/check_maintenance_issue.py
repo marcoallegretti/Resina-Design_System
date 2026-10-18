@@ -211,6 +211,8 @@ def cited_paths(text, root):
         pattern = match.group("glob").rstrip(".")
         if match.start() > 0 and text_without_urls[match.start() - 1] == "*":
             pattern = pattern.rstrip("*").rstrip(".")
+        if "*" not in pattern:
+            return match.group(0)
         if pattern.startswith("./"):
             pattern = pattern[2:]
         if "/" not in pattern:

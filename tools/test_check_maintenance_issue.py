@@ -135,6 +135,9 @@ class MaintenanceIssueGateTests(unittest.TestCase):
         self.assertIn("tools/check_*_missing_lane.py matches no repository path", result)
         result = errors(sections=replace("Evidence", "See tools/../../*.md."))
         self.assertIn("tools/../../*.md is not a repository path pattern", result)
+        for prose in ("Use *and/or* here.", "The *input/output* pair.", "Keep _read/write_ apart."):
+            with self.subTest(prose=prose):
+                self.assertEqual(errors(sections=replace("Evidence", prose)), [])
 
     def test_line_range_beyond_the_file_is_rejected(self):
         for citation in (
