@@ -29,7 +29,10 @@ at that bound for the neutral focused state and require the complete snapshot
 checks below to pass, including both thumb footprints inside the track content.
 The Rust reference exposes the part body as
 `resolve_toggle_part_reservation_paint`; it certifies layout and is never a
-published state frame. Environment, profile or layout changes may require a new
+published state frame. The snapshot checks only the paints it is given and
+cannot tell a rest paint from a reservation paint, so certification is the
+owner's obligation: an owner MUST certify with the reservation paints before
+it publishes any state. Environment, profile or layout changes may require a new
 reservation and coherent lifecycle update. Do not resize or move the target
 solely because press, hover, selection or availability changed.
 
