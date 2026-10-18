@@ -1074,6 +1074,9 @@ through the compositor:
 `zwlr_virtual_pointer_v1` absolute motion and buttons and a persistent
 `zwp_virtual_keyboard_v1` keyboard. Held keys use the compositor's repeat
 information, so Qt produces its own auto-repeat.
+Each held Space or Enter must deliver at least two repeat publications while the
+published frame stays in place: a repeat that leaves the activation state
+unchanged does not retract or re-prepare the Command or Toggle.
 
 ```sh
 python tools/check_quickshell_command_lifecycle.py \
