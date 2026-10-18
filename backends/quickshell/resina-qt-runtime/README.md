@@ -1275,10 +1275,15 @@ physical input are not covered.
 runs the lifecycle probe with the explicit motion channels of the
 [motion request](../../../conformance/ir/command-motion-request.json) and authored
 preference variants. The probe logs every published motion sample with its
-snapshot; after the run, each frame keeps the authored dynamics and its complete
+snapshot and a sequence number; after the run, each frame keeps the authored dynamics and its complete
 snapshot and motion sample are checked against the request in effect, the
-projected state set and the independent spring equations. Input
-reaches the control through the compositor:
+projected state set and the independent spring equations. Each consumer effect
+also logs the snapshot, motion sample, readiness and hover the `activated()`
+callback observes, with the sequence number of the last frame logged before it.
+The observed frame must be withdrawn (no snapshot, no motion sample, not ready), or
+complete, identical to the logged frame with that number and valid for the
+committed state the effect reports; a frame published for the superseded pressed
+request fails. Input reaches the control through the compositor:
 
 - holding Space publishes several unsettled spring frames; the release retarget continues from the position
   and velocity the previous trajectory had reached at the published `retargetTime`,
@@ -1287,14 +1292,27 @@ reaches the control through the compositor:
   instant itself comes from the Qt runtime clock check, which compares `CommandClock.restart()` with
   monotonic time. Each sampled epoch's clock
   advances with elapsed native time within 10 % or 50 ms; one channel settles
-  before the other, both settle, and no frame follows;
+  before the other, both settle, and no frame follows. Every frame logged between
+  the press and the effect holds the press, and the first frame after the effect
+  presents the effect's committed state and is the release retarget. A Space press
+  held through auto-repeat and the Space activation after a live scale change
+  meet the same callback and ordering conditions;
 - compositor hover enters and leaves the target through spring frames. Qt's
   Wayland client types the seat pointer as a touchpad when the compositor offers
   pointer gestures, so hover accepts mouse events from mouse and touchpad devices;
 - focus loss during motion republishes frames without the focus cue;
 - switching to the reduced-motion preference or withdrawing availability during a
-  press cancels the held gesture without an effect; reduced motion then publishes
+  press cancels the held gesture without an effect; the probe logs each request
+  before applying it, the first frame logged after it already reflects the change,
+  no frame for the earlier request follows, and every later frame is valid for the
+  request in effect; reduced motion then publishes
   only immediate settled frames;
+- with motion, activation callbacks reached by Space that replace the
+  configuration, withdraw availability or invoke the control meet the same
+  callback frame condition, including the callback of the reentrant invocation;
+  every later frame is valid for the request in effect and keeps no hold, frames
+  after a replacement present the replacement, and frames after the withdrawal
+  are unavailable;
 - moving the control during a press cancels the held gesture without an effect
   and publishes frames at the new position;
 - reduced motion and Cast publish immediate settled frames, and Frost with

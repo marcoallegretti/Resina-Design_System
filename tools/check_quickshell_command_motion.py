@@ -52,6 +52,84 @@ def verify_frame(frame, requests):
         raise ValueError("sampled native target differs from the published snapshot")
 
 
+def verify_callback_frame(events, position, requests):
+    effect = events[position]
+    name = f"activation effect {effect['effects']}"
+    logged = [event for event in events[:position]
+              if event["kind"] == "frame" and event["generation"] == effect["generation"]]
+    sequence = logged[-1]["sequence"] if logged else 0
+    if effect.get("frame") != sequence:
+        raise ValueError(f"{name} reports frame sequence {effect.get('frame')!r}, but frame {sequence} was logged "
+                         "last before it")
+    snapshot, motion, ready = effect.get("snapshot"), effect.get("motion"), effect.get("ready")
+    if snapshot is None and motion is None and ready is False:
+        return
+    if snapshot is None or motion is None or ready is not True:
+        raise ValueError(f"{name} observed an incomplete Command frame: snapshot "
+                         f"{'absent' if snapshot is None else 'present'}, motion "
+                         f"{'absent' if motion is None else 'present'}, ready {ready!r}")
+    if not logged or snapshot != logged[-1]["snapshot"] or motion != logged[-1]["motion"]:
+        raise ValueError(f"{name} observed a complete frame other than frame {sequence}, the last frame logged "
+                         "before it")
+    if logged[-1]["state"] != effect["state"]:
+        superseded = " for the superseded pressed request" if logged[-1]["state"]["hold"] else ""
+        raise ValueError(f"{name} observed frame {sequence} published{superseded} with state "
+                         f"{logged[-1]['state']}, not the committed state {effect['state']}")
+    try:
+        verify_frame(effect, requests)
+    except ValueError as error:
+        raise ValueError(f"{name} observed frame {sequence}, which does not present the committed state: "
+                         f"{error}") from None
+
+
+def verify_activation(events, position, start, requests):
+    verify_callback_frame(events, position, requests)
+    effect = events[position]
+    split = len(frames(events[:position]))
+    pressed = frames(events)[start:split]
+    if not pressed:
+        raise ValueError(f"no frame was logged during the press before activation effect {effect['effects']}")
+    released = [frame for frame in pressed if not frame["state"]["hold"]]
+    if released:
+        raise ValueError(f"frame {released[0]['sequence']}, logged before activation effect {effect['effects']}, "
+                         "no longer presents the held press")
+    return split
+
+
+def verify_committed_frame(events, position, split):
+    effect, recorded = events[position], frames(events)
+    if split >= len(recorded):
+        raise ValueError(f"no frame was logged after activation effect {effect['effects']}")
+    if recorded[split]["state"] != effect["state"]:
+        raise ValueError(f"frame {recorded[split]['sequence']}, the first after activation effect "
+                         f"{effect['effects']}, presents state {recorded[split]['state']}, not the committed state "
+                         f"{effect['state']}")
+
+
+def verify_superseding_frames(events, marker, expectation, name, requests=None):
+    later = frames(events[marker + 1:])
+    if not later:
+        raise ValueError(f"no frame was logged after the {name}")
+    if not expectation(later[0]):
+        raise ValueError(f"frame {later[0]['sequence']}, the first after the {name}, presents the superseded "
+                         f"request: configuration {later[0]['configuration']}, state {later[0]['state']}")
+    stale = [frame for frame in later if not expectation(frame)]
+    if stale:
+        raise ValueError(f"frame {stale[0]['sequence']} for the request superseded by the {name} was published "
+                         "after it")
+    for frame in later if requests is not None else ():
+        try:
+            verify_frame(frame, requests)
+        except ValueError as error:
+            raise ValueError(f"frame {frame['sequence']} after the {name} does not present the request in effect: "
+                             f"{error}") from None
+    return later
+
+
+def effect_positions(events):
+    return [index for index, event in enumerate(events) if event["kind"] == "effect"]
+
+
 def verify_scale(observed, expected):
     scale = observed.get("deviceScale") if observed else None
     if type(scale) not in (int, float) or scale != expected:
@@ -168,7 +246,7 @@ class Motion:
         self.session.wait(lambda: self.frames() and settled(self.frames()[-1]), description, timeout=30)
 
 
-def spring_cases(session, motion):
+def spring_cases(session, motion, requests):
     results = []
     session.input.move(*OUTSIDE)
     session.reset("motion", True)
@@ -184,6 +262,13 @@ def spring_cases(session, motion):
     session.input.key(KEY_SPACE, False)
     expect_effects(session, before, 1, "sampled Command activation")
     first = motion.index(release, lambda frame: not frame["state"]["hold"], "retargeted release frame")
+    events = session.events()
+    position = effect_positions(events)[before]
+    split = verify_activation(events, position, start, requests)
+    verify_committed_frame(events, position, split)
+    if split != first:
+        raise ValueError(f"the retargeted release frame is frame {first}, not frame {split}, the first after the "
+                         "activation effect")
     recorded = motion.frames()
     verify_retarget(*recorded[first - 2:first + 1])
     motion.settle("both channels settled")
@@ -196,7 +281,9 @@ def spring_cases(session, motion):
     session.quiet(.5)
     if len(motion.frames()) != count:
         raise ValueError("native frame scheduling continued after both channels settled")
-    results.append("pressed and released spring frames continue across the retarget, track native time and settle")
+    results.append("pressed and released spring frames continue across the retarget, track native time and settle; "
+                   "the activation callback observes no incomplete or superseded frame and the next frame presents "
+                   "committed state")
 
     motion.settle("motion settled before the held press")
     start = len(motion.frames())
@@ -219,6 +306,9 @@ def spring_cases(session, motion):
     session.input.key(KEY_SPACE, False)
     expect_effects(session, before, 1, "held sampled Command activation")
     motion.settle("motion settled after the held press")
+    events = session.events()
+    position = effect_positions(events)[before]
+    verify_committed_frame(events, position, verify_activation(events, position, start, requests))
     results.append("auto-repeat during a held press keeps one clock epoch and publishes frames without retraction")
 
     start = len(motion.frames())
@@ -242,29 +332,38 @@ def spring_cases(session, motion):
     return results
 
 
-def interruption_cases(session, motion):
+def interruption_cases(session, motion, requests):
     results = []
-    for name, change, expectation in (
+    for name, change, marker, expectation in (
             ("reduced-motion preference", lambda: session.call("configure", "reduced"),
+             lambda event: event["kind"] == "configure" and event["configuration"] == "reduced",
              lambda frame: frame["configuration"] == "reduced"),
             ("availability withdrawal", lambda: session.call("availability", "false"),
+             lambda event: event["kind"] == "availability" and event["enabled"] is False,
              lambda frame: not frame["state"]["enabled"])):
         session.reset("motion", True)
         start = len(motion.frames())
         before = len(effects(session.events()))
         session.input.key(KEY_SPACE, True)
         motion.wait_frames(start, lambda frame: moving(frame) and frame["state"]["hold"], f"press before {name}")
-        index = len(motion.frames())
+        logged = len(session.events())
         change()
-        after = motion.wait_frames(index, expectation, f"frames after {name}")
+        motion.wait_frames(start, expectation, f"frames after {name}")
+        session.input.key(KEY_SPACE, False)
+        expect_effects(session, before, 0, f"Space released after {name}")
+        motion.settle(f"motion settled after {name}")
+        events = session.events()
+        requested = [index for index, event in enumerate(events) if index >= logged and marker(event)]
+        if not requested:
+            raise ValueError(f"the probe did not log the {name} request")
+        after = verify_superseding_frames(events, requested[0], expectation, name, requests)
         if any(frame["state"]["hold"] for frame in after):
             raise ValueError(f"{name} during a press retained the held gesture")
         if name.startswith("reduced") and any(frame["motion"]["motion"]["policy"] != "reducedMotion"
                                               or not settled(frame) for frame in after):
             raise ValueError("reduced-motion preference retained sampled motion")
-        session.input.key(KEY_SPACE, False)
-        expect_effects(session, before, 0, f"Space released after {name}")
-        results.append(f"{name} during a press cancels the gesture and republishes guarded frames")
+        results.append(f"{name} during a press cancels the gesture; the first frame after it reflects the change "
+                       "and every later frame is valid for the request in effect")
 
     session.reset("motion", True)
     start = len(motion.frames())
@@ -280,6 +379,55 @@ def interruption_cases(session, motion):
     motion.wait_frames(moved, lambda frame: frame["center"] and abs(frame["center"]["x"] - origin - 50) < 1e-6,
                        "frames published at the moved position")
     results.append("layout change during a press cancels the gesture and republishes frames at the new position")
+    return results
+
+
+CALLBACK_REACTIONS = (
+    ("replace", "replacing the configuration", 1, lambda frame: frame["configuration"] == "replacement",
+     "still presents the earlier configuration"),
+    ("unavailable", "withdrawing availability", 1, lambda frame: not frame["state"]["enabled"], "is still enabled"),
+    ("invoke", "invoking the control", 2, lambda frame: True, ""),
+)
+
+
+def reentrancy_cases(session, motion, requests):
+    results = []
+    for mode, reaction, count, expectation, problem in CALLBACK_REACTIONS:
+        session.input.move(*OUTSIDE)
+        session.reset("motion", True)
+        session.settle(lambda current: not current["hovered"], "pointer outside the Command")
+        motion.settle(f"motion settled before the {mode} callback")
+        start = len(motion.frames())
+        before = len(effects(session.events()))
+        session.call("setReaction", mode)
+        session.input.key(KEY_SPACE, True)
+        motion.wait_frames(start, lambda frame: moving(frame) and frame["state"]["hold"],
+                           f"pressed spring frames before the {mode} callback")
+        session.input.key(KEY_SPACE, False)
+        expect_effects(session, before, count, f"{mode} from a consumer callback with motion")
+        motion.settle(f"motion settled after the {mode} callback")
+        if mode != "replace" and session.current()["reactionResult"] is not True:
+            raise ValueError(f"the {mode} reaction from a consumer callback was not delivered")
+        events = session.events()
+        positions = effect_positions(events)[before:before + count]
+        verify_activation(events, positions[0], start, requests)
+        for position in positions[1:]:
+            verify_callback_frame(events, position, requests)
+        later = frames(events[positions[-1] + 1:])
+        if not later:
+            raise ValueError(f"no frame was logged after the {mode} callback")
+        for frame in later:
+            if frame["state"]["hold"]:
+                raise ValueError(f"frame {frame['sequence']} after the {mode} callback keeps the released hold")
+            if not expectation(frame):
+                raise ValueError(f"frame {frame['sequence']} after the {mode} callback {problem}")
+            try:
+                verify_frame(frame, requests)
+            except ValueError as error:
+                raise ValueError(f"frame {frame['sequence']} after the {mode} callback: {error}") from None
+        results.append(f"an activation callback {reaction} with motion observes no incomplete or superseded frame, "
+                       "and every "
+                       "later frame presents the committed result")
     return results
 
 
@@ -308,7 +456,7 @@ def policy_cases(session, motion):
     return results
 
 
-def live_scale_case(session, motion, compositor, initial, final):
+def live_scale_case(session, motion, requests, compositor, initial, final):
     session.input.move(*OUTSIDE)
     session.reset("motion", True)
     session.settle(lambda current: not current["hovered"], "pointer outside the Command")
@@ -341,10 +489,13 @@ def live_scale_case(session, motion, compositor, initial, final):
     session.input.key(KEY_SPACE, False)
     expect_effects(session, before_effects, 1, f"Command activation at device scale {final:g}")
     motion.settle(f"motion settled at device scale {final:g}")
+    events = session.events()
+    position = effect_positions(events)[before_effects]
+    verify_committed_frame(events, position, verify_activation(events, position, start, requests))
     verify_clock(motion.frames()[start:])
     return logged, (f"a live output scale change from {initial:g} to {final:g} republishes a complete frame with the "
                     "same target and accessible node, and Space then publishes spring frames that track native time "
-                    "and settle at the new scale")
+                    "and settle at the new scale; its activation callback observes no superseded frame")
 
 
 def main():
@@ -373,12 +524,13 @@ def main():
         compositor = Sway(os.environ) if live is not None else None
         motion = Motion(session)
         requests = authored_requests()
-        results = spring_cases(session, motion)
-        for cases in (interruption_cases, policy_cases):
-            results += cases(session, motion)
+        results = spring_cases(session, motion, requests)
+        results += interruption_cases(session, motion, requests)
+        results += reentrancy_cases(session, motion, requests)
+        results += policy_cases(session, motion)
         change = None
         if live is not None:
-            change, result = live_scale_case(session, motion, compositor, args.scale, live)
+            change, result = live_scale_case(session, motion, requests, compositor, args.scale, live)
             results.append(result)
         recorded = motion.frames()
         verify_publication_scales(session.events(), args.scale, change, live)
