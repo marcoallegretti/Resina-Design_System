@@ -67,7 +67,7 @@ focus, layout and preference policy belong to this shell, not to Resina.
   `frame(index)` returns one of them, or `null` past the last. One frame per
   reply keeps each reply within what the Quickshell 0.3.2 IPC client reliably
   receives. `publications` returns, for the bar, the clock surface and each
-  Command, the device pixel ratio of every publication since the shell started,
+  Command, the device pixel ratio of every publication since the current shell generation loaded,
   as runs of `[scale, count]`.
 
 ## Prerequisites

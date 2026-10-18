@@ -201,6 +201,8 @@ Window {
                              "placement precision, type, density or finite-input checks")
         native_resolver=window.findChild(QObject,"snapshotResolver")
         native_view=window.findChild(QObject,"commandView")
+        if native_view.property("nativeDeviceScale")!=window.effectiveDevicePixelRatio():
+            raise ValueError("native view density is not its window's effective device pixel ratio")
         if not native_resolver.matchesNativeContext(native_view,44.3,26.1,dpr):
             raise ValueError("valid UI-thread context unexpectedly rejected")
         thread_results=[]

@@ -253,6 +253,8 @@ def main():
                              "placement precision, type, density or finite-input checks")
         native_resolver = window.findChild(QObject, "surfaceResolver")
         native_view = window.findChild(QObject, "surfaceView")
+        if native_view.property("nativeDeviceScale") != window.effectiveDevicePixelRatio():
+            raise ValueError("native surface view density is not its window's effective device pixel ratio")
         results = []
         worker = threading.Thread(target=lambda: results.append(
             native_resolver.matchesNativeContext(native_view, *PLACEMENT, scale)), daemon=True)
