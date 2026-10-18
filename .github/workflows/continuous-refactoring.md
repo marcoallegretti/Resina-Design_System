@@ -32,8 +32,10 @@ imports:
 # Continuous Refactoring
 
 Read AGENTS.md sections 10, 11 and 14, and .agents/agents/continuous-refactoring.md.
-Inspect only the current default branch. If the change needs an architectural decision, it belongs to the architecture lane: stop and produce nothing.
+Inspect only the current default branch. Follow the imported scope: this run performs
+only the issue-filing step of its lane, using the maintenance form.
+The isolated worktree, branch, refactoring, review and pull request steps are out of scope.
+If the change needs an architectural decision, call `noop`; the architecture lane files those.
 
-Apply the issue threshold. Search open and closed issues for the same underlying
-problem first and stop without output if one exists. Then follow the imported
-template, fact-check, hostile self-review and language rules. If nothing survives, stop without creating an issue.
+Apply the issue threshold, then the imported duplicate, template, fact-check,
+hostile self-review and language rules. If nothing survives, call `noop` with the reason.

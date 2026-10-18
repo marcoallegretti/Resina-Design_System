@@ -32,8 +32,10 @@ imports:
 # Continuous Simplicity
 
 Read AGENTS.md sections 10, 11 and 13, and .agents/agents/continuous-simplicity.md.
-Inspect only the current default branch. Prefer deletion and single sources of truth; focus on code changed in the last 14 days.
+Inspect only the current default branch. Prefer deletion and single sources of truth.
+Follow the imported scope: this run performs only the issue-filing step of its lane,
+using the maintenance form. The isolated worktree, branch, implementation, review and
+pull request steps are out of scope.
 
-Apply the issue threshold. Search open and closed issues for the same underlying
-problem first and stop without output if one exists. Then follow the imported
-template, fact-check, hostile self-review and language rules. If nothing survives, stop without creating an issue.
+Apply the issue threshold, then the imported duplicate, template, fact-check,
+hostile self-review and language rules. If nothing survives, call `noop` with the reason.

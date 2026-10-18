@@ -33,7 +33,7 @@ imports:
 
 Read AGENTS.md sections 10, 11 and 12, and .agents/agents/architecture-debt-scout.md.
 Inspect only the current default branch. Challenge the boundaries listed in AGENTS.md section 12.
+Follow the imported scope: this lane files at most one architecture issue and makes no source changes.
 
-Apply the issue threshold. Search open and closed issues for the same underlying
-problem first and stop without output if one exists. Then follow the imported
-template, fact-check, hostile self-review and language rules. If nothing survives, stop without creating an issue.
+Apply the issue threshold, then the imported duplicate, template, fact-check,
+hostile self-review and language rules. If nothing survives, call `noop` with the reason.

@@ -29,6 +29,22 @@ safe-outputs:
         run: python3 tools/check_maintenance_issue.py --agent-output /tmp/gh-aw/threat-detection/agent_output.json
 ---
 
+## Scope
+
+This run only decides whether to file one issue. Do not create a worktree,
+branch, commit, patch or pull request, and do not implement the change; the
+lane's later steps happen after a maintainer accepts the issue.
+
+Finish every run with exactly one safe output: `create_issue` for one issue
+that survives every rule below, or `noop` with a one-line reason otherwise.
+Producing `noop` is a correct outcome.
+
+## Duplicates
+
+Search open and closed issues for the same underlying problem before writing.
+If one exists, call `noop` naming that issue number. This run cannot update or
+comment on existing issues.
+
 ## Template
 
 The issue body must reproduce, in order and with identical headings, the fields
@@ -59,13 +75,14 @@ Before creating the issue, argue against it as an adversary whose goal is to rej
 - Is the "problem" intentional, documented in AGENTS.md, spec/ or conformance/, or required by a layer boundary?
 - Is the cost present today, or hypothetical?
 - Does the proposed outcome change normative behaviour, a public contract or ownership?
-  If yes it is architectural: use the architecture form or stop.
+  If yes it is architectural: in the simplicity and refactoring lanes call `noop`,
+  because architectural problems are filed by the architecture lane.
 - Does an open or closed issue, or a recent commit, already cover it?
 - Would the acceptance criterion pass trivially or be unverifiable?
 - Which of your own beliefs did you accept without reading the code?
 
 Create the issue only if no objection survives. If any objection stands, or any
-claim stays unverified, produce no issue. Producing nothing is a correct outcome.
+claim stays unverified, call `noop` instead.
 
 ## Language
 
