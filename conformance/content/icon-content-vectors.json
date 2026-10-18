@@ -1,4 +1,5 @@
 [
+
   {
     "name": "mirrored symbolic icon",
     "document": {
@@ -955,6 +956,95 @@
     },
     "schemaValid": false,
     "error": "inkBounds must have a nonnegative origin"
+  },
+  {
+    "name": "bounds that fit only in binary64",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.48193,
+        "y": 0.1875,
+        "width": 0.51807000000000001,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "bounds that exceed the box only in binary64",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.05956,
+        "y": 0.1875,
+        "width": 0.9404400000009999,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 0.5,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": true,
+    "error": "inkBounds exceeds the icon box"
+  },
+  {
+    "name": "extent that underflows to zero",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "reference": "resina.fixture:chevron-back",
+      "kind": "symbolic",
+      "inkBounds": {
+        "x": 0.3125,
+        "y": 0.1875,
+        "width": 0.375,
+        "height": 0.625
+      },
+      "opticalBounds": {
+        "x": 0.25,
+        "y": 0.125,
+        "width": 1e-400,
+        "height": 0.75
+      },
+      "direction": {
+        "behavior": "mirror"
+      },
+      "layers": [
+        {
+          "role": "content"
+        }
+      ]
+    },
+    "schemaValid": false,
+    "error": "opticalBounds must have a positive extent"
   },
   {
     "name": "negative optical origin",
