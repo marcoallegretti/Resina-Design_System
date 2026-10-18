@@ -263,10 +263,20 @@ def proposed_issues(agent_output):
     return [item for item in items if item.get("type") == "create_issue"]
 
 
+ISSUE_FIELDS = {"type", "title", "body"}
+
+
+def field_errors(issue):
+    """Reject fields beyond title and body, such as labels or a parent issue, which would be published unchecked."""
+    extra = sorted(key for key, value in issue.items() if key not in ISSUE_FIELDS and value not in (None, "", [], {}))
+    return [f"issue sets {', '.join(extra)}; only title and body may be proposed"] if extra else []
+
+
 def issue_errors(issue, *, labels, prefix, root, existing_titles):
     title = issue.get("title") or ""
     body = issue.get("body") or ""
-    errors = heading_errors(body, labels)
+    errors = field_errors(issue)
+    errors.extend(heading_errors(body, labels))
     _, remaining, path_errors = cited_paths(f"{title}\n{body}", root)
     errors.extend(path_errors)
     errors.extend(process_term_errors(remaining))

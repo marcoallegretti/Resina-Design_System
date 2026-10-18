@@ -58,6 +58,20 @@ class MaintenanceIssueGateTests(unittest.TestCase):
     def test_issue_following_the_form_with_real_citations_is_accepted(self):
         self.assertEqual(errors(existing=["[simplicity] Remove the unused slider fixture"]), [])
 
+    def test_fields_beyond_title_and_body_are_rejected(self):
+        for field, value in (
+            ("labels", ["ai-generated"]),
+            ("parent", 42),
+            ("blocked_by", [7]),
+            ("fields", [{"name": "Status"}]),
+            ("repo", "owner/other"),
+            ("temporary_id", "aw_issue1"),
+        ):
+            with self.subTest(field=field):
+                issue = {"type": "create_issue", "title": "Declare the test matrix once", "body": body(valid_sections()), field: value}
+                result = issue_errors(issue, labels=MAINTENANCE_LABELS, prefix="", root=ROOT, existing_titles=[])
+                self.assertIn(f"issue sets {field}; only title and body may be proposed", result)
+
     def test_forms_supply_the_required_headings(self):
         self.assertEqual(
             MAINTENANCE_LABELS,

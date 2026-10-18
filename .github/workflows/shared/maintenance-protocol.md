@@ -39,6 +39,9 @@ Finish every run with exactly one safe output: `create_issue` for one issue
 that survives every rule below, or `noop` with a one-line reason otherwise.
 Producing `noop` is a correct outcome.
 
+Propose only a title and a body. Do not set labels, a parent issue, blocking
+issues, project fields, a repository or a temporary ID.
+
 ## Duplicates
 
 Search open and closed issues for the same underlying problem before writing.
@@ -91,6 +94,7 @@ issue was produced: no mention of agents, models, AI, Copilot, LLMs, gh-aw,
 automation, this run or this review process. Repository files such as AGENTS.md,
 `.agents/` or `.github/workflows/reference.yml` may be cited by path when they are evidence.
 
-Before publication, `tools/check_maintenance_issue.py` rejects an issue whose
-headings differ from the form, that cites a missing path or line range, that
-uses the vocabulary above, or whose title matches an existing issue.
+Before publication, `tools/check_maintenance_issue.py` rejects an issue that
+sets any field besides title and body, whose headings differ from the form,
+that cites a missing path or line range, that uses the vocabulary above, or
+whose title matches an existing issue.
