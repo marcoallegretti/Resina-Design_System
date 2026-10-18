@@ -66,6 +66,8 @@ def main():
         views[0].visibleChanged.connect(observe_visibility)
         window.requestActivate()
         wait(app, lambda: window.isActive() and window.isExposed(), "exposed active native window")
+        if views[0].property("nativeDeviceScale") != window.effectiveDevicePixelRatio():
+            raise ValueError("Command view density is not its window's device pixel ratio")
         args.output_dir.mkdir(parents=True, exist_ok=True)
 
         def observe():

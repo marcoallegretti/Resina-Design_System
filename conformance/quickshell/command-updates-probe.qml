@@ -189,7 +189,7 @@ FloatingWindow {
                 nativeFocused: root.focused(observation),
                 nativeFocus: observation,
                 ignored: command.Accessible.ignored,
-                deviceScale: capture.Screen.devicePixelRatio,
+                deviceScale: capture.Window.window ? capture.Window.window.devicePixelRatio : null,
                 renderer: capture.GraphicsInfo.api === GraphicsInfo.Software ? "software" : "unsupported",
                 publications: root.publications,
                 measurements: []

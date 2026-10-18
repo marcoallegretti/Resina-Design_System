@@ -118,6 +118,9 @@ Window {
     function contextProbes() {
         const scale = view.nativeDeviceScale;
         return JSON.stringify([
+            scale === view.Window.window.devicePixelRatio,
+            resolver.presentsNativeWindow(view),
+            resolver.presentsNativeWindow(resolver),
             resolver.matchesNativeContext(view, @@X@@, @@Y@@, scale),
             resolver.matchesNativeContext(view, @@X@@ + 1/2048, @@Y@@, scale),
             resolver.matchesNativeContext(view, @@X@@ + 1/512, @@Y@@, scale),
@@ -242,10 +245,16 @@ def main():
         if window.property("renderer") != 1:
             raise ValueError("requires actual Qt software rendering")
 
-        if json.loads(window.contextProbes()) != [True, True, False, False, False, False, False, False, False]:
-            raise ValueError("native context guard lost placement precision, type, density or finite-input checks")
+        if not window.isExposed():
+            raise ValueError("native surface fixture window was not exposed")
+        if json.loads(window.contextProbes()) != [True, True, False, True, True, False, False, False, False, False,
+                                                  False, False]:
+            raise ValueError("native view density is not its window's, or the native context guard lost exposure, "
+                             "placement precision, type, density or finite-input checks")
         native_resolver = window.findChild(QObject, "surfaceResolver")
         native_view = window.findChild(QObject, "surfaceView")
+        if native_view.property("nativeDeviceScale") != window.effectiveDevicePixelRatio():
+            raise ValueError("native surface view density is not its window's effective device pixel ratio")
         results = []
         worker = threading.Thread(target=lambda: results.append(
             native_resolver.matchesNativeContext(native_view, *PLACEMENT, scale)), daemon=True)

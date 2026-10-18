@@ -10,8 +10,9 @@ import sys
 from check_command_motion_backend import equation_sample
 from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
-from check_quickshell_command_lifecycle import OUTSIDE, Session, authored_requests, expect_effects, effects
+from check_quickshell_command_lifecycle import OUTSIDE, Session, authored_requests, expect_effects, effects, focused
 from check_quickshell_command_updates import verify_version
+from sway_output import Sway, changed_scale
 from wayland_virtual_input import KEY_SPACE
 
 CHANNELS = ("bodyMix", "depthScale")
@@ -49,6 +50,47 @@ def verify_frame(frame, requests):
         raise ValueError("native motion differs from independent equations at " + difference)
     if frame["target"] != frame["snapshot"]["hitRegion"]:
         raise ValueError("sampled native target differs from the published snapshot")
+
+
+def verify_scale(observed, expected):
+    scale = observed.get("deviceScale") if observed else None
+    if type(scale) not in (int, float) or scale != expected:
+        raise ValueError(f"the Command's window has device scale {scale!r}, not {expected!r}")
+
+
+def verify_frame_scales(sequence, initial, change=None, final=None, kind="native frame"):
+    scales = [frame.get("deviceScale") for frame in sequence]
+    if any(type(scale) not in (int, float) for scale in scales):
+        raise ValueError(f"a {kind} does not publish its device scale")
+    end = len(scales) if change is None else change
+    early = [scale for scale in scales[:end] if scale != initial]
+    if early:
+        raise ValueError(f"a {kind} was published at device scale {early[0]!r}, not {initial!r}")
+    if change is None:
+        return
+    later = scales[change:]
+    if final not in later:
+        raise ValueError(f"no {kind} was published at device scale {final!r} after the scale change")
+    first = later.index(final)
+    if any(scale != initial for scale in later[:first]) or any(scale != final for scale in later[first:]):
+        raise ValueError(f"{kind}s after the scale change did not move once from {initial!r} to {final!r}")
+
+
+def verify_publication_scales(events, initial, change=None, final=None):
+    frames = [event for event in events if event["kind"] == "frame"]
+    static = [event for event in events if event["kind"] == "published"]
+    if not static:
+        raise ValueError("no static publication was logged from startup")
+    if change is None:
+        verify_frame_scales(frames, initial)
+        verify_frame_scales(static, initial, kind="static publication")
+        return
+    earlier = [event["kind"] for event in events[:change]]
+    verify_frame_scales(frames, initial, earlier.count("frame"), final)
+    split = earlier.count("published")
+    verify_frame_scales(static[:split], initial, kind="static publication")
+    if static[split:]:
+        verify_frame_scales(static[split:], initial, 0, final, "static publication")
 
 
 def settled(frame):
@@ -266,15 +308,58 @@ def policy_cases(session, motion):
     return results
 
 
+def live_scale_case(session, motion, compositor, initial, final):
+    session.input.move(*OUTSIDE)
+    session.reset("motion", True)
+    session.settle(lambda current: not current["hovered"], "pointer outside the Command")
+    motion.settle("motion settled before the scale change")
+    before = session.current()
+    reference = motion.frames()[-1]
+    change = len(motion.frames())
+    logged = len(session.events())
+    compositor.set_scale(final)
+    after = session.until(lambda current: current["ready"] and current["target"] and current["deviceScale"] == final,
+                          f"ready Command at device scale {final:g}", 20)
+    republished = motion.wait_frames(change, lambda frame: frame["deviceScale"] == final,
+                                     f"a complete frame at device scale {final:g}")[0]
+    for channel in ("hitRegion", "accessibility"):
+        if republished["snapshot"][channel] != reference["snapshot"][channel]:
+            raise ValueError(f"the {channel} published at device scale {final:g} differs from scale {initial:g}")
+    if after["target"] != before["target"] or republished["center"] != reference["center"]:
+        raise ValueError(f"the native target moved when the device scale changed: {before['target']} versus "
+                         f"{after['target']}")
+    session.input.width, session.input.height = after["screen"]["width"], after["screen"]["height"]
+    session.call("focusCommand")
+    session.settle(lambda current: focused(current) and current["state"]["focused"],
+                   f"observed Command focus at device scale {final:g}")
+    start = len(motion.frames())
+    before_effects = len(effects(session.events()))
+    session.input.key(KEY_SPACE, True)
+    session.wait(lambda: len([frame for frame in motion.frames()[start:]
+                              if moving(frame) and frame["state"]["hold"]]) >= 3,
+                 f"several unsettled pressed spring frames at device scale {final:g}", timeout=10)
+    session.input.key(KEY_SPACE, False)
+    expect_effects(session, before_effects, 1, f"Command activation at device scale {final:g}")
+    motion.settle(f"motion settled at device scale {final:g}")
+    verify_clock(motion.frames()[start:])
+    return logged, (f"a live output scale change from {initial:g} to {final:g} republishes a complete frame with the "
+                    "same target and accessible node, and Space then publishes spring frames that track native time "
+                    "and settle at the new scale")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--module-path", type=Path, required=True)
     parser.add_argument("--font", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--scale", type=float, required=True, help="Output scale the compositor presents")
+    parser.add_argument("--live-scale", type=float,
+                        help="Output scale Sway changes to while the shell runs, after the other cases")
     args = parser.parse_args()
     session = None
     try:
+        live = changed_scale(args.scale, args.live_scale)
         host, module, font = (path.resolve(strict=True) for path in (args.host, args.module_path, args.font))
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
             raise ValueError("requires a live Wayland compositor session with layer-shell and virtual input")
@@ -284,21 +369,30 @@ def main():
                                       env=environment, capture_output=True, text=True, timeout=15))
         args.output_dir.mkdir(parents=True, exist_ok=False)
         session = Session(host, module, font, args.output_dir)
+        verify_scale(session.current(), args.scale)
+        compositor = Sway(os.environ) if live is not None else None
         motion = Motion(session)
         requests = authored_requests()
         results = spring_cases(session, motion)
         for cases in (interruption_cases, policy_cases):
             results += cases(session, motion)
+        change = None
+        if live is not None:
+            change, result = live_scale_case(session, motion, compositor, args.scale, live)
+            results.append(result)
         recorded = motion.frames()
+        verify_publication_scales(session.events(), args.scale, change, live)
         for frame in recorded:
             verify_dynamics(frame, requests["channels"])
             verify_frame(frame, requests)
-        (args.output_dir / "report.json").write_text(json.dumps({"cases": results, "frames": len(recorded)}, indent=2),
-                                                     encoding="utf-8")
+        (args.output_dir / "report.json").write_text(
+            json.dumps({"scale": args.scale, "liveScale": live, "cases": results, "frames": len(recorded)}, indent=2),
+            encoding="utf-8")
         for result in results:
             print("PASS " + result)
-        print(f"PASS {len(recorded)} native frames keep the authored dynamics and match independent equations "
-              "and complete snapshots")
+        scales = f"{args.scale:g}" + (f" then {live:g}" if live is not None else "")
+        print(f"PASS {len(recorded)} native frames at device scale {scales} keep the authored dynamics and match "
+              "independent equations and complete snapshots")
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as error:
         print(f"Quickshell Command motion check failed: {error}", file=sys.stderr)
         return 1

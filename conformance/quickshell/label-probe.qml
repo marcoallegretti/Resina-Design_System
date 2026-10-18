@@ -6,6 +6,8 @@ FloatingWindow {
     implicitWidth: 400
     implicitHeight: 240
     color: "white"
+    readonly property real nativeDeviceScale: paragraphOracle.Window.window
+        ? paragraphOracle.Window.window.devicePixelRatio : 0
 
     FontLoader {
         id: fontAsset
@@ -39,7 +41,7 @@ FloatingWindow {
                 const measurer = measurement.item;
                 const expectedScale = Number(Quickshell.env("RESINA_LABEL_DEVICE_SCALE"));
                 if (!Number.isFinite(expectedScale) || expectedScale <= 0
-                    || Math.abs(window.screen.devicePixelRatio - expectedScale) > 0.00001)
+                    || Math.abs(window.nativeDeviceScale - expectedScale) > 0.00001)
                     throw new Error("actual window device scale differs from the requested scale");
                 if (measurer.visible || measurer.focus || measurer.activeFocusOnTab
                     || !measurer.Accessible.ignored)
@@ -157,7 +159,7 @@ FloatingWindow {
                 const recovered = measurer.measure("Reconnect", fontAsset.name, 20, 400, 0, 1.4, null);
                 if (recovered.width !== base.width || recovered.height !== base.height)
                     throw new Error("a failed request contaminated the next complete measurement");
-                console.log("RESINA_LABEL_PASS", checked, failures.length, window.screen.devicePixelRatio);
+                console.log("RESINA_LABEL_PASS", checked, failures.length, window.nativeDeviceScale);
             } catch (error) {
                 console.error("RESINA_LABEL_FAIL", error.message);
             }

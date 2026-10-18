@@ -135,7 +135,7 @@ class LostReplyTests(unittest.TestCase):
         session.host, session.config, session.environment = "quickshell", Path("probe"), {}
         shell = clock.Shell.__new__(clock.Shell)
         shell.host, shell.path, shell.client_environment = "quickshell", Path("shell.qml"), {}
-        return ((session, lifecycle, "observe"), (shell, clock, "frames"))
+        return ((session, lifecycle, "observe"), (shell, clock, "publications"))
 
     def test_queries_retry_a_lost_reply(self):
         for owner, module, query in self.owners():

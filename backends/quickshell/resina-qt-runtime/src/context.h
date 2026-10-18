@@ -19,19 +19,25 @@ inline bool translationOnly(const QQuickItem* item, QTransform* sceneTransform =
     return true;
 }
 
-inline bool nativeContextMatches(const QObject* owner, QObject* object, double x, double y, double deviceScale) {
+inline QQuickWindow* exposedNativeWindow(const QObject* owner, QObject* object) {
     const auto* application = QCoreApplication::instance();
     // Reject before inspecting item state unless the call is on the owning UI thread.
     if (!application || QThread::currentThread() != application->thread()
-        || owner->thread() != application->thread() || !object || object->thread() != application->thread()
-        || !qIsFinite(x) || !qIsFinite(y) || !qIsFinite(deviceScale) || deviceScale <= 0) return false;
+        || owner->thread() != application->thread() || !object || object->thread() != application->thread()) return nullptr;
     const auto* item = qobject_cast<QQuickItem*>(object);
-    if (!item || !item->window() || item->window()->thread() != application->thread()) return false;
+    if (!item || !item->window() || item->window()->thread() != application->thread()) return nullptr;
+    // Before exposure a platform window may report a fallback density.
+    return item->window()->isExposed() ? item->window() : nullptr;
+}
+
+inline bool nativeContextMatches(const QObject* owner, QObject* object, double x, double y, double deviceScale) {
+    if (!qIsFinite(x) || !qIsFinite(y) || !qIsFinite(deviceScale) || deviceScale <= 0) return false;
+    const auto* window = exposedNativeWindow(owner, object);
     QTransform transform;
-    return translationOnly(item, &transform)
+    return window && translationOnly(qobject_cast<QQuickItem*>(object), &transform)
         && qAbs(transform.dx() - x) <= 1.0 / 1024
         && qAbs(transform.dy() - y) <= 1.0 / 1024
-        && item->window()->devicePixelRatio() == deviceScale;
+        && window->effectiveDevicePixelRatio() == deviceScale;
 }
 }
 #endif

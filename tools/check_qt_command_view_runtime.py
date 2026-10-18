@@ -157,6 +157,9 @@ Window {
     function contextProbes() {
         const scale=view.nativeDeviceScale;
         return JSON.stringify([
+            scale === view.Window.window.devicePixelRatio,
+            resolver.presentsNativeWindow(view),
+            resolver.presentsNativeWindow(resolver),
             resolver.matchesNativeContext(view,44.3,26.1,scale),
             resolver.matchesNativeContext(view,44.3+1/2048,26.1,scale),
             resolver.matchesNativeContext(view,44.3+1/512,26.1,scale),
@@ -175,6 +178,9 @@ Window {
         if not isinstance(window, QQuickWindow):
             raise ValueError("native view fixture failed: " + repr(component.errors()))
         args.output_dir.mkdir(parents=True, exist_ok=False)
+        present(app)
+        if not window.isExposed():
+            raise ValueError("native view fixture window was not exposed")
         dpr = window.devicePixelRatio()
         options = json.dumps({"x":44.3, "y":26.1, "deviceScale":dpr, "samplesPerAxis":4})
         window.projective(True)
@@ -190,10 +196,13 @@ Window {
         if observation["ready"] or observation["snapshot"] or observation["visible"] or not observation["error"]:
             raise ValueError("projective rejection retained native publication")
         window.projective(False)
-        if json.loads(window.contextProbes()) != [True,True,False,False,False,False,False,False,False]:
-            raise ValueError("native context guard lost placement precision, type, density or finite-input checks")
+        if json.loads(window.contextProbes()) != [True,True,False,True,True,False,False,False,False,False,False,False]:
+            raise ValueError("native view density is not its window's, or the native context guard lost exposure, "
+                             "placement precision, type, density or finite-input checks")
         native_resolver=window.findChild(QObject,"snapshotResolver")
         native_view=window.findChild(QObject,"commandView")
+        if native_view.property("nativeDeviceScale")!=window.effectiveDevicePixelRatio():
+            raise ValueError("native view density is not its window's effective device pixel ratio")
         if not native_resolver.matchesNativeContext(native_view,44.3,26.1,dpr):
             raise ValueError("valid UI-thread context unexpectedly rejected")
         thread_results=[]

@@ -10,7 +10,7 @@ import sys
 
 from check_qt_command_snapshot_runtime import ROOT
 from check_quickshell_command_lifecycle import OUTSIDE, Session
-from check_quickshell_command_motion import Motion, epochs, moving
+from check_quickshell_command_motion import Motion, epochs, moving, verify_scale
 from check_quickshell_command_updates import verify_version
 from wayland_virtual_input import KEY_SPACE
 
@@ -29,12 +29,6 @@ def seconds(value, name):
     if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
         raise ValueError(f"{name} {value!r} is not a finite non-negative number of seconds")
     return value
-
-
-def verify_scale(screen, expected):
-    observed = screen.get("deviceScale") if screen else None
-    if type(observed) not in (int, float) or observed != expected:
-        raise ValueError(f"the Command is presented at device scale {observed!r}, not {expected!r}")
 
 
 def continuations(sequence):
@@ -139,7 +133,7 @@ def main():
                                       env=environment, capture_output=True, text=True, timeout=15))
         args.output_dir.mkdir(parents=True, exist_ok=False)
         session = Session(host, module, font, args.output_dir)
-        verify_scale(session.current()["screen"], args.scale)
+        verify_scale(session.current(), args.scale)
         motion = Motion(session)
         measured = continuations(measure(session, motion, args.presses, args.frames_per_phase))
         (args.output_dir / "report.json").write_text(json.dumps({"scale": args.scale, "measured": measured}),

@@ -367,19 +367,44 @@ from checked label IR and uses the body's checked foreground. Set its position
 before preparation, then compute the actual scene origin with
 `view.mapToItem(null, 0, 0)` and use `view.nativeDeviceScale` for `deviceScale`.
 These options describe the sampling context, not a second placement transform.
+`nativeDeviceScale` is the hosting window's `devicePixelRatio`, a property Qt
+Quick provides since 6.11, and 0 without a window. It is not the attached
+`Screen.devicePixelRatio`, for two reasons. Under `wp_fractional_scale_v1` the
+screen reports the output's integer scale while the window renders at the
+fractional one, and the attached screen value does not notify when the ratio of
+the same screen changes, so a live change between integer scales would not
+reach the view either.
 Do not force a different front width/height or add scale/rotation. Native
 translation is checked within the existing 1/1024 logical-pixel precision budget;
 the compiled `CommandSnapshotResolver.matchesNativeContext(item, x, y,
 deviceScale)` checks the complete native scene transform. It requires a live
-UI-thread `QQuickItem` in a native window, finite placement, matching actual
-window pixel density and an affine translation with an exact identity linear
-part. Missing/non-item/foreign-thread contexts and invalid numeric inputs return
+UI-thread `QQuickItem` in an exposed native window, finite placement, the
+window's effective device pixel ratio and an affine translation with an exact
+identity linear part. Missing/non-item/foreign-thread contexts and invalid numeric inputs return
 false. It retains no native object. The same translation predicate guards native
 pointer targeting. Sampling the origin and unit basis alone is insufficient:
 a projective matrix can preserve all three samples while distorting the body
 elsewhere. Scale, rotation, shear and projective transforms are rejected before
 publication and on the GUI frame check. Keep ancestor clipping/occlusion and
 actual surrounding/backdrop colors consistent with the supplied paint context.
+
+A window may report a fallback density: Qt's Wayland platform reports the
+screen's integer scale until the compositor's preferred fractional scale
+arrives, and Quickshell creates a new window each time a hidden surface is
+shown again. `presentsNativeWindow(item)` on the same resolvers reports whether
+the item's window is exposed, and the context check above rejects an unexposed
+window. The Command and Toggle controls therefore prepare nothing, and report no
+preparation error, until their view's window is exposed; they prepare on the
+window's next `afterAnimating`. The preferred scale is a separate compositor
+event, so exposure does not guarantee it has arrived. In headless Sway 1.12 at
+output scales 1.25 and 1.5, a layer-shell `PanelWindow` received its scale
+before exposure, so no publication in it is made at the fallback density. An
+xdg toplevel `FloatingWindow` was exposed and presented its first frame at the
+fallback ratio 2 and received its scale only afterwards, so a Command or Toggle
+in such a window can publish once at the fallback density; the change of the
+window's ratio then withdraws readiness, as a live output-scale change does, and
+the control prepares again at the new density. The released-host checks host
+their controls only in layer-shell windows.
 
 Own position, size, parent, window and pixel-density changes withdraw readiness.
 Before scene-graph synchronization, a GUI-thread
@@ -429,7 +454,9 @@ request JSON and `samplesPerAxis` to the raster sampling density. The view
 resolves the request with the reference resolver through the compiled
 `SurfacePaintResolver.resolveSurfaceView(request, options)` at its actual scene
 origin and window pixel density, and realizes the body and optional focus ring
-with the shared CPU raster as one native image.
+with the shared CPU raster as one native image. Like the Command view it takes
+the hosting window's `devicePixelRatio` as `nativeDeviceScale` and waits, without
+an error, until that window is exposed.
 
 `publication` carries the complete surface paint IR only once the native image
 is ready; `paintReady` and default visibility become true with it. The view
@@ -500,9 +527,10 @@ QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
 
 The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
 in released Quickshell 0.3.2 and checks its publications against the reference
-resolver and its composited pixels at output scales 1 and 2. Live output-scale
-transfer, hardware renderers and enhanced Frost or Gel treatments beyond their
-opaque representation are not covered.
+resolver and its sampled composited pixels at output scales 1, 1.25, 1.5 and 2,
+and after live output-scale changes between them. Hardware renderers and
+enhanced Frost or Gel treatments beyond their opaque representation are not
+covered.
 
 ## Platform appearance preferences
 
@@ -782,8 +810,9 @@ measurement and drawing. Released-host Command qualification is described in
 [authored updates](#released-quickshell-authored-updates),
 [lifecycle](#compositor-delivered-command-lifecycle),
 [accessibility](#released-quickshell-command-accessibility) and
-[motion](#released-quickshell-command-motion). Physical devices, screen-reader
-presentation in CI, and fractional output scale or multiple outputs remain
+[motion](#released-quickshell-command-motion). Fractional output scales are
+verified on one headless Sway output by the motion and clock shell checks.
+Physical devices, screen-reader presentation in CI, and multiple outputs remain
 unverified. Orca 50.3 passes locally only; Orca 46.1 hangs at start-up on the
 CI runner ([#165](https://github.com/marcoallegretti/Resina-Design_System/issues/165)).
 The integrated static profile below now verifies composed command input and
@@ -1271,12 +1300,39 @@ reaches the control through the compositor:
 - reduced motion and Cast publish immediate settled frames, and Frost with
   reduced transparency keeps its family and spring policy.
 
+The check runs at the output scale given by `--scale` and first requires the
+device pixel ratio of the Command's window to equal it. The probe logs that
+ratio with every motion frame and with every publication without motion from
+startup on, and each must carry it, so a publication made at a window's
+fallback density fails the check. With `--live-scale`, the
+check then changes the scale of the single active Sway output through the
+only `sway-ipc.*.sock` in `XDG_RUNTIME_DIR` (a set `SWAYSOCK` must name that
+socket) while the shell runs, and requires:
+
+- the Command to become ready again at the new device scale with the same
+  target centre, and a complete frame at that scale with the same hit region and
+  accessibility channel as the last frame before the change;
+- logged frames and publications to move once from the old scale to the new
+  one;
+- Space, with the Command focused again, to publish unsettled spring frames that
+  activate it once, track native time and settle at the new scale.
+
+CI runs the check in headless Sway at output scale 1 on a 1024×600 output, and
+at 1.25 and 2 on a 1280×720 output with live changes from 1.25 to 2 and from 2
+to 1.25. With Quickshell 0.3.2 and Qt 6.11.2 it also passes in headless Sway
+1.12 at output scale 1.5, and with live changes from 1 to 2, 2 to 1 and 1.25 to
+1.5.
+
+The Command requests keep the authored environment scale of
+`conformance/headless/valid-request.json` at every output scale, so a live
+change proves the native device scale only; the clock shell check proves that
+the environment scale follows the output.
+
 The motion channels are the conformance fixture, not calibrated material
 dynamics, and preferences are explicit authored inputs: no platform preference
-is discovered. Fractional or changing output scale is not measured. These cases,
-like every other functional, lifecycle and accessibility check, run against the
-debug runtime module; frame timing is qualified separately against the release
-module.
+is discovered. These cases, like every other functional, lifecycle and
+accessibility check, run against the debug runtime module; frame timing is
+qualified separately against the release module.
 
 ### Released Quickshell Command motion frame budget
 
@@ -1298,7 +1354,7 @@ CI sets `CARGO_TARGET_DIR` to `target/qt-runtime-build`, so its library is
 
 [`check_quickshell_command_motion_budget.py`](../../../tools/check_quickshell_command_motion_budget.py)
 runs the lifecycle probe in headless Sway at the output scale given by `--scale`
-and first requires the device pixel ratio of the Command's screen, which its
+and first requires the device pixel ratio of the Command's window, which its
 views use as their native device scale, to equal it. Space is
 held and released through the compositor ten times, and each phase lasts six
 spring frames. With the release module a hold therefore ends before Sway's
