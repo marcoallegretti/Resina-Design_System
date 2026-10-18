@@ -60,7 +60,8 @@ Every set is closed. Each point takes the first rule that applies:
 F is tested first, so a point of F's boundary on the shadow side takes rule 3.
 F and E use the exact spec/81 and spec/83 predicates; S and E_d use the
 closed-set spec/36 contour membership. For d ≠ 0 the two kinds of predicate can
-disagree only within the spec/36 arithmetic tie band near the boundary of E_d.
+disagree only within the spec/36 arithmetic tie band near the boundaries of S
+and E_d; on the lit side these coincide with the boundaries of F and E.
 Raster evidence brackets those samples instead of treating either color as
 exact. The highlight band, `highlightOuter`, `highlightWidth`
 and the rounded `content` contour of spec/36 are not part of this body.
@@ -116,6 +117,16 @@ boundary included; the foreground must meet the minimum content contrast
 against the exact body; the edge candidate is selected against the supplied
 adjacent color. Light never changes the body, edge or foreground. Component
 contracts own label containment against C and disabled label dimming.
+
+The body never dims on its own. Under the `disabled` phase, and only there, a
+component contract may replace exactly `face.foreground` and
+`face.contentContrastRatio` with its dimmed label color and that color's
+contrast against the body. The dimming bound is a component value, so the
+component version that applies it states the bound and its checker verifies
+it; the body invariant that `face.contentContrastRatio` is the contrast of
+`face.foreground` against the body still holds. Every other member, every
+sampled color and the depth-zero equivalence with spec/86 for all other members
+are unchanged by dimming.
 
 The three spec/86 ranges, body-to-highlight, body-to-side and the exact edge,
 cover every color this body paints: face pixels lie in the first two, the side
