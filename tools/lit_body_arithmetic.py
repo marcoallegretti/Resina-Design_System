@@ -59,11 +59,16 @@ def relief_profile_violation(profile):
     amplitude, shoulder = profile["amplitude"], profile["shoulderWidth"]
     if not (math.isfinite(thickness) and thickness > 0):
         return "bodyThickness must be finite and positive"
+    if not (math.isfinite(amplitude) and amplitude >= 0 and math.isfinite(shoulder) and shoulder >= 0):
+        return "amplitude and shoulderWidth must be finite and nonnegative"
     if kind == "flat":
         return None if amplitude == 0 and shoulder == 0 else "flat requires zero amplitude and shoulderWidth"
     if not (0 < amplitude and 0 < shoulder and 2 * amplitude <= shoulder):
         return "relief requires positive amplitude no greater than shoulderWidth/2"
-    if kind == "recessed" and amplitude >= thickness:
+    if amplitude / shoulder == 0:
+        return "amplitude/shoulderWidth must remain representable"
+    relieved = thickness + amplitude if kind == "convex" else thickness - amplitude
+    if not (math.isfinite(relieved) and relieved > 0) or relieved == thickness:
         return "relieved thickness must be representable and positive"
     return None
 
@@ -546,6 +551,9 @@ def body_invariants(ir):
         return "lit control bodies use circular outlines"
     radii = [outline["corners"][name]["x"] for name in PHYSICAL]
     profile = face["surface"]["profile"]
+    violation = relief_profile_violation(profile)
+    if violation:
+        return f"face surface profile: {violation}"
     if profile["kind"] != "flat" and any(
             radius > 0 and not 2 * (profile["shoulderWidth"] / radius + profile["shoulderWidth"] / radius) < 1 for radius in radii):
         return "every rounded corner must carry the shoulder with tau below 1"

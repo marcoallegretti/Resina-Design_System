@@ -956,11 +956,19 @@ def main():
         ("lit body outline reserved without the edge inset", "/face/surface/outline/contentBounds/x", 6),
         ("lit body contrast of another foreground", "/face/contentContrastRatio", 3),
         ("lit body shoulder reaching tau 1", "/face/surface/profile/shoulderWidth", 6),
+        ("lit body relief amplitude above half shoulder", "/face/surface/profile/amplitude", 5),
     ):
         invalid = apply_changes(lit_body, [{"path": pointer, "value": value}])
         check_case(lit_body_schema, name, invalid, True)
         if body_invariants(invalid) is None:
             raise ValueError(f"{name}: invariant violation was not detected")
+    flat_with_amplitude = apply_changes(lit_body, [
+        {"path": "/face/surface/profile/kind", "value": "flat"},
+        {"path": "/face/surface/profile/shoulderWidth", "value": 0},
+    ])
+    check_case(lit_body_schema, "lit body flat profile with amplitude", flat_with_amplitude, False)
+    if body_invariants(flat_with_amplitude) is None:
+        raise ValueError("lit body flat profile with amplitude: invariant violation was not detected")
     lit_paint_schema = validator_for("schemas/lit-control-paint-ir.schema.json")
     focus = load_json(ROOT / "conformance/ir/focus-ir-expected.json")
     focused = apply_changes(lit_body, [{"path": "/states/states", "value": ["hover", "focused"]}])
@@ -1426,7 +1434,7 @@ def main():
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
-        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 13 + 7
+        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 15 + 7
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)
@@ -2431,6 +2439,9 @@ def main():
     for name, pointer, value in (
         ("relief amplitude above half shoulder", "/commandBody/amplitude", 1.5),
         ("recessed amplitude at body thickness", "/toggleTrack/bodyThickness", 0.75),
+        ("relief amplitude ratio underflowing", "/commandBody",
+         {"kind": "convex", "bodyThickness": 5e-324, "amplitude": 5e-324, "shoulderWidth": 2}),
+        ("convex amplitude absorbed by body thickness", "/commandBody/bodyThickness", 1e17),
     ):
         invalid = apply_changes(control_relief, [{"path": pointer, "value": value}])
         check_case(control_relief_validator, name, invalid, True)
