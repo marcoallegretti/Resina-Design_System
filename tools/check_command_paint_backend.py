@@ -144,10 +144,11 @@ def command_mismatch(actual, request, response=None):
     if not math.isclose(body["contentContrastRatio"], ratio, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/contentContrastRatio"
     offset = body["lighting"]["sideOffset"]
-    depth = 2 * response["depthScale"]
+    rest_depth = fixture_depth(request)
+    depth = rest_depth * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
-    if authored and imperceptible_phase(rest_color, 2, request["commandAppearance"]["profiles"][family]):
+    if authored and imperceptible_phase(rest_color, rest_depth, request["commandAppearance"]["profiles"][family]):
         return "/commandAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != ("focused" in states):
         return "/paint/focus"

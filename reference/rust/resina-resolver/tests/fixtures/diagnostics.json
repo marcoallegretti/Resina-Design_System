@@ -54,6 +54,8 @@
     "imperceptible disabled response": "imperceptible from rest",
     "color below perceivable difference": "imperceptible from rest",
     "depth compression below one pixel": "imperceptible from rest",
+    "depth rise below one pixel": "imperceptible from rest",
+    "depth rise beyond the tolerance of one pixel": "imperceptible from rest",
     "depth rise above bound": "depthScale",
     "invalid unselected family": "bodyMix",
     "unknown response member": "unknown field",

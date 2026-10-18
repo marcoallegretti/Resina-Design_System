@@ -881,6 +881,66 @@
     "expectedPhase": "hover"
   },
   {
+    "name": "depth rise below one pixel",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 1.49
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
+    "name": "depth rise within the tolerance of one pixel",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 1.4999999999996
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPhase": "hover"
+  },
+  {
+    "name": "depth rise beyond the tolerance of one pixel",
+    "requestChanges": [
+      {
+        "path": "/commandAppearance/profiles/elastomer/hover",
+        "value": {
+          "bodyMix": 0,
+          "depthScale": 1.499999999999
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "failure": true
+  },
+  {
     "name": "deepest authored rise",
     "requestChanges": [
       {
