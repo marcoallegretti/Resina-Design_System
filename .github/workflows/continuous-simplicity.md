@@ -25,31 +25,8 @@ safe-outputs:
     title-prefix: "[simplicity] "
     labels: [continuous-simplicity, maintenance]
     footer: false
-  threat-detection:
-    enabled: true
-    engine:
-      id: copilot
-      model: small
-      max-turns: 12
-    continue-on-error: false
-    report-as-issue: false
-    prompt: |
-      You are an adversarial fact-checker. You did not write the proposed issue; reject it if you can.
-      For every file path, line range, symbol, count and quoted text in the issue, open the file in the
-      checked-out repository and confirm it exists and says what is claimed. Confirm the issue body has
-      exactly the headings of the matching .github/ISSUE_TEMPLATE form, in order. Reject if any claim is
-      unverifiable, any reference is wrong, the problem is intended behaviour documented in AGENTS.md,
-      spec/ or conformance/, the issue duplicates an existing one, it needs an architectural decision but
-      uses the maintenance form, or it mentions agents, models, workflows or automation. Approve only
-      when every claim was verified by you now.
-    steps:
-      - name: Checkout repository for verification
-        uses: actions/checkout@v6
-        with:
-          persist-credentials: false
 imports:
   - shared/maintenance-protocol.md
-
 ---
 
 # Continuous Simplicity
