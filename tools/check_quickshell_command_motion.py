@@ -363,7 +363,7 @@ def interruption_cases(session, motion, requests):
                                               or not settled(frame) for frame in after):
             raise ValueError("reduced-motion preference retained sampled motion")
         results.append(f"{name} during a press cancels the gesture; the first frame after it reflects the change "
-                       "and no frame for the earlier request follows")
+                       "and every later frame is valid for the request in effect")
 
     session.reset("motion", True)
     start = len(motion.frames())
