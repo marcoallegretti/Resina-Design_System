@@ -364,24 +364,39 @@ mod tests {
     fn duplicate_members_are_rejected() {
         let source =
             include_str!("../../../../conformance/content/invalid-duplicate-icon-member.json");
-        let nested = [
-            source.replacen(r#""x": 0,"#, r#""x": 0, "x": 0.5,"#, 1),
-            source.replacen(
-                r#""behavior": "invariant""#,
-                r#""behavior": "invariant", "behavior": "mirror""#,
-                1,
-            ),
-            source.replacen(
-                r#"{"role": "content"}"#,
-                r#"{"role": "content", "role": "content"}"#,
-                1,
-            ),
-        ];
-        let unique = source.replacen(r#""reference": "resina.fixture:other","#, "", 1);
+        let replaced = |text: &str, from: &str, to: &str| {
+            assert!(text.contains(from), "{from} is not in the fixture");
+            text.replacen(from, to, 1)
+        };
+        let unique = replaced(source, r#""reference": "resina.fixture:other","#, "");
         assert!(serde_json::from_str::<IconContent>(&unique).is_ok());
-        for source in std::iter::once(source.to_owned()).chain(nested) {
-            let error = serde_json::from_str::<IconContent>(&source).unwrap_err();
-            assert!(error.to_string().contains("duplicate field"), "{error}");
+        for (field, document) in [
+            ("reference", source.to_owned()),
+            ("x", replaced(&unique, r#""x": 0,"#, r#""x": 0, "x": 0.5,"#)),
+            (
+                "behavior",
+                replaced(
+                    &unique,
+                    r#""behavior": "invariant""#,
+                    r#""behavior": "invariant", "behavior": "mirror""#,
+                ),
+            ),
+            (
+                "role",
+                replaced(
+                    &unique,
+                    r#"{"role": "content"}"#,
+                    r#"{"role": "content", "role": "content"}"#,
+                ),
+            ),
+        ] {
+            let error = serde_json::from_str::<IconContent>(&document).unwrap_err();
+            assert!(
+                error
+                    .to_string()
+                    .contains(&format!("duplicate field `{field}`")),
+                "{field}: {error}"
+            );
         }
     }
 }
