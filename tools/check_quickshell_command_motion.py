@@ -106,7 +106,7 @@ def verify_committed_frame(events, position, split):
                          f"{effect['state']}")
 
 
-def verify_superseding_frames(events, marker, expectation, name):
+def verify_superseding_frames(events, marker, expectation, name, requests=None):
     later = frames(events[marker + 1:])
     if not later:
         raise ValueError(f"no frame was logged after the {name}")
@@ -117,6 +117,12 @@ def verify_superseding_frames(events, marker, expectation, name):
     if stale:
         raise ValueError(f"frame {stale[0]['sequence']} for the request superseded by the {name} was published "
                          "after it")
+    for frame in later if requests is not None else ():
+        try:
+            verify_frame(frame, requests)
+        except ValueError as error:
+            raise ValueError(f"frame {frame['sequence']} after the {name} does not present the request in effect: "
+                             f"{error}") from None
     return later
 
 
@@ -276,7 +282,8 @@ def spring_cases(session, motion, requests):
     if len(motion.frames()) != count:
         raise ValueError("native frame scheduling continued after both channels settled")
     results.append("pressed and released spring frames continue across the retarget, track native time and settle; "
-                   "the activation callback observes a withdrawn frame and the next frame presents committed state")
+                   "the activation callback observes no incomplete or superseded frame and the next frame presents "
+                   "committed state")
 
     motion.settle("motion settled before the held press")
     start = len(motion.frames())
@@ -325,7 +332,7 @@ def spring_cases(session, motion, requests):
     return results
 
 
-def interruption_cases(session, motion):
+def interruption_cases(session, motion, requests):
     results = []
     for name, change, marker, expectation in (
             ("reduced-motion preference", lambda: session.call("configure", "reduced"),
@@ -349,7 +356,7 @@ def interruption_cases(session, motion):
         requested = [index for index, event in enumerate(events) if index >= logged and marker(event)]
         if not requested:
             raise ValueError(f"the probe did not log the {name} request")
-        after = verify_superseding_frames(events, requested[0], expectation, name)
+        after = verify_superseding_frames(events, requested[0], expectation, name, requests)
         if any(frame["state"]["hold"] for frame in after):
             raise ValueError(f"{name} during a press retained the held gesture")
         if name.startswith("reduced") and any(frame["motion"]["motion"]["policy"] != "reducedMotion"
@@ -418,7 +425,8 @@ def reentrancy_cases(session, motion, requests):
                 verify_frame(frame, requests)
             except ValueError as error:
                 raise ValueError(f"frame {frame['sequence']} after the {mode} callback: {error}") from None
-        results.append(f"an activation callback {reaction} with motion observes a withdrawn frame, and every "
+        results.append(f"an activation callback {reaction} with motion observes no incomplete or superseded frame, "
+                       "and every "
                        "later frame presents the committed result")
     return results
 
@@ -517,7 +525,7 @@ def main():
         motion = Motion(session)
         requests = authored_requests()
         results = spring_cases(session, motion, requests)
-        results += interruption_cases(session, motion)
+        results += interruption_cases(session, motion, requests)
         results += reentrancy_cases(session, motion, requests)
         results += policy_cases(session, motion)
         change = None

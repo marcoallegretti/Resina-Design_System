@@ -1304,14 +1304,15 @@ request fails. Input reaches the control through the compositor:
 - switching to the reduced-motion preference or withdrawing availability during a
   press cancels the held gesture without an effect; the probe logs each request
   before applying it, the first frame logged after it already reflects the change,
-  and no frame for the earlier request follows; reduced motion then publishes
+  no frame for the earlier request follows, and every later frame is valid for the
+  request in effect; reduced motion then publishes
   only immediate settled frames;
 - with motion, activation callbacks reached by Space that replace the
-  configuration, withdraw availability or invoke the control observe a withdrawn
-  frame, including the callback of the reentrant invocation; every later frame
-  is valid for the request in effect and keeps no hold, frames after a
-  replacement present the replacement, and frames after the withdrawal are
-  unavailable;
+  configuration, withdraw availability or invoke the control meet the same
+  callback frame condition, including the callback of the reentrant invocation;
+  every later frame is valid for the request in effect and keeps no hold, frames
+  after a replacement present the replacement, and frames after the withdrawal
+  are unavailable;
 - moving the control during a press cancels the held gesture without an effect
   and publishes frames at the new position;
 - reduced motion and Cast publish immediate settled frames, and Frost with

@@ -271,6 +271,10 @@ class CommandCallbackFrameTests(unittest.TestCase):
             sequence = [logged_frame(index + 2, state) for index, state in enumerate(later)]
             with self.subTest(later=later), self.assertRaisesRegex(ValueError, message):
                 verify_superseding_frames([logged_frame(1, HELD), change, *sequence], 1, expectation, "change")
+        with mock.patch("check_quickshell_command_motion.verify_frame",
+                        side_effect=[None, ValueError("snapshot differs")]),                 self.assertRaisesRegex(ValueError, "frame 3 after the change does not present the request in "
+                                                   "effect: snapshot differs"):
+            verify_superseding_frames(events, 1, expectation, "change", {})
 
 
 if __name__ == "__main__":
