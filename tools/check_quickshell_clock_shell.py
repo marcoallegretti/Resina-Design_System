@@ -571,7 +571,8 @@ def main():
         time.sleep(1.2)
         if shell.observe()["clockDate"] != paused or observed["clockEnabled"]:
             raise ValueError("SystemClock kept running after the clock surface closed")
-        report["cases"].append("keyboard activation of Close unmaps the surface and pauses the clock")
+        shell.check_log()
+        report["cases"].append("keyboard activation of Close unmaps the surface without QML errors and pauses the clock")
 
         shell.until(closed, "Show clock ready after closing")
         shell.key(KEY_SPACE)

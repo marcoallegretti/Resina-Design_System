@@ -94,6 +94,8 @@ ResinaCommandInput {
         state.motionActive = false;
         state.channels = null;
         state.motionTarget = null;
+        state.publishedSpan = null;
+        state.frameDue = false;
         clock.invalidate();
         root.focus = false;
         const running = state.running;
@@ -172,7 +174,12 @@ ResinaCommandInput {
         state.running = true;
         state.revision = {};
         state.dirty = false;
+        state.frameDue = false;
         try {
+            const cycle = clockValue(preparationClock.restart()).previousTime;
+            const predecessorSpan = state.publishedSpan;
+            const publicationDelay = predecessorSpan === null ? null : cycle - predecessorSpan;
+            state.publishedSpan = null;
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
                 retireViews();
@@ -207,7 +214,8 @@ ResinaCommandInput {
             state.pendingView = candidate;
             candidate.invalidate();
             if (motionChannels.length)
-                candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime);
+                candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime,
+                    preparationClock,publicationDelay,predecessorSpan);
             else
                 candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
@@ -256,6 +264,7 @@ ResinaCommandInput {
         if (state.revision !== revision) return;
         resolver.publishFrame(candidate.snapshot,candidate.motion,candidate);
         if (state.revision !== revision) return;
+        state.publishedSpan = candidate.motion.length ? clockValue(preparationClock.sample()).time : null;
         if (candidate.motion.length) {
             const sample = JSON.parse(candidate.motion).motion;
             state.motionActive = !(sample.bodyMix.settled && sample.depthScale.settled);
@@ -264,7 +273,16 @@ ResinaCommandInput {
         state.armed = true;
         if (state.revision !== revision) return;
         if (!ready) fail("native command publication was invalidated");
+        else if (state.frameDue) Qt.callLater(resume);
     }
+
+    function advance() {
+        // A tick during preparation starts the next frame at publication, not one tick later.
+        if (state.running || state.pending.length) state.frameDue = true;
+        else refresh(true);
+    }
+
+    function resume() { if (state.started && state.frameDue && frames.running) advance(); }
 
     function reconfigure() {
         if (!state.started) return;
@@ -276,6 +294,8 @@ ResinaCommandInput {
             state.resumeChannels = next && !next.error && canonical(next.channels) === state.profile ? captureMotion() : null;
             state.motionActive = false;
             state.motionTarget = null;
+            state.publishedSpan = null;
+            state.frameDue = false;
             clock.invalidate();
             state.qualified = false;
             state.armed = false;
@@ -302,7 +322,7 @@ ResinaCommandInput {
     onParentChanged: reconfigure()
     onNativeWindowChanged: reconfigure()
     Component.onCompleted: { state.started = true; Qt.callLater(refresh); }
-    Component.onDestruction: { state.started = false; state.pending = ""; state.pendingView = null; }
+    Component.onDestruction: { state.started = false; state.frameDue = false; state.pending = ""; state.pendingView = null; }
     onHoveredChanged: { if (state.qualified || !state.error.length) refresh(); }
 
     Connections {
@@ -343,12 +363,14 @@ ResinaCommandInput {
         function onNativeDeviceScaleChanged() { root.reconfigure(); }
     }
     FrameAnimation {
-        running: state.motionActive && motionChannels.length > 0 && !state.pending.length
+        id: frames
+        running: state.motionActive && motionChannels.length > 0
             && root.visible && root.nativeWindow && root.nativeWindow.visible && !state.error.length
-        onTriggered: root.refresh(true)
+        onTriggered: root.advance()
     }
     ResinaCommandView { id: view; visible: root.ready && root.currentFrame === view && paintReady }
     CommandClock { id: clock }
+    CommandClock { id: preparationClock }
     ResinaLabelMeasure { id: measurement }
     CommandSnapshotResolver { id: resolver }
     QtObject {
@@ -371,6 +393,8 @@ ResinaCommandInput {
         property bool armed: false
         property bool running: false
         property bool dirty: false
+        property bool frameDue: false
+        property var publishedSpan: null
         property string target: ""
         property var reservation: null
         property string pending: ""
