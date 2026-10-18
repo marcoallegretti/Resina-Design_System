@@ -38,6 +38,13 @@ def authored_cases():
         cases.append({**copy.deepcopy(baseline), "name": name + "-focused", "focused": True})
     source = request_for("light")
     cases.append({"name": "disabled", "request": source, "enabled": False, "checked": True})
+    cases.append({"name": "dark-disabled", "request": request_for("dark"), "enabled": False})
+    high_contrast = request_for("light")
+    high_contrast["content"]["environment"]["accessibilityPreferences"]["highContrast"] = True
+    cases.append({"name": "disabled-high-contrast", "request": high_contrast, "enabled": False, "checked": True})
+    # The label guard applies to the undimmed label, so it rejects before dimming.
+    label = copy.deepcopy(source)
+    label["minimumLabelContrast"] = 21
     thumb = copy.deepcopy(source)
     thumb["minimumThumbContrast"] = 21
     for name, request, options in (
@@ -47,6 +54,7 @@ def authored_cases():
         ("unsupported-transform", source, {"rotation": 10,
             "expectedError": "requires matching native translation and pixel density"}),
         ("thumb-contrast", thumb, {"expectedError": "thumb edge contrast against painted track"}),
+        ("disabled-label-contrast", label, {"enabled": False, "expectedError": "toggle label contrast is"}),
     ):
         cases.append({"name": name, "request": request, "reject": True, **options})
         recovery = {"name": "recover-" + name, "request": source, "enabled": True}
