@@ -25,6 +25,7 @@ safe-outputs:
     title-prefix: "[simplicity] "
     labels: [continuous-simplicity, maintenance]
     footer: false
+    deduplicate-by-title: true
 imports:
   - shared/maintenance-protocol.md
 ---
@@ -36,4 +37,4 @@ Inspect only the current default branch. Prefer deletion and single sources of t
 
 Apply the issue threshold. Search open and closed issues for the same underlying
 problem first and stop without output if one exists. Then follow the imported
-template, fact-check and hostile self-review rules. If nothing survives, stop without creating an issue.
+template, fact-check, hostile self-review and language rules. If nothing survives, stop without creating an issue.

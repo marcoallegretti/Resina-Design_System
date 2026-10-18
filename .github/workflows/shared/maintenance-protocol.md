@@ -18,22 +18,15 @@ safe-outputs:
       max-turns: 12
     continue-on-error: false
     report-as-issue: false
-    prompt: |
-      You are an adversarial fact-checker. You did not write the proposed issue; reject it if you can.
-      For every file path, line range, symbol, count and quoted text in the issue, open the file in the
-      checked-out repository and confirm it exists and says what is claimed. The body must contain, in
-      this order, the level-3 headings (### Label) of the fields of the form
-      .github/ISSUE_TEMPLATE/maintenance.yml (Observed, Expected, Evidence, Affected layer or boundary,
-      Why it matters now, Acceptance criterion, Expected proof) or of architecture.yml for an architecture
-      issue, and no other sections. Reject if any claim is unverifiable, any reference is wrong, the problem
-      is intended behaviour documented in AGENTS.md, spec/ or conformance/, a maintenance-form issue needs
-      an architectural decision, or the text mentions agents, models, workflows or automation.
-      Approve only when every claim was verified by you now.
     steps:
       - name: Checkout repository for verification
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Check proposed issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/check_maintenance_issue.py --agent-output /tmp/gh-aw/threat-detection/agent_output.json
 ---
 
 ## Template
@@ -42,7 +35,8 @@ The issue body must reproduce, in order and with identical headings, the fields
 of the repository issue form named by the workflow: `.github/ISSUE_TEMPLATE/maintenance.yml`
 for simplicity and refactoring, `.github/ISSUE_TEMPLATE/architecture.yml` for
 architecture debt. Read that file first. Render each field label as a level-3 heading (### Label), in form order.
-Do not add, rename or omit sections, and do not copy the form's introductory markdown text.
+Do not add, rename or omit sections, do not put text before the first heading,
+and do not copy the form's introductory markdown text.
 
 ## Fact-check (continuous)
 
@@ -52,9 +46,11 @@ against the current default branch, not from memory or from earlier issues.
 1. List each claim in a private scratch list: file path, line range, what it asserts.
 2. Open the file and confirm each reference exists and says what you claim.
    Confirm quoted symbols, counts and line numbers by reading or searching, never by estimating.
-3. External network access is unavailable. Claims about standards or upstream behaviour
+3. Cite files by their full repository-relative path, and line ranges only as
+   `path:start-end` or `path:line`.
+4. External network access is unavailable. Claims about standards or upstream behaviour
    must be backed by repository evidence; otherwise remove them.
-4. Remove any claim you could not verify. Do not hedge it into the text.
+5. Remove any claim you could not verify. Do not hedge it into the text.
 
 ## Hostile self-review (always)
 
@@ -71,4 +67,13 @@ Before creating the issue, argue against it as an adversary whose goal is to rej
 Create the issue only if no objection survives. If any objection stands, or any
 claim stays unverified, produce no issue. Producing nothing is a correct outcome.
 
-Never mention agents, models, workflows, automation or this review process in the issue text.
+## Language
+
+Describe only the repository problem and its evidence. Never describe how the
+issue was produced: no mention of agents, models, AI, Copilot, LLMs, gh-aw,
+automation, this run or this review process. Repository files such as AGENTS.md,
+`.agents/` or `.github/workflows/reference.yml` may be cited by path when they are evidence.
+
+Before publication, `tools/check_maintenance_issue.py` rejects an issue whose
+headings differ from the form, that cites a missing path or line range, that
+uses the vocabulary above, or whose title matches an existing issue.

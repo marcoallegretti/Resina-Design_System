@@ -25,6 +25,7 @@ safe-outputs:
     title-prefix: "[refactoring] "
     labels: [continuous-refactoring, maintenance]
     footer: false
+    deduplicate-by-title: true
 imports:
   - shared/maintenance-protocol.md
 ---
@@ -36,4 +37,4 @@ Inspect only the current default branch. If the change needs an architectural de
 
 Apply the issue threshold. Search open and closed issues for the same underlying
 problem first and stop without output if one exists. Then follow the imported
-template, fact-check and hostile self-review rules. If nothing survives, stop without creating an issue.
+template, fact-check, hostile self-review and language rules. If nothing survives, stop without creating an issue.
