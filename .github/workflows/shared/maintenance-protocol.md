@@ -1,5 +1,15 @@
 ---
 safe-outputs:
+  report-failure-as-issue: false
+  report-failed-jobs: false
+  noop:
+    report-as-issue: false
+  missing-tool:
+    create-issue: false
+  missing-data:
+    create-issue: false
+  report-incomplete:
+    create-issue: false
   threat-detection:
     enabled: true
     engine:
