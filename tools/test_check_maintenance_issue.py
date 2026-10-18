@@ -127,6 +127,15 @@ class MaintenanceIssueGateTests(unittest.TestCase):
                 result = errors(sections=replace("Evidence", f"See {citation}."))
                 self.assertTrue(any("does not exist" in error for error in result), result)
 
+    def test_path_patterns_must_match_a_repository_path(self):
+        for citation in ("`tools/check_*_backend.py`", "**tools/check_*.py**", ".github/workflows/*.md"):
+            with self.subTest(citation=citation):
+                self.assertEqual(errors(sections=replace("Evidence", f"See {citation}.")), [])
+        result = errors(sections=replace("Evidence", "See tools/check_*_missing_lane.py."))
+        self.assertIn("tools/check_*_missing_lane.py matches no repository path", result)
+        result = errors(sections=replace("Evidence", "See tools/../../*.md."))
+        self.assertIn("tools/../../*.md is not a repository path pattern", result)
+
     def test_line_range_beyond_the_file_is_rejected(self):
         for citation in (
             f".github/workflows/reference.yml:{REFERENCE_LINES + 1}",

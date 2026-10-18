@@ -66,7 +66,7 @@ against the current default branch, not from memory or from earlier issues.
 2. Open the file and confirm each reference exists and says what you claim.
    Confirm quoted symbols, counts and line numbers by reading or searching, never by estimating.
 3. Cite files by their full repository-relative path, and line ranges only as
-   `path:start-end` or `path:line`.
+   `path:start-end` or `path:line`. A `*` path pattern must match at least one file.
 4. External network access is unavailable. Claims about standards or upstream behaviour
    must be backed by repository evidence; otherwise remove them.
 5. Remove any claim you could not verify. Do not hedge it into the text.

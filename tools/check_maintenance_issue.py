@@ -35,6 +35,7 @@ PATH_TOKEN = re.compile(
     r"(?::L?(?P<start>\d+)(?:-L?(?P<end>\d+))?|#L(?P<hstart>\d+)(?:-L(?P<hend>\d+))?)?"
     r"(?![\w/-])"
 )
+GLOB_TOKEN = re.compile(r"(?<![\w./-])(?P<glob>\.?[\w-][\w./-]*\*[\w./*-]*)")
 URL = re.compile(r"https?://\S+")
 HEADING = re.compile(r"^ {0,3}(#{1,6})[ \t]+(.*?)[ \t#]*$")
 FENCE = re.compile(r"^ {0,3}(```|~~~)")
@@ -206,7 +207,27 @@ def cited_paths(text, root):
         urls[key] = match.group(0)
         return key
 
-    remaining = PATH_TOKEN.sub(check, URL.sub(mask, text))
+    def check_glob(match):
+        pattern = match.group("glob").rstrip(".")
+        if match.start() > 0 and text_without_urls[match.start() - 1] == "*":
+            pattern = pattern.rstrip("*").rstrip(".")
+        if pattern.startswith("./"):
+            pattern = pattern[2:]
+        if "/" not in pattern:
+            return match.group(0)
+        citations.append(pattern)
+        try:
+            matches = [path for path in root.glob(pattern) if root.resolve() in path.resolve().parents]
+        except (ValueError, NotImplementedError):
+            matches = None
+        if matches is None or ".." in pattern.split("/"):
+            errors.append(f"{pattern} is not a repository path pattern")
+        elif not matches:
+            errors.append(f"{pattern} matches no repository path")
+        return " "
+
+    text_without_urls = URL.sub(mask, text)
+    remaining = PATH_TOKEN.sub(check, GLOB_TOKEN.sub(check_glob, text_without_urls))
     for key, url in urls.items():
         remaining = remaining.replace(key, url)
     return citations, remaining, errors
