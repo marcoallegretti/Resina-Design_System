@@ -1,7 +1,9 @@
 import json
 import os
+from pathlib import Path
 import socket
 import struct
+import subprocess
 from types import SimpleNamespace
 import unittest
 
@@ -106,6 +108,52 @@ class CommandLifecycleEvidenceTests(unittest.TestCase):
             server.close()
             os.close(read)
             os.close(write)
+
+
+class LostReplyTests(unittest.TestCase):
+    LOST = "ERROR quickshell.ipc: Socket Error QLocalSocket::PeerClosedError\n" \
+           "ERROR quickshell.ipc: Error occurred while waiting for response.\n"
+
+    def call(self, owner, module, function, replies):
+        calls = []
+
+        def run(*args, **kwargs):
+            calls.append(args[0])
+            return subprocess.CompletedProcess(args[0], 0, replies[min(len(calls), len(replies)) - 1], "")
+
+        original = module.subprocess.run
+        module.subprocess.run = run
+        try:
+            return owner.call(function, timeout=5), calls
+        finally:
+            module.subprocess.run = original
+
+    def owners(self):
+        import check_quickshell_clock_shell as clock
+        import check_quickshell_command_lifecycle as lifecycle
+        session = lifecycle.Session.__new__(lifecycle.Session)
+        session.host, session.config, session.environment = "quickshell", Path("probe"), {}
+        shell = clock.Shell.__new__(clock.Shell)
+        shell.host, shell.path, shell.client_environment = "quickshell", Path("shell.qml"), {}
+        return ((session, lifecycle, "observe"), (shell, clock, "frames"))
+
+    def test_queries_retry_a_lost_reply(self):
+        for owner, module, query in self.owners():
+            with self.subTest(module=module.__name__):
+                reply, calls = self.call(owner, module, query, [self.LOST, '{"ok":true}'])
+                self.assertEqual((reply, len(calls)), ('{"ok":true}', 2))
+
+    def test_calls_with_effects_are_not_repeated(self):
+        for owner, module, _ in self.owners():
+            with self.subTest(module=module.__name__), self.assertRaisesRegex(ValueError, "waiting for response"):
+                self.call(owner, module, "record", [self.LOST, ""])
+
+    def test_a_reload_may_lose_its_reply(self):
+        for owner, module, _ in self.owners():
+            reload = "reloadShell" if module.__name__.endswith("lifecycle") else "reload"
+            with self.subTest(module=module.__name__):
+                reply, calls = self.call(owner, module, reload, [self.LOST])
+                self.assertEqual((reply, len(calls)), ("", 1))
 
 
 if __name__ == "__main__":
