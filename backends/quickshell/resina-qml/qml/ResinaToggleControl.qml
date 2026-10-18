@@ -85,6 +85,7 @@ ResinaToggleInput {
 
     function fail(cause) {
         state.revision = {};
+        state.prepared = "";
         state.qualified = false;
         state.armed = false;
         resolver.publishSnapshot("");
@@ -203,6 +204,7 @@ ResinaToggleInput {
             }
             // Target preparation can expose a retained native hover observation.
             state.pending = requestFor(JSON.parse(publication).state,root.hovered,root.checked);
+            state.prepared = JSON.stringify([JSON.parse(controller.publication).activation.state, JSON.parse(controller.publication).checked]);
             const origin = view.mapToItem(null,0,0);
             const options = JSON.stringify({x:origin.x,y:origin.y,
                 deviceScale:view.nativeDeviceScale,samplesPerAxis:samplesPerAxis});
@@ -273,6 +275,7 @@ ResinaToggleInput {
     function reconfigure() {
         if (!state.started) return;
         state.revision = {};
+        state.prepared = "";
         const running = state.running;
         state.running = true;
         try {
@@ -315,6 +318,9 @@ ResinaToggleInput {
     Connections {
         target: root.controller
         function onPublicationChanged() {
+            // Key auto-repeat republishes an unchanged state; keep the current frame.
+            if (root.keyRepeat && state.started && state.qualified && !state.error.length
+                && state.prepared === JSON.stringify([JSON.parse(root.controller.publication).activation.state, JSON.parse(root.controller.publication).checked])) return;
             if (state.qualified || !state.error.length) root.refresh();
         }
         function onActivated(checked) { root.activated(checked); }
@@ -372,6 +378,7 @@ ResinaToggleInput {
         property string target: ""
         property var reservation: null
         property string pending: ""
+        property string prepared: ""
         property var semantics: null
         property string error: ""
     }

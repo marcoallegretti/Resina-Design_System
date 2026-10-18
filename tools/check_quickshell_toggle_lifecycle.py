@@ -138,6 +138,9 @@ def activation_cases(session):
         repeated = session.current()["publications"] - holding["publications"]
         if repeated < 2:
             raise ValueError(f"{name} hold delivered {repeated} auto-repeat publications; at least 2 are required")
+        retracted = session.current()["retractions"] - holding["retractions"]
+        if retracted:
+            raise ValueError(f"{name} auto-repeat retracted the published Toggle frame {retracted} times")
         expect_effects(session, before, 0 if name == "space" else 1, name + " held with repeat")
         session.input.key(key, False)
         _, now = expect_toggles(session, before, 1, False, name + " toggle")

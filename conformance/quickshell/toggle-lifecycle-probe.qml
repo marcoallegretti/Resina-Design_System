@@ -17,6 +17,7 @@ ShellRoot {
     property string reaction: ""
     property int effects: 0
     property int publications: 0
+    property int retractions: 0
     property var reactionResult: null
     readonly property var mountItem: windowLoader.item ? windowLoader.item.mount.item : null
     readonly property var toggle: mountItem ? mountItem.toggle : null
@@ -53,7 +54,7 @@ ShellRoot {
             ready:toggle ? toggle.ready : false, error:toggle ? toggle.preparationError : "",
             state:toggle ? JSON.parse(toggle.publication).state : null, checked:toggle ? toggle.checked : null,
             hovered:toggle ? toggle.hovered : false, nativeFocus:nativeFocus(),
-            target:targetCenter(), effects:effects, publications:publications, reactionResult:reactionResult,
+            target:targetCenter(), effects:effects, publications:publications, retractions:retractions, reactionResult:reactionResult,
             otherFocused:Boolean(mountItem && mountItem.other.activeFocus),
             screen:toggle && toggle.Screen.width > 0 ? {width:toggle.Screen.width, height:toggle.Screen.height} : null};
     }
@@ -89,6 +90,10 @@ ShellRoot {
     Connections {
         target: root.toggle ? root.toggle.controller : null
         function onPublicationChanged() { ++root.publications; }
+    }
+    Connections {
+        target: root.toggle
+        function onSnapshotChanged() { if (!root.toggle.snapshot.length) ++root.retractions; }
     }
 
     FontLoader {

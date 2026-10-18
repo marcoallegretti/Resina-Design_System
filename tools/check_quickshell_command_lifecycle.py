@@ -279,6 +279,9 @@ def activation_cases(session):
         repeated = session.current()["publications"] - held["publications"]
         if repeated < 2:
             raise ValueError(f"{name} hold delivered {repeated} auto-repeat publications; at least 2 are required")
+        retracted = session.current()["retractions"] - held["retractions"]
+        if retracted:
+            raise ValueError(f"{name} auto-repeat retracted the published Command frame {retracted} times")
         expect_effects(session, before, 0 if key == KEY_SPACE else 1, name + " held with repeat")
         session.input.key(key, False)
         expect_effects(session, before, 1, name + " activation")
