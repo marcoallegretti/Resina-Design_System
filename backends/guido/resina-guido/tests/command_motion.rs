@@ -99,12 +99,23 @@ fn sampled_command_motion_uses_complete_paint_on_the_first_native_frame() {
                 json!(false);
             let request = json!({"schemaVersion":"0.1.0", "surface":surface_request, "commandAppearance":profile, "channels":motion_template["channels"], "time":time});
             let command = resolve_command_motion_source(&request.to_string()).unwrap();
-            let minimum = if phase == "disabled" {
-                resina_resolver::DISABLED_LABEL_CONTRAST
+            let ratio = command.command().paint().body().content_contrast_ratio();
+            if phase == "disabled" {
+                let bound = if surface_request["body"]["theme"]["environment"]["accessibilityPreferences"]
+                    ["highContrast"]
+                    == json!(true)
+                {
+                    resina_resolver::HIGH_CONTRAST_DISABLED_LABEL_CONTRAST
+                } else {
+                    resina_resolver::DISABLED_LABEL_CONTRAST
+                };
+                assert!(
+                    (bound..bound + 1e-9).contains(&ratio),
+                    "disabled label contrast {ratio} is not dimmed to {bound}:1"
+                );
             } else {
-                4.5
-            };
-            assert!(command.command().paint().body().content_contrast_ratio() >= minimum);
+                assert!(ratio >= 4.5);
+            }
             for scale in [1.0, 1.25, 2.0, 3.0] {
                 app.configure(surface, 204, 96, scale);
                 let paint = prepare_surface_paint(command.command().paint(), scale, 4).unwrap();

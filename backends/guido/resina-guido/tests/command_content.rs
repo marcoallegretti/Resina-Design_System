@@ -552,6 +552,18 @@ fn check_frame(
     let label = snapshot.label();
     let disabled_label = (paint.phase() == resina_model::CommandPhase::Disabled)
         .then(|| paint.paint().body().foreground());
+    if disabled_label.is_some() {
+        let ratio = paint.paint().body().content_contrast_ratio();
+        assert!(
+            [
+                resina_resolver::DISABLED_LABEL_CONTRAST,
+                resina_resolver::HIGH_CONTRAST_DISABLED_LABEL_CONTRAST
+            ]
+            .iter()
+            .any(|bound| (*bound..bound + 1e-9).contains(&ratio)),
+            "{name}: disabled label contrast {ratio} is not dimmed to its bound"
+        );
+    }
     assert_eq!(snapshot.accessibility().name(), label.text());
     assert!(
         snapshot
