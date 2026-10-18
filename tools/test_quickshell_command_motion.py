@@ -1,10 +1,13 @@
 import copy
 import unittest
+from unittest import mock
 
 from check_command_motion_backend import equation_sample
-from check_quickshell_command_motion import (CHANNELS, epochs, expected_states, frames, moving, settled, verify_clock,
-                                             verify_dynamics, verify_frame_scales, verify_publication_scales,
-                                             verify_retarget, verify_scale)
+from check_quickshell_command_motion import (CHANNELS, effect_positions, epochs, expected_states, frames, moving,
+                                             settled, verify_activation, verify_callback_frame, verify_clock,
+                                             verify_committed_frame, verify_dynamics, verify_frame_scales,
+                                             verify_publication_scales, verify_retarget, verify_scale,
+                                             verify_superseding_frames)
 
 DYNAMICS = {"schemaVersion": "0.1.0", "mass": 1, "stiffness": 4, "damping": 4,
             "positionThreshold": 1e-06, "velocityThreshold": 1e-06}
@@ -20,6 +23,21 @@ def frame(time, sample_time, settled_channels=(False, False), policy="spring", t
                        "motion": {"policy": policy, "target": target or {"bodyMix": 1, "depthScale": .5},
                                   "bodyMix": {"settled": settled_channels[0]},
                                   "depthScale": {"settled": settled_channels[1]}}}}
+
+
+HELD = {"enabled": True, "focused": True, "hold": {"kind": "key", "key": "space"}}
+COMMITTED = {"enabled": True, "focused": True, "hold": None}
+
+
+def logged_frame(sequence, state, generation="g", configuration="motion"):
+    return {"kind": "frame", "generation": generation, "sequence": sequence, "configuration": configuration,
+            "snapshot": {"hitRegion": sequence}, "motion": {"sample": sequence}, "state": copy.deepcopy(state)}
+
+
+def callback(effects, sequence, state=COMMITTED, generation="g", presented=None):
+    shown = presented or {"snapshot": None, "motion": None, "ready": False}
+    return {"kind": "effect", "generation": generation, "effects": effects, "frame": sequence,
+            "state": copy.deepcopy(state), **shown}
 
 
 def continued(previous, elapsed):
@@ -167,6 +185,93 @@ class CommandMotionEvidenceTests(unittest.TestCase):
                  "no static publication was published at device scale 2")):
             with self.subTest(entries=entries), self.assertRaisesRegex(ValueError, message):
                 verify_publication_scales(self.logged(*entries), 1.25, change, 2 if change else None)
+
+
+class CommandCallbackFrameTests(unittest.TestCase):
+    def press(self, *after):
+        return [logged_frame(1, COMMITTED), {"kind": "started"}, logged_frame(2, HELD), logged_frame(3, HELD),
+                callback(1, 3), *after]
+
+    def test_a_callback_may_observe_a_withdrawn_frame(self):
+        events = self.press(logged_frame(4, COMMITTED))
+        position = effect_positions(events)[0]
+        verify_callback_frame(events, position, {})
+        self.assertEqual(verify_activation(events, position, 1, {}), 3)
+        verify_committed_frame(events, position, 3)
+
+    def test_a_callback_must_report_the_last_logged_frame(self):
+        for sequence in (2, 4, None):
+            events = self.press()
+            events[-1]["frame"] = sequence
+            with self.subTest(sequence=sequence), self.assertRaisesRegex(ValueError, "reports frame sequence"):
+                verify_callback_frame(events, len(events) - 1, {})
+        events = [logged_frame(7, HELD, generation="retired"), callback(1, 0)]
+        verify_callback_frame(events, 1, {})
+
+    def test_a_callback_must_not_observe_an_incomplete_frame(self):
+        frame = logged_frame(3, HELD)
+        for presented in ({"snapshot": frame["snapshot"], "motion": None, "ready": True},
+                          {"snapshot": None, "motion": frame["motion"], "ready": False},
+                          {"snapshot": None, "motion": None, "ready": True},
+                          {"snapshot": frame["snapshot"], "motion": frame["motion"], "ready": False}):
+            events = self.press()
+            events[-1].update(presented)
+            with self.subTest(presented=presented), self.assertRaisesRegex(ValueError, "incomplete Command frame"):
+                verify_callback_frame(events, len(events) - 1, {})
+
+    def test_a_callback_must_not_observe_the_superseded_pressed_frame(self):
+        stale = logged_frame(3, HELD)
+        events = self.press()
+        events[-1].update(snapshot=stale["snapshot"], motion=stale["motion"], ready=True)
+        with self.assertRaisesRegex(ValueError, "frame 3 published for the superseded pressed request"):
+            verify_callback_frame(events, len(events) - 1, {})
+
+    def test_a_complete_callback_frame_must_be_the_logged_frame_for_committed_state(self):
+        events = [logged_frame(1, HELD), logged_frame(2, COMMITTED)]
+        events.append(callback(1, 2, presented={"snapshot": events[1]["snapshot"], "motion": events[1]["motion"],
+                                                "ready": True}))
+        with mock.patch("check_quickshell_command_motion.verify_frame") as verify:
+            verify_callback_frame(events, 2, {"motion": {}})
+            verify.assert_called_once_with(events[2], {"motion": {}})
+            verify.side_effect = ValueError("native motion differs")
+            with self.assertRaisesRegex(ValueError, "does not present the committed state: native motion differs"):
+                verify_callback_frame(events, 2, {})
+        events[2]["motion"] = events[0]["motion"]
+        with self.assertRaisesRegex(ValueError, "complete frame other than frame 2"):
+            verify_callback_frame(events, 2, {})
+
+    def test_frames_before_the_callback_must_hold_the_press(self):
+        events = self.press()
+        events[3]["state"] = COMMITTED
+        with self.assertRaisesRegex(ValueError, "frame 3, logged before activation effect 1, no longer presents"):
+            verify_activation(events, len(events) - 1, 1, {})
+        with self.assertRaisesRegex(ValueError, "no frame was logged during the press"):
+            verify_activation(events, len(events) - 1, 3, {})
+
+    def test_the_first_frame_after_the_callback_presents_committed_state(self):
+        events = self.press()
+        with self.assertRaisesRegex(ValueError, "no frame was logged after activation effect 1"):
+            verify_committed_frame(events, len(events) - 1, 3)
+        events = self.press(logged_frame(4, HELD), logged_frame(5, COMMITTED))
+        with self.assertRaisesRegex(ValueError, "frame 4, the first after activation effect 1, presents state"):
+            verify_committed_frame(events, 4, 3)
+
+    def test_frames_after_a_superseding_request_never_present_the_earlier_one(self):
+        unavailable = {"enabled": False, "focused": False, "hold": None}
+        change = {"kind": "availability", "enabled": False}
+
+        def expectation(frame):
+            return not frame["state"]["enabled"]
+        events = [logged_frame(1, HELD), change, logged_frame(2, unavailable), logged_frame(3, unavailable)]
+        self.assertEqual([frame["sequence"] for frame in verify_superseding_frames(events, 1, expectation, "change")],
+                         [2, 3])
+        for later, message in (((), "no frame was logged after the change"),
+                               ((HELD, unavailable), "frame 2, the first after the change, presents the superseded"),
+                               ((unavailable, HELD), "frame 3 for the request superseded by the change")):
+            sequence = [logged_frame(index + 2, state) for index, state in enumerate(later)]
+            with self.subTest(later=later), self.assertRaisesRegex(ValueError, message):
+                verify_superseding_frames([logged_frame(1, HELD), change, *sequence], 1, expectation, "change")
+
 
 if __name__ == "__main__":
     unittest.main()

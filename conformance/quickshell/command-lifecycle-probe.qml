@@ -22,6 +22,7 @@ ShellRoot {
     property int effects: 0
     property int publications: 0
     property int retractions: 0
+    property int frameSequence: 0
     property var reactionResult: null
     readonly property var command: windowLoader.item && windowLoader.item.mount.item
         ? windowLoader.item.mount.item.command : null
@@ -69,23 +70,30 @@ ShellRoot {
         return control && control.Window.window ? control.Window.window.devicePixelRatio : null;
     }
 
+    function presentation(control) {
+        return {configuration:configurationName, snapshot:JSON.parse(control.snapshot || "null"),
+            motion:JSON.parse(control.motion || "null"), state:JSON.parse(control.publication).state,
+            hovered:control.hovered, target:JSON.parse(control.targetPublication || "null"), center:targetCenter(),
+            deviceScale:deviceScale(control)};
+    }
+
     function frame(control) {
         if (!control.snapshot.length || !control.motion.length) return;
-        log("frame", {time:Date.now() / 1000, configuration:configurationName, snapshot:JSON.parse(control.snapshot),
-            motion:JSON.parse(control.motion), state:JSON.parse(control.publication).state, hovered:control.hovered,
-            target:JSON.parse(control.targetPublication || "null"), center:targetCenter(),
-            deviceScale:deviceScale(control)});
+        log("frame", Object.assign({time:Date.now() / 1000, sequence:++frameSequence}, presentation(control)));
     }
 
     function activated(control) {
         const publication = JSON.parse(control.publication);
         if (!publication.state.enabled || !publication.activate) fail("consumer effect preceded committed activation");
         ++effects;
-        log("effect", {effects:effects, state:publication.state, reaction:reaction});
+        log("effect", Object.assign({effects:effects, reaction:reaction, ready:control.ready, frame:frameSequence},
+            presentation(control)));
         const mode = reaction;
         reaction = "";
-        if (mode === "replace") configuration = JSON.stringify(requests.replacement);
-        else if (mode === "unavailable") reactionResult = control.controller.dispatch(JSON.stringify({kind:"availability", enabled:false}));
+        if (mode === "replace") {
+            configurationName = "replacement";
+            configuration = JSON.stringify(requests.replacement);
+        } else if (mode === "unavailable") reactionResult = control.controller.dispatch(JSON.stringify({kind:"availability", enabled:false}));
         else if (mode === "invoke") reactionResult = control.invoke();
         else if (mode === "hide") shown = false;
         else if (mode === "unmount") mounted = false;
@@ -230,12 +238,14 @@ ShellRoot {
             }
         }
         function configure(name: string): void {
+            root.log("configure", {configuration:name});
             root.configurationName = name;
             root.configuration = JSON.stringify(root.requests[name]);
         }
         function setMotion(enabled: bool): void { root.motionChannels = enabled ? JSON.stringify(root.requests.channels) : ""; }
         function setCommandX(value: real): void { root.commandX = value; }
         function availability(enabled: bool): bool {
+            root.log("availability", {enabled:enabled});
             return root.command ? root.command.controller.dispatch(JSON.stringify({kind:"availability", enabled:enabled})) : false;
         }
         function focusCommand(): void { if (root.command) root.command.forceActiveFocus(); }
