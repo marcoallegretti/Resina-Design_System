@@ -133,11 +133,18 @@ def activation_cases(session):
         session.reset()
         before = len(effects(session.events()))
         session.input.key(key, True)
-        holding = session.settle(lambda current: (current["state"]["hold"] or {}).get("key") == name, name + " hold")
+        holding = session.settle(lambda current: (current["state"]["hold"] or {}).get("key") == name
+                                                 and current["ready"], name + " hold with a published frame")
         session.quiet(1.2)
-        repeated = session.current()["publications"] - holding["publications"]
+        current = session.current()
+        repeated = current["publications"] - holding["publications"]
         if repeated < 2:
             raise ValueError(f"{name} hold delivered {repeated} auto-repeat publications; at least 2 are required")
+        retracted = current["retractions"] - holding["retractions"]
+        if not current["ready"]:
+            raise ValueError(f"{name} hold left no published frame after auto-repeat")
+        if retracted:
+            raise ValueError(f"{name} auto-repeat retracted the published Toggle frame {retracted} times")
         expect_effects(session, before, 0 if name == "space" else 1, name + " held with repeat")
         session.input.key(key, False)
         _, now = expect_toggles(session, before, 1, False, name + " toggle")

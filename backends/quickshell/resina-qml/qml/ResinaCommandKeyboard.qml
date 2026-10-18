@@ -6,6 +6,7 @@ Item {
     readonly property CommandController controller: lifecycle
     readonly property string publication: lifecycle.publication
     readonly property string routingError: nativeState.error
+    readonly property bool keyRepeat: nativeState.repeating
     readonly property var nativeWindow: Window.window
     property bool acceptsNewGestures: true
     enabled: JSON.parse(publication).state.enabled
@@ -13,7 +14,9 @@ Item {
     Accessible.ignored: true
 
     function deliver(event) {
+        nativeState.repeating = event.kind === "keyDown" && event.repeat === true;
         const accepted = lifecycle.dispatch(JSON.stringify(event));
+        nativeState.repeating = false;
         nativeState.error = accepted ? "" : lifecycle.lastError;
         return accepted;
     }
@@ -139,6 +142,7 @@ Item {
         property bool focusLost: false
         property bool destroyed: false
         property string error: ""
+        property bool repeating: false
     }
     CommandController { id: lifecycle }
 }

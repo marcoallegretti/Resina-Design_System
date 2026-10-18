@@ -156,6 +156,29 @@ def spring_cases(session, motion):
         raise ValueError("native frame scheduling continued after both channels settled")
     results.append("pressed and released spring frames continue across the retarget, track native time and settle")
 
+    motion.settle("motion settled before the held press")
+    start = len(motion.frames())
+    before = len(effects(session.events()))
+    session.input.key(KEY_SPACE, True)
+    held = session.settle(lambda current: (current["state"]["hold"] or {}).get("key") == "space" and current["ready"],
+                          "space hold with a published frame")
+    session.quiet(1.2)
+    current = session.current()
+    if current["publications"] - held["publications"] < 2:
+        raise ValueError("a held press with motion delivered fewer than 2 auto-repeat publications")
+    if current["retractions"] != held["retractions"] or not current["ready"]:
+        raise ValueError("auto-repeat during a held press with motion retracted or unpublished the Command frame")
+    held_frames = [frame for frame in motion.frames()[start:] if frame["state"]["hold"]]
+    # The authored test profile is still moving after the compositor's repeat delay, so held frames span repeats.
+    if not held_frames or held_frames[-1]["time"] - held_frames[0]["time"] < 1:
+        raise ValueError("held spring frames stopped while auto-repeat continued")
+    if len(epochs(held_frames)) != 1:
+        raise ValueError("auto-repeat restarted the motion clock during a held press")
+    session.input.key(KEY_SPACE, False)
+    expect_effects(session, before, 1, "held sampled Command activation")
+    motion.settle("motion settled after the held press")
+    results.append("auto-repeat during a held press keeps one clock epoch and publishes frames without retraction")
+
     start = len(motion.frames())
     session.point(session.current())
     entered = motion.index(start, lambda frame: frame["hovered"] and moving(frame), "hover spring frames")

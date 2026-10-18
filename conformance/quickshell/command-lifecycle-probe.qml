@@ -21,6 +21,7 @@ ShellRoot {
     property bool disabledFocusable: false
     property int effects: 0
     property int publications: 0
+    property int retractions: 0
     property var reactionResult: null
     readonly property var command: windowLoader.item && windowLoader.item.mount.item
         ? windowLoader.item.mount.item.command : null
@@ -58,7 +59,7 @@ ShellRoot {
             ready:command ? command.ready : false, error:command ? command.preparationError : "",
             state:command ? JSON.parse(command.publication).state : null,
             hovered:command ? command.hovered : false, nativeFocus:nativeFocus(),
-            target:targetCenter(), effects:effects, publications:publications, reactionResult:reactionResult,
+            target:targetCenter(), effects:effects, publications:publications, retractions:retractions, reactionResult:reactionResult,
             otherFocused:Boolean(windowLoader.item && windowLoader.item.mount.item && windowLoader.item.mount.item.other.activeFocus),
             screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height,
                 deviceScale:command.Screen.devicePixelRatio} : null};
@@ -91,6 +92,10 @@ ShellRoot {
     Connections {
         target: root.command ? root.command.controller : null
         function onPublicationChanged() { ++root.publications; }
+    }
+    Connections {
+        target: root.command
+        function onSnapshotChanged() { if (!root.command.snapshot.length) ++root.retractions; }
     }
 
     function checkFocusable() {

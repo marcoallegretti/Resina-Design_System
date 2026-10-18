@@ -85,6 +85,7 @@ ResinaCommandInput {
 
     function fail(cause) {
         state.revision = {};
+        state.prepared = "";
         state.qualified = false;
         state.armed = false;
         resolver.publishSnapshot("");
@@ -207,6 +208,7 @@ ResinaCommandInput {
             }
             // Target preparation can expose a retained native hover observation.
             state.pending = requestFor(JSON.parse(publication).state,root.hovered);
+            state.prepared = JSON.stringify(JSON.parse(controller.publication).state);
             const origin = view.mapToItem(null,0,0);
             const options = JSON.stringify({x:origin.x,y:origin.y,
                 deviceScale:view.nativeDeviceScale,samplesPerAxis:samplesPerAxis});
@@ -287,6 +289,7 @@ ResinaCommandInput {
     function reconfigure() {
         if (!state.started) return;
         state.revision = {};
+        state.prepared = "";
         const running = state.running;
         state.running = true;
         try {
@@ -332,6 +335,9 @@ ResinaCommandInput {
     Connections {
         target: root.controller
         function onPublicationChanged() {
+            // Key auto-repeat republishes an unchanged state; keep the current frame.
+            if (root.keyRepeat && state.started && state.qualified && !state.error.length
+                && state.prepared === JSON.stringify(JSON.parse(root.controller.publication).state)) return;
             if (state.qualified || !state.error.length) root.refresh();
         }
         function onActivated() { root.activated(); }
@@ -398,6 +404,7 @@ ResinaCommandInput {
         property string target: ""
         property var reservation: null
         property string pending: ""
+        property string prepared: ""
         property var semantics: null
         property string error: ""
     }
