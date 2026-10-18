@@ -1,7 +1,7 @@
 use crate::{OpaquePigmentResult, SrgbFallback, resolve_key_light, resolve_opaque_pigment_source};
 use resina_color::OpaqueSrgbRange;
 use resina_environment::{EnvironmentSnapshot, QualityPolicy};
-use resina_model::{KeyLight, MaterialLight, PhysicalVector};
+use resina_model::{KeyLight, MaterialLight, MaterialLightChannels, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
@@ -161,6 +161,25 @@ pub fn resolve_material_light_source(
     })
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct MaterialLightPolicy {
+    ambient: bool,
+    interaction: bool,
+}
+
+impl MaterialLightPolicy {
+    pub(crate) fn of(environment: &EnvironmentSnapshot) -> Self {
+        let preferences = environment.accessibility_preferences();
+        Self {
+            ambient: !preferences.high_contrast,
+            interaction: environment.renderer_capabilities().dynamic_lighting
+                && environment.quality_policy() != QualityPolicy::Economy
+                && !preferences.high_contrast
+                && !preferences.reduced_motion,
+        }
+    }
+}
+
 impl ResolvedMaterialLight {
     pub(crate) fn resolve(
         light: &MaterialLight,
@@ -168,24 +187,31 @@ impl ResolvedMaterialLight {
         enabled: bool,
         interaction_active: bool,
     ) -> Result<Self, MaterialLightError> {
+        Self::admit(
+            light.key_light(),
+            light.channels(),
+            MaterialLightPolicy::of(environment),
+            enabled && interaction_active,
+        )
+    }
+
+    pub(crate) fn admit(
+        key_light: &KeyLight,
+        channels: &MaterialLightChannels,
+        policy: MaterialLightPolicy,
+        interaction_admitted: bool,
+    ) -> Result<Self, MaterialLightError> {
         let error = |e: &dyn fmt::Display| MaterialLightError(e.to_string());
-        let key_direction = resolve_key_light(light.key_light(), 0.0, &[])
+        let key_direction = resolve_key_light(key_light, 0.0, &[])
             .map_err(|e| error(&e))?
             .direction();
-        let preferences = environment.accessibility_preferences();
-        let ambient = if preferences.high_contrast {
-            0.0
+        let ambient = if policy.ambient {
+            channels.ambient().unwrap_or(0.0)
         } else {
-            light.ambient().unwrap_or(0.0)
+            0.0
         };
-        let allow_interaction = enabled
-            && interaction_active
-            && environment.renderer_capabilities().dynamic_lighting
-            && environment.quality_policy() != QualityPolicy::Economy
-            && !preferences.high_contrast
-            && !preferences.reduced_motion;
-        let interaction = match light.interaction() {
-            Some(input) if allow_interaction && input.strength() > 0.0 => {
+        let interaction = match channels.interaction() {
+            Some(input) if policy.interaction && interaction_admitted && input.strength() > 0.0 => {
                 let key = KeyLight::try_new(input.direction()).map_err(|e| error(&e))?;
                 Some(ResolvedInteraction {
                     direction: resolve_key_light(&key, 0.0, &[])

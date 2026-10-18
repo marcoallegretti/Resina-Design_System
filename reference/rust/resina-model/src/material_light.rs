@@ -47,12 +47,55 @@ impl InteractionLight {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct MaterialLightChannels {
+    ambient: Option<f64>,
+    interaction: Option<InteractionLight>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ChannelsInput {
+    #[serde(deserialize_with = "required_nullable")]
+    ambient: Option<f64>,
+    #[serde(deserialize_with = "required_nullable")]
+    interaction: Option<InteractionLight>,
+}
+
+impl MaterialLightChannels {
+    fn try_new(
+        ambient: Option<f64>,
+        interaction: Option<InteractionLight>,
+    ) -> Result<Self, &'static str> {
+        if ambient.is_some_and(|a| !a.is_finite() || !(0.0..1.0).contains(&a)) {
+            return Err("ambient must be finite and in [0,1)");
+        }
+        Ok(Self {
+            ambient,
+            interaction,
+        })
+    }
+    pub fn ambient(&self) -> Option<f64> {
+        self.ambient
+    }
+    pub fn interaction(&self) -> Option<&InteractionLight> {
+        self.interaction.as_ref()
+    }
+}
+
+impl<'de> Deserialize<'de> for MaterialLightChannels {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = crate::deserialize_assignment_object::<D, ChannelsInput>(deserializer)?;
+        Self::try_new(input.ambient, input.interaction).map_err(D::Error::custom)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MaterialLight {
     schema_version: String,
     key_light: KeyLight,
-    ambient: Option<f64>,
-    interaction: Option<InteractionLight>,
+    #[serde(flatten)]
+    channels: MaterialLightChannels,
 }
 
 #[derive(Deserialize)]
@@ -70,17 +113,11 @@ struct LightInput {
 impl<'de> Deserialize<'de> for MaterialLight {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let input = crate::deserialize_assignment_object::<D, LightInput>(deserializer)?;
-        if input
-            .ambient
-            .is_some_and(|a| !a.is_finite() || !(0.0..1.0).contains(&a))
-        {
-            return Err(D::Error::custom("ambient must be finite and in [0,1)"));
-        }
         Ok(Self {
             schema_version: input.schema_version,
             key_light: input.key_light,
-            ambient: input.ambient,
-            interaction: input.interaction,
+            channels: MaterialLightChannels::try_new(input.ambient, input.interaction)
+                .map_err(D::Error::custom)?,
         })
     }
 }
@@ -89,11 +126,14 @@ impl MaterialLight {
     pub fn key_light(&self) -> &KeyLight {
         &self.key_light
     }
+    pub fn channels(&self) -> &MaterialLightChannels {
+        &self.channels
+    }
     pub fn ambient(&self) -> Option<f64> {
-        self.ambient
+        self.channels.ambient()
     }
     pub fn interaction(&self) -> Option<&InteractionLight> {
-        self.interaction.as_ref()
+        self.channels.interaction()
     }
 }
 
@@ -154,5 +194,42 @@ mod tests {
                 .strength(),
             0.25
         );
+    }
+
+    #[test]
+    fn channels_are_named_nullable_and_bounded_without_a_key() {
+        let channels =
+            json!({"ambient":0.25,"interaction":{"direction":{"x":1,"y":0},"strength":0.5}});
+        let decoded: MaterialLightChannels = serde_json::from_value(channels.clone()).unwrap();
+        assert_eq!(decoded.ambient(), Some(0.25));
+        assert_eq!(decoded.interaction().unwrap().strength(), 0.5);
+        assert!(
+            serde_json::from_value::<MaterialLightChannels>(
+                json!({"ambient":null,"interaction":null})
+            )
+            .unwrap()
+            .interaction()
+            .is_none()
+        );
+        for name in ["ambient", "interaction"] {
+            let mut missing = channels.clone();
+            missing.as_object_mut().unwrap().remove(name);
+            assert!(
+                serde_json::from_value::<MaterialLightChannels>(missing).is_err(),
+                "{name}"
+            );
+        }
+        let mut keyed = channels.clone();
+        keyed["keyLight"] = valid()["keyLight"].clone();
+        assert!(serde_json::from_value::<MaterialLightChannels>(keyed).is_err());
+        assert!(serde_json::from_value::<MaterialLightChannels>(json!([0.25, null])).is_err());
+        for ambient in [-0.1, 1.0] {
+            let mut invalid = channels.clone();
+            invalid["ambient"] = json!(ambient);
+            assert!(serde_json::from_value::<MaterialLightChannels>(invalid).is_err());
+        }
+        let mut invalid = channels;
+        invalid["interaction"]["strength"] = json!(1);
+        assert!(serde_json::from_value::<MaterialLightChannels>(invalid).is_err());
     }
 }

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:control-relief:0.1.0",
+  "title": "Resina Control Relief Profiles",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "commandBody",
+    "toggleTrack",
+    "toggleThumb"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "commandBody": {
+      "$ref": "urn:resina:schema:surface-relief-request:0.1.0#/$defs/profile"
+    },
+    "toggleTrack": {
+      "$ref": "urn:resina:schema:surface-relief-request:0.1.0#/$defs/profile"
+    },
+    "toggleThumb": {
+      "$ref": "urn:resina:schema:surface-relief-request:0.1.0#/$defs/profile"
+    }
+  }
+}

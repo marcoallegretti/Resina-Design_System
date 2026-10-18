@@ -40,6 +40,35 @@ impl Serialize for MaterialReliefPaint {
 }
 
 impl MaterialReliefPaint {
+    pub(crate) fn new(face: ReliefPaint, light: ResolvedMaterialLight) -> Self {
+        Self { face, light }
+    }
+
+    pub(crate) fn edge_interior_contains(&self, point: PhysicalVector) -> bool {
+        self.face.edge_interior_contains(point)
+    }
+
+    pub(crate) fn face_color(
+        &self,
+        point: PhysicalVector,
+    ) -> Result<SrgbFallback, ReliefPaintError> {
+        let normal = self
+            .face
+            .surface
+            .sample(point)
+            .map_err(|e| ReliefPaintError(e.to_string()))?
+            .ok_or_else(|| ReliefPaintError("face color requires a point of the outline".into()))?
+            .normal;
+        self.shade(normal)
+    }
+
+    fn shade(&self, normal: crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError> {
+        self.light
+            .sample(self.face.pigment(), normal.x, normal.y)
+            .map(|(_, color)| color)
+            .map_err(|e| ReliefPaintError(e.to_string()))
+    }
+
     pub fn surface(&self) -> &SurfaceRelief {
         self.face.surface()
     }
@@ -68,12 +97,8 @@ impl MaterialReliefPaint {
         &self,
         point: PhysicalVector,
     ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
-        self.face.sample_paint_with(point, |normal| {
-            self.light
-                .sample(self.face.pigment(), normal.x, normal.y)
-                .map(|(_, color)| color)
-                .map_err(|e| ReliefPaintError(e.to_string()))
-        })
+        self.face
+            .sample_paint_with(point, |normal| self.shade(normal))
     }
 }
 
@@ -172,7 +197,7 @@ pub fn resolve_material_relief_paint_source(
         request.interaction_active,
     )
     .map_err(|e| error(&e))?;
-    let paint = MaterialReliefPaint { face, light };
+    let paint = MaterialReliefPaint::new(face, light);
     let samples = request
         .points
         .into_iter()

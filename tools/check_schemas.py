@@ -6,6 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from command_label_arithmetic import check_cases as check_label_arithmetic
+from lit_body_arithmetic import body_invariants, relief_profile_violation
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -284,6 +285,7 @@ def main():
         "schemas/command-label-arithmetic.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-relief-containment.schema.json",
+        "schemas/control-relief.schema.json",
         "schemas/command-accessibility-ir.schema.json",
         "schemas/toggle-snapshot-cases.schema.json",
         "schemas/toggle-travel-cases.schema.json",
@@ -450,6 +452,9 @@ def main():
         "schemas/material-relief-paint-request.schema.json",
         "schemas/material-relief-paint-result.schema.json",
         "schemas/material-relief-paint-case.schema.json",
+        "schemas/lit-control-body-case.schema.json",
+        "schemas/lit-control-body-ir.schema.json",
+        "schemas/lit-control-paint-ir.schema.json",
         "schemas/key-light.schema.json",
         "schemas/key-light-request.schema.json",
         "schemas/key-light-result.schema.json",
@@ -899,6 +904,84 @@ def main():
         check_case(material_paint_request_schema, case["name"], case["request"], case["requestSchemaValid"])
         if "expected" in case:
             check_case(material_paint_result_schema, case["name"], case["expected"], True)
+    lit_body_source = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
+    lit_body_case_schema = validator_for("schemas/lit-control-body-case.schema.json")
+    lit_body_source_schema = Draft202012Validator(
+        {"$ref": "urn:resina:schema:lit-control-body-case:0.1.0#/$defs/source"}, registry=schema_registry())
+    check_case(lit_body_source_schema, "lit control body source", lit_body_source, True)
+    lit_body_cases = load_json(ROOT / "conformance/ir/lit-control-body-vectors.json")
+    lit_body_names = set()
+    for case in lit_body_cases:
+        if case["name"] in lit_body_names:
+            raise ValueError(f"duplicate lit control body case: {case['name']}")
+        lit_body_names.add(case["name"])
+        check_case(lit_body_case_schema, case["name"], case, True)
+        check_case(lit_body_source_schema, case["name"], apply_changes(lit_body_source, case["sourceChanges"]), case["sourceSchemaValid"])
+    lit_body = load_json(ROOT / "conformance/ir/lit-control-body-ir.json")
+    lit_body_schema = validator_for("schemas/lit-control-body-ir.schema.json")
+    check_case(lit_body_schema, "lit control body IR", lit_body, True)
+    if body_invariants(lit_body):
+        raise ValueError(f"lit control body IR: {body_invariants(lit_body)}")
+    invalid_lit_bodies = (
+        ("lit body highlight band", {"highlightWidth": 2}),
+        ("lit body spec/36 band contour", {"geometry": dict(lit_body["geometry"], highlightOuter=lit_body["geometry"]["edgeInterior"])}),
+        ("lit body unswept geometry", {"geometry": {"silhouette": lit_body["geometry"]["silhouette"]}}),
+        ("lit body second key light", {"face": dict(lit_body["face"], keyLight={"schemaVersion": "0.1.0", "direction": {"x": 1, "y": 0}})}),
+        ("lit body Frost representation on Cast", {"frostRepresentation": "opaqueDimensional"}),
+    )
+    for name, members in invalid_lit_bodies:
+        check_case(lit_body_schema, name, dict(lit_body, **members), False)
+    for name, pointer, value in (
+        ("lit body translucent representation", "/representation", "translucent"),
+        ("lit body two color ranges", "/face/colorRanges", lit_body["face"]["colorRanges"][:2]),
+        ("lit body unsupported state", "/states/states", ["dragging"]),
+        ("lit body Gel family", "/materialFamily", "gel"),
+        ("lit body inconsistent face family", "/face/pigment/materialFamily", "frost"),
+        ("lit body negative depth", "/depth", -1),
+        ("lit body sampled normals", "/lighting/normalHighlightWeights", [0.5]),
+        ("lit body version", "/schemaVersion", "0.2.0"),
+    ):
+        check_case(lit_body_schema, name, apply_changes(lit_body, [{"path": pointer, "value": value}]), False)
+    for name, pointer, value in (
+        ("lit body competing key direction", "/face/light/keyDirection", {"x": 1, "y": 0}),
+        ("lit body interaction outside hover or pressed", "/states/states", ["rest"]),
+        ("lit body unswept silhouette", "/geometry/silhouette/bounds/width", lit_body["face"]["surface"]["outline"]["size"]["width"]),
+        ("lit body misplaced edge interior", "/geometry/edgeInterior/offset", {"x": 0, "y": 0}),
+        ("lit body content outside plateau", "/face/contentBounds/x", 1),
+        ("lit body inexact edge range", "/face/colorRanges/2/upper", lit_body["face"]["pigment"]["body"]),
+        ("lit body truncated silhouette", "/geometry/silhouette/segments", lit_body["geometry"]["silhouette"]["segments"][:1]),
+        ("lit body unswept silhouette segments", "/geometry/silhouette/segments/4/center", {"x": 72, "y": 24}),
+        ("lit body edge interior with silhouette segments", "/geometry/edgeInterior/contour/segments", lit_body["geometry"]["silhouette"]["segments"]),
+        ("lit body corner contradicting the silhouette", "/face/surface/outline/corners/topLeft", {"x": 4, "y": 4}),
+        ("lit body outline reserved without the edge inset", "/face/surface/outline/contentBounds/x", 6),
+        ("lit body contrast of another foreground", "/face/contentContrastRatio", 3),
+        ("lit body shoulder reaching tau 1", "/face/surface/profile/shoulderWidth", 6),
+        ("lit body relief amplitude above half shoulder", "/face/surface/profile/amplitude", 5),
+    ):
+        invalid = apply_changes(lit_body, [{"path": pointer, "value": value}])
+        check_case(lit_body_schema, name, invalid, True)
+        if body_invariants(invalid) is None:
+            raise ValueError(f"{name}: invariant violation was not detected")
+    flat_with_amplitude = apply_changes(lit_body, [
+        {"path": "/face/surface/profile/kind", "value": "flat"},
+        {"path": "/face/surface/profile/shoulderWidth", "value": 0},
+    ])
+    check_case(lit_body_schema, "lit body flat profile with amplitude", flat_with_amplitude, False)
+    if body_invariants(flat_with_amplitude) is None:
+        raise ValueError("lit body flat profile with amplitude: invariant violation was not detected")
+    lit_paint_schema = validator_for("schemas/lit-control-paint-ir.schema.json")
+    focus = load_json(ROOT / "conformance/ir/focus-ir-expected.json")
+    focused = apply_changes(lit_body, [{"path": "/states/states", "value": ["hover", "focused"]}])
+    for name, document, valid in (
+        ("lit paint unfocused", {"schemaVersion": "0.1.0", "body": lit_body}, True),
+        ("lit paint focused", {"schemaVersion": "0.1.0", "body": focused, "focus": focus}, True),
+        ("lit paint focus without focused state", {"schemaVersion": "0.1.0", "body": lit_body, "focus": focus}, False),
+        ("lit paint focused without focus", {"schemaVersion": "0.1.0", "body": focused}, False),
+        ("lit paint version", {"schemaVersion": "0.2.0", "body": lit_body}, False),
+        ("lit paint spec/36 body", {"schemaVersion": "0.1.0", "body": load_json(ROOT / "conformance/ir/opaque-surface-expected.json")}, False),
+        ("lit paint unknown member", {"schemaVersion": "0.1.0", "body": lit_body, "raster": "native"}, False),
+    ):
+        check_case(lit_paint_schema, name, document, valid)
     relief_paint_cases = load_json(ROOT / "conformance/ir/relief-paint-vectors.json")
     relief_paint_case_schema = validator_for("schemas/relief-paint-case.schema.json")
     relief_paint_request_schema = validator_for("schemas/relief-paint-request.schema.json")
@@ -1351,6 +1434,7 @@ def main():
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
+        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 15 + 7
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)
@@ -2324,6 +2408,45 @@ def main():
                         ("/cases/0/contained", "yes")]:
         check_case(relief_content_validator, f"relief content invalid {path}",
                    apply_changes(relief_content, [{"path": path, "value": value}]), False)
+        checked += 1
+    control_relief = load_json(ROOT / "definitions/control-relief.json")
+    control_relief_validator = validator_for("schemas/control-relief.schema.json")
+    check_case(control_relief_validator, "reference control relief", control_relief, True)
+    checked += 1
+    for name, changes in [
+        ("unsupported control relief version", [{"path": "/schemaVersion", "value": "0.2.0"}]),
+        ("unknown relief kind", [{"path": "/commandBody/kind", "value": "negative-extrusion"}]),
+        ("flat relief with amplitude", [{"path": "/toggleThumb/kind", "value": "flat"}]),
+        ("relief without shoulder", [{"path": "/toggleTrack/shoulderWidth", "value": 0}]),
+        ("relief without amplitude", [{"path": "/commandBody/amplitude", "value": 0}]),
+        ("zero body thickness", [{"path": "/toggleThumb/bodyThickness", "value": 0}]),
+        ("positional profile", [{"path": "/commandBody", "value": ["convex", 2, 1, 2]}]),
+        ("textual extent", [{"path": "/commandBody/shoulderWidth", "value": "2px"}]),
+    ]:
+        check_case(control_relief_validator, name, apply_changes(control_relief, changes), False)
+        checked += 1
+    for name in ("commandBody", "toggleTrack", "toggleThumb"):
+        missing = copy.deepcopy(control_relief)
+        del missing[name]
+        check_case(control_relief_validator, f"missing control relief {name}", missing, False)
+        checked += 1
+    for name, value in (("sliderTrack", control_relief["toggleTrack"]), ("renderer", "native")):
+        check_case(control_relief_validator, f"unknown control relief {name}", dict(control_relief, **{name: value}), False)
+        checked += 1
+    for part in ("commandBody", "toggleTrack", "toggleThumb"):
+        if relief_profile_violation(control_relief[part]):
+            raise ValueError(f"reference control relief {part}: {relief_profile_violation(control_relief[part])}")
+    for name, pointer, value in (
+        ("relief amplitude above half shoulder", "/commandBody/amplitude", 1.5),
+        ("recessed amplitude at body thickness", "/toggleTrack/bodyThickness", 0.75),
+        ("relief amplitude ratio underflowing", "/commandBody",
+         {"kind": "convex", "bodyThickness": 5e-324, "amplitude": 5e-324, "shoulderWidth": 2}),
+        ("convex amplitude absorbed by body thickness", "/commandBody/bodyThickness", 1e17),
+    ):
+        invalid = apply_changes(control_relief, [{"path": pointer, "value": value}])
+        check_case(control_relief_validator, name, invalid, True)
+        if relief_profile_violation(invalid[pointer.split("/")[1]]) is None:
+            raise ValueError(f"{name}: relief violation was not detected")
         checked += 1
     expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
     checked += check_label_expansion(expansion)

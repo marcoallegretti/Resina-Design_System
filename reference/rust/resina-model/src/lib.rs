@@ -41,7 +41,7 @@ pub use icon::{IconBounds, IconContent, IconDirection, IconKind, IconLayerRole};
 mod key_light;
 pub use key_light::KeyLight;
 mod material_light;
-pub use material_light::{InteractionLight, MaterialLight};
+pub use material_light::{InteractionLight, MaterialLight, MaterialLightChannels};
 mod elevation;
 pub use elevation::ElevationDepthAssignments;
 mod frost;
