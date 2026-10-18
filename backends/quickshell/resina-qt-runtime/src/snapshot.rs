@@ -5,15 +5,16 @@ use resina_model::{
     SurfaceIntent, SurfaceSize,
 };
 use resina_resolver::{
-    CommandMotionChannels, CommandMotionInput, CommandPaintInput, CommandSnapshotInput,
-    OpaqueSurfaceInput, SrgbFallback, SurfaceHitRegionInput, SurfacePaintInput,
-    resolve_command_motion, resolve_command_paint, resolve_command_reservation_body,
-    resolve_command_snapshot, resolve_command_states, resolve_srgb_fallback,
-    resolve_surface_hit_region,
+    CommandLabelIr, CommandMotionChannels, CommandMotionInput, CommandPaintInput,
+    CommandSnapshotInput, HitRegionIr, OpaqueSurfaceInput, SrgbFallback, SurfaceHitRegionInput,
+    SurfacePaintInput, resolve_command_motion, resolve_command_paint,
+    resolve_command_reservation_body, resolve_command_snapshot, resolve_command_states,
+    resolve_srgb_fallback, resolve_surface_hit_region,
 };
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
 use serde_json::{Value, json};
+use std::{cell::RefCell, rc::Rc};
 
 #[cxx::bridge(namespace = "resina::qt")]
 mod ffi {
@@ -131,6 +132,80 @@ mod pigment_source_tests {
     }
 }
 
+struct ParsedRequest {
+    request: Request,
+    description: Option<String>,
+    adjacent: SrgbFallback,
+    backdrop: Option<SrgbFallback>,
+    surrounding: Option<SrgbFallback>,
+}
+
+thread_local! {
+    // Motion frames resolve the same request bytes; only successful results are kept, so every
+    // failure is diagnosed again exactly as before.
+    static PARSED: RefCell<Option<(String, Rc<ParsedRequest>)>> = const { RefCell::new(None) };
+    static RESERVATION: RefCell<Option<(String, CommandLabelIr, HitRegionIr)>> =
+        const { RefCell::new(None) };
+}
+
+fn parse_request(source: &str) -> Result<Rc<ParsedRequest>, String> {
+    let cached = PARSED.with_borrow(|entry| {
+        entry
+            .as_ref()
+            .filter(|(cached, _)| cached == source)
+            .map(|(_, parsed)| Rc::clone(parsed))
+    });
+    if let Some(parsed) = cached {
+        return Ok(parsed);
+    }
+    let document = parse_token_document(source).map_err(|error| error.to_string())?;
+    if !document.is_object() || !document.get("body").is_some_and(Value::is_object) {
+        return Err("Qt command snapshot request and body must be objects".to_owned());
+    }
+    if !document
+        .get("availableBounds")
+        .is_some_and(Value::is_object)
+        || !document
+            .get("occupiedRegions")
+            .and_then(Value::as_array)
+            .is_some_and(|regions| regions.iter().all(Value::is_object))
+    {
+        return Err("Qt command target bounds must be named objects".to_owned());
+    }
+    let request: Request = serde_json::from_str(source).map_err(|error| error.to_string())?;
+    let description: Option<String> =
+        serde_json::from_value(request.description.clone()).map_err(|error| error.to_string())?;
+    let rest = resolve_command_states(
+        &ActivationState::try_new(true, false, None).expect("valid neutral command"),
+        false,
+    );
+    if request.body.surface.states() != &rest {
+        return Err("Qt command body template must have exactly the neutral rest state".to_owned());
+    }
+    let adjacent =
+        resolve_srgb_fallback(&request.body.adjacent_color).map_err(|error| error.to_string())?;
+    let backdrop = optional_color(&request.body.post_treatment_backdrop)?;
+    let surrounding = optional_color(&request.body.surrounding_color)?;
+    let parsed = Rc::new(ParsedRequest {
+        request,
+        description,
+        adjacent,
+        backdrop,
+        surrounding,
+    });
+    PARSED.set(Some((source.to_owned(), Rc::clone(&parsed))));
+    Ok(parsed)
+}
+
+fn cached_hit_region(source: &str, label: &CommandLabelIr) -> Option<HitRegionIr> {
+    RESERVATION.with_borrow(|entry| {
+        entry
+            .as_ref()
+            .filter(|(cached, measured, _)| cached == source && measured == label)
+            .map(|(_, _, region)| *region)
+    })
+}
+
 fn optional_color(value: &Value) -> Result<Option<SrgbFallback>, String> {
     if value.is_null() {
         Ok(None)
@@ -159,35 +234,11 @@ fn prepare(
     if source.len() > 8 * 1024 * 1024 {
         return Err("Qt command snapshot request exceeds 8 MiB".to_owned());
     }
-    let document = parse_token_document(source).map_err(|error| error.to_string())?;
-    if !document.is_object() || !document.get("body").is_some_and(Value::is_object) {
-        return Err("Qt command snapshot request and body must be objects".to_owned());
-    }
-    if !document
-        .get("availableBounds")
-        .is_some_and(Value::is_object)
-        || !document
-            .get("occupiedRegions")
-            .and_then(Value::as_array)
-            .is_some_and(|regions| regions.iter().all(Value::is_object))
-    {
-        return Err("Qt command target bounds must be named objects".to_owned());
-    }
-    let request: Request = serde_json::from_str(source).map_err(|error| error.to_string())?;
-    let description: Option<String> =
-        serde_json::from_value(request.description).map_err(|error| error.to_string())?;
-    let rest = resolve_command_states(
-        &ActivationState::try_new(true, false, None).expect("valid neutral command"),
-        false,
-    );
-    if request.body.surface.states() != &rest {
-        return Err("Qt command body template must have exactly the neutral rest state".to_owned());
-    }
-    let adjacent =
-        resolve_srgb_fallback(&request.body.adjacent_color).map_err(|error| error.to_string())?;
-    let backdrop = optional_color(&request.body.post_treatment_backdrop)?;
-    let surrounding = optional_color(&request.body.surrounding_color)?;
-    let content = prepare_content(parse_label_request(request.content)?, producer)?;
+    let parsed = parse_request(source)?;
+    let request = &parsed.request;
+    let (adjacent, backdrop, surrounding) =
+        (&parsed.adjacent, &parsed.backdrop, &parsed.surrounding);
+    let content = prepare_content(parse_label_request(request.content.clone())?, producer)?;
     let available_bounds = request.available_bounds.bounds();
     let occupied_regions: Vec<_> = request
         .occupied_regions
@@ -202,7 +253,7 @@ fn prepare(
                 appearance: &request.body.appearance,
                 foreground_role: request.body.foreground_role,
                 post_treatment_backdrop: backdrop.as_ref(),
-                adjacent_color: &adjacent,
+                adjacent_color: adjacent,
                 minimum_content_contrast: request.body.minimum_content_contrast,
                 minimum_edge_contrast: request.body.minimum_edge_contrast,
             },
@@ -210,20 +261,27 @@ fn prepare(
         },
         command_appearance: &request.body.command_appearance,
     };
-    let deepest = resolve_command_reservation_body(
-        &content.theme,
-        &content.environment,
-        paint_input(&request.body.surface),
-    )
-    .map_err(|error| error.to_string())?;
-    let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
-        environment: &content.environment,
-        body: &deepest,
-        available_bounds,
-        component_minimum: request.component_minimum,
-        occupied_regions: &occupied_regions,
-    })
-    .map_err(|error| error.to_string())?;
+    let hit_region = match cached_hit_region(source, &content.label) {
+        Some(region) => region,
+        None => {
+            let deepest = resolve_command_reservation_body(
+                &content.theme,
+                &content.environment,
+                paint_input(&request.body.surface),
+            )
+            .map_err(|error| error.to_string())?;
+            let region = resolve_surface_hit_region(SurfaceHitRegionInput {
+                environment: &content.environment,
+                body: &deepest,
+                available_bounds,
+                component_minimum: request.component_minimum,
+                occupied_regions: &occupied_regions,
+            })
+            .map_err(|error| error.to_string())?;
+            RESERVATION.set(Some((source.to_owned(), content.label.clone(), region)));
+            region
+        }
+    };
     let surface = request
         .body
         .surface
@@ -254,7 +312,7 @@ fn prepare(
         hit_region,
         activation: &request.activation,
         hovered: request.hovered,
-        description: description.as_deref(),
+        description: parsed.description.as_deref(),
         focusable: request.focusable,
         environment: &content.environment,
         available_bounds,

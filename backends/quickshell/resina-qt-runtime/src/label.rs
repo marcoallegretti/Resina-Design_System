@@ -8,10 +8,17 @@ use resina_resolver::{
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
 use serde_json::json;
-use std::collections::BTreeMap;
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 const MAX_REQUEST_BYTES: usize = 8 * 1024 * 1024;
 const MAX_MEASUREMENT_BYTES: usize = 64 * 1024;
+
+type ThemeEntry = (String, BTreeMap<String, String>, Rc<CompiledTheme>);
+
+thread_local! {
+    // Theme compilation is pure; consecutive frames repeat the same source bytes.
+    static THEME: RefCell<Option<ThemeEntry>> = const { RefCell::new(None) };
+}
 
 #[cxx::bridge(namespace = "resina::qt")]
 pub(crate) mod ffi {
@@ -57,7 +64,7 @@ enum Measurement {
 
 pub(crate) struct PreparedContent {
     pub label: CommandLabelIr,
-    pub theme: CompiledTheme,
+    pub theme: Rc<CompiledTheme>,
     pub environment: EnvironmentSnapshot,
 }
 
@@ -80,8 +87,7 @@ pub(crate) fn prepare_content(
     request: LabelRequest,
     producer: &ffi::NativeLabelMeasure,
 ) -> Result<PreparedContent, String> {
-    let theme = compile_theme_source_with_sources(&request.theme_source, &request.external_sources)
-        .map_err(|error| error.to_string())?;
+    let theme = compiled_theme(&request.theme_source, &request.external_sources)?;
     let resolved = theme.resolve(&request.environment).map_err(|errors| {
         errors
             .iter()
@@ -134,6 +140,31 @@ pub(crate) fn prepare_content(
     })
 }
 
+pub(crate) fn compiled_theme(
+    source: &str,
+    external_sources: &BTreeMap<String, String>,
+) -> Result<Rc<CompiledTheme>, String> {
+    let cached = THEME.with_borrow(|entry| {
+        entry
+            .as_ref()
+            .filter(|(cached, sources, _)| cached == source && sources == external_sources)
+            .map(|(_, _, theme)| Rc::clone(theme))
+    });
+    if let Some(theme) = cached {
+        return Ok(theme);
+    }
+    let theme = Rc::new(
+        compile_theme_source_with_sources(source, external_sources)
+            .map_err(|error| error.to_string())?,
+    );
+    THEME.set(Some((
+        source.to_owned(),
+        external_sources.clone(),
+        Rc::clone(&theme),
+    )));
+    Ok(theme)
+}
+
 fn prepare(request: &str, producer: &ffi::NativeLabelMeasure) -> Result<serde_json::Value, String> {
     if request.len() > MAX_REQUEST_BYTES {
         return Err("Qt label request exceeds 8 MiB".to_owned());
@@ -147,4 +178,49 @@ fn resolve_label(request: &QString, producer: &ffi::NativeLabelMeasure) -> QStri
     let result =
         prepare(&request.to_string(), producer).unwrap_or_else(|error| json!({"error": error}));
     QString::from(result.to_string())
+}
+
+#[cfg(test)]
+mod theme_cache_tests {
+    use super::*;
+
+    fn sources() -> (String, BTreeMap<String, String>) {
+        (
+            include_str!("../../../../tokens/themes/light.json").to_owned(),
+            BTreeMap::from([(
+                "foundation.json".to_owned(),
+                include_str!("../../../../tokens/foundation.json").to_owned(),
+            )]),
+        )
+    }
+
+    #[test]
+    fn identical_sources_reuse_the_compiled_theme() {
+        let (theme, external) = sources();
+        let first = compiled_theme(&theme, &external).unwrap();
+        assert!(Rc::ptr_eq(
+            &first,
+            &compiled_theme(&theme, &external).unwrap()
+        ));
+        let dark = include_str!("../../../../tokens/themes/dark.json");
+        let other = compiled_theme(dark, &external).unwrap();
+        assert!(!Rc::ptr_eq(&first, &other));
+        assert!(!Rc::ptr_eq(
+            &first,
+            &compiled_theme(&theme, &external).unwrap()
+        ));
+    }
+
+    #[test]
+    fn a_failing_source_is_diagnosed_again_and_not_kept() {
+        let (theme, external) = sources();
+        let kept = compiled_theme(&theme, &external).unwrap();
+        let broken = theme.replacen('{', "{\"unknownMember\": 1, ", 1);
+        let first = compiled_theme(&broken, &external).err().unwrap();
+        assert_eq!(compiled_theme(&broken, &external).err().unwrap(), first);
+        assert!(Rc::ptr_eq(
+            &kept,
+            &compiled_theme(&theme, &external).unwrap()
+        ));
+    }
 }
