@@ -152,9 +152,9 @@ class LostReplyTests(unittest.TestCase):
         for owner, module, _ in self.owners():
             reload = "reloadShell" if module.__name__.endswith("lifecycle") else "reload"
             with self.subTest(module=module.__name__):
-                self.assertEqual(len(self.call(owner, module, reload, [self.LOST])[1]), 1)
+                reply, calls = self.call(owner, module, reload, [self.LOST])
+                self.assertEqual((reply, len(calls)), ("", 1))
 
 
 if __name__ == "__main__":
     unittest.main()
-

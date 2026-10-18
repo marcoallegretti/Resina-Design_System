@@ -173,7 +173,7 @@ class Session:
         if result.returncode or NOT_READY in output or LOST_REPLY in output and function not in RELOADS \
                 or function == "observe" and not result.stdout.strip():
             raise ValueError(f"probe call {function} failed: " + output[-500:])
-        return result.stdout.strip()
+        return "" if LOST_REPLY in output else result.stdout.strip()
 
     def observe(self):
         try:

@@ -116,7 +116,7 @@ class Shell:
         if result.returncode or NOT_READY in output or STARTING in output \
                 or LOST_REPLY in output and function not in RELOADS:
             raise ValueError(f"clock shell call {function} failed: {output[-500:]}")
-        return result.stdout.strip()
+        return "" if LOST_REPLY in output else result.stdout.strip()
 
     def observe(self):
         self.check_log()
