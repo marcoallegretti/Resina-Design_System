@@ -59,7 +59,7 @@ PROCESS_TERMS = [
         ),
         "model or vendor name",
     ),
-    (re.compile(r"\bgh[- ]aw\b", re.IGNORECASE), "gh-aw"),
+    (re.compile(r"\bgh[- ]?aw\b", re.IGNORECASE), "gh-aw"),
     (re.compile(r"\b(?:chat)?bots?\b|\bassistants?\b", re.IGNORECASE), "bot or assistant"),
     (
         re.compile(
@@ -236,20 +236,19 @@ def cited_paths(text, root):
     return citations, remaining, errors
 
 
-def scan_text(text):
-    """Reduce text to what GitHub renders as letters, then fold compatibility forms and Latin look-alikes."""
+def scan_texts(text):
+    """Return the rendered letters of the text, as typed and with inline emphasis markers removed."""
     text = re.sub(r"<!--.*?-->", "", html.unescape(text), flags=re.DOTALL)
     text = unicodedata.normalize("NFKD", text)
     text = "".join(char for char in text if unicodedata.category(char) not in {"Cf", "Mn"})
     text = unicodedata.normalize("NFKC", text).translate(CONFUSABLES)
-    return re.sub(r"(?<=\w)[*_~]+(?=\w)", "", text)
+    return text, re.sub(r"(?<=\w)[*_~]+(?=\w)", "", text)
 
 
 def process_term_errors(text):
-    text = scan_text(text)
     errors = []
     for pattern, name in PROCESS_TERMS:
-        match = pattern.search(text)
+        match = next(filter(None, (pattern.search(variant) for variant in scan_texts(text))), None)
         if match:
             errors.append(f"mentions {name} ({match.group(0)!r})")
     return errors

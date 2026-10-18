@@ -190,7 +190,8 @@ class MaintenanceIssueGateTests(unittest.TestCase):
         self.assertEqual(errors(sections=replace("Observed", text)), [])
 
     def test_rendered_spellings_of_process_terms_are_rejected(self):
-        for phrase in ("Written by Cl&#97;ude.", "Written by Cl<!-- -->aude.", "Written by C**l**aude.",
+        for phrase in ("Claude*Code wrote it.", "An AI~assisted scan.", "Built with gh*aw.",
+                       "Written by Cl&#97;ude.", "Written by Cl<!-- -->aude.", "Written by C**l**aude.",
                        "Written by Ćlaude."):
             with self.subTest(phrase=phrase):
                 result = errors(sections=replace("Evidence", phrase))
