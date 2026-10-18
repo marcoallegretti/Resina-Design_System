@@ -27,22 +27,50 @@
       "$ref": "urn:resina:schema:opaque-surface-ir:0.1.0#/properties/representation"
     },
     "materialRole": {
-      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/materialRole"
+      "enum": [
+        "control.passive",
+        "control.interactive",
+        "control.primary"
+      ]
     },
     "colorRole": {
-      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/colorRole"
+      "$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"
     },
     "materialFamily": {
-      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/materialFamily"
+      "enum": [
+        "cast",
+        "frost",
+        "elastomer"
+      ]
     },
     "form": {
-      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/form"
+      "$ref": "urn:resina:schema:surface-form:0.1.0"
     },
     "states": {
-      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/states"
+      "allOf": [
+        {
+          "$ref": "urn:resina:schema:state-set:0.1.0"
+        },
+        {
+          "properties": {
+            "states": {
+              "items": {
+                "enum": [
+                  "rest",
+                  "hover",
+                  "pressed",
+                  "disabled",
+                  "focused",
+                  "checked"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     "frostRepresentation": {
-      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/frostRepresentation"
+      "const": "opaqueDimensional"
     },
     "face": {
       "$ref": "urn:resina:schema:material-relief-paint-result:0.1.0#/properties/paint"
@@ -71,7 +99,7 @@
       }
     },
     "foregroundRole": {
-      "$ref": "urn:resina:schema:toggle-part-body-ir:0.1.0#/properties/foregroundRole"
+      "$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"
     },
     "contentFallbackApplied": {
       "type": "boolean"
