@@ -78,12 +78,12 @@ fn every_family_and_phase_requires_named_members() {
 
 #[test]
 fn response_validation_and_lookup_preserve_the_contract() {
-    for (mix, depth) in [(-1.0, 0.0), (0.0, 1.0), (1.0, 0.5)] {
+    for (mix, depth) in [(-1.0, 0.0), (0.0, 1.0), (1.0, 0.5), (0.0, 2.0)] {
         let response: CommandResponse =
             serde_json::from_value(json!({"bodyMix":mix,"depthScale":depth})).unwrap();
         assert_eq!(response, CommandResponse::try_new(mix, depth).unwrap());
     }
-    for (mix, depth) in [(-1.01, 0.5), (1.01, 0.5), (0.0, -0.01), (0.0, 1.01)] {
+    for (mix, depth) in [(-1.01, 0.5), (1.01, 0.5), (0.0, -0.01), (0.0, 2.01)] {
         assert!(
             serde_json::from_value::<CommandResponse>(json!({"bodyMix":mix,"depthScale":depth}))
                 .is_err()

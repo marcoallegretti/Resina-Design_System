@@ -6,6 +6,7 @@ from jsonschema.exceptions import ValidationError
 from PIL import Image
 
 from check_schemas import validator_for
+from check_command_paint_backend import disabled_label_bound, disabled_label_mismatch
 from check_qt_command_label_runtime import verify_layout
 from check_qt_toggle_control_runtime import request_for
 from check_quickshell_command_updates import (
@@ -37,6 +38,13 @@ def authored_cases():
         cases.append({**copy.deepcopy(baseline), "name": name + "-focused", "focused": True})
     source = request_for("light")
     cases.append({"name": "disabled", "request": source, "enabled": False, "checked": True})
+    cases.append({"name": "dark-disabled", "request": request_for("dark"), "enabled": False})
+    high_contrast = request_for("light")
+    high_contrast["content"]["environment"]["accessibilityPreferences"]["highContrast"] = True
+    cases.append({"name": "disabled-high-contrast", "request": high_contrast, "enabled": False, "checked": True})
+    # The label guard applies to the undimmed label, so it rejects before dimming.
+    label = copy.deepcopy(source)
+    label["minimumLabelContrast"] = 21
     thumb = copy.deepcopy(source)
     thumb["minimumThumbContrast"] = 21
     for name, request, options in (
@@ -46,6 +54,7 @@ def authored_cases():
         ("unsupported-transform", source, {"rotation": 10,
             "expectedError": "requires matching native translation and pixel density"}),
         ("thumb-contrast", thumb, {"expectedError": "thumb edge contrast against painted track"}),
+        ("disabled-label-contrast", label, {"enabled": False, "expectedError": "toggle label contrast is"}),
     ):
         cases.append({"name": name, "request": request, "reject": True, **options})
         recovery = {"name": "recover-" + name, "request": source, "enabled": True}
@@ -145,11 +154,19 @@ def verify_snapshot(snapshot, request):
         raise ValueError("native layout disagrees with the checked owner")
     theme = json.loads(request["content"]["themeSource"], object_pairs_hook=unique_object)
     foreground = inline_color(theme, request["labelForegroundRole"])
-    ratio = contrast(foreground["components"], request["background"]["components"])
+    published = snapshot["labelForeground"]
+    if activation["enabled"]:
+        label_differs = published != foreground
+    else:
+        label_differs = published["alpha"] != 1 or disabled_label_mismatch(
+            published["components"], request["background"]["components"], foreground["components"],
+            disabled_label_bound(request["content"]["environment"])) is not None
+    ratio = contrast(published["components"], request["background"]["components"])
+    guarded = contrast(foreground["components"], request["background"]["components"])
     if snapshot["labelOrigin"] != request["labelOrigin"] or snapshot["labelBackground"] != request["background"] \
-            or snapshot["labelForeground"] != foreground \
+            or label_differs \
             or not math.isclose(snapshot["labelContrastRatio"], ratio, rel_tol=0, abs_tol=1e-12) \
-            or ratio < request["minimumLabelContrast"]:
+            or guarded < request["minimumLabelContrast"]:
         raise ValueError("native label colors differ from the authored theme or contrast guard")
     if type(snapshot["thumbContrastRatio"]) not in (int, float) \
             or not request["minimumThumbContrast"] <= snapshot["thumbContrastRatio"] <= 21:

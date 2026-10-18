@@ -3,7 +3,7 @@
   "size": {"width": 64, "height": 40},
   "componentMinimum": {"width": 48, "height": 48},
   "inputCapabilities": ["coarsePointer"],
-  "reservedBounds": {"x": 0, "y": -3, "width": 64, "height": 48},
+  "reservedBounds": {"x": 0, "y": -2, "width": 64, "height": 48},
   "stationaryPoint": {"x": 32, "y": 44.5},
   "activateOnRelease": true
 }

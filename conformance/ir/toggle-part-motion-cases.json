@@ -325,12 +325,12 @@
     "expectedPolicy": "spring"
   },
   {
-    "name": "depthScale-1.5-retains-velocity",
+    "name": "depthScale-2.5-retains-velocity",
     "requestChanges": [
       {
         "path": "/channels/depthScale/initial",
         "value": {
-          "position": 1.5,
+          "position": 2.5,
           "velocity": 2
         }
       },

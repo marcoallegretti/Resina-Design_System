@@ -342,11 +342,15 @@ matrix at three text scales and four device scales, all four command phases
 across Cast, opaque Frost fallback and Elastomer in both schemes, and four sampled
 Elastomer motion times, plus unfocused replacement: 188 first composite frames.
 Every composition consumes a checked snapshot with an explicit test interaction
-state and a reservation derived from the same profile's neutral rest body.
+state and a reservation derived from the same profile's deepest neutral
+silhouette at the projected depth bound.
 Compositions use the authored surrounding color. Subsequent material-only and
 text-only readbacks identify actual glyph coverage. Every covered pixel footprint
 must remain inside the content contour on uniform opaque pigment; solid native
-foreground/background pairs must retain at least 4.5 contrast. Missing lines,
+foreground/background pairs must retain at least 4.5 contrast; the dimmed disabled
+label sits exactly at its contrast bound, which 8-bit quantization can undercut, so
+its solid glyph pixels must instead match the quantized published color within one
+level per channel. Missing lines,
 material changes outside coverage and diagnostic failures are checked. These
 fixtures do not establish all fonts/scripts, capability tiers or full component
 conformance. Set `RESINA_COMMAND_CAPTURE_DIR` to save PPM captures for visual

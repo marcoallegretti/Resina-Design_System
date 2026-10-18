@@ -13,6 +13,95 @@ from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
 from check_surface_paint_backend import surface_paint_channel_mismatch
 
+MINIMUM_STATE_COLOR_DIFFERENCE = 0.04
+MINIMUM_STATE_DEPTH_CHANGE = 1
+DEPTH_TOLERANCE = 1e-12
+
+
+def oklab(components):
+    # Ottosson's linear sRGB to LMS and LMS' to Oklab matrices, independent of the reference's XYZ path.
+    linear = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in components]
+    lms = [sum(w * c for w, c in zip(row, linear)) ** (1 / 3) for row in (
+        (0.4122214708, 0.5363325363, 0.0514459929),
+        (0.2119034982, 0.6806995451, 0.1073969566),
+        (0.0883024619, 0.2817188376, 0.6299787005))]
+    return [sum(w * c for w, c in zip(row, lms)) for row in (
+        (0.2104542553, 0.7936177850, -0.0040720468),
+        (1.9779984951, -2.4285922050, 0.4505937099),
+        (0.0259040371, 0.7827717662, -0.8086757660))]
+
+
+def mix_body(components, mix):
+    return [c * (1 + mix) if mix < 0 else c + (1 - c) * mix for c in components]
+
+
+def perceivable(rest_color, color, rest_depth, depth):
+    return (math.dist(oklab(rest_color), oklab(color)) >= MINIMUM_STATE_COLOR_DIFFERENCE
+            or abs(depth - rest_depth) >= MINIMUM_STATE_DEPTH_CHANGE - DEPTH_TOLERANCE)
+
+
+DISABLED_LABEL_CONTRAST = 3
+HIGH_CONTRAST_DISABLED_LABEL_CONTRAST = 4.5
+
+
+def disabled_label_bound(environment):
+    return HIGH_CONTRAST_DISABLED_LABEL_CONTRAST if environment["accessibilityPreferences"]["highContrast"] \
+        else DISABLED_LABEL_CONTRAST
+
+
+def decode(c):
+    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def relative_luminance(components):
+    return sum(decode(c) * w for c, w in zip(components, (0.2126, 0.7152, 0.0722)))
+
+
+def contrast_ratio(first, second):
+    high, low = sorted((relative_luminance(first), relative_luminance(second)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+def disabled_label_mismatch(label, background, undimmed, bound):
+    """Checks a published disabled label against the linear-light dimming law independently."""
+    ratio = contrast_ratio(label, background)
+    if contrast_ratio(undimmed, background) <= bound + 1e-9:
+        return None if label == list(undimmed) else "undimmed label changed"
+    # Independent rounding may land within the 1e-12 conformance tolerance of the bound.
+    if not bound - 1e-12 <= ratio < bound + 1e-9:
+        return f"disabled label contrast {ratio} is not the {bound}:1 bound"
+    start, end, actual = ([decode(c) for c in color] for color in (undimmed, background, label))
+    fractions = [(a - s) / (e - s) for a, s, e in zip(actual, start, end) if abs(e - s) > 1e-6]
+    if not fractions or max(fractions) - min(fractions) > 1e-9 or not 0 <= fractions[0] <= 1:
+        return "disabled label is not a linear-light mix toward its background"
+    return None
+
+
+def fixture_color(request, role):
+    """Resolves an opaque role in the public arithmetic fixture, whose palette is literal sRGB."""
+    theme = parse_json(request["surface"]["body"]["theme"]["themeSource"], "command fixture theme")
+    group, name = theme["opaqueColorAssignments"]["roles"][role].split(".")
+    return theme["tokens"][group][name]["$value"]["components"]
+
+
+def fixture_depth(request):
+    """Resolves the semantic elevation depth of the public arithmetic fixture in logical px."""
+    body = request["surface"]["body"]
+    theme = parse_json(body["theme"]["themeSource"], "command fixture theme")
+    group, name = body["appearance"]["depthAssignments"]["roles"][body["surface"]["form"]["elevation"]].split(".")
+    return theme["tokens"][group][name]["$value"]["value"]
+
+
+def imperceptible_phase(rest_color, rest_depth, profile):
+    responses = {"rest": {"bodyMix": 0, "depthScale": 1}, **profile}
+    for phase, reference in (("hover", "rest"), ("pressed", "rest"), ("disabled", "rest"),
+                             ("disabled", "pressed")):
+        first, second = responses[reference], responses[phase]
+        if not perceivable(mix_body(rest_color, first["bodyMix"]), mix_body(rest_color, second["bodyMix"]),
+                           rest_depth * first["depthScale"], rest_depth * second["depthScale"]):
+            return phase if reference == "rest" else phase + " from " + reference
+    return None
+
 
 def command_mismatch(actual, request, response=None):
     states = request["surface"]["body"]["surface"]["states"]["states"]
@@ -24,7 +113,8 @@ def command_mismatch(actual, request, response=None):
     role = request["surface"]["body"]["surface"]["materialRole"].split(".")[1]
     if family != theme["materialAssignments"]["control"][role]:
         return "/paint/body/materialFamily"
-    if response is None:
+    authored = response is None
+    if authored:
         response = {"bodyMix": 0, "depthScale": 1} if phase == "rest" else request["commandAppearance"]["profiles"][family][phase]
     if actual["phase"] != phase:
         return "/phase"
@@ -35,21 +125,31 @@ def command_mismatch(actual, request, response=None):
     for field in ("materialRole", "colorRole", "form"):
         if mismatch(body[field], request["surface"]["body"]["surface"][field]):
             return "/paint/body/" + field
-    if body["foreground"] != {"colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1}:
-        return "/paint/body/foreground"
-    # Public arithmetic fixture: an opaque (0.8, 0.7, 0.6) body with black foreground.
+    rest_color = fixture_color(request, request["surface"]["body"]["surface"]["colorRole"])
+    guarded = fixture_color(request, request["surface"]["body"]["foregroundRole"])
     mix = response["bodyMix"]
-    color = [c * (1 + mix) if mix < 0 else c + (1 - c) * mix for c in (0.8, 0.7, 0.6)]
+    color = mix_body(rest_color, mix)
     if mismatch(body["pigment"]["body"], {"colorSpace": "srgb", "components": color, "alpha": 1}):
         return "/paint/body/pigment/body"
-    linear = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in color]
-    ratio = (sum(c * w for c, w in zip(linear, (0.2126, 0.7152, 0.0722))) + 0.05) / 0.05
+    foreground = body["foreground"]
+    if foreground["colorSpace"] != "srgb" or foreground["alpha"] != 1:
+        return "/paint/body/foreground"
+    if phase == "disabled":
+        if disabled_label_mismatch(foreground["components"], color, guarded,
+                                   disabled_label_bound(request["surface"]["body"]["theme"]["environment"])):
+            return "/paint/body/foreground (disabled label)"
+    elif foreground["components"] != guarded:
+        return "/paint/body/foreground"
+    ratio = contrast_ratio(foreground["components"], color)
     if not math.isclose(body["contentContrastRatio"], ratio, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/contentContrastRatio"
     offset = body["lighting"]["sideOffset"]
-    depth = 2 * response["depthScale"]
+    rest_depth = fixture_depth(request)
+    depth = rest_depth * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
+    if authored and imperceptible_phase(rest_color, rest_depth, request["commandAppearance"]["profiles"][family]):
+        return "/commandAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != ("focused" in states):
         return "/paint/focus"
     return surface_paint_channel_mismatch(actual["paint"])

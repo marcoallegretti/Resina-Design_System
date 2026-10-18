@@ -59,12 +59,15 @@ impl TryFrom<ResponseInput> for CommandResponse {
     }
 }
 impl CommandResponse {
+    /// Upper bound of `depthScale`, shared by authored responses and projected motion samples.
+    pub const MAX_DEPTH_SCALE: f64 = 2.0;
+
     pub fn try_new(body_mix: f64, depth_scale: f64) -> Result<Self, &'static str> {
         if !body_mix.is_finite() || !(-1.0..=1.0).contains(&body_mix) {
             return Err("bodyMix must be finite and in [-1, 1]");
         }
-        if !depth_scale.is_finite() || !(0.0..=1.0).contains(&depth_scale) {
-            return Err("depthScale must be finite and in [0, 1]");
+        if !depth_scale.is_finite() || !(0.0..=Self::MAX_DEPTH_SCALE).contains(&depth_scale) {
+            return Err("depthScale must be finite and in [0, 2]");
         }
         Ok(Self {
             body_mix,

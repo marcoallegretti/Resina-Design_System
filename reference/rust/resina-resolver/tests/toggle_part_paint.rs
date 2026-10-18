@@ -1,4 +1,7 @@
-use resina_resolver::{resolve_command_paint_source, resolve_toggle_part_paint_source};
+use resina_resolver::{
+    ImperceptibleResponse, TogglePartPaintError, resolve_command_paint_source,
+    resolve_toggle_part_paint_source,
+};
 use serde_json::{Value, json};
 
 fn request() -> Value {
@@ -172,4 +175,79 @@ fn navigation_owner_requires_surroundings_without_losing_thumb_focus_state() {
         serde_json::to_value(ir.paint().body()).unwrap()["states"]["states"],
         json!(["focused", "checked"])
     );
+}
+
+#[test]
+fn embedded_track_responses_are_perceivable_only_through_body_color() {
+    let resolve = |checked: bool, response: Value| {
+        let mut request = request();
+        request["part"] = json!("track");
+        request["surface"]["body"]["surface"]["form"]["elevation"] = json!("embedded");
+        let states = if checked {
+            json!(["hover", "checked"])
+        } else {
+            json!(["hover"])
+        };
+        request["surface"]["body"]["surface"]["states"]["states"] = states;
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] = response;
+        resolve_toggle_part_paint_source(&request.to_string())
+    };
+    for checked in [false, true] {
+        resolve(checked, json!({"bodyMix": -0.1, "depthScale": 1})).unwrap();
+        let Err(TogglePartPaintError::Imperceptible(ImperceptibleResponse {
+            depth_change, ..
+        })) = resolve(checked, json!({"bodyMix": 0, "depthScale": 2}))
+        else {
+            panic!("a depth-only response cannot change an embedded track");
+        };
+        assert_eq!(depth_change, 0.0);
+        assert!(matches!(
+            resolve(checked, json!({"bodyMix": -0.03, "depthScale": 1})),
+            Err(TogglePartPaintError::Imperceptible(_))
+        ));
+    }
+}
+
+#[test]
+fn every_authored_response_of_the_bound_family_is_validated_in_any_state() {
+    for part in ["track", "thumb"] {
+        let mut request = request();
+        request["part"] = json!(part);
+        request["surface"]["body"]["surface"]["states"]["states"] = json!(["rest", "checked"]);
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] =
+            json!({"bodyMix": 0.06, "depthScale": 1});
+        assert!(matches!(
+            resolve_toggle_part_paint_source(&request.to_string()),
+            Err(TogglePartPaintError::Imperceptible(ImperceptibleResponse {
+                phase: resina_model::CommandPhase::Hover,
+                ..
+            }))
+        ));
+    }
+}
+
+#[test]
+fn profiles_are_validated_against_both_role_bodies_in_either_selection() {
+    for checked in [false, true] {
+        let mut request = request();
+        request["part"] = json!("track");
+        request["surface"]["body"]["surface"]["form"]["elevation"] = json!("embedded");
+        request["surface"]["body"]["surface"]["states"]["states"] = if checked {
+            json!(["rest", "checked"])
+        } else {
+            json!(["rest"])
+        };
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] =
+            json!({"bodyMix": -0.0701, "depthScale": 1});
+        assert!(
+            matches!(
+                resolve_toggle_part_paint_source(&request.to_string()),
+                Err(TogglePartPaintError::Imperceptible(_))
+            ),
+            "checked={checked}: the checked role body perceives too little of the hover"
+        );
+        request["interactionAppearance"]["profiles"]["elastomer"]["hover"] =
+            json!({"bodyMix": -0.0783, "depthScale": 1});
+        resolve_toggle_part_paint_source(&request.to_string()).unwrap();
+    }
 }

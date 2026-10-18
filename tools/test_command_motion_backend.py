@@ -55,16 +55,17 @@ class CommandMotionComparisonTests(unittest.TestCase):
     def test_paint_projection_uses_accepted_backend_sample_not_oracle_rounding(self):
         request = load_json(ROOT / "conformance/ir/command-motion-request.json")
         request["time"] = 0
+        request["channels"]["depthScale"]["initial"]["position"] = 2
         target = request["commandAppearance"]["profiles"]["elastomer"]["pressed"]
         result = {"schemaVersion": "0.1.0", "policy": "spring", "target": target, "command": {}}
         for name in ("bodyMix", "depthScale"):
             result[name] = equation_sample(request["channels"][name], target[name], 0, False)
             result[name + "Projection"] = "none"
         result["bodyMix"]["state"]["position"] = 5e-10
-        result["depthScale"]["state"]["position"] = 1 + 5e-10
+        result["depthScale"]["state"]["position"] = 2 + 5e-10
         result["depthScaleProjection"] = "upperBound"
         with patch("check_command_motion_backend.command_mismatch", return_value=None) as paint:
             self.assertIsNone(motion_mismatch(result, request))
-            self.assertEqual(paint.call_args.args[2], {"bodyMix": 5e-10, "depthScale": 1})
+            self.assertEqual(paint.call_args.args[2], {"bodyMix": 5e-10, "depthScale": 2})
         result["depthScaleProjection"] = "none"
         self.assertEqual(motion_mismatch(result, request), "/depthScaleProjection")

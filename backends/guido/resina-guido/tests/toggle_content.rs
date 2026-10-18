@@ -379,6 +379,29 @@ fn color(value: &SrgbFallback) -> Color {
 fn pixel_color(pixel: &[u8]) -> SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":pixel[..3].iter().map(|v|f64::from(*v)/255.0).collect::<Vec<_>>(),"alpha":1})).unwrap()
 }
+/// A dimmed disabled label is published at its contrast bound, which 8-bit quantization can
+/// undercut; its solid glyph pixels must instead reproduce the quantized published color.
+fn assert_solid_glyph(
+    name: &str,
+    pixel: &[u8],
+    background: &[u8],
+    disabled_label: Option<&resina_resolver::SrgbFallback>,
+) {
+    match disabled_label {
+        Some(published) => {
+            for (channel, value) in published.components().iter().enumerate() {
+                assert!(
+                    pixel[channel].abs_diff((value * 255.0).round() as u8) <= 1,
+                    "{name}: solid disabled glyph differs from the published label"
+                );
+            }
+        }
+        None => assert!(
+            opaque_contrast_ratio(&pixel_color(pixel), &pixel_color(background)).unwrap() >= 4.5,
+            "{name}: solid native glyph contrast is insufficient"
+        ),
+    }
+}
 fn check_frame(
     frames: &mut Frames,
     f: &Fixture,
@@ -516,7 +539,19 @@ fn check_commands(
     let label = f.label.label_bounds();
     assert!((f64::from(rect.x) - f.origin.x - label.x).abs() <= 1.0 / 1024.0);
     assert!((f64::from(rect.y) - f.origin.y - label.y).abs() <= 1.0 / 1024.0);
-    let expected = color(&f.foreground);
+    let snapshot = f.snapshot();
+    let published = snapshot.label_foreground();
+    if f.activation.enabled() {
+        assert_eq!(published, &f.foreground);
+    } else {
+        let bound = resina_resolver::disabled_label_bound(&f.environment);
+        assert!(
+            (bound..bound + 1e-9)
+                .contains(&opaque_contrast_ratio(published, &f.background).unwrap()),
+            "{name}: disabled label is not dimmed to its bound"
+        );
+    }
+    let expected = color(published);
     assert_eq!(
         [foreground.r, foreground.g, foreground.b, foreground.a],
         [expected.r, expected.g, expected.b, expected.a]
@@ -564,14 +599,11 @@ fn check_commands(
                 &parts[at..at + 3],
                 "{name}: native glyph disappeared"
             );
-            assert!(
-                opaque_contrast_ratio(
-                    &pixel_color(&combined[at..at + 4]),
-                    &pixel_color(&parts[at..at + 4])
-                )
-                .unwrap()
-                    >= 4.5,
-                "{name}: native glyph contrast failed"
+            assert_solid_glyph(
+                name,
+                &combined[at..at + 4],
+                &parts[at..at + 4],
+                (!f.activation.enabled()).then_some(published),
             );
         }
     }

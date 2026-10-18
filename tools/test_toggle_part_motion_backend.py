@@ -56,17 +56,18 @@ class TogglePartMotionComparisonTests(unittest.TestCase):
     def test_paint_projection_uses_accepted_backend_sample_not_oracle_rounding(self):
         request = load_json(ROOT / "conformance/ir/toggle-part-motion-request.json")
         request["time"] = 0
+        request["channels"]["depthScale"]["initial"]["position"] = 2
         target = request["interactionAppearance"]["profiles"]["elastomer"]["pressed"]
         result = {"schemaVersion": "0.1.0", "policy": "spring", "target": target, "partPaint": {}}
         for name in ("bodyMix", "depthScale"):
             result[name] = equation_sample(request["channels"][name], target[name], 0, False)
             result[name + "Projection"] = "none"
         result["bodyMix"]["state"]["position"] = 5e-10
-        result["depthScale"]["state"]["position"] = 1 + 5e-10
+        result["depthScale"]["state"]["position"] = 2 + 5e-10
         result["depthScaleProjection"] = "upperBound"
         with patch("check_toggle_part_motion_backend.toggle_part_mismatch", return_value=None) as paint:
             self.assertIsNone(toggle_motion_mismatch(result, request))
-            self.assertEqual(paint.call_args.args[2], {"bodyMix": 5e-10, "depthScale": 1})
+            self.assertEqual(paint.call_args.args[2], {"bodyMix": 5e-10, "depthScale": 2})
         result["depthScaleProjection"] = "none"
         self.assertEqual(toggle_motion_mismatch(result, request), "/depthScaleProjection")
 

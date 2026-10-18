@@ -14,8 +14,8 @@ use resina_resolver::{
     CommandPaintInput, CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, CompiledTheme,
     HitRegionError, HitRegionIr, OpaqueSurfaceInput, SrgbFallback, SurfaceHitRegionInput,
     SurfacePaintInput, TypographyResolutionError, resolve_command_label, resolve_command_motion,
-    resolve_command_paint, resolve_command_snapshot, resolve_command_states,
-    resolve_surface_hit_region,
+    resolve_command_paint, resolve_command_reservation_body, resolve_command_snapshot,
+    resolve_command_states, resolve_surface_hit_region,
 };
 use std::{fmt, sync::Arc};
 
@@ -243,11 +243,12 @@ impl CommandInputs {
             },
             command_appearance: &self.command_appearance,
         };
-        let rest = resolve_command_paint(&self.theme, &self.environment, input(&rest_surface))
-            .map_err(CommandPrepareError::Paint)?;
+        let deepest =
+            resolve_command_reservation_body(&self.theme, &self.environment, input(&rest_surface))
+                .map_err(CommandPrepareError::Paint)?;
         let target = resolve_surface_hit_region(SurfaceHitRegionInput {
             environment: &self.environment,
-            body: rest.paint().body(),
+            body: &deepest,
             available_bounds: self.available_bounds,
             component_minimum: self.component_minimum,
             occupied_regions: &self.occupied_regions,

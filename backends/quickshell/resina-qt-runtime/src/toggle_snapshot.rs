@@ -10,7 +10,7 @@ use resina_resolver::{
     CommandMotionChannel, CommandMotionChannels, HitRegionInput, OpaqueSurfaceInput,
     SurfacePaintInput, ToggleLayoutInput, TogglePart, TogglePartMotionInput, TogglePartPaintInput,
     ToggleSnapshotInput, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
-    resolve_toggle_part_motion, resolve_toggle_part_paint,
+    resolve_toggle_part_motion, resolve_toggle_part_paint, resolve_toggle_part_reservation_paint,
     resolve_toggle_snapshot as resolve_snapshot_ir, resolve_toggle_states, resolve_toggle_travel,
 };
 use resina_tokens::parse_token_document;
@@ -301,6 +301,88 @@ fn prepare(
     }
     let description: Option<String> =
         serde_json::from_value(request.description).map_err(|error| error.to_string())?;
+    let neutral_focus =
+        ActivationState::try_new(true, true, None).expect("valid focused neutral activation");
+    let deepest_states = resolve_toggle_states(&neutral_focus, false, request.checked);
+    let deepest_track_surface = request
+        .track
+        .surface
+        .clone()
+        .with_states(deepest_states.clone());
+    let deepest_thumb_surface = request.thumb.surface.clone().with_states(deepest_states);
+    let deepest_track = resolve_toggle_part_reservation_paint(
+        &content.theme,
+        &content.environment,
+        TogglePartPaintInput {
+            part: TogglePart::Track,
+            checked_color_role: request.track.checked_color_role,
+            interaction_appearance: &request.track.interaction_appearance,
+            surface: SurfacePaintInput {
+                surrounding_color: Some(&background),
+                body: OpaqueSurfaceInput {
+                    surface: &deepest_track_surface,
+                    size: request.layout.track_size,
+                    appearance: &request.track.appearance,
+                    foreground_role: request.track.foreground_role,
+                    post_treatment_backdrop: Some(&background),
+                    adjacent_color: &background,
+                    minimum_content_contrast: request.track.minimum_content_contrast,
+                    minimum_edge_contrast: request.track.minimum_edge_contrast,
+                },
+            },
+        },
+    )
+    .map_err(|error| error.to_string())?;
+    let deepest_track_pigment = deepest_track.paint().body().pigment().body();
+    let deepest_thumb = resolve_toggle_part_reservation_paint(
+        &content.theme,
+        &content.environment,
+        TogglePartPaintInput {
+            part: TogglePart::Thumb,
+            checked_color_role: request.thumb.checked_color_role,
+            interaction_appearance: &request.thumb.interaction_appearance,
+            surface: SurfacePaintInput {
+                surrounding_color: None,
+                body: OpaqueSurfaceInput {
+                    surface: &deepest_thumb_surface,
+                    size: request.layout.thumb_size,
+                    appearance: &request.thumb.appearance,
+                    foreground_role: request.thumb.foreground_role,
+                    post_treatment_backdrop: Some(deepest_track_pigment),
+                    adjacent_color: deepest_track_pigment,
+                    minimum_content_contrast: request.thumb.minimum_content_contrast,
+                    minimum_edge_contrast: request.thumb.minimum_edge_contrast,
+                },
+            },
+        },
+    )
+    .map_err(|error| error.to_string())?;
+    resolve_snapshot_ir(ToggleSnapshotInput {
+        label: &content.label,
+        label_origin: request.label_origin,
+        label_foreground,
+        label_background: &background,
+        minimum_label_contrast: request.minimum_label_contrast,
+        layout: &layout,
+        track: &deepest_track,
+        thumb: &deepest_thumb,
+        hit_region: target,
+        activation: &neutral_focus,
+        hovered: false,
+        checked: request.checked,
+        description: description.as_deref(),
+        focusable: true,
+        minimum_thumb_contrast: request.minimum_thumb_contrast,
+        environment: &content.environment,
+        available_bounds: request.available_bounds.bounds(),
+        component_minimum: request.component_minimum,
+        occupied_regions: &occupied,
+    })
+    .map_err(|error| {
+        format!(
+            "Qt Toggle layout or reservation does not cover the deepest part silhouettes: {error}"
+        )
+    })?;
     let snapshot = resolve_snapshot_ir(ToggleSnapshotInput {
         label: &content.label,
         label_origin: request.label_origin,

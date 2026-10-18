@@ -7,8 +7,9 @@ use resina_model::{
 use resina_resolver::{
     CommandMotionChannels, CommandMotionInput, CommandPaintInput, CommandSnapshotInput,
     OpaqueSurfaceInput, SrgbFallback, SurfaceHitRegionInput, SurfacePaintInput,
-    resolve_command_motion, resolve_command_paint, resolve_command_snapshot,
-    resolve_command_states, resolve_srgb_fallback, resolve_surface_hit_region,
+    resolve_command_motion, resolve_command_paint, resolve_command_reservation_body,
+    resolve_command_snapshot, resolve_command_states, resolve_srgb_fallback,
+    resolve_surface_hit_region,
 };
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
@@ -209,7 +210,7 @@ fn prepare(
         },
         command_appearance: &request.body.command_appearance,
     };
-    let rest_paint = resolve_command_paint(
+    let deepest = resolve_command_reservation_body(
         &content.theme,
         &content.environment,
         paint_input(&request.body.surface),
@@ -217,7 +218,7 @@ fn prepare(
     .map_err(|error| error.to_string())?;
     let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
         environment: &content.environment,
-        body: rest_paint.paint().body(),
+        body: &deepest,
         available_bounds,
         component_minimum: request.component_minimum,
         occupied_regions: &occupied_regions,

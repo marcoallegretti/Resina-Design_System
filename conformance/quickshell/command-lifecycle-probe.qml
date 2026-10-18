@@ -60,7 +60,8 @@ ShellRoot {
             hovered:command ? command.hovered : false, nativeFocus:nativeFocus(),
             target:targetCenter(), effects:effects, publications:publications, reactionResult:reactionResult,
             otherFocused:Boolean(windowLoader.item && windowLoader.item.mount.item && windowLoader.item.mount.item.other.activeFocus),
-            screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height} : null};
+            screen:command && command.Screen.width > 0 ? {width:command.Screen.width, height:command.Screen.height,
+                deviceScale:command.Screen.devicePixelRatio} : null};
     }
 
     function frame(control) {

@@ -6,9 +6,10 @@ use resina_model::{
 use resina_resolver::{
     CommandLabelInput, CommandLabelIr, HitRegionError, HitRegionInput, HitRegionIr, SrgbFallback,
     ToggleAccessibilityError, ToggleLayoutInput, ToggleLayoutIr, TogglePart, TogglePartPaintIr,
-    ToggleSnapshotError, ToggleSnapshotInput, compile_theme_source, resolve_activation,
-    resolve_command_label, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
-    resolve_toggle_part_paint_source, resolve_toggle_snapshot,
+    ToggleSnapshotError, ToggleSnapshotInput, compile_theme_source, opaque_contrast_ratio,
+    resolve_activation, resolve_command_label, resolve_hit_region, resolve_srgb_fallback,
+    resolve_toggle_layout, resolve_toggle_part_paint_source,
+    resolve_toggle_part_reservation_paint_source, resolve_toggle_snapshot,
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -82,6 +83,18 @@ fn request(family: &str, direction: LayoutDirection) -> Value {
         json!(false);
     r
 }
+fn thumb_request(track_request: &Value, track: &TogglePartPaintIr, states: Value) -> Value {
+    let mut t = track_request.clone();
+    t["part"] = json!("thumb");
+    t["surface"]["body"]["size"] = json!({"width":16,"height":16});
+    t["surface"]["body"]["surface"]["states"]["states"] = states;
+    t["surface"]["body"]["surface"]["colorRole"] = json!("surface.high");
+    t["checkedColorRole"] = json!("surface.high");
+    t["surface"]["body"]["adjacentColor"] =
+        serde_json::to_value(track.paint().body().pigment().body()).unwrap();
+    t["surface"]["body"]["postTreatmentBackdrop"] = t["surface"]["body"]["adjacentColor"].clone();
+    t
+}
 struct Fixture {
     request: Value,
     environment: EnvironmentSnapshot,
@@ -101,17 +114,10 @@ impl Fixture {
         let mut r = request(family, direction);
         r["surface"]["body"]["surface"]["states"]["states"] = json!(case.track_states);
         let track = resolve_toggle_part_paint_source(&r.to_string()).unwrap();
-        let mut t = r.clone();
-        t["part"] = json!("thumb");
-        t["surface"]["body"]["size"] = json!({"width":16,"height":16});
-        t["surface"]["body"]["surface"]["states"]["states"] = json!(case.thumb_states);
-        t["surface"]["body"]["surface"]["colorRole"] = json!("surface.high");
-        t["checkedColorRole"] = json!("surface.high");
-        t["surface"]["body"]["adjacentColor"] =
-            serde_json::to_value(track.paint().body().pigment().body()).unwrap();
-        t["surface"]["body"]["postTreatmentBackdrop"] =
-            t["surface"]["body"]["adjacentColor"].clone();
-        let thumb = resolve_toggle_part_paint_source(&t.to_string()).unwrap();
+        let thumb = resolve_toggle_part_paint_source(
+            &thumb_request(&r, &track, json!(case.thumb_states)).to_string(),
+        )
+        .unwrap();
         let environment: EnvironmentSnapshot =
             serde_json::from_value(r["surface"]["body"]["theme"]["environment"].clone()).unwrap();
         let theme = compile_theme_source(
@@ -841,4 +847,144 @@ fn thumb_travel_rejects_swallowed_interior_progress_without_mutating_static_snap
         f.layout.off_thumb_bounds()
     );
     assert_eq!(snapshot.hit_region().bounds(), f.target.bounds());
+}
+
+#[test]
+fn deepest_part_paint_certifies_a_layout_that_the_rest_body_cannot() {
+    let mut f = fixture();
+    let rest_track = f.track.clone();
+    let rest_thumb = f.thumb.clone();
+    let mut track_request = f.request.clone();
+    track_request["interactionAppearance"]["profiles"]["cast"]["hover"] =
+        json!({"bodyMix": 0, "depthScale": 1.55});
+    track_request["surface"]["body"]["surface"]["states"]["states"] = json!(["rest"]);
+    let deepest_track =
+        resolve_toggle_part_reservation_paint_source(&track_request.to_string()).unwrap();
+    let deepest_thumb = resolve_toggle_part_reservation_paint_source(
+        &thumb_request(&track_request, &deepest_track, json!(["rest"])).to_string(),
+    )
+    .unwrap();
+    assert_eq!(deepest_thumb.response().depth_scale(), 2.0);
+    track_request["surface"]["body"]["surface"]["states"]["states"] = json!(["hover"]);
+    let hover_track = resolve_toggle_part_paint_source(&track_request.to_string()).unwrap();
+    let hover_thumb = resolve_toggle_part_paint_source(
+        &thumb_request(&track_request, &hover_track, json!(["hover"])).to_string(),
+    )
+    .unwrap();
+    assert!(hover_thumb.response().depth_scale() > 1.0);
+    let mut certify = |top: f64, track: &TogglePartPaintIr, thumb: &TogglePartPaintIr, hovered| {
+        f.layout = resolve_toggle_layout(ToggleLayoutInput {
+            track_size: size(64.0, 40.0),
+            thumb_size: size(16.0, 16.0),
+            insets: &SafeArea {
+                start: 12.0,
+                end: 12.0,
+                top,
+                bottom: 24.0 - top,
+            },
+            layout_direction: LayoutDirection::Ltr,
+            checked: false,
+        })
+        .unwrap();
+        f.track = track.clone();
+        f.thumb = thumb.clone();
+        f.hovered = hovered;
+        resolve_toggle_snapshot(f.input()).map(|_| ())
+    };
+    assert!(certify(18.0, &rest_track, &rest_thumb, false).is_ok());
+    for (track, thumb, hovered) in [
+        (&deepest_track, &deepest_thumb, false),
+        (&hover_track, &hover_thumb, true),
+    ] {
+        assert!(matches!(
+            certify(18.0, track, thumb, hovered),
+            Err(ToggleSnapshotError::ThumbOutsideContent("off"))
+        ));
+    }
+    assert!(certify(12.0, &deepest_track, &deepest_thumb, false).is_ok());
+    assert!(certify(12.0, &hover_track, &hover_thumb, true).is_ok());
+}
+
+#[test]
+fn disabled_label_mixes_toward_its_background_down_to_its_bound() {
+    let mut dimmed = 0;
+    for (case, (high_contrast, bound)) in cases()
+        .iter()
+        .filter(|case| case.coherent)
+        .flat_map(|case| [(false, 3.0), (true, 4.5)].map(|mode| (case, mode)))
+    {
+        let mut f = Fixture::new("cast", LayoutDirection::Ltr, case);
+        let mut environment = serde_json::to_value(&f.environment).unwrap();
+        environment["accessibilityPreferences"]["highContrast"] = json!(high_contrast);
+        f.environment = serde_json::from_value(environment).unwrap();
+        let snapshot = resolve_toggle_snapshot(f.input()).unwrap();
+        let undimmed = opaque_contrast_ratio(&f.label_foreground, &f.label_background).unwrap();
+        assert!(undimmed > 4.5);
+        if case.activation.enabled() {
+            assert_eq!(snapshot.label_foreground(), &f.label_foreground);
+            assert_eq!(snapshot.label_contrast_ratio(), undimmed);
+        } else {
+            let ratio =
+                opaque_contrast_ratio(snapshot.label_foreground(), snapshot.label_background())
+                    .unwrap();
+            assert_eq!(snapshot.label_contrast_ratio(), ratio);
+            assert!(
+                (bound..bound + 1e-9).contains(&ratio),
+                "{}: {ratio}",
+                case.name
+            );
+            dimmed += 1;
+        }
+    }
+    assert!(dimmed >= 4);
+}
+
+#[test]
+fn disabled_labels_meet_the_supplied_minimum_before_dimming() {
+    for case in cases().iter().filter(|case| case.coherent) {
+        let mut f = Fixture::new("cast", LayoutDirection::Ltr, case);
+        f.label_foreground = resolve_srgb_fallback(
+            &json!({"colorSpace": "srgb", "components": [0.45, 0.45, 0.45], "alpha": 1}),
+        )
+        .unwrap();
+        let undimmed = opaque_contrast_ratio(&f.label_foreground, &f.label_background).unwrap();
+        assert!(undimmed > 3.5 && undimmed < 20.0);
+        let mut input = f.input();
+        input.minimum_label_contrast = undimmed + 0.5;
+        let result = resolve_toggle_snapshot(input);
+        assert!(
+            matches!(result, Err(ToggleSnapshotError::LabelContrast { .. })),
+            "{}: a label below the supplied minimum must fail before any dimming: {result:?}",
+            case.name
+        );
+    }
+}
+
+#[test]
+fn disabled_labels_between_bounds_dim_only_without_high_contrast() {
+    let case = cases()
+        .into_iter()
+        .find(|case| case.coherent && !case.activation.enabled())
+        .unwrap();
+    for (high_contrast, dims) in [(false, true), (true, false)] {
+        let mut f = Fixture::new("cast", LayoutDirection::Ltr, &case);
+        let mut environment = serde_json::to_value(&f.environment).unwrap();
+        environment["accessibilityPreferences"]["highContrast"] = json!(high_contrast);
+        f.environment = serde_json::from_value(environment).unwrap();
+        f.label_foreground = resolve_srgb_fallback(
+            &json!({"colorSpace": "srgb", "components": [0.5, 0.5, 0.5], "alpha": 1}),
+        )
+        .unwrap();
+        let undimmed = opaque_contrast_ratio(&f.label_foreground, &f.label_background).unwrap();
+        assert!(undimmed > 3.0 && undimmed < 4.5, "{undimmed}");
+        let mut input = f.input();
+        input.minimum_label_contrast = 3.0;
+        let snapshot = resolve_toggle_snapshot(input).unwrap();
+        if dims {
+            assert!((3.0..3.0 + 1e-9).contains(&snapshot.label_contrast_ratio()));
+        } else {
+            assert_eq!(snapshot.label_foreground(), &f.label_foreground);
+            assert_eq!(snapshot.label_contrast_ratio(), undimmed);
+        }
+    }
 }
