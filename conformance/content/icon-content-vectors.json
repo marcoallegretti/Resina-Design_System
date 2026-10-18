@@ -1106,7 +1106,7 @@
     "schemaValid": true
   },
   {
-    "name": "bounds that exceed the box only in binary64",
+    "name": "bounds that exceed the box in binary64 but not binary32",
     "document": {
       "schemaVersion": "0.1.0",
       "reference": "resina.fixture:chevron-back",
