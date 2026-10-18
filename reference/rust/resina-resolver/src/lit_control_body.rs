@@ -89,7 +89,6 @@ pub fn parse_control_relief_source(source: &str) -> Result<ControlRelief, LitCon
     })
 }
 
-/// Bound identity of a Command or Toggle part body; it never selects light or geometry.
 #[derive(Debug, Clone, PartialEq)]
 pub struct LitControlIdentity {
     pub material_role: MaterialRole,
@@ -311,7 +310,6 @@ impl LitControlBodyIr {
         self.material_family
     }
 
-    /// The face ranges cover every painted color: the side pigment ends the body-to-side range.
     pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {
         self.face.paint_color_ranges()
     }
