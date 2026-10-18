@@ -26,6 +26,7 @@ KEY_ESCAPE = 1
 NOT_READY = "Not ready to accept queries yet."
 STARTING = "No running instances"
 QUERIES = {"frames", "request", "observe"}
+RELOADS = {"reload"}
 SHELL = ROOT / "lab/quickshell/clock-shell"
 QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context", "RESINA_CLOCK_ERROR")
 
@@ -112,7 +113,8 @@ class Shell:
             if (NOT_READY not in output and STARTING not in output and not lost) or time.monotonic() > deadline:
                 break
             time.sleep(.1)
-        if result.returncode or NOT_READY in output or STARTING in output or LOST_REPLY in output:
+        if result.returncode or NOT_READY in output or STARTING in output \
+                or LOST_REPLY in output and function not in RELOADS:
             raise ValueError(f"clock shell call {function} failed: {output[-500:]}")
         return result.stdout.strip()
 

@@ -18,6 +18,8 @@ NOT_READY = "Not ready to accept queries yet."
 # Quickshell 0.3.2 exits 0 after this message when the socket closes before a reply arrives.
 LOST_REPLY = "Error occurred while waiting for response."
 QUERIES = {"observe"}
+# A reload replaces the handler that would reply; its completion is observed through events.
+RELOADS = {"reloadShell"}
 REPLACEMENT = "Riconnetti già"
 REPLACEMENT_DESCRIPTION = "Connetti con le impostazioni già salvate."
 
@@ -168,7 +170,7 @@ class Session:
             if NOT_READY not in output and not lost or time.monotonic() > deadline:
                 break
             time.sleep(0.1)
-        if result.returncode or NOT_READY in output or LOST_REPLY in output \
+        if result.returncode or NOT_READY in output or LOST_REPLY in output and function not in RELOADS \
                 or function == "observe" and not result.stdout.strip():
             raise ValueError(f"probe call {function} failed: " + output[-500:])
         return result.stdout.strip()

@@ -110,10 +110,6 @@ class CommandLifecycleEvidenceTests(unittest.TestCase):
             os.close(write)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class LostReplyTests(unittest.TestCase):
     LOST = "ERROR quickshell.ipc: Socket Error QLocalSocket::PeerClosedError\n" \
            "ERROR quickshell.ipc: Error occurred while waiting for response.\n"
@@ -151,3 +147,14 @@ class LostReplyTests(unittest.TestCase):
         for owner, module, _ in self.owners():
             with self.subTest(module=module.__name__), self.assertRaisesRegex(ValueError, "waiting for response"):
                 self.call(owner, module, "record", [self.LOST, ""])
+
+    def test_a_reload_may_lose_its_reply(self):
+        for owner, module, _ in self.owners():
+            reload = "reloadShell" if module.__name__.endswith("lifecycle") else "reload"
+            with self.subTest(module=module.__name__):
+                self.assertEqual(len(self.call(owner, module, reload, [self.LOST])[1]), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()
+
