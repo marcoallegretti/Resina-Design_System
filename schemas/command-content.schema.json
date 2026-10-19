@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-content:0.1.0",
+  "title": "Resina Command Content",
+  "type": "object",
+  "required": ["schemaVersion", "form"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "form": { "enum": ["label", "iconAndLabel", "iconOnly"] }
+  },
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "schemaVersion": true,
+        "form": { "const": "label" },
+        "label": { "$ref": "#/$defs/text" }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "required": ["icon", "label"],
+      "properties": {
+        "schemaVersion": true,
+        "form": { "const": "iconAndLabel" },
+        "icon": { "$ref": "urn:resina:schema:icon-content:0.1.0" },
+        "label": { "$ref": "#/$defs/text" }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "required": ["icon", "accessibleLabel"],
+      "properties": {
+        "schemaVersion": true,
+        "form": { "const": "iconOnly" },
+        "icon": { "$ref": "urn:resina:schema:icon-content:0.1.0" },
+        "accessibleLabel": { "$ref": "#/$defs/text" }
+      }
+    }
+  ],
+  "$defs": {
+    "text": { "type": "string", "minLength": 1 }
+  }
+}

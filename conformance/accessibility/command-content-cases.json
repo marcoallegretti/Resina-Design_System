@@ -1,0 +1,993 @@
+[
+  {
+    "name": "icon only",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "Mute microphone"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Mute microphone",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only focused description",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:sync",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            },
+            {
+              "role": "status.warning"
+            }
+          ]
+        },
+        "accessibleLabel": "Sync now"
+      },
+      "laidOutLabel": null,
+      "description": "Synchronize the saved folders.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Sync now",
+      "description": "Synchronize the saved folders.",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only disabled discoverable",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "Mute microphone"
+      },
+      "laidOutLabel": null,
+      "description": "No microphone is connected.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Mute microphone",
+      "description": "No microphone is connected.",
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only disabled excluded",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "Mikrofon stummschalten"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Mikrofon stummschalten",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": false,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only keyboard held",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:network-globe",
+          "kind": "color",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "directionalVariants",
+            "ltr": "resina.fixture:network-globe-ltr",
+            "rtl": "resina.fixture:network-globe-rtl"
+          },
+          "bakedLight": true
+        },
+        "accessibleLabel": "إعادة الاتصال"
+      },
+      "laidOutLabel": null,
+      "description": "إعادة الاتصال",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "إعادة الاتصال",
+      "description": "إعادة الاتصال",
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only pointer held",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "  Mute\nmicrophone "
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "pointer-1",
+          "inside": true
+        }
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "  Mute\nmicrophone ",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only label equal to icon name",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "microphone-off"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "microphone-off",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only label equal to icon reference",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "resina.fixture:microphone-off"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "resina.fixture:microphone-off",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon only label of zero-width characters",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "\u200b\u2060\ufeff"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "\u200b\u2060\ufeff",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon and label",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconAndLabel",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:chevron-back",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "mirror"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "label": "Back"
+      },
+      "laidOutLabel": "Back",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Back",
+      "description": null,
+      "value": null,
+      "state": {
+        "enabled": true,
+        "focused": false
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": true
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "icon and label disabled discoverable",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconAndLabel",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:chevron-back",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "mirror"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "label": "Zurück"
+      },
+      "laidOutLabel": "Zurück",
+      "description": "Nothing to go back to.",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "role": "button",
+      "name": "Zurück",
+      "description": "Nothing to go back to.",
+      "value": null,
+      "state": {
+        "enabled": false,
+        "focused": true
+      },
+      "actions": [
+        {
+          "kind": "invoke",
+          "available": false
+        }
+      ],
+      "focusable": true,
+      "relationships": []
+    }
+  },
+  {
+    "name": "label form",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "label",
+        "label": "Reconnect"
+      },
+      "laidOutLabel": "Reconnect",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "error": "LabelForm"
+  },
+  {
+    "name": "icon and label without laid-out label",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconAndLabel",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:chevron-back",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "mirror"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "label": "Back"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "error": "MissingLabelLayout"
+  },
+  {
+    "name": "icon and label with another laid-out label",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconAndLabel",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:chevron-back",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "mirror"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "label": "Back"
+      },
+      "laidOutLabel": "Back ",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "error": "LabelLayoutMismatch"
+  },
+  {
+    "name": "icon only with laid-out label",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "Mute microphone"
+      },
+      "laidOutLabel": "Mute microphone",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "error": "UnexpectedLabelLayout"
+  },
+  {
+    "name": "icon only blank description",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "Mute microphone"
+      },
+      "laidOutLabel": null,
+      "description": "  \t",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true
+    },
+    "error": "BlankDescription"
+  },
+  {
+    "name": "icon only enabled not focusable",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "Mute microphone"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": false
+    },
+    "error": "EnabledNotFocusable"
+  },
+  {
+    "name": "icon only focused not focusable",
+    "input": {
+      "content": {
+        "schemaVersion": "0.1.0",
+        "form": "iconOnly",
+        "icon": {
+          "schemaVersion": "0.1.0",
+          "reference": "resina.fixture:microphone-off",
+          "kind": "symbolic",
+          "inkBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "opticalBounds": {
+            "x": 0.125,
+            "y": 0.125,
+            "width": 0.75,
+            "height": 0.75
+          },
+          "direction": {
+            "behavior": "invariant"
+          },
+          "layers": [
+            {
+              "role": "content"
+            }
+          ]
+        },
+        "accessibleLabel": "Mute microphone"
+      },
+      "laidOutLabel": null,
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": false
+    },
+    "error": "FocusedNotFocusable"
+  }
+]

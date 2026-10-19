@@ -1,10 +1,18 @@
 use crate::CommandLabelIr;
-use resina_model::ActivationState;
+use resina_model::{ActivationState, CommandContent, CommandContentForm};
 use serde::Serialize;
 use std::fmt;
 
 pub struct CommandAccessibilityInput<'a> {
     pub label: &'a CommandLabelIr,
+    pub activation: &'a ActivationState,
+    pub description: Option<&'a str>,
+    pub focusable: bool,
+}
+
+pub struct CommandContentAccessibilityInput<'a> {
+    pub content: &'a CommandContent,
+    pub label: Option<&'a CommandLabelIr>,
     pub activation: &'a ActivationState,
     pub description: Option<&'a str>,
     pub focusable: bool,
@@ -89,35 +97,109 @@ impl fmt::Display for CommandAccessibilityError {
 }
 impl std::error::Error for CommandAccessibilityError {}
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommandContentAccessibilityError {
+    LabelForm,
+    MissingLabelLayout,
+    UnexpectedLabelLayout,
+    LabelLayoutMismatch,
+    BlankDescription,
+    EnabledNotFocusable,
+    FocusedNotFocusable,
+}
+impl fmt::Display for CommandContentAccessibilityError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::LabelForm => "label content resolves through ordinary command accessibility",
+            Self::MissingLabelLayout => "icon and label content requires its laid-out label",
+            Self::UnexpectedLabelLayout => "icon only content has no laid-out label",
+            Self::LabelLayoutMismatch => "laid-out label text differs from the content label",
+            Self::BlankDescription => "command description must be nonblank or absent",
+            Self::EnabledNotFocusable => "enabled command must be focusable",
+            Self::FocusedNotFocusable => "actual command focus requires focusability",
+        })
+    }
+}
+impl std::error::Error for CommandContentAccessibilityError {}
+impl From<CommandAccessibilityError> for CommandContentAccessibilityError {
+    fn from(error: CommandAccessibilityError) -> Self {
+        match error {
+            CommandAccessibilityError::BlankDescription => Self::BlankDescription,
+            CommandAccessibilityError::EnabledNotFocusable => Self::EnabledNotFocusable,
+            CommandAccessibilityError::FocusedNotFocusable => Self::FocusedNotFocusable,
+        }
+    }
+}
+
 pub fn resolve_command_accessibility(
     input: CommandAccessibilityInput<'_>,
 ) -> Result<CommandAccessibilityIr, CommandAccessibilityError> {
-    if input.description.is_some_and(|text| text.trim().is_empty()) {
+    snapshot(
+        input.label.text(),
+        input.activation,
+        input.description,
+        input.focusable,
+    )
+}
+
+pub fn resolve_command_content_accessibility(
+    input: CommandContentAccessibilityInput<'_>,
+) -> Result<CommandAccessibilityIr, CommandContentAccessibilityError> {
+    match (input.content.form(), input.label) {
+        (CommandContentForm::Label, _) => {
+            return Err(CommandContentAccessibilityError::LabelForm);
+        }
+        (CommandContentForm::IconAndLabel, None) => {
+            return Err(CommandContentAccessibilityError::MissingLabelLayout);
+        }
+        (CommandContentForm::IconAndLabel, Some(label)) if label.text() != input.content.text() => {
+            return Err(CommandContentAccessibilityError::LabelLayoutMismatch);
+        }
+        (CommandContentForm::IconOnly, Some(_)) => {
+            return Err(CommandContentAccessibilityError::UnexpectedLabelLayout);
+        }
+        _ => {}
+    }
+    Ok(snapshot(
+        input.content.text(),
+        input.activation,
+        input.description,
+        input.focusable,
+    )?)
+}
+
+fn snapshot(
+    name: &str,
+    activation: &ActivationState,
+    description: Option<&str>,
+    focusable: bool,
+) -> Result<CommandAccessibilityIr, CommandAccessibilityError> {
+    if description.is_some_and(|text| text.trim().is_empty()) {
         return Err(CommandAccessibilityError::BlankDescription);
     }
-    if !input.focusable {
-        if input.activation.enabled() {
+    if !focusable {
+        if activation.enabled() {
             return Err(CommandAccessibilityError::EnabledNotFocusable);
         }
-        if input.activation.focused() {
+        if activation.focused() {
             return Err(CommandAccessibilityError::FocusedNotFocusable);
         }
     }
     Ok(CommandAccessibilityIr {
         schema_version: "0.1.0",
         role: "button",
-        name: input.label.text().to_owned(),
-        description: input.description.map(str::to_owned),
+        name: name.to_owned(),
+        description: description.map(str::to_owned),
         value: (),
         state: CommandAccessibilityState {
-            enabled: input.activation.enabled(),
-            focused: input.activation.focused(),
+            enabled: activation.enabled(),
+            focused: activation.focused(),
         },
         actions: [CommandAccessibilityAction {
             kind: "invoke",
-            available: input.activation.enabled(),
+            available: activation.enabled(),
         }],
-        focusable: input.focusable,
+        focusable,
         relationships: [],
     })
 }

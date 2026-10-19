@@ -178,7 +178,9 @@ pub use command_states::{
 mod command_accessibility;
 pub use command_accessibility::{
     CommandAccessibilityAction, CommandAccessibilityError, CommandAccessibilityInput,
-    CommandAccessibilityIr, CommandAccessibilityState, resolve_command_accessibility,
+    CommandAccessibilityIr, CommandAccessibilityState, CommandContentAccessibilityError,
+    CommandContentAccessibilityInput, resolve_command_accessibility,
+    resolve_command_content_accessibility,
 };
 
 mod command_label;

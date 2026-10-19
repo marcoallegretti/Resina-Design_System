@@ -92,10 +92,14 @@ producer measurements rather than guessing width. A fixed narrow text slot or
 silently smaller text undermines both hierarchy and accessibility.
 
 Symbolic icons should identify controls; full-color artwork can identify product
-content. Shared icon metrics, directional metadata and icon-only Command content
-are [proposed work](https://github.com/marcoallegretti/Resina-Design_System/issues/135),
-not a current portable glyph or asset contract. Physical light direction and an
-icon's logical mirroring policy are different concerns.
+content. [Icon content](../spec/87-icon-content.md) describes an icon's
+reference, bounds, direction and colour layers without carrying artwork, and
+[Command content](../spec/90-command-content-accessibility.md) names an
+icon-only Command from a required accessible label, never from the icon. Icon
+size roles, placement, contrast, mapping lookup and rendering remain
+[proposed work](https://github.com/marcoallegretti/Resina-Design_System/issues/135),
+so there is no portable glyph or asset contract yet. Physical light direction
+and an icon's logical mirroring policy are different concerns.
 
 ## Motion and interaction
 

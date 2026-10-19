@@ -25,7 +25,7 @@ The [portable snapshot](../schemas/command-accessibility-ir.schema.json) require
 
 The momentary press hold is interaction feedback, not a toggle value or accessibility pressed state. Do not expose it as checked, selected or toggle-pressed. Disabled snapshots retain the supported action while making its unavailability explicit. Hover, paint, spring values, hit-region geometry, native objects and backend names do not belong in this snapshot.
 
-External label/description nodes, controlling relationships, menu buttons, toggles, icon-only controls and links require their own complete contracts. A producer MUST NOT use this intrinsic ordinary command profile to discard relationships required by such content. Empty relationships and null value here are explicit semantics, not defaults for unsupported component kinds. Native accessibility names/descriptions may require platform-owned nodes; that mapping does not change the portable content.
+External label/description nodes, controlling relationships, menu buttons, toggles and links require their own complete contracts. This contract alone resolves the `label` form of [command content](90-command-content-accessibility.md). Commands that show an icon resolve this snapshot through that contract: an icon beside a label requires the same successfully laid-out label, and an icon-only command is named from a required accessible label. A producer MUST NOT use this intrinsic ordinary command profile to discard relationships required by such content. Empty relationships and null value here are explicit semantics, not defaults for unsupported component kinds. Native accessibility names/descriptions may require platform-owned nodes; that mapping does not change the portable content.
 
 ## Delivery and conformance
 
