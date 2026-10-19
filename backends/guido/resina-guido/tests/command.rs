@@ -163,3 +163,99 @@ fn command_endpoints_use_portable_paint_on_the_first_native_frame() {
     assert_eq!(checked, 192);
     hold.release();
 }
+
+#[test]
+fn admitted_command_light_reaches_the_native_frame() {
+    let mut request: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-paint-request.json"
+    ))
+    .unwrap();
+    let environment = &mut request["surface"]["body"]["theme"]["environment"];
+    environment["accessibilityPreferences"]["highContrast"] = json!(false);
+    environment["accessibilityPreferences"]["reducedMotion"] = json!(false);
+    environment["rendererCapabilities"]["dynamicLighting"] = json!(true);
+    environment["qualityPolicy"] = json!("balanced");
+    request["surface"]["body"]["size"] = json!({"width": 64, "height": 40});
+    request["surface"]["body"]["surface"]["states"]["states"] = json!(["hover"]);
+    let lit = resolve_command_paint_source(&request.to_string()).unwrap();
+    let light = &serde_json::to_value(&lit).unwrap()["paint"]["body"]["face"]["light"];
+    assert!(light["ambient"].as_f64().unwrap() > 0.0, "{light}");
+    assert!(
+        light["interaction"]["strength"].as_f64().unwrap() > 0.0,
+        "{light}"
+    );
+    request["light"] = json!({"ambient": null, "interaction": null});
+    let unlit = resolve_command_paint_source(&request.to_string()).unwrap();
+    let scale = 2.0;
+    let paint = prepare_lit_control_paint(lit.paint(), scale, 4).unwrap();
+    let reference = prepare_lit_control_paint(unlit.paint(), scale, 4).unwrap();
+    assert_eq!(paint.origin(), reference.origin());
+    let (
+        ImageSource::Rgba {
+            width,
+            pixels: lit_pixels,
+            ..
+        },
+        ImageSource::Rgba {
+            pixels: unlit_pixels,
+            ..
+        },
+    ) = (paint.image_source(), reference.image_source())
+    else {
+        unreachable!()
+    };
+    let (index, difference) = lit_pixels
+        .as_chunks::<4>()
+        .0
+        .iter()
+        .zip(unlit_pixels.as_chunks::<4>().0)
+        .map(|(lit, unlit)| {
+            if lit[3] == 255 && unlit[3] == 255 {
+                (0..3).map(|c| lit[c].abs_diff(unlit[c])).max().unwrap()
+            } else {
+                0
+            }
+        })
+        .enumerate()
+        .max_by_key(|(_, difference)| *difference)
+        .unwrap();
+    assert!(
+        difference > 2,
+        "admitted light leaves the prepared body unchanged"
+    );
+    let mut app = guido::testing::Headless::new().expect("GUIdo GPU rendering is required");
+    let origin = paint.origin();
+    let size = paint.logical_size();
+    let source = paint.image_source();
+    let surface = app.surface(
+        SurfaceConfig::new()
+            .height(96)
+            .background_color(Color::rgba(0.0, 0.0, 0.0, 0.0)),
+        move || {
+            container().width(204.0).height(96.0).child(
+                container()
+                    .width(size.width)
+                    .height(size.height)
+                    .translate((12.0 + origin.0, 12.0 + origin.1))
+                    .child(image(source.clone()).content_fit(ContentFit::Fill)),
+            )
+        },
+    );
+    app.configure(surface, 204, 96, scale);
+    app.step();
+    app.wait_for_image_decodes();
+    app.step();
+    let actual = app.read_pixel(
+        surface,
+        ((12.0 + origin.0) * scale).round() as u32 + index as u32 % width,
+        ((12.0 + origin.1) * scale).round() as u32 + index as u32 / width,
+    );
+    for channel in 0..4 {
+        assert!(
+            actual[channel].abs_diff(lit_pixels[index * 4 + channel]) <= 1,
+            "{actual:?} {:?}",
+            &lit_pixels[index * 4..index * 4 + 4]
+        );
+    }
+    assert!((0..3).any(|c| actual[c].abs_diff(unlit_pixels[index * 4 + c]) > 1));
+}
