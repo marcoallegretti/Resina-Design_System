@@ -445,3 +445,78 @@ fn alternating_sample_colors_match_uncached_decoding_across_workers() {
         }
     }
 }
+
+#[test]
+fn lit_shortcuts_and_samplers_match_point_sampling() {
+    let mut compared = 0_usize;
+    for (shape, size, direction, states) in [
+        ("rounded", [44.0, 26.0], "ltr", json!(["rest"])),
+        ("rounded", [44.0, 26.0], "rtl", json!(["hover"])),
+        (
+            "capsule",
+            [40.0, 22.0],
+            "ltr",
+            json!(["pressed", "focused"]),
+        ),
+        ("organic", [46.0, 30.0], "rtl", json!(["hover", "focused"])),
+        ("structural", [30.0, 18.0], "ltr", json!(["disabled"])),
+        (
+            "structural",
+            [30.0, 18.0],
+            "rtl",
+            json!(["rest", "focused"]),
+        ),
+    ] {
+        let mut request: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/command-paint-request.json"
+        ))
+        .unwrap();
+        let body = &mut request["surface"]["body"];
+        body["size"] = json!({"width": size[0], "height": size[1]});
+        body["surface"]["form"]["shape"] = json!(shape);
+        body["surface"]["states"]["states"] = states.clone();
+        body["appearance"]["shapeAssignments"]["profiles"]["rounded"]["radius"] = json!("radius.3");
+        body["appearance"]["shapeAssignments"]["profiles"]["organic"]["radii"] = json!({
+            "topStart": "radius.3", "topEnd": "radius.0",
+            "bottomEnd": "radius.4", "bottomStart": "radius.3"
+        });
+        let environment = &mut body["theme"]["environment"];
+        environment["layoutDirection"] = json!(direction);
+        environment["accessibilityPreferences"] =
+            json!({"reducedMotion": false, "reducedTransparency": false, "highContrast": false});
+        environment["rendererCapabilities"]["dynamicLighting"] = json!(true);
+        let command = resolve_command_paint_source(&request.to_string()).unwrap();
+        let paint = command.paint();
+        for (scale, samples) in [(1.0_f64, 4), (1.25, 4), (2.0, 4), (1.25, 3)] {
+            let viewport = Viewport {
+                origin: PhysicalVector {
+                    x: -5.125,
+                    y: -5.375,
+                },
+                width: ((size[0] + 10.0) * scale).ceil() as u32,
+                height: ((size[1] + 10.0) * scale).ceil() as u32,
+                pixels_per_unit: scale,
+            };
+            let expected = render(
+                viewport,
+                samples,
+                paint.body().face().pigment().body(),
+                |_| UniformRegion::Sample,
+                |point| paint.sample_paint(point).map_err(RasterError::LitPaint),
+            )
+            .unwrap();
+            for workers in [1, 4] {
+                let actual = with_workers(workers, || {
+                    render_lit_control_paint(paint, viewport, samples)
+                })
+                .unwrap();
+                assert!(
+                    actual.rgba() == expected.rgba(),
+                    "{shape} {direction} {states} at scale {scale} with {samples} samples and {workers} workers"
+                );
+            }
+            compared += expected.rgba().len() / 4;
+        }
+    }
+    assert!(compared > 50_000, "{compared}");
+}

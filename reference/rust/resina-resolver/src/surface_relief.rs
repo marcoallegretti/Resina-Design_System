@@ -2,7 +2,7 @@ use crate::{OutlineCurvature, SurfaceOutline, resolve_surface_outline_source};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -376,6 +376,22 @@ impl SurfaceRelief {
         .map(Some)
     }
 
+    pub(crate) fn sampler(&self) -> ReliefSampler<'_> {
+        let size = self.outline.size();
+        ReliefSampler {
+            relief: self,
+            neutral: (self.profile.kind != ReliefKind::Flat).then(|| {
+                [
+                    self.axis(size.width / 2.0, Axis::X),
+                    self.axis(size.height / 2.0, Axis::Y),
+                ]
+            }),
+            axes: [Vec::new(), Vec::new()],
+            corner_gates: Default::default(),
+            lines: [HashMap::new(), HashMap::new()],
+        }
+    }
+
     fn axis(&self, coordinate: f64, axis: Axis) -> ReliefAxis {
         let size = self.outline.size();
         let w = SampleNumber::exact(self.profile.shoulder_width);
@@ -504,6 +520,7 @@ impl SurfaceRelief {
 }
 
 #[derive(Clone, Copy)]
+#[repr(usize)]
 enum Axis {
     X,
     Y,
@@ -515,6 +532,107 @@ type Gate = (SampleNumber, SampleNumber, SampleNumber);
 struct ReliefAxis {
     gates: [Gate; 2],
     corners: [SampleNumber; 4],
+}
+
+impl ReliefAxis {
+    fn identical(&self, other: &Self) -> bool {
+        self.gates
+            .iter()
+            .zip(&other.gates)
+            .all(|(a, b)| a.0.identical(b.0) && a.1.identical(b.1) && a.2.identical(b.2))
+            && self
+                .corners
+                .iter()
+                .zip(&other.corners)
+                .all(|(a, b)| a.identical(*b))
+    }
+}
+
+const RECENT: usize = 8;
+
+/// Evaluates [`SurfaceRelief::sample`] for many points. A sample whose terms along one axis are
+/// bit-identical to those at the surface midline is a function of its other coordinate alone, so
+/// it is evaluated once per such coordinate.
+pub(crate) struct ReliefSampler<'a> {
+    relief: &'a SurfaceRelief,
+    neutral: Option<[ReliefAxis; 2]>,
+    axes: [Vec<(u64, ReliefAxis)>; 2],
+    corner_gates: [Vec<(SampleNumber, SampleNumber, Gate)>; 4],
+    lines: [HashMap<u64, Result<ReliefSample, SurfaceReliefError>>; 2],
+}
+
+impl ReliefSampler<'_> {
+    pub(crate) fn sample(
+        &mut self,
+        point: PhysicalVector,
+    ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
+        let relief = self.relief;
+        let Some(neutral) = self.neutral else {
+            return relief.sample(point);
+        };
+        if !relief
+            .outline
+            .contains(point)
+            .map_err(|e| SurfaceReliefError(e.to_string()))?
+        {
+            return Ok(None);
+        }
+        let x = self.axis(point.x, Axis::X);
+        let y = self.axis(point.y, Axis::Y);
+        let (line, coordinate) = if x.identical(&neutral[0]) {
+            (1, point.y)
+        } else if y.identical(&neutral[1]) {
+            (0, point.x)
+        } else {
+            let gates = &mut self.corner_gates;
+            return relief
+                .relief(&x, &y, |corner, u, v| {
+                    recall(
+                        &mut gates[corner],
+                        |(cu, cv, _)| cu.identical(u) && cv.identical(v),
+                        || (u, v, relief.corner_gate(corner, u, v)),
+                    )
+                    .2
+                })
+                .map(Some);
+        };
+        self.lines[line]
+            .entry(coordinate.to_bits())
+            .or_insert_with(|| {
+                relief.relief(&x, &y, |corner, u, v| relief.corner_gate(corner, u, v))
+            })
+            .clone()
+            .map(Some)
+    }
+
+    fn axis(&mut self, coordinate: f64, axis: Axis) -> ReliefAxis {
+        let relief = self.relief;
+        let key = coordinate.to_bits();
+        recall(
+            &mut self.axes[axis as usize],
+            |(bits, _)| *bits == key,
+            || (key, relief.axis(coordinate, axis)),
+        )
+        .1
+    }
+}
+
+/// The entry among the most recent evaluations that `matches`, evaluating and keeping a new one
+/// when none does.
+pub(crate) fn recall<T: Copy>(
+    recent: &mut Vec<T>,
+    matches: impl Fn(&T) -> bool,
+    evaluate: impl FnOnce() -> T,
+) -> T {
+    if let Some(found) = recent.iter().find(|entry| matches(entry)) {
+        return *found;
+    }
+    let entry = evaluate();
+    if recent.len() == RECENT {
+        recent.remove(0);
+    }
+    recent.push(entry);
+    entry
 }
 
 fn smooth(t: f64) -> (f64, f64) {
@@ -566,6 +684,12 @@ impl SampleNumber {
             lower: lower.next_down(),
             upper: upper.next_up(),
         }
+    }
+
+    fn identical(self, other: Self) -> bool {
+        self.value.to_bits() == other.value.to_bits()
+            && self.lower.to_bits() == other.lower.to_bits()
+            && self.upper.to_bits() == other.upper.to_bits()
     }
 
     fn is_exact(self, value: f64) -> bool {
@@ -910,9 +1034,10 @@ mod tests {
     }
 
     #[test]
-    fn split_terms_reproduce_unsplit_relief_bits() {
+    fn sampler_and_split_terms_reproduce_unsplit_relief_bits() {
         let radius = |x: f64, y: f64| CornerRadius { x, y };
         let mut compared = 0_usize;
+        let mut reused = 0_usize;
         for (size, radii, curvature) in [
             (
                 (166.0, 80.0),
@@ -1037,14 +1162,17 @@ mod tests {
                         PhysicalVector { x: size.0 / 2.0, y },
                     ]);
                 }
+                let mut sampler = relief.sampler();
                 for point in points {
                     let expected = bits(unsplit_sample(&relief, point));
                     assert_eq!(bits(relief.sample(point)), expected, "{kind:?} {point:?}");
+                    assert_eq!(bits(sampler.sample(point)), expected, "{kind:?} {point:?}");
                     compared += 1;
                 }
+                reused += sampler.lines.iter().map(HashMap::len).sum::<usize>();
             }
         }
-        assert!(compared > 40_000, "{compared}");
+        assert!(compared > 40_000 && reused > 3_000, "{compared} {reused}");
     }
 
     #[test]

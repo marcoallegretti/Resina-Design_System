@@ -1,8 +1,10 @@
 use crate::{
-    EdgeContrastResult, OpaquePigmentResult, OutlineCurvature, SrgbFallback, SurfaceRelief,
-    SurfaceReliefProfile, opaque_contrast_ratio, resolve_edge_contrast_source, resolve_key_light,
-    resolve_opaque_pigment_source, resolve_surface_outline_source, resolve_surface_relief,
+    EdgeContrastResult, OpaquePigmentResult, OutlineCurvature, ReliefSample, SrgbFallback,
+    SurfaceRelief, SurfaceReliefError, SurfaceReliefProfile, opaque_contrast_ratio,
+    resolve_edge_contrast_source, resolve_key_light, resolve_opaque_pigment_source,
+    resolve_surface_outline_source, resolve_surface_relief,
     srgb_input::{SrgbInput, SrgbInputError},
+    surface_relief::ReliefSampler,
 };
 use resina_color::OpaqueSrgbRange;
 use resina_model::{KeyLight, PhysicalBounds, PhysicalVector};
@@ -14,6 +16,45 @@ mod material;
 pub use material::{
     MaterialReliefPaint, MaterialReliefPaintResult, resolve_material_relief_paint_source,
 };
+
+/// The face terms a paint sample reads besides its outline: edge-interior containment and relief.
+pub(crate) trait FaceTerms {
+    fn edge_interior_contains(&mut self, point: PhysicalVector) -> bool;
+    fn relief(&mut self, point: PhysicalVector)
+    -> Result<Option<ReliefSample>, SurfaceReliefError>;
+}
+
+pub(crate) struct DirectTerms<'a>(&'a ReliefPaint);
+
+impl FaceTerms for DirectTerms<'_> {
+    fn edge_interior_contains(&mut self, point: PhysicalVector) -> bool {
+        self.0.edge_interior_contains(point)
+    }
+    fn relief(
+        &mut self,
+        point: PhysicalVector,
+    ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
+        self.0.surface.sample(point)
+    }
+}
+
+/// Face terms equal to [`DirectTerms`] that reuse evaluations shared by many points.
+pub(crate) struct FaceSampler<'a> {
+    edge: edge::EdgeSampler<'a>,
+    relief: ReliefSampler<'a>,
+}
+
+impl FaceTerms for FaceSampler<'_> {
+    fn edge_interior_contains(&mut self, point: PhysicalVector) -> bool {
+        self.edge.contains(point)
+    }
+    fn relief(
+        &mut self,
+        point: PhysicalVector,
+    ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
+        self.relief.sample(point)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReliefPaintError(String);
@@ -310,6 +351,26 @@ impl ReliefPaint {
         point: PhysicalVector,
         shade: impl FnOnce(crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
     ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
+        self.sample_paint_using(point, &mut self.terms(), shade)
+    }
+
+    pub(crate) fn terms(&self) -> DirectTerms<'_> {
+        DirectTerms(self)
+    }
+
+    pub(crate) fn sampler(&self) -> FaceSampler<'_> {
+        FaceSampler {
+            edge: edge::EdgeSampler::new(self.surface.outline(), self.edge_width),
+            relief: self.surface.sampler(),
+        }
+    }
+
+    pub(crate) fn sample_paint_using(
+        &self,
+        point: PhysicalVector,
+        terms: &mut impl FaceTerms,
+        shade: impl FnOnce(crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
         if !self
             .surface
             .outline()
@@ -318,12 +379,11 @@ impl ReliefPaint {
         {
             return Ok(None);
         }
-        if !self.edge_interior_contains(point) {
+        if !terms.edge_interior_contains(point) {
             return Ok(Some(self.edge.color().clone()));
         }
-        let normal = self
-            .surface
-            .sample(point)
+        let normal = terms
+            .relief(point)
             .map_err(|e| ReliefPaintError(e.to_string()))?
             .ok_or_else(|| ReliefPaintError("interior point lost outline containment".into()))?
             .normal;

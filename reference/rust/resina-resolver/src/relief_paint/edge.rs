@@ -1,4 +1,4 @@
-use crate::{OutlineCurvature, SurfaceOutline};
+use crate::{OutlineCurvature, SurfaceOutline, surface_relief::recall};
 use num_bigint::BigUint;
 use resina_model::PhysicalVector;
 
@@ -45,7 +45,7 @@ pub(super) fn contains(outline: &SurfaceOutline, inset: f64, point: PhysicalVect
 }
 
 #[derive(Clone, Copy)]
-struct EdgeAxis {
+pub(super) struct EdgeAxis {
     outside: bool,
     uncertain: bool,
     ratios: [Option<Bounds>; 4],
@@ -111,6 +111,40 @@ fn decide(
         }
     }
     !uncertain || exact_contains(outline, inset, point, exponent(outline))
+}
+
+/// Evaluates [`contains`] for many points, reusing the terms of recently seen coordinates.
+pub(super) struct EdgeSampler<'a> {
+    outline: &'a SurfaceOutline,
+    inset: f64,
+    axes: [Vec<(u64, EdgeAxis)>; 2],
+}
+
+impl<'a> EdgeSampler<'a> {
+    pub(super) fn new(outline: &'a SurfaceOutline, inset: f64) -> Self {
+        Self {
+            outline,
+            inset,
+            axes: [Vec::new(), Vec::new()],
+        }
+    }
+
+    pub(super) fn contains(&mut self, point: PhysicalVector) -> bool {
+        let x = self.axis(point.x, true);
+        let y = self.axis(point.y, false);
+        decide(self.outline, self.inset, point, &x, &y)
+    }
+
+    fn axis(&mut self, coordinate: f64, horizontal: bool) -> EdgeAxis {
+        let key = coordinate.to_bits();
+        let (outline, inset) = (self.outline, self.inset);
+        recall(
+            &mut self.axes[usize::from(!horizontal)],
+            |(bits, _)| *bits == key,
+            || (key, axis(outline, inset, coordinate, horizontal)),
+        )
+        .1
+    }
 }
 
 fn dyadic(value: f64) -> (u64, i32) {
@@ -237,7 +271,7 @@ mod tests {
     }
 
     #[test]
-    fn split_terms_reproduce_unsplit_containment() {
+    fn split_and_sampled_terms_reproduce_unsplit_containment() {
         let radius = |r: f64| CornerRadius { x: r, y: r };
         let mut compared = 0_usize;
         let mut inside = 0_usize;
@@ -298,9 +332,11 @@ mod tests {
                     }
                 }
             }
+            let mut sampler = EdgeSampler::new(&outline, inset);
             for point in points {
                 let expected = unsplit_contains(&outline, inset, point);
                 assert_eq!(contains(&outline, inset, point), expected, "{point:?}");
+                assert_eq!(sampler.contains(point), expected, "{point:?}");
                 compared += 1;
                 inside += usize::from(expected);
             }

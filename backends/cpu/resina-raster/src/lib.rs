@@ -290,7 +290,7 @@ fn render_lit(
         && ring.is_none_or(|ring| {
             uniform::placed_supported(ring.inner()) && uniform::placed_supported(ring.outer())
         });
-    render(
+    render_sampled(
         viewport,
         samples_per_axis,
         face.pigment().body(),
@@ -318,17 +318,20 @@ fn render_lit(
                 UniformRegion::Sample
             }
         },
-        |point| match body
-            .sample_paint(point)
-            .map_err(|error| RasterError::LitPaint(LitControlPaintSampleError::Body(error)))?
-        {
-            Some(color) => Ok(Some(color)),
-            None => match focus {
-                Some(focus) => focus.sample_paint(point).map_err(|error| {
-                    RasterError::LitPaint(LitControlPaintSampleError::Focus(error))
-                }),
-                None => Ok(None),
-            },
+        || {
+            let mut sampler = body.sampler();
+            move |point| match sampler
+                .sample_paint(point)
+                .map_err(|error| RasterError::LitPaint(LitControlPaintSampleError::Body(error)))?
+            {
+                Some(color) => Ok(Some(color)),
+                None => match focus {
+                    Some(focus) => focus.sample_paint(point).map_err(|error| {
+                        RasterError::LitPaint(LitControlPaintSampleError::Focus(error))
+                    }),
+                    None => Ok(None),
+                },
+            }
         },
     )
 }
@@ -373,6 +376,20 @@ fn render(
     uniform: impl Fn(SampleBox) -> UniformRegion + Sync,
     sample: impl Fn(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError> + Sync,
 ) -> Result<RasterImage, RasterError> {
+    render_sampled(viewport, samples_per_axis, solid_color, uniform, || &sample)
+}
+
+/// Renders with one sampler per painting thread, so a sampler may keep evaluations it reuses.
+fn render_sampled<S>(
+    viewport: Viewport,
+    samples_per_axis: u8,
+    solid_color: &SrgbFallback,
+    uniform: impl Fn(SampleBox) -> UniformRegion + Sync,
+    sampler: impl Fn() -> S + Sync,
+) -> Result<RasterImage, RasterError>
+where
+    S: FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
+{
     let byte_count = validate(viewport, samples_per_axis)?;
     let mut rgba = Vec::new();
     rgba.try_reserve_exact(byte_count)
@@ -389,7 +406,7 @@ fn render(
             samples_per_axis,
             solid_color,
             uniform: &uniform,
-            sample: &sample,
+            sample: sampler(),
             decoded_color: None,
             solid_pixel: None,
         };
@@ -495,7 +512,7 @@ struct RowPainter<'a, U, S> {
     samples_per_axis: u8,
     solid_color: &'a SrgbFallback,
     uniform: &'a U,
-    sample: &'a S,
+    sample: S,
     decoded_color: Option<([f64; 3], [f64; 3])>,
     solid_pixel: Option<[u8; 4]>,
 }
@@ -503,7 +520,7 @@ struct RowPainter<'a, U, S> {
 impl<U, S> RowPainter<'_, U, S>
 where
     U: Fn(SampleBox) -> UniformRegion,
-    S: Fn(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
+    S: FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
 {
     fn paint(&mut self, row: &mut [u8], y: u32) -> Result<(), RasterError> {
         for (pixel, x) in row.as_chunks_mut::<4>().0.iter_mut().zip(0..) {

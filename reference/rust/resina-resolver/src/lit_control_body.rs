@@ -4,6 +4,7 @@ use crate::{
     SurfaceReliefProfile,
     material_light::{MaterialLightPolicy, ResolvedMaterialLight},
     opaque_paint::{contains, placed_contains},
+    relief_paint::{FaceSampler, FaceTerms},
     resolve_extruded_contour, resolve_inset_contour, resolve_key_light, resolve_opaque_pigment,
     resolve_relief_paint, resolve_surface_outline, resolve_surface_relief,
 };
@@ -377,12 +378,29 @@ impl LitControlBodyIr {
         &self,
         point: PhysicalVector,
     ) -> Result<Option<SrgbFallback>, LitControlBodyError> {
+        self.sample_paint_using(point, &mut self.face.terms())
+    }
+
+    /// An evaluator of [`sample_paint`](Self::sample_paint) for many points of one realization,
+    /// which reuses the face terms that many points share.
+    pub fn sampler(&self) -> LitControlBodySampler<'_> {
+        LitControlBodySampler {
+            body: self,
+            face: self.face.sampler(),
+        }
+    }
+
+    fn sample_paint_using(
+        &self,
+        point: PhysicalVector,
+        terms: &mut impl FaceTerms,
+    ) -> Result<Option<SrgbFallback>, LitControlBodyError> {
         if !point.x.is_finite() || !point.y.is_finite() {
             return Err(fail("paint point must be finite"));
         }
         let offset = self.lighting.side_offset();
         if offset.x == 0.0 && offset.y == 0.0 {
-            return self.face.sample_paint(point).map_err(fail);
+            return self.face.sample_paint_using(point, terms).map_err(fail);
         }
         let swept_interior = |point| placed_contains(&self.geometry.edge_interior, point);
         if self
@@ -392,8 +410,12 @@ impl LitControlBodyIr {
             .contains(point)
             .map_err(fail)?
         {
-            if self.face.edge_interior_contains(point) || swept_interior(point).map_err(fail)? {
-                return self.face.face_color(point).map(Some).map_err(fail);
+            if terms.edge_interior_contains(point) || swept_interior(point).map_err(fail)? {
+                return self
+                    .face
+                    .face_color_using(point, terms)
+                    .map(Some)
+                    .map_err(fail);
             }
             return Ok(Some(self.face.edge().color().clone()));
         }
@@ -405,6 +427,22 @@ impl LitControlBodyIr {
         } else {
             Ok(Some(self.face.edge().color().clone()))
         }
+    }
+}
+
+/// See [`LitControlBodyIr::sampler`].
+pub struct LitControlBodySampler<'a> {
+    body: &'a LitControlBodyIr,
+    face: FaceSampler<'a>,
+}
+
+impl LitControlBodySampler<'_> {
+    /// Equal to [`LitControlBodyIr::sample_paint`] at every point.
+    pub fn sample_paint(
+        &mut self,
+        point: PhysicalVector,
+    ) -> Result<Option<SrgbFallback>, LitControlBodyError> {
+        self.body.sample_paint_using(point, &mut self.face)
     }
 }
 

@@ -53,18 +53,26 @@ impl MaterialReliefPaint {
                 .expect("the dimmed label and resolved body are opaque");
     }
 
+    #[cfg(test)]
     pub(crate) fn edge_interior_contains(&self, point: PhysicalVector) -> bool {
         self.face.edge_interior_contains(point)
     }
 
-    pub(crate) fn face_color(
+    pub(crate) fn terms(&self) -> DirectTerms<'_> {
+        self.face.terms()
+    }
+
+    pub(crate) fn sampler(&self) -> FaceSampler<'_> {
+        self.face.sampler()
+    }
+
+    pub(crate) fn face_color_using(
         &self,
         point: PhysicalVector,
+        terms: &mut impl FaceTerms,
     ) -> Result<SrgbFallback, ReliefPaintError> {
-        let normal = self
-            .face
-            .surface
-            .sample(point)
+        let normal = terms
+            .relief(point)
             .map_err(|e| ReliefPaintError(e.to_string()))?
             .ok_or_else(|| ReliefPaintError("face color requires a point of the outline".into()))?
             .normal;
@@ -116,6 +124,15 @@ impl MaterialReliefPaint {
     ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
         self.face
             .sample_paint_with(point, |normal| self.shade(normal))
+    }
+
+    pub(crate) fn sample_paint_using(
+        &self,
+        point: PhysicalVector,
+        terms: &mut impl FaceTerms,
+    ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
+        self.face
+            .sample_paint_using(point, terms, |normal| self.shade(normal))
     }
 }
 
