@@ -4154,11 +4154,9 @@ Allow community backends such as Flutter.
 
 # 190. Release line
 
-Resina releases are tags of this repository. Specifications, schemas and crates keep their own versions (§162).
+Releases before 0.1.0 are development releases. They are accepted, not tagged. 0.1.0 is the first release intended for building a complete product, and the first tag of this repository. Specifications, schemas and crates keep their own versions (§162).
 
-Releases before 0.1.0 are development releases. 0.1.0 is the first release intended for building a complete product.
-
-A release is proposed with evidence for each of its requirements and accepted by the maintainer.
+A release is proposed with evidence for each of its requirements at one candidate commit, and accepted by the maintainer. A milestone holds the work that blocks its release.
 
 A component is qualified in a backend when its contracts are realized in the released host and verified with authored updates, native input, focus, lifetime, motion and accessibility evidence.
 
