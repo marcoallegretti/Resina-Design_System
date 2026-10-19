@@ -368,84 +368,153 @@ impl SurfaceRelief {
                 },
             }));
         }
+        self.relief(
+            &self.axis(point.x, Axis::X),
+            &self.axis(point.y, Axis::Y),
+            |corner, u, v| self.corner_gate(corner, u, v),
+        )
+        .map(Some)
+    }
+
+    fn axis(&self, coordinate: f64, axis: Axis) -> ReliefAxis {
         let size = self.outline.size();
         let w = SampleNumber::exact(self.profile.shoulder_width);
-        let px = SampleNumber::exact(point.x);
-        let py = SampleNumber::exact(point.y);
-        let right = SampleNumber::exact(size.width) - px;
-        let bottom = SampleNumber::exact(size.height) - py;
+        let near = SampleNumber::exact(coordinate);
         let straight = |distance: SampleNumber, x: f64, y: f64| {
             let (value, derivative) = (distance / w).smooth();
             (value, derivative * x.into(), derivative * y.into())
         };
-        let one = SampleNumber::exact(1.0);
-        let zero = SampleNumber::exact(0.0);
-        let mut gates = [
-            straight(px, 1.0, 0.0),
-            straight(right, -1.0, 0.0),
-            straight(py, 0.0, 1.0),
-            straight(bottom, 0.0, -1.0),
-            (one, zero, zero),
-            (one, zero, zero),
-            (one, zero, zero),
-            (one, zero, zero),
-        ];
-        let corners = [
-            (px, py, 1.0, 1.0),
-            (right, py, -1.0, 1.0),
-            (right, bottom, -1.0, -1.0),
-            (px, bottom, 1.0, -1.0),
-        ];
-        for (i, (r, (x, y, sx, sy))) in self.outline.corners().into_iter().zip(corners).enumerate()
+        let (gates, distances) = match axis {
+            Axis::X => {
+                let far = SampleNumber::exact(size.width) - near;
+                (
+                    [straight(near, 1.0, 0.0), straight(far, -1.0, 0.0)],
+                    [near, far, far, near],
+                )
+            }
+            Axis::Y => {
+                let far = SampleNumber::exact(size.height) - near;
+                (
+                    [straight(near, 0.0, 1.0), straight(far, 0.0, -1.0)],
+                    [near, near, far, far],
+                )
+            }
+        };
+        let mut corners = [SampleNumber::exact(0.0); 4];
+        for ((corner, r), distance) in corners
+            .iter_mut()
+            .zip(self.outline.corners())
+            .zip(distances)
         {
             if r.x == 0.0 {
                 continue;
             }
-            let a = SampleNumber::exact(r.x);
-            let b = SampleNumber::exact(r.y);
-            let rx = w / a;
-            let ry = w / b;
-            let n = SampleNumber::exact(self.exponent());
-            let tau = n * (rx + ry);
-            let u = ((a - x) / a).clamp(0.0, 1.0);
-            let v = ((b - y) / b).clamp(0.0, 1.0);
-            let (up, vp, du, dv) = match self.outline.curvature() {
-                OutlineCurvature::Circular => (u * u, v * v, u, v),
-                OutlineCurvature::Quartic => (u * u * u * u, v * v * v * v, u * u * u, v * v * v),
-            };
-            let f = (one - up) - vp;
-            let (value, derivative) = (f / tau).smooth();
-            gates[i + 4] = (
-                value,
-                derivative * n * du * (rx / tau) * sx.into(),
-                derivative * n * dv * (ry / tau) * sy.into(),
-            );
+            let a = SampleNumber::exact(match axis {
+                Axis::X => r.x,
+                Axis::Y => r.y,
+            });
+            *corner = ((a - distance) / a).clamp(0.0, 1.0);
+        }
+        ReliefAxis { gates, corners }
+    }
+
+    fn corner_gate(&self, corner: usize, u: SampleNumber, v: SampleNumber) -> Gate {
+        let r = self.outline.corners()[corner];
+        let (sx, sy) = [(1.0, 1.0), (-1.0, 1.0), (-1.0, -1.0), (1.0, -1.0)][corner];
+        let w = SampleNumber::exact(self.profile.shoulder_width);
+        let one = SampleNumber::exact(1.0);
+        let a = SampleNumber::exact(r.x);
+        let b = SampleNumber::exact(r.y);
+        let rx = w / a;
+        let ry = w / b;
+        let n = SampleNumber::exact(self.exponent());
+        let tau = n * (rx + ry);
+        let (up, vp, du, dv) = match self.outline.curvature() {
+            OutlineCurvature::Circular => (u * u, v * v, u, v),
+            OutlineCurvature::Quartic => (u * u * u * u, v * v * v * v, u * u * u, v * v * v),
+        };
+        let f = (one - up) - vp;
+        let (value, derivative) = (f / tau).smooth();
+        (
+            value,
+            derivative * n * du * (rx / tau) * sx.into(),
+            derivative * n * dv * (ry / tau) * sy.into(),
+        )
+    }
+
+    fn relief(
+        &self,
+        x: &ReliefAxis,
+        y: &ReliefAxis,
+        mut corner_gate: impl FnMut(usize, SampleNumber, SampleNumber) -> Gate,
+    ) -> Result<ReliefSample, SurfaceReliefError> {
+        let w = SampleNumber::exact(self.profile.shoulder_width);
+        let one = SampleNumber::exact(1.0);
+        let zero = SampleNumber::exact(0.0);
+        let mut gates = [
+            x.gates[0],
+            x.gates[1],
+            y.gates[0],
+            y.gates[1],
+            (one, zero, zero),
+            (one, zero, zero),
+            (one, zero, zero),
+            (one, zero, zero),
+        ];
+        for (i, r) in self.outline.corners().into_iter().enumerate() {
+            if r.x != 0.0 {
+                gates[i + 4] = corner_gate(i, x.corners[i], y.corners[i]);
+            }
         }
         let value = gates.iter().fold(one, |product, g| product * g.0);
         let (mut dx, mut dy) = (zero, zero);
         for (i, gate) in gates.iter().enumerate() {
+            // Skipping an exact-zero derivative is bit-identical: its product is an exact zero,
+            // which the `is_exact(0.0)` short-circuits of `+` and `-` below discard.
+            let (x_term, y_term) = (!gate.1.is_exact(0.0), !gate.2.is_exact(0.0));
+            if !x_term && !y_term {
+                continue;
+            }
             let product = gates
                 .iter()
                 .enumerate()
                 .filter(|(j, _)| *j != i)
                 .fold(one, |product, (_, g)| product * g.0);
-            dx = dx + gate.1 * product;
-            dy = dy + gate.2 * product;
+            if x_term {
+                dx = dx + gate.1 * product;
+            }
+            if y_term {
+                dy = dy + gate.2 * product;
+            }
         }
         let amplitude = SampleNumber::exact(self.signed_amplitude());
         let ratio = amplitude / w;
         dx = dx * ratio;
         dy = dy * ratio;
         let length = (dx * dx + dy * dy + one).sqrt();
-        Ok(Some(ReliefSample {
+        Ok(ReliefSample {
             height: (amplitude * value).certify()?,
             normal: FaceNormal {
                 x: ((zero - dx) / length).certify()?,
                 y: ((zero - dy) / length).certify()?,
                 z: (one / length).certify()?,
             },
-        }))
+        })
     }
+}
+
+#[derive(Clone, Copy)]
+enum Axis {
+    X,
+    Y,
+}
+
+type Gate = (SampleNumber, SampleNumber, SampleNumber);
+
+#[derive(Clone, Copy)]
+struct ReliefAxis {
+    gates: [Gate; 2],
+    corners: [SampleNumber; 4],
 }
 
 fn smooth(t: f64) -> (f64, f64) {
@@ -717,6 +786,265 @@ mod tests {
             },
         )
         .unwrap()
+    }
+
+    fn unsplit_sample(
+        relief: &SurfaceRelief,
+        point: PhysicalVector,
+    ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
+        if !relief
+            .outline
+            .contains(point)
+            .map_err(|e| SurfaceReliefError(e.to_string()))?
+        {
+            return Ok(None);
+        }
+        if relief.profile.kind == ReliefKind::Flat {
+            return Ok(Some(ReliefSample {
+                height: 0.0,
+                normal: FaceNormal {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                },
+            }));
+        }
+        let size = relief.outline.size();
+        let w = SampleNumber::exact(relief.profile.shoulder_width);
+        let px = SampleNumber::exact(point.x);
+        let py = SampleNumber::exact(point.y);
+        let right = SampleNumber::exact(size.width) - px;
+        let bottom = SampleNumber::exact(size.height) - py;
+        let straight = |distance: SampleNumber, x: f64, y: f64| {
+            let (value, derivative) = (distance / w).smooth();
+            (value, derivative * x.into(), derivative * y.into())
+        };
+        let one = SampleNumber::exact(1.0);
+        let zero = SampleNumber::exact(0.0);
+        let mut gates = [
+            straight(px, 1.0, 0.0),
+            straight(right, -1.0, 0.0),
+            straight(py, 0.0, 1.0),
+            straight(bottom, 0.0, -1.0),
+            (one, zero, zero),
+            (one, zero, zero),
+            (one, zero, zero),
+            (one, zero, zero),
+        ];
+        let corners = [
+            (px, py, 1.0, 1.0),
+            (right, py, -1.0, 1.0),
+            (right, bottom, -1.0, -1.0),
+            (px, bottom, 1.0, -1.0),
+        ];
+        for (i, (r, (x, y, sx, sy))) in relief
+            .outline
+            .corners()
+            .into_iter()
+            .zip(corners)
+            .enumerate()
+        {
+            if r.x == 0.0 {
+                continue;
+            }
+            let a = SampleNumber::exact(r.x);
+            let b = SampleNumber::exact(r.y);
+            let rx = w / a;
+            let ry = w / b;
+            let n = SampleNumber::exact(relief.exponent());
+            let tau = n * (rx + ry);
+            let u = ((a - x) / a).clamp(0.0, 1.0);
+            let v = ((b - y) / b).clamp(0.0, 1.0);
+            let (up, vp, du, dv) = match relief.outline.curvature() {
+                OutlineCurvature::Circular => (u * u, v * v, u, v),
+                OutlineCurvature::Quartic => (u * u * u * u, v * v * v * v, u * u * u, v * v * v),
+            };
+            let f = (one - up) - vp;
+            let (value, derivative) = (f / tau).smooth();
+            gates[i + 4] = (
+                value,
+                derivative * n * du * (rx / tau) * sx.into(),
+                derivative * n * dv * (ry / tau) * sy.into(),
+            );
+        }
+        let value = gates.iter().fold(one, |product, g| product * g.0);
+        let (mut dx, mut dy) = (zero, zero);
+        for (i, gate) in gates.iter().enumerate() {
+            let product = gates
+                .iter()
+                .enumerate()
+                .filter(|(j, _)| *j != i)
+                .fold(one, |product, (_, g)| product * g.0);
+            dx = dx + gate.1 * product;
+            dy = dy + gate.2 * product;
+        }
+        let amplitude = SampleNumber::exact(relief.signed_amplitude());
+        let ratio = amplitude / w;
+        dx = dx * ratio;
+        dy = dy * ratio;
+        let length = (dx * dx + dy * dy + one).sqrt();
+        Ok(Some(ReliefSample {
+            height: (amplitude * value).certify()?,
+            normal: FaceNormal {
+                x: ((zero - dx) / length).certify()?,
+                y: ((zero - dy) / length).certify()?,
+                z: (one / length).certify()?,
+            },
+        }))
+    }
+
+    fn bits(
+        sample: Result<Option<ReliefSample>, SurfaceReliefError>,
+    ) -> Result<Option<[u64; 4]>, SurfaceReliefError> {
+        sample.map(|sample| {
+            sample.map(|sample| {
+                [
+                    sample.height,
+                    sample.normal.x,
+                    sample.normal.y,
+                    sample.normal.z,
+                ]
+                .map(f64::to_bits)
+            })
+        })
+    }
+
+    #[test]
+    fn split_terms_reproduce_unsplit_relief_bits() {
+        let radius = |x: f64, y: f64| CornerRadius { x, y };
+        let mut compared = 0_usize;
+        for (size, radii, curvature) in [
+            (
+                (166.0, 80.0),
+                [radius(24.0, 24.0); 4],
+                OutlineCurvature::Circular,
+            ),
+            (
+                (120.0, 60.0),
+                [
+                    radius(20.0, 12.0),
+                    radius(0.0, 0.0),
+                    radius(12.0, 12.0),
+                    radius(6.0, 6.0),
+                ],
+                OutlineCurvature::Circular,
+            ),
+            (
+                (120.0, 60.0),
+                [radius(0.0, 0.0); 4],
+                OutlineCurvature::Circular,
+            ),
+            (
+                (48.0, 48.0),
+                [radius(24.0, 24.0); 4],
+                OutlineCurvature::Circular,
+            ),
+            (
+                (96.0, 40.0),
+                [radius(20.0, 20.0); 4],
+                OutlineCurvature::Circular,
+            ),
+            (
+                (90.0, 44.0),
+                [radius(16.0, 12.0); 4],
+                OutlineCurvature::Quartic,
+            ),
+            (
+                (31.0, 13.0),
+                [radius(6.5, 6.5); 4],
+                OutlineCurvature::Circular,
+            ),
+        ] {
+            let outline = resolve_surface_outline(
+                SurfaceSize {
+                    width: size.0,
+                    height: size.1,
+                },
+                LogicalCornerRadii {
+                    top_start: radii[0],
+                    top_end: radii[1],
+                    bottom_end: radii[2],
+                    bottom_start: radii[3],
+                },
+                LayoutDirection::Ltr,
+                curvature,
+                1.0,
+            )
+            .unwrap();
+            for (kind, amplitude, shoulder_width) in [
+                (ReliefKind::Convex, 1.0, 2.0),
+                (ReliefKind::Recessed, 0.75, 1.5),
+                (ReliefKind::Convex, 0.5, 1.0),
+                (ReliefKind::Flat, 0.0, 0.0),
+            ] {
+                let Ok(relief) = resolve_surface_relief(
+                    outline.clone(),
+                    SurfaceReliefProfile {
+                        kind,
+                        body_thickness: 2.0,
+                        amplitude,
+                        shoulder_width,
+                    },
+                ) else {
+                    continue;
+                };
+                let mut points = Vec::new();
+                for (scale, samples, origin) in [(1.25, 1, -2.4)] {
+                    let grid = f64::from(samples);
+                    let columns = ((size.0 - 2.0 * origin) * scale).ceil() as u32;
+                    let rows = ((size.1 - 2.0 * origin) * scale).ceil() as u32;
+                    for y in 0..rows {
+                        for x in 0..columns {
+                            for sy in 0..samples {
+                                for sx in 0..samples {
+                                    let point = PhysicalVector {
+                                        x: origin
+                                            + (f64::from(x) + (f64::from(sx) + 0.5) / grid) / scale,
+                                        y: origin
+                                            + (f64::from(y) + (f64::from(sy) + 0.5) / grid) / scale,
+                                    };
+                                    let corner = (point.x.min(size.0 - point.x) < 28.0)
+                                        && (point.y.min(size.1 - point.y) < 28.0);
+                                    if corner
+                                        || point
+                                            .x
+                                            .min(size.0 - point.x)
+                                            .min(point.y)
+                                            .min(size.1 - point.y)
+                                            < 6.0
+                                    {
+                                        points.push(point);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                let mut state = 0x9e37_79b9_7f4a_7c15_u64;
+                for _ in 0..500 {
+                    let mut next = || {
+                        state ^= state << 13;
+                        state ^= state >> 7;
+                        state ^= state << 17;
+                        (state >> 11) as f64 / (1_u64 << 53) as f64
+                    };
+                    let x = next() * (size.0 + 2.0) - 1.0;
+                    let y = next() * (size.1 + 2.0) - 1.0;
+                    points.extend([
+                        PhysicalVector { x, y },
+                        PhysicalVector { x: size.0 - x, y },
+                        PhysicalVector { x, y: size.1 / 2.0 },
+                        PhysicalVector { x: size.0 / 2.0, y },
+                    ]);
+                }
+                for point in points {
+                    let expected = bits(unsplit_sample(&relief, point));
+                    assert_eq!(bits(relief.sample(point)), expected, "{kind:?} {point:?}");
+                    compared += 1;
+                }
+            }
+        }
+        assert!(compared > 40_000, "{compared}");
     }
 
     #[test]
