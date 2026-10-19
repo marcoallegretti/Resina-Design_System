@@ -1,7 +1,9 @@
+import os
 from pathlib import Path
 import signal
 import subprocess
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -174,19 +176,20 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
                                                  "Reconnect", "button.", "Connect using saved settings."))
 
     def test_focus_presentation_follows_the_verified_orca_release(self):
-        self.assertEqual(accessibility.focus_presentation("46.1", "Reconnect", "Connect using saved settings."),
-                         ("46.1", ("Reconnect push button.", "Connect using saved settings."),
+        self.assertEqual(accessibility.verified_release("46.1"), "46.1")
+        self.assertEqual(accessibility.verified_release("Orca version 50.3, AT-SPI2 version: 2.60.7"), "50.3")
+        self.assertEqual(accessibility.FOCUS_PRESENTATIONS["46.1"]("Reconnect", "Connect using saved settings."),
+                         (("Reconnect push button.", "Connect using saved settings."),
                           "quickshell application frame Reconnect push button"))
-        self.assertEqual(accessibility.focus_presentation("Orca version 50.3, AT-SPI2 version: 2.60.7", "Reconnect",
-                                                          "Connect using saved settings."),
-                         ("50.3", ("Reconnect", "button.", "Connect using saved settings."),
+        self.assertEqual(accessibility.FOCUS_PRESENTATIONS["50.3"]("Reconnect", "Connect using saved settings."),
+                         (("Reconnect", "button.", "Connect using saved settings."),
                           "quickshell application frame Reconnect button Connect using saved settings."))
         speech = ["'Screen reader on.' {}", "'Reconnect push button.' {'established': False}",
                   "'Connect using saved settings.' {'established': False}"]
         self.assertTrue(accessibility.announced(speech, "Reconnect push button.", "Connect using saved settings."))
-        for version in ("Orca version 50.4", "46", ""):
+        for version in ("Orca version 50.4, AT-SPI2 version: 2.60.7", "50.3.1", "46", ""):
             with self.assertRaisesRegex(ValueError, "no verified focus presentation .*verified releases: 46.1, 50.3"):
-                accessibility.focus_presentation(version, "Reconnect", "Connect using saved settings.")
+                accessibility.verified_release(version)
 
     def test_screen_reader_presentation_is_read_from_the_marked_position(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -202,14 +205,20 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
             self.assertEqual(accessibility.lines(log), 4)
             self.assertEqual(accessibility.presentation(log, 4), ([], []))
 
-    def test_orca_start_reports_the_exit_status_of_a_stopped_screen_reader(self):
+    def test_orca_start_reads_the_announcement_before_the_exit_status(self):
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "orca.debug"
+            missing = Path(directory) / "missing.debug"
             log.write_text("10:00:00 - SPEECH OUTPUT: 'Screen reader on.' {}", encoding="utf-8")
-            self.assertTrue(accessibility.started(FakeProcess(), log))
-            self.assertFalse(accessibility.started(FakeProcess(), Path(directory) / "missing.debug"))
-            with self.assertRaisesRegex(ValueError, "Orca exited with return code -9 before it announced itself"):
-                accessibility.started(FakeProcess(-9), log)
+            later = time.monotonic() + 60
+            self.assertTrue(accessibility.started(FakeProcess(), log, later))
+            self.assertTrue(accessibility.started(FakeProcess(0), log, 0))
+            self.assertFalse(accessibility.started(FakeProcess(), missing, later))
+            with self.assertRaisesRegex(ValueError, "Orca exited with return code -9 before its announcement "
+                                                    "'Screen reader on.' was read"):
+                accessibility.started(FakeProcess(-9), missing, later)
+            with self.assertRaises(accessibility.StartExpired):
+                accessibility.started(FakeProcess(), missing, 0)
 
     def test_a_screen_reader_that_failed_to_start_dumps_its_stacks_before_it_is_stopped(self):
         aborted = FakeProcess(exits_on=(signal.SIGABRT,))
@@ -223,6 +232,41 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
         self.assertEqual(stopped.signals, [signal.SIGTERM])
         exited = FakeProcess(0)
         accessibility.stop(exited, abort=True)
+        self.assertEqual(exited.signals, [])
+
+    @unittest.skipUnless(os.name == "posix", "the screen reader runs on a pseudo-terminal")
+    def test_only_a_screen_reader_that_never_announced_itself_is_sent_sigabrt(self):
+        def start(version, failure, process):
+            def wait(predicate, description, timeout):
+                if failure:
+                    raise ValueError(failure)
+                predicate()
+            reply = subprocess.CompletedProcess([], 0, version + "\n", "")
+            with tempfile.TemporaryDirectory() as directory, \
+                    patch.object(accessibility.subprocess, "run", return_value=reply), \
+                    patch.object(accessibility.subprocess, "Popen", return_value=process) as launched, \
+                    patch.object(accessibility, "ORCA_START_TIMEOUT", 0):
+                try:
+                    accessibility.ScreenReader(wait, Path(directory))
+                finally:
+                    self.launched = launched.called
+
+        unverified = FakeProcess()
+        with self.assertRaisesRegex(ValueError, "no verified focus presentation for 50.4"):
+            start("50.4", None, unverified)
+        self.assertFalse(self.launched)
+        shell = FakeProcess(exits_on=(signal.SIGTERM,))
+        with self.assertRaisesRegex(ValueError, "^Orca start was not reached: the shell exited$"):
+            start("46.1", "Orca start was not reached: the shell exited", shell)
+        self.assertEqual(shell.signals, [signal.SIGTERM])
+        silent = FakeProcess(exits_on=(signal.SIGABRT,))
+        with self.assertRaisesRegex(ValueError, "Orca did not announce 'Screen reader on.' within 0 s; Orca was "
+                                                "still running and was sent SIGABRT"):
+            start("46.1", None, silent)
+        self.assertEqual(silent.signals, [signal.SIGABRT])
+        exited = FakeProcess(-9)
+        with self.assertRaisesRegex(ValueError, "return code -9"):
+            start("46.1", None, exited)
         self.assertEqual(exited.signals, [])
 
 

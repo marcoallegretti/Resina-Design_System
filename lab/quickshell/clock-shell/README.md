@@ -168,11 +168,12 @@ GSettings. It runs at the output scale given by `--scale` and requires:
   body and Tab move keyboard focus to it;
 - with `--screen-reader`, run in the same way as for
   [Command accessibility](../../../backends/quickshell/resina-qt-runtime/README.md#released-quickshell-command-accessibility),
-  Orca's speech "Close", "button.", "Close the clock surface." with the braille
-  line "quickshell application frame Close button Close the clock surface." when
-  the surface opens, and "Show clock", "button.", "Open the clock surface." with
-  "quickshell application frame Show clock button Open the clock surface." after
-  Tab.
+  the focus presentation verified for the running Orca release when the surface
+  opens and after Tab; unverified releases fail before Orca starts. With Orca
+  50.3 this is the speech "Close", "button.", "Close the clock surface." with the
+  braille line "quickshell application frame Close button Close the clock
+  surface.", and "Show clock", "button.", "Open the clock surface." with
+  "quickshell application frame Show clock button Open the clock surface.".
 
 With Quickshell 0.3.2 (revision 4f508be), Qt 6.11.2, xdg-desktop-portal 1.22.1
 and xdg-desktop-portal-gnome 50.0:

@@ -1265,10 +1265,13 @@ sequence and show the braille line
 "quickshell application frame Reconnect button Connect using saved settings.".
 Orca 46.1 must speak "Reconnect push button.", "Connect using saved settings."
 in sequence and show "quickshell application frame Reconnect push button": it
-does not braille the description. If Orca exits before it announces
-"Screen reader on.", the failure reports its return code; if it is still running
-when the wait expires, it receives SIGABRT so that its faulthandler writes every
-thread's stack to `orca.debug`.
+does not braille the description. The release is read from `orca --version`
+before Orca is started, and the clock shell check applies the same rule. If Orca
+exits before "Screen reader on." is read, the failure reports its return code; if
+it is still running after 30 s without that announcement, it receives SIGABRT so
+that its faulthandler writes every thread's stack to `orca.debug`
+([Orca 46.1 `orca.py` line 484](https://gitlab.gnome.org/GNOME/orca/-/blob/ORCA_46_1/src/orca/orca.py#L484)). A shell that
+exits during Orca's start fails as a shell exit and Orca is only terminated.
 Neither Orca release presents a sensitivity change on its own, so spoken
 presentation of availability withdrawal is unverified. Orca's output after the
 withdrawal is recorded under `unavailableUnverified` in `screen-reader.json`
