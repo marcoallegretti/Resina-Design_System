@@ -146,6 +146,11 @@ pub use control_paint::ImperceptibleResponse;
 pub use disabled_label::{
     DISABLED_LABEL_CONTRAST, HIGH_CONTRAST_DISABLED_LABEL_CONTRAST, disabled_label_bound,
 };
+mod command_layout;
+pub use command_layout::{
+    CommandLayoutError, CommandLayoutInput, CommandLayoutIr, resolve_command_layout,
+    resolve_command_layout_source,
+};
 mod toggle_layout;
 pub use toggle_layout::{
     ToggleLayoutError, ToggleLayoutInput, ToggleLayoutIr, resolve_toggle_layout,

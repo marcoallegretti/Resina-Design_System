@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-layout-request:0.1.0",
+  "title": "Resina Command Layout Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profile", "tokens", "spatialBinding", "environment", "availableSize"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "profile": { "$ref": "urn:resina:schema:component-layout-profile:0.1.0" },
+    "tokens": { "type": "object" },
+    "spatialBinding": { "$ref": "urn:resina:schema:spatial-binding:0.1.0" },
+    "environment": { "$ref": "urn:resina:schema:environment:0.2.0" },
+    "availableSize": { "$ref": "urn:resina:schema:command-layout-ir:0.1.0#/$defs/size" }
+  }
+}

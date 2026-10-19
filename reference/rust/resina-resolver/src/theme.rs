@@ -205,6 +205,10 @@ impl CompiledTheme {
         &self.tokens
     }
 
+    pub fn space(&self) -> &SpatialBinding {
+        &self.space
+    }
+
     pub fn resolve(
         &self,
         environment: &EnvironmentSnapshot,

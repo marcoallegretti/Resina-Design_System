@@ -1,6 +1,10 @@
 use resina_environment::DensityPreference;
 use resina_model::{DENSITY_MODES, DensityModes, SpatialAssignments, SpatialRole};
 use resina_tokens::{ResolvedToken, validate_resolved_value};
+use serde::{
+    Deserialize, Deserializer, Serialize,
+    de::{Error as _, MapAccess, Visitor},
+};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
 
@@ -37,16 +41,73 @@ impl fmt::Display for SpatialResolutionError {
 
 impl std::error::Error for SpatialResolutionError {}
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(untagged)]
 enum BoundSpace {
     Uniform(Value),
     PerDensity(DensityModes<Value>),
 }
 
 /// Validated spatial values, keeping every density mode of a density-mapped role.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(transparent)]
 pub struct SpatialBinding {
     roles: BTreeMap<SpatialRole, BoundSpace>,
+}
+
+impl<'de> Deserialize<'de> for SpatialBinding {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct Roles;
+
+        impl<'de> Visitor<'de> for Roles {
+            type Value = SpatialBinding;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a spatial binding object")
+            }
+
+            fn visit_map<A: MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
+                let mut roles = BTreeMap::new();
+                while let Some(role) = access.next_key::<SpatialRole>()? {
+                    let bound = if role.is_density_mapped() {
+                        let values: DensityModes<Value> = access.next_value()?;
+                        values
+                            .try_map(|_, value| checked_dimension(value))
+                            .map_err(A::Error::custom)?;
+                        BoundSpace::PerDensity(values)
+                    } else {
+                        let value: Value = access.next_value()?;
+                        checked_dimension(&value).map_err(A::Error::custom)?;
+                        BoundSpace::Uniform(value)
+                    };
+                    if roles.insert(role, bound).is_some() {
+                        return Err(A::Error::custom("duplicate spatial role"));
+                    }
+                }
+                if SpatialRole::ALL
+                    .iter()
+                    .any(|role| !roles.contains_key(role))
+                {
+                    return Err(A::Error::custom("missing spatial role"));
+                }
+                Ok(SpatialBinding { roles })
+            }
+        }
+
+        deserializer.deserialize_map(Roles)
+    }
+}
+
+fn checked_dimension(value: &Value) -> Result<(), String> {
+    validate_resolved_value("dimension", value)
+        .map_err(|error| format!("invalid spatial dimension object: {error}"))?;
+    if value["value"]
+        .as_f64()
+        .is_some_and(|distance| distance < 0.0)
+    {
+        return Err("negative spatial distance".to_owned());
+    }
+    Ok(())
 }
 
 impl SpatialBinding {

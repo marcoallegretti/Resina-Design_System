@@ -335,6 +335,14 @@ each Command phase and focus through Command paint with 4.5:1 content and 3:1
 edge contrast, and each Toggle phase, focus and selection through part paint
 with 3:1 edges and a 4.5:1 label color.
 
+[Component layout profiles](spec/89-component-layout-profile.md) bind the
+authored [Command profile](definitions/layout/command.json) to the
+density-mapped control inset roles and to its [extent tokens](tokens/components/command.json),
+one per density mode. `resina-command-layout` resolves a profile, its tokens, a
+theme's spatial binding and an environment into the size, padding and direction inputs of Command label
+layout and the hit-region minimum, with public cases over every density, 100%
+and 200% text, fine and coarse input and both directions.
+
 [Slider track segments](spec/79-slider-track-segments.md) divide the track into
 an active and an inactive segment that stop at an explicit clearance around the
 thumb, the geometry for a gap between thumb and track. Public cases cover both

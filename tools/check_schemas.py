@@ -6,6 +6,8 @@ from functools import lru_cache
 from pathlib import Path
 
 from command_label_arithmetic import check_cases as check_label_arithmetic
+from command_layout_arithmetic import resolve as resolve_command_layout
+from command_layout_arithmetic import resolve_extents
 from lit_body_arithmetic import body_invariants, relief_profile_violation
 
 from jsonschema import Draft202012Validator
@@ -125,6 +127,78 @@ def apply_changes(document, changes):
 def spatial_assignments_0_1(assignments):
     roles = {role: path for role, path in assignments["roles"].items() if isinstance(path, str)}
     return {"schemaVersion": "0.1.0", "roles": roles}
+
+
+def same_numbers(actual, expected):
+    if isinstance(expected, dict):
+        return isinstance(actual, dict) and actual.keys() == expected.keys() and all(
+            same_numbers(actual[key], value) for key, value in expected.items())
+    if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        return isinstance(actual, (int, float)) and not isinstance(actual, bool) and float(actual) == float(expected)
+    return actual == expected
+
+
+def check_command_layout():
+    checked = 0
+    profile_schema = validator_for("schemas/component-layout-profile.schema.json")
+    profile_case_schema = validator_for("schemas/component-layout-profile-case.schema.json")
+    authored = load_json(ROOT / "definitions/layout/command.json")
+    check_case(profile_schema, "authored Command layout profile", authored, True)
+    extent_tokens = load_json(ROOT / "tokens/components/command.json")
+    extents = resolve_extents(authored, extent_tokens)
+    for smaller, larger in zip(extents.values(), list(extents.values())[1:]):
+        if not all(smaller[size][axis] < larger[size][axis] for size in (0, 1) for axis in ("width", "height")):
+            raise ValueError("authored Command extents must grow with density on every axis")
+    profile_cases = load_json(ROOT / "conformance/layout/command-profile-cases.json")
+    if profile_cases[0]["document"] != authored or "error" in profile_cases[0]:
+        raise ValueError("first Command profile case must be the authored profile")
+    names = set()
+    for case in profile_cases:
+        name = f"command profile case: {case['name']}"
+        if case["name"] in names:
+            raise ValueError(f"duplicate {name}")
+        names.add(case["name"])
+        check_case(profile_case_schema, name, case, True)
+        check_case(profile_schema, name, case["document"], case["schemaValid"])
+        checked += 2
+    binding_schema = validator_for("schemas/spatial-binding.schema.json")
+    for vector in load_json(ROOT / "conformance/spatial/resolution-vectors.json"):
+        if "expected" in vector:
+            check_case(binding_schema, f"spatial binding: {vector['name']}", vector["expected"], True)
+            checked += 1
+    case_schema = validator_for("schemas/command-layout-case.schema.json")
+    request_schema = validator_for("schemas/command-layout-request.schema.json")
+    result_schema = validator_for("schemas/command-layout-ir.schema.json")
+    names = set()
+    layout_cases = load_json(ROOT / "conformance/layout/command-layout-cases.json")
+    for case in layout_cases[:32]:
+        if case["request"]["tokens"] != extent_tokens or case["request"]["profile"] != authored:
+            raise ValueError(f"command layout case {case['name']}: matrix must use the authored profile and tokens")
+    for case in layout_cases:
+        name = f"command layout case: {case['name']}"
+        if case["name"] in names:
+            raise ValueError(f"duplicate {name}")
+        names.add(case["name"])
+        check_case(case_schema, name, case, True)
+        check_case(request_schema, name, case["request"], case["requestSchemaValid"])
+        checked += 2
+        if not case["requestSchemaValid"]:
+            if "expected" in case:
+                raise ValueError(f"{name}: schema-invalid request has an expected result")
+            continue
+        try:
+            actual = resolve_command_layout(case["request"])
+        except ValueError as error:
+            if "errorContains" not in case or case["errorContains"] not in str(error):
+                raise ValueError(f"{name}: independent resolution failed with {error}") from None
+            continue
+        if "expected" not in case:
+            raise ValueError(f"{name}: independent resolution succeeded for a rejected case")
+        check_case(result_schema, name, case["expected"], True)
+        if not same_numbers(actual, case["expected"]):
+            raise ValueError(f"{name}: expected result differs from independent resolution {actual}")
+        checked += 1
+    return checked
 
 
 def check_vectors(schema_path, vector_path):
@@ -304,6 +378,12 @@ def main():
         "schemas/toggle-layout-request.schema.json",
         "schemas/toggle-layout-ir.schema.json",
         "schemas/toggle-layout-case.schema.json",
+        "schemas/component-layout-profile.schema.json",
+        "schemas/component-layout-profile-case.schema.json",
+        "schemas/spatial-binding.schema.json",
+        "schemas/command-layout-request.schema.json",
+        "schemas/command-layout-ir.schema.json",
+        "schemas/command-layout-case.schema.json",
         "schemas/toggle-accessibility-ir.schema.json",
         "schemas/toggle-accessibility-case.schema.json",
         "schemas/command-accessibility-case.schema.json",
@@ -2601,6 +2681,7 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
+    checked += check_command_layout()
     segment_cases = load_json(ROOT / "conformance/geometry/slider-track-segments-cases.json")
     check_case(validator_for("schemas/slider-track-segments-cases.schema.json"),
                "slider track segment matrix", segment_cases, True)

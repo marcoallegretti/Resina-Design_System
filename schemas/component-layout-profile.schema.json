@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:component-layout-profile:0.1.0",
+  "title": "Resina Component Layout Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "component", "padding", "extents"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "component": { "enum": ["command"] },
+    "padding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "top", "bottom"],
+      "properties": {
+        "start": { "$ref": "#/$defs/inlineInset" },
+        "end": { "$ref": "#/$defs/inlineInset" },
+        "top": { "$ref": "#/$defs/blockInset" },
+        "bottom": { "$ref": "#/$defs/blockInset" }
+      }
+    },
+    "extents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compact", "standard", "comfortable", "immersive"],
+      "properties": {
+        "compact": { "$ref": "#/$defs/extent" },
+        "standard": { "$ref": "#/$defs/extent" },
+        "comfortable": { "$ref": "#/$defs/extent" },
+        "immersive": { "$ref": "#/$defs/extent" }
+      }
+    }
+  },
+  "$defs": {
+    "inlineInset": { "enum": ["space.control.inset.inline"] },
+    "blockInset": { "enum": ["space.control.inset.block"] },
+    "tokenPath": { "type": "string", "minLength": 1 },
+    "sizeTokens": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "$ref": "#/$defs/tokenPath" },
+        "height": { "$ref": "#/$defs/tokenPath" }
+      }
+    },
+    "extent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimumSize", "maximumSize"],
+      "properties": {
+        "minimumSize": { "$ref": "#/$defs/sizeTokens" },
+        "maximumSize": { "$ref": "#/$defs/sizeTokens" }
+      }
+    }
+  }
+}
