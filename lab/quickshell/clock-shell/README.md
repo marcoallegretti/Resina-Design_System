@@ -197,7 +197,7 @@ and xdg-desktop-portal-gnome 50.0:
 - the native focus-event cases have been run at output scale 1, in headless Sway
   with the platform-selected theme and in nested niri 26.04;
 - `--screen-reader` passes with Orca 50.3 in nested niri 26.04 locally. CI does
-  not install Orca.
+  not run this check with `--screen-reader`.
 
 ## Boundaries
 

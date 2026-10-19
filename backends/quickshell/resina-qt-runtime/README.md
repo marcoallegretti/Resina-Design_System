@@ -812,9 +812,9 @@ measurement and drawing. Released-host Command qualification is described in
 [accessibility](#released-quickshell-command-accessibility) and
 [motion](#released-quickshell-command-motion). Fractional output scales are
 verified on one headless Sway output by the motion and clock shell checks.
-Physical devices, screen-reader presentation in CI, and multiple outputs remain
-unverified. Orca 50.3 passes locally only; Orca 46.1 hangs at start-up on the
-CI runner ([#165](https://github.com/marcoallegretti/Resina-Design_System/issues/165)).
+Physical devices and multiple outputs remain unverified. Command screen-reader
+presentation is verified with Orca 46.1 in CI and Orca 50.3 locally
+([#165](https://github.com/marcoallegretti/Resina-Design_System/issues/165)).
 The integrated static profile below now verifies composed command input and
 native accessibility in the standalone host. Hosted native runtime checks have
 also passed; the sampled profile section links the executed evidence.
@@ -1258,16 +1258,35 @@ and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with a
 English locale and isolated settings and reads its generated presentation
 through a pseudo-terminal: Orca block-buffers a regular debug file and never
 flushes it. After focus moves to the probe's accessible focus target and Orca's output stops
-growing, focusing the control must produce the consecutive speech "Reconnect",
-"button.", "Connect using saved settings." and the braille line
+growing, focusing the control must produce the presentation recorded for the
+running Orca release; other releases fail until their presentation is verified.
+Orca 50.3 must speak "Reconnect", "button.", "Connect using saved settings." in
+sequence and show the braille line
 "quickshell application frame Reconnect button Connect using saved settings.".
-Orca 50.3 does not present a sensitivity change on its own, so spoken
+Orca 46.1 must speak "Reconnect push button.", "Connect using saved settings."
+in sequence and show "quickshell application frame Reconnect push button": it
+does not braille the description. If Orca exits before it announces
+"Screen reader on.", the failure reports its return code; if it is still running
+when the wait expires, it receives SIGABRT so that its faulthandler writes every
+thread's stack to `orca.debug`.
+Neither Orca release presents a sensitivity change on its own, so spoken
 presentation of availability withdrawal is unverified. Orca's output after the
 withdrawal is recorded under `unavailableUnverified` in `screen-reader.json`
-without being asserted; locally it is empty. The Orca version and the matched
-focus output are saved in the same file. Orca 50.3 with speech-dispatcher passes
-locally; CI does not install Orca. Audible output, other screen readers and
-physical input are not covered.
+without being asserted; it is empty with both releases. The Orca version and
+the matched focus output are saved in the same file.
+
+Orca 50.3 with speech-dispatcher passes locally on openSUSE Tumbleweed. CI runs
+Ubuntu 24.04's Orca 46.1 with speech-dispatcher, without the espeak-ng output
+module or an audio device; the debug output records Orca's generated speech
+either way.
+Orca 46.1 reads its modifier keymap with `xkbcomp` from the X display named by
+`DISPLAY` while it loads its settings, and raises `KeyError` when `DISPLAY` is
+unset. On the runner, Ubuntu's apport exception hook then collects package
+checksums for longer than Orca's 10-second start-up watchdog, which kills Orca
+with SIGKILL before the traceback is printed. CI therefore runs this check under
+`xvfb-run`; the checker removes `DISPLAY` from Quickshell's environment, so only
+Orca uses it. Orca 50.3 skips the keymap step when `DISPLAY` is unset. Audible
+output, other screen readers and physical input are not covered.
 
 ### Released Quickshell Command motion
 
