@@ -286,6 +286,7 @@ fn render_lit(
     let silhouette = body.geometry().silhouette();
     let ring = focus.map(FocusIndicatorIr::geometry);
     let supported = uniform::supported(silhouette)
+        && uniform::placed_supported(body.geometry().edge_interior())
         && ring.is_none_or(|ring| {
             uniform::placed_supported(ring.inner()) && uniform::placed_supported(ring.outer())
         });
@@ -308,6 +309,11 @@ fn render_lit(
                 })
             {
                 UniformRegion::Clear
+            } else if supported
+                && body.flat_face_over(region.min, region.max)
+                && uniform::placed_inside(region, body.geometry().edge_interior())
+            {
+                UniformRegion::Solid
             } else {
                 UniformRegion::Sample
             }

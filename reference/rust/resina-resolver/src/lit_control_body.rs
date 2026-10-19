@@ -366,6 +366,13 @@ impl LitControlBodyIr {
         self.face.paint_color_ranges()
     }
 
+    /// Whether every point of the closed box from `min` to `max` is certified to have the exactly
+    /// flat face normal. This is an evaluation aid for realizations that skip sampling such regions;
+    /// it adds nothing to `sample_paint`, which remains the definition of the body's paint.
+    pub fn flat_face_over(&self, min: PhysicalVector, max: PhysicalVector) -> bool {
+        self.face.surface().flat_over(min, max)
+    }
+
     pub fn sample_paint(
         &self,
         point: PhysicalVector,

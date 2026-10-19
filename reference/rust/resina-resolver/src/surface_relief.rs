@@ -298,6 +298,55 @@ impl SurfaceRelief {
         Ok((rx, ry, tau))
     }
 
+    /// Whether every point of the closed box from `min` to `max` is certified to have the exactly
+    /// flat normal, by evaluating every gate over the box with outward-rounded intervals.
+    pub(crate) fn flat_over(&self, min: PhysicalVector, max: PhysicalVector) -> bool {
+        if self.profile.kind == ReliefKind::Flat {
+            return true;
+        }
+        if ![min.x, min.y, max.x, max.y].iter().all(|v| v.is_finite())
+            || min.x > max.x
+            || min.y > max.y
+        {
+            return false;
+        }
+        let span = |lower: f64, upper: f64| SampleNumber {
+            value: lower,
+            lower,
+            upper,
+        };
+        let size = self.outline.size();
+        let w = SampleNumber::exact(self.profile.shoulder_width);
+        let px = span(min.x, max.x);
+        let py = span(min.y, max.y);
+        let right = SampleNumber::exact(size.width) - px;
+        let bottom = SampleNumber::exact(size.height) - py;
+        if [px, right, py, bottom].iter().any(|d| (*d / w).lower < 1.0) {
+            return false;
+        }
+        let one = SampleNumber::exact(1.0);
+        let corners = [(px, py), (right, py), (right, bottom), (px, bottom)];
+        self.outline
+            .corners()
+            .into_iter()
+            .zip(corners)
+            .all(|(r, (x, y))| {
+                if r.x == 0.0 {
+                    return true;
+                }
+                let a = SampleNumber::exact(r.x);
+                let b = SampleNumber::exact(r.y);
+                let tau = SampleNumber::exact(self.exponent()) * (w / a + w / b);
+                let u = ((a - x) / a).clamp(0.0, 1.0);
+                let v = ((b - y) / b).clamp(0.0, 1.0);
+                let (up, vp) = match self.outline.curvature() {
+                    OutlineCurvature::Circular => (u * u, v * v),
+                    OutlineCurvature::Quartic => (u * u * u * u, v * v * v * v),
+                };
+                (((one - up) - vp) / tau).lower >= 1.0
+            })
+    }
+
     pub fn sample(
         &self,
         point: PhysicalVector,
@@ -627,5 +676,109 @@ impl std::ops::Div for SampleNumber {
             quotients.into_iter().fold(f64::INFINITY, f64::min),
             quotients.into_iter().fold(f64::NEG_INFINITY, f64::max),
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::resolve_surface_outline;
+    use resina_environment::LayoutDirection;
+    use resina_model::{CornerRadius, LogicalCornerRadii, SurfaceSize};
+
+    fn relief(
+        kind: ReliefKind,
+        curvature: OutlineCurvature,
+        radius: CornerRadius,
+    ) -> SurfaceRelief {
+        let outline = resolve_surface_outline(
+            SurfaceSize {
+                width: 120.0,
+                height: 60.0,
+            },
+            LogicalCornerRadii {
+                top_start: radius,
+                top_end: radius,
+                bottom_end: radius,
+                bottom_start: radius,
+            },
+            LayoutDirection::Ltr,
+            curvature,
+            2.0,
+        )
+        .unwrap();
+        resolve_surface_relief(
+            outline,
+            SurfaceReliefProfile {
+                kind,
+                body_thickness: 4.0,
+                amplitude: 0.5,
+                shoulder_width: 1.0,
+            },
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn certified_flat_boxes_contain_only_exactly_flat_samples() {
+        for kind in [ReliefKind::Convex, ReliefKind::Recessed] {
+            for (curvature, radius, minimum_rejected) in [
+                (
+                    OutlineCurvature::Circular,
+                    CornerRadius { x: 20.0, y: 12.0 },
+                    500,
+                ),
+                (
+                    OutlineCurvature::Quartic,
+                    CornerRadius { x: 20.0, y: 12.0 },
+                    500,
+                ),
+                (
+                    OutlineCurvature::Circular,
+                    CornerRadius { x: 0.0, y: 0.0 },
+                    300,
+                ),
+            ] {
+                let relief = relief(kind, curvature, radius);
+                let (mut certified, mut rejected) = (0, 0);
+                for iy in 0..60 {
+                    for ix in 0..120 {
+                        let min = PhysicalVector {
+                            x: f64::from(ix) * 0.995,
+                            y: f64::from(iy) * 0.995,
+                        };
+                        let max = PhysicalVector {
+                            x: min.x + 0.75,
+                            y: min.y + 0.75,
+                        };
+                        if !relief.flat_over(min, max) {
+                            rejected += 1;
+                            continue;
+                        }
+                        certified += 1;
+                        for (fx, fy) in
+                            [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0), (0.37, 0.61)]
+                        {
+                            let point = PhysicalVector {
+                                x: min.x + (max.x - min.x) * fx,
+                                y: min.y + (max.y - min.y) * fy,
+                            };
+                            let sample = relief.sample(point).unwrap().unwrap();
+                            assert_eq!(
+                                (sample.normal.x, sample.normal.y, sample.normal.z),
+                                (0.0, 0.0, 1.0),
+                                "{kind:?} {curvature:?} {point:?}"
+                            );
+                        }
+                    }
+                }
+                assert!(
+                    certified > 4000 && rejected > minimum_rejected,
+                    "{certified} {rejected}"
+                );
+                let near_shoulder = PhysicalVector { x: 0.5, y: 30.0 };
+                assert!(!relief.flat_over(near_shoulder, near_shoulder));
+            }
+        }
     }
 }

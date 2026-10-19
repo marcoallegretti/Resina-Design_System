@@ -251,16 +251,8 @@ impl ResolvedMaterialLight {
             } else {
                 pigment.side()
             };
-            let body = pigment.body().components();
-            let tip = endpoint.components();
-            let proportion = weight.abs();
-            let components = std::array::from_fn::<_, 3, _>(|i| {
-                body[i] * (1.0 - proportion) + tip[i] * proportion
-            });
-            resina_color::resolve_srgb_fallback(
-                &serde_json::json!({"colorSpace":"srgb","components":components,"alpha":1}),
-            )
-            .map_err(|e| error(&e))?
+            let tip = endpoint.with_alpha(weight.abs()).map_err(|e| error(&e))?;
+            resina_color::composite_srgb_over_opaque(&tip, pigment.body()).map_err(|e| error(&e))?
         };
         Ok((weight, color))
     }
