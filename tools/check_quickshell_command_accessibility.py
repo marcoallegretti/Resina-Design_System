@@ -386,6 +386,60 @@ def announced(speech, *items):
     return any(spoken[index:index + len(expected)] == expected for index in range(len(spoken)))
 
 
+# Orca's generated presentation of a focused push button, by verified Orca release.
+FOCUS_PRESENTATIONS = {
+    "46.1": lambda name, description: ((f"{name} push button.", description),
+                                       f"quickshell application frame {name} push button"),
+    "50.3": lambda name, description: ((name, "button.", description),
+                                       f"quickshell application frame {name} button {description}"),
+}
+
+
+def verified_release(version):
+    release = re.fullmatch(r"(?:Orca version )?(\d+\.\d+)(?:, .*)?", version)
+    if not release or release[1] not in FOCUS_PRESENTATIONS:
+        raise ValueError(f"no verified focus presentation for {version or 'an unidentified Orca'}; verified "
+                         "releases: " + ", ".join(FOCUS_PRESENTATIONS))
+    return release[1]
+
+
+ORCA_START_TIMEOUT = 30
+
+
+class StartExpired(ValueError):
+    pass
+
+
+def started(process, log, deadline):
+    if log.exists() and any("Screen reader on" in item for item in presentation(log, 0)[0]):
+        return True
+    if process.poll() is not None:
+        raise ValueError(f"Orca exited with return code {process.returncode} before its announcement "
+                         "'Screen reader on.' was read")
+    if time.monotonic() >= deadline:
+        raise StartExpired(f"Orca did not announce 'Screen reader on.' within {ORCA_START_TIMEOUT} s")
+    return False
+
+
+def stop(process, abort=False):
+    if process.poll() is not None:
+        return
+    if abort:
+        # Orca's faulthandler writes every thread's stack to its debug output on SIGABRT.
+        process.send_signal(signal.SIGABRT)
+        try:
+            process.wait(5)
+            return
+        except subprocess.TimeoutExpired:
+            pass
+    process.terminate()
+    try:
+        process.wait(5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
+
+
 class ScreenReader:
     def __init__(self, wait, output):
         self.wait, self.log = wait, output / "orca.debug"
@@ -395,6 +449,7 @@ class ScreenReader:
                            XDG_CONFIG_HOME=str(home / "config"), XDG_DATA_HOME=str(home / "data"))
         self.version = subprocess.run(["orca", "--version"], env=environment, capture_output=True, text=True,
                                       timeout=30).stdout.strip()
+        self.release = verified_release(self.version)
         import pty
         import tty
         # Orca block-buffers a regular debug file and never flushes it; a terminal makes it line-buffered.
@@ -407,8 +462,12 @@ class ScreenReader:
             self.process = subprocess.Popen(["orca", "--debug-file", os.ttyname(self.terminal)],
                                             stdout=(output / "orca.log").open("w"), stderr=subprocess.STDOUT,
                                             env=environment)
-            wait(lambda: self.process.poll() is None and self.log.exists()
-                 and any("Screen reader on" in item for item in presentation(self.log, 0)[0]), "Orca start", timeout=30)
+            deadline = time.monotonic() + ORCA_START_TIMEOUT
+            wait(lambda: started(self.process, self.log, deadline), "Orca start", timeout=ORCA_START_TIMEOUT + 30)
+        except StartExpired as error:
+            self.close(abort=True)
+            raise ValueError(f"{error}; Orca was still running and was sent SIGABRT to dump its thread stacks into "
+                             f"{self.log.name}") from None
         except BaseException:
             self.close()
             raise
@@ -428,21 +487,19 @@ class ScreenReader:
     def mark(self):
         return quiet(self.wait, self.log)
 
+    def focus(self, name, description):
+        return FOCUS_PRESENTATIONS[self.release](name, description)
+
     def expect(self, start, speech, braille, description):
         self.wait(lambda: announced(presentation(self.log, start)[0], *speech)
                   and f"'{braille}'" in presentation(self.log, start)[1], description, timeout=10)
         spoken, shown = presentation(self.log, start)
         return {"speech": spoken, "braille": shown}
 
-    def close(self):
+    def close(self, abort=False):
         try:
-            if self.process and self.process.poll() is None:
-                self.process.terminate()
-                try:
-                    self.process.wait(5)
-                except subprocess.TimeoutExpired:
-                    self.process.kill()
-                    self.process.wait()
+            if self.process:
+                stop(self.process, abort)
         finally:
             # Reading the master fails once no terminal descriptor remains open.
             os.close(self.terminal)
@@ -453,13 +510,13 @@ class ScreenReader:
 def screen_reader(session, output):
     reader = ScreenReader(session.wait, output)
     try:
+        speech, braille = reader.focus("Reconnect", DESCRIPTION)
         session.reset()
         session.call("focusOther")
         session.settle(lambda current: not current["state"]["focused"], "focus away from Command")
         start = reader.mark()
         session.call("focusCommand")
-        braille = "quickshell application frame Reconnect button " + DESCRIPTION
-        focus = reader.expect(start, ("Reconnect", "button.", DESCRIPTION), braille, "Orca focus presentation")
+        focus = reader.expect(start, speech, braille, "Orca focus presentation")
         start = reader.mark()
         session.call("availability", "false")
         session.settle(lambda current: not current["state"]["enabled"], "unavailable Command")
@@ -468,7 +525,8 @@ def screen_reader(session, output):
         (output / "screen-reader.json").write_text(json.dumps({
             "screenReader": reader.version, "focus": focus, "unavailableUnverified": unavailable},
             indent=2, ensure_ascii=False), encoding="utf-8")
-        return ["Orca speaks and brailles the focused Command name, role and description"]
+        return [f"Orca {reader.release} presents the focused Command as the consecutive speech "
+                + ", ".join(f"'{item}'" for item in speech) + f" and the braille line '{braille}'"]
     finally:
         reader.close()
 

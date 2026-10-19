@@ -526,8 +526,7 @@ def accessibility_cases(shell, report, reader=None):
         focus.focused(events, found["Close"][0], "Close")
         if reader:
             report["screenReader"] = {"version": reader.version, "close": reader.expect(
-                spoken, ("Close", "button.", "Close the clock surface."),
-                "quickshell application frame Close button Close the clock surface.", "Orca presentation of Close")}
+                spoken, *reader.focus("Close", "Close the clock surface."), "Orca presentation of Close")}
 
         def readable(nodes):
             labels = [node["name"] for node in nodes if node["role"] == "label"]
@@ -559,11 +558,9 @@ def accessibility_cases(shell, report, reader=None):
                                "on the bar and Tab move keyboard focus to it")
         if reader:
             report["screenReader"]["showClock"] = reader.expect(
-                spoken, ("Show clock", "button.", "Open the clock surface."),
-                "quickshell application frame Show clock button Open the clock surface.",
-                "Orca presentation of Show clock")
-            report["cases"].append("Orca speaks and brailles the focused Close and Show clock with name, role "
-                                   "and description")
+                spoken, *reader.focus("Show clock", "Open the clock surface."), "Orca presentation of Show clock")
+            report["cases"].append(f"Orca {reader.release} presents the focused Close and Show clock as verified "
+                                   "for that release")
     finally:
         focus.close()
 
