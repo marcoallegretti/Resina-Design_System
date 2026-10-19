@@ -386,6 +386,23 @@ def announced(speech, *items):
     return any(spoken[index:index + len(expected)] == expected for index in range(len(spoken)))
 
 
+# Orca's generated presentation of a focused push button, by verified Orca release.
+FOCUS_PRESENTATIONS = {
+    "46.1": lambda name, description: ((f"{name} push button.", description),
+                                       f"quickshell application frame {name} push button"),
+    "50.3": lambda name, description: ((name, "button.", description),
+                                       f"quickshell application frame {name} button {description}"),
+}
+
+
+def focus_presentation(version, name, description):
+    release = re.search(r"\d+\.\d+", version)
+    if not release or release[0] not in FOCUS_PRESENTATIONS:
+        raise ValueError(f"no verified focus presentation for {version or 'an unidentified Orca'}; verified "
+                         "releases: " + ", ".join(FOCUS_PRESENTATIONS))
+    return release[0], *FOCUS_PRESENTATIONS[release[0]](name, description)
+
+
 def started(process, log):
     if process.poll() is not None:
         raise ValueError(f"Orca exited with return code {process.returncode} before it announced itself")
@@ -479,13 +496,13 @@ class ScreenReader:
 def screen_reader(session, output):
     reader = ScreenReader(session.wait, output)
     try:
+        release, speech, braille = focus_presentation(reader.version, "Reconnect", DESCRIPTION)
         session.reset()
         session.call("focusOther")
         session.settle(lambda current: not current["state"]["focused"], "focus away from Command")
         start = reader.mark()
         session.call("focusCommand")
-        braille = "quickshell application frame Reconnect button " + DESCRIPTION
-        focus = reader.expect(start, ("Reconnect", "button.", DESCRIPTION), braille, "Orca focus presentation")
+        focus = reader.expect(start, speech, braille, "Orca focus presentation")
         start = reader.mark()
         session.call("availability", "false")
         session.settle(lambda current: not current["state"]["enabled"], "unavailable Command")
@@ -494,7 +511,8 @@ def screen_reader(session, output):
         (output / "screen-reader.json").write_text(json.dumps({
             "screenReader": reader.version, "focus": focus, "unavailableUnverified": unavailable},
             indent=2, ensure_ascii=False), encoding="utf-8")
-        return ["Orca speaks and brailles the focused Command name, role and description"]
+        return [f"Orca {release} presents the focused Command as the consecutive speech "
+                + ", ".join(f"'{item}'" for item in speech) + f" and the braille line '{braille}'"]
     finally:
         reader.close()
 

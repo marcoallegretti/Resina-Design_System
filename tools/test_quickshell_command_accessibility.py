@@ -173,6 +173,21 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
                                                   "'Connect using saved settings.' {}"],
                                                  "Reconnect", "button.", "Connect using saved settings."))
 
+    def test_focus_presentation_follows_the_verified_orca_release(self):
+        self.assertEqual(accessibility.focus_presentation("46.1", "Reconnect", "Connect using saved settings."),
+                         ("46.1", ("Reconnect push button.", "Connect using saved settings."),
+                          "quickshell application frame Reconnect push button"))
+        self.assertEqual(accessibility.focus_presentation("Orca version 50.3, AT-SPI2 version: 2.60.7", "Reconnect",
+                                                          "Connect using saved settings."),
+                         ("50.3", ("Reconnect", "button.", "Connect using saved settings."),
+                          "quickshell application frame Reconnect button Connect using saved settings."))
+        speech = ["'Screen reader on.' {}", "'Reconnect push button.' {'established': False}",
+                  "'Connect using saved settings.' {'established': False}"]
+        self.assertTrue(accessibility.announced(speech, "Reconnect push button.", "Connect using saved settings."))
+        for version in ("Orca version 50.4", "46", ""):
+            with self.assertRaisesRegex(ValueError, "no verified focus presentation .*verified releases: 46.1, 50.3"):
+                accessibility.focus_presentation(version, "Reconnect", "Connect using saved settings.")
+
     def test_screen_reader_presentation_is_read_from_the_marked_position(self):
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "orca.debug"
