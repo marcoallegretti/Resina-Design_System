@@ -386,6 +386,31 @@ def announced(speech, *items):
     return any(spoken[index:index + len(expected)] == expected for index in range(len(spoken)))
 
 
+def started(process, log):
+    if process.poll() is not None:
+        raise ValueError(f"Orca exited with return code {process.returncode} before it announced itself")
+    return log.exists() and any("Screen reader on" in item for item in presentation(log, 0)[0])
+
+
+def stop(process, abort=False):
+    if process.poll() is not None:
+        return
+    if abort:
+        # Orca's faulthandler writes every thread's stack to its debug output on SIGABRT.
+        process.send_signal(signal.SIGABRT)
+        try:
+            process.wait(5)
+            return
+        except subprocess.TimeoutExpired:
+            pass
+    process.terminate()
+    try:
+        process.wait(5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
+
+
 class ScreenReader:
     def __init__(self, wait, output):
         self.wait, self.log = wait, output / "orca.debug"
@@ -407,8 +432,14 @@ class ScreenReader:
             self.process = subprocess.Popen(["orca", "--debug-file", os.ttyname(self.terminal)],
                                             stdout=(output / "orca.log").open("w"), stderr=subprocess.STDOUT,
                                             env=environment)
-            wait(lambda: self.process.poll() is None and self.log.exists()
-                 and any("Screen reader on" in item for item in presentation(self.log, 0)[0]), "Orca start", timeout=30)
+            wait(lambda: started(self.process, self.log), "Orca start", timeout=30)
+        except ValueError as error:
+            running = self.process is not None and self.process.poll() is None
+            self.close(abort=True)
+            if running:
+                raise ValueError(f"{error}: Orca was still running and dumped its thread stacks into "
+                                 f"{self.log.name}") from None
+            raise
         except BaseException:
             self.close()
             raise
@@ -434,15 +465,10 @@ class ScreenReader:
         spoken, shown = presentation(self.log, start)
         return {"speech": spoken, "braille": shown}
 
-    def close(self):
+    def close(self, abort=False):
         try:
-            if self.process and self.process.poll() is None:
-                self.process.terminate()
-                try:
-                    self.process.wait(5)
-                except subprocess.TimeoutExpired:
-                    self.process.kill()
-                    self.process.wait()
+            if self.process:
+                stop(self.process, abort)
         finally:
             # Reading the master fails once no terminal descriptor remains open.
             os.close(self.terminal)

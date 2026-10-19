@@ -1,4 +1,6 @@
 from pathlib import Path
+import signal
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -37,6 +39,31 @@ def action_bus(names, reply):
     def call(destination, path, method, *arguments, address=None):
         return actions(*names) if method.endswith("GetActions") else REPLY + reply
     return call
+
+
+class FakeProcess:
+    def __init__(self, returncode=None, exits_on=()):
+        self.returncode, self.exits_on, self.signals = returncode, exits_on, []
+
+    def poll(self):
+        return self.returncode
+
+    def send_signal(self, number):
+        self.signals.append(number)
+        if number in self.exits_on:
+            self.returncode = -number
+
+    def terminate(self):
+        self.send_signal(signal.SIGTERM)
+
+    def kill(self):
+        self.signals.append("kill")
+        self.returncode = -9
+
+    def wait(self, timeout=None):
+        if self.returncode is None:
+            raise subprocess.TimeoutExpired("orca", timeout)
+        return self.returncode
 
 
 class CommandAccessibilityEvidenceTests(unittest.TestCase):
@@ -159,6 +186,29 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
             self.assertEqual(braille, ["'quickshell application frame Reconnect button Connect using saved settings.'"])
             self.assertEqual(accessibility.lines(log), 4)
             self.assertEqual(accessibility.presentation(log, 4), ([], []))
+
+    def test_orca_start_reports_the_exit_status_of_a_stopped_screen_reader(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "orca.debug"
+            log.write_text("10:00:00 - SPEECH OUTPUT: 'Screen reader on.' {}", encoding="utf-8")
+            self.assertTrue(accessibility.started(FakeProcess(), log))
+            self.assertFalse(accessibility.started(FakeProcess(), Path(directory) / "missing.debug"))
+            with self.assertRaisesRegex(ValueError, "Orca exited with return code -9 before it announced itself"):
+                accessibility.started(FakeProcess(-9), log)
+
+    def test_a_screen_reader_that_failed_to_start_dumps_its_stacks_before_it_is_stopped(self):
+        aborted = FakeProcess(exits_on=(signal.SIGABRT,))
+        accessibility.stop(aborted, abort=True)
+        self.assertEqual(aborted.signals, [signal.SIGABRT])
+        ignoring = FakeProcess(exits_on=(signal.SIGTERM,))
+        accessibility.stop(ignoring, abort=True)
+        self.assertEqual(ignoring.signals, [signal.SIGABRT, signal.SIGTERM])
+        stopped = FakeProcess(exits_on=(signal.SIGTERM,))
+        accessibility.stop(stopped)
+        self.assertEqual(stopped.signals, [signal.SIGTERM])
+        exited = FakeProcess(0)
+        accessibility.stop(exited, abort=True)
+        self.assertEqual(exited.signals, [])
 
 
 if __name__ == "__main__":
