@@ -198,7 +198,8 @@ jobs:
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --output-dir target/quickshell-command-lifecycle
-          python tools/check_quickshell_command_accessibility.py \
+          # Orca 46.1 reads its modifier keymap from an X display with xkbcomp and fails without DISPLAY.
+          xvfb-run -a -e /dev/stderr python tools/check_quickshell_command_accessibility.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --output-dir target/quickshell-command-accessibility --screen-reader
