@@ -275,11 +275,15 @@ Supply every field explicitly:
 
 - `content`: the complete `CommandLabelResolver` request above. Its single
   compiled theme/environment owns typography, paint and target resolution.
-- `body`: `surface`, `appearance`, `commandAppearance`, `foregroundRole`,
-  `adjacentColor`, `postTreatmentBackdrop`, `surroundingColor`,
+- `body`: `surface`, `appearance`, `commandAppearance`, `light`, `relief`,
+  `foregroundRole`, `adjacentColor`, `postTreatmentBackdrop`, `surroundingColor`,
   `minimumContentContrast` and `minimumEdgeContrast`. These are existing authored
-  surface/appearance inputs and color records. Both nullable backdrop fields
-  are required. Color conversion uses the existing sRGB fallback resolver.
+  surface/appearance inputs, the [command paint](../../../spec/43-command-paint.md#light-and-relief)
+  light channels and control relief, and color records. Both nullable backdrop
+  fields are required, and so are both light channels; absent observations are
+  explicit null. Light coefficient sources are validated before rounding, also
+  where the phase or policy suppresses them. Color conversion uses the existing
+  sRGB fallback resolver. The body is drawn as a lit control body.
   The surface template must have exactly the neutral rest state; current states
   come exclusively from the canonical activation/hover projection.
 - `activation`, `hovered`, nullable `description`, and `focusable`: existing

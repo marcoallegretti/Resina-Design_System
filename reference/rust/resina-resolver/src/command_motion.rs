@@ -1,9 +1,11 @@
 use crate::{
-    CommandPaintError, CommandPaintInput, CommandPaintIr, CompiledTheme,
+    CommandPaintError, CommandPaintInput, CommandPaintIr, CompiledTheme, ControlRelief,
     command_paint::resolve_command_paint_with_response,
 };
 use resina_environment::EnvironmentSnapshot;
-use resina_model::{CommandAppearance, CommandResponse, SpringDynamics, SpringState};
+use resina_model::{
+    CommandAppearance, CommandResponse, MaterialLightChannels, SpringDynamics, SpringState,
+};
 use resina_motion::SpringTrajectorySample;
 use serde::{
     Deserialize, Deserializer, Serialize,
@@ -145,7 +147,7 @@ pub fn resolve_command_motion(
         },
     )?;
     Ok(CommandMotionIr {
-        schema_version: "0.1.0",
+        schema_version: "0.2.0",
         policy: sample.policy,
         target,
         body_mix: sample.body_mix,
@@ -159,6 +161,8 @@ struct Request {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
     command_appearance: CommandAppearance,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
     channels: CommandMotionChannels,
     time: f64,
 }
@@ -169,6 +173,8 @@ struct RequestMembers {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
     command_appearance: CommandAppearance,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
     channels: CommandMotionChannels,
     time: f64,
 }
@@ -187,6 +193,8 @@ impl<'de> Deserialize<'de> for Request {
                     schema_version: input.schema_version,
                     surface: input.surface,
                     command_appearance: input.command_appearance,
+                    light: input.light,
+                    relief: input.relief,
                     channels: input.channels,
                     time: input.time,
                 })
@@ -198,12 +206,8 @@ impl<'de> Deserialize<'de> for Request {
 pub fn resolve_command_motion_source(source: &str) -> Result<CommandMotionIr, CommandPaintError> {
     let document = resina_tokens::parse_token_document(source).map_err(CommandPaintError::Parse)?;
     let request: Request = serde_json::from_value(document).map_err(CommandPaintError::Request)?;
-    crate::pigment_source::validate_pigment_source(
-        source,
-        &["surface", "body", "appearance", "pigmentProfiles"],
-    )
-    .map_err(CommandPaintError::Request)?;
-    if request.schema_version != "0.1.0" {
+    crate::command_paint::validate_command_sources(source)?;
+    if request.schema_version != "0.2.0" {
         return Err(CommandPaintError::UnsupportedVersion);
     }
     let (theme, environment, owned) =
@@ -215,6 +219,8 @@ pub fn resolve_command_motion_source(source: &str) -> Result<CommandMotionIr, Co
             command: CommandPaintInput {
                 surface: owned.input(),
                 command_appearance: &request.command_appearance,
+                light: &request.light,
+                relief: &request.relief,
             },
             channels: &request.channels,
             time: request.time,

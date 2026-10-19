@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "0.1.0",
+  "radius": 24,
+  "profile": {
+    "kind": "convex",
+    "bodyThickness": 2,
+    "amplitude": 1,
+    "shoulderWidth": 2
+  },
+  "cases": [
+    {
+      "name": "text-scale-1-reference-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": true
+    },
+    {
+      "name": "text-scale-1-shoulder-3",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 3,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "text-scale-1-shoulder-4",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 4,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "text-scale-2-reference-shoulder",
+      "textScale": 2,
+      "size": {
+        "width": 160,
+        "height": 72
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 48,
+      "contained": true
+    },
+    {
+      "name": "text-scale-2-shoulder-3",
+      "textScale": 2,
+      "size": {
+        "width": 160,
+        "height": 72
+      },
+      "shoulderWidth": 3,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 48,
+      "contained": false
+    },
+    {
+      "name": "text-scale-2-shoulder-4",
+      "textScale": 2,
+      "size": {
+        "width": 160,
+        "height": 72
+      },
+      "shoulderWidth": 4,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 48,
+      "contained": false
+    },
+    {
+      "name": "start-padding-crosses-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 10,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "end-padding-crosses-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 10,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "minimal-vertical-padding",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 10.5,
+        "bottom": 10.5
+      },
+      "labelHeight": 27,
+      "contained": true
+    }
+  ]
+}

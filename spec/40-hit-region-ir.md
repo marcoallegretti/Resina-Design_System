@@ -74,8 +74,10 @@ not establish complete component interaction or accessibility conformance.
 
 ## Resolved surface composition
 
-The Rust reference provides `resolve_surface_hit_region` for a validated opaque
-surface body, including the opaque fallback of Frost. It derives `visualBounds`
+The Rust reference provides `resolve_surface_hit_region` for a validated
+[opaque surface body](36-opaque-surface-ir.md) or
+[lit control body](88-lit-control-body.md), including the opaque fallback of
+Frost; its input accepts only these resolved bodies. It derives `visualBounds`
 from the body's complete resolved silhouette, including extrusion, and applies
 the same rectangular target policy and diagnostics. Pass the body from static
 or sampled command paint. A command's label size or front contour omits its

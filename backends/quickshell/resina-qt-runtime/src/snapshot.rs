@@ -1,15 +1,15 @@
 use crate::label::{PreparedContent, parse_label_request, prepare_content};
 use cxx_qt_lib::QString;
 use resina_model::{
-    ActivationState, ColorRole, CommandAppearance, OpaqueSurfaceAppearance, PhysicalBounds,
-    SurfaceIntent, SurfaceSize,
+    ActivationState, ColorRole, CommandAppearance, MaterialLightChannels, OpaqueSurfaceAppearance,
+    PhysicalBounds, SurfaceIntent, SurfaceSize,
 };
 use resina_resolver::{
     CommandLabelIr, CommandMotionChannels, CommandMotionInput, CommandPaintInput,
-    CommandSnapshotInput, HitRegionIr, OpaqueSurfaceInput, SrgbFallback, SurfaceHitRegionInput,
-    SurfacePaintInput, resolve_command_motion, resolve_command_paint,
-    resolve_command_reservation_body, resolve_command_snapshot, resolve_command_states,
-    resolve_srgb_fallback, resolve_surface_hit_region,
+    CommandSnapshotInput, ControlRelief, HitRegionBody, HitRegionIr, OpaqueSurfaceInput,
+    SrgbFallback, SurfaceHitRegionInput, SurfacePaintInput, resolve_command_motion,
+    resolve_command_paint, resolve_command_reservation_body, resolve_command_snapshot,
+    resolve_command_states, resolve_srgb_fallback, resolve_surface_hit_region,
 };
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
@@ -96,12 +96,22 @@ struct Body {
     #[serde(deserialize_with = "crate::appearance_source::deserialize")]
     appearance: OpaqueSurfaceAppearance,
     command_appearance: CommandAppearance,
+    #[serde(deserialize_with = "light_source")]
+    light: MaterialLightChannels,
+    relief: ControlRelief,
     foreground_role: ColorRole,
     adjacent_color: Value,
     post_treatment_backdrop: Value,
     surrounding_color: Value,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
+}
+
+fn light_source<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<MaterialLightChannels, D::Error> {
+    let source = Box::<serde_json::value::RawValue>::deserialize(deserializer)?;
+    resina_resolver::parse_light_channels_source(source.get()).map_err(serde::de::Error::custom)
 }
 
 #[cfg(test)]
@@ -118,6 +128,7 @@ mod pigment_source_tests {
         let mut input = json!({
             "surface": body["surface"], "appearance": body["appearance"],
             "commandAppearance": request["commandAppearance"],
+            "light": request["light"], "relief": request["relief"],
             "foregroundRole": body["foregroundRole"], "adjacentColor": body["adjacentColor"],
             "postTreatmentBackdrop": body["postTreatmentBackdrop"], "surroundingColor": request["surface"]["surroundingColor"],
             "minimumContentContrast": body["minimumContentContrast"], "minimumEdgeContrast": body["minimumEdgeContrast"],
@@ -129,6 +140,41 @@ mod pigment_source_tests {
             .to_string()
             .replace("\"coefficient-source\"", "-1e-400");
         assert!(serde_json::from_str::<Body>(&source).is_err());
+    }
+
+    #[test]
+    fn command_body_rejects_negative_light_sources_even_when_suppressed() {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/command-paint-request.json"
+        ))
+        .unwrap();
+        let body = &request["surface"]["body"];
+        let input = json!({
+            "surface": body["surface"], "appearance": body["appearance"],
+            "commandAppearance": request["commandAppearance"],
+            "light": request["light"], "relief": request["relief"],
+            "foregroundRole": body["foregroundRole"], "adjacentColor": body["adjacentColor"],
+            "postTreatmentBackdrop": body["postTreatmentBackdrop"], "surroundingColor": request["surface"]["surroundingColor"],
+            "minimumContentContrast": body["minimumContentContrast"], "minimumEdgeContrast": body["minimumEdgeContrast"],
+        });
+        for pointer in ["/light/ambient", "/light/interaction/strength"] {
+            let mut changed = input.clone();
+            *changed.pointer_mut(pointer).unwrap() = json!("coefficient-source");
+            let source = changed.to_string();
+            for (literal, valid) in [("-1e-400", false), ("-0e-400", true), ("1e-400", true)] {
+                let text = source.replace("\"coefficient-source\"", literal);
+                assert_eq!(
+                    serde_json::from_str::<Body>(&text).is_ok(),
+                    valid,
+                    "{pointer} {literal}"
+                );
+            }
+        }
+        for member in ["light", "relief"] {
+            let mut missing = input.clone();
+            missing.as_object_mut().unwrap().remove(member);
+            assert!(serde_json::from_str::<Body>(&missing.to_string()).is_err());
+        }
     }
 }
 
@@ -231,6 +277,8 @@ fn paint_input<'a>(
             surrounding_color: parsed.surrounding.as_ref(),
         },
         command_appearance: &body.command_appearance,
+        light: &body.light,
+        relief: &body.relief,
     }
 }
 
@@ -268,7 +316,7 @@ fn target_region(
         .collect();
     let region = resolve_surface_hit_region(SurfaceHitRegionInput {
         environment: &content.environment,
-        body: &deepest,
+        body: HitRegionBody::Lit(&deepest),
         available_bounds: request.available_bounds.bounds(),
         component_minimum: request.component_minimum,
         occupied_regions: &occupied_regions,
@@ -370,7 +418,7 @@ fn prepare(
             x: options.x,
             y: options.y,
         };
-        resina_qml::prepare_surface_paint(
+        resina_qml::prepare_lit_control_paint(
             snapshot.paint().paint(),
             placement,
             options.device_scale,
@@ -378,7 +426,7 @@ fn prepare(
         )
         .map_err(|error| error.to_string())?;
         if render {
-            let source = resina_qml::render_surface_paint(
+            let source = resina_qml::render_lit_control_paint(
                 snapshot.paint().paint(),
                 resina_model::PhysicalVector {
                     x: options.x,
@@ -636,6 +684,8 @@ mod input_cache_tests {
                     "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}},
                 "appearance": serde_json::from_str::<Value>(include_str!("../../../../definitions/tier0-surface-appearance.json")).unwrap(),
                 "commandAppearance": serde_json::from_str::<Value>(include_str!("../../../../definitions/command-appearance-light.json")).unwrap(),
+                "light": {"ambient": null, "interaction": null},
+                "relief": serde_json::from_str::<Value>(include_str!("../../../../definitions/control-relief.json")).unwrap(),
                 "foregroundRole": body["contentRole"], "adjacentColor": white,
                 "postTreatmentBackdrop": white, "surroundingColor": white,
                 "minimumContentContrast": 4.5, "minimumEdgeContrast": 3

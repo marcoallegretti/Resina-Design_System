@@ -18,7 +18,8 @@ pub use relief_paint::{
 mod lit_control_body;
 pub use lit_control_body::{
     ControlRelief, LitControlBodyError, LitControlBodyGeometry, LitControlBodyInput,
-    LitControlBodyIr, LitControlIdentity, parse_control_relief_source, resolve_lit_control_body,
+    LitControlBodyIr, LitControlIdentity, LitControlPaintIr, LitControlPaintSampleError,
+    parse_control_relief_source, parse_light_channels_source, resolve_lit_control_body,
 };
 mod surface_relief;
 pub use surface_relief::{
@@ -334,8 +335,8 @@ pub use focus_traversal::{
 };
 mod target;
 pub use hit_region::{
-    HitRegionError, HitRegionInput, HitRegionIr, SurfaceHitRegionInput, resolve_hit_region,
-    resolve_hit_region_source, resolve_surface_hit_region,
+    HitRegionBody, HitRegionError, HitRegionInput, HitRegionIr, SurfaceHitRegionInput,
+    resolve_hit_region, resolve_hit_region_source, resolve_surface_hit_region,
 };
 pub use target::{MinimumHitTarget, resolve_minimum_hit_target};
 mod theme;

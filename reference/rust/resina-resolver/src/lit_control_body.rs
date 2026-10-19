@@ -1,6 +1,7 @@
 use crate::{
-    EdgeContrastResult, ExtrudedContourResult, KeyLightResult, MaterialReliefPaint,
-    OutlineCurvature, PlacedContour, SrgbFallback, SurfaceReliefProfile,
+    EdgeContrastResult, ExtrudedContourResult, FocusIndicatorIr, KeyLightResult,
+    MaterialReliefPaint, OutlineCurvature, PlacedContour, SrgbFallback, SurfacePaintError,
+    SurfaceReliefProfile,
     material_light::{MaterialLightPolicy, ResolvedMaterialLight},
     opaque_paint::{contains, placed_contains},
     resolve_extruded_contour, resolve_inset_contour, resolve_key_light, resolve_opaque_pigment,
@@ -29,6 +30,12 @@ impl std::error::Error for LitControlBodyError {}
 
 fn fail(error: impl fmt::Display) -> LitControlBodyError {
     LitControlBodyError(error.to_string())
+}
+
+impl LitControlBodyError {
+    pub(crate) fn for_part(self, part: &str) -> Self {
+        Self(format!("{part}: {}", self.0))
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
@@ -61,13 +68,37 @@ impl ControlRelief {
 }
 
 pub fn parse_control_relief_source(source: &str) -> Result<ControlRelief, LitControlBodyError> {
-    let document = parse_token_document(source).map_err(fail)?;
+    control_relief(parse_token_document(source).map_err(fail)?)
+}
+
+/// Parses one light channels object, validating the original ambient and interaction strength
+/// sources even for channels that policy or phase later suppresses.
+pub fn parse_light_channels_source(
+    source: &str,
+) -> Result<MaterialLightChannels, LitControlBodyError> {
+    crate::pigment_source::validate_light_channel_source(source, &[]).map_err(fail)?;
+    serde_json::from_str(source).map_err(fail)
+}
+
+impl<'de> Deserialize<'de> for ControlRelief {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        control_relief(serde_json::Value::deserialize(deserializer)?)
+            .map_err(serde::de::Error::custom)
+    }
+}
+
+fn control_relief(document: serde_json::Value) -> Result<ControlRelief, LitControlBodyError> {
     for pointer in ["", "/commandBody", "/toggleTrack", "/toggleThumb"] {
         if !document
             .pointer(pointer)
             .is_some_and(serde_json::Value::is_object)
         {
-            return Err(fail(format!("control relief {pointer} must be an object")));
+            let part = pointer.trim_start_matches('/');
+            return Err(fail(if part.is_empty() {
+                "control relief must be an object".to_owned()
+            } else {
+                format!("control relief {part} must be an object")
+            }));
         }
     }
     let members: ControlReliefMembers = serde_json::from_value(document).map_err(fail)?;
@@ -291,8 +322,29 @@ pub fn resolve_lit_control_body(
 }
 
 impl LitControlBodyIr {
+    pub(crate) fn dim_disabled_label(&mut self, bound: f64) {
+        self.face.dim_disabled_label(bound);
+    }
     pub fn face(&self) -> &MaterialReliefPaint {
         &self.face
+    }
+    pub fn material_role(&self) -> MaterialRole {
+        self.material_role
+    }
+    pub fn color_role(&self) -> ColorRole {
+        self.color_role
+    }
+    pub fn form(&self) -> &SurfaceForm {
+        &self.form
+    }
+    pub fn frost_representation(&self) -> Option<FrostRepresentation> {
+        self.frost_representation
+    }
+    pub fn foreground_role(&self) -> ColorRole {
+        self.foreground_role
+    }
+    pub fn content_fallback_applied(&self) -> bool {
+        self.content_fallback_applied
     }
     pub fn lighting(&self) -> &KeyLightResult {
         &self.lighting
@@ -345,6 +397,80 @@ impl LitControlBodyIr {
             Ok(Some(self.face.pigment().side().clone()))
         } else {
             Ok(Some(self.face.edge().color().clone()))
+        }
+    }
+}
+
+/// The [lit control body](LitControlBodyIr) with its independent navigation ring, present exactly
+/// when the body states include `focused`.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LitControlPaintIr {
+    schema_version: &'static str,
+    body: LitControlBodyIr,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    focus: Option<FocusIndicatorIr>,
+}
+
+impl LitControlPaintIr {
+    pub(crate) fn new(body: LitControlBodyIr, focus: Option<FocusIndicatorIr>) -> Self {
+        Self {
+            schema_version: "0.1.0",
+            body,
+            focus,
+        }
+    }
+    pub(crate) fn body_mut(&mut self) -> &mut LitControlBodyIr {
+        &mut self.body
+    }
+    pub fn body(&self) -> &LitControlBodyIr {
+        &self.body
+    }
+    pub fn focus(&self) -> Option<&FocusIndicatorIr> {
+        self.focus.as_ref()
+    }
+
+    /// Samples the body, then the separated focus ring where the body paints nothing.
+    pub fn sample_paint(
+        &self,
+        point: PhysicalVector,
+    ) -> Result<Option<SrgbFallback>, LitControlPaintSampleError> {
+        if let Some(color) = self
+            .body
+            .sample_paint(point)
+            .map_err(LitControlPaintSampleError::Body)?
+        {
+            return Ok(Some(color));
+        }
+        match &self.focus {
+            Some(focus) => focus
+                .sample_paint(point)
+                .map_err(LitControlPaintSampleError::Focus),
+            None => Ok(None),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LitControlPaintSampleError {
+    Body(LitControlBodyError),
+    Focus(SurfacePaintError),
+}
+
+impl fmt::Display for LitControlPaintSampleError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Body(error) => error.fmt(f),
+            Self::Focus(error) => write!(f, "lit control focus: {error}"),
+        }
+    }
+}
+
+impl std::error::Error for LitControlPaintSampleError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Body(error) => Some(error),
+            Self::Focus(error) => Some(error),
         }
     }
 }

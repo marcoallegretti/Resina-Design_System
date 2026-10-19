@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from check_schemas import validator_for
+from lit_body_arithmetic import body_invariants
 from check_qt_command_label_runtime import verify_layout
 from opaque_request_source import pigment_coefficient_failures
 import conformance_font
@@ -28,9 +29,20 @@ def verify_snapshot(snapshot, request, expected_states, motion=None):
         validator_for(f"schemas/{schema}.schema.json").validate(snapshot[member])
     body = snapshot["paint"]["paint"]["body"]
     label = snapshot["label"]
-    front = body["geometry"]["front"]["bounds"]
+    offset = body["lighting"]["sideOffset"]
+    front = {"x": body["geometry"]["silhouette"]["bounds"]["x"] - min(0, offset["x"]),
+             "y": body["geometry"]["silhouette"]["bounds"]["y"] - min(0, offset["y"]),
+             **body["face"]["surface"]["outline"]["size"]}
     if front != {"x": 0, "y": 0, **label["size"]}:
         raise ValueError("native body and complete label differ in front size/origin")
+    invariant = body_invariants(body)
+    if invariant:
+        raise ValueError(f"native lit body violates its invariants: {invariant}")
+    content, box = body["face"]["contentBounds"], label["labelBounds"]
+    if box["x"] < content["x"] or box["y"] < content["y"] \
+            or box["x"] + box["width"] > content["x"] + content["width"] \
+            or box["y"] + box["height"] > content["y"] + content["height"]:
+        raise ValueError("native label layout box leaves the lit body content rectangle")
     target = snapshot["hitRegion"]["bounds"]
     silhouette = body["geometry"]["silhouette"]["bounds"]
     available = request["availableBounds"]
@@ -91,6 +103,8 @@ def request_for(theme, text):
                                   "treatmentStack": {"schemaVersion": "0.1.0", "treatments": ["none"]}},
                      "appearance": json.loads((ROOT / "definitions/tier0-surface-appearance.json").read_text()),
                      "commandAppearance": json.loads((ROOT / f"definitions/command-appearance-{theme}.json").read_text()),
+                     "light": {"ambient": None, "interaction": None},
+                     "relief": json.loads((ROOT / "definitions/control-relief.json").read_text()),
                      "foregroundRole": definition["contentRole"], "adjacentColor": background,
                      "postTreatmentBackdrop": background, "surroundingColor": background,
                      "minimumContentContrast": 4.5, "minimumEdgeContrast": 3},

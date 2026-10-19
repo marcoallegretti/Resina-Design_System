@@ -72,13 +72,15 @@ def check_native_paint(window, control, source, args):
             raise ValueError('native sampled oracle capture failed')
         body = copy.deepcopy(source['body'])
         appearance = body.pop('commandAppearance')
+        light, relief = body.pop('light'), body.pop('relief')
         surrounding = body.pop('surroundingColor')
         body.update(schemaVersion='0.1.0', size=snapshot['label']['size'],
                     theme={'schemaVersion':'0.1.0', **{key:source['content'][key]
                           for key in ('themeSource','externalSources','environment')}})
         body['surface']['states'] = snapshot['paint']['paint']['body']['states']
-        request = {'schemaVersion':'0.1.0', 'surface':{'schemaVersion':'0.1.0','body':body,
+        request = {'schemaVersion':'0.2.0', 'surface':{'schemaVersion':'0.1.0','body':body,
                    'surroundingColor':surrounding}, 'commandAppearance':appearance,
+                   'light':light, 'relief':relief,
                    'channels':metadata['channels'], 'time':metadata['time']}
         oracle = read_backend_output([str(args.raster.resolve()), '-', str(image.width()), str(image.height()),
                                      str(-origin.x()), str(-origin.y()), str(dpr), '4'], json.dumps(request).encode())

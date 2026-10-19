@@ -162,8 +162,8 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                 "materialFamily": "elastomer", "lighting": {
                     "direction": {"x": -math.sqrt(0.5), "y": -math.sqrt(0.5)},
                     "sideOffset": {"x": offset, "y": offset}},
+                "face": {"surface": {"outline": {"size": {"width": 160, "height": 80}}}},
                 "geometry": {
-                    "front": {"bounds": {"x": 0, "y": 0, "width": 160, "height": 80}},
                     "silhouette": {"bounds": {"x": 0, "y": 0, "width": 160 + offset, "height": 80 + offset}},
                     "edgeInterior": {"offset": {"x": 1, "y": 1}, "contour": {"bounds": {
                         "x": 0, "y": 0, "width": 158 + offset, "height": 78 + offset}}}}}}}}
@@ -283,11 +283,14 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             "paint": {"body": {"materialFamily": "elastomer", "materialRole": "control.interactive",
                 "colorRole": "surface.high", "foregroundRole": "content.primary",
                 "form": {"schemaVersion": "0.1.0", "shape": "rounded", "elevation": "raised"},
-                "pigment": {"body": {"colorSpace": "srgb", "alpha": 1,
-                    "components": [252/255, 251/255, 248/255]}},
-                "foreground": {"colorSpace": "srgb", "alpha": 1, "components": [24/255, 41/255, 45/255]},
-                "edge": {"color": {"colorSpace": "srgb", "alpha": 1, "components": [109/255, 129/255, 128/255]}}}}}}
-        with patch("check_quickshell_command_updates.verify_authored_geometry"):
+                "face": {
+                    "pigment": {"body": {"colorSpace": "srgb", "alpha": 1,
+                        "components": [252/255, 251/255, 248/255]}},
+                    "foreground": {"colorSpace": "srgb", "alpha": 1, "components": [24/255, 41/255, 45/255]},
+                    "edge": {"color": {"colorSpace": "srgb", "alpha": 1, "components": [109/255, 129/255, 128/255]}},
+                    "surface": {"profile": request["body"]["relief"]["commandBody"]}}}}}}
+        with patch("check_quickshell_command_updates.verify_authored_geometry"), \
+                patch("check_quickshell_command_updates.body_invariants", return_value=None):
             verify_authored_paint(request, snapshot)
             request["content"]["themeSource"] = authored_cases()[12]["request"]["content"]["themeSource"]
             with self.assertRaisesRegex(ValueError, "authored"):
@@ -306,11 +309,11 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                               "size": {"width": 80, "height": 60},
                               "typography": {"fontSize": {"value": 10}, "lineHeight": 1}},
                     "hitRegion": {"bounds": {"x": 0, "y": 0}},
-                    "paint": {"paint": {"body": {
-                        "geometry": {"content": {"offset": {"x": 3, "y": 3}}},
+                    "paint": {"paint": {"body": {"geometry": {}, "face": {
+                        "contentBounds": {"x": 3, "y": 3, "width": 74, "height": 54},
                         "pigment": {"body": {"colorSpace": "srgb", "alpha": 1, "components": [1, 1, 1]}},
                         "foreground": {
-                        "colorSpace": "srgb", "alpha": 1, "components": [0, 0, 0]}}}}}
+                        "colorSpace": "srgb", "alpha": 1, "components": [0, 0, 0]}}}}}}
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "capture.png"
             for points in ([], [(65, 65)], [(65, 65), (65, 75)], [(5, 5), (5, 15)]):

@@ -9,7 +9,7 @@ from pathlib import Path
 from command_label_arithmetic import check_cases as check_label_arithmetic
 from command_layout_arithmetic import resolve as resolve_command_layout
 from command_layout_arithmetic import resolve_extents
-from lit_body_arithmetic import body_invariants, relief_profile_violation
+from lit_body_arithmetic import Body as LitBody, body_invariants, relief_profile_violation
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -572,6 +572,134 @@ def check_theme_derivation_schemas():
     return checked
 
 
+def check_command_lit_envelopes(lit_body, focus):
+    """Check the Command 0.2.0 envelopes around the lit body and their 0.1.0 archives."""
+    checked = 0
+    ir_schema = validator_for("schemas/command-paint-ir.schema.json")
+    published = load_json(ROOT / "conformance/ir/command-paint-ir.json")
+    check_case(ir_schema, "published command paint IR", published, True)
+    if body_invariants(published["paint"]["body"]):
+        raise ValueError(f"published command paint IR: {body_invariants(published['paint']['body'])}")
+    checked += 1
+    response = {"bodyMix": 0.06, "depthScale": 1.5}
+    command = {"schemaVersion": "0.2.0", "phase": "hover", "response": response,
+               "paint": {"schemaVersion": "0.1.0", "body": lit_body}}
+    focused = apply_changes(command, [{"path": "/paint/body/states/states", "value": ["hover", "focused"]}])
+    focused["paint"]["focus"] = focus
+    spec36 = load_json(ROOT / "conformance/ir/opaque-surface-expected.json")
+    for name, document, valid in (
+        ("command lit paint", command, True),
+        ("command lit focused paint", focused, True),
+        ("command lit rest identity response", apply_changes(command, [
+            {"path": "/phase", "value": "rest"}, {"path": "/paint/body/states/states", "value": ["rest"]},
+            {"path": "/response", "value": {"bodyMix": 0, "depthScale": 1}}]), True),
+        ("command lit rest without identity response", apply_changes(command, [
+            {"path": "/phase", "value": "rest"}, {"path": "/paint/body/states/states", "value": ["rest"]}]), False),
+        ("command lit checked state", apply_changes(command, [
+            {"path": "/paint/body/states/states", "value": ["hover", "checked"]}]), False),
+        ("command lit phase disagrees with states", apply_changes(command, [{"path": "/phase", "value": "pressed"}]), False),
+        ("command lit version 0.1.0", apply_changes(command, [{"path": "/schemaVersion", "value": "0.1.0"}]), False),
+        ("command lit spec/36 body", apply_changes(command, [{"path": "/paint/body", "value": spec36}]), False),
+        ("command lit highlight width", apply_changes(command, [
+            {"path": "/paint/body", "value": dict(lit_body, highlightWidth=1)}]), False),
+        ("command lit two color ranges", apply_changes(command, [
+            {"path": "/paint/body/face/colorRanges", "value": lit_body["face"]["colorRanges"][:2]}]), False),
+        ("command lit translucent representation", apply_changes(command, [
+            {"path": "/paint/body/representation", "value": "translucent"}]), False),
+        ("command lit focus without focused state", apply_changes(command, [
+            {"path": "/paint", "value": {"schemaVersion": "0.1.0", "body": lit_body, "focus": focus}}]), False),
+    ):
+        check_case(ir_schema, name, document, valid)
+        checked += 1
+    second_key = apply_changes(command, [{"path": "/paint/body/face/light/keyDirection", "value": {"x": 1, "y": 0}}])
+    check_case(ir_schema, "command lit second key direction is structurally valid", second_key, True)
+    if body_invariants(second_key["paint"]["body"]) is None:
+        raise ValueError("command lit second key direction: invariant violation was not detected")
+    checked += 1
+    motion = load_json(ROOT / "conformance/ir/command-motion-request.json")
+    sample = {"schemaVersion": "0.1.0", "representation": "spring", "target": 1.5,
+              "state": {"position": 1.2, "velocity": 0.5}, "settled": False}
+    motion_ir = {"schemaVersion": "0.2.0", "policy": "spring", "target": response,
+                 "bodyMix": dict(sample, target=0.06, state={"position": 0.03, "velocity": 0.1}),
+                 "depthScale": sample, "bodyMixProjection": "none", "depthScaleProjection": "none",
+                 "command": dict(command, response={"bodyMix": 0.03, "depthScale": 1.2})}
+    motion_schema = validator_for("schemas/command-motion-ir.schema.json")
+    for name, document, valid in (
+        ("command lit motion sample", motion_ir, True),
+        ("command lit motion version 0.1.0", dict(motion_ir, schemaVersion="0.1.0"), False),
+        ("command lit motion command version 0.1.0", apply_changes(motion_ir, [
+            {"path": "/command/schemaVersion", "value": "0.1.0"}]), False),
+        ("command lit motion spec/36 body", apply_changes(motion_ir, [
+            {"path": "/command/paint/body", "value": spec36}]), False),
+    ):
+        check_case(motion_schema, name, document, valid)
+        checked += 1
+    for current, archived, base in (
+        ("command-paint-request", "command-paint-request-0.1.0", load_json(ROOT / "conformance/ir/command-paint-request.json")),
+        ("command-motion-request", "command-motion-request-0.1.0", motion),
+    ):
+        for member in ("light", "relief"):
+            missing = {key: value for key, value in base.items() if key != member}
+            check_case(validator_for(f"schemas/{current}.schema.json"), f"{current} without {member}", missing, False)
+            checked += 1
+        legacy = {key: value for key, value in base.items() if key not in ("light", "relief")}
+        legacy["schemaVersion"] = "0.1.0"
+        check_case(validator_for(f"schemas/versions/{archived}.schema.json"), f"{archived} archive", legacy, True)
+        check_case(validator_for(f"schemas/{current}.schema.json"), f"{current} rejects the 0.1.0 archive", legacy, False)
+        check_case(validator_for(f"schemas/versions/{archived}.schema.json"), f"{archived} rejects light", dict(legacy, light=base["light"]), False)
+        checked += 3
+    archived_ir = validator_for("schemas/versions/command-paint-ir-0.1.0.schema.json")
+    check_case(archived_ir, "command paint IR 0.1.0 archive rejects the lit body", dict(command, schemaVersion="0.1.0"), False)
+    checked += 1
+    return checked
+
+
+def check_lit_containment():
+    """Validate the lit command containment matrix and decide every outcome with independent arithmetic."""
+    matrix = load_json(ROOT / "conformance/content/command-lit-containment.json")
+    validator = validator_for("schemas/command-lit-containment.schema.json")
+    check_case(validator, "lit containment cases", matrix, True)
+    checked = 1
+    for path, value in [("/schemaVersion", "0.2.0"),
+                        ("/radius", 0),
+                        ("/profile/kind", "negative-extrusion"),
+                        ("/cases/0/shoulderWidth", 0),
+                        ("/cases/0/padding/top", -1),
+                        ("/cases/0/padding", [16, 16, 12, 12]),
+                        ("/cases/0/labelHeight", 0),
+                        ("/cases/0/contained", "yes")]:
+        check_case(validator, f"lit containment invalid {path}",
+                   apply_changes(matrix, [{"path": path, "value": value}]), False)
+        checked += 1
+    check_case(validator, "lit containment renderer leakage", dict(matrix, renderer="native"), False)
+    checked += 1
+    source = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
+    names = set()
+    for case in matrix["cases"]:
+        if case["name"] in names:
+            raise ValueError(f"duplicate lit containment case: {case['name']}")
+        names.add(case["name"])
+        size, padding, height = case["size"], case["padding"], case["labelHeight"]
+        for direction in ("ltr", "rtl"):
+            body_source = copy.deepcopy(source)
+            body_source["size"] = size
+            body_source["radii"] = {name: {"x": matrix["radius"], "y": matrix["radius"]}
+                                    for name in ("topStart", "topEnd", "bottomEnd", "bottomStart")}
+            body_source["relief"] = dict(matrix["profile"], shoulderWidth=case["shoulderWidth"])
+            body_source["environment"]["layoutDirection"] = direction
+            content = LitBody(body_source).content_bounds
+            x = padding["start"] if direction == "ltr" else padding["end"]
+            width = size["width"] - padding["start"] - padding["end"]
+            y = padding["top"] + (size["height"] - padding["top"] - padding["bottom"] - height) / 2
+            contained = (x >= content["x"] and y >= content["y"]
+                         and x + width <= content["x"] + content["width"]
+                         and y + height <= content["y"] + content["height"])
+            if contained != case["contained"]:
+                raise ValueError(f"lit containment {case['name']} {direction}: independent outcome is {contained}")
+            checked += 1
+    return checked
+
+
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
@@ -627,7 +755,6 @@ def main():
         "schemas/common-contrast-cases.schema.json",
         "schemas/opaque-paint-range-cases.schema.json",
         "schemas/command-paint-request.schema.json",
-        "schemas/command-body-ir.schema.json",
         "schemas/command-paint-ir.schema.json",
         "schemas/command-paint-case.schema.json",
         "schemas/spring-parameters.schema.json",
@@ -825,6 +952,12 @@ def main():
         "schemas/versions/spatial-assignments-0.1.0.schema.json",
         "schemas/versions/surface-binding-result-0.3.0.schema.json",
         "schemas/versions/surface-scenario-0.3.0.schema.json",
+        "schemas/versions/command-paint-request-0.1.0.schema.json",
+        "schemas/versions/command-paint-ir-0.1.0.schema.json",
+        "schemas/versions/command-body-ir-0.1.0.schema.json",
+        "schemas/versions/command-motion-request-0.1.0.schema.json",
+        "schemas/versions/command-motion-ir-0.1.0.schema.json",
+        "schemas/command-lit-containment.schema.json",
     }
     actual_paths = {path.relative_to(ROOT).as_posix() for path in schema_paths}
     if actual_paths != expected_paths:
@@ -1319,6 +1452,7 @@ def main():
         ("lit paint unknown member", {"schemaVersion": "0.1.0", "body": lit_body, "raster": "native"}, False),
     ):
         check_case(lit_paint_schema, name, document, valid)
+    command_lit_checked = check_command_lit_envelopes(lit_body, focus)
     relief_paint_cases = load_json(ROOT / "conformance/ir/relief-paint-vectors.json")
     relief_paint_case_schema = validator_for("schemas/relief-paint-case.schema.json")
     relief_paint_request_schema = validator_for("schemas/relief-paint-request.schema.json")
@@ -1771,7 +1905,7 @@ def main():
         + 2 * len(relief_cases) + sum("expected" in case for case in relief_cases)
         + 2 * len(relief_paint_cases) + sum("expected" in case for case in relief_paint_cases)
         + 2 * len(material_paint_cases) + sum("expected" in case for case in material_paint_cases)
-        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 15 + 7
+        + 1 + 2 * len(lit_body_cases) + 1 + 13 + 15 + 7 + command_lit_checked
         + 2 * len(outline_focus_cases)
         + len(key_light_cases)
         + 1 + 2 * len(light_cases) + sum("expected" in case for case in light_cases)
@@ -2780,6 +2914,7 @@ def main():
         check_case(relief_content_validator, f"relief content invalid {path}",
                    apply_changes(relief_content, [{"path": path, "value": value}]), False)
         checked += 1
+    checked += check_lit_containment()
     control_relief = load_json(ROOT / "definitions/control-relief.json")
     control_relief_validator = validator_for("schemas/control-relief.schema.json")
     check_case(control_relief_validator, "reference control relief", control_relief, True)

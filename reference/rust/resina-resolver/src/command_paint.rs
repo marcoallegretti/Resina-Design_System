@@ -1,11 +1,12 @@
 use crate::{
-    CompiledTheme, ImperceptibleResponse, OpaqueSurfaceError, OpaqueSurfaceIr, SurfacePaintInput,
-    SurfacePaintIr, SurfacePaintResolutionError, bind_surface,
+    CompiledTheme, ControlRelief, ImperceptibleResponse, LitControlBodyError, LitControlBodyIr,
+    LitControlPaintIr, OpaqueSurfaceError, SurfacePaintInput, SurfacePaintResolutionError,
+    bind_surface, control_paint::LitControlPaintError,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
-    CommandAppearance, CommandPhase, CommandResponse, MaterialFamily, MaterialRole,
-    resolve_command_phase,
+    CommandAppearance, CommandPhase, CommandResponse, MaterialFamily, MaterialLightChannels,
+    MaterialRole, resolve_command_phase,
 };
 use serde::{
     Deserialize, Deserializer, Serialize,
@@ -16,6 +17,8 @@ use std::fmt;
 pub struct CommandPaintInput<'a> {
     pub surface: SurfacePaintInput<'a>,
     pub command_appearance: &'a CommandAppearance,
+    pub light: &'a MaterialLightChannels,
+    pub relief: &'a ControlRelief,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -24,7 +27,7 @@ pub struct CommandPaintIr {
     schema_version: &'static str,
     phase: CommandPhase,
     response: CommandResponse,
-    paint: SurfacePaintIr,
+    paint: LitControlPaintIr,
 }
 impl CommandPaintIr {
     pub fn phase(&self) -> CommandPhase {
@@ -33,7 +36,7 @@ impl CommandPaintIr {
     pub fn response(&self) -> CommandResponse {
         self.response
     }
-    pub fn paint(&self) -> &SurfacePaintIr {
+    pub fn paint(&self) -> &LitControlPaintIr {
         &self.paint
     }
 }
@@ -45,6 +48,7 @@ pub enum CommandPaintError {
     UnsupportedVersion,
     Scope(&'static str),
     Paint(SurfacePaintResolutionError),
+    Body(LitControlBodyError),
     Imperceptible(ImperceptibleResponse),
     Motion(resina_motion::SpringError),
 }
@@ -53,9 +57,10 @@ impl fmt::Display for CommandPaintError {
         match self {
             Self::Parse(e) => write!(f, "command paint parse failed: {e}"),
             Self::Request(e) => write!(f, "invalid command paint request: {e}"),
-            Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
+            Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.2.0"),
             Self::Scope(e) => f.write_str(e),
             Self::Paint(e) => write!(f, "command {e}"),
+            Self::Body(e) => write!(f, "command {e}"),
             Self::Imperceptible(e) => write!(f, "command {e}"),
             Self::Motion(e) => write!(f, "command motion: {e}"),
         }
@@ -67,11 +72,21 @@ impl From<SurfacePaintResolutionError> for CommandPaintError {
         Self::Paint(error)
     }
 }
+impl From<LitControlPaintError> for CommandPaintError {
+    fn from(error: LitControlPaintError) -> Self {
+        match error {
+            LitControlPaintError::Paint(error) => Self::Paint(error),
+            LitControlPaintError::Body(error) => Self::Body(error),
+        }
+    }
+}
 
 struct Request {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
     command_appearance: CommandAppearance,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
 }
 
 #[derive(Deserialize)]
@@ -80,6 +95,8 @@ struct RequestMembers {
     schema_version: String,
     surface: crate::surface_paint::SurfacePaintRequest,
     command_appearance: CommandAppearance,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
 }
 
 impl<'de> Deserialize<'de> for Request {
@@ -96,11 +113,24 @@ impl<'de> Deserialize<'de> for Request {
                     schema_version: input.schema_version,
                     surface: input.surface,
                     command_appearance: input.command_appearance,
+                    light: input.light,
+                    relief: input.relief,
                 })
             }
         }
         deserializer.deserialize_map(RequestVisitor)
     }
+}
+
+/// Validates the original pigment and light channel coefficient sources of a command request.
+pub(crate) fn validate_command_sources(source: &str) -> Result<(), CommandPaintError> {
+    crate::pigment_source::validate_pigment_source(
+        source,
+        &["surface", "body", "appearance", "pigmentProfiles"],
+    )
+    .map_err(CommandPaintError::Request)?;
+    crate::pigment_source::validate_light_channel_source(source, &["light"])
+        .map_err(CommandPaintError::Request)
 }
 
 pub fn resolve_command_paint_source(source: &str) -> Result<CommandPaintIr, CommandPaintError> {
@@ -110,7 +140,7 @@ pub fn resolve_command_paint_source(source: &str) -> Result<CommandPaintIr, Comm
 /// Source form of [`resolve_command_reservation_body`], reading one command paint request.
 pub fn resolve_command_reservation_body_source(
     source: &str,
-) -> Result<OpaqueSurfaceIr, CommandPaintError> {
+) -> Result<LitControlBodyIr, CommandPaintError> {
     resolve_source(source, resolve_command_reservation_body)
 }
 
@@ -124,12 +154,8 @@ fn resolve_source<T>(
 ) -> Result<T, CommandPaintError> {
     let document = resina_tokens::parse_token_document(source).map_err(CommandPaintError::Parse)?;
     let request: Request = serde_json::from_value(document).map_err(CommandPaintError::Request)?;
-    crate::pigment_source::validate_pigment_source(
-        source,
-        &["surface", "body", "appearance", "pigmentProfiles"],
-    )
-    .map_err(CommandPaintError::Request)?;
-    if request.schema_version != "0.1.0" {
+    validate_command_sources(source)?;
+    if request.schema_version != "0.2.0" {
         return Err(CommandPaintError::UnsupportedVersion);
     }
     let (theme, environment, owned) =
@@ -140,6 +166,8 @@ fn resolve_source<T>(
         CommandPaintInput {
             surface: owned.input(),
             command_appearance: &request.command_appearance,
+            light: &request.light,
+            relief: &request.relief,
         },
     )
 }
@@ -154,13 +182,13 @@ pub fn resolve_command_paint(
 }
 
 /// Resolves the deepest body any static response or projected motion sample can paint for this
-/// command: its surface at the projected depth bound. Layout reserves the target from this
+/// command: its lit body at the projected depth bound. Layout reserves the target from this
 /// body's silhouette.
 pub fn resolve_command_reservation_body(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
     input: CommandPaintInput<'_>,
-) -> Result<OpaqueSurfaceIr, CommandPaintError> {
+) -> Result<LitControlBodyIr, CommandPaintError> {
     let deepest = CommandResponse::try_new(0.0, CommandResponse::MAX_DEPTH_SCALE)
         .expect("the projected depth bound is a valid response");
     resolve_command_paint_with_response(theme, environment, input, |_, _| Ok((deepest, ())))
@@ -217,23 +245,24 @@ pub(crate) fn resolve_command_paint_with_response<T>(
         return Err(CommandPaintError::Imperceptible(imperceptible));
     }
     let (response, sampled) = sample(binding.material_family(), response)?;
-    let mut paint = crate::control_paint::resolve_control_paint(
+    let mut paint = crate::control_paint::resolve_lit_control_paint(
         theme,
         environment,
         &snapshot,
         input.surface,
         binding,
         response,
-        true,
+        input.light,
+        ("commandBody", input.relief.command_body()),
     )?;
     if phase == CommandPhase::Disabled {
         paint
-            .body
+            .body_mut()
             .dim_disabled_label(crate::disabled_label::disabled_label_bound(environment));
     }
     Ok((
         CommandPaintIr {
-            schema_version: "0.1.0",
+            schema_version: "0.2.0",
             phase,
             response,
             paint,

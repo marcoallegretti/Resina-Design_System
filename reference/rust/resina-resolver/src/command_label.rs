@@ -1,6 +1,6 @@
 use crate::{
-    MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ResolvedTypography, SurfacePaintError,
-    opaque_paint::placed_contains,
+    LitControlBodyIr, MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ResolvedTypography,
+    SurfacePaintError, opaque_paint::placed_contains,
 };
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_model::{PhysicalBounds, PhysicalVector, SurfaceSize};
@@ -40,6 +40,12 @@ impl CommandLabelIr {
         paint: &MaterialReliefPaint,
     ) -> Result<(), CommandContentError> {
         self.validate_relief_bounds(paint.surface().outline().size(), paint.content_bounds())
+    }
+
+    /// Contains the complete label layout box in the reserved content rectangle of a lit command
+    /// body from static or sampled motion paint.
+    pub fn validate_lit_content(&self, body: &LitControlBodyIr) -> Result<(), CommandContentError> {
+        self.validate_material_relief_content(body.face())
     }
 
     fn validate_relief_bounds(

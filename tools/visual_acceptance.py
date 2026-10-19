@@ -139,13 +139,31 @@ def validate_capture(scene, result, viewport):
         difference = motion_mismatch(result, scene["request"])
         if difference:
             raise ValueError(f"{scene['name']}: sampled command differs at {difference}")
-        paint = result["command"]["paint"]
-        check_scene(scene | {"kind": "surfacePaint", "request": scene["request"]["surface"]},
-                    paint, viewport)
-        validate_paint_evidence("surfacePaint", scene["request"]["surface"], paint)
+        check_lit_command_scene(scene, result["command"]["paint"], viewport)
     else:
         check_scene(scene, result, viewport)
         validate_paint_evidence(kind, scene["request"], result)
+
+
+def check_lit_command_scene(scene, paint, viewport):
+    """Bindings, edge guard and complete capture bounds of a lit Command paint sample."""
+    body, request = paint["body"], scene["request"]["surface"]["body"]
+    if body["materialFamily"] != scene["expectedMaterialFamily"]:
+        raise ValueError(f"{scene['name']}: resolved material family differs from scene")
+    edge = body["face"]["edge"]
+    validate_ratio(edge["color"], request["adjacentColor"], edge["contrastRatio"],
+                   request["minimumEdgeContrast"], "edge")
+    if "focus" in paint:
+        check_scene(scene | {"kind": "focusRing", "request": {"surface": request["surface"]}},
+                    paint["focus"], viewport)
+    bounds = body["geometry"]["silhouette"]["bounds"]
+    left, top = viewport["origin"]["x"], viewport["origin"]["y"]
+    right = left + viewport["width"] / viewport["pixelsPerUnit"]
+    bottom = top + viewport["height"] / viewport["pixelsPerUnit"]
+    if any(actual > limit and not math.isclose(actual, limit, rel_tol=1e-12, abs_tol=1e-12)
+           for actual, limit in ((left, bounds["x"]), (top, bounds["y"]),
+                                 (bounds["x"] + bounds["width"], right), (bounds["y"] + bounds["height"], bottom))):
+        raise ValueError(f"{scene['name']}: capture clips required paint bounds")
 
 
 def validate_ratio(color, background, reported, minimum, label):

@@ -1,8 +1,9 @@
 use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb_to_linear_srgb};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_resolver::{
-    FocusIndicatorIr, MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError,
-    SurfacePaintError, SurfacePaintIr,
+    FocusIndicatorIr, LitControlBodyIr, LitControlPaintIr, LitControlPaintSampleError,
+    MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError, SurfacePaintError,
+    SurfacePaintIr,
 };
 use std::{
     collections::TryReserveError,
@@ -41,6 +42,7 @@ pub enum RasterError {
     Allocation(TryReserveError),
     Paint(SurfacePaintError),
     ReliefPaint(ReliefPaintError),
+    LitPaint(LitControlPaintSampleError),
     OutlineFocus(resina_resolver::OutlineFocusError),
     FocusPrecision(&'static str),
     Color(ColorConversionError),
@@ -57,6 +59,7 @@ impl fmt::Display for RasterError {
             Self::Allocation(error) => write!(formatter, "raster allocation failed: {error}"),
             Self::Paint(error) => write!(formatter, "surface paint failed: {error}"),
             Self::ReliefPaint(error) => write!(formatter, "relief paint failed: {error}"),
+            Self::LitPaint(error) => write!(formatter, "lit control paint failed: {error}"),
             Self::OutlineFocus(error) => write!(formatter, "focus support failed: {error}"),
             Self::FocusPrecision(reason) => {
                 write!(formatter, "focus coverage cannot be certified: {reason}")
@@ -72,6 +75,7 @@ impl std::error::Error for RasterError {
             Self::Allocation(error) => Some(error),
             Self::Paint(error) => Some(error),
             Self::ReliefPaint(error) => Some(error),
+            Self::LitPaint(error) => Some(error),
             Self::OutlineFocus(error) => Some(error),
             Self::Color(error) => Some(error),
             _ => None,
@@ -250,6 +254,76 @@ pub fn render_material_relief_paint(
         viewport,
         samples_per_axis,
         |point| paint.sample_paint(point),
+    )
+}
+
+/// Realizes a lit control body: its face, side plane and guarded edge.
+pub fn render_lit_body(
+    body: &LitControlBodyIr,
+    viewport: Viewport,
+    samples_per_axis: u8,
+) -> Result<RasterImage, RasterError> {
+    render_lit(body, None, viewport, samples_per_axis)
+}
+
+/// Realizes a lit control body and its separated focus ring.
+pub fn render_lit_control_paint(
+    paint: &LitControlPaintIr,
+    viewport: Viewport,
+    samples_per_axis: u8,
+) -> Result<RasterImage, RasterError> {
+    render_lit(paint.body(), paint.focus(), viewport, samples_per_axis)
+}
+
+fn render_lit(
+    body: &LitControlBodyIr,
+    focus: Option<&FocusIndicatorIr>,
+    viewport: Viewport,
+    samples_per_axis: u8,
+) -> Result<RasterImage, RasterError> {
+    let face = body.face();
+    let content = face.content_bounds();
+    let silhouette = body.geometry().silhouette();
+    let ring = focus.map(FocusIndicatorIr::geometry);
+    let supported = uniform::supported(silhouette)
+        && ring.is_none_or(|ring| {
+            uniform::placed_supported(ring.inner()) && uniform::placed_supported(ring.outer())
+        });
+    render(
+        viewport,
+        samples_per_axis,
+        face.pigment().body(),
+        |region| {
+            if region.min.x >= content.x
+                && region.min.y >= content.y
+                && region.max.x <= content.x + content.width
+                && region.max.y <= content.y + content.height
+            {
+                UniformRegion::Solid
+            } else if supported
+                && uniform::disjoint(region, silhouette)
+                && ring.is_none_or(|ring| {
+                    uniform::placed_disjoint(region, ring.outer())
+                        || uniform::placed_inside(region, ring.inner())
+                })
+            {
+                UniformRegion::Clear
+            } else {
+                UniformRegion::Sample
+            }
+        },
+        |point| match body
+            .sample_paint(point)
+            .map_err(|error| RasterError::LitPaint(LitControlPaintSampleError::Body(error)))?
+        {
+            Some(color) => Ok(Some(color)),
+            None => match focus {
+                Some(focus) => focus.sample_paint(point).map_err(|error| {
+                    RasterError::LitPaint(LitControlPaintSampleError::Focus(error))
+                }),
+                None => Ok(None),
+            },
+        },
     )
 }
 

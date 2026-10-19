@@ -110,7 +110,7 @@ pub fn resolve_command_snapshot<'a>(
     }
     input
         .label
-        .validate_content(body)
+        .validate_lit_content(body)
         .map_err(CommandSnapshotError::Content)?;
     let hit_region = resolve_hit_region(HitRegionInput {
         environment: input.environment,

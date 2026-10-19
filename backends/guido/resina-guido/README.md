@@ -287,7 +287,9 @@ checked accessibility semantics before preparing either drawing channel. It
 returns a read-only `CommandPublication` only after every operation succeeds.
 The publication owns its members; a later preparation cannot change an earlier
 publication. All inputs are explicit, including layout limits, logical padding,
-neighbor reservations, contrast requirements and native font mapping.
+neighbor reservations, contrast requirements, native font mapping, the control
+relief profiles and the light channels, which the product sets to explicit null
+channels when it has no ambient or pointer observation.
 Content requirements below 4.5:1 and edge requirements below 3:1 are rejected,
 including for disabled and sampled publications. Stronger authored requirements
 reach the paint guards unchanged; invalid requirements are not clamped.
@@ -316,10 +318,10 @@ frames, observe focus, route input or publish a native accessibility tree.
 Use `prepare_command_content` for a checked `CommandSnapshot`, the same verified
 font family, device scale and sampling count. Resolve the snapshot with current
 activation, explicit hover, a stable reserved target and accessible semantics
-before native preparation. Its existing guards validate shared front size/origin
-and actual content-contour containment. Native preparation remeasures complete
-text, takes its foreground from the body's readability
-result, and prepares material and navigation paint. A failure returns no command
+before native preparation. Its existing guards validate shared outline size/origin
+and containment in the lit body's content rectangle. Native preparation remeasures
+complete text, takes its foreground from the lit body face, and prepares material
+and navigation paint with `prepare_lit_control_paint_at`. A failure returns no command
 pair and preserves its diagnostic cause.
 
 The result is exactly two native draw commands, in order: the prepared RGBA image

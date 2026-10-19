@@ -6,12 +6,12 @@ use resina_model::{
 };
 use resina_resolver::{
     CommandAccessibilityError, CommandContentError, CommandLabelInput, CommandLabelIr,
-    CommandPaintInput, CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, HitRegionError,
-    HitRegionInput, HitRegionIr, OpaqueSurfaceInput, OpaqueSurfaceIr, SurfaceHitRegionInput,
-    SurfacePaintInput, compile_theme_source, resolve_activation, resolve_command_label,
-    resolve_command_motion_source, resolve_command_paint_source, resolve_command_reservation_body,
-    resolve_command_snapshot, resolve_command_states, resolve_hit_region, resolve_srgb_fallback,
-    resolve_surface_hit_region,
+    CommandPaintInput, CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, HitRegionBody,
+    HitRegionError, HitRegionInput, HitRegionIr, LitControlBodyIr, OpaqueSurfaceInput,
+    SurfaceHitRegionInput, SurfacePaintInput, compile_theme_source, resolve_activation,
+    resolve_command_label, resolve_command_motion_source, resolve_command_paint_source,
+    resolve_command_reservation_body, resolve_command_snapshot, resolve_command_states,
+    resolve_hit_region, resolve_srgb_fallback, resolve_surface_hit_region,
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -65,7 +65,7 @@ fn label(request: &Value, width: f64, padding: f64, direction: LayoutDirection) 
 }
 
 /// The deepest neutral body the request's command can paint, from which layout reserves.
-fn reservation_body(request: &Value) -> OpaqueSurfaceIr {
+fn reservation_body(request: &Value) -> LitControlBodyIr {
     let body = &request["surface"]["body"];
     let theme = compile_theme_source(body["theme"]["themeSource"].as_str().unwrap()).unwrap();
     let neutral = ActivationState::try_new(true, false, None).unwrap();
@@ -81,6 +81,8 @@ fn reservation_body(request: &Value) -> OpaqueSurfaceIr {
     let backdrop = resolve_srgb_fallback(&body["postTreatmentBackdrop"]).unwrap();
     let adjacent = resolve_srgb_fallback(&body["adjacentColor"]).unwrap();
     let surrounding = resolve_srgb_fallback(&request["surface"]["surroundingColor"]).unwrap();
+    let light = serde_json::from_value(request["light"].clone()).unwrap();
+    let relief = serde_json::from_value(request["relief"].clone()).unwrap();
     resolve_command_reservation_body(
         &theme,
         &environment(request),
@@ -99,15 +101,17 @@ fn reservation_body(request: &Value) -> OpaqueSurfaceIr {
                 surrounding_color: Some(&surrounding),
             },
             command_appearance: &responses,
+            light: &light,
+            relief: &relief,
         },
     )
     .unwrap()
 }
 
-fn reserve(env: &EnvironmentSnapshot, body: &OpaqueSurfaceIr, minimum: f64) -> HitRegionIr {
+fn reserve(env: &EnvironmentSnapshot, body: &LitControlBodyIr, minimum: f64) -> HitRegionIr {
     resolve_surface_hit_region(SurfaceHitRegionInput {
         environment: env,
-        body,
+        body: HitRegionBody::Lit(body),
         available_bounds: PhysicalBounds {
             x: -100.0,
             y: -100.0,

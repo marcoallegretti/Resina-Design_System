@@ -1,7 +1,7 @@
 #![cfg(feature = "testing")]
 
 use guido::prelude::*;
-use resina_guido::prepare_surface_paint;
+use resina_guido::prepare_lit_control_paint;
 use resina_resolver::resolve_command_paint_source;
 use serde_json::{Value, json};
 use std::{cell::Cell, rc::Rc};
@@ -15,11 +15,12 @@ fn command_endpoints_use_portable_paint_on_the_first_native_frame() {
         .unwrap(),
     )
     .unwrap();
-    let initial_command = resolve_command_paint_source(include_str!(
+    let template: Value = serde_json::from_str(include_str!(
         "../../../../conformance/ir/command-paint-request.json"
     ))
     .unwrap();
-    let initial = prepare_surface_paint(initial_command.paint(), 1.0, 4).unwrap();
+    let initial_command = resolve_command_paint_source(&template.to_string()).unwrap();
+    let initial = prepare_lit_control_paint(initial_command.paint(), 1.0, 4).unwrap();
     let mut app = guido::testing::Headless::new().expect("GUIdo GPU rendering is required");
     let slot = Rc::new(Cell::new(None));
     let captured = slot.clone();
@@ -84,9 +85,10 @@ fn command_endpoints_use_portable_paint_on_the_first_native_frame() {
             } else {
                 json!([phase])
             };
-            let request = json!({"schemaVersion":"0.1.0", "surface":surface_request, "commandAppearance":profile});
+            let request = json!({"schemaVersion":"0.2.0", "surface":surface_request, "commandAppearance":profile,
+                "light":template["light"], "relief":template["relief"]});
             let command = resolve_command_paint_source(&request.to_string()).unwrap();
-            let ratio = command.paint().body().content_contrast_ratio();
+            let ratio = command.paint().body().face().content_contrast_ratio();
             if phase == "disabled" {
                 let bound = if surface_request["body"]["theme"]["environment"]["accessibilityPreferences"]
                     ["highContrast"]
@@ -105,7 +107,7 @@ fn command_endpoints_use_portable_paint_on_the_first_native_frame() {
             }
             for scale in [1.0, 1.25, 2.0, 3.0] {
                 app.configure(surface, 204, 96, scale);
-                let paint = prepare_surface_paint(command.paint(), scale, 4).unwrap();
+                let paint = prepare_lit_control_paint(command.paint(), scale, 4).unwrap();
                 let ImageSource::Rgba {
                     width,
                     height,

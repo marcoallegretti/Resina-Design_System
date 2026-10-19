@@ -102,14 +102,15 @@ Window {
                     raise ValueError("native paint source is not the prepared PNG")
                 body_request = copy.deepcopy(request["body"])
                 command_appearance = body_request.pop("commandAppearance")
+                light, relief = body_request.pop("light"), body_request.pop("relief")
                 surrounding = body_request.pop("surroundingColor")
                 body_request.update(schemaVersion="0.1.0", size=result["snapshot"]["label"]["size"],
                                     theme={"schemaVersion": "0.1.0", **{key: request["content"][key]
                                            for key in ("themeSource", "externalSources", "environment")}})
                 body_request["surface"]["states"] = {"schemaVersion": "0.1.0", "states": states}
-                portable = {"schemaVersion": "0.1.0", "surface": {"schemaVersion": "0.1.0",
+                portable = {"schemaVersion": "0.2.0", "surface": {"schemaVersion": "0.1.0",
                             "body": body_request, "surroundingColor": surrounding},
-                            "commandAppearance": command_appearance}
+                            "commandAppearance": command_appearance, "light": light, "relief": relief}
                 with Image.open(io.BytesIO(unquote_to_bytes(encoded.group(1)))) as source:
                     oracle = read_backend_output([str(args.raster.resolve()), "-", str(source.width), str(source.height),
                         str(body.property("paintOriginX") - options["x"]),

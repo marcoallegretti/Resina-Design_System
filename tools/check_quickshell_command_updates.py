@@ -19,6 +19,7 @@ from check_surface_paint_backend import surface_paint_channel_mismatch
 from check_focus_indicator_backend import contrast
 from check_command_paint_backend import disabled_label_bound, disabled_label_mismatch
 import conformance_font
+from lit_body_arithmetic import body_invariants
 
 
 def authored_cases():
@@ -156,11 +157,14 @@ def verify_authored_paint(request, snapshot):
     if paint["response"] != response or body["materialFamily"] != family \
             or any(body[field] != surface[field] for field in ("materialRole", "colorRole", "form")) \
             or body["foregroundRole"] != request["body"]["foregroundRole"] \
-            or body["pigment"]["body"] != color \
-            or body["edge"]["color"] != inline_color(theme, "outline"):
-        raise ValueError("native paint differs from the authored theme, form or response")
+            or body["face"]["pigment"]["body"] != color \
+            or body["face"]["edge"]["color"] != inline_color(theme, "outline") \
+            or body["face"]["surface"]["profile"] != request["body"]["relief"]["commandBody"]:
+        raise ValueError("native paint differs from the authored theme, form, relief or response")
+    if body_invariants(body):
+        raise ValueError("native lit body violates its invariants: " + body_invariants(body))
     authored = inline_color(theme, request["body"]["foregroundRole"])
-    foreground = body["foreground"]
+    foreground = body["face"]["foreground"]
     if paint["phase"] == "disabled":
         if foreground["alpha"] != 1 or disabled_label_mismatch(
                 foreground["components"], color["components"], authored["components"],
@@ -208,7 +212,7 @@ def verify_authored_geometry(request, snapshot):
             or not equal_numbers(body["lighting"]["sideOffset"], offset):
         raise ValueError("native lighting differs from the authored depth response")
     geometry = body["geometry"]
-    front = geometry["front"]["bounds"]
+    front = body["face"]["surface"]["outline"]["size"]
     edge = appearance["bands"][body["materialFamily"]]["edgeWidth"]
     silhouette = {"x": min(0, offset["x"]), "y": min(0, offset["y"]),
                   "width": front["width"] + abs(offset["x"]),
@@ -364,7 +368,7 @@ def verify_capture(path, snapshot, scale, surrounding_color=None):
     lines = round(bounds["height"] / line_height)
     if lines < 1 or abs(bounds["height"] - lines * line_height) > 1 / 1024:
         raise ValueError("native complete label does not retain fixed line heights")
-    foreground = snapshot["paint"]["paint"]["body"]["foreground"]
+    foreground = snapshot["paint"]["paint"]["body"]["face"]["foreground"]
     if foreground["colorSpace"] != "srgb" or foreground["alpha"] != 1:
         raise ValueError("capture requires the supported opaque sRGB foreground")
     ink = tuple(round(channel * 255) for channel in foreground["components"])
@@ -372,11 +376,11 @@ def verify_capture(path, snapshot, scale, surrounding_color=None):
     right = math.ceil((50 - target["x"] + bounds["x"] + bounds["width"]) * scale)
     top = 50 - target["y"] + bounds["y"]
     body = snapshot["paint"]["paint"]["body"]
-    color = body["pigment"]["body"]
+    color = body["face"]["pigment"]["body"]
     if color["colorSpace"] != "srgb" or color["alpha"] != 1:
         raise ValueError("capture requires the supported opaque sRGB body pigment")
     body_x = math.floor((50 - target["x"] + label["size"]["width"] / 2) * scale)
-    body_y = math.floor((50 - target["y"] + (body["geometry"]["content"]["offset"]["y"] + bounds["y"]) / 2) * scale)
+    body_y = math.floor((50 - target["y"] + (body["face"]["contentBounds"]["y"] + bounds["y"]) / 2) * scale)
     pixel = image.getpixel((body_x, body_y))
     if pixel[3] != 255 or any(abs(pixel[channel] - round(color["components"][channel] * 255)) > 1
                              for channel in range(3)):

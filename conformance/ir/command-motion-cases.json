@@ -1219,7 +1219,7 @@
     "requestChanges": [
       {
         "path": "/schemaVersion",
-        "value": "0.2.0"
+        "value": "0.1.0"
       }
     ],
     "requestSchemaValid": false,
@@ -1563,5 +1563,297 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "motion object"
+  },
+  {
+    "name": "lit-press-admits-interaction-while-depth-springs",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/channels/bodyMix/initial",
+        "value": {
+          "position": 0,
+          "velocity": 0
+        }
+      },
+      {
+        "path": "/channels/depthScale/initial",
+        "value": {
+          "position": 1,
+          "velocity": 0
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      },
+      {
+        "path": "/time",
+        "value": 0.05
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "lit-hover-retarget-at-zero-time",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/channels/bodyMix/initial",
+        "value": {
+          "position": 0,
+          "velocity": 0
+        }
+      },
+      {
+        "path": "/channels/depthScale/initial",
+        "value": {
+          "position": 1,
+          "velocity": 0
+        }
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      },
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "lit-release-to-rest-drops-interaction",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      },
+      {
+        "path": "/channels/depthScale/initial",
+        "value": {
+          "position": 0.5,
+          "velocity": -1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "lit-disabled-suppresses-interaction-while-moving",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "disabled",
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "lit-settled-sample-equals-static-paint",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      },
+      {
+        "path": "/time",
+        "value": 100
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "lit-reduced-motion-suppresses-interaction",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      },
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/reducedMotion",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "reducedMotion"
+  },
+  {
+    "name": "lit-keyboard-press-without-pointer-direction",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/surface/body/surface/states/states",
+        "value": [
+          "pressed",
+          "focused"
+        ]
+      },
+      {
+        "path": "/light/interaction",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "lit-absent-channels",
+    "requestChanges": [
+      {
+        "path": "/surface/body/theme/environment/accessibilityPreferences/highContrast",
+        "value": false
+      },
+      {
+        "path": "/surface/body/theme/environment/rendererCapabilities/dynamicLighting",
+        "value": true
+      },
+      {
+        "path": "/surface/body/theme/environment/qualityPolicy",
+        "value": "balanced"
+      },
+      {
+        "path": "/light",
+        "value": {
+          "ambient": null,
+          "interaction": null
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "lit-missing-light",
+    "requestChanges": [
+      {
+        "path": "/light",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid type: null"
+  },
+  {
+    "name": "lit-missing-relief",
+    "requestChanges": [
+      {
+        "path": "/relief",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "control relief must be an object"
+  },
+  {
+    "name": "lit-relief-amplitude-above-half-shoulder",
+    "requestChanges": [
+      {
+        "path": "/relief/commandBody/amplitude",
+        "value": 1.5
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "commandBody"
   }
 ]

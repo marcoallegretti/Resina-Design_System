@@ -10,16 +10,14 @@ class NativeSnapshotEvidenceTests(unittest.TestCase):
     def fixture(self):
         load = lambda path: json.loads((ROOT / path).read_text())
         # Supplied public pieces exercise checker invariants; no native font claim.
-        body = load("conformance/ir/opaque-surface-expected.json")
-        body["materialRole"] = "control.interactive"
+        paint = load("conformance/ir/command-paint-ir.json")
+        body = paint["paint"]["body"]
         label = load("conformance/ir/command-label-ir.json")
         label.update(size={"width": 20, "height": 12},
                      labelBounds={"x": 2, "y": 2, "width": 16, "height": 8})
         semantic = load("conformance/accessibility/command-cases.json")[0]["expected"]
         target = load("conformance/interaction/hit-region-cases.json")[0]["expected"]
-        snapshot = {"label": label, "paint": {"schemaVersion": "0.1.0", "phase": "rest",
-                    "response": {"bodyMix": 0, "depthScale": 1},
-                    "paint": {"schemaVersion": "0.1.0", "body": body}},
+        snapshot = {"label": label, "paint": paint,
                     "hitRegion": target, "accessibility": semantic}
         request = request_for("light", "Reconnect")
         request.update(description=None, componentMinimum={"width": 24, "height": 24})
@@ -62,6 +60,17 @@ class NativeSnapshotEvidenceTests(unittest.TestCase):
                 with self.subTest(capability=capability, axis=axis), self.assertRaisesRegex(
                         ValueError, "resolved target minimum"):
                     verify_snapshot(snapshot, request, states)
+
+    def test_body_front_must_share_the_label_origin_and_size(self):
+        for axis, delta in (("x", 1), ("y", -0.5), ("width", 1)):
+            snapshot, request, states = copy.deepcopy(self.fixture())
+            body = snapshot["paint"]["paint"]["body"]
+            if axis == "width":
+                body["face"]["surface"]["outline"]["size"]["width"] += delta
+            else:
+                body["geometry"]["silhouette"]["bounds"][axis] += delta
+            with self.subTest(axis=axis), self.assertRaisesRegex(ValueError, "front size/origin"):
+                verify_snapshot(snapshot, request, states)
 
     def test_partial_stale_or_inconsistent_channels_fail(self):
         for change in ("missing", "extra", "semantic", "body", "direction", "focus", "target", "available", "occupied"):

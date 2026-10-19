@@ -92,7 +92,12 @@ fn every_sample_rechecks_contrast_and_navigation_matches_sample_geometry() {
             paint["body"]["geometry"]["silhouette"],
             paint["focus"]["geometry"]["silhouette"]
         );
-        assert!(paint["body"]["contentContrastRatio"].as_f64().unwrap() >= 4.5);
+        assert!(
+            paint["body"]["face"]["contentContrastRatio"]
+                .as_f64()
+                .unwrap()
+                >= 4.5
+        );
     }
     input["time"] = json!(0);
     input["channels"]["bodyMix"]["initial"] = json!({"position":-0.9,"velocity":0});
@@ -223,6 +228,8 @@ fn typed_motion_matches_source_with_actual_environment() {
     let adjacent = resolve_srgb_fallback(&body["adjacentColor"]).unwrap();
     let surrounding = resolve_srgb_fallback(&request["surface"]["surroundingColor"]).unwrap();
     let channels = serde_json::from_value(request["channels"].clone()).unwrap();
+    let light = serde_json::from_value(request["light"].clone()).unwrap();
+    let relief = serde_json::from_value(request["relief"].clone()).unwrap();
     let typed = resolve_command_motion(
         &theme,
         &environment,
@@ -243,6 +250,8 @@ fn typed_motion_matches_source_with_actual_environment() {
                     surrounding_color: Some(&surrounding),
                 },
                 command_appearance: &command_appearance,
+                light: &light,
+                relief: &relief,
             },
             channels: &channels,
             time: request["time"].as_f64().unwrap(),

@@ -47,6 +47,8 @@ class BackendDiagnosticTests(unittest.TestCase):
             # Successful results have their own operation-specific tests. Here the
             # real case schemas, requests, and every rejection path remain active.
             stack.enter_context(patch.object(module, "check_success"))
+            if hasattr(module, "check_light_differential"):
+                stack.enter_context(patch.object(module, "check_light_differential"))
             if operation in ("focus_indicator", "frost_surface_readability", "surface_readability"):
                 stack.enter_context(patch.object(module, "load_json", side_effect=negative_cases))
             result = module.main()

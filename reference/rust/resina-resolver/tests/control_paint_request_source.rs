@@ -64,7 +64,13 @@ fn consumers() -> Vec<(&'static str, Value, &'static [&'static str])> {
                 "../../../../conformance/ir/command-paint-request.json"
             ))
             .unwrap(),
-            &["schemaVersion", "surface", "commandAppearance"],
+            &[
+                "schemaVersion",
+                "surface",
+                "commandAppearance",
+                "light",
+                "relief",
+            ],
         ),
         (
             env!("CARGO_BIN_EXE_resina-command-motion"),
@@ -76,6 +82,8 @@ fn consumers() -> Vec<(&'static str, Value, &'static [&'static str])> {
                 "schemaVersion",
                 "surface",
                 "commandAppearance",
+                "light",
+                "relief",
                 "channels",
                 "time",
             ],

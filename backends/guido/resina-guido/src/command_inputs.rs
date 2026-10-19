@@ -5,17 +5,17 @@ use crate::{
 use guido::{prelude::FontFamily, renderer::DrawCommand};
 use resina_environment::{EnvironmentSnapshot, SafeArea};
 use resina_model::{
-    ActivationState, CommandAnatomy, CommandAppearance, CommandEmphasis, OpaqueSurfaceAppearance,
-    PhysicalBounds, PhysicalVector, SurfaceSize,
+    ActivationState, CommandAnatomy, CommandAppearance, CommandEmphasis, MaterialLightChannels,
+    OpaqueSurfaceAppearance, PhysicalBounds, PhysicalVector, SurfaceSize,
 };
 use resina_resolver::{
     CommandAccessibilityIr, CommandLabelError, CommandLabelInput, CommandLabelIr,
     CommandMotionChannels, CommandMotionInput, CommandMotionIr, CommandPaintError,
     CommandPaintInput, CommandPaintIr, CommandSnapshotError, CommandSnapshotInput, CompiledTheme,
-    HitRegionError, HitRegionIr, OpaqueSurfaceInput, SrgbFallback, SurfaceHitRegionInput,
-    SurfacePaintInput, TypographyResolutionError, resolve_command_label, resolve_command_motion,
-    resolve_command_paint, resolve_command_reservation_body, resolve_command_snapshot,
-    resolve_command_states, resolve_surface_hit_region,
+    ControlRelief, HitRegionBody, HitRegionError, HitRegionIr, OpaqueSurfaceInput, SrgbFallback,
+    SurfaceHitRegionInput, SurfacePaintInput, TypographyResolutionError, resolve_command_label,
+    resolve_command_motion, resolve_command_paint, resolve_command_reservation_body,
+    resolve_command_snapshot, resolve_command_states, resolve_surface_hit_region,
 };
 use std::{fmt, sync::Arc};
 
@@ -27,6 +27,10 @@ pub struct CommandInputs {
     pub emphasis: CommandEmphasis,
     pub appearance: OpaqueSurfaceAppearance,
     pub command_appearance: CommandAppearance,
+    /// Ambient and interaction light channels; the product supplies explicit null channels when
+    /// it has no observation.
+    pub light: MaterialLightChannels,
+    pub relief: ControlRelief,
     pub font: FontFamily,
     pub text: String,
     pub description: Option<String>,
@@ -242,13 +246,15 @@ impl CommandInputs {
                 surrounding_color: self.surrounding_color.as_ref(),
             },
             command_appearance: &self.command_appearance,
+            light: &self.light,
+            relief: &self.relief,
         };
         let deepest =
             resolve_command_reservation_body(&self.theme, &self.environment, input(&rest_surface))
                 .map_err(CommandPrepareError::Paint)?;
         let target = resolve_surface_hit_region(SurfaceHitRegionInput {
             environment: &self.environment,
-            body: &deepest,
+            body: HitRegionBody::Lit(&deepest),
             available_bounds: self.available_bounds,
             component_minimum: self.component_minimum,
             occupied_regions: &self.occupied_regions,

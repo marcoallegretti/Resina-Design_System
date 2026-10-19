@@ -1,4 +1,6 @@
-use crate::{LabelPrepareError, PrepareError, prepare_command_label_at, prepare_surface_paint_at};
+use crate::{
+    LabelPrepareError, PrepareError, prepare_command_label_at, prepare_lit_control_paint_at,
+};
 use guido::{
     renderer::DrawCommand,
     widgets::{Color, ContentFit, Rect, font::FontFamily},
@@ -57,14 +59,15 @@ pub fn prepare_command_content_at(
 ) -> Result<[DrawCommand; 2], CommandContentPrepareError> {
     let paint = snapshot.paint();
     let label = snapshot.label();
-    let body = paint.paint().body();
-    let [r, g, b] = body.foreground().components().map(|value| value as f32);
-    let material = prepare_surface_paint_at(paint.paint(), origin, device_scale, samples_per_axis)
-        .map_err(CommandContentPrepareError::Paint)?;
+    let foreground = paint.paint().body().face().foreground();
+    let [r, g, b] = foreground.components().map(|value| value as f32);
+    let material =
+        prepare_lit_control_paint_at(paint.paint(), origin, device_scale, samples_per_axis)
+            .map_err(CommandContentPrepareError::Paint)?;
     let text = prepare_command_label_at(
         label,
         family,
-        Color::rgba(r, g, b, body.foreground().alpha() as f32),
+        Color::rgba(r, g, b, foreground.alpha() as f32),
         origin,
         device_scale,
     )

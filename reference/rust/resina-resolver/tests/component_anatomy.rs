@@ -1,13 +1,13 @@
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
     ColorRole, CommandAnatomy, CommandAppearance, CommandBody, CommandEmphasis,
-    OpaqueSurfaceAppearance, StateSet, SurfaceSize, ToggleAnatomy,
+    MaterialLightChannels, OpaqueSurfaceAppearance, StateSet, SurfaceSize, ToggleAnatomy,
 };
 use resina_resolver::{
-    CommandPaintError, CommandPaintInput, CommandPaintIr, CompiledTheme, OpaqueSurfaceInput,
-    SrgbFallback, SurfacePaintInput, TogglePart, TogglePartPaintInput, TogglePartPaintIr,
-    compile_theme_source_with_sources, opaque_contrast_ratio, resolve_command_paint,
-    resolve_toggle_part_paint,
+    CommandPaintError, CommandPaintInput, CommandPaintIr, CompiledTheme, ControlRelief,
+    OpaqueSurfaceInput, SrgbFallback, SurfacePaintInput, TogglePart, TogglePartPaintInput,
+    TogglePartPaintIr, compile_theme_source_with_sources, opaque_contrast_ratio,
+    resolve_command_paint, resolve_toggle_part_paint,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -107,13 +107,20 @@ fn toggle_anatomy() -> ToggleAnatomy {
     .unwrap()
 }
 
+fn light(ambient: Value, interaction: Value) -> MaterialLightChannels {
+    serde_json::from_value(json!({"ambient": ambient, "interaction": interaction})).unwrap()
+}
+
 fn command(
     theme: &Theme,
     environment: &EnvironmentSnapshot,
     body: &CommandBody,
     names: &[&str],
+    light: &MaterialLightChannels,
 ) -> Result<CommandPaintIr, CommandPaintError> {
     let intent = body.intent(states(names));
+    let relief: ControlRelief =
+        serde_json::from_str(include_str!("../../../../definitions/control-relief.json")).unwrap();
     resolve_command_paint(
         &theme.theme,
         environment,
@@ -135,6 +142,8 @@ fn command(
                 surrounding_color: Some(&theme.canvas),
             },
             command_appearance: &appearance(theme.name),
+            light,
+            relief: &relief,
         },
     )
 }
@@ -200,6 +209,13 @@ fn command_anatomy_resolves_every_state_in_the_authored_themes() {
     let anatomy = command_anatomy();
     let environment = environment();
     let mut resolved = 0;
+    let lights = [
+        light(Value::Null, Value::Null),
+        light(
+            json!(0.25),
+            json!({"direction": {"x": 1, "y": 0.5}, "strength": 0.5}),
+        ),
+    ];
     for theme in themes(&environment) {
         for emphasis in [CommandEmphasis::Standard, CommandEmphasis::Primary] {
             let body = anatomy.variant(emphasis).body();
@@ -209,15 +225,17 @@ fn command_anatomy_resolves_every_state_in_the_authored_themes() {
                         .into_iter()
                         .chain(focused.then_some("focused"))
                         .collect();
-                    if let Err(error) = command(&theme, &environment, body, &names) {
-                        panic!("{} {emphasis:?} {names:?}: {error}", theme.name);
+                    for light in &lights {
+                        if let Err(error) = command(&theme, &environment, body, &names, light) {
+                            panic!("{} {emphasis:?} {names:?}: {error}", theme.name);
+                        }
+                        resolved += 1;
                     }
-                    resolved += 1;
                 }
             }
         }
     }
-    assert_eq!(resolved, 2 * 28 * 2 * 4 * 2);
+    assert_eq!(resolved, 2 * 28 * 2 * 4 * 2 * 2);
 }
 
 #[test]
@@ -253,6 +271,11 @@ fn channels(body: &resina_resolver::OpaqueSurfaceIr) -> (SrgbFallback, f64) {
     (body.pigment().body().clone(), offset.x.hypot(offset.y))
 }
 
+/// The same two channels of a lit Command body, measured on its unlit body colour.
+fn lit_channels(body: &resina_resolver::LitControlBodyIr) -> (SrgbFallback, f64) {
+    (body.face().pigment().body().clone(), body.depth())
+}
+
 /// Measures every authored hover, pressed and disabled body against the rest body of the
 /// same part, and the disabled body against the pressed body, for each body the shipped Command and Toggle anatomy bind in both themes and
 /// under every family a theme may assign to each control role. A state is perceivable when
@@ -271,9 +294,16 @@ fn authored_state_responses_differ_perceivably_from_rest() {
             let painted = PHASES
                 .into_iter()
                 .map(|phase| {
-                    command(&theme, &environment, body, &[phase]).map(|paint| {
+                    command(
+                        &theme,
+                        &environment,
+                        body,
+                        &[phase],
+                        &light(Value::Null, Value::Null),
+                    )
+                    .map(|paint| {
                         let body = paint.paint().body();
-                        (body.material_family(), channels(body))
+                        (body.material_family(), lit_channels(body))
                     })
                 })
                 .collect::<Result<Vec<_>, _>>();

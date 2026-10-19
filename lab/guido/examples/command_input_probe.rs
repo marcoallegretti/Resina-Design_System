@@ -7,7 +7,7 @@ use resina_model::{
     PhysicalVector, SurfaceSize, TypographyRole,
 };
 use resina_resolver::{
-    CommandLabelInput, CommandSnapshotInput, HitRegionIr, SurfaceHitRegionInput,
+    CommandLabelInput, CommandSnapshotInput, HitRegionBody, HitRegionIr, SurfaceHitRegionInput,
     resolve_activation, resolve_command_label, resolve_command_paint_source,
     resolve_command_reservation_body_source, resolve_command_snapshot, resolve_command_states,
     resolve_surface_hit_region, resolve_theme_request_source,
@@ -87,6 +87,9 @@ fn prepare(root: &str, scenes: &str, family: FontFamily) -> Result<Frames, Box<d
         width: 48.0,
         height: 48.0,
     };
+    let channels: Value = serde_json::from_str(include_str!(
+        "../../../conformance/ir/command-paint-request.json"
+    ))?;
     let mut commands = Vec::new();
     let mut target = None;
     for phase in 0..4 {
@@ -108,14 +111,14 @@ fn prepare(root: &str, scenes: &str, family: FontFamily) -> Result<Frames, Box<d
             surface["body"]["size"] = serde_json::to_value(label.size())?;
             surface["body"]["minimumContentContrast"] = json!(4.5);
             surface["body"]["minimumEdgeContrast"] = json!(3.0);
-            let request =
-                json!({"schemaVersion":"0.1.0","surface":surface,"commandAppearance":appearance});
+            let request = json!({"schemaVersion":"0.2.0","surface":surface,"commandAppearance":appearance,
+                "light":channels["light"],"relief":channels["relief"]});
             let paint = resolve_command_paint_source(&request.to_string())?;
             if target.is_none() {
                 let deepest = resolve_command_reservation_body_source(&request.to_string())?;
                 target = Some(resolve_surface_hit_region(SurfaceHitRegionInput {
                     environment: &environment,
-                    body: &deepest,
+                    body: HitRegionBody::Lit(&deepest),
                     available_bounds: available,
                     component_minimum: minimum,
                     occupied_regions: &[],

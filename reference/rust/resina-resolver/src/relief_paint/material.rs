@@ -44,6 +44,15 @@ impl MaterialReliefPaint {
         Self { face, light }
     }
 
+    pub(crate) fn dim_disabled_label(&mut self, bound: f64) {
+        let face = &mut self.face;
+        face.foreground =
+            crate::disabled_label::dim_disabled_label(&face.foreground, face.pigment.body(), bound);
+        face.content_contrast_ratio =
+            crate::opaque_contrast_ratio(&face.foreground, face.pigment.body())
+                .expect("the dimmed label and resolved body are opaque");
+    }
+
     pub(crate) fn edge_interior_contains(&self, point: PhysicalVector) -> bool {
         self.face.edge_interior_contains(point)
     }
@@ -83,6 +92,14 @@ impl MaterialReliefPaint {
 
     pub fn foreground(&self) -> &SrgbFallback {
         self.face.foreground()
+    }
+
+    pub fn content_contrast_ratio(&self) -> f64 {
+        self.face.content_contrast_ratio
+    }
+
+    pub fn edge_width(&self) -> f64 {
+        self.face.edge_width
     }
 
     pub fn content_bounds(&self) -> PhysicalBounds {

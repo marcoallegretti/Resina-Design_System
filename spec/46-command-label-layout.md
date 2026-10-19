@@ -51,9 +51,9 @@ The same matrix reaches native complete measurement and drawing at every tested 
 
 ## Uniform body content containment
 
-Before drawing a label using the opaque body's guarded foreground, which in the disabled phase is the [dimmed disabled label](43-command-paint.md#disabled-label), composition MUST establish that its complete layout box lies within the body's uniform content region defined in [opaque surface IR](36-opaque-surface-ir.md). Matching command dimensions or testing only the rectangular bounds of that region is insufficient around rounded corners. Labels and paint MUST refer to the same command front size and physical origin. The extrusion silhouette is not the command front size.
+Before drawing a label using the guarded foreground of an [opaque surface body](36-opaque-surface-ir.md), composition MUST establish that its complete layout box lies within the body's uniform content region defined in [opaque surface IR](36-opaque-surface-ir.md). Matching command dimensions or testing only the rectangular bounds of that region is insufficient around rounded corners. Labels and paint MUST refer to the same command front size and physical origin. The extrusion silhouette is not the command front size.
 
-The Rust reference exposes `CommandLabelIr::validate_content(&OpaqueSurfaceIr)`. It accepts the body from either static or sampled motion paint, compares front dimensions and origin, and tests all four physical label-box corners against the placed content contour. The current resolved content contour is a convex rectangle with circular or square corners: containing the four vertices contains their entire rectangular convex hull. Membership includes the boundary and uses the same contour geometry as opaque paint sampling. Nonrepresentable arithmetic and unsupported geometry are diagnostic. A future nonconvex content representation requires a different containment proof before this guard can accept it.
+The Rust reference exposes `CommandLabelIr::validate_content(&OpaqueSurfaceIr)`. It compares front dimensions and origin, and tests all four physical label-box corners against the placed content contour. The current resolved content contour is a convex rectangle with circular or square corners: containing the four vertices contains their entire rectangular convex hull. Membership includes the boundary and uses the same contour geometry as opaque paint sampling. Nonrepresentable arithmetic and unsupported geometry are diagnostic. A future nonconvex content representation requires a different containment proof before this guard can accept it.
 
 This guard neither changes layout nor guesses new padding. On failure, composition must resolve a suitable size, padding or complete reflow policy and validate again; it MUST NOT crop, silently shrink or relocate text. Logical padding has already been mapped to physical coordinates by label resolution. The caller must retain the common environment and typography context for label and paint; containment does not validate that context.
 
@@ -91,3 +91,34 @@ convex/recessed faces with a 6 px shoulder, the plateau is exactly
 while its next binary64 height is outside. Both layout directions consume the
 same physical containment law. These are supplied measurement cases, not native
 font or complete styling evidence.
+
+## Lit command body content
+
+[Command paint](43-command-paint.md) 0.2.0 publishes a [lit control body](88-lit-control-body.md).
+Its only certified content region is the face's reserved content rectangle C,
+inside the edge interior and the uniform relief plateau, where every admitted
+light paints the exact body. Before using the face foreground, which in the
+disabled phase is the [dimmed disabled label](43-command-paint.md#disabled-label),
+composition MUST contain the complete physical layout box in C with the relief
+face guard above: the label's command size equals the outline size, both share
+the placement origin, and the conservative right/bottom endpoints must not exceed
+C. The swept side plane, the guarded edge and the shoulders are never content,
+and the rounded contour of the spec/36 guard does not apply.
+
+`CommandLabelIr::validate_lit_content(&LitControlBodyIr)` performs this guard for
+a body from static or sampled motion paint. Depth, phase and light do not move C,
+because the relief profile and the outline are independent of them. On failure,
+resolve a suitable size, padding or complete reflow and validate again; do not
+crop, shrink or relocate text.
+
+The [supplied lit containment matrix](../conformance/content/command-lit-containment.json)
+uses rounded command bodies of radius 24 px with the label's supplied extents. At
+text scale 1 a 24 px label in a 96 × 48 px body and at text scale 2 a 48 px label
+in a 160 × 72 px body, each with 12 px vertical padding, are contained with the
+reference shoulder width 2, whose plateau begins `24*(1 - sqrt(1/3))`, about
+10.14 px, from each side. Shoulder width 3 moves that inset just beyond 12 px
+through the plateau's conservative eight-epsilon guard, and shoulder width 4
+moves it to about 14.20 px; both fail. A 10 px start or end padding crosses the
+shoulder in both layout directions. Independent arithmetic checks every outcome,
+and the Rust reference resolves each case through command paint. These are
+supplied measurement cases, not native font evidence.
