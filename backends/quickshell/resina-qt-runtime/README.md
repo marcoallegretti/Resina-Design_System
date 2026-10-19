@@ -1284,12 +1284,20 @@ module or an audio device; the debug output records Orca's generated speech
 either way.
 Orca 46.1 reads its modifier keymap with `xkbcomp` from the X display named by
 `DISPLAY` while it loads its settings, and raises `KeyError` when `DISPLAY` is
-unset. On the runner, Ubuntu's apport exception hook then collects package
-checksums for longer than Orca's 10-second start-up watchdog, which kills Orca
-with SIGKILL before the traceback is printed. CI therefore runs this check under
-`xvfb-run`; the checker removes `DISPLAY` from Quickshell's environment, so only
-Orca uses it. Orca 50.3 skips the keymap step when `DISPLAY` is unset. Audible
-output, other screen readers and physical input are not covered.
+unset: `refresh_orca_modifiers` calls `subprocess.check_output(['xkbcomp',
+os.environ['DISPLAY'], '-'])` ([`orca_modifier_manager.py` line 118](https://gitlab.gnome.org/GNOME/orca/-/blob/ORCA_46_1/src/orca/orca_modifier_manager.py#L118)),
+and `loadUserSettings` calls it ([`orca.py` line 178](https://gitlab.gnome.org/GNOME/orca/-/blob/ORCA_46_1/src/orca/orca.py#L178))
+from `init()` while the `SIGALRM` start-up watchdog of `settings.timeoutTime`
+(10 s) is armed ([lines 284-291](https://gitlab.gnome.org/GNOME/orca/-/blob/ORCA_46_1/src/orca/orca.py#L284-291)).
+On the runner, Ubuntu's apport exception hook then collects package checksums
+for longer than that, and the watchdog's `timeout()` calls `die(EXIT_CODE_HANG)`,
+which sends SIGKILL to Orca before the traceback is printed
+([lines 334-351](https://gitlab.gnome.org/GNOME/orca/-/blob/ORCA_46_1/src/orca/orca.py#L334-351)).
+CI therefore runs this check under `xvfb-run`; the checker removes `DISPLAY` from
+Quickshell's environment, so Quickshell does not receive the X display, while
+Orca and other services of the session may. Orca 50.3 skips the keymap step when
+`DISPLAY` is unset ([`orca_modifier_manager.py` lines 284-288](https://gitlab.gnome.org/GNOME/orca/-/blob/50.3/src/orca/orca_modifier_manager.py#L284-288)).
+Audible output, other screen readers and physical input are not covered.
 
 ### Released Quickshell Command motion
 
