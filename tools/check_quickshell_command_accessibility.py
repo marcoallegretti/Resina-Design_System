@@ -454,8 +454,8 @@ class ScreenReader:
             running = self.process is not None and self.process.poll() is None
             self.close(abort=True)
             if running:
-                raise ValueError(f"{error}: Orca was still running and dumped its thread stacks into "
-                                 f"{self.log.name}") from None
+                raise ValueError(f"{error}: Orca was still running and was sent SIGABRT to dump its thread stacks "
+                                 f"into {self.log.name}") from None
             raise
         except BaseException:
             self.close()
