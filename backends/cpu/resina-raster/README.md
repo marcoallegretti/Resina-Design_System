@@ -76,7 +76,7 @@ Pass an absolute bundle path: Cargo runs the benchmark from the package director
 
 Current point sampling can be expensive even for a small surface. Prepare reusable images before exposing a state; measure preparation and upload before using this realization in an input-event path. The benchmark accepts separate surface/focus scenes and complete paint scenes from the same public bundle and does not require PNG support.
 
-`resina-command-raster` uses the same viewport and sampling arguments as `resina-paint-raster`, with a [command paint request](../../../schemas/command-paint-request.schema.json). It renders the complete headless result through the existing surface paint sampler; command state rules remain in portable resolution.
+`resina-command-raster` uses the same viewport and sampling arguments as `resina-paint-raster`, with a [command paint request](../../../schemas/command-paint-request.schema.json). It renders the complete headless result through `render_lit_control_paint`, which samples the [lit control body](../../../spec/88-lit-control-body.md) and its separated focus ring; command state and light rules remain in portable resolution. `python tools/check_lit_body_raster_backend.py -- <raster-command>` compares every pixel at device scales 1, 1.25, 1.5, 2 and 3, with one and three samples per axis, against independent lit-body and focus-ring arithmetic: RGB within one step, exact alpha, and tie-bracketed bounds for samples on a swept boundary.
 
 `resina-toggle-part-motion-raster` accepts the existing sampled Toggle part request
 from specification 57 and the same explicit viewport/sampling arguments as the

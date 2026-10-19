@@ -403,11 +403,38 @@ def samples(source):
     return body, [dict(zip(("rule", "color"), body.sample(point)), point=point) for point in source["points"]]
 
 
-def pixels(source, width, height, origin, scale, samples_per_axis, band=None):
-    """Supersampled RGBA8 bounds: one (lower, upper) pair per pixel, equal unless a subsample is tie-bracketed."""
+def pixels(source, width, height, origin, scale, samples_per_axis, band=None, ring=None):
+    """Supersampled RGBA8 bounds: one (lower, upper) pair per pixel, equal unless a subsample is tie-bracketed.
+
+    A ring (color, gap, stroke) adds the spec/37 focus ring: the swept silhouette dilated by gap + stroke, minus
+    its dilation by gap, painted only where the body paints nothing. The outer boundary is closed, the inner open.
+    """
     body = Body(source)
     if band is None:
-        band = 64 * EPSILON * max(body.width, body.height, abs(body.offset[0]), abs(body.offset[1]), 1.0)
+        extent = 0 if ring is None else ring[1] + ring[2]
+        band = 64 * EPSILON * max(body.width + extent, body.height + extent,
+                                  abs(body.offset[0]), abs(body.offset[1]), 1.0)
+
+    def decisions(point, outset):
+        decision = body.swept(point, -outset, band)
+        return (True, False) if decision is None else (decision,)
+
+    def ring_colors(point):
+        color, gap, stroke = ring
+        return {tuple(color) if outer and not inner else None
+                for outer in decisions(point, gap + stroke) for inner in decisions(point, gap)}
+
+    def paints(point):
+        colors = set()
+        for rule in body.classify(point, band):
+            color = body.rule_color(rule, point)
+            if color is not None:
+                colors.add(tuple(color["components"]))
+            elif ring is None:
+                colors.add(None)
+            else:
+                colors |= ring_colors(point)
+        return colors
 
     def linear(value):
         return value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
@@ -425,9 +452,7 @@ def pixels(source, width, height, origin, scale, samples_per_axis, band=None):
                 for sx in range(samples_per_axis):
                     point = (origin[0] + (column + (sx + 0.5) / samples_per_axis) / scale,
                              origin[1] + (row + (sy + 0.5) / samples_per_axis) / scale)
-                    colors = {None if (c := body.rule_color(rule, point)) is None else tuple(c["components"])
-                              for rule in body.classify(point, band)}
-                    candidates.append(sorted(colors, key=lambda c: (c is not None, c or ())))
+                    candidates.append(sorted(paints(point), key=lambda c: (c is not None, c or ())))
             ambiguous = sum(len(options) > 1 for options in candidates)
             if ambiguous > 8:
                 raise ValueError("too many tie-bracketed subsamples in one pixel")
