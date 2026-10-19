@@ -1,0 +1,1192 @@
+[
+  {
+    "name": "label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "label",
+      "label": "Reconnect"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon and label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconAndLabel",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:chevron-back",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "mirror"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "label": "Back"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only with layered symbolic icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:sync",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          },
+          {
+            "role": "status.warning"
+          }
+        ]
+      },
+      "accessibleLabel": "Sync now"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only with colour icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:network-globe",
+        "kind": "color",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "directionalVariants",
+          "ltr": "resina.fixture:network-globe-ltr",
+          "rtl": "resina.fixture:network-globe-rtl"
+        },
+        "bakedLight": true
+      },
+      "accessibleLabel": "إعادة الاتصال"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only label preserves whitespace",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "  Mute\nmicrophone "
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only label equal to icon name",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "microphone-off"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only label equal to icon reference",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "resina.fixture:microphone-off"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only with zero-width characters as accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "\u200b\u2060\ufeff"
+    },
+    "schemaValid": true
+  },
+  {
+    "name": "icon only without accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      }
+    },
+    "schemaValid": false,
+    "error": "iconOnly content requires accessibleLabel"
+  },
+  {
+    "name": "icon only with null accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": null
+    },
+    "schemaValid": false,
+    "error": "invalid type: null, expected a string"
+  },
+  {
+    "name": "icon only with empty accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": ""
+    },
+    "schemaValid": false,
+    "error": "accessibleLabel must not be blank"
+  },
+  {
+    "name": "icon only with spaces as accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "  \t"
+    },
+    "schemaValid": true,
+    "error": "accessibleLabel must not be blank"
+  },
+  {
+    "name": "icon only with line breaks as accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "\n "
+    },
+    "schemaValid": true,
+    "error": "accessibleLabel must not be blank"
+  },
+  {
+    "name": "icon only with ideographic space as accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "　 "
+    },
+    "schemaValid": true,
+    "error": "accessibleLabel must not be blank"
+  },
+  {
+    "name": "icon only with numeric accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": 1
+    },
+    "schemaValid": false,
+    "error": "invalid type: integer `1`, expected a string"
+  },
+  {
+    "name": "icon only with visible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "label": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "iconOnly content must not declare label"
+  },
+  {
+    "name": "icon only with both labels",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone",
+      "label": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "iconOnly content must not declare label"
+  },
+  {
+    "name": "icon only without icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "iconOnly content requires icon"
+  },
+  {
+    "name": "icon only with null icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": null,
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "invalid type: null"
+  },
+  {
+    "name": "icon only with incomplete icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "missing field `direction`"
+  },
+  {
+    "name": "icon only with invalid icon reference",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "invalid icon reference"
+  },
+  {
+    "name": "icon only with icon bounds outside the box",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.5,
+          "y": 0,
+          "width": 0.75,
+          "height": 1
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": true,
+    "error": "inkBounds exceeds the icon box"
+  },
+  {
+    "name": "icon and label without label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconAndLabel",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:chevron-back",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "mirror"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      }
+    },
+    "schemaValid": false,
+    "error": "iconAndLabel content requires label"
+  },
+  {
+    "name": "icon and label with accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconAndLabel",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:chevron-back",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "mirror"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "label": "Back",
+      "accessibleLabel": "Back"
+    },
+    "schemaValid": false,
+    "error": "iconAndLabel content must not declare accessibleLabel"
+  },
+  {
+    "name": "icon and label with accessible label in place of label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconAndLabel",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:chevron-back",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "mirror"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Back"
+    },
+    "schemaValid": false,
+    "error": "iconAndLabel content must not declare accessibleLabel"
+  },
+  {
+    "name": "icon and label without icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconAndLabel",
+      "label": "Back"
+    },
+    "schemaValid": false,
+    "error": "iconAndLabel content requires icon"
+  },
+  {
+    "name": "icon and label with blank label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconAndLabel",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:chevron-back",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "mirror"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "label": "　"
+    },
+    "schemaValid": true,
+    "error": "label must not be blank"
+  },
+  {
+    "name": "label without label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "label"
+    },
+    "schemaValid": false,
+    "error": "label content requires label"
+  },
+  {
+    "name": "label with null label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "label",
+      "label": null
+    },
+    "schemaValid": false,
+    "error": "invalid type: null, expected a string"
+  },
+  {
+    "name": "label with blank label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "label",
+      "label": "  "
+    },
+    "schemaValid": true,
+    "error": "label must not be blank"
+  },
+  {
+    "name": "label with icon",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "label",
+      "label": "Reconnect",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      }
+    },
+    "schemaValid": false,
+    "error": "label content must not declare icon"
+  },
+  {
+    "name": "label with accessible label",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "label",
+      "label": "Reconnect",
+      "accessibleLabel": "Reconnect"
+    },
+    "schemaValid": false,
+    "error": "label content must not declare accessibleLabel"
+  },
+  {
+    "name": "unknown form",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "icon",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "unknown command content form \"icon\""
+  },
+  {
+    "name": "missing form",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "missing field `form`"
+  },
+  {
+    "name": "null form",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": null,
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "invalid type: null, expected a string"
+  },
+  {
+    "name": "missing version",
+    "document": {
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "missing field `schemaVersion`"
+  },
+  {
+    "name": "unsupported version",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "unsupported command content version"
+  },
+  {
+    "name": "unknown member",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone",
+      "tooltip": "Mute microphone"
+    },
+    "schemaValid": false,
+    "error": "unknown field `tooltip`"
+  },
+  {
+    "name": "variant member",
+    "document": {
+      "schemaVersion": "0.1.0",
+      "form": "iconOnly",
+      "icon": {
+        "schemaVersion": "0.1.0",
+        "reference": "resina.fixture:microphone-off",
+        "kind": "symbolic",
+        "inkBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "opticalBounds": {
+          "x": 0.125,
+          "y": 0.125,
+          "width": 0.75,
+          "height": 0.75
+        },
+        "direction": {
+          "behavior": "invariant"
+        },
+        "layers": [
+          {
+            "role": "content"
+          }
+        ]
+      },
+      "accessibleLabel": "Mute microphone",
+      "variant": "primary"
+    },
+    "schemaValid": false,
+    "error": "unknown field `variant`"
+  }
+]

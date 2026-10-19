@@ -40,7 +40,7 @@ command interaction state and effects. The model validates states and event
 vocabulary; the resolver chooses the next state and effects. This interaction
 protocol is separate from paint IR, native event delivery and product actions.
 
-The [ordinary command accessibility snapshot](47-command-accessibility.md) resolves semantic content, current state, focusability and invocation availability from validated label and activation inputs. It is separate from paint IR and native accessibility tree delivery.
+The [ordinary command accessibility snapshot](47-command-accessibility.md) resolves semantic content, current state, focusability and invocation availability from validated label and activation inputs. It is separate from paint IR and native accessibility tree delivery. The [command content](90-command-content-accessibility.md) contract resolves the same snapshot for icon-and-label commands, from the same laid-out label, and for icon-only commands, from their required accessible label.
 
 The [command interaction projection](48-command-states.md) derives supported paint signals from the same committed activation state and explicit hover observation. Native adapters supply observations; they do not recreate pressed, focused or disabled policy independently for painting.
 

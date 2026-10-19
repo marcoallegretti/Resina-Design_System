@@ -351,6 +351,87 @@ def check_visual_record_schemas():
     return checked + 1
 
 
+def command_content_outcome(inputs):
+    content = inputs["content"]
+    laid_out = inputs["laidOutLabel"]
+    form = content["form"]
+    if form == "label":
+        return "LabelForm"
+    if form == "iconOnly" and laid_out is not None:
+        return "UnexpectedLabelLayout"
+    if form == "iconAndLabel" and laid_out is None:
+        return "MissingLabelLayout"
+    if form == "iconAndLabel" and laid_out != content["label"]:
+        return "LabelLayoutMismatch"
+    description = inputs["description"]
+    if description is not None and not description.strip():
+        return "BlankDescription"
+    activation = inputs["activation"]
+    if not inputs["focusable"] and activation["enabled"]:
+        return "EnabledNotFocusable"
+    if not inputs["focusable"] and activation["focused"]:
+        return "FocusedNotFocusable"
+    return {
+        "schemaVersion": "0.1.0",
+        "role": "button",
+        "name": content["accessibleLabel" if form == "iconOnly" else "label"],
+        "description": description,
+        "value": None,
+        "state": {"enabled": activation["enabled"], "focused": activation["focused"]},
+        "actions": [{"kind": "invoke", "available": activation["enabled"]}],
+        "focusable": inputs["focusable"],
+        "relationships": [],
+    }
+
+
+def check_command_content(vectors, cases):
+    checked = 0
+    content_validator = validator_for("schemas/command-content.schema.json")
+    vector_validator = validator_for("schemas/command-content-case.schema.json")
+    names = set()
+    for vector in vectors:
+        name = vector["name"]
+        if name in names:
+            raise ValueError(f"duplicate command content case: {name}")
+        names.add(name)
+        check_case(vector_validator, f"command content case: {name}", vector, True)
+        check_case(content_validator, f"command content: {name}", vector["document"], vector["schemaValid"])
+        checked += 2
+    case_validator = validator_for("schemas/command-content-accessibility-case.schema.json")
+    ir_validator = validator_for("schemas/command-accessibility-ir.schema.json")
+    error_names = set(load_json(ROOT / "schemas/command-content-accessibility-case.schema.json")
+                      ["properties"]["error"]["enum"])
+    names = set()
+    forms = set()
+    errors = set()
+    for case in cases:
+        name = case["name"]
+        if name in names:
+            raise ValueError(f"duplicate command content accessibility case: {name}")
+        names.add(name)
+        check_case(case_validator, name, case, True)
+        forms.add(case["input"]["content"]["form"])
+        outcome = command_content_outcome(case["input"])
+        if isinstance(outcome, str):
+            if case.get("error") != outcome:
+                raise AssertionError(f"{name}: expected error {outcome}")
+            errors.add(outcome)
+        else:
+            if "expected" not in case:
+                raise AssertionError(f"{name}: expected a snapshot, not {case['error']}")
+            check_case(ir_validator, name, case["expected"], True)
+            for field, value in outcome.items():
+                if case["expected"][field] != value:
+                    raise AssertionError(f"{name}: {field} is not the {field} the inputs determine")
+            checked += 1
+        checked += 1
+    if forms != {"label", "iconAndLabel", "iconOnly"}:
+        raise AssertionError(f"command content accessibility cases cover only {sorted(forms)}")
+    if errors != error_names:
+        raise AssertionError(f"command content accessibility cases omit {sorted(error_names - errors)}")
+    return checked
+
+
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
@@ -570,6 +651,9 @@ def main():
         "schemas/typography-assignments.schema.json",
         "schemas/icon-content.schema.json",
         "schemas/icon-content-case.schema.json",
+        "schemas/command-content.schema.json",
+        "schemas/command-content-case.schema.json",
+        "schemas/command-content-accessibility-case.schema.json",
         "schemas/theme-source.schema.json",
         "schemas/theme-source-case.schema.json",
         "schemas/theme-resolution-case.schema.json",
@@ -2613,6 +2697,19 @@ def main():
         document = dict(accessibility, **{field: value})
         check_case(accessibility_validator, f"unsupported accessibility {field}", document, False)
         checked += 1
+    checked += check_command_content(
+        load_json(ROOT / "conformance/content/command-content-vectors.json"),
+        load_json(ROOT / "conformance/accessibility/command-content-cases.json"),
+    )
+    duplicate_content = ROOT / "conformance/content/invalid-duplicate-command-content-member.json"
+    try:
+        load_json(duplicate_content)
+    except ValueError as error:
+        if "duplicate JSON member 'accessibleLabel'" not in str(error):
+            raise
+    else:
+        raise AssertionError(f"{duplicate_content}: duplicate member was accepted")
+    checked += 1
     slider_accessibility_names = set()
     for case in load_json(ROOT / "conformance/accessibility/slider-cases.json"):
         name = case["name"]

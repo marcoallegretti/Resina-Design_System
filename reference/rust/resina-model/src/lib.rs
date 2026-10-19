@@ -38,6 +38,8 @@ pub use geometry::{
 };
 mod icon;
 pub use icon::{IconBounds, IconContent, IconDirection, IconKind, IconLayerRole};
+mod command_content;
+pub use command_content::{CommandContent, CommandContentForm};
 mod key_light;
 pub use key_light::KeyLight;
 mod material_light;

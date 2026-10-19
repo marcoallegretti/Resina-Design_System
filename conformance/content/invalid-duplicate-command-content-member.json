@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "0.1.0",
+  "form": "iconOnly",
+  "icon": {
+    "schemaVersion": "0.1.0",
+    "reference": "resina.fixture:microphone-off",
+    "kind": "symbolic",
+    "inkBounds": {"x": 0.125, "y": 0.125, "width": 0.75, "height": 0.75},
+    "opticalBounds": {"x": 0.125, "y": 0.125, "width": 0.75, "height": 0.75},
+    "direction": {"behavior": "invariant"},
+    "layers": [{"role": "content"}]
+  },
+  "accessibleLabel": "Mute microphone",
+  "accessibleLabel": "Unmute microphone"
+}
