@@ -222,6 +222,40 @@ fn authored_srgb_components_match_hex_fallbacks() {
 }
 
 #[test]
+fn authored_control_insets_grow_with_each_explicit_density() {
+    let request: Value = serde_json::from_str(ENVIRONMENT).unwrap();
+    for source in [LIGHT, DARK] {
+        let mut previous = (0, 0);
+        for (density, inline, block) in [
+            ("compact", 12, 8),
+            ("standard", 16, 12),
+            ("comfortable", 24, 16),
+            ("immersive", 32, 24),
+        ] {
+            let mut environment = request["environment"].clone();
+            environment["densityPreference"] = density.into();
+            let result = resolve(source, &serde_json::from_value(environment).unwrap());
+            let space = result.space();
+            let px = |role| {
+                assert_eq!(space[&role]["unit"], "px");
+                space[&role]["value"].as_i64().unwrap()
+            };
+            assert_eq!(
+                (
+                    px(resina_model::SpatialRole::ControlInsetInline),
+                    px(resina_model::SpatialRole::ControlInsetBlock)
+                ),
+                (inline, block),
+                "{density}"
+            );
+            assert_eq!(px(resina_model::SpatialRole::ControlInline), 8, "{density}");
+            assert!(inline > previous.0 && block > previous.1);
+            previous = (inline, block);
+        }
+    }
+}
+
+#[test]
 fn authored_themes_compile_with_foundation_and_preserve_hierarchy() {
     let standard = environment_for_scale(1.0);
     let scaled = environment_for_scale(2.0);

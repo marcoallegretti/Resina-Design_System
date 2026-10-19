@@ -122,6 +122,11 @@ def apply_changes(document, changes):
     return result
 
 
+def spatial_assignments_0_1(assignments):
+    roles = {role: path for role, path in assignments["roles"].items() if isinstance(path, str)}
+    return {"schemaVersion": "0.1.0", "roles": roles}
+
+
 def check_vectors(schema_path, vector_path):
     validator = validator_for(schema_path)
     vectors = load_json(ROOT / vector_path)
@@ -501,6 +506,8 @@ def main():
         "schemas/versions/surface-binding-result-0.2.0.schema.json",
         "schemas/versions/headless-resolution-0.2.0.schema.json",
         "schemas/versions/headless-result-0.3.0.schema.json",
+        "schemas/versions/headless-result-0.4.0.schema.json",
+        "schemas/versions/spatial-assignments-0.1.0.schema.json",
         "schemas/versions/surface-binding-result-0.3.0.schema.json",
         "schemas/versions/surface-scenario-0.3.0.schema.json",
     }
@@ -1466,6 +1473,14 @@ def main():
     ):
         checked += check_vectors(schema, vectors)
 
+    previous_spatial = validator_for("schemas/versions/spatial-assignments-0.1.0.schema.json")
+    previous_spatial_vector = next(
+        vector for vector in load_json(ROOT / "conformance/spatial/assignment-vectors.json")
+        if vector["name"] == "previous version without control insets"
+    )
+    check_case(previous_spatial, "spatial assignments 0.1.0 archive", previous_spatial_vector["document"], True)
+    checked += 1
+
     icon_validator = validator_for("schemas/icon-content.schema.json")
     icon_case_validator = validator_for("schemas/icon-content-case.schema.json")
     icon_names = set()
@@ -1725,6 +1740,7 @@ def main():
     checked += 1
     previous_headless = copy.deepcopy(valid_headless)
     previous_headless["schemaVersion"] = "0.1.0"
+    previous_headless["spatialAssignments"] = spatial_assignments_0_1(valid_headless["spatialAssignments"])
     previous_headless.pop("opaqueColorAssignments")
     previous_headless.pop("frostPigment")
     check_case(
@@ -1737,6 +1753,7 @@ def main():
     checked += 2
     previous_headless_0_2 = copy.deepcopy(valid_headless)
     previous_headless_0_2["schemaVersion"] = "0.2.0"
+    previous_headless_0_2["spatialAssignments"] = spatial_assignments_0_1(valid_headless["spatialAssignments"])
     previous_headless_0_2.pop("frostPigment")
     check_case(
         validator_for("schemas/versions/headless-resolution-0.2.0.schema.json"),
@@ -1884,6 +1901,8 @@ def main():
     previous_result = validator_for("schemas/versions/headless-result-0.1.0.schema.json")
     archived_result = copy.deepcopy(expected_result)
     archived_result["schemaVersion"] = "0.1.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
     archived_result.pop("colorFallbacks")
     archived_result.pop("opaqueColorFallbacks")
     archived_result.pop("frostTintStrength")
@@ -1894,6 +1913,8 @@ def main():
     previous_result = validator_for("schemas/versions/headless-result-0.2.0.schema.json")
     archived_result = copy.deepcopy(expected_result)
     archived_result["schemaVersion"] = "0.2.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
     archived_result.pop("opaqueColorFallbacks")
     archived_result.pop("frostTintStrength")
     check_case(previous_result, "headless result 0.2.0 archive", archived_result, True)
@@ -1903,13 +1924,33 @@ def main():
     previous_result = validator_for("schemas/versions/headless-result-0.3.0.schema.json")
     archived_result = copy.deepcopy(expected_result)
     archived_result["schemaVersion"] = "0.3.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
     archived_result.pop("frostTintStrength")
     check_case(previous_result, "headless result 0.3.0 archive", archived_result, True)
     check_case(result_schema, "current result rejects 0.3.0 archive", archived_result, False)
     checked += 2
 
+    previous_result = validator_for("schemas/versions/headless-result-0.4.0.schema.json")
+    archived_result = copy.deepcopy(expected_result)
+    archived_result["schemaVersion"] = "0.4.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
+    check_case(previous_result, "headless result 0.4.0 archive", archived_result, True)
+    check_case(result_schema, "current result rejects 0.4.0 archive", archived_result, False)
+    checked += 2
+    spatial_schema = load_json(ROOT / "schemas/spatial-assignments.schema.json")
+    spatial_roles = spatial_schema["properties"]["roles"]["required"]
+    if load_json(ROOT / "schemas/headless-result.schema.json")["properties"]["space"]["required"] != spatial_roles:
+        raise ValueError("resolved spatial roles differ from spatial assignments")
+    for role in spatial_roles:
+        document = copy.deepcopy(expected_result)
+        document["space"].pop(role)
+        check_case(result_schema, f"headless result missing {role}", document, False)
+        checked += 1
+
     color_value = Draft202012Validator(
-        {"$ref": "urn:resina:schema:headless-result:0.4.0#/$defs/color"},
+        {"$ref": "urn:resina:schema:headless-result:0.5.0#/$defs/color"},
         registry=schema_registry(),
     )
     for vector in load_json(ROOT / "conformance/tokens/primitive-value-vectors.json"):

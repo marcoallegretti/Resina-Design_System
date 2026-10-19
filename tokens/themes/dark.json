@@ -398,10 +398,22 @@
     }
   },
   "spatialAssignments": {
-    "schemaVersion": "0.1.0",
+    "schemaVersion": "0.2.0",
     "roles": {
       "space.control.inline": "space.2",
       "space.control.block": "space.2",
+      "space.control.inset.inline": {
+        "compact": "space.3",
+        "standard": "space.4",
+        "comfortable": "space.5",
+        "immersive": "space.6"
+      },
+      "space.control.inset.block": {
+        "compact": "space.2",
+        "standard": "space.3",
+        "comfortable": "space.4",
+        "immersive": "space.5"
+      },
       "space.container.inner": "space.4",
       "space.container.outer": "space.5",
       "space.group": "space.5",

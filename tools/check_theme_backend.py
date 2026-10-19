@@ -34,8 +34,9 @@ def theme_source(case, base_text, foundation_text):
                     {"$ref": "#/sets/theme"},
                 ],
             }
-            for role in theme["spatialAssignments"]["roles"]:
-                theme["spatialAssignments"]["roles"][role] = "space.4"
+            roles = theme["spatialAssignments"]["roles"]
+            for role, path in roles.items():
+                roles[role] = {mode: "space.4" for mode in path} if isinstance(path, dict) else "space.4"
             for role in theme["typographyAssignments"]["roles"].values():
                 role["fontSize"] = "type.size.4"
             if not case.get("omitFoundationSource"):

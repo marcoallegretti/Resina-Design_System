@@ -12,7 +12,7 @@
     "frostPigment": {"$ref": "urn:resina:schema:frost-pigment:0.1.0"},
     "colorAssignments": {"$ref": "urn:resina:schema:color-assignments:0.1.0"},
     "opaqueColorAssignments": {"$ref": "urn:resina:schema:opaque-color-assignments:0.1.0"},
-    "spatialAssignments": {"$ref": "urn:resina:schema:spatial-assignments:0.1.0"},
+    "spatialAssignments": {"$ref": "urn:resina:schema:spatial-assignments:0.2.0"},
     "typographyAssignments": {"$ref": "urn:resina:schema:typography-assignments:0.1.0"},
     "environment": {"$ref": "urn:resina:schema:environment:0.2.0"}
   }

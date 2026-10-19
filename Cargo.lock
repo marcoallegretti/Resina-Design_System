@@ -188,6 +188,7 @@ dependencies = [
 name = "resina-model"
 version = "0.0.1"
 dependencies = [
+ "resina-environment",
  "serde",
  "serde_json",
 ]

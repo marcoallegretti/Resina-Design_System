@@ -1,13 +1,14 @@
 use crate::{
-    HeadlessBindingError, HeadlessResolution, SrgbFallback, TypographyResolutionError,
-    resolve_frost_representation, resolve_minimum_hit_target, resolve_semantic_color_fallbacks,
-    resolve_semantic_colors, resolve_semantic_opaque_color_fallbacks, resolve_semantic_space,
-    resolve_semantic_typography, typography::resolve_semantic_typography_for_scale,
+    HeadlessBindingError, HeadlessResolution, SpatialBinding, SrgbFallback,
+    TypographyResolutionError, resolve_frost_representation, resolve_minimum_hit_target,
+    resolve_semantic_color_fallbacks, resolve_semantic_colors,
+    resolve_semantic_opaque_color_fallbacks, resolve_semantic_space, resolve_semantic_typography,
+    typography::resolve_semantic_typography_for_scale,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
     ColorAssignments, ColorRole, FrostPigment, MaterialAssignments, MaterialFamily, MaterialRole,
-    OpaqueColorAssignments, SpatialAssignments, SpatialRole, TypographyAssignments,
+    OpaqueColorAssignments, SpatialAssignments, TypographyAssignments,
 };
 use resina_tokens::{
     DocumentError, ResolvedToken, ResolverModuleError, parse_token_document,
@@ -38,7 +39,7 @@ pub struct CompiledTheme {
     colors: BTreeMap<ColorRole, Value>,
     color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
     opaque_color_fallbacks: BTreeMap<ColorRole, SrgbFallback>,
-    space: BTreeMap<SpatialRole, Value>,
+    space: SpatialBinding,
     typography_assignments: TypographyAssignments,
     frost_tint_strength: f64,
 }
@@ -211,13 +212,13 @@ impl CompiledTheme {
         let typography =
             resolve_semantic_typography(&self.typography_assignments, &self.tokens, environment)?;
         Ok(HeadlessResolution {
-            schema_version: "0.4.0",
+            schema_version: "0.5.0",
             materials: self.materials.clone(),
             colors: self.colors.clone(),
             color_fallbacks: self.color_fallbacks.clone(),
             opaque_color_fallbacks: self.opaque_color_fallbacks.clone(),
             frost_tint_strength: self.frost_tint_strength,
-            space: self.space.clone(),
+            space: self.space.for_density(environment.density_preference()),
             typography,
             frost_representation: resolve_frost_representation(
                 environment.renderer_capabilities(),
@@ -233,6 +234,7 @@ impl CompiledTheme {
 mod tests {
     use super::*;
     use crate::resolve_headless_source;
+    use resina_model::SpatialRole;
     use serde_json::json;
 
     const SOURCE: &str = include_str!("../../../../conformance/themes/valid-source.json");
@@ -342,7 +344,16 @@ mod tests {
             .unwrap()
             .values_mut()
         {
-            *path = json!("space.4");
+            *path = if path.is_object() {
+                json!({
+                    "compact": "space.4",
+                    "standard": "space.4",
+                    "comfortable": "space.4",
+                    "immersive": "space.4"
+                })
+            } else {
+                json!("space.4")
+            };
         }
         for role in source["typographyAssignments"]["roles"]
             .as_object_mut()

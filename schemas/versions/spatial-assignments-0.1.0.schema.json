@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:spatial-assignments:0.1.0",
+  "title": "Resina Spatial Assignments",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "roles"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "space.control.inline", "space.control.block", "space.container.inner",
+        "space.container.outer", "space.group", "space.section", "space.page"
+      ],
+      "properties": {
+        "space.control.inline": { "$ref": "#/$defs/tokenPath" },
+        "space.control.block": { "$ref": "#/$defs/tokenPath" },
+        "space.container.inner": { "$ref": "#/$defs/tokenPath" },
+        "space.container.outer": { "$ref": "#/$defs/tokenPath" },
+        "space.group": { "$ref": "#/$defs/tokenPath" },
+        "space.section": { "$ref": "#/$defs/tokenPath" },
+        "space.page": { "$ref": "#/$defs/tokenPath" }
+      }
+    }
+  },
+  "$defs": {
+    "tokenPath": { "type": "string", "minLength": 1 }
+  }
+}

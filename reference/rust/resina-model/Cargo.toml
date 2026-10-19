@@ -5,6 +5,7 @@ edition = "2024"
 description = "Platform-neutral Resina semantic model"
 
 [dependencies]
+resina-environment = { path = "../resina-environment" }
 serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]

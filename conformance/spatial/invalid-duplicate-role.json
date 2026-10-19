@@ -1,9 +1,11 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "roles": {
     "space.control.inline": "foundation.space.0",
     "space.control.\u0069nline": "foundation.space.8",
     "space.control.block": "foundation.space.1",
+    "space.control.inset.inline": {"compact": "foundation.space.1", "standard": "foundation.space.2", "comfortable": "foundation.space.4", "immersive": "foundation.space.5"},
+    "space.control.inset.block": {"compact": "foundation.space.0", "standard": "foundation.space.1", "comfortable": "foundation.space.2", "immersive": "foundation.space.4"},
     "space.container.inner": "foundation.space.2",
     "space.container.outer": "foundation.space.3",
     "space.group": "foundation.space.4",

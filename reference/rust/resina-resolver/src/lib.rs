@@ -263,7 +263,9 @@ pub use key_light::{
 pub use resina_color::{
     ColorFallbackError, ContrastError, SrgbFallback, opaque_contrast_ratio, resolve_srgb_fallback,
 };
-pub use spatial::{SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space};
+pub use spatial::{
+    SpatialBinding, SpatialResolutionError, SpatialResolutionErrorKind, resolve_semantic_space,
+};
 mod surface;
 pub use surface::{BoundSurface, SurfaceBindingError, bind_surface};
 mod surface_readability;
