@@ -174,7 +174,7 @@ impl<E: std::error::Error + 'static> std::error::Error for CommandLabelError<E> 
 fn valid_size(size: SurfaceSize) -> bool {
     size.width.is_finite() && size.width > 0.0 && size.height.is_finite() && size.height > 0.0
 }
-fn extent_sum(left: f64, right: f64) -> Option<f64> {
+pub(crate) fn extent_sum(left: f64, right: f64) -> Option<f64> {
     let sum = left + right;
     if !sum.is_finite() || (left > 0.0 && sum <= right) || (right > 0.0 && sum <= left) {
         return None;

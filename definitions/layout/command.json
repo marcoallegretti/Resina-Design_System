@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "0.1.0",
+  "component": "command",
+  "padding": {
+    "start": "space.control.inset.inline",
+    "end": "space.control.inset.inline",
+    "top": "space.control.inset.block",
+    "bottom": "space.control.inset.block"
+  },
+  "extents": {
+    "compact": {
+      "minimumSize": {
+        "width": "command.extent.compact.minimum.width",
+        "height": "command.extent.compact.minimum.height"
+      },
+      "maximumSize": {
+        "width": "command.extent.compact.maximum.width",
+        "height": "command.extent.compact.maximum.height"
+      }
+    },
+    "standard": {
+      "minimumSize": {
+        "width": "command.extent.standard.minimum.width",
+        "height": "command.extent.standard.minimum.height"
+      },
+      "maximumSize": {
+        "width": "command.extent.standard.maximum.width",
+        "height": "command.extent.standard.maximum.height"
+      }
+    },
+    "comfortable": {
+      "minimumSize": {
+        "width": "command.extent.comfortable.minimum.width",
+        "height": "command.extent.comfortable.minimum.height"
+      },
+      "maximumSize": {
+        "width": "command.extent.comfortable.maximum.width",
+        "height": "command.extent.comfortable.maximum.height"
+      }
+    },
+    "immersive": {
+      "minimumSize": {
+        "width": "command.extent.immersive.minimum.width",
+        "height": "command.extent.immersive.minimum.height"
+      },
+      "maximumSize": {
+        "width": "command.extent.immersive.maximum.width",
+        "height": "command.extent.immersive.maximum.height"
+      }
+    }
+  }
+}

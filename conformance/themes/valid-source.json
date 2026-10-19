@@ -153,10 +153,12 @@
     }
   },
   "spatialAssignments": {
-    "schemaVersion": "0.1.0",
+    "schemaVersion": "0.2.0",
     "roles": {
       "space.control.inline": "space.base",
       "space.control.block": "space.base",
+      "space.control.inset.inline": {"compact": "space.base", "standard": "space.base", "comfortable": "space.base", "immersive": "space.base"},
+      "space.control.inset.block": {"compact": "space.base", "standard": "space.base", "comfortable": "space.base", "immersive": "space.base"},
       "space.container.inner": "space.base",
       "space.container.outer": "space.base",
       "space.group": "space.base",

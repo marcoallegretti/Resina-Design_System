@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.4.0",
+  "schemaVersion": "0.5.0",
   "materials": {
     "surface.base": "cast",
     "surface.content": "cast",
@@ -346,6 +346,14 @@
       "unit": "px"
     },
     "space.control.block": {
+      "value": 16,
+      "unit": "px"
+    },
+    "space.control.inset.inline": {
+      "value": 16,
+      "unit": "px"
+    },
+    "space.control.inset.block": {
       "value": 16,
       "unit": "px"
     },

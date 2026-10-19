@@ -10,7 +10,7 @@
     "materialRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/materialRole"},
     "colorRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
     "materialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
-    "sourceColor": {"$ref": "urn:resina:schema:headless-result:0.4.0#/$defs/color"},
+    "sourceColor": {"$ref": "urn:resina:schema:headless-result:0.5.0#/$defs/color"},
     "colorFallback": {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},
     "opaqueColorFallback": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
     "frostPortableBody": {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},

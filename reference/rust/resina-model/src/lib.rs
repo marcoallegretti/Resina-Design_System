@@ -48,6 +48,12 @@ mod frost;
 pub use frost::FrostPigment;
 mod opaque_pigment;
 pub use opaque_pigment::{OpaquePigmentProfile, OpaquePigmentProfiles};
+mod density;
+pub use density::{DENSITY_MODES, DensityModes};
+mod layout_profile;
+pub use layout_profile::{
+    ComponentLayoutProfile, LayoutComponent, ProfileExtent, ProfilePadding, SizeTokenPaths,
+};
 mod spatial;
 pub use spatial::{SpatialAssignments, SpatialRole};
 mod shape_fallback;

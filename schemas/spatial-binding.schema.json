@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:spatial-binding:0.1.0",
+  "title": "Resina Spatial Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "space.control.inline", "space.control.block", "space.control.inset.inline",
+    "space.control.inset.block", "space.container.inner", "space.container.outer",
+    "space.group", "space.section", "space.page"
+  ],
+  "properties": {
+    "space.control.inline": { "$ref": "#/$defs/dimension" },
+    "space.control.block": { "$ref": "#/$defs/dimension" },
+    "space.control.inset.inline": { "$ref": "#/$defs/densityDimensions" },
+    "space.control.inset.block": { "$ref": "#/$defs/densityDimensions" },
+    "space.container.inner": { "$ref": "#/$defs/dimension" },
+    "space.container.outer": { "$ref": "#/$defs/dimension" },
+    "space.group": { "$ref": "#/$defs/dimension" },
+    "space.section": { "$ref": "#/$defs/dimension" },
+    "space.page": { "$ref": "#/$defs/dimension" }
+  },
+  "$defs": {
+    "dimension": { "$ref": "urn:resina:schema:headless-result:0.5.0#/$defs/dimension" },
+    "densityDimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compact", "standard", "comfortable", "immersive"],
+      "properties": {
+        "compact": { "$ref": "#/$defs/dimension" },
+        "standard": { "$ref": "#/$defs/dimension" },
+        "comfortable": { "$ref": "#/$defs/dimension" },
+        "immersive": { "$ref": "#/$defs/dimension" }
+      }
+    }
+  }
+}

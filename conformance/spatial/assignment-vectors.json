@@ -2,10 +2,22 @@
   {
     "name": "complete spatial assignment",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "roles": {
         "space.control.inline": "foundation.space.0",
         "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
         "space.container.inner": "foundation.space.2",
         "space.container.outer": "foundation.space.3",
         "space.group": "foundation.space.4",
@@ -16,6 +28,18 @@
     "expected": {
       "space.control.inline": "foundation.space.0",
       "space.control.block": "foundation.space.1",
+      "space.control.inset.inline": {
+        "compact": "foundation.space.1",
+        "standard": "foundation.space.2",
+        "comfortable": "foundation.space.4",
+        "immersive": "foundation.space.5"
+      },
+      "space.control.inset.block": {
+        "compact": "foundation.space.0",
+        "standard": "foundation.space.1",
+        "comfortable": "foundation.space.2",
+        "immersive": "foundation.space.4"
+      },
       "space.container.inner": "foundation.space.2",
       "space.container.outer": "foundation.space.3",
       "space.group": "foundation.space.4",
@@ -26,10 +50,22 @@
   {
     "name": "missing role",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "roles": {
         "space.control.inline": "foundation.space.0",
         "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
         "space.container.inner": "foundation.space.2",
         "space.container.outer": "foundation.space.3",
         "space.group": "foundation.space.4",
@@ -39,12 +75,46 @@
     "error": "missing spatial role"
   },
   {
-    "name": "unknown role",
+    "name": "missing control inset role",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "roles": {
         "space.control.inline": "foundation.space.0",
         "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "missing spatial role"
+  },
+  {
+    "name": "unknown role",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
         "space.container.inner": "foundation.space.2",
         "space.container.outer": "foundation.space.3",
         "space.group": "foundation.space.4",
@@ -58,10 +128,22 @@
   {
     "name": "empty path",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "roles": {
         "space.control.inline": "foundation.space.0",
         "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
         "space.container.inner": "foundation.space.2",
         "space.container.outer": "foundation.space.3",
         "space.group": "",
@@ -74,10 +156,22 @@
   {
     "name": "non-string path",
     "document": {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "roles": {
         "space.control.inline": "foundation.space.0",
         "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
         "space.container.inner": "foundation.space.2",
         "space.container.outer": "foundation.space.3",
         "space.group": 3,
@@ -88,9 +182,205 @@
     "error": "invalid type"
   },
   {
-    "name": "unsupported version",
+    "name": "empty density path",
     "document": {
       "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "must not be empty"
+  },
+  {
+    "name": "one path for a density-mapped role",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": "foundation.space.2",
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "density mapping for a uniform role",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "invalid type"
+  },
+  {
+    "name": "missing density mode",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "missing field `immersive`"
+  },
+  {
+    "name": "unknown density mode",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4",
+          "dense": "foundation.space.0"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "unknown field `dense`"
+  },
+  {
+    "name": "positional density mapping",
+    "document": {
+      "schemaVersion": "0.2.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": [
+          "foundation.space.1",
+          "foundation.space.2",
+          "foundation.space.4",
+          "foundation.space.5"
+        ],
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "assignment object"
+  },
+  {
+    "name": "unsupported version",
+    "document": {
+      "schemaVersion": "0.3.0",
+      "roles": {
+        "space.control.inline": "foundation.space.0",
+        "space.control.block": "foundation.space.1",
+        "space.control.inset.inline": {
+          "compact": "foundation.space.1",
+          "standard": "foundation.space.2",
+          "comfortable": "foundation.space.4",
+          "immersive": "foundation.space.5"
+        },
+        "space.control.inset.block": {
+          "compact": "foundation.space.0",
+          "standard": "foundation.space.1",
+          "comfortable": "foundation.space.2",
+          "immersive": "foundation.space.4"
+        },
+        "space.container.inner": "foundation.space.2",
+        "space.container.outer": "foundation.space.3",
+        "space.group": "foundation.space.4",
+        "space.section": "foundation.space.5",
+        "space.page": "foundation.space.6"
+      }
+    },
+    "error": "schemaVersion must be 0.2.0"
+  },
+  {
+    "name": "previous version without control insets",
+    "document": {
+      "schemaVersion": "0.1.0",
       "roles": {
         "space.control.inline": "foundation.space.0",
         "space.control.block": "foundation.space.1",
@@ -101,18 +391,18 @@
         "space.page": "foundation.space.6"
       }
     },
-    "error": "schemaVersion must be 0.1.0"
+    "error": "schemaVersion must be 0.2.0"
   },
-  {"name":"spatial source shape root positional","document":["0.1.0",{"space.control.inline":"foundation.space.0","space.control.block":"foundation.space.1","space.container.inner":"foundation.space.2","space.container.outer":"foundation.space.3","space.group":"foundation.space.4","space.section":"foundation.space.5","space.page":"foundation.space.6"}],"error":"object"},
+  {"name":"spatial source shape root positional","document":["0.2.0",{"space.control.inline":"foundation.space.0","space.control.block":"foundation.space.1","space.control.inset.inline":{"compact":"foundation.space.1","standard":"foundation.space.2","comfortable":"foundation.space.4","immersive":"foundation.space.5"},"space.control.inset.block":{"compact":"foundation.space.0","standard":"foundation.space.1","comfortable":"foundation.space.2","immersive":"foundation.space.4"},"space.container.inner":"foundation.space.2","space.container.outer":"foundation.space.3","space.group":"foundation.space.4","space.section":"foundation.space.5","space.page":"foundation.space.6"}],"error":"object"},
   {"name":"spatial source shape root null","document":null,"error":"object"},
   {"name":"spatial source shape root boolean","document":true,"error":"object"},
   {"name":"spatial source shape root number","document":1,"error":"object"},
   {"name":"spatial source shape root string","document":"assignment","error":"object"},
   {"name":"spatial source shape root empty array","document":[],"error":"object"},
-  {"name":"spatial source shape roles positional","document":{"schemaVersion":"0.1.0","roles":[["space.control.inline","foundation.space.0"],["space.control.block","foundation.space.1"],["space.container.inner","foundation.space.2"],["space.container.outer","foundation.space.3"],["space.group","foundation.space.4"],["space.section","foundation.space.5"],["space.page","foundation.space.6"]]},"error":"mapping"},
-  {"name":"spatial source shape roles null","document":{"schemaVersion":"0.1.0","roles":null},"error":"mapping"},
-  {"name":"spatial source shape roles boolean","document":{"schemaVersion":"0.1.0","roles":true},"error":"mapping"},
-  {"name":"spatial source shape roles number","document":{"schemaVersion":"0.1.0","roles":1},"error":"mapping"},
-  {"name":"spatial source shape roles string","document":{"schemaVersion":"0.1.0","roles":"assignment"},"error":"mapping"},
-  {"name":"spatial source shape roles empty array","document":{"schemaVersion":"0.1.0","roles":[]},"error":"mapping"}
+  {"name":"spatial source shape roles positional","document":{"schemaVersion":"0.2.0","roles":[["space.control.inline","foundation.space.0"],["space.control.block","foundation.space.1"],["space.control.inset.inline",{"compact":"foundation.space.1","standard":"foundation.space.2","comfortable":"foundation.space.4","immersive":"foundation.space.5"}],["space.control.inset.block",{"compact":"foundation.space.0","standard":"foundation.space.1","comfortable":"foundation.space.2","immersive":"foundation.space.4"}],["space.container.inner","foundation.space.2"],["space.container.outer","foundation.space.3"],["space.group","foundation.space.4"],["space.section","foundation.space.5"],["space.page","foundation.space.6"]]},"error":"mapping"},
+  {"name":"spatial source shape roles null","document":{"schemaVersion":"0.2.0","roles":null},"error":"mapping"},
+  {"name":"spatial source shape roles boolean","document":{"schemaVersion":"0.2.0","roles":true},"error":"mapping"},
+  {"name":"spatial source shape roles number","document":{"schemaVersion":"0.2.0","roles":1},"error":"mapping"},
+  {"name":"spatial source shape roles string","document":{"schemaVersion":"0.2.0","roles":"assignment"},"error":"mapping"},
+  {"name":"spatial source shape roles empty array","document":{"schemaVersion":"0.2.0","roles":[]},"error":"mapping"}
 ]

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:component-layout-profile-case:0.1.0",
+  "title": "Resina Component Layout Profile Conformance Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "document", "schemaValid"],
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "document": {},
+    "schemaValid": { "type": "boolean" },
+    "error": { "type": "string", "minLength": 1 }
+  },
+  "if": { "properties": { "schemaValid": { "const": false } } },
+  "then": { "required": ["error"] },
+  "else": { "not": { "required": ["error"] } }
+}

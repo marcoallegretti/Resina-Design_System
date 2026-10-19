@@ -21,7 +21,7 @@
       "minLength": 1
     },
     "typography": {
-      "$ref": "urn:resina:schema:headless-result:0.4.0#/$defs/typography"
+      "$ref": "urn:resina:schema:headless-result:0.5.0#/$defs/typography"
     },
     "size": {
       "type": "object",

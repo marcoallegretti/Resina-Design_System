@@ -1,0 +1,47 @@
+{
+  "command": {
+    "extent": {
+      "$type": "dimension",
+      "compact": {
+        "minimum": {
+          "width": { "$value": { "value": 64, "unit": "px" } },
+          "height": { "$value": { "value": 32, "unit": "px" } }
+        },
+        "maximum": {
+          "width": { "$value": { "value": 240, "unit": "px" } },
+          "height": { "$value": { "value": 160, "unit": "px" } }
+        }
+      },
+      "standard": {
+        "minimum": {
+          "width": { "$value": { "value": 96, "unit": "px" } },
+          "height": { "$value": { "value": 40, "unit": "px" } }
+        },
+        "maximum": {
+          "width": { "$value": { "value": 320, "unit": "px" } },
+          "height": { "$value": { "value": 200, "unit": "px" } }
+        }
+      },
+      "comfortable": {
+        "minimum": {
+          "width": { "$value": { "value": 112, "unit": "px" } },
+          "height": { "$value": { "value": 48, "unit": "px" } }
+        },
+        "maximum": {
+          "width": { "$value": { "value": 360, "unit": "px" } },
+          "height": { "$value": { "value": 240, "unit": "px" } }
+        }
+      },
+      "immersive": {
+        "minimum": {
+          "width": { "$value": { "value": 144, "unit": "px" } },
+          "height": { "$value": { "value": 64, "unit": "px" } }
+        },
+        "maximum": {
+          "width": { "$value": { "value": 480, "unit": "px" } },
+          "height": { "$value": { "value": 320, "unit": "px" } }
+        }
+      }
+    }
+  }
+}

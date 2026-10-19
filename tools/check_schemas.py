@@ -6,6 +6,8 @@ from functools import lru_cache
 from pathlib import Path
 
 from command_label_arithmetic import check_cases as check_label_arithmetic
+from command_layout_arithmetic import resolve as resolve_command_layout
+from command_layout_arithmetic import resolve_extents
 from lit_body_arithmetic import body_invariants, relief_profile_violation
 
 from jsonschema import Draft202012Validator
@@ -120,6 +122,83 @@ def apply_changes(document, changes):
     for change in changes:
         replace_at_pointer(result, change["path"], change["value"])
     return result
+
+
+def spatial_assignments_0_1(assignments):
+    roles = {role: path for role, path in assignments["roles"].items() if isinstance(path, str)}
+    return {"schemaVersion": "0.1.0", "roles": roles}
+
+
+def same_numbers(actual, expected):
+    if isinstance(expected, dict):
+        return isinstance(actual, dict) and actual.keys() == expected.keys() and all(
+            same_numbers(actual[key], value) for key, value in expected.items())
+    if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        return isinstance(actual, (int, float)) and not isinstance(actual, bool) and float(actual) == float(expected)
+    return actual == expected
+
+
+def check_command_layout():
+    checked = 0
+    profile_schema = validator_for("schemas/component-layout-profile.schema.json")
+    profile_case_schema = validator_for("schemas/component-layout-profile-case.schema.json")
+    authored = load_json(ROOT / "definitions/layout/command.json")
+    check_case(profile_schema, "authored Command layout profile", authored, True)
+    extent_tokens = load_json(ROOT / "tokens/components/command.json")
+    extents = resolve_extents(authored, extent_tokens)
+    for smaller, larger in zip(extents.values(), list(extents.values())[1:]):
+        if not all(smaller[size][axis] < larger[size][axis] for size in (0, 1) for axis in ("width", "height")):
+            raise ValueError("authored Command extents must grow with density on every axis")
+    profile_cases = load_json(ROOT / "conformance/layout/command-profile-cases.json")
+    if profile_cases[0]["document"] != authored or "error" in profile_cases[0]:
+        raise ValueError("first Command profile case must be the authored profile")
+    names = set()
+    for case in profile_cases:
+        name = f"command profile case: {case['name']}"
+        if case["name"] in names:
+            raise ValueError(f"duplicate {name}")
+        names.add(case["name"])
+        check_case(profile_case_schema, name, case, True)
+        check_case(profile_schema, name, case["document"], case["schemaValid"])
+        checked += 2
+    binding_schema = validator_for("schemas/spatial-binding.schema.json")
+    for vector in load_json(ROOT / "conformance/spatial/resolution-vectors.json"):
+        if "expected" in vector:
+            check_case(binding_schema, f"spatial binding: {vector['name']}", vector["expected"], True)
+            checked += 1
+    case_schema = validator_for("schemas/command-layout-case.schema.json")
+    request_schema = validator_for("schemas/command-layout-request.schema.json")
+    result_schema = validator_for("schemas/command-layout-ir.schema.json")
+    names = set()
+    layout_cases = load_json(ROOT / "conformance/layout/command-layout-cases.json")
+    for case in layout_cases[:32]:
+        if case["request"]["tokens"] != extent_tokens or case["request"]["profile"] != authored:
+            raise ValueError(f"command layout case {case['name']}: matrix must use the authored profile and tokens")
+    for case in layout_cases:
+        name = f"command layout case: {case['name']}"
+        if case["name"] in names:
+            raise ValueError(f"duplicate {name}")
+        names.add(case["name"])
+        check_case(case_schema, name, case, True)
+        check_case(request_schema, name, case["request"], case["requestSchemaValid"])
+        checked += 2
+        if not case["requestSchemaValid"]:
+            if "expected" in case:
+                raise ValueError(f"{name}: schema-invalid request has an expected result")
+            continue
+        try:
+            actual = resolve_command_layout(case["request"])
+        except ValueError as error:
+            if "errorContains" not in case or case["errorContains"] not in str(error):
+                raise ValueError(f"{name}: independent resolution failed with {error}") from None
+            continue
+        if "expected" not in case:
+            raise ValueError(f"{name}: independent resolution succeeded for a rejected case")
+        check_case(result_schema, name, case["expected"], True)
+        if not same_numbers(actual, case["expected"]):
+            raise ValueError(f"{name}: expected result differs from independent resolution {actual}")
+        checked += 1
+    return checked
 
 
 def check_vectors(schema_path, vector_path):
@@ -299,6 +378,12 @@ def main():
         "schemas/toggle-layout-request.schema.json",
         "schemas/toggle-layout-ir.schema.json",
         "schemas/toggle-layout-case.schema.json",
+        "schemas/component-layout-profile.schema.json",
+        "schemas/component-layout-profile-case.schema.json",
+        "schemas/spatial-binding.schema.json",
+        "schemas/command-layout-request.schema.json",
+        "schemas/command-layout-ir.schema.json",
+        "schemas/command-layout-case.schema.json",
         "schemas/toggle-accessibility-ir.schema.json",
         "schemas/toggle-accessibility-case.schema.json",
         "schemas/command-accessibility-case.schema.json",
@@ -501,6 +586,8 @@ def main():
         "schemas/versions/surface-binding-result-0.2.0.schema.json",
         "schemas/versions/headless-resolution-0.2.0.schema.json",
         "schemas/versions/headless-result-0.3.0.schema.json",
+        "schemas/versions/headless-result-0.4.0.schema.json",
+        "schemas/versions/spatial-assignments-0.1.0.schema.json",
         "schemas/versions/surface-binding-result-0.3.0.schema.json",
         "schemas/versions/surface-scenario-0.3.0.schema.json",
     }
@@ -1466,6 +1553,14 @@ def main():
     ):
         checked += check_vectors(schema, vectors)
 
+    previous_spatial = validator_for("schemas/versions/spatial-assignments-0.1.0.schema.json")
+    previous_spatial_vector = next(
+        vector for vector in load_json(ROOT / "conformance/spatial/assignment-vectors.json")
+        if vector["name"] == "previous version without control insets"
+    )
+    check_case(previous_spatial, "spatial assignments 0.1.0 archive", previous_spatial_vector["document"], True)
+    checked += 1
+
     icon_validator = validator_for("schemas/icon-content.schema.json")
     icon_case_validator = validator_for("schemas/icon-content-case.schema.json")
     icon_names = set()
@@ -1725,6 +1820,7 @@ def main():
     checked += 1
     previous_headless = copy.deepcopy(valid_headless)
     previous_headless["schemaVersion"] = "0.1.0"
+    previous_headless["spatialAssignments"] = spatial_assignments_0_1(valid_headless["spatialAssignments"])
     previous_headless.pop("opaqueColorAssignments")
     previous_headless.pop("frostPigment")
     check_case(
@@ -1737,6 +1833,7 @@ def main():
     checked += 2
     previous_headless_0_2 = copy.deepcopy(valid_headless)
     previous_headless_0_2["schemaVersion"] = "0.2.0"
+    previous_headless_0_2["spatialAssignments"] = spatial_assignments_0_1(valid_headless["spatialAssignments"])
     previous_headless_0_2.pop("frostPigment")
     check_case(
         validator_for("schemas/versions/headless-resolution-0.2.0.schema.json"),
@@ -1884,6 +1981,8 @@ def main():
     previous_result = validator_for("schemas/versions/headless-result-0.1.0.schema.json")
     archived_result = copy.deepcopy(expected_result)
     archived_result["schemaVersion"] = "0.1.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
     archived_result.pop("colorFallbacks")
     archived_result.pop("opaqueColorFallbacks")
     archived_result.pop("frostTintStrength")
@@ -1894,6 +1993,8 @@ def main():
     previous_result = validator_for("schemas/versions/headless-result-0.2.0.schema.json")
     archived_result = copy.deepcopy(expected_result)
     archived_result["schemaVersion"] = "0.2.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
     archived_result.pop("opaqueColorFallbacks")
     archived_result.pop("frostTintStrength")
     check_case(previous_result, "headless result 0.2.0 archive", archived_result, True)
@@ -1903,13 +2004,33 @@ def main():
     previous_result = validator_for("schemas/versions/headless-result-0.3.0.schema.json")
     archived_result = copy.deepcopy(expected_result)
     archived_result["schemaVersion"] = "0.3.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
     archived_result.pop("frostTintStrength")
     check_case(previous_result, "headless result 0.3.0 archive", archived_result, True)
     check_case(result_schema, "current result rejects 0.3.0 archive", archived_result, False)
     checked += 2
 
+    previous_result = validator_for("schemas/versions/headless-result-0.4.0.schema.json")
+    archived_result = copy.deepcopy(expected_result)
+    archived_result["schemaVersion"] = "0.4.0"
+    archived_result["space"].pop("space.control.inset.inline")
+    archived_result["space"].pop("space.control.inset.block")
+    check_case(previous_result, "headless result 0.4.0 archive", archived_result, True)
+    check_case(result_schema, "current result rejects 0.4.0 archive", archived_result, False)
+    checked += 2
+    spatial_schema = load_json(ROOT / "schemas/spatial-assignments.schema.json")
+    spatial_roles = spatial_schema["properties"]["roles"]["required"]
+    if load_json(ROOT / "schemas/headless-result.schema.json")["properties"]["space"]["required"] != spatial_roles:
+        raise ValueError("resolved spatial roles differ from spatial assignments")
+    for role in spatial_roles:
+        document = copy.deepcopy(expected_result)
+        document["space"].pop(role)
+        check_case(result_schema, f"headless result missing {role}", document, False)
+        checked += 1
+
     color_value = Draft202012Validator(
-        {"$ref": "urn:resina:schema:headless-result:0.4.0#/$defs/color"},
+        {"$ref": "urn:resina:schema:headless-result:0.5.0#/$defs/color"},
         registry=schema_registry(),
     )
     for vector in load_json(ROOT / "conformance/tokens/primitive-value-vectors.json"):
@@ -2560,6 +2681,7 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
+    checked += check_command_layout()
     segment_cases = load_json(ROOT / "conformance/geometry/slider-track-segments-cases.json")
     check_case(validator_for("schemas/slider-track-segments-cases.schema.json"),
                "slider track segment matrix", segment_cases, True)
