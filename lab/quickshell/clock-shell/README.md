@@ -205,8 +205,10 @@ and xdg-desktop-portal-gnome 50.0, at revision 4cb60fe:
 - the fixed dark theme passes in headless Sway 1.12 at output scales 1 and 2
   and in the live change from 1.25 to 2;
 - `--screen-reader` passes with Orca 50.3 in nested niri 26.04 at scale 1;
-- the 1.5 output on a 1920×1080 output, the other live changes (1 to 2, 2 to 1,
-  2 to 1.25 and 1.25 to 1.5) and nested niri at scale 2 passed at earlier
+- CI ran the check at 4cb60fe in headless Sway at output scale 1 and in the
+  live changes from 1.25 to 2 and from 2 to 1.25;
+- the 1.5 output on a 1920×1080 output, the live changes from 1 to 2, from 2
+  to 1 and from 1.25 to 1.5, and nested niri at scale 2 passed at earlier
   revisions and were not repeated at 4cb60fe;
 - CI does not run the clock shell check in niri or with `--screen-reader`;
 - the `grim` checks compare, within one 8-bit step, only points where a flat
