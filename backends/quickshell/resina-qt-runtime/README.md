@@ -1684,10 +1684,10 @@ samples were inspected. The
 [hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
 also passed. These results apply to the standalone Qt host; GUIdo integration
 requires its own runtime verification. Released Quickshell Command accessibility
-is verified by the ten AT-SPI cases of
-[Released Quickshell Command accessibility](#released-quickshell-command-accessibility).
-Material calibration and screen-reader presentation outside local runs remain
-unverified.
+is verified by the thirteen AT-SPI cases of
+[Released Quickshell Command accessibility](#released-quickshell-command-accessibility),
+which also covers Command screen-reader presentation. Material calibration
+remains unverified here.
 
 ## Integrated static Toggle control
 
