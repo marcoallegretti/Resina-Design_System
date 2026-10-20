@@ -17,10 +17,16 @@ from check_quickshell_command_lifecycle import (REPLACEMENT, REPLACEMENT_DESCRIP
 from check_quickshell_command_updates import verify_version
 from check_slint_native_availability import (ACCESSIBLE, BUTTON_ROLE, PROPERTIES, call, integer_values, payload,
                                              references, state_flags, string_value)
+from wayland_virtual_input import KEY_SPACE
 
 FOCUSED = 12
+# AT-SPI State positions that Command feedback must never set: a Command is not a toggle or a selectable item,
+# and hover and press are feedback, not state.
+FEEDBACK_STATES = {"checked": 4, "pressed": 20, "selected": 23, "checkable": 41}
 DESCRIPTION = "Connect using saved settings."
 REPORT = "RESINA_ACCESSIBILITY_REPORT "
+# The lifecycle probe's own accessible focus target stays mounted while only the Command is withdrawn.
+PROBE_FOCUS_TARGET = ("panel", "Focus target", ("SetFocus",))
 UNKNOWN_OBJECT = "org.freedesktop.DBus.Error.UnknownObject"
 SIGNAL = re.compile(r"signal .* path=(\S+); interface=org\.a11y\.atspi\.Event\.(\w+); member=(\w+)")
 SIGNAL_TEXT = re.compile(r'\s+string "(.*)"')
@@ -45,6 +51,57 @@ def buttons(address, application):
     return found
 
 
+def strings(reply):
+    match = re.fullmatch(r"array\s*\[\s*(.*?)\s*\]", payload(reply), re.S)
+    pattern = r'string "([^"\\\n]*)"'
+    if not match or re.sub(pattern, "", match[1]).strip():
+        raise ValueError("expected a D-Bus string array")
+    return re.findall(pattern, match[1])
+
+
+def listed_actions(reply):
+    match = re.fullmatch(r"array\s*\[\s*(.*?)\s*\]", payload(reply), re.S)
+    pattern = r'struct\s*\{\s*string "([^"\\\n]*)"\s*string "[^"\\\n]*"\s*string "[^"\\\n]*"\s*\}'
+    if not match or re.sub(pattern, "", match[1]).strip():
+        raise ValueError("expected a native action array")
+    return re.findall(pattern, match[1])
+
+
+def node_actions(address, node):
+    if ACTION not in strings(call(*node, ACCESSIBLE + ".GetInterfaces", address=address)):
+        return []
+    return listed_actions(call(*node, ACTION + ".GetActions", address=address))
+
+
+def exposed(address, application):
+    pending, visited, nodes = [application], set(), []
+    while pending:
+        node = pending.pop(0)
+        if node in visited or len(visited) >= 64:
+            raise ValueError("cyclic or excessive native tree")
+        visited.add(node)
+        if node != application:
+            nodes.append({"node": node, "role": string_value(call(*node, ACCESSIBLE + ".GetRoleName", address=address)),
+                          "name": text(address, node, "Name"), "actions": node_actions(address, node)})
+        pending.extend(references(call(*node, ACCESSIBLE + ".GetChildren", address=address)))
+    return nodes
+
+
+def leaked(nodes, retained=()):
+    """Nodes of a withdrawn tree that carry a name or an action, apart from the retained (role, name, actions)."""
+    remaining, found = list(retained), []
+    for node in nodes:
+        key = (node["role"], node["name"], tuple(node["actions"]))
+        if key in remaining:
+            remaining.remove(key)
+        elif node["name"] or node["actions"]:
+            found.append(key)
+    if remaining:
+        raise ValueError(f"withdrawn native tree lost its retained nodes {remaining}; observed "
+                         f"{[(node['role'], node['name'], tuple(node['actions'])) for node in nodes]}")
+    return found
+
+
 def text(address, node, field):
     return string_value(call(*node, PROPERTIES + ".Get", "string:" + ACCESSIBLE, "string:" + field, address=address))
 
@@ -52,6 +109,14 @@ def text(address, node, field):
 def state(address, node):
     reply = call(*node, ACCESSIBLE + ".GetState", address=address)
     return {**state_flags(reply), "focused": bool(integer_values(reply, array=True)[0] & (1 << FOCUSED))}
+
+
+def feedback_states(reply):
+    words = integer_values(reply, array=True)
+    if len(words) != 2:
+        raise ValueError("expected both AT-SPI state words")
+    bits = words[0] | (words[1] << 32)
+    return sorted(name for name, position in FEEDBACK_STATES.items() if bits & (1 << position))
 
 
 def listen_for_events(address, *events):
@@ -120,6 +185,9 @@ class NativeEvents:
     def mark(self):
         return len(signals(self.read()))
 
+    def signals(self, start):
+        return signals(self.read())[start:]
+
     def expect(self, start, expected, description):
         self.wait(lambda: all(item in [found[:4] for found in signals(self.read())[start:]] for item in expected),
                   description, timeout=10)
@@ -131,6 +199,12 @@ class NativeEvents:
             if path == node[1] and event == "Object.PropertyChange" \
                     and kind in ("accessible-name", "accessible-description") and not value:
                 raise ValueError(f"{description} cleared the native Command {kind.split('-')[1]}")
+
+    def unexposed(self, start, node, description):
+        changed = sorted({kind for path, event, kind, _, _ in signals(self.read())[start:]
+                          if path == node[1] and event == "Object.StateChanged" and kind in FEEDBACK_STATES})
+        if changed:
+            raise ValueError(f"{description} emitted native StateChanged events for {', '.join(changed)}")
 
     def focused(self, start, node, name):
         self.expect(start, [(node[1], "Focus.Focus", "", 0)], f"native focus event for {name}")
@@ -149,6 +223,7 @@ class NativeEvents:
 class Tree:
     def __init__(self, session, address, events=None):
         self.session, self.address, self.events = session, address, events
+        self.observations = {}
 
     def application(self):
         applications = references(call("org.a11y.atspi.Registry", "/org/a11y/atspi/accessible/root",
@@ -182,8 +257,27 @@ class Tree:
             raise ValueError("native Command lost its complete description")
         return node
 
-    def absent(self, description):
-        self.settled(lambda: not buttons(self.address, self.application()), description)
+    def absent(self, description, retained=()):
+        last = [None]
+
+        def withdrawn():
+            nodes = exposed(self.address, self.application())
+            last[0] = leaked(nodes, retained)
+            return not last[0] and not buttons(self.address, self.application())
+        try:
+            self.settled(withdrawn, description)
+        except ValueError as error:
+            raise ValueError(f"{error}; named or actionable nodes: {last[0]}") from None
+
+    def focus_after(self, start):
+        """Record, without requiring anything, where native focus went after a focused Command was withdrawn."""
+        events = [{"path": path, "event": event, "kind": kind, "detail": detail}
+                  for path, event, kind, detail, _ in self.events.signals(start)
+                  if event == "Focus.Focus" or event == "Object.StateChanged" and kind == "focused"]
+        focused_nodes = self.settled(lambda: {"focusedNodes": [
+            {field: node[field] for field in ("role", "name")} for node in exposed(self.address, self.application())
+            if state(self.address, node["node"])["focused"]]}, "a readable native tree after the withdrawal")
+        return {"events": events, **focused_nodes}
 
     def press(self, node):
         actions = action_names(call(*node, ACTION + ".GetActions", address=self.address))
@@ -200,6 +294,11 @@ class Tree:
             raise ValueError("native Press on a retired Command did not fail as an unknown object: "
                              + str(error)) from None
         raise ValueError("a retired native Command accepted Press")
+
+    def unexposed(self, node, description):
+        found = feedback_states(call(*node, ACCESSIBLE + ".GetState", address=self.address))
+        if found:
+            raise ValueError(f"the native Command exposes {', '.join(found)} during {description}")
 
     def expect_state(self, node, enabled, focused):
         expected = {"enabled": enabled, "sensitive": enabled, "focusable": enabled, "focused": focused}
@@ -224,19 +323,30 @@ def stable_updates(session, tree):
                            f"native state-change events on the Command for {description}")
         session.quiet()
         tree.events.retained(start, node, description)
+        tree.events.unexposed(start, node, description)
 
     def feedback():
         # A pointer already resting on the target delivers no motion, hence no hover.
         session.input.move(*session.outside)
         session.point(session.current())
         session.settle(lambda current: current["hovered"], "hovered Command")
+        tree.unexposed(node, "hover")
         session.input.button(True)
         session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is True, "pointer hold")
+        tree.unexposed(node, "a pointer hold inside the target")
         session.input.move(*session.outside)
         session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is False, "pointer leaving")
+        tree.unexposed(node, "a pointer hold outside the target")
         session.input.button(False)
     update("hover and press feedback", feedback,
            lambda current: not current["hovered"] and current["state"]["hold"] is None)
+
+    def keyboard():
+        session.input.key(KEY_SPACE, True)
+        session.settle(lambda current: (current["state"]["hold"] or {}).get("key") == "space", "Space hold")
+        tree.unexposed(node, "a Space hold")
+        session.input.key(KEY_SPACE, False)
+    update("keyboard press feedback", keyboard, lambda current: current["state"]["hold"] is None)
     update("availability withdrawal", lambda: session.call("availability", "false"),
            lambda current: not current["state"]["enabled"],
            events=(("enabled", 0), ("sensitive", 0)))
@@ -250,7 +360,25 @@ def stable_updates(session, tree):
            lambda current: True, REPLACEMENT, REPLACEMENT_DESCRIPTION)
     tree.expect_state(node, True, False)
     return ["feedback, availability withdrawal and restoration, and label replacement update the same native "
-            "Button in place: no empty name or description, no tree removal, and state-change events on that node"]
+            "Button in place: no empty name or description, no tree removal, and state-change events on that node",
+            "hover, a pointer hold inside and outside the target and a Space hold leave checked, pressed, selected and "
+            "checkable clear in the native state, and no update emits a state-change event for them"]
+
+
+def committed(found, description):
+    for effect in found:
+        if not effect["state"]["enabled"] or effect["state"]["hold"] is not None:
+            raise ValueError(f"{description} reached the consumer before committed activation: {effect['state']}")
+    return found
+
+
+def press_once(session, tree, node, description):
+    before = len(effects(session.events()))
+    tree.press(node)
+    committed(expect_effects(session, before, 1, description), description)
+    session.until(lambda current: current["ready"] and current["state"]["enabled"]
+                  and current["state"]["hold"] is None, f"ready, available Command without a hold after {description}",
+                  10)
 
 
 def verify(session, tree):
@@ -260,12 +388,8 @@ def verify(session, tree):
     tree.expect_state(node, True, True)
     results.append("one truthful Button with complete name, description, focus and availability")
 
-    before = len(effects(session.events()))
-    tree.press(node)
-    for effect in expect_effects(session, before, 1, "native Press"):
-        if not effect["state"]["enabled"] or effect["state"]["hold"] is not None:
-            raise ValueError("native Press reached the consumer before committed activation")
-    results.append("native Press produces exactly one committed effect")
+    press_once(session, tree, node, "native Press")
+    results.append("native Press produces exactly one committed effect and the Command is ready again")
 
     start = tree.events.mark()
     session.call("availability", "false")
@@ -283,21 +407,22 @@ def verify(session, tree):
     session.ready()
     if tree.command(REPLACEMENT, REPLACEMENT_DESCRIPTION) != node:
         raise ValueError("configuration replacement changed the native Command identity")
-    before = len(effects(session.events()))
-    tree.press(node)
-    expect_effects(session, before, 1, "native Press after replacement")
+    press_once(session, tree, node, "native Press after replacement")
     results.append("replacement keeps the native identity, republishes the localized name and description "
-                   "and acts once")
+                   "and acts once with committed activation, after which the Command is ready again")
 
     for operation, description in (("setMounted", "unmounted Command"), ("setWindowed", "closed surface")):
         session.reset()
         node = tree.command("Reconnect")
-        before = len(effects(session.events()))
+        before, start = len(effects(session.events())), tree.events.mark()
+        held_focus = state(tree.address, node)["focused"]
         session.call(operation, "false")
         tree.absent(f"native Button removed with the {description}")
+        tree.observations[description] = dict(tree.focus_after(start), commandFocusedBefore=held_focus)
         tree.press_retired(node)
         expect_effects(session, before, 0, f"native Press after the {description}")
-        results.append(f"{description} withdraws the native Button without stale delivery")
+        results.append(f"{description} withdraws the native Button, leaves no named or actionable node and "
+                       "delivers nothing stale")
 
     for hard, description in ((False, "soft reload"), (True, "hard reload")):
         retired = session.reset()["generation"]
@@ -352,8 +477,9 @@ def verify(session, tree):
     session.call("setDisabledFocusable", "true")
     session.until(lambda current: "does not support discoverable disabled focus" in current["error"]
                   and not current["ready"], "unsupported disabled-focus diagnostic", 10)
-    tree.absent("native Button withdrawn for the unsupported disabled-focus policy")
-    results.append("unsupported disabled-focus policy fails diagnostically without a native Button")
+    tree.absent("native Button withdrawn for the unsupported disabled-focus policy", (PROBE_FOCUS_TARGET,))
+    results.append("unsupported disabled-focus policy fails diagnostically without a native Button and leaves no "
+                   "named or actionable node besides the probe's own focus target")
     return results + stable_updates(session, tree)
 
 
@@ -541,7 +667,10 @@ def run(args):
     try:
         session = Session(args.host, args.module_path, args.font, args.output_dir)
         events = NativeEvents(session.wait, address, args.output_dir)
-        results = verify(session, Tree(session, address, events))
+        tree = Tree(session, address, events)
+        results = verify(session, tree)
+        (args.output_dir / "withdrawal-focus.json").write_text(json.dumps(tree.observations, indent=2),
+                                                               encoding="utf-8")
         if args.screen_reader:
             results += screen_reader(session, args.output_dir)
         return results

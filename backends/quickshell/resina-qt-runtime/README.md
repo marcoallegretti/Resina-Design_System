@@ -1229,15 +1229,18 @@ the lifecycle checker and inspects the actual native tree:
   with the complete name and description, enabled, sensitive, focusable and
   focused state, and exactly one `Press` action, which an available or
   unavailable Command must accept;
-- a real AT-SPI `Press` produces exactly one committed consumer effect;
+- a real AT-SPI `Press` produces exactly one consumer effect, delivered while
+  the Command is enabled and holds no gesture, after which the Command is ready,
+  available and without a hold again;
 - withdrawn availability clears `enabled` and `sensitive` on the same node, each
   observed as an AT-SPI `StateChanged` event through a registered event listener,
   leaves a disabled, unfocusable final state, and the next `Press` produces no
   effect;
 - configuration replacement keeps the native node, republishes the current
   non-ASCII name and the replacement's own localized description, and acts
-  exactly once;
-- unmounting the control or destroying its surface removes the Button, and a
+  exactly once under the same conditions as the first `Press`;
+- unmounting the control or destroying its surface removes the Button and
+  leaves no node in the application tree with a name or an action, and a
   `Press` on the retired node fails with `org.freedesktop.DBus.Error.UnknownObject`
   and produces no effect;
 - after a soft and after a hard reload, a `Press` on the Button held from before
@@ -1248,14 +1251,28 @@ the lifecycle checker and inspects the actual native tree:
 - availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
   the next `Press`;
 - the unsupported discoverable-disabled focus policy fails with its diagnostic
-  and exposes no Button;
+  and exposes no Button and no named or actionable node other than the probe's
+  own "Focus target" pane;
 - starting from a focused Command, hover and press feedback, availability
   withdrawal and restoration and label replacement keep the same Button path in
   the tree. The registered listener records no `ChildrenChanged` removal or
   addition of that node and no empty name or description, and each availability
-  change arrives as `enabled` and `sensitive` `StateChanged` events on that node.
+  change arrives as `enabled` and `sensitive` `StateChanged` events on that node;
+- the full AT-SPI `GetState` of that Button, sampled while hovered, during a
+  pointer hold inside and outside the target and during a Space hold, has
+  `checked`, `pressed`, `selected` and `checkable` clear, and none of these
+  updates emits a `StateChanged` event for those states. Qt emits no event for
+  `pressed`, so the sampled state is the evidence for it.
 
-All twelve cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
+Where native focus goes after a focused Command is unmounted or its surface is
+destroyed is recorded, without being asserted, in `withdrawal-focus.json`: the
+focus events received after the withdrawal and the nodes then reporting
+`focused`. In headless Sway 1.12 and nested niri 26.04 the Command was focused
+before each withdrawal; afterwards no focus event arrived and no node of the
+application reported `focused`, so focus did not move to another accessible
+node. Focus recovery is not part of Command qualification.
+
+All thirteen cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
 English locale and isolated settings and reads its generated presentation
 through a pseudo-terminal: Orca block-buffers a regular debug file and never
