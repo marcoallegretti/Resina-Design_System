@@ -19,7 +19,7 @@ from check_surface_paint_backend import surface_paint_channel_mismatch
 from check_focus_indicator_backend import contrast
 from check_command_paint_backend import disabled_label_bound, disabled_label_mismatch
 import conformance_font
-from lit_body_arithmetic import body_invariants
+from lit_body_arithmetic import body_invariants, ir_uniform_contains_box
 
 
 def authored_cases():
@@ -376,11 +376,17 @@ def verify_capture(path, snapshot, scale, surrounding_color=None):
     right = math.ceil((50 - target["x"] + bounds["x"] + bounds["width"]) * scale)
     top = 50 - target["y"] + bounds["y"]
     body = snapshot["paint"]["paint"]["body"]
-    color = body["face"]["pigment"]["body"]
+    face = body["face"]
+    color = face["pigment"]["body"]
     if color["colorSpace"] != "srgb" or color["alpha"] != 1:
         raise ValueError("capture requires the supported opaque sRGB body pigment")
+    margin = max(face["edgeWidth"], face["surface"]["profile"]["shoulderWidth"])
     body_x = math.floor((50 - target["x"] + label["size"]["width"] / 2) * scale)
-    body_y = math.floor((50 - target["y"] + (body["face"]["contentBounds"]["y"] + bounds["y"]) / 2) * scale)
+    body_y = math.floor((50 - target["y"] + (margin + bounds["y"]) / 2) * scale)
+    probe = {"x": body_x / scale - 50 + target["x"], "y": body_y / scale - 50 + target["y"],
+             "width": 1 / scale, "height": 1 / scale}
+    if probe["y"] + probe["height"] > bounds["y"] or not ir_uniform_contains_box(body, probe):
+        raise ValueError("capture has no whole body pixel between the uniform face edge and the label")
     pixel = image.getpixel((body_x, body_y))
     if pixel[3] != 255 or any(abs(pixel[channel] - round(color["components"][channel] * 255)) > 1
                              for channel in range(3)):

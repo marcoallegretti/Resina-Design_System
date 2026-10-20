@@ -310,7 +310,10 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                               "typography": {"fontSize": {"value": 10}, "lineHeight": 1}},
                     "hitRegion": {"bounds": {"x": 0, "y": 0}},
                     "paint": {"paint": {"body": {"geometry": {}, "face": {
-                        "contentBounds": {"x": 3, "y": 3, "width": 74, "height": 54},
+                        "edgeWidth": 1,
+                        "surface": {"outline": {"size": {"width": 80, "height": 60}, "corners": {
+                            name: {"x": 0, "y": 0} for name in ("topLeft", "topRight", "bottomRight", "bottomLeft")}},
+                            "profile": {"kind": "convex", "shoulderWidth": 2}},
                         "pigment": {"body": {"colorSpace": "srgb", "alpha": 1, "components": [1, 1, 1]}},
                         "foreground": {
                         "colorSpace": "srgb", "alpha": 1, "components": [0, 0, 0]}}}}}}
@@ -336,6 +339,10 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             image.save(path)
             with self.assertRaisesRegex(ValueError, "body pigment"):
                 verify_capture(path, snapshot, 1)
+            crowded = copy.deepcopy(snapshot)
+            crowded["label"]["labelBounds"]["y"] = 2.5
+            with self.assertRaisesRegex(ValueError, "no whole body pixel"):
+                verify_capture(path, crowded, 1)
             snapshot["paint"]["paint"]["body"]["geometry"]["silhouette"] = {
                 "bounds": {"x": 0, "y": 0, "width": 80, "height": 60}}
             snapshot["paint"]["paint"]["focus"] = {"indicator": {
