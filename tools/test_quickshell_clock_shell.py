@@ -1,8 +1,8 @@
 import unittest
 
 from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, edge_points, platform_expectations,
-                                          verify_capture_size, verify_command_scale, verify_device_scale, verify_platform_preferences,
-                                          verify_publication_scales)
+                                          tree_mismatch, verify_capture_size, verify_command_scale, verify_device_scale,
+                                          verify_platform_preferences, verify_publication_scales)
 
 AUTHORED = {"reducedMotion": False, "reducedTransparency": False, "highContrast": False}
 FULL = {"reducedMotion": True, "highContrast": False, "colorScheme": "light"}
@@ -111,6 +111,69 @@ class ClockShellPlatformTests(unittest.TestCase):
         for current, request, message in cases:
             with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
                 verify_platform_preferences(current, request, FULL, expected, sources)
+
+
+DATE = "Monday, 19 October 2026"
+
+
+def node(role, name="", actions=()):
+    return {"role": role, "name": name, "actions": list(actions)}
+
+
+def closed_tree():
+    return [node("frame"), node("frame"), node("push button", "Show clock", ["Press", "SetFocus"])]
+
+
+def open_tree():
+    return [node("frame"), node("frame"), node("frame"), node("push button", "Show clock", ["Press"]),
+            node("label", "02:06:55", ["SetFocus"]), node("label", DATE, ["SetFocus"]),
+            node("push button", "Close", ["Press", "SetFocus"])]
+
+
+class ClockShellAccessibilityTests(unittest.TestCase):
+    def test_the_native_tree_is_exactly_the_frames_commands_time_and_date(self):
+        self.assertIsNone(tree_mismatch(closed_tree(), ["Show clock"]))
+        self.assertIsNone(tree_mismatch(open_tree(), ["Show clock", "Close"], DATE))
+        self.assertIsNone(tree_mismatch(list(reversed(open_tree())), ["Close", "Show clock"], DATE))
+
+    def test_any_other_role_name_or_count_is_a_mismatch(self):
+        closed = [
+            (closed_tree() + [node("frame")], "roles and names"),
+            (closed_tree()[1:], "roles and names"),
+            (closed_tree() + [node("push button", "Show clock", ["Press"])], "roles and names"),
+            (closed_tree() + [node("push button", "Close", ["Press"])], "roles and names"),
+            (closed_tree() + [node("panel")], "roles and names"),
+            (closed_tree() + [node("label", "Show clock")], "static text"),
+            (closed_tree() + [node("label", "")], "static text"),
+        ]
+        for nodes, message in closed:
+            with self.subTest(nodes=nodes):
+                self.assertRegex(tree_mismatch(nodes, ["Show clock"]), "^" + message)
+        opened = [
+            (open_tree()[:4] + open_tree()[5:], "static text"),
+            (open_tree()[:5] + open_tree()[6:], "static text"),
+            ([item if item["name"] != "02:06:55" else node("label", "2:06") for item in open_tree()], "static text"),
+            (open_tree() + [node("label", "Close")], "static text"),
+            ([item if item["name"] != DATE else node("label", "Tuesday") for item in open_tree()], "static text"),
+            (open_tree()[1:], "roles and names"),
+        ]
+        for nodes, message in opened:
+            with self.subTest(nodes=nodes):
+                self.assertRegex(tree_mismatch(nodes, ["Show clock", "Close"], DATE), "^" + message)
+
+    def test_only_buttons_carry_actions_and_every_button_can_be_pressed(self):
+        nodes = open_tree()
+        nodes[4] = dict(nodes[4], actions=[])
+        self.assertIsNone(tree_mismatch(nodes, ["Show clock", "Close"], DATE))
+        for index, actions in ((0, ["SetFocus"]), (0, ["Press"]), (4, ["SetFocus", "Press"]), (5, ["Press"])):
+            nodes = open_tree()
+            nodes[index] = dict(nodes[index], actions=actions)
+            with self.subTest(role=nodes[index]["role"], actions=actions):
+                self.assertRegex(tree_mismatch(nodes, ["Show clock", "Close"], DATE),
+                                 "^actions on nodes other than Buttons beyond static-text SetFocus")
+        nodes = open_tree()
+        nodes[-1] = dict(nodes[-1], actions=["SetFocus"])
+        self.assertRegex(tree_mismatch(nodes, ["Show clock", "Close"], DATE), "^Buttons without a Press action")
 
 
 if __name__ == "__main__":

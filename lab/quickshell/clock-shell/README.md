@@ -159,10 +159,17 @@ GSettings. It runs at the output scale given by `--scale` and requires:
   device scale with the same target, the reference paint, the composited pixels
   with `--grim`, one available native "Show clock" Button and calibrated spring
   frames while held; the accessibility cases below then run at the new scale;
-- on a private AT-SPI bus, the native tree to expose exactly one Button per mapped
-  Command with its complete name and description, "Show clock" unavailable and
-  "Close" available and focused while open, and the displayed time and date as
-  static text; a native Press must open and close the clock surface;
+- on a private AT-SPI bus, the native tree of the shell to be exactly, by role
+  and name, one unnamed frame per mapped window (bar, backdrop and, while open,
+  the clock surface), one Button per mapped Command with its complete name and
+  description and, while open, the displayed time and date as two static text
+  labels, before opening, while open and after closing. Every Button carries
+  `Press`; frames carry no action, and the static text carries at most the
+  `SetFocus` action that Qt 6.11.2 gives every static text, because it
+  [makes text roles focusable](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/accessible/qaccessiblequickitem.cpp#L451-L452).
+  "Show clock" must be unavailable and
+  "Close" available and focused while open; a native Press must open and close
+  the clock surface;
 - with an AT-SPI focus listener registered, a native focus event for "Close" when
   the surface opens, and for "Show clock" when, after closing, a click on the bar
   body and Tab move keyboard focus to it;
