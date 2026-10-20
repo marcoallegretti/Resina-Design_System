@@ -1345,8 +1345,18 @@ request fails. Input reaches the control through the compositor:
   are unavailable;
 - moving the control during a press cancels the held gesture without an effect
   and publishes frames at the new position;
-- reduced motion and Cast publish immediate settled frames, and Frost with
-  reduced transparency keeps its family and spring policy.
+- reduced motion and Cast publish immediate settled frames;
+- Frost with authored reduced transparency keeps its family and spring policy,
+  and every frame publishes the `opaqueDimensional` Frost representation with
+  body alpha 1 and no content fallback;
+- the same Frost Command without reduced transparency, whose environment
+  declares `translucentSurfaces`, selects a translucent body that the opaque
+  Command profile rejects: the Command reports the opaque-body preparation
+  error, is not ready, has no target and publishes no frame.
+  [Command paint](../../../spec/43-command-paint.md) accepts Frost only as
+  `opaqueDimensional`, so a released-host Command never publishes
+  `translucentPigmented`; this pair shows that the authored preference, and not
+  a fixed host value, selects the representation.
 
 The check runs at the output scale given by `--scale` and first requires the
 device pixel ratio of the Command's window to equal it. The probe logs that

@@ -7,7 +7,8 @@ from check_quickshell_command_motion import (CHANNELS, effect_positions, epochs,
                                              settled, verify_activation, verify_callback_frame, verify_clock,
                                              verify_committed_frame, verify_dynamics, verify_frame_scales,
                                              verify_publication_scales, verify_retarget, verify_scale,
-                                             verify_superseding_frames)
+                                             verify_reduced_frost, verify_superseding_frames,
+                                             verify_translucent_frost)
 
 DYNAMICS = {"schemaVersion": "0.1.0", "mass": 1, "stiffness": 4, "damping": 4,
             "positionThreshold": 1e-06, "velocityThreshold": 1e-06}
@@ -276,6 +277,58 @@ class CommandCallbackFrameTests(unittest.TestCase):
                 self.assertRaisesRegex(ValueError, "frame 3 after the change does not present the request in "
                                                    "effect: snapshot differs"):
             verify_superseding_frames(events, 1, expectation, "change", {})
+
+    def test_reduced_transparency_frost_publishes_opaque_dimensional_frames(self):
+        valid = [frost_frame(1), frost_frame(2)]
+        verify_reduced_frost(valid)
+        for change, message in ((("materialFamily", "cast"), "frame 2 with reduced transparency lost its bound family"),
+                                (("frostRepresentation", "translucentPigmented"),
+                                 "publishes Frost representation 'translucentPigmented', not 'opaqueDimensional'"),
+                                (("frostRepresentation", None), "publishes Frost representation None"),
+                                (("alpha", .62), "publishes body alpha 0.62, not 1"),
+                                (("contentFallbackApplied", True), "through the content fallback, not the preference")):
+            sequence = [frost_frame(1), frost_frame(2, *change)]
+            with self.subTest(change=change), self.assertRaisesRegex(ValueError, message):
+                verify_reduced_frost(sequence)
+        with self.assertRaisesRegex(ValueError, "no Frost frame with reduced transparency was logged"):
+            verify_reduced_frost([])
+
+    def test_frost_without_reduced_transparency_is_withdrawn_by_the_opaque_profile(self):
+        rejected = {"ready": False, "target": None,
+                    "error": "command surface paint body: opaque surface IR requires a resolved opaque body"}
+        verify_translucent_frost(rejected, [{"kind": "configure", "configuration": "translucentFrost"},
+                                            {"kind": "rejected", "error": rejected["error"]}])
+        rejection = [{"kind": "rejected", "error": rejected["error"]}]
+        for change, message in (({"ready": True}, "was not withdrawn by the opaque body rejection: ready True"),
+                                ({"target": {"x": 1, "y": 2}}, r"target \{'x': 1, 'y': 2\}"),
+                                ({"error": ""}, "error ''"),
+                                ({"error": "command label: missing font"}, "error 'command label: missing font'")):
+            with self.subTest(change=change), self.assertRaisesRegex(ValueError, message):
+                verify_translucent_frost({**rejected, **change}, rejection)
+        unrelated = "was not rejected for its translucent body"
+        for events in ([], [{"kind": "rejected", "error": "command label: missing font"}]):
+            with self.subTest(events=events), self.assertRaisesRegex(ValueError, unrelated):
+                verify_translucent_frost(rejected, events)
+        translucent = frost_frame(3, "frostRepresentation", "translucentPigmented")
+        translucent["configuration"] = "translucentFrost"
+        for event, message in ((translucent, "was published: frame event .*translucentPigmented"),
+                               ({"kind": "published", "deviceScale": 1}, "was published: published event")):
+            with self.subTest(event=event["kind"]), self.assertRaisesRegex(ValueError, message):
+                verify_translucent_frost(rejected, [event])
+
+
+def frost_frame(sequence, field=None, value=None):
+    body = {"materialFamily": "frost", "frostRepresentation": "opaqueDimensional",
+            "pigment": {"body": {"colorSpace": "srgb", "components": [.94, .94, .92], "alpha": 1}},
+            "contentFallbackApplied": False}
+    if field == "alpha":
+        body["pigment"]["body"]["alpha"] = value
+    elif field == "frostRepresentation" and value is None:
+        del body[field]
+    elif field:
+        body[field] = value
+    return {"kind": "frame", "sequence": sequence, "configuration": "frost",
+            "snapshot": {"paint": {"paint": {"body": body}}}}
 
 
 if __name__ == "__main__":

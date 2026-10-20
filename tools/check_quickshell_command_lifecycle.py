@@ -91,6 +91,7 @@ def authored_requests():
     return {"standard": request_for("light", "Reconnect"), "replacement": replacement,
             "motion": variant(False), "reduced": variant(True), "cast": variant(False, "cast"),
             "frost": variant(False, "frost", True),
+            "translucentFrost": variant(False, "frost"),
             "channels": json.loads((ROOT / "conformance/ir/command-motion-request.json").read_text())["channels"]}
 
 
