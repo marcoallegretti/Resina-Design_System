@@ -1356,6 +1356,8 @@ request fails. Input reaches the control through the compositor:
   presents the effect's committed state and is the release retarget. A Space press
   held through auto-repeat and the Space activation after a live scale change
   meet the same callback and ordering conditions;
+- a press, its release, hover enter and a second press follow while the spring
+  is still moving, so each hands over a moving state;
 - compositor hover enters and leaves the target through spring frames. Qt's
   Wayland client types the seat pointer as a touchpad when the compositor offers
   pointer gestures, so hover accepts mouse events from mouse and touchpad devices;
@@ -1389,22 +1391,19 @@ request fails. Input reaches the control through the compositor:
 
 Every logged clock epoch boundary is then checked. A boundary is a frame whose
 retained `channels` or target differ from those of the frame logged before it
-in the same engine generation. Its initial position and velocity must equal,
-within 0.02 and 0.1, the state the previous trajectory reached, sampled with
-that trajectory's own policy; reduced motion and Cast reach their endpoint with
-zero velocity. The instant is:
-
-- the published `retargetTime`, which must not precede the previous frame's
-  sample or exceed the log time elapsed since the frame logged before that one.
-  That log bound is only as tight as one frame's preparation time; the precision
-  of the restart instant itself comes from the Qt runtime clock check, which
-  compares `CommandClock.restart()` with monotonic time;
-- for an epoch resumed by a reconfiguration, which publishes no `retargetTime`,
-  any instant within the same log bound, tried at most 1 ms apart. A boundary
-  without `retargetTime` fails unless the probe logged a configuration request
-  between the two frames or their configuration, device scale or target centre
-  differ. Policy changes come only from configuration changes, so they are
-  checked this way.
+in the same engine generation. It must publish exactly one instant: a
+`retargetTime`, or for an epoch resumed by a reconfiguration a `resumeTime`.
+Its initial position and velocity must equal, within spec/44's tolerance
+`max(1e-9, 1e-9 * abs(expected))`, the state the previous trajectory reaches
+at that instant, sampled with that trajectory's own policy; reduced motion and Cast
+reach their endpoint with zero velocity. The instant must not precede the
+previous frame's sample or exceed the log time elapsed since the frame logged
+before that one. That log bound is only as tight as one frame's preparation
+time; the precision of the restart instant itself comes from the Qt runtime
+clock check, which compares `CommandClock.restart()` with monotonic time. A
+`resumeTime` fails unless the probe logged a configuration request between the
+two frames or their configuration, device scale or target centre differ. Policy
+changes come only from configuration changes, so they are checked this way.
 
 A channel may hand over exactly zero velocity only when the trajectory it
 continues is settled at that instant or uses reduced motion or Cast. An
@@ -1414,15 +1413,22 @@ published. Of the effects logged between the two frames, take the last whose
 committed state has, through the request in effect, a policy or target other
 than those of the previous frame: the boundary may instead continue an epoch for
 that state that started from the previous trajectory, and both elapsed times
-together must fit the same log bound; its start is tried at no more than 501
-instants. Otherwise a `retargetTime` that precedes
+together must fit the same log bound. That start is not published: the closest
+of at most 501 evenly spaced instants is refined by ternary search within one
+spacing, and the boundary must continue it within the same tolerance at the
+published instant. Otherwise a `retargetTime` or `resumeTime` that precedes
 the previous sample, or a retarget across a changed configuration, device scale
 or position, fails because the epoch it continues was not logged, as does a
-`retargetTime` on the first frame of a generation or a boundary with only one
-earlier frame logged. The run must check at least one boundary each for hover
-enter, hover exit, press, release and a policy change, and `report.json` counts
-the checked boundaries by trigger, including availability changes and
-reconfigurations; one boundary can count for several triggers.
+published instant on the first frame of a generation or a boundary with only
+one earlier frame logged. A rejected configuration fails the control, which
+discards its trajectory and clock: the first boundary after a logged rejection
+must publish no instant and start from the authored channels. The run must
+check at least one boundary each for hover enter, hover exit, press, release, a
+policy change and a reconfiguration, and for each of them at least one boundary
+that hands over a nonzero velocity. `report.json` counts the checked boundaries
+by trigger under `boundaries`, including availability changes and restarts after
+a rejection, and those handing over a nonzero velocity under `movingBoundaries`;
+one boundary can count for several triggers.
 
 The check runs at the output scale given by `--scale` and first requires the
 device pixel ratio of the Command's window to equal it. The probe logs that
