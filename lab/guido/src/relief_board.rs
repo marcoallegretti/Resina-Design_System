@@ -311,10 +311,7 @@ mod tests {
 
     fn source_and_font() -> (String, FontFamily) {
         let source = std::fs::read_to_string(std::env::var("RESINA_SCENES").unwrap()).unwrap();
-        let font = std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap();
-        board::validate_font(&font, "DejaVu Sans").unwrap();
-        guido::load_font(font);
-        (source, FontFamily::name("DejaVu Sans"))
+        (source, board::conformance_family())
     }
 
     #[test]

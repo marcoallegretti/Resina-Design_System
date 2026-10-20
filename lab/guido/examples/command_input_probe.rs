@@ -248,7 +248,7 @@ impl Widget for FocusPeer {
             Rect::new(16.0, 16.0, 168.0, 88.0),
             Color::BLACK,
             20.0,
-            FontFamily::name("DejaVu Sans"),
+            FontFamily::name("Inter"),
             FontWeight::NORMAL,
             LineHeight::default(),
             0.0,
@@ -463,24 +463,32 @@ fn run() -> Result<(), Box<dyn Error>> {
     let peer_mode = args.len() == 4 && args[3] == "--focus-peer";
     if args.len() != 3 && !peer_mode {
         return Err(
-            "usage: native-command-probe <repository> <scenes.json> <DejaVuSans.ttf> [--focus-peer]".into(),
+            "usage: native-command-probe <repository> <scenes.json> <font-files> [--focus-peer]; <font-files> lists the Inter masters with the platform path-list separator".into(),
         );
     }
-    let font = std::fs::read(&args[2])?;
-    let mut database = fontdb::Database::new();
-    database.load_font_data(font.clone());
-    if !database.faces().any(|face| {
-        face.families
-            .iter()
-            .any(|(family, _)| family == "DejaVu Sans")
-    }) {
-        return Err("input fixture requires DejaVu Sans in the supplied font file".into());
+    let mut fonts = Vec::new();
+    for path in std::env::split_paths(&args[2]) {
+        let font = std::fs::read(path)?;
+        let mut database = fontdb::Database::new();
+        database.load_font_data(font.clone());
+        if !database
+            .faces()
+            .any(|face| face.families.iter().any(|(family, _)| family == "Inter"))
+        {
+            return Err("input fixture requires Inter in every supplied font file".into());
+        }
+        fonts.push(font);
     }
-    guido::load_font(font);
+    if fonts.is_empty() {
+        return Err("input fixture requires the Inter font files".into());
+    }
+    for font in fonts {
+        guido::load_font(font);
+    }
     let frames = Rc::new(prepare(
         &args[0],
         &std::fs::read_to_string(&args[1])?,
-        FontFamily::name("DejaVu Sans"),
+        FontFamily::name("Inter"),
     )?);
     let target = frames.target.bounds();
     if peer_mode {

@@ -135,13 +135,14 @@ and action availability, target bounds, label ink and containment are checked.
 The original arithmetic Toggle test remains independently executable.
 
 For example, in a Linux checkout with the native backend's documented build
-dependencies and DejaVu Sans installed:
+dependencies and the pinned Inter static masters installed (`fonts-inter` on
+Ubuntu 24.04, or `python tools/conformance_font.py fetch --output DIR`):
 
 ```bash
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
 export RESINA_SCENES="$PWD/target/material-scenes.json"
-export RESINA_LABEL_FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+export RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter
 RESINA_COMMAND_CAPTURE_DIR="$PWD/target/calibrated-command" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing --test command_content calibrated_command_profiles_preserve_complete_native_content_on_retarget
 RESINA_TOGGLE_CAPTURE_DIR="$PWD/target/calibrated-toggle" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing --test toggle_content frames_keep_current_adjacency_semantics_and_raw_retarget_state -- --test-threads=1
 ```
@@ -149,6 +150,7 @@ RESINA_TOGGLE_CAPTURE_DIR="$PWD/target/calibrated-toggle" cargo test --manifest-
 Use fresh capture directories: output refuses to overwrite an existing frame.
 The Toggle calibrated frames are in the `calibrated/` child directory. Preserve
 the committed source, supplied scene file, actual font and adapter identity when
-recording a run. The checked Linux specimens use DejaVu Sans and llvmpipe Vulkan;
+recording a run. The checked Linux specimens were recorded with DejaVu Sans,
+before the label checks moved to the Inter masters, and llvmpipe Vulkan;
 they are sampled native composition evidence, not hardware cadence, native
 input, assistive-technology qualification or full component-style acceptance.

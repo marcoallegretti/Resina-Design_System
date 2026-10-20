@@ -73,7 +73,7 @@ class VisualAcceptanceTests(unittest.TestCase):
                 "typography": load_json(ROOT / "conformance/headless/expected-resolution.json")["typography"]["label"],
                 "size": {"width": 64, "height": 44}, "labelBounds": {"x": 16, "y": 8, "width": 36, "height": 28},
             },
-            "font": {"family": "DejaVu Sans", "gitBlob": "b" * 40},
+            "font": {"family": "Inter", "postScriptName": "Inter-Regular", "weight": 400, "file": "Inter-Regular.otf", "gitBlob": "b" * 40},
             "renderer": {"name": "guido-native-label-test", "gitBlob": "c" * 40,
                          "gpu": {"name": "unit-fixture", "vendor": 0, "device": 0, "backend": "Vulkan", "deviceType": "Cpu", "driver": "test", "driverInfo": "test"}},
             "runtime": {"system": "test", "machine": "test"}, "colorEncoding": "rgba8-srgb-straight",

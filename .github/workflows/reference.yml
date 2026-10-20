@@ -376,22 +376,23 @@ jobs:
       - name: Install GUIdo build and software GPU dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends --no-upgrade -y libwayland-dev libxkbcommon-dev libvulkan1 mesa-vulkan-drivers fonts-dejavu-core
+          sudo apt-get install --no-install-recommends --no-upgrade -y libwayland-dev libxkbcommon-dev libvulkan1 mesa-vulkan-drivers fonts-dejavu-core fonts-inter
       - run: cargo fmt --manifest-path backends/guido/resina-guido/Cargo.toml -- --check
       - run: python -m pip install -r tools/requirements-schema.txt
+      - run: python tools/conformance_font.py verify /usr/share/fonts/opentype/inter
       - run: cargo build -p resina-resolver --bin resina-theme-resolve --locked
       - run: python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
       - name: Check preparation and required GPU rendering
         env:
           RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
-          RESINA_LABEL_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          RESINA_LABEL_FONT_DIR: /usr/share/fonts/opentype/inter
         run: cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
       - run: cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
       - run: cargo fmt --manifest-path lab/guido/Cargo.toml -- --check
       - name: Check native Material Board
         env:
           RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
-          RESINA_LABEL_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          RESINA_LABEL_FONT_DIR: /usr/share/fonts/opentype/inter
         run: cargo test --manifest-path lab/guido/Cargo.toml --locked
       - run: cargo clippy --manifest-path lab/guido/Cargo.toml --all-targets --locked -- -D warnings
   rust:

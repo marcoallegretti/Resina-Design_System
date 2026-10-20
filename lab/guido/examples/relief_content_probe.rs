@@ -131,12 +131,12 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
     database.load_font_data(font.clone());
     if !database.faces().any(|face| {
-        face.families.iter().any(|(name, _)| name == "DejaVu Sans")
+        face.families.iter().any(|(name, _)| name == "Inter")
             && face.weight == fontdb::Weight::NORMAL
             && face.style == fontdb::Style::Normal
             && face.stretch == fontdb::Stretch::Normal
     }) {
-        return Err("inspection font contains no regular normal-width DejaVu Sans face".into());
+        return Err("inspection font contains no regular normal-width Inter face".into());
     }
     guido::load_font(font.clone());
     let scale: f32 = args[2].parse()?;
@@ -203,7 +203,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         .map_err(|errors| format!("inspection theme: {errors:?}"))?;
     let direction: LayoutDirection =
         serde_json::from_value(request["outline"]["layoutDirection"].clone())?;
-    let family = guido::widgets::font::FontFamily::name("DejaVu Sans");
+    let family = guido::widgets::font::FontFamily::name("Inter");
     let label = resolve_command_label(
         CommandLabelInput {
             text: "j Reconnect now",

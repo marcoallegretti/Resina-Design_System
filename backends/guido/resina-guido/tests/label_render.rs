@@ -1,5 +1,7 @@
 #![cfg(feature = "testing")]
 
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
 #[path = "common/cases.rs"]
 mod label_cases;
 #[path = "common/label_evidence.rs"]
@@ -12,7 +14,7 @@ use guido::{
         DrawCommand, FlattenScratch, GpuContext, LineFit, RenderNode, RenderTarget, Renderer,
         flatten_root_into,
     },
-    widgets::{Color, TextAlign, TextOverflow, font::FontFamily},
+    widgets::{Color, TextAlign, TextOverflow},
 };
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{
@@ -94,11 +96,7 @@ fn assert_matches_unconstrained(
 
 #[test]
 fn complete_centered_labels_reach_every_native_line_at_all_scales() {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT is required"))
-            .unwrap(),
-    );
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let gpu = GpuContext::try_new().expect("native label GPU rendering is required");
     let mut target = RenderTarget::offscreen(&gpu, 220, 300);
     let mut renderer = Renderer::new(gpu.device.clone(), gpu.queue.clone(), target.format());
@@ -359,27 +357,27 @@ fn complete_centered_labels_reach_every_native_line_at_all_scales() {
             LabelPrepareError::InvalidScale
         );
     }
-    let edit_fit = measure_command_label(
+    let edit_fix = measure_command_label(
         family,
         LabelMeasureInput {
-            text: "Edit Fit",
+            text: "Edit Fix",
             typography: &spaced,
             maximum_width: None,
         },
     )
     .unwrap();
     // Both rebreak at 1.5 while keeping the complete height and widest line.
-    for text in ["Edit Fit a\nFit Edit", "Fit Edit Edit Fit a"] {
+    for text in ["Edit Fix a\nFix Edit", "Fix Edit Edit Fix a"] {
         let rebreaking = resolve_command_label(
             CommandLabelInput {
                 text,
                 typography: &spaced,
                 minimum_size: SurfaceSize {
-                    width: edit_fit.width,
+                    width: edit_fix.width,
                     height: 44.0,
                 },
                 maximum_size: SurfaceSize {
-                    width: edit_fit.width,
+                    width: edit_fix.width,
                     height: 300.0,
                 },
                 padding: SafeArea {
@@ -412,11 +410,7 @@ fn complete_centered_labels_reach_every_native_line_at_all_scales() {
 
 #[test]
 fn native_drawing_applies_the_measured_letter_spacing() {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT is required"))
-            .unwrap(),
-    );
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let gpu = GpuContext::try_new().expect("native label GPU rendering is required");
     let mut target = RenderTarget::offscreen(&gpu, 220, 80);
     let mut renderer = Renderer::new(gpu.device.clone(), gpu.queue.clone(), target.format());
@@ -481,11 +475,7 @@ fn native_drawing_applies_the_measured_letter_spacing() {
 
 #[test]
 fn hard_breaks_and_empty_paragraphs_draw_their_measured_lines() {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT is required"))
-            .unwrap(),
-    );
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let gpu = GpuContext::try_new().expect("native label GPU rendering is required");
     let mut target = RenderTarget::offscreen(&gpu, 220, 300);
     let mut renderer = Renderer::new(gpu.device.clone(), gpu.queue.clone(), target.format());
@@ -567,4 +557,26 @@ fn hard_breaks_and_empty_paragraphs_draw_their_measured_lines() {
             assert_eq!(inked(bottom + typography.font_size() * 0.5, 300.0), 0);
         }
     }
+}
+
+#[test]
+fn authored_weights_resolve_distinct_inter_masters() {
+    let masters = conformance_font::masters();
+    let resolved = [400, 500, 600].map(|weight| {
+        label_evidence::resolve(&masters, weight).unwrap_or_else(|error| panic!("{error}"))
+    });
+    for (master, (file, name)) in resolved.iter().zip([
+        ("Inter-Regular.otf", "Inter-Regular"),
+        ("Inter-Medium.otf", "Inter-Medium"),
+        ("Inter-SemiBold.otf", "Inter-SemiBold"),
+    ]) {
+        assert_eq!(master.path.file_name().unwrap(), file);
+        assert_eq!(master.post_script_name, name);
+    }
+    let regular_only = label_evidence::resolve(&masters[..1], 500).err().unwrap();
+    assert!(
+        regular_only.contains("weight 500 resolved to Inter-Regular (400")
+            && regular_only.contains("substituted"),
+        "{regular_only}"
+    );
 }

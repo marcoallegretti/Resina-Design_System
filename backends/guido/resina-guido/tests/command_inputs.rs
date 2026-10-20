@@ -1,4 +1,6 @@
-use guido::{prelude::FontFamily, renderer::DrawCommand};
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
+use guido::renderer::DrawCommand;
 use resina_environment::SafeArea;
 use resina_guido::{CommandInputs, CommandPrepareError};
 use resina_model::{
@@ -10,9 +12,6 @@ use serde_json::Value;
 use std::sync::Arc;
 
 fn inputs() -> CommandInputs {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("explicit font required")).unwrap(),
-    );
     let source: Value = serde_json::from_str(include_str!(
         "../../../../conformance/ir/command-motion-request.json"
     ))
@@ -30,7 +29,7 @@ fn inputs() -> CommandInputs {
         emphasis: CommandEmphasis::Standard,
         appearance: serde_json::from_value(body["appearance"].clone()).unwrap(),
         command_appearance: serde_json::from_value(source["commandAppearance"].clone()).unwrap(),
-        font: FontFamily::name("DejaVu Sans"),
+        font: conformance_font::load(),
         text: "Reconnect".into(),
         description: Some("Reconnect to the configured network.".into()),
         minimum_size: SurfaceSize {

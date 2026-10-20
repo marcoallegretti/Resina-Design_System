@@ -224,9 +224,18 @@ would clamp or drop (`ScaledMetrics`) and invalid color channels fail explicitly
 these constraints: its layout can shrink the text box to the longest line before
 drawing.
 
-The native label test requires `RESINA_LABEL_FONT` to name the installed
-DejaVuSans.ttf file and loads it before measurement and rendering. On Ubuntu with
-`fonts-dejavu-core`, this is `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf`.
+The native label tests require `RESINA_LABEL_FONT_DIR` to name a directory that
+holds the Inter 4.0 static Regular, Medium and SemiBold masters pinned in
+[`tools/conformance_font.json`](../../../tools/conformance_font.json), and register
+all three before measurement and rendering. On Ubuntu 24.04 with `fonts-inter`,
+this is `/usr/share/fonts/opentype/inter`; elsewhere
+`python tools/conformance_font.py fetch --output DIR` provides them. Inter has no
+Arabic or Hebrew glyphs, so those labels shape with the system fallback face
+(DejaVu Sans in CI). Fontdb's CSS matching, which the pinned cosmic-text tries
+first for GUIdo text, must resolve weights 400, 500 and 600 to the three distinct
+masters; with only the Regular master, weight 500 resolves to Regular and the
+test reports the substitution. A saved capture records the resolved master's
+PostScript name, weight, file and Git blob.
 Actual GPU readback checks Latin, expanded German and Arabic labels plus the
 public 100/150/200% string-length matrix at three text scales and four device
 scales: 72 frames, each with 0.15 px tracking before text scaling and no ink a
@@ -255,7 +264,7 @@ conformance probes, not interactive controls. Component accessibility and native
 event delivery remain separate work.
 
 The separate [glyph-ink test](tests/label_ink.rs) verifies that a command's
-advance box does not crop a centered DejaVu Sans “j” at 60 logical px. It
+advance box does not crop a centered Inter Regular “j” at 60 logical px. It
 compares the adapter's exact resolved label rectangle with a wider diagnostic
 rectangle at an identical glyph position, at device scales 1, 1.25, 2 and 3.
 Every corresponding pixel must match, with visible ink outside the resolved
@@ -556,7 +565,7 @@ context cannot be created; it never skips rendering checks.
 python -m pip install -r tools/requirements-schema.txt
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT="$RESINA_LABEL_FONT" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
+RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
 cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
 

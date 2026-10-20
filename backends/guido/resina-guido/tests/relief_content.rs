@@ -1,5 +1,7 @@
 #![cfg(feature = "testing")]
 
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
 #[path = "common/label.rs"]
 mod label_style;
 #[path = "common/readback.rs"]
@@ -10,7 +12,7 @@ use guido::{
         DrawCommand, FlattenScratch, GpuContext, LineFit, RenderNode, RenderTarget, Renderer,
         flatten_root_into,
     },
-    widgets::{Color, font::FontFamily},
+    widgets::Color,
 };
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{ReliefContentPrepareError, measure_command_label, prepare_relief_content_at};
@@ -24,8 +26,7 @@ use std::rc::Rc;
 
 #[test]
 fn placed_relief_content_preserves_complete_native_text_and_rejects_edge_overlap() {
-    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let vectors: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../conformance/ir/relief-paint-vectors.json"
     ))
@@ -92,8 +93,7 @@ fn placed_relief_content_preserves_complete_native_text_and_rejects_edge_overlap
 
 #[test]
 fn actual_glyph_ink_remains_on_the_opaque_plateau_at_fractional_device_and_text_scales() {
-    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let vectors: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../conformance/ir/relief-paint-vectors.json"
     ))

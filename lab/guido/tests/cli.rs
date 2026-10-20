@@ -4,6 +4,24 @@ use std::{
     process::Command,
 };
 
+/// The pinned Inter static masters as one platform path list.
+fn conformance_fonts() -> String {
+    let directory = std::path::PathBuf::from(
+        std::env::var_os("RESINA_LABEL_FONT_DIR").expect("RESINA_LABEL_FONT_DIR required"),
+    );
+    std::env::join_paths(
+        [
+            "Inter-Regular.otf",
+            "Inter-Medium.otf",
+            "Inter-SemiBold.otf",
+        ]
+        .map(|file| directory.join(file)),
+    )
+    .unwrap()
+    .into_string()
+    .unwrap()
+}
+
 #[test]
 fn relief_command_writes_opaque_srgb_and_rejects_invalid_modes_without_overwriting() {
     let output =
@@ -11,8 +29,8 @@ fn relief_command_writes_opaque_srgb_and_rejects_invalid_modes_without_overwriti
     let args = [
         "relief-board".to_owned(),
         std::env::var("RESINA_SCENES").unwrap(),
-        std::env::var("RESINA_LABEL_FONT").unwrap(),
-        "DejaVu Sans".to_owned(),
+        conformance_fonts(),
+        "Inter".to_owned(),
         output.to_str().unwrap().to_owned(),
         "1.25".to_owned(),
         "1".to_owned(),
@@ -71,8 +89,8 @@ fn command_writes_native_srgb_png_and_preserves_existing_output() {
     let args = [
         "material-board".to_owned(),
         std::env::var("RESINA_SCENES").expect("RESINA_SCENES required"),
-        std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"),
-        "DejaVu Sans".to_owned(),
+        conformance_fonts(),
+        "Inter".to_owned(),
         output.to_str().unwrap().to_owned(),
         "1.25".to_owned(),
         "1".to_owned(),

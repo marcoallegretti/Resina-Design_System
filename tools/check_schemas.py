@@ -324,7 +324,7 @@ def check_visual_record_schemas():
             "typography": load_json(ROOT / "conformance/headless/expected-resolution.json")["typography"]["label"],
             "size": {"width": 64, "height": 44}, "labelBounds": {"x": 16, "y": 8, "width": 36, "height": 28}
         },
-        "font": {"family": "DejaVu Sans", "gitBlob": "b" * 40},
+        "font": {"family": "Inter", "postScriptName": "Inter-Regular", "weight": 400, "file": "Inter-Regular.otf", "gitBlob": "b" * 40},
         "renderer": {"name": "guido-native-label-test", "gitBlob": "c" * 40,
                      "gpu": {"name": "schema-fixture", "vendor": 0, "device": 0, "backend": "Vulkan", "deviceType": "Cpu", "driver": "test", "driverInfo": "test"}},
         "runtime": {"system": "test", "machine": "test"}, "colorEncoding": "rgba8-srgb-straight",
@@ -340,6 +340,9 @@ def check_visual_record_schemas():
     for name, path, value in (
         ("native fixture cannot self-accept", "/purpose", "accepted"),
         ("native font must identify its file", "/font/gitBlob", "unknown"),
+        ("native font must be a pinned Inter master", "/font/family", "DejaVu Sans"),
+        ("native font cannot record a substituted weight", "/font/weight", 500),
+        ("native font cannot record an unpinned master", "/font/file", "Inter-Bold.otf"),
         ("native readback needs actual GPU metadata", "/renderer/gpu", None),
         ("native image cannot escape directory", "/image/file", "../image.png"),
         ("native text cannot lose semantic result", "/semanticResult", {}),

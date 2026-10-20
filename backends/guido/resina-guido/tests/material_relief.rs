@@ -1,5 +1,7 @@
 #![cfg(feature = "testing")]
 
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
 #[path = "common/label.rs"]
 mod label_style;
 
@@ -105,8 +107,7 @@ fn authored_light_changes_are_ready_on_the_first_gpu_frame_at_fractional_scales(
 
 #[test]
 fn material_light_never_relaxes_complete_label_containment() {
-    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
-    let family = guido::widgets::font::FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     for name in [
         "cast-convex-opaque-face-active-light",
         "cast-recessed-opaque-face-active-light",

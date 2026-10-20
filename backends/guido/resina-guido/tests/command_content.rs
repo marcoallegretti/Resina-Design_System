@@ -1,5 +1,7 @@
 #![cfg(feature = "testing")]
 
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
 #[path = "common/cases.rs"]
 mod label_cases;
 #[path = "common/label.rs"]
@@ -44,8 +46,7 @@ const UNWRAPPED: LineFit = LineFit {
 
 #[test]
 fn placed_command_content_samples_material_before_native_translation() {
-    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let scenes: Value = serde_json::from_str(
         &std::fs::read_to_string(std::env::var("RESINA_SCENES").unwrap()).unwrap(),
     )
@@ -222,8 +223,7 @@ fn placed_command_content_samples_material_before_native_translation() {
 
 #[test]
 fn calibrated_command_profiles_preserve_complete_native_content_on_retarget() {
-    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
-    let font = FontFamily::name("DejaVu Sans");
+    let font = conformance_font::load();
     let scenes: Value = serde_json::from_str(
         &std::fs::read_to_string(std::env::var("RESINA_SCENES").unwrap()).unwrap(),
     )
@@ -753,11 +753,7 @@ fn check_frame(
 
 #[test]
 fn native_command_content_keeps_actual_ink_on_guarded_material() {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT is required"))
-            .unwrap(),
-    );
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let scenes: Value = serde_json::from_str(
         &std::fs::read_to_string(
             std::env::var("RESINA_SCENES").expect("RESINA_SCENES is required"),

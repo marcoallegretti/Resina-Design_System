@@ -1,7 +1,15 @@
 use guido::renderer::GpuContext;
 use resina_resolver::CommandLabelIr;
 use serde_json::json;
-use std::{fs, io::Write, path::Path, process::Command};
+use std::{
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
+    process::Command,
+    sync::Arc,
+};
+
+use super::conformance_font::FAMILY;
 
 fn git_output(args: &[&str]) -> String {
     let output = Command::new("git").args(args).output().unwrap();
@@ -11,6 +19,55 @@ fn git_output(args: &[&str]) -> String {
 
 fn blob(path: &Path) -> String {
     git_output(&["hash-object", "--no-filters", path.to_str().unwrap()])
+}
+
+pub struct Master {
+    pub post_script_name: String,
+    pub weight: u16,
+    pub path: PathBuf,
+}
+
+/// Identifies the face that fontdb's CSS matching selects for a requested weight.
+///
+/// The pinned cosmic-text tries this face first for GUIdo text. A face whose
+/// own weight differs from the request is a substitution.
+pub fn resolve(files: &[PathBuf], weight: u16) -> Result<Master, String> {
+    let mut fonts = fontdb::Database::new();
+    let mut sources = Vec::new();
+    for path in files {
+        let data = fs::read(path).map_err(|error| format!("{}: {error}", path.display()))?;
+        for id in fonts.load_font_source(fontdb::Source::Binary(Arc::new(data))) {
+            sources.push((id, path.clone()));
+        }
+    }
+    let id = fonts
+        .query(&fontdb::Query {
+            families: &[fontdb::Family::Name(FAMILY)],
+            weight: fontdb::Weight(weight),
+            stretch: fontdb::Stretch::Normal,
+            style: fontdb::Style::Normal,
+        })
+        .ok_or_else(|| format!("no {FAMILY} face matches weight {weight}"))?;
+    let face = fonts.face(id).unwrap();
+    let path = sources
+        .iter()
+        .find(|(source, _)| *source == id)
+        .unwrap()
+        .1
+        .clone();
+    if face.weight.0 != weight {
+        return Err(format!(
+            "weight {weight} resolved to {} ({}, {}); the requested weight was substituted",
+            face.post_script_name,
+            face.weight.0,
+            path.display()
+        ));
+    }
+    Ok(Master {
+        post_script_name: face.post_script_name.clone(),
+        weight,
+        path,
+    })
 }
 
 pub fn capture(
@@ -40,15 +97,10 @@ pub fn capture(
     let mut writer = encoder.write_header().unwrap();
     writer.write_image_data(pixels).unwrap();
     writer.finish().unwrap();
-    let font = std::env::var("RESINA_LABEL_FONT").unwrap();
-    let mut fonts = fontdb::Database::new();
-    fonts.load_font_data(fs::read(&font).unwrap());
-    assert!(
-        fonts
-            .faces()
-            .any(|face| face.families.iter().any(|(name, _)| name == "DejaVu Sans")),
-        "native label evidence requires the actual DejaVu Sans font file"
-    );
+    let weight = ir.typography().font_weight();
+    assert_eq!(weight.fract(), 0.0);
+    let master = resolve(&super::conformance_font::masters(), weight as u16)
+        .expect("native label evidence requires a real master for the requested weight");
     let adapter = &gpu.adapter_info;
     let record = json!({
         "schemaVersion": "0.1.0", "kind": "nativeLabel", "purpose": "diagnostic",
@@ -58,7 +110,11 @@ pub fn capture(
         "width": size.0, "height": size.1,
         "deviceScale": scales.0, "textScale": scales.1,
         "sampling": {"time": 0, "inputTrajectory": []},
-        "font": {"family": "DejaVu Sans", "gitBlob": blob(Path::new(&font))},
+        "font": {
+            "family": FAMILY, "postScriptName": master.post_script_name, "weight": master.weight,
+            "file": master.path.file_name().unwrap().to_str().unwrap(),
+            "gitBlob": blob(&master.path)
+        },
         "renderer": {
             "name": "guido-native-label-test", "gitBlob": blob(&std::env::current_exe().unwrap()),
             "gpu": {

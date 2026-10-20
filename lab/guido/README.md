@@ -11,15 +11,18 @@ Prepare the catalog with the existing theme resolver, then capture it on Linux:
 ```sh
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-cargo run --manifest-path lab/guido/Cargo.toml --locked -- material-board target/material-scenes.json /path/to/font.ttf "Font Family" target/material-board.png 1.25 1
+cargo run --manifest-path lab/guido/Cargo.toml --locked -- material-board target/material-scenes.json /path/to/Regular.otf:/path/to/Medium.otf:/path/to/SemiBold.otf "Font Family" target/material-board.png 1.25 1
 ```
 
 The final arguments are device scale and text scale, defaulting to 1. Device
 scale must be finite in [0.5, 4], text scale in [1, 3]. Captures are limited to
 16,777,216 pixels. Header text reflows at its measured width; the board grows
-vertically with text scaling. The named font family must exist in the supplied
-font file. GUIdo performs weight matching and shaping; arbitrary scripts and
-every font face are not certified by this English material catalog.
+vertically with text scaling. The font argument lists one or more font files
+with the platform path-list separator (`:` on Linux), and the named family must
+exist in every file. Supply a face for each authored weight, for example the
+Regular, Medium and SemiBold masters; GUIdo otherwise matches the nearest weight.
+GUIdo performs weight matching and shaping; arbitrary scripts and every font face
+are not certified by this English material catalog.
 
 The output is a native RGBA PNG tagged as sRGB. An existing output is never
 overwritten. Invalid catalogs, inconsistent names/themes/backdrops, unsupported
@@ -54,7 +57,7 @@ Capsules use circular geometry; the other specimens explicitly select quartic
 geometry. Nominal body thickness does not project a side or create a shadow.
 
 ```sh
-cargo run --release --locked --manifest-path lab/guido/Cargo.toml -- relief-board target/material-scenes.json /path/to/font.ttf "Font Family" target/relief-board.png 1.25 1 convex rest
+cargo run --release --locked --manifest-path lab/guido/Cargo.toml -- relief-board target/material-scenes.json /path/to/Regular.otf:/path/to/Medium.otf:/path/to/SemiBold.otf "Font Family" target/relief-board.png 1.25 1 convex rest
 ```
 
 The last two arguments select `flat`, `convex` or `recessed`, then `rest` or
@@ -75,7 +78,7 @@ preserved. Run the checker under a live parent Wayland display with Sway and gri
 
 ```sh
 cargo build --release --locked --manifest-path lab/guido/Cargo.toml
-python tools/check_guido_relief_native.py --probe lab/guido/target/release/resina-lab --request target/material-scenes.json --content-font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --relief-board convex --board-state focused --output-dir target/relief-board-native
+python tools/check_guido_relief_native.py --probe lab/guido/target/release/resina-lab --request target/material-scenes.json --content-font /usr/share/fonts/opentype/inter/Inter-Regular.otf --relief-board convex --board-state focused --output-dir target/relief-board-native
 ```
 
 Supply the actual binary path when `CARGO_TARGET_DIR` is set. Preflight determines
@@ -91,8 +94,9 @@ authored specimens; visual inspection still evaluates their material identity.
 Native checks establish presentation, not input or assistive
 technology integration.
 
-Set `RESINA_SCENES` to the prepared catalog and `RESINA_LABEL_FONT` to a DejaVu
-Sans font file, then run:
+Set `RESINA_SCENES` to the prepared catalog and `RESINA_LABEL_FONT_DIR` to the
+directory holding the pinned Inter static masters
+([`tools/conformance_font.json`](../../tools/conformance_font.json)), then run:
 
 ```sh
 cargo test --manifest-path lab/guido/Cargo.toml --locked
@@ -129,12 +133,13 @@ Build the example after preparing the catalog above:
 ```sh
 cargo build --manifest-path lab/guido/Cargo.toml --locked --example command_input_probe
 cargo run --manifest-path lab/guido/Cargo.toml --locked --example command_input_probe -- \
-  "$PWD" target/material-scenes.json /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+  "$PWD" target/material-scenes.json \
+  /usr/share/fonts/opentype/inter/Inter-Regular.otf:/usr/share/fonts/opentype/inter/Inter-Medium.otf:/usr/share/fonts/opentype/inter/Inter-SemiBold.otf
 ```
 
 Run it in an isolated layer-shell session with a fixed unit-scale output. The
 tested host is Sway 1.10.1 with an X11 backend, an Xvfb parent display and software
-Vulkan rendering. The fixture requires DejaVu Sans in the supplied font file,
+Vulkan rendering. The fixture requires Inter in every supplied font file,
 uses the scene's authored canvas, preserves its direction and rejects native
 layout that cannot contain the reserved target. Observed non-unit integer output
 scale fails explicitly. Font replacement, fractional scale changes, dynamic
@@ -168,7 +173,7 @@ Run the complete checker:
 python tools/check_guido_command_input.py \
   --probe lab/guido/target/debug/examples/command_input_probe \
   --scenes target/material-scenes.json \
-  --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+  --font-dir /usr/share/fonts/opentype/inter \
   --sway-socket /path/to/sway-ipc.sock \
   --parent-display :92 --parent-window 0x200004
 ```
@@ -228,7 +233,8 @@ realization, rather than accepted component appearance, input or accessibility.
 
 Build the `relief_content_probe` example to compare complete face and text pixels
 on an owned nested Wayland output. The checker isolates font discovery in its
-owned children and uses an explicit regular normal-width DejaVu Sans file.
+owned children and uses the pinned Inter Regular master; the Relief Board also
+registers the Medium and SemiBold masters from the same directory.
 The probe rejects discovered system fonts, authors weight 400 through existing
 theme resolution, and registers supplied bytes before each rendering lifetime.
 The checker records the input hash and compares the whole opaque canvas against
@@ -240,7 +246,7 @@ shortened-height render must expose a missing wrapped line while retaining ink.
 
 ```sh
 cargo build --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe
-python tools/check_guido_relief_native.py --probe lab/guido/target/debug/examples/relief_content_probe --content-font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --text-scale 2 --output-dir target/relief-content-native
+python tools/check_guido_relief_native.py --probe lab/guido/target/debug/examples/relief_content_probe --content-font /usr/share/fonts/opentype/inter/Inter-Regular.otf --text-scale 2 --output-dir target/relief-content-native
 ```
 
 If `CARGO_TARGET_DIR` is set, supply its example binary path. Run under a live
@@ -278,7 +284,7 @@ Use the optimized probe for the complete material-lit fractional-scale matrix:
 
 ```sh
 cargo build --release --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe
-python tools/check_guido_relief_native.py --probe lab/guido/target/release/examples/relief_content_probe --material-light --content-font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --content-focus --text-scale 2 --output-dir target/material-relief-content-native
+python tools/check_guido_relief_native.py --probe lab/guido/target/release/examples/relief_content_probe --material-light --content-font /usr/share/fonts/opentype/inter/Inter-Regular.otf --content-focus --text-scale 2 --output-dir target/material-relief-content-native
 ```
 
 Supply the actual font and `CARGO_TARGET_DIR` paths on the host. The same

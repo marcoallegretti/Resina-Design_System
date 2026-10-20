@@ -400,6 +400,28 @@ pub(crate) fn render(board: &Board) -> Result<Vec<u8>> {
         .collect())
 }
 
+/// The pinned Inter static masters; `tools/conformance_font.json` holds their SHA-256.
+#[cfg(test)]
+pub(crate) fn conformance_fonts() -> Vec<Vec<u8>> {
+    let directory = std::path::PathBuf::from(
+        std::env::var_os("RESINA_LABEL_FONT_DIR").expect("RESINA_LABEL_FONT_DIR required"),
+    );
+    [
+        "Inter-Regular.otf",
+        "Inter-Medium.otf",
+        "Inter-SemiBold.otf",
+    ]
+    .map(|file| std::fs::read(directory.join(file)).unwrap())
+    .into()
+}
+#[cfg(test)]
+pub(crate) fn conformance_family() -> FontFamily {
+    for data in conformance_fonts() {
+        validate_font(&data, "Inter").unwrap();
+        guido::load_font(data);
+    }
+    FontFamily::name("Inter")
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -408,12 +430,7 @@ mod tests {
             .unwrap()
     }
     fn font() -> FontFamily {
-        let data =
-            std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
-                .unwrap();
-        validate_font(&data, "DejaVu Sans").unwrap();
-        guido::load_font(data);
-        FontFamily::name("DejaVu Sans")
+        conformance_family()
     }
     #[test]
     fn every_native_specimen_and_text_line_survives_placement_and_scaling() {
@@ -646,12 +663,10 @@ mod tests {
     }
     #[test]
     fn invalid_and_mismatched_font_files_are_rejected() {
-        assert!(validate_font(b"not a font", "DejaVu Sans").is_err());
-        let data =
-            std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
-                .unwrap();
+        assert!(validate_font(b"not a font", "Inter").is_err());
+        let data = conformance_fonts().remove(0);
         assert!(validate_font(&data, "unknown family").is_err());
         assert!(validate_font(&data, "").is_err());
-        validate_font(&data, "DejaVu Sans").unwrap();
+        validate_font(&data, "Inter").unwrap();
     }
 }

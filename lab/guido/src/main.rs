@@ -13,17 +13,27 @@ fn run() -> Result<(), Box<dyn Error>> {
     if !(5..=if relief { 9 } else { 7 }).contains(&args.len())
         || (!relief && args[0] != "material-board")
     {
-        return Err("usage: resina-lab <material-board|relief-board|relief-board-native> <scenes.json> <font-file> <font-family> <output.png> [device-scale=1] [text-scale=1] [relief-kind=convex] [relief-state=rest]".into());
+        return Err("usage: resina-lab <material-board|relief-board|relief-board-native> <scenes.json> <font-files> <font-family> <output.png> [device-scale=1] [text-scale=1] [relief-kind=convex] [relief-state=rest]; <font-files> uses the platform path-list separator".into());
     }
     let scale: f32 = args.get(5).map_or(Ok(1.0), |v| v.parse())?;
     let text_scale: f64 = args.get(6).map_or(Ok(1.0), |v| v.parse())?;
     let source = fs::read_to_string(&args[1])
         .map_err(|error| format!("cannot read scene catalog {:?}: {error}", args[1]))?;
-    let data = fs::read(&args[2])
-        .map_err(|error| format!("cannot read font file {:?}: {error}", args[2]))?;
-    board::validate_font(&data, &args[3])?;
-    let native_font = native.then(|| data.clone());
-    guido::load_font(data);
+    let fonts = std::env::split_paths(&args[2])
+        .map(|path| {
+            let data = fs::read(&path)
+                .map_err(|error| format!("cannot read font file {}: {error}", path.display()))?;
+            board::validate_font(&data, &args[3])?;
+            Ok(data)
+        })
+        .collect::<Result<Vec<_>, Box<dyn Error>>>()?;
+    if fonts.is_empty() {
+        return Err("at least one font file is required".into());
+    }
+    let native_fonts = native.then(|| fonts.clone());
+    for data in fonts {
+        guido::load_font(data);
+    }
     let family = guido::widgets::font::FontFamily::name(&args[3]);
     let board = if relief {
         relief_board::prepare(
@@ -81,7 +91,9 @@ fn run() -> Result<(), Box<dyn Error>> {
         }
     );
     if let Some((width, height)) = native_dimensions {
-        guido::load_font(native_font.ok_or("native font bytes are absent")?);
+        for data in native_fonts.ok_or("native font bytes are absent")? {
+            guido::load_font(data);
+        }
         println!(
             "RESINA_RELIEF_BOARD_PREPARED {}",
             serde_json::json!({"scale":scale,"textScale":text_scale,"width":board.width,"height":board.height,"logicalWidth":width,"logicalHeight":height,"reliefKind":args.get(7).map_or("convex", String::as_str),"reliefState":args.get(8).map_or("rest",String::as_str)})

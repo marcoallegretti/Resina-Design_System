@@ -16,8 +16,19 @@
       "properties": {"time": {"const": 0}, "inputTrajectory": {"type": "array", "maxItems": 0}}
     },
     "font": {
-      "type": "object", "additionalProperties": false, "required": ["family", "gitBlob"],
-      "properties": {"family": {"const": "DejaVu Sans"}, "gitBlob": {"$ref": "#/$defs/blob"}}
+      "type": "object", "additionalProperties": false, "required": ["family", "postScriptName", "weight", "file", "gitBlob"],
+      "properties": {
+        "family": {"const": "Inter"},
+        "postScriptName": {"enum": ["Inter-Regular", "Inter-Medium", "Inter-SemiBold"]},
+        "weight": {"enum": [400, 500, 600]},
+        "file": {"enum": ["Inter-Regular.otf", "Inter-Medium.otf", "Inter-SemiBold.otf"]},
+        "gitBlob": {"$ref": "#/$defs/blob"}
+      },
+      "oneOf": [
+        {"properties": {"postScriptName": {"const": "Inter-Regular"}, "weight": {"const": 400}, "file": {"const": "Inter-Regular.otf"}}},
+        {"properties": {"postScriptName": {"const": "Inter-Medium"}, "weight": {"const": 500}, "file": {"const": "Inter-Medium.otf"}}},
+        {"properties": {"postScriptName": {"const": "Inter-SemiBold"}, "weight": {"const": 600}, "file": {"const": "Inter-SemiBold.otf"}}}
+      ]
     },
     "renderer": {
       "type": "object", "additionalProperties": false, "required": ["name", "gitBlob", "gpu"],
