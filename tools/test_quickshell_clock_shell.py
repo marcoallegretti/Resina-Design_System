@@ -1,9 +1,11 @@
 import unittest
+from unittest import mock
 
-from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, Shell, closed, edge_points, opened,
-                                          platform_expectations, tree_mismatch, verify_capture_size,
-                                          verify_command_scale, verify_device_scale, verify_platform_preferences,
-                                          verify_publication_scales)
+import check_quickshell_clock_shell
+from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, DesktopBackend, PortalTestBackend, Shell,
+                                          closed, edge_points, opened, platform_expectations, require_keys,
+                                          tree_mismatch, verify_capture_size, verify_command_scale,
+                                          verify_device_scale, verify_platform_preferences, verify_publication_scales)
 
 AUTHORED = {"reducedMotion": False, "reducedTransparency": False, "highContrast": False}
 FULL = {"reducedMotion": True, "highContrast": False, "colorScheme": "light"}
@@ -163,6 +165,41 @@ class ClockShellPlatformTests(unittest.TestCase):
         for current, request, message in cases:
             with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
                 verify_platform_preferences(current, request, FULL, expected, sources)
+
+    def test_a_required_key_the_portal_does_not_provide_fails_instead_of_skipping(self):
+        require_keys(FULL, ["reduced-motion", "contrast", "color-scheme"])
+        require_keys(dict(FULL, reducedMotion=None), ["contrast", "color-scheme"])
+        with self.assertRaisesRegex(ValueError, "does not provide required keys: reduced-motion$"):
+            require_keys(dict(FULL, reducedMotion=None), ["reduced-motion", "contrast"])
+        with self.assertRaisesRegex(ValueError, "required keys: contrast, color-scheme$"):
+            require_keys({name: None for name in FULL}, ["contrast", "color-scheme"])
+
+    def test_the_desktop_backend_changes_and_resets_the_gnome_settings(self):
+        with mock.patch.object(check_quickshell_clock_shell, "gsettings") as gsettings:
+            settings = DesktopBackend({"GSETTINGS_BACKEND": "dconf"})
+            for key in ("reduced-motion", "contrast", "color-scheme"):
+                settings.change(key)
+                settings.reset(key)
+        environment = {"GSETTINGS_BACKEND": "dconf"}
+        self.assertEqual(gsettings.call_args_list, [
+            mock.call(environment, "set", "org.gnome.desktop.a11y.interface", "reduced-motion", "reduce"),
+            mock.call(environment, "reset", "org.gnome.desktop.a11y.interface", "reduced-motion"),
+            mock.call(environment, "set", "org.gnome.desktop.a11y.interface", "high-contrast", "true"),
+            mock.call(environment, "reset", "org.gnome.desktop.a11y.interface", "high-contrast"),
+            mock.call(environment, "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark"),
+            mock.call(environment, "reset", "org.gnome.desktop.interface", "color-scheme")])
+
+    def test_the_test_backend_sets_the_preferred_value_and_resets_to_no_preference(self):
+        backend = check_quickshell_clock_shell.portal_settings_backend
+        with mock.patch.object(backend, "set_value") as set_value:
+            settings = PortalTestBackend({"DBUS_SESSION_BUS_ADDRESS": "unix:path=/bus"})
+            for key in ("reduced-motion", "contrast", "color-scheme"):
+                settings.change(key)
+                settings.reset(key)
+        environment = {"DBUS_SESSION_BUS_ADDRESS": "unix:path=/bus"}
+        self.assertEqual(set_value.call_args_list, [
+            mock.call(environment, key, value) for key in ("reduced-motion", "contrast", "color-scheme")
+            for value in (1, 0)])
 
 
 DATE = "Monday, 19 October 2026"
