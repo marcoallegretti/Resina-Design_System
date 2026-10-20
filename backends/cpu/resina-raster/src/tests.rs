@@ -1,9 +1,11 @@
 use super::*;
 use resina_resolver::{
-    resolve_command_paint_source, resolve_focus_ir_source, resolve_material_relief_paint_source,
-    resolve_opaque_surface_source, resolve_relief_paint_source, resolve_surface_paint_source,
+    resolve_command_motion_source, resolve_command_paint_source, resolve_focus_ir_source,
+    resolve_material_relief_paint_source, resolve_opaque_surface_source,
+    resolve_relief_paint_source, resolve_surface_paint_source,
 };
 use serde_json::{Value, json};
+use std::cell::Cell;
 
 #[test]
 fn boundary_and_extreme_boxes_require_point_sampling() {
@@ -37,6 +39,23 @@ fn boundary_and_extreme_boxes_require_point_sampling() {
     };
     assert!(!uniform::placed_inside(region, content));
     assert!(!uniform::disjoint(region, surface.geometry().silhouette()));
+    assert!(!uniform::outside(region, surface.geometry().silhouette()));
+    let silhouette = surface.geometry().silhouette();
+    let bounds = silhouette.bounds().unwrap();
+    let edge = |x: f64| {
+        let point = PhysicalVector {
+            x,
+            y: bounds.y + bounds.height / 2.0,
+        };
+        SampleBox {
+            min: point,
+            max: point,
+        }
+    };
+    for x in [bounds.x.next_down(), bounds.x, bounds.x.next_up()] {
+        assert!(!uniform::outside(edge(x), silhouette));
+    }
+    assert!(uniform::outside(edge(bounds.x - 0.5), silhouette));
     let viewport = Viewport {
         origin: exterior,
         width: 1,
@@ -519,4 +538,70 @@ fn lit_shortcuts_and_samplers_match_point_sampling() {
         }
     }
     assert!(compared > 50_000, "{compared}");
+}
+
+#[test]
+fn lit_motion_frames_match_point_sampling() {
+    let mut regions = [0; 4];
+    let mut compared = 0_usize;
+    for (size, scale) in [
+        ([120.0, 44.0], 2.0_f64),
+        ([96.0, 40.0], 1.25),
+        ([120.0, 44.0], 2.0),
+    ] {
+        for states in [json!(["pressed", "focused"]), json!(["focused"])] {
+            for time in [0.0, 0.3] {
+                let mut request: Value = serde_json::from_str(include_str!(
+                    "../../../../conformance/ir/command-motion-request.json"
+                ))
+                .unwrap();
+                request["time"] = json!(time);
+                let body = &mut request["surface"]["body"];
+                body["size"] = json!({"width": size[0], "height": size[1]});
+                body["surface"]["form"]["shape"] = json!("rounded");
+                body["surface"]["states"]["states"] = states.clone();
+                body["appearance"]["shapeAssignments"]["profiles"]["rounded"]["radius"] =
+                    json!("radius.4");
+                body["theme"]["environment"]["layoutDirection"] = json!("ltr");
+                let motion = resolve_command_motion_source(&request.to_string()).unwrap();
+                let paint = motion.command().paint();
+                let viewport = Viewport {
+                    origin: PhysicalVector {
+                        x: -6.125,
+                        y: -6.375,
+                    },
+                    width: ((size[0] + 14.0) * scale).ceil() as u32,
+                    height: ((size[1] + 14.0) * scale).ceil() as u32,
+                    pixels_per_unit: scale,
+                };
+                let expected = render(
+                    viewport,
+                    4,
+                    paint.body().face().pigment().body(),
+                    |_| UniformRegion::Sample,
+                    |point| paint.sample_paint(point).map_err(RasterError::LitPaint),
+                )
+                .unwrap();
+                for workers in [1, 4] {
+                    REGIONS.with(|counts| counts.set([0; 4]));
+                    let actual =
+                        with_workers(workers, || render_lit_control_paint(paint, viewport, 4))
+                            .unwrap();
+                    assert!(
+                        actual.rgba() == expected.rgba(),
+                        "{size:?} {states} at {time} s and scale {scale} with {workers} workers"
+                    );
+                    if workers == 1 {
+                        for (total, count) in regions.iter_mut().zip(REGIONS.with(Cell::get)) {
+                            *total += count;
+                        }
+                    }
+                }
+                compared += expected.rgba().len() / 4;
+            }
+        }
+    }
+    assert!(compared > 50_000, "{compared}");
+    // Every shortcut, including the focus ring fill, decided some pixels.
+    assert!(regions.iter().all(|count| *count > 1_000), "{regions:?}");
 }

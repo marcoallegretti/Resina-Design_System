@@ -179,6 +179,8 @@ pub fn render_focus(
 enum UniformRegion {
     Clear,
     Solid,
+    /// Every sample has the fill color at this index.
+    Fill(usize),
     Sample,
 }
 
@@ -290,28 +292,60 @@ fn render_lit(
         && ring.is_none_or(|ring| {
             uniform::placed_supported(ring.inner()) && uniform::placed_supported(ring.outer())
         });
+    // The relief plateau, once certified flat and inside the edge interior, certifies each box
+    // within it without evaluating the box itself.
+    let plateau = face.surface().content_bounds();
+    let plateau = SampleBox {
+        min: PhysicalVector {
+            x: plateau.x,
+            y: plateau.y,
+        },
+        max: PhysicalVector {
+            x: plateau.x + plateau.width,
+            y: plateau.y + plateau.height,
+        },
+    };
+    let plateau = (supported
+        && uniform::placed_inside(plateau, body.geometry().edge_interior())
+        && body.flat_face_over(plateau.min, plateau.max))
+    .then_some(plateau);
+    let ring_color = focus.map(|focus| focus.indicator().color());
     render_sampled(
         viewport,
         samples_per_axis,
         face.pigment().body(),
+        ring_color.as_slice(),
         |region| {
             if region.min.x >= content.x
                 && region.min.y >= content.y
                 && region.max.x <= content.x + content.width
                 && region.max.y <= content.y + content.height
             {
-                UniformRegion::Solid
-            } else if supported
-                && uniform::disjoint(region, silhouette)
-                && ring.is_none_or(|ring| {
-                    uniform::placed_disjoint(region, ring.outer())
-                        || uniform::placed_inside(region, ring.inner())
-                })
-            {
-                UniformRegion::Clear
-            } else if supported
-                && body.flat_face_over(region.min, region.max)
-                && uniform::placed_inside(region, body.geometry().edge_interior())
+                return UniformRegion::Solid;
+            }
+            // Outside the silhouette the body paints nothing, so the focus ring decides.
+            if supported && uniform::outside(region, silhouette) {
+                match ring {
+                    None => return UniformRegion::Clear,
+                    Some(ring)
+                        if uniform::placed_outside(region, ring.outer())
+                            || uniform::placed_inside(region, ring.inner()) =>
+                    {
+                        return UniformRegion::Clear;
+                    }
+                    Some(ring)
+                        if uniform::placed_inside(region, ring.outer())
+                            && uniform::placed_outside(region, ring.inner()) =>
+                    {
+                        return UniformRegion::Fill(0);
+                    }
+                    Some(_) => {}
+                }
+            }
+            if plateau.is_some_and(|plateau| plateau.contains(region))
+                || supported
+                    && uniform::placed_inside(region, body.geometry().edge_interior())
+                    && body.flat_face_over(region.min, region.max)
             {
                 UniformRegion::Solid
             } else {
@@ -376,7 +410,14 @@ fn render(
     uniform: impl Fn(SampleBox) -> UniformRegion + Sync,
     sample: impl Fn(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError> + Sync,
 ) -> Result<RasterImage, RasterError> {
-    render_sampled(viewport, samples_per_axis, solid_color, uniform, || &sample)
+    render_sampled(
+        viewport,
+        samples_per_axis,
+        solid_color,
+        &[],
+        uniform,
+        || &sample,
+    )
 }
 
 /// Renders with one sampler per painting thread, so a sampler may keep evaluations it reuses.
@@ -384,6 +425,7 @@ fn render_sampled<S>(
     viewport: Viewport,
     samples_per_axis: u8,
     solid_color: &SrgbFallback,
+    fills: &[&SrgbFallback],
     uniform: impl Fn(SampleBox) -> UniformRegion + Sync,
     sampler: impl Fn() -> S + Sync,
 ) -> Result<RasterImage, RasterError>
@@ -405,10 +447,12 @@ where
             viewport,
             samples_per_axis,
             solid_color,
+            fills,
             uniform: &uniform,
             sample: sampler(),
-            decoded_color: None,
+            decoded: DecodedColors::default(),
             solid_pixel: None,
+            fill_pixels: vec![None; fills.len()],
         };
         while let Some((row, y)) = RowQueue::next(&queue) {
             if let Err(error) = painter.paint(row, y) {
@@ -461,6 +505,8 @@ const SERIAL_RASTER_BUDGET: Duration = Duration::from_micros(500);
 #[cfg(test)]
 thread_local! {
     static FORCED_WORKERS: std::cell::Cell<Option<usize>> = const { std::cell::Cell::new(None) };
+    /// Pixels of each [`UniformRegion`] kind this thread painted: clear, solid, fill and sampled.
+    static REGIONS: std::cell::Cell<[usize; 4]> = const { std::cell::Cell::new([0; 4]) };
 }
 
 /// Workers for a raster, and the time the calling thread paints alone before
@@ -511,10 +557,12 @@ struct RowPainter<'a, U, S> {
     viewport: Viewport,
     samples_per_axis: u8,
     solid_color: &'a SrgbFallback,
+    fills: &'a [&'a SrgbFallback],
     uniform: &'a U,
     sample: S,
-    decoded_color: Option<([f64; 3], [f64; 3])>,
+    decoded: DecodedColors,
     solid_pixel: Option<[u8; 4]>,
+    fill_pixels: Vec<Option<[u8; 4]>>,
 }
 
 impl<U, S> RowPainter<'_, U, S>
@@ -545,7 +593,19 @@ where
                 min: at(x, y, 0.0),
                 max: at(x, y, grid - 1.0),
             };
-            match (self.uniform)(region) {
+            let region = (self.uniform)(region);
+            #[cfg(test)]
+            REGIONS.with(|regions| {
+                let mut counts = regions.get();
+                counts[match region {
+                    UniformRegion::Clear => 0,
+                    UniformRegion::Solid => 1,
+                    UniformRegion::Fill(_) => 2,
+                    UniformRegion::Sample => 3,
+                }] += 1;
+                regions.set(counts);
+            });
+            match region {
                 UniformRegion::Clear => return Ok([0; 4]),
                 UniformRegion::Solid => {
                     if let Some(pixel) = self.solid_pixel {
@@ -553,6 +613,14 @@ where
                     }
                     let pixel = constant_pixel(self.solid_color, samples_per_axis)?;
                     self.solid_pixel = Some(pixel);
+                    return Ok(pixel);
+                }
+                UniformRegion::Fill(index) => {
+                    if let Some(pixel) = self.fill_pixels[index] {
+                        return Ok(pixel);
+                    }
+                    let pixel = constant_pixel(self.fills[index], samples_per_axis)?;
+                    self.fill_pixels[index] = Some(pixel);
                     return Ok(pixel);
                 }
                 UniformRegion::Sample => {}
@@ -571,15 +639,7 @@ where
                 if let Some(color) = (self.sample)(point)? {
                     covered += 1;
                     let components = color.components();
-                    let linear = match self.decoded_color {
-                        Some((previous, linear)) if previous == components => linear,
-                        _ => {
-                            let linear =
-                                srgb_to_linear_srgb(components).map_err(RasterError::Color)?;
-                            self.decoded_color = Some((components, linear));
-                            linear
-                        }
-                    };
+                    let linear = self.decoded.linear(components)?;
                     for (sum, channel) in linear_sum.iter_mut().zip(linear) {
                         *sum += channel;
                     }
@@ -593,6 +653,27 @@ where
             .map_err(RasterError::Color)?
             .map(quantize);
         Ok([r, g, b, quantize(f64::from(covered) / sample_count)])
+    }
+}
+
+/// The linear decodings of the most recent sample colors. A pixel's sample rows can alternate
+/// between a few colors, which then decode once per painter.
+#[derive(Default)]
+struct DecodedColors {
+    recent: [Option<([u64; 3], [f64; 3])>; 4],
+    next: usize,
+}
+
+impl DecodedColors {
+    fn linear(&mut self, components: [f64; 3]) -> Result<[f64; 3], RasterError> {
+        let key = components.map(f64::to_bits);
+        if let Some((_, linear)) = self.recent.iter().flatten().find(|(bits, _)| *bits == key) {
+            return Ok(*linear);
+        }
+        let linear = srgb_to_linear_srgb(components).map_err(RasterError::Color)?;
+        self.recent[self.next] = Some((key, linear));
+        self.next = (self.next + 1) % self.recent.len();
+        Ok(linear)
     }
 }
 
