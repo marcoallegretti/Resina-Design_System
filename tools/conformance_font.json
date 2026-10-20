@@ -1,0 +1,32 @@
+{
+  "family": "Inter",
+  "version": "4.0",
+  "license": "SIL Open Font License 1.1",
+  "archive": {
+    "url": "https://github.com/rsms/inter/releases/download/v4.0/Inter-4.0.zip",
+    "sha256": "ff970a5d4561a04f102a7cb781adbd6ac4e9b6c460914c7a101f15acb7f7d1a4"
+  },
+  "masters": [
+    {
+      "style": "Regular",
+      "weight": 400,
+      "file": "Inter-Regular.otf",
+      "archivePath": "extras/otf/Inter-Regular.otf",
+      "sha256": "be6d709dcb730ddaf050cbdae6fe89bd56d5d14dc66885639bbf6f06bd03521b"
+    },
+    {
+      "style": "Medium",
+      "weight": 500,
+      "file": "Inter-Medium.otf",
+      "archivePath": "extras/otf/Inter-Medium.otf",
+      "sha256": "1e65171fccd6f445b7742728454620ec2867356c849af78e71bf2c4f0e3d97ba"
+    },
+    {
+      "style": "SemiBold",
+      "weight": 600,
+      "file": "Inter-SemiBold.otf",
+      "archivePath": "extras/otf/Inter-SemiBold.otf",
+      "sha256": "bd68706b7bf8b3c580ae57685a2116bb1704b3a9998309ccfec7cd486f8a593e"
+    }
+  ]
+}
