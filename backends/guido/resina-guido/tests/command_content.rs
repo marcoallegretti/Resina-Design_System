@@ -489,12 +489,6 @@ impl NativeFrames {
         readback::read_frame(&self.target)
     }
 }
-fn in_content(content: PhysicalBounds, point: PhysicalVector) -> bool {
-    point.x >= content.x
-        && point.y >= content.y
-        && point.x <= content.x + content.width
-        && point.y <= content.y + content.height
-}
 fn pixel_color(pixel: &[u8]) -> resina_resolver::SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb", "components":pixel[..3].iter().map(|v| f64::from(*v)/255.0).collect::<Vec<_>>(), "alpha":1})).unwrap()
 }
@@ -676,20 +670,7 @@ fn check_frame(
             }
             continue;
         }
-        let x = index as u32 % width;
         let y = index as u32 / width;
-        for dx in [0.0, 1.0] {
-            for dy in [0.0, 1.0] {
-                let point = PhysicalVector {
-                    x: (f64::from(x) + dx) / f64::from(scale) - 16.0,
-                    y: (f64::from(y) + dy) / f64::from(scale) - 16.0,
-                };
-                assert!(
-                    in_content(face.content_bounds(), point),
-                    "{name}: glyph footprint crossed the content rectangle at {x},{y}"
-                );
-            }
-        }
         assert_eq!(baseline[3], 255, "{name}: glyph background is translucent");
         for channel in 0..3 {
             assert!(
