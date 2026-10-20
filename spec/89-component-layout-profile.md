@@ -102,11 +102,11 @@ authored Command profile, its extent tokens and the spatial binding shared by
 the authored light and dark themes. That binding gives compact 16 px inline and
 8 px block insets: compact lowers the body height but keeps the standard inline
 inset. With the 8 px block inset, a 12 px inline inset would cross the lit
-body's corner shoulder once the corner radius reaches 24 px. They cover every density mode at text
-scales 1 and 2, fine and coarse input, and both layout directions. Every mode
-keeps the 24-unit fine and 48-unit coarse target, including compact, whose
-visual minimum height is 32, and direct touch without a coarse pointer selects
-the 48-unit target.
+body's corner shoulder once the corner radius reaches 24 px. The layout cases
+cover every density mode at text scales 1 and 2, fine and coarse input, and
+both layout directions. Every mode keeps the 24-unit fine and 48-unit coarse
+target, including compact, whose visual minimum height is 32, and direct touch
+without a coarse pointer selects the 48-unit target.
 Further cases clamp the maximum to a narrow container, accept a container equal
 to the minimum, reject a container below the profile minimum, reject a text
 scale whose maximum overflows, reject insets that leave no label space, reject
