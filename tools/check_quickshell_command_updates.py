@@ -1,5 +1,6 @@
 import argparse
 import copy
+from fractions import Fraction
 import json
 import math
 import os
@@ -355,6 +356,28 @@ def verify_case(case, report, scale):
             raise ValueError("consumer callback changed the fixed authored target")
 
 
+def capture_body_probe(snapshot, scale):
+    """The capture pixel at the body's centre column halfway down the whole device pixels that the uniform
+    face contains above the label, located exactly from the published lit body IR."""
+    label = snapshot["label"]
+    top = Fraction(label["labelBounds"]["y"])
+    target = snapshot["hitRegion"]["bounds"]
+    body = snapshot["paint"]["paint"]["body"]
+    device = Fraction(scale)
+    origin = {axis: 50 - Fraction(target[axis]) for axis in ("x", "y")}
+    column = math.floor((origin["x"] + Fraction(label["size"]["width"]) / 2) * device)
+
+    def box(row):
+        return {"x": column / device - origin["x"], "y": row / device - origin["y"],
+                "width": 1 / device, "height": 1 / device}
+
+    rows = [row for row in range(math.floor(origin["y"] * device), math.ceil((origin["y"] + top) * device))
+            if box(row)["y"] + 1 / device <= top and ir_uniform_contains_box(body, box(row))]
+    if not rows:
+        raise ValueError("capture has no whole body pixel between the uniform face edge and the label")
+    return column, rows[len(rows) // 2]
+
+
 def verify_capture(path, snapshot, scale, surrounding_color=None):
     with Image.open(path) as source:
         if source.format != "PNG" or source.size != (round(500 * scale), round(800 * scale)):
@@ -376,18 +399,10 @@ def verify_capture(path, snapshot, scale, surrounding_color=None):
     right = math.ceil((50 - target["x"] + bounds["x"] + bounds["width"]) * scale)
     top = 50 - target["y"] + bounds["y"]
     body = snapshot["paint"]["paint"]["body"]
-    face = body["face"]
-    color = face["pigment"]["body"]
+    color = body["face"]["pigment"]["body"]
     if color["colorSpace"] != "srgb" or color["alpha"] != 1:
         raise ValueError("capture requires the supported opaque sRGB body pigment")
-    margin = max(face["edgeWidth"], face["surface"]["profile"]["shoulderWidth"])
-    body_x = math.floor((50 - target["x"] + label["size"]["width"] / 2) * scale)
-    body_y = math.floor((50 - target["y"] + (margin + bounds["y"]) / 2) * scale)
-    probe = {"x": body_x / scale - 50 + target["x"], "y": body_y / scale - 50 + target["y"],
-             "width": 1 / scale, "height": 1 / scale}
-    if probe["y"] + probe["height"] > bounds["y"] or not ir_uniform_contains_box(body, probe):
-        raise ValueError("capture has no whole body pixel between the uniform face edge and the label")
-    pixel = image.getpixel((body_x, body_y))
+    pixel = image.getpixel(capture_body_probe(snapshot, scale))
     if pixel[3] != 255 or any(abs(pixel[channel] - round(color["components"][channel] * 255)) > 1
                              for channel in range(3)):
         raise ValueError("native capture body pigment differs from its current authored snapshot")
