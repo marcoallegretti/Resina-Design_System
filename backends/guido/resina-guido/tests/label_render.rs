@@ -562,8 +562,9 @@ fn hard_breaks_and_empty_paragraphs_draw_their_measured_lines() {
 #[test]
 fn authored_weights_resolve_distinct_inter_masters() {
     let masters = conformance_font::masters();
+    let fonts = label_evidence::database(&masters, true).unwrap();
     let resolved = [400, 500, 600].map(|weight| {
-        label_evidence::resolve(&masters, weight).unwrap_or_else(|error| panic!("{error}"))
+        label_evidence::resolve(&fonts, weight).unwrap_or_else(|error| panic!("{error}"))
     });
     for (master, (file, name)) in resolved.iter().zip([
         ("Inter-Regular.otf", "Inter-Regular"),
@@ -573,10 +574,29 @@ fn authored_weights_resolve_distinct_inter_masters() {
         assert_eq!(master.path.file_name().unwrap(), file);
         assert_eq!(master.post_script_name, name);
     }
-    let regular_only = label_evidence::resolve(&masters[..1], 500).err().unwrap();
+    let regular_only = label_evidence::database(&masters[..1], false).unwrap();
+    let regular_only = label_evidence::resolve(&regular_only, 500).err().unwrap();
     assert!(
         regular_only.contains("weight 500 resolved to Inter-Regular (400")
             && regular_only.contains("substituted"),
         "{regular_only}"
     );
+}
+
+#[test]
+fn visible_unpinned_inter_face_is_rejected() {
+    let masters = conformance_font::masters();
+    let mut fonts = label_evidence::database(&masters, false).unwrap();
+    let mut medium = std::fs::read(&masters[1]).unwrap();
+    medium.push(0);
+    fonts.load_font_data(medium);
+    for weight in [400, 500, 600] {
+        let error = label_evidence::resolve(&fonts, weight).err().unwrap();
+        assert!(
+            error.contains(
+                "Inter-Medium (500, registered data face 0) is visible as Inter weight 500"
+            ) && error.contains("not the pinned master"),
+            "{error}"
+        );
+    }
 }
