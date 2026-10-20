@@ -106,7 +106,8 @@ The separately locked [Qt runtime adapter](backends/quickshell/resina-qt-runtime
 owns command activation in a native Rust/QObject binding. Compiled delivery
 matches shared activation cases, and actual Linux AT-SPI invocation verifies live
 availability through that binding. The released Quickshell 0.3.2 Command
-checkers run in CI; screen-reader presentation is verified locally only.
+checkers run in CI, including screen-reader presentation with Orca 46.1;
+Orca 50.3 is verified locally.
 Complete component publication, including Toggle, Slider and further
 components, remains outstanding.
 
