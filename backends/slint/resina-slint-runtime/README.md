@@ -45,14 +45,14 @@ Slint's allocation API itself does not expose recoverable allocation failure.
 
 ## Conformance
 
-On Ubuntu, install `libfontconfig-dev` and `fonts-dejavu-core` before building
+On Ubuntu, install `libfontconfig-dev` and `fonts-inter` before building
 this crate. The locked native font dependency discovers Fontconfig
 through `pkg-config`; runtime libraries or a font file alone are insufficient.
 
 ```sh
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf cargo test --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --features testing --locked
+RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter cargo test --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --features testing --locked
 cargo clippy --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
 
@@ -107,7 +107,10 @@ complete resolver closure.
 The family must name a registered native family. Missing families and failed
 face loading are diagnostic. Matching follows the pinned SDK's normal-style
 weight selection; fractional weights are rejected because Slint's Text weight
-property is an integer. Glyph fallback follows the shared native collection's
+property is an integer. A matched face whose own weight differs from the
+request, or that would need faux bold, fails with `FontWeightSubstituted`
+naming the matched weight; a variable face whose `wght` axis covers the request
+is accepted. Glyph fallback follows the shared native collection's
 configured fallback families. The application must establish their availability
 and retain that font context for both measurement and drawing. The adapter does
 not establish universal script coverage or certify a particular substitution.
@@ -134,9 +137,14 @@ The caller owns this provenance and the same-context drawing requirement.
 The measurement test covers seven complete labels, including expanded German,
 Arabic and explicit line breaks, at three text scales, five actual window
 scales and three spacing values (315 combinations), plus weight matching,
-blank paragraphs, CRLF and invalid input. `RESINA_LABEL_FONT` is required; CI explicitly registers DejaVu
-Sans on Linux and Arial on Windows. This proves layout measurement at those
-tested contexts, not visual shaping fidelity or full script coverage.
+blank paragraphs, CRLF and invalid input. `RESINA_LABEL_FONT_DIR` is required
+and must hold the Inter 4.0 static Regular, Medium and SemiBold masters pinned in
+[`tools/conformance_font.json`](../../../tools/conformance_font.json). The test
+registers all three, so weights 400, 500 and 600 measure real masters, while
+100, 300, 700 and 900 fail as substituted weights. CI installs `fonts-inter` on
+Linux and fetches the same masters by pinned URL and SHA-256 in the other matrix
+job. This proves layout measurement at those tested contexts, not visual
+shaping fidelity or full script coverage.
 
 **Drawing limitation:** the pinned SDK's
 [shared text renderer](https://github.com/slint-ui/slint/blob/372cf0ee5577c3dfec309a45e7b778ba4e81b734/internal/core/textlayout/sharedparley.rs#L195-L230)
@@ -148,9 +156,9 @@ also clips to Text bounds. The compiled
 with a diagnostic box extended by 20 logical px on each side. The added width
 and centered alignment preserve the glyph position. Every pixel within the
 advance box must match, and every difference must be cropped left overhang.
-Linux DejaVu Sans produced a 27 px advance with 16 cropped pixels; Windows
-Arial produced a 22 px advance with 33 cropped pixels. These counts describe
-the tested font files, not a universal threshold.
+The pinned Inter Regular master produced a 24 px advance with 9 cropped pixels
+in both tested environments. These counts describe the tested font file, not
+a universal threshold.
 
 This test records the pinned SDK's known clipping capability; a future SDK
 change that permits overhang must update this evidence and its assertions.

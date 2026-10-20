@@ -403,10 +403,8 @@ jobs:
         include:
           - os: ubuntu-24.04
             executableSuffix: ''
-            labelFont: '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
           - os: windows-latest
             executableSuffix: '.exe'
-            labelFont: 'C:/Windows/Fonts/arial.ttf'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -475,13 +473,20 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends --no-upgrade -y libfontconfig-dev fonts-dejavu-core
+          sudo apt-get install --no-install-recommends --no-upgrade -y libfontconfig-dev fonts-dejavu-core fonts-inter
           pkg-config --modversion fontconfig
+          python tools/conformance_font.py verify /usr/share/fonts/opentype/inter
+          echo "RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter" >> "$GITHUB_ENV"
+      - name: Fetch the pinned Inter conformance masters
+        if: runner.os != 'Linux'
+        shell: bash
+        run: |
+          python tools/conformance_font.py fetch --output "$RUNNER_TEMP/inter"
+          echo "RESINA_LABEL_FONT_DIR=$RUNNER_TEMP/inter" >> "$GITHUB_ENV"
       - name: Check compiled Slint runtime publication and measurement
         shell: bash
         env:
           RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
-          RESINA_LABEL_FONT: ${{ matrix.labelFont }}
         run: |
           python tools/material_scenarios.py -- target/debug/resina-theme-resolve${{ matrix.executableSuffix }} - > target/material-scenes.json
           cargo fmt --manifest-path backends/slint/resina-slint-runtime/Cargo.toml -- --check
