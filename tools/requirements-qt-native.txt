@@ -1,1 +1,2 @@
 PySide6==6.11.2
+jeepney==0.9.0

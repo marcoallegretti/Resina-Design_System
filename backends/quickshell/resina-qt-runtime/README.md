@@ -595,6 +595,17 @@ all three keys. xdg-desktop-portal-gnome 46 to 49 do not provide
 `contrast` and `color-scheme`. The checker needs a Wayland session for the GNOME
 backend.
 
+In CI, the platform `reduced-motion` value is exercised by the
+[clock shell](../../../lab/quickshell/clock-shell/README.md#verification) check
+at output scale 1. That check runs this element through the real
+xdg-desktop-portal 1.18.4 frontend with the test Settings backend
+[`portal_settings_backend.py`](../../../tools/portal_settings_backend.py) in
+place of the GNOME backend, and requires all three keys. The value and its
+changes therefore reach the element through the standard
+`org.freedesktop.portal.Settings` interface and `SettingChanged`, with no
+separate code path in the element. A desktop backend providing
+`reduced-motion` is verified only locally, with xdg-desktop-portal-gnome 50.0.
+
 ## Build and verification
 
 Install the tested Qt 6.11.2 development SDK with its Core/Qml tools and a C++17

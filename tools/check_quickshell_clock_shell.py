@@ -16,11 +16,13 @@ from PIL import Image
 from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_qt_native_availability import ACTION, action_names
-from check_qt_platform_appearance import APPEARANCE, session, start_portal, stop, wait_portal
+from check_qt_platform_appearance import APPEARANCE, PROPERTIES as PORTAL_KEYS, SETTINGS as DESKTOP_SETTINGS, \
+    session, start_portal, stop, wait_portal
 from check_quickshell_command_accessibility import NativeEvents, ScreenReader, buttons, exposed, state, text
 from check_quickshell_command_lifecycle import LOST_REPLY
 from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payload, references, \
     string_value
+import portal_settings_backend
 from sway_output import Sway, changed_scale
 from wayland_virtual_input import KEY_SPACE, KEY_TAB, VirtualInput
 
@@ -654,8 +656,52 @@ def verify_platform_preferences(observed, environment, portal, expected, sources
         raise ValueError(f"platform preferences did not reach the Command environment: {observed['preferences']}")
 
 
+def require_keys(portal, required):
+    missing = [key for key in required if portal[PORTAL_KEYS[key]] is None]
+    if missing:
+        raise ValueError("the portal does not provide required keys: " + ", ".join(missing))
+
+
 def gsettings(environment, *arguments):
     subprocess.run(["gsettings", *arguments], env=environment, check=True, timeout=10)
+
+
+class DesktopBackend:
+    name = "desktop backend, changed through GSettings"
+
+    def __init__(self, environment):
+        self.environment = environment
+
+    def change(self, key):
+        schema, setting, value, _ = DESKTOP_SETTINGS[key]
+        gsettings(self.environment, "set", schema, setting, value)
+
+    def reset(self, key):
+        schema, setting, _, _ = DESKTOP_SETTINGS[key]
+        gsettings(self.environment, "reset", schema, setting)
+
+
+class PortalTestBackend:
+    name = "test backend tools/portal_settings_backend.py, changed over D-Bus"
+
+    def __init__(self, environment):
+        self.environment = environment
+
+    def change(self, key):
+        portal_settings_backend.set_value(self.environment, key, 1)
+
+    def reset(self, key):
+        portal_settings_backend.set_value(self.environment, key, 0)
+
+
+def start_settings(args, platform, processes, log):
+    if not args.test_settings:
+        start_portal(args, platform, processes, log)
+        return DesktopBackend(platform)
+    directory = portal_settings_backend.portal_directory(args.output_dir / "portals")
+    processes.append(portal_settings_backend.start(platform, sorted(portal_settings_backend.VALUES), log))
+    processes.append(portal_settings_backend.start_frontend(args.portal.resolve(strict=True), platform, directory, log))
+    return PortalTestBackend(platform)
 
 
 def live_scale_case(shell, compositor, resolvers, grim, final):
@@ -701,6 +747,10 @@ def main():
                         help="fixed theme; by default the platform colour scheme selects it")
     parser.add_argument("--portal", type=Path, default=Path("/usr/libexec/xdg-desktop-portal"))
     parser.add_argument("--backend", type=Path, default=Path("/usr/libexec/xdg-desktop-portal-gnome"))
+    parser.add_argument("--test-settings", action="store_true",
+                        help="serve the frontend's Settings from tools/portal_settings_backend.py instead of --backend")
+    parser.add_argument("--require", nargs="*", choices=list(PORTAL_KEYS), default=[],
+                        help="fail instead of skipping when the portal does not provide a listed key")
     parser.add_argument("--grim", type=Path)
     parser.add_argument("--screen-reader", action="store_true",
                         help="also verify Orca presentation of the focused Close and Show clock")
@@ -727,10 +777,11 @@ def main():
                  "string:" + name, "variant:boolean:true")
         log = (args.output_dir / "portal.log").open("w")
         processes.append(log)
-        start_portal(args, platform, processes, log)
-        wait_portal(platform, None, "portal Settings interface")
+        settings = start_settings(args, platform, processes, log)
+        require_keys(wait_portal(platform, None, "portal Settings interface"), args.require)
         shell = Shell(host, module, font, args.theme, args.output_dir, platform, args.scale)
-        report = {"theme": args.theme or "platform", "scale": args.scale, "liveScale": live, "cases": []}
+        report = {"theme": args.theme or "platform", "scale": args.scale, "liveScale": live,
+                  "settingsBackend": settings.name, "cases": []}
 
         observed = shell.until(closed, "published bar with a ready Show clock Command")
         shell.input = VirtualInput(observed["outputWidth"], observed["outputHeight"],
@@ -811,7 +862,7 @@ def main():
         report["cases"].append("a held Show clock publishes calibrated Elastomer spring frames that match the equations")
 
         if sources["reducedMotion"] == "platform":
-            gsettings(platform, "set", "org.gnome.desktop.a11y.interface", "reduced-motion", "reduce")
+            settings.change("reduced-motion")
             shell.until(lambda current: current["preferences"]["reducedMotion"] and closed(current),
                         "platform reduced motion in the shell environment")
             report["motion"].append(verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels,
@@ -819,7 +870,7 @@ def main():
             shell.until(opened, "clock surface opened under reduced motion")
             shell.key(KEY_ESCAPE)
             shell.until(lambda current: not current["open"] and not current["clock"], "clock closed under reduced motion")
-            gsettings(platform, "reset", "org.gnome.desktop.a11y.interface", "reduced-motion")
+            settings.reset("reduced-motion")
             shell.until(lambda current: not current["preferences"]["reducedMotion"] and closed(current),
                         "platform reduced motion reset")
             report["motion"].append(verify_motion(shell, "showClock", press_samples(shell, "showClock"), channels,
@@ -830,23 +881,23 @@ def main():
             report["cases"].append(PLATFORM_CASES["reducedMotion"][1])
 
         if sources["highContrast"] == "platform":
-            gsettings(platform, "set", "org.gnome.desktop.a11y.interface", "high-contrast", "true")
+            settings.change("contrast")
             observed = shell.until(lambda current: current["preferences"]["highContrast"] and closed(current),
                                    "platform high contrast in the shell environment")
             verify_surfaces(shell, observed, resolvers)
-            gsettings(platform, "reset", "org.gnome.desktop.a11y.interface", "high-contrast")
+            settings.reset("contrast")
             observed = shell.until(lambda current: not current["preferences"]["highContrast"] and closed(current),
                                    "platform high contrast reset")
             verify_surfaces(shell, observed, resolvers)
             report["cases"].append(PLATFORM_CASES["highContrast"][1])
 
         if not args.theme and portal["colorScheme"] is not None:
-            gsettings(platform, "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark")
+            settings.change("color-scheme")
             observed = shell.until(lambda current: current["theme"] == "dark" and closed(current),
                                    "dark theme from the platform colour scheme")
             verify_surfaces(shell, observed, resolvers)
             verify_theme_files(shell, "dark")
-            gsettings(platform, "reset", "org.gnome.desktop.interface", "color-scheme")
+            settings.reset("color-scheme")
             observed = shell.until(lambda current: current["theme"] == "light" and closed(current),
                                    "light theme after resetting the colour scheme")
             verify_surfaces(shell, observed, resolvers)
@@ -867,6 +918,7 @@ def main():
                                "device scale" + (f", moving once from {args.scale:g} to {live:g}" if live else ""))
 
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(f"INFO portal Settings: the real xdg-desktop-portal frontend with the {settings.name}")
         for case in report["cases"]:
             print("PASS " + case)
         for skip in report["skips"]:
