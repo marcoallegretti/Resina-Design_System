@@ -10,6 +10,8 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import re
+import subprocess
 import sys
 import urllib.request
 import zipfile
@@ -64,6 +66,81 @@ def resolve(records, family, style, weight):
     raise ValueError(f"weight {weight} resolved to {family!r} {style!r}, which is not a registered conformance master")
 
 
+# Fontconfig's FC_WEIGHT_REGULAR, FC_WEIGHT_MEDIUM and FC_WEIGHT_DEMIBOLD.
+FONTCONFIG_WEIGHTS = {80: 400, 100: 500, 180: 600}
+FONTCONFIG_ROMAN = 0
+FONTCONFIG_NORMAL_WIDTH = 100
+FONTCONFIG_FIELDS = ("file", "index", "weight", "slant", "width")
+
+
+def fontconfig_value(text):
+    """Parse a fontconfig number or [low high] range into an inclusive interval."""
+    match = re.fullmatch(r"\[\s*([0-9.]+)\s+([0-9.]+)\s*\]|([0-9.]+)", text.strip())
+    if match is None:
+        raise ValueError(f"fontconfig reported an unreadable value {text!r}")
+    low, high, single = match.groups()
+    return (float(single), float(single)) if single is not None else (float(low), float(high))
+
+
+def parse_fontconfig_faces(output):
+    faces = []
+    for line in output.splitlines():
+        if not line:
+            continue
+        fields = line.split("\t")
+        if len(fields) != len(FONTCONFIG_FIELDS):
+            raise ValueError(f"fontconfig reported an unreadable face {line!r}")
+        face = dict(zip(FONTCONFIG_FIELDS, fields))
+        face["index"] = int(face["index"])
+        for key in ("weight", "slant", "width"):
+            face[key] = fontconfig_value(face[key])
+        faces.append(face)
+    return faces
+
+
+def fontconfig_faces(environment=None):
+    """List the faces of the conformance family that fontconfig makes visible in an environment."""
+    try:
+        result = subprocess.run(["fc-list", "--format", "\t".join(f"%{{{field}}}" for field in FONTCONFIG_FIELDS)
+                                 + "\n", f":family={FAMILY}"], env=environment, capture_output=True,
+                                encoding="utf-8", errors="strict", timeout=60, check=False)
+    except (subprocess.TimeoutExpired, UnicodeError) as error:
+        raise ValueError(f"fc-list did not list the {FAMILY} faces: {error}") from error
+    if result.returncode:
+        raise ValueError(f"fc-list failed (exit {result.returncode}): {result.stderr[-2000:]}")
+    return parse_fontconfig_faces(result.stdout)
+
+
+def check_visible_faces(records, faces):
+    """Reject a visible family face that could be matched for an authored weight but is not its pinned master.
+
+    Qt matches an exact upright, normal-width weight when one exists, so only those
+    faces can compete with a registered master. Each of them must be byte-identical
+    to the master of that weight, otherwise the master Qt used cannot be identified
+    by its family and style.
+    """
+    pinned = {record["weight"]: record for record in records}
+    checked = []
+    for face in faces:
+        if not (face["slant"][0] <= FONTCONFIG_ROMAN <= face["slant"][1]
+                and face["width"][0] <= FONTCONFIG_NORMAL_WIDTH <= face["width"][1]):
+            continue
+        for fontconfig_weight, weight in FONTCONFIG_WEIGHTS.items():
+            if not face["weight"][0] <= fontconfig_weight <= face["weight"][1]:
+                continue
+            master = pinned[weight]
+            if face["index"] != 0 or sha256(Path(face["file"]).read_bytes()) != master["sha256"]:
+                raise ValueError(f"{face['file']} face {face['index']} is visible as {FAMILY} weight {weight} "
+                                 f"but is not the pinned {master['style']} master")
+            checked.append({"file": face["file"], "weight": weight})
+    return sorted(checked, key=lambda face: (face["weight"], face["file"]))
+
+
+def check_fontconfig(records, environment=None):
+    """Check the fontconfig-visible faces of the family against the pinned masters."""
+    return check_visible_faces(records, fontconfig_faces(environment))
+
+
 def isolated_fontconfig(directory):
     """Write a fontconfig file with no font directories so only registered files are visible."""
     directory = Path(directory)
@@ -86,9 +163,15 @@ def extract(archive, output):
     return masters(output)
 
 
+ARCHIVE_LIMIT = 64 * 1024 * 1024
+
+
 def fetch(output):
     with urllib.request.urlopen(MANIFEST["archive"]["url"], timeout=120) as response:
-        return extract(response.read(), output)
+        archive = response.read(ARCHIVE_LIMIT + 1)
+    if len(archive) > ARCHIVE_LIMIT:
+        raise ValueError(f"downloaded Inter archive exceeds {ARCHIVE_LIMIT} bytes")
+    return extract(archive, output)
 
 
 def register_qt(directory):

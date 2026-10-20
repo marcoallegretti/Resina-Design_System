@@ -613,13 +613,18 @@ compiler. Keep the host's Qt ABI aligned. Native label checks take
 `--font-dir`, a directory holding the Inter 4.0 static Regular, Medium and
 SemiBold masters pinned by SHA-256 in
 [`tools/conformance_font.json`](../../../tools/conformance_font.json). Ubuntu
-24.04's `fonts-inter` installs exactly these files in
-`/usr/share/fonts/opentype/inter`; elsewhere,
+24.04's `fonts-inter` installs these files, with the other Inter 4.0 static
+faces, in `/usr/share/fonts/opentype/inter`; elsewhere,
 `python tools/conformance_font.py fetch --output DIR` downloads the pinned
 release archive and extracts them. Each check registers all three, so authored
 weights 400, 500 and 600 resolve to real masters, and
 `check_qt_command_label_runtime.py` prints the master that resolved every
-Command label measurement. Measurements are compared within one run only.
+Command label measurement. That check first lists the Inter faces fontconfig
+makes visible to the process and fails unless every upright, normal-width one at
+weight 400, 500 or 600 is byte-identical to that weight's pinned master, so the
+style Qt reports identifies the file it used. Production `measureJson` returns
+only the extent: it drops the matched face, so the Command path cannot detect a
+substituted weight. Measurements are compared within one run only.
 From the repository root on Linux:
 
 ```sh

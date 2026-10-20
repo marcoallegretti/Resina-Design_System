@@ -65,6 +65,7 @@ def main():
         if loader.instance() is None:
             raise ValueError("Qt plugin factory failed: " + loader.errorString())
         masters = conformance_font.register_qt(arguments.font_dir)
+        visible = conformance_font.check_fontconfig(masters)
         family = conformance_font.FAMILY
         engine = QQmlEngine()
         engine.addImportPath(str(arguments.module_path.resolve()))
@@ -202,7 +203,7 @@ Item {
     except (ImportError, OSError, ValueError, KeyError, TypeError) as error:
         print("FAIL Qt command label runtime: " + str(error), file=sys.stderr)
         return 1
-    print(json.dumps({"resolvedMaster": dict(resolved.pop())}, indent=2))
+    print(json.dumps({"visibleFaces": visible, "resolvedMaster": dict(resolved.pop())}, indent=2))
     print(f"Rust/Qt command content passed {count} actual native layout/drawing preparations, strict rejection and recovery")
     return 0
 

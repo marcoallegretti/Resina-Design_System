@@ -130,7 +130,14 @@ the requested weight even when only a Regular master is registered, while
 `{family, style}` of that master, and every nonempty paragraph must resolve the
 same one. The font mapping owns the registered masters and must reject a face
 whose own weight differs from the requested weight; the label checks do this
-against the pinned Inter masters. Per-glyph fallback availability remains the
+against the pinned Inter masters. A style name identifies a file only when no
+other visible face of the family has that style, so the label checks also list
+the fontconfig-visible faces of the family in the probe's environment and fail
+unless every upright, normal-width face at weight 400, 500 or 600 is
+byte-identical to that weight's pinned master. `measureJson`, the production
+entry point of the Rust Command path, returns only `{kind, width, height}`: it
+drops `face`, so production measurement cannot detect a substituted weight. Only
+the label checks, which call `measure`, verify it. Per-glyph fallback availability remains the
 application's explicit font mapping policy.
 Preserve that context, typography and wrapping constraint for drawing, allow
 glyph overhang and invalidate measurements when the font environment changes.
@@ -172,8 +179,7 @@ The checker takes the directory holding the pinned Inter static masters
 (`tools/conformance_font.json`; `python tools/conformance_font.py fetch --output DIR`
 provides them where no package does). The native probe registers all three and
 checks 27 labels, four text scales and four signed spacing values on each
-requested actual device scale (by default 1, 1.25 and 2; 0.5 and 1.3 were also
-exercised). It includes
+requested actual device scale (by default 0.5, 1, 1.25, 2 and 1.3). It includes
 100.06% text scaling and the authored 0.15 px wide tracking, alongside
 Latin, expanded German, Arabic, 100/150/200% string-length fixtures, literal
 markup, LF/CRLF/CR, VT/FF/NEL, line separators and leading/trailing/consecutive
@@ -183,7 +189,10 @@ each fitted paragraph also matches its isolated native measurement. The probe
 checks complete line heights, contiguous paragraph offsets, wide-word reflow,
 spacing effects, weights with blank paragraphs, fractional line heights and
 13 invalid/unsupported inputs, including failure after a valid paragraph and
-recovery afterward. At each scale it records the master that weights 400, 500
+recovery afterward. Before the runs the checker lists the Inter faces
+fontconfig makes visible in the probe's environment and fails on an upright,
+normal-width face at weight 400, 500 or 600 that is not byte-identical to that
+weight's pinned master. At each scale it records the master that weights 400, 500
 and 600 resolve to (family, style, weight, file and SHA-256) and fails unless
 they are the three distinct pinned masters. A second run registers only the
 Regular master, with a fontconfig file that lists no font directories, and must

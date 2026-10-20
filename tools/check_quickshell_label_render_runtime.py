@@ -78,6 +78,7 @@ def main():
     try:
         masters = conformance_font.masters(arguments.font_dir)
         environment["RESINA_LABEL_FONTS"] = json.dumps([master["path"].as_uri() for master in masters])
+        visible = conformance_font.check_fontconfig(masters, environment)
         arguments.output_dir.mkdir(parents=True, exist_ok=False)
         for index, scale in enumerate(arguments.scales):
             directory = arguments.output_dir / str(index)
@@ -94,7 +95,7 @@ def main():
     except (OSError, UnicodeError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
         print(f"FAIL Quickshell label drawing: {error}", file=sys.stderr)
         return 1
-    print(json.dumps(resolved, indent=2))
+    print(json.dumps({"visibleFaces": visible, "resolved": resolved}, indent=2))
     print(f"Quickshell native label drawing passed {36 * len(arguments.scales)} complete capture pairs and {9 * len(arguments.scales)} rejection cases on {arguments.platform} ({arguments.scene_graph})")
     return 0
 

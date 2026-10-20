@@ -53,7 +53,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends --no-upgrade -y \
-            g++ pkg-config lld cmake ninja-build libgl-dev libegl-dev libfontconfig1 libfreetype6 \
+            g++ pkg-config lld cmake ninja-build libgl-dev libegl-dev libfontconfig1 fontconfig libfreetype6 \
             libdrm-dev libwayland-dev wayland-protocols libcli11-dev spirv-tools libjemalloc-dev \
             meson libffi-dev libexpat1-dev curl \
             libxkbcommon-dev libxkbcommon-x11-0 libx11-xcb1 \

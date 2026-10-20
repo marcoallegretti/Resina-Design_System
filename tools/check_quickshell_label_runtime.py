@@ -81,7 +81,7 @@ def main():
     parser.add_argument("--font-dir", type=Path, required=True, help="directory with the pinned Inter static masters")
     parser.add_argument("--quickshell", default="quickshell")
     parser.add_argument("--platform", choices=("offscreen", "wayland"), default="offscreen")
-    parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 2])
+    parser.add_argument("--scales", nargs="+", type=float, default=[0.5, 1, 1.25, 2, 1.3])
     arguments = parser.parse_args()
     if any(not math.isfinite(scale) or scale <= 0 for scale in arguments.scales):
         parser.error("device scales must be finite and positive")
@@ -98,6 +98,7 @@ def main():
     try:
         masters = conformance_font.masters(arguments.font_dir)
         environment["RESINA_LABEL_FONTS"] = json.dumps([master["path"].as_uri() for master in masters])
+        evidence["visibleFaces"] = conformance_font.check_fontconfig(masters, environment)
         for scale in arguments.scales:
             environment.update(QT_SCALE_FACTOR=str(scale), RESINA_LABEL_DEVICE_SCALE=str(scale))
             result = subprocess.run(probe, env=environment, capture_output=True, encoding="utf-8",

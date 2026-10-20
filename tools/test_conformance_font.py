@@ -69,6 +69,55 @@ class ConformanceFontTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not a registered conformance master"):
             conformance_font.resolve(records, "DejaVu Sans", "Book", 400)
 
+    def test_visible_unpinned_family_face_is_rejected(self):
+        data = {master["file"]: master["style"].encode() for master in conformance_font.MANIFEST["masters"]}
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch.object(conformance_font, "MANIFEST", self.manifest(data)):
+            for name, content in data.items():
+                (Path(directory) / name).write_bytes(content)
+            records = conformance_font.masters(directory)
+            other = Path(directory) / "Inter.ttc"
+            other.write_bytes(b"Inter 4.1 collection")
+
+            def faces(file, weight, slant=0, width=100, index=0):
+                return conformance_font.parse_fontconfig_faces(f"{file}\t{index}\t{weight}\t{slant}\t{width}\n")
+
+            pinned = [face for name, weight in zip(data, (80, 100, 180))
+                      for face in faces(Path(directory) / name, weight)]
+            self.assertEqual([face["weight"] for face in conformance_font.check_visible_faces(records, pinned)],
+                             [400, 500, 600])
+            ignored = faces(other, 200) + faces(other, 100, slant=100) + faces(other, 100, width=87.5)
+            self.assertEqual(len(conformance_font.check_visible_faces(records, pinned + ignored)), 3)
+            for unpinned, weight in ((faces(other, 100, index=3), 500),
+                                     (faces(Path(directory) / "Inter-Regular.otf", 100), 500),
+                                     (faces(Path(directory) / "Inter-Medium.otf", 100, index=1), 500),
+                                     (faces(other, "[0 210]"), 400)):
+                with self.assertRaisesRegex(ValueError, f"is visible as Inter weight {weight} but is not the pinned"):
+                    conformance_font.check_visible_faces(records, pinned + unpinned)
+
+    def test_fontconfig_listing_is_parsed_strictly(self):
+        listing = "/fonts/Inter.ttc\t3\t100\t0\t100\n/fonts/InterVariable.ttf\t0\t[100 900]\t0\t[75 100]\n"
+        faces = conformance_font.parse_fontconfig_faces(listing)
+        self.assertEqual([(face["file"], face["index"], face["weight"], face["width"]) for face in faces],
+                         [("/fonts/Inter.ttc", 3, (100.0, 100.0), (100.0, 100.0)),
+                          ("/fonts/InterVariable.ttf", 0, (100.0, 900.0), (75.0, 100.0))])
+        for listing in ("/fonts/Inter.ttc\t3\t100\n", "/fonts/Inter.ttc\t3\tbold\t0\t100\n"):
+            with self.assertRaisesRegex(ValueError, "unreadable"):
+                conformance_font.parse_fontconfig_faces(listing)
+        failed = mock.Mock(returncode=1, stdout="", stderr="no fc")
+        with mock.patch.object(conformance_font.subprocess, "run", return_value=failed):
+            with self.assertRaisesRegex(ValueError, "fc-list failed"):
+                conformance_font.fontconfig_faces({})
+
+    def test_fetch_rejects_an_oversized_archive(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b"x" * (conformance_font.ARCHIVE_LIMIT + 1)
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch.object(conformance_font.urllib.request, "urlopen", return_value=response):
+            with self.assertRaisesRegex(ValueError, "exceeds"):
+                conformance_font.fetch(directory)
+            self.assertEqual(list(Path(directory).iterdir()), [])
+
     def test_isolated_fontconfig_lists_no_font_directory(self):
         with tempfile.TemporaryDirectory() as directory:
             environment = conformance_font.isolated_fontconfig(directory)
