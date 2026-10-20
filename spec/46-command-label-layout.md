@@ -146,10 +146,11 @@ each corner center has radius `sqrt(384)`, about 19.60 px: a 24 px label with
 48 px label in a 160 × 72 px body at text scale 2, are contained. Shoulder width
 3, radius `sqrt(288)`, is still contained although C rejects it; shoulder width
 4, radius `sqrt(192)`, is not. A 10 px start or end padding stays on the plateau
-and an 8 px one crosses the shoulder. With 16 px inline and 8 px block padding
-and the label role's line height, one and two label lines at text scales 1, 1.5
-and 2 are contained in bodies from 34.76 to 91.04 px high, whose radius grows
-from 17.38 to 24 px. A 12 px inline padding is contained in a 64 × 32 px body,
+and an 8 px one crosses the shoulder. With the compact insets of the
+[Command layout profile](89-component-layout-profile.md), 16 px inline and 8 px
+block padding, and the label role's line height, one and two label lines at
+text scales 1, 1.5 and 2 are contained in bodies from 34.76 to 91.04 px high,
+whose radius grows from 17.38 to 24 px. A 12 px inline padding is contained in a 64 × 32 px body,
 where the radius is 16 px, and crosses the shoulder once the radius reaches
 24 px. Shoulder width 3.65625 gives a plateau disc of radius exactly 15 px: a
 vertex on it is contained, as is one `2^-40` px inside, while one `2^-40` px

@@ -5,8 +5,8 @@ from fractions import Fraction
 
 from check_schemas import ROOT, apply_changes, load_json
 from lit_body_arithmetic import (
-    LOGICAL, PHYSICAL, Body, body_invariants, contour_difference, filled_label_bounds, lit_body_source,
-    lit_containment_outcomes, physical_radii, pixels, samples, swept_contour,
+    LOGICAL, PHYSICAL, Body, body_invariants, contour_difference, filled_label_bounds, layout_lit_outcomes,
+    lit_body_source, lit_containment_outcomes, physical_radii, pixels, samples, swept_contour,
 )
 from material_relief_arithmetic import rectangular_samples
 
@@ -296,6 +296,16 @@ def containment_body(case, direction="ltr"):
                                 case.get("edgeWidth", CONTAINMENT["edgeWidth"]), direction))
 
 
+def token_value(trees, path):
+    for tree in trees:
+        node = tree
+        for segment in path.split("."):
+            node = node.get(segment) if isinstance(node, dict) else None
+        if isinstance(node, dict) and "$value" in node:
+            return node["$value"]
+    raise KeyError(path)
+
+
 class LitContainmentTests(unittest.TestCase):
     def test_matrix_outcomes_follow_the_exact_vertex_law(self):
         expected = {case["name"]: case["contained"] for case in CONTAINMENT["cases"]}
@@ -377,3 +387,33 @@ class LitContainmentTests(unittest.TestCase):
                     checked[inside] += 1
         self.assertGreater(min(checked.values()), 300, checked)
 
+
+class LayoutLitMatrixTests(unittest.TestCase):
+    def test_every_density_text_scale_and_wrap_contains_its_label_in_the_lit_body(self):
+        foundation = load_json(ROOT / "tokens/foundation.json")
+        cases = load_json(ROOT / "conformance/layout/command-layout-cases.json")
+        request = next(case for case in cases if case["name"] == "compact text 1 fine ltr")["request"]
+        appearance = load_json(ROOT / "definitions/tier0-surface-appearance.json")
+        relief = load_json(ROOT / "definitions/control-relief.json")["commandBody"]
+        shape = load_json(ROOT / "definitions/tier0-shapes.json")["profiles"]["rounded"]["radius"]
+        radius = token_value([foundation], shape)
+        self.assertEqual(radius["unit"], "px")
+        for theme_path in ("tokens/themes/light.json", "tokens/themes/dark.json"):
+            theme = load_json(ROOT / theme_path)
+            trees = [foundation] + theme["tokenResolver"]["sets"]["theme"]["sources"]
+            binding = {}
+            for role, path in theme["spatialAssignments"]["roles"].items():
+                binding[role] = ({mode: token_value(trees, value) for mode, value in path.items()}
+                                 if isinstance(path, dict) else token_value(trees, path))
+            self.assertEqual(binding, request["spatialBinding"], theme_path)
+            typography = theme["typographyAssignments"]["roles"]["label"]
+            self.assertEqual(typography["minimumTextScale"], 1)
+            label = {"fontSize": token_value(trees, typography["fontSize"])["value"],
+                     "lineHeight": token_value(trees, typography["lineHeight"])}
+            edge = appearance["bands"]["elastomer"]["edgeWidth"]
+            outcomes = list(layout_lit_outcomes(request, label, SOURCE, radius["value"], relief, edge,
+                                                (1, 1.5, 2), (1, 2)))
+            self.assertEqual(len(outcomes), 4 * 3 * 2 * 2)
+            for density, scale, lines, direction, bounds, contained in outcomes:
+                with self.subTest(theme=theme_path, density=density, scale=scale, lines=lines, direction=direction):
+                    self.assertTrue(contained, bounds)

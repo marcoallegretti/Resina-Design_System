@@ -5,6 +5,7 @@ import math
 from fractions import Fraction
 
 from command_label_arithmetic import layout as label_layout
+from command_layout_arithmetic import resolve as resolve_command_layout
 from material_light_arithmetic import expected_result, pigment_result
 
 EPSILON = 2.0 ** -52
@@ -677,6 +678,31 @@ def lit_containment_outcomes(matrix, source):
                                         case.get("edgeWidth", matrix["edgeWidth"]), direction))
             bounds = filled_label_bounds(case["size"], case["padding"], case["labelHeight"], direction)
             yield case["name"], direction, body.uniform_contains_box(bounds)
+
+
+def layout_lit_outcomes(layout_request, label, source, radius, relief, edge_width, scales, lines):
+    """Run spec/89 layout, spec/46 label layout with supplied advances and the lit body for each density,
+    text scale, line count and direction; yield (density, scale, lines, direction, label bounds, contained).
+
+    `label` holds the label role's unscaled font size and line height; every line is one font size
+    times the line height and the supplied width is four font sizes.
+    """
+    for density in ("compact", "standard", "comfortable", "immersive"):
+        for scale in scales:
+            for count in lines:
+                for direction in ("ltr", "rtl"):
+                    request = copy.deepcopy(layout_request)
+                    environment = request["environment"]
+                    environment.update(densityPreference=density, textScale=scale, layoutDirection=direction)
+                    policy = resolve_command_layout(request)
+                    font_size = label["fontSize"] * scale
+                    measured = {"width": font_size * 4, "height": count * (font_size * label["lineHeight"])}
+                    resolved = label_layout({"padding": policy["padding"], "minimumSize": policy["minimumSize"],
+                                             "maximumSize": policy["maximumSize"], "natural": measured,
+                                             "fitted": measured, "direction": direction})
+                    body = Body(lit_body_source(source, resolved["size"], radius, relief, edge_width, direction))
+                    bounds = resolved["labelBounds"]
+                    yield density, scale, count, direction, bounds, body.uniform_contains_box(bounds)
 
 
 def ir_uniform_contains_box(ir, bounds):

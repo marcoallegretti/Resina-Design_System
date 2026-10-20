@@ -214,12 +214,12 @@ fn authored_srgb_components_match_hex_fallbacks() {
 }
 
 #[test]
-fn authored_control_insets_grow_with_each_explicit_density() {
+fn authored_control_insets_follow_each_explicit_density() {
     let request: Value = serde_json::from_str(ENVIRONMENT).unwrap();
     for source in [LIGHT, DARK] {
         let mut previous = (0, 0);
         for (density, inline, block) in [
-            ("compact", 12, 8),
+            ("compact", 16, 8),
             ("standard", 16, 12),
             ("comfortable", 24, 16),
             ("immersive", 32, 24),
@@ -241,7 +241,7 @@ fn authored_control_insets_grow_with_each_explicit_density() {
                 "{density}"
             );
             assert_eq!(px(resina_model::SpatialRole::ControlInline), 8, "{density}");
-            assert!(inline > previous.0 && block > previous.1);
+            assert!(inline >= previous.0 && block > previous.1);
             previous = (inline, block);
         }
     }

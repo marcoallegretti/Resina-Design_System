@@ -3,8 +3,9 @@ use resina_model::{SurfaceSize, TypographyRole};
 use resina_resolver::{
     CommandLabelError, CommandLabelInput, CommandLayoutIr, LabelMeasureInput,
     compile_theme_source_with_sources, resolve_command_label, resolve_command_layout_source,
+    resolve_command_paint_source,
 };
-use serde_json::Value;
+use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
 const CASES: &str = include_str!("../../../../conformance/layout/command-layout-cases.json");
@@ -13,6 +14,10 @@ const PROFILE: &str = include_str!("../../../../definitions/layout/command.json"
 const FOUNDATION: &str = include_str!("../../../../tokens/foundation.json");
 const LIGHT: &str = include_str!("../../../../tokens/themes/light.json");
 const DARK: &str = include_str!("../../../../tokens/themes/dark.json");
+const PAINT_REQUEST: &str = include_str!("../../../../conformance/ir/command-paint-request.json");
+const CONTROL_RELIEF: &str = include_str!("../../../../definitions/control-relief.json");
+const SHAPES: &str = include_str!("../../../../definitions/tier0-shapes.json");
+const APPEARANCE: &str = include_str!("../../../../definitions/tier0-surface-appearance.json");
 
 fn cases() -> Vec<Value> {
     serde_json::from_str(CASES).unwrap()
@@ -233,4 +238,81 @@ fn doubled_text_keeps_the_line_count_of_a_label_that_fits_at_full_scale() {
             .unwrap();
         assert!(double <= single * 2.0, "{density}: {double} > 2 × {single}");
     }
+}
+
+#[test]
+fn every_density_contains_its_label_in_the_lit_command_body() {
+    let sources = BTreeMap::from([("foundation.json".to_owned(), FOUNDATION.to_owned())]);
+    let foundation: Value = serde_json::from_str(FOUNDATION).unwrap();
+    let appearance: Value = serde_json::from_str(APPEARANCE).unwrap();
+    let mut contained = 0;
+    for theme in [LIGHT, DARK] {
+        let compiled = compile_theme_source_with_sources(theme, &sources).unwrap();
+        for density in ["compact", "standard", "comfortable", "immersive"] {
+            for scale in [1.0, 1.5, 2.0] {
+                for lines in [1.0, 2.0] {
+                    for direction in ["ltr", "rtl"] {
+                        let mut request =
+                            case(&format!("{density} text 1 fine ltr"))["request"].clone();
+                        request["environment"]["textScale"] = json!(scale);
+                        request["environment"]["layoutDirection"] = json!(direction);
+                        let layout = resolve_command_layout_source(&request.to_string()).unwrap();
+                        let environment: EnvironmentSnapshot =
+                            serde_json::from_value(request["environment"].clone()).unwrap();
+                        let typography = compiled.resolve(&environment).unwrap().typography()
+                            [&TypographyRole::Label]
+                            .clone();
+                        let label = resolve_command_label(
+                            CommandLabelInput {
+                                text: "Reconnect",
+                                typography: &typography,
+                                minimum_size: layout.minimum_size(),
+                                maximum_size: layout.maximum_size(),
+                                padding: layout.padding().clone(),
+                                direction: layout.layout_direction(),
+                            },
+                            |input| {
+                                let size = input.typography.font_size();
+                                Ok::<_, std::convert::Infallible>(SurfaceSize {
+                                    width: size * 4.0,
+                                    height: lines * (size * input.typography.line_height()),
+                                })
+                            },
+                        )
+                        .unwrap();
+                        let mut paint: Value = serde_json::from_str(PAINT_REQUEST).unwrap();
+                        let body = &mut paint["surface"]["body"];
+                        body["size"] = serde_json::to_value(label.size()).unwrap();
+                        body["theme"]["environment"]["layoutDirection"] = json!(direction);
+                        body["theme"]["environment"]["textScale"] = json!(scale);
+                        body["surface"]["form"]["shape"] = json!("rounded");
+                        let mut source: Value =
+                            serde_json::from_str(body["theme"]["themeSource"].as_str().unwrap())
+                                .unwrap();
+                        source["tokens"]["radius"] = foundation["radius"].clone();
+                        body["theme"]["themeSource"] = json!(source.to_string());
+                        body["appearance"]["shapeAssignments"] =
+                            serde_json::from_str(SHAPES).unwrap();
+                        body["appearance"]["bands"] = appearance["bands"].clone();
+                        paint["relief"] = serde_json::from_str(CONTROL_RELIEF).unwrap();
+                        let paint = resolve_command_paint_source(&paint.to_string()).unwrap();
+                        let lit = paint.paint().body();
+                        assert_eq!(
+                            lit.face().surface().outline().corners()[0].x,
+                            (label.size().height / 2.0).min(24.0)
+                        );
+                        assert_eq!(
+                            label.validate_lit_content(lit),
+                            Ok(()),
+                            "{density} {scale} {lines} {direction}: {:?} in {:?}",
+                            label.label_bounds(),
+                            label.size()
+                        );
+                        contained += 1;
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(contained, 2 * 4 * 3 * 2 * 2);
 }
