@@ -201,6 +201,31 @@ class QtNativeAvailabilityTests(unittest.TestCase):
                  contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(checker.main(), expected)
 
+    def test_known_deviation_accepts_only_the_non_focusable_disabled_command(self):
+        checker.verify_known_deviation(measured_report())
+        extra = {"command": "Excluded command", "state": "enabled", "expected": False, "actual": True}
+        for issues in ([], checker.KNOWN_DEVIATION + [extra], [extra],
+                       [dict(checker.KNOWN_DEVIATION[0], state="sensitive")],
+                       [dict(checker.KNOWN_DEVIATION[0], command="Enabled command")],
+                       checker.KNOWN_DEVIATION * 2):
+            with self.subTest(issues=issues), self.assertRaisesRegex(ValueError, "single known deviation"):
+                checker.verify_known_deviation(dict(measured_report(), issues=issues))
+
+    def test_known_deviation_mode_fails_on_any_other_measurement(self):
+        conformant = dict(measured_report(), conformant=True, issues=[])
+        for outcome, expected in ((measured_report(), 0), (conformant, 1),
+                                  (ValueError("native host failed"), 1)):
+            with self.subTest(outcome=outcome), \
+                 mock.patch.object(checker.sys, "argv", ["checker", "--session", "--known-deviation"]), \
+                 mock.patch.object(checker.sys, "platform", "linux"), \
+                 mock.patch.dict(os.environ, {"DISPLAY": ":42"}, clear=True), \
+                 mock.patch.object(checker.subprocess, "run", return_value=
+                                   subprocess.CompletedProcess([], 0, "Qt Quick 6.11.2", "")), \
+                 mock.patch.object(checker, "session_probe", return_value=outcome,
+                                   side_effect=outcome if isinstance(outcome, Exception) else None), \
+                 contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(checker.main(), expected)
+
     @unittest.skipUnless(checker.sys.platform == "linux", "Linux process-group cleanup")
     def test_session_timeout_kills_owned_process_group(self):
         process = mock.Mock(pid=123, returncode=None)

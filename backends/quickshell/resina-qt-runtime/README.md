@@ -661,16 +661,18 @@ Command content, snapshot, keyboard, pointer and control checks. Surface view,
 Command paint, control, motion and view, and Toggle control and motion checks
 run at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure.
 This job's AT-SPI step runs under Xvfb: it measures real invocation and
-availability using `--report-only`, and runs the static and sampled Command
+availability using `--known-deviation`, and runs the static and sampled Command
 control accessibility checks and the horizontal and vertical Slider adapter.
 The released Quickshell host then repeats the availability measurement with
-`--report-only` and runs the authored-update checker. In headless Sway it runs
+`--known-deviation` and runs the authored-update checker. In headless Sway it runs
 the lifecycle, accessibility, motion, platform appearance and
 [clock shell](../../../lab/quickshell/clock-shell/README.md) checkers.
 In the availability measurement, malformed/missing native observations and incorrect action
 delivery still fail; the known disabled-focusability discrepancy is recorded as
-`conformant: false` rather than certified as passing accessibility. The strict
-command above remains the qualification gate. A local reproduction does not
+`conformant: false` rather than certified as passing accessibility, and any
+mismatch list other than that single entry fails the step. The strict command
+above, which fails on that entry, remains the gate for discoverable disabled
+focus; the native accessibility claim covers the excluded-disabled policy only. A local reproduction does not
 prove that the hosted workflow has executed.
 
 Use a fresh import output directory. The packager verifies generated metadata
