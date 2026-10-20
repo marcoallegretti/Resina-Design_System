@@ -409,8 +409,9 @@ frame budget, and the clock shell) host their controls only in layer-shell
 `PanelWindow`s. The authored-update, focus, label, label-render, paint and
 native-availability probes use a `FloatingWindow`. CI runs the update checks on
 Qt's offscreen platform and the native-availability check on xcb under Xvfb;
-with `WAYLAND_DISPLAY` set, the native-availability check, and the Command update
-check with `--platform wayland`, present that window as an xdg toplevel. No
+the native-availability check with `WAYLAND_DISPLAY` set, and the Command and
+Toggle update, label, label-render and paint checks with `--platform wayland`,
+present that window as an xdg toplevel. No
 check asserts the fallback-density first publication described above or the
 preparation that follows it.
 
