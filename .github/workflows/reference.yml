@@ -214,7 +214,8 @@ jobs:
             --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
             --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
             --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
-            --grim /usr/bin/grim --output-dir target/quickshell-clock-shell --scale 1
+            --grim /usr/bin/grim --output-dir target/quickshell-clock-shell --scale 1 \
+            --test-settings --require reduced-motion contrast color-scheme
       - name: Check compositor-delivered Toggle lifecycle in released Quickshell
         timeout-minutes: 15
         run: |
@@ -268,7 +269,7 @@ jobs:
               --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
               --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
               --grim /usr/bin/grim --output-dir "target/quickshell-clock-shell-$scale" \
-              --scale "$scale" --live-scale "$live" || status=1
+              --scale "$scale" --live-scale "$live" --require contrast color-scheme || status=1
             kill "$sway_pid" || true
             wait "$sway_pid" || true
           done

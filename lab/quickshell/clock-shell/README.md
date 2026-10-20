@@ -113,7 +113,19 @@ from the first output; each window's device scale comes from that window.
 runs the shell in a caller-provided compositor session and drives it with
 compositor-delivered pointer and keyboard input. It starts a private session bus
 with the real `xdg-desktop-portal` frontend and GNOME backend, with isolated
-GSettings. It runs at the output scale given by `--scale` and requires:
+GSettings, and changes platform preferences through GSettings. With
+`--test-settings`, the frontend instead loads only the Settings backend
+[`portal_settings_backend.py`](../../../tools/portal_settings_backend.py)
+through `XDG_DESKTOP_PORTAL_DIR`. That backend provides `reduced-motion`,
+`contrast` and `color-scheme` in `org.freedesktop.appearance`, each starting at
+0 (no preference). The check sets a key to 1 and resets it to 0 over a D-Bus
+control interface, and the backend emits `SettingChanged` for each change. The
+shell still reads the frontend's `org.freedesktop.portal.Settings`, exactly as
+with a desktop backend. The check prints the backend it used as an
+`INFO portal Settings` line and records it as `settingsBackend` in
+`report.json`. `--require` fails the check, instead of skipping the case, when
+the portal does not provide a listed key. It runs at the output scale given by
+`--scale` and requires:
 
 - every surface and Command request environment, the device pixel ratio of each
   Command's window and every recorded motion frame to use that scale;
@@ -146,9 +158,9 @@ GSettings. It runs at the output scale given by `--scale` and requires:
   shell as it is published until a settled frame, to use the calibrated
   Elastomer dynamics and match the independent spring equations and complete
   snapshot, with at least one unsettled spring frame;
-- the platform reduced-motion setting, changed through GSettings, to switch the
-  Commands to immediate settled frames, and its reset to restore calibrated
-  spring frames;
+- the platform reduced-motion setting, changed through the portal backend, to
+  switch the Commands to immediate settled frames, and its reset to restore
+  calibrated spring frames;
 - the platform high-contrast setting to reach every surface and Command, each
   re-verified against the reference paint, and its reset likewise;
 - without a fixed theme, the platform colour scheme to select the dark and light
@@ -205,6 +217,12 @@ and xdg-desktop-portal-gnome 50.0:
   spring takes to settle, so a held "Show clock" published one or two unsettled
   frames before settling, against three at scale 1;
 - the fixed dark theme passes in headless Sway at output scale 1;
+- with `--test-settings --require reduced-motion contrast color-scheme`, all
+  cases pass in headless Sway at output scale 1. With `reduced-motion` removed
+  from the test backend, the check fails on the missing required key, and
+  without `--require` the case is a `SKIP`. With the runtime element changed to
+  ignore `SettingChanged` for `reduced-motion`, the reduced-motion case fails
+  because the change never reaches the shell environment;
 - the native focus-event cases have been run at output scale 1, in headless Sway
   with the platform-selected theme and, at revision 9abb974, in nested niri
   26.04;
@@ -237,12 +255,21 @@ and xdg-desktop-portal-gnome 50.0:
   authored value is then used, so with xdg-desktop-portal-gnome 46 to 49 turning
   animations off in GNOME does not reduce the shell's motion. Neither the shell
   nor the platform appearance element reads GSettings directly, including
-  `org.gnome.desktop.interface enable-animations`, as a fallback. CI runs the
-  GNOME 46 backend, so its platform reduced-motion case is a `SKIP` there and is
-  verified only locally with xdg-desktop-portal-gnome 50.0. Every platform case
-  that cannot run, because the portal does not provide its key or `--theme`
+  `org.gnome.desktop.interface enable-animations`, as a fallback. Every platform
+  case that cannot run, because the portal does not provide its key or `--theme`
   fixes the theme, is printed as a `SKIP` line with its reason and kept under
-  `skips` in `report.json`.
+  `skips` in `report.json`; a key listed with `--require` fails the check
+  instead.
+- CI runs Ubuntu 24.04's xdg-desktop-portal 1.18.4 and xdg-desktop-portal-gnome
+  46.2. At output scale 1 it runs the check with `--test-settings --require
+  reduced-motion contrast color-scheme`, so the platform reduced-motion,
+  high-contrast and colour-scheme cases all run through the real frontend with
+  the test backend, and a missing key fails the step. This shows that values the
+  frontend delivers, and their changes, reach the Commands. It does not show
+  that a desktop backend provides them. At output scales 1.25 and 2, CI runs the
+  GNOME 46.2 backend with `--require contrast color-scheme`; the reduced-motion
+  case is a `SKIP` there. A desktop backend's `reduced-motion` reaching the
+  Commands is verified only locally, with xdg-desktop-portal-gnome 50.0.
 - One output is verified, with the authored text scale 1, the `en-GB` locale and
   left-to-right layout direction of [`preferences.json`](preferences.json). The
   shell reads no platform text scale, and no check runs it at another text
