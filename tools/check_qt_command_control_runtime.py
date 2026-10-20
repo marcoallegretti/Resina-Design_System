@@ -7,6 +7,7 @@ import sys
 import time
 
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
+import conformance_font
 
 
 def wait(app, predicate, description):
@@ -21,7 +22,7 @@ def wait(app, predicate, description):
 def main():
     parser = argparse.ArgumentParser(description="Verify the integrated static Qt command control with injected native-window input.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--motion", action="store_true", help="Exercise explicit arithmetic spring channels in the same native control")
     parser.add_argument("--parent-x11-display", help="XTest injection through a named nested Weston output")
@@ -33,7 +34,7 @@ def main():
     os.environ.setdefault("QT_QUICK_BACKEND", "software")
     try:
         from PySide6.QtCore import QCoreApplication, QEvent, QPointF, QPluginLoader, QObject, Qt, QUrl, qVersion
-        from PySide6.QtGui import QFontDatabase, QGuiApplication, QKeyEvent, QMouseEvent, QPointingDevice
+        from PySide6.QtGui import QGuiApplication, QKeyEvent, QMouseEvent, QPointingDevice
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from PySide6.QtQuick import QQuickWindow
         if qVersion() != "6.11.2":
@@ -42,8 +43,7 @@ def main():
         plugin = QPluginLoader(str(args.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
             raise ValueError(plugin.errorString())
-        if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ["DejaVu Sans"]:
-            raise ValueError("requires explicitly loaded DejaVu Sans")
+        conformance_font.register_qt(args.font_dir)
         engine = QQmlEngine()
         engine.addImportPath(str(args.module_path.resolve()))
         component = QQmlComponent(engine, QUrl.fromLocalFile(str(ROOT / "conformance/quickshell/command-control-fixture.qml")))

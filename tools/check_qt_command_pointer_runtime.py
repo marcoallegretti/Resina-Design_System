@@ -6,6 +6,7 @@ import sys
 import time
 
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
+import conformance_font
 
 
 def wait(app, predicate, description):
@@ -20,7 +21,7 @@ def wait(app, predicate, description):
 def main():
     parser = argparse.ArgumentParser(description="Verify native Qt pointer ownership against Rust hit membership and activation.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--parent-x11-display")
     parser.add_argument("--parent-x11-window", type=lambda value: int(value, 0))
     args = parser.parse_args()
@@ -30,7 +31,7 @@ def main():
     os.environ.setdefault("QT_QUICK_BACKEND", "software")
     try:
         from PySide6.QtCore import QCoreApplication, QEvent, QObject, QPointF, QPluginLoader, Qt, QUrl, qVersion
-        from PySide6.QtGui import QEnterEvent, QFontDatabase, QGuiApplication, QInputDevice, QKeyEvent, QMouseEvent, QPointingDevice
+        from PySide6.QtGui import QEnterEvent, QGuiApplication, QInputDevice, QKeyEvent, QMouseEvent, QPointingDevice
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from PySide6.QtQuick import QQuickWindow
         if qVersion() != "6.11.2":
@@ -39,8 +40,7 @@ def main():
         plugin = QPluginLoader(str(args.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
             raise ValueError(plugin.errorString())
-        if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ["DejaVu Sans"]:
-            raise ValueError("requires explicitly loaded DejaVu Sans")
+        conformance_font.register_qt(args.font_dir)
         engine = QQmlEngine()
         engine.addImportPath(str(args.module_path.resolve()))
         component = QQmlComponent(engine)

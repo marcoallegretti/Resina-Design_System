@@ -25,6 +25,7 @@ from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payloa
 import portal_settings_backend
 from sway_output import Sway, changed_scale
 from wayland_virtual_input import KEY_SPACE, KEY_TAB, VirtualInput
+import conformance_font
 
 KEY_ESCAPE = 1
 NOT_READY = "Not ready to accept queries yet."
@@ -84,7 +85,7 @@ def verify_publication_scales(runs, initial, final=None):
 
 
 class Shell:
-    def __init__(self, host, module, font, theme, output, platform, scale):
+    def __init__(self, host, module, fonts, theme, output, platform, scale):
         self.host, self.output, self.scale, self.initial_scale = host, output, scale, scale
         config = output / "clock-shell"
         config.mkdir(parents=True)
@@ -93,7 +94,7 @@ class Shell:
         (config / "controls").symlink_to(ROOT / "backends/quickshell/resina-qml/qml", target_is_directory=True)
         self.path = config / "shell.qml"
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
-                                QML_IMPORT_PATH=str(module), RESINA_ROOT=str(ROOT), RESINA_CLOCK_FONT=str(font),
+                                QML_IMPORT_PATH=str(module), RESINA_ROOT=str(ROOT), RESINA_CLOCK_FONTS=fonts,
                                 QS_NO_RELOAD_POPUP="1", QT_LINUX_ACCESSIBILITY_ALWAYS_ON="1")
         for name in ("DBUS_SESSION_BUS_ADDRESS", "XDG_CONFIG_HOME", "XDG_CURRENT_DESKTOP", "GSETTINGS_BACKEND"):
             self.environment[name] = platform[name]
@@ -740,7 +741,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--module-path", type=Path, required=True)
-    parser.add_argument("--font", type=Path, required=True)
+    parser.add_argument("--font-dir", type=Path, required=True)
     parser.add_argument("--surface-resolver", type=Path, required=True)
     parser.add_argument("--theme-resolver", type=Path, required=True)
     parser.add_argument("--theme", choices=["light", "dark"],
@@ -766,7 +767,8 @@ def main():
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
             raise ValueError("requires a live Wayland compositor session with layer-shell and virtual input")
         compositor = Sway(os.environ) if live is not None else None
-        host, module, font = (path.resolve(strict=True) for path in (args.host, args.module_path, args.font))
+        host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
+        fonts = os.pathsep.join(str(master["path"]) for master in conformance_font.masters(args.font_dir))
         resolvers = {"surface": str(args.surface_resolver.resolve(strict=True)),
                      "theme": str(args.theme_resolver.resolve(strict=True))}
         args.output_dir.mkdir(parents=True, exist_ok=False)
@@ -779,7 +781,7 @@ def main():
         processes.append(log)
         settings = start_settings(args, platform, processes, log)
         require_keys(wait_portal(platform, None, "portal Settings interface"), args.require)
-        shell = Shell(host, module, font, args.theme, args.output_dir, platform, args.scale)
+        shell = Shell(host, module, fonts, args.theme, args.output_dir, platform, args.scale)
         report = {"theme": args.theme or "platform", "scale": args.scale, "liveScale": live,
                   "settingsBackend": settings.name, "cases": []}
 

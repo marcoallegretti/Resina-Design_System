@@ -12,6 +12,7 @@ from check_qt_command_snapshot_runtime import ROOT, request_for as command_reque
 from check_qt_command_control_runtime import wait
 from check_schemas import validator_for
 from check_quickshell_paint_runtime import compare_images, read_backend_output
+import conformance_font
 
 
 def request_for(theme="light", text="Automatic updates", direction="ltr"):
@@ -103,7 +104,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--module-path",required=True,type=Path)
     parser.add_argument("--raster",required=True,type=Path)
-    parser.add_argument("--font",required=True,type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--output-dir",required=True,type=Path)
     parser.add_argument("--motion",action="store_true")
     parser.add_argument("--parent-x11-display")
@@ -114,7 +115,7 @@ def main():
     os.environ.setdefault("QT_QUICK_BACKEND","software")
     try:
         from PySide6.QtCore import QObject,QPluginLoader,QPointF,Qt,QUrl,qVersion
-        from PySide6.QtGui import QFontDatabase,QGuiApplication
+        from PySide6.QtGui import QGuiApplication
         from PySide6.QtQml import QQmlComponent,QQmlEngine
         from PySide6.QtQuick import QQuickWindow
         from PySide6.QtTest import QTest
@@ -122,8 +123,7 @@ def main():
         app=QGuiApplication([])
         plugin=QPluginLoader(str(args.module_path.resolve()/"Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None: raise ValueError(plugin.errorString())
-        if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ["DejaVu Sans"]:
-            raise ValueError("requires explicit DejaVu Sans")
+        conformance_font.register_qt(args.font_dir)
         engine=QQmlEngine();engine.addImportPath(str(args.module_path.resolve()))
         component=QQmlComponent(engine,QUrl.fromLocalFile(str(ROOT/"conformance/quickshell/toggle-control-fixture.qml")))
         window=component.create()

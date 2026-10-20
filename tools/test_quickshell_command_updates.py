@@ -197,11 +197,12 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                 for name in ("host", "font"):
                     (root / name).touch()
                 (root / "module").mkdir()
-                argv = ["check", "--host", str(root / "host"), "--font", str(root / "font"),
+                argv = ["check", "--host", str(root / "host"), "--font-dir", str(root / "fonts"),
                         "--alternate-font", str(root / "font"), "--module-path", str(root / "module"),
                         "--output-dir", str(root / "output")]
                 timeout = subprocess.TimeoutExpired(["host"], 350, output=stdout, stderr=stderr)
                 with patch("sys.argv", argv), redirect_stderr(io.StringIO()), \
+                        patch("conformance_font.qml_sources", return_value='["file:///fonts/Inter-Regular.otf"]'), \
                         patch("check_quickshell_command_updates.subprocess.run", side_effect=[
                             SimpleNamespace(returncode=0, stdout="Quickshell 0.3.2 / Qt Quick 6.11.2\n", stderr=""),
                             timeout]) as run:
@@ -430,10 +431,11 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             for name in ("host", "font"):
                 (root / name).touch()
             (root / "module").mkdir()
-            argv = ["check", "--host", str(root / "host"), "--font", str(root / "font"),
+            argv = ["check", "--host", str(root / "host"), "--font-dir", str(root / "fonts"),
                     "--alternate-font", str(root / "font"),
                     "--module-path", str(root / "module"), "--output-dir", str(root / "output")]
             with patch("sys.argv", argv), patch.dict("os.environ", {"QT_QPA_PLATFORM": "wayland"}), \
+                    patch("conformance_font.qml_sources", return_value='["file:///fonts/Inter-Regular.otf"]'), \
                     patch("check_quickshell_command_updates.subprocess.run", return_value=SimpleNamespace(
                         returncode=1, stdout="", stderr="unavailable host")) as run, redirect_stderr(io.StringIO()):
                 self.assertEqual(main(), 1)

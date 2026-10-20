@@ -4,16 +4,17 @@ from pathlib import Path
 import sys
 
 from check_qt_command_snapshot_runtime import ROOT, request_for
+import conformance_font
 
 
 def main():
     parser = argparse.ArgumentParser(description="Host the integrated Qt command for real AT-SPI probing.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--motion", action="store_true", help="Use explicit arithmetic spring fixture channels")
     args = parser.parse_args()
     from PySide6.QtCore import QPluginLoader, QTimer, QUrl, qVersion
-    from PySide6.QtGui import QFontDatabase, QGuiApplication
+    from PySide6.QtGui import QGuiApplication
     from PySide6.QtQml import QQmlComponent, QQmlEngine
     from PySide6.QtQuick import QQuickWindow
     if qVersion() != "6.11.2":
@@ -22,8 +23,7 @@ def main():
     plugin = QPluginLoader(str(args.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
     if plugin.instance() is None:
         raise ValueError(plugin.errorString())
-    if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ["DejaVu Sans"]:
-        raise ValueError("requires explicitly loaded DejaVu Sans")
+    conformance_font.register_qt(args.font_dir)
     engine = QQmlEngine()
     engine.addImportPath(str(args.module_path.resolve()))
     component = QQmlComponent(engine, QUrl.fromLocalFile(str(ROOT / "conformance/quickshell/command-control-fixture.qml")))

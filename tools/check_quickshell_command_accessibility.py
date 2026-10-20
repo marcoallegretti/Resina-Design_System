@@ -18,6 +18,7 @@ from check_quickshell_command_updates import verify_version
 from check_slint_native_availability import (ACCESSIBLE, BUTTON_ROLE, PROPERTIES, call, integer_values, payload,
                                              references, state_flags, string_value)
 from wayland_virtual_input import KEY_SPACE
+import conformance_font
 
 FOCUSED = 12
 # AT-SPI State positions that Command feedback must never set: a Command is not a toggle or a selectable item,
@@ -665,7 +666,7 @@ def run(args):
     os.environ["QT_LINUX_ACCESSIBILITY_ALWAYS_ON"] = "1"
     session = events = None
     try:
-        session = Session(args.host, args.module_path, args.font, args.output_dir)
+        session = Session(args.host, args.module_path, conformance_font.qml_sources(args.font_dir), args.output_dir)
         events = NativeEvents(session.wait, address, args.output_dir)
         tree = Tree(session, address, events)
         results = verify(session, tree)
@@ -685,15 +686,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--module-path", type=Path, required=True)
-    parser.add_argument("--font", type=Path, required=True)
+    parser.add_argument("--font-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--screen-reader", action="store_true",
                         help="also verify Orca presentation of the focused Command")
     parser.add_argument("--session", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     try:
-        args.host, args.module_path, args.font = (path.resolve(strict=True)
-                                                  for path in (args.host, args.module_path, args.font))
+        args.host, args.module_path, args.font_dir = (path.resolve(strict=True)
+                                                      for path in (args.host, args.module_path, args.font_dir))
         if args.session:
             print(REPORT + json.dumps(run(args)), flush=True)
             return 0
@@ -706,7 +707,7 @@ def main():
         args.output_dir.mkdir(parents=True, exist_ok=False)
         process = subprocess.Popen(["dbus-run-session", "--", sys.executable, str(Path(__file__).resolve()),
                                     "--host", str(args.host), "--module-path", str(args.module_path),
-                                    "--font", str(args.font), "--output-dir", str(args.output_dir), "--session",
+                                    "--font-dir", str(args.font_dir), "--output-dir", str(args.output_dir), "--session",
                                     *(["--screen-reader"] if args.screen_reader else [])],
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
         try:

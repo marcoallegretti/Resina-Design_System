@@ -33,7 +33,7 @@ ShellRoot {
     property var recorded: []
     property string loadError: ""
     readonly property bool loaded: sourceFiles.every(file => sources[file[0]] !== undefined
-        && sources[file[0]].tag === file[2]) && typeface.status === FontLoader.Ready && platform.ready
+        && sources[file[0]].tag === file[2]) && typeface.ready && platform.ready
     readonly property var authored: loaded ? JSON.parse(text("preferences")) : null
     readonly property var preferenceSources: authored ? ({
         reducedMotion: platform.reducedMotion !== null && platform.reducedMotion !== undefined ? "platform" : "authored",
@@ -196,10 +196,31 @@ ShellRoot {
         });
     }
 
-    FontLoader {
+    QtObject {
         id: typeface
-        source: Quickshell.env("RESINA_CLOCK_FONT")
-        onStatusChanged: if (status === FontLoader.Error) root.fail("font could not be loaded")
+        property string name: ""
+        readonly property bool ready: typefaces.sources.length > 0 && typefaces.loaded === typefaces.sources.length
+    }
+
+    Instantiator {
+        id: typefaces
+        readonly property var sources: (Quickshell.env("RESINA_CLOCK_FONTS") || "").split(":").filter(path => path.length)
+        property int loaded: 0
+        model: sources
+        delegate: FontLoader {
+            required property string modelData
+            source: modelData
+            onStatusChanged: {
+                if (status === FontLoader.Error)
+                    root.fail("font could not be loaded");
+                else if (status === FontLoader.Ready && typeface.name.length && name !== typeface.name)
+                    root.fail("font files must share one family");
+                else if (status === FontLoader.Ready) {
+                    typeface.name = name;
+                    ++typefaces.loaded;
+                }
+            }
+        }
     }
 
     Instantiator {

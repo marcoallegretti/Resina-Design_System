@@ -331,9 +331,10 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
             for name in ("host", "font"):
                 (root / name).touch()
             (root / "module").mkdir()
-            argv = ["check", "--host", str(root / "host"), "--font", str(root / "font"),
+            argv = ["check", "--host", str(root / "host"), "--font-dir", str(root / "fonts"),
                     "--module-path", str(root / "module"), "--output-dir", str(root / "output"), "--scales", "1"]
             with patch("sys.argv", argv), redirect_stderr(io.StringIO()) as stderr, \
+                    patch("conformance_font.qml_sources", return_value='["file:///fonts/Inter-Regular.otf"]') as sources, \
                     patch("check_quickshell_command_updates.subprocess.run", side_effect=[
                         SimpleNamespace(returncode=0, stdout="Quickshell 0.3.2 / Qt Quick 6.11.2\n", stderr=""),
                         SimpleNamespace(returncode=0, stdout="RESINA_TOGGLE_DONE 0\n", stderr="")]) as run:
@@ -343,7 +344,8 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
             self.assertEqual((output / "config.qml").read_bytes(),
                              (ROOT / "conformance/quickshell/toggle-updates-probe.qml").read_bytes())
             self.assertEqual(environment["RESINA_TOGGLE_CASES"], str((output / "cases.json").resolve()))
-            self.assertEqual(environment["RESINA_TOGGLE_FONT"], (root / "font").resolve().as_uri())
+            self.assertEqual(environment["RESINA_TOGGLE_FONTS"], '["file:///fonts/Inter-Regular.otf"]')
+            sources.assert_called_once_with(root / "fonts")
             self.assertNotIn("RESINA_COMMAND_CASES", environment)
             self.assertEqual(run.call_args.kwargs["timeout"], 10 * len(authored_cases()))
             self.assertIn("FAIL Quickshell Toggle updates: native toggle omitted", stderr.getvalue())

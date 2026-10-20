@@ -2,7 +2,8 @@ import copy
 import json
 import unittest
 
-from check_qt_command_label_runtime import ROOT, verify_layout
+from check_qt_command_label_runtime import ROOT, resolved_master, verify_layout
+import conformance_font
 
 
 class NativeCommandLabelEvidenceTests(unittest.TestCase):
@@ -50,6 +51,26 @@ class NativeCommandLabelEvidenceTests(unittest.TestCase):
                 calls[1]["result"]["width"] = 181
             with self.subTest(change=change), self.assertRaises(ValueError):
                 verify_layout(label, calls, request)
+
+    def test_every_call_must_resolve_the_master_of_the_requested_weight(self):
+        masters = [{"family": "Inter", "style": master["style"], "weight": master["weight"],
+                    "file": master["file"], "sha256": master["sha256"]}
+                   for master in conformance_font.MANIFEST["masters"]]
+        _, calls, _ = self.fixture()
+        for call in calls:
+            call["face"] = {"family": "Inter", "style": "SemiBold"}
+        self.assertEqual(resolved_master(masters, calls)["file"], "Inter-SemiBold.otf")
+        for change in ("regular", "mixed", "weights"):
+            changed = copy.deepcopy(calls)
+            if change == "regular":
+                for call in changed:
+                    call["face"]["style"] = "Regular"
+            elif change == "mixed":
+                changed[1]["face"]["style"] = "Medium"
+            else:
+                changed[1]["request"]["weight"] = 500
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                resolved_master(masters, changed)
 
 
 if __name__ == "__main__":

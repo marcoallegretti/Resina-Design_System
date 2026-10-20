@@ -81,18 +81,20 @@ focus, layout and preference policy belong to this shell, not to Resina.
 - A Linux checkout: `controls` is a symbolic link to the reusable QML controls,
   because Quickshell does not load QML modules from outside its configuration
   folder.
-- DejaVu Sans as a font file.
+- The font files of one family, for example the Inter static masters that the
+  checks use (see [`tools/conformance_font.json`](../../../tools/conformance_font.json)).
 
 ## Running
 
 ```sh
 QML_IMPORT_PATH=target/qt-runtime-import \
 RESINA_ROOT="$PWD" \
-RESINA_CLOCK_FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf \
+RESINA_CLOCK_FONTS=/usr/share/fonts/opentype/inter/Inter-Regular.otf:/usr/share/fonts/opentype/inter/Inter-Medium.otf:/usr/share/fonts/opentype/inter/Inter-SemiBold.otf \
 quickshell --path lab/quickshell/clock-shell/shell.qml
 ```
 
-`RESINA_ROOT` selects the repository whose theme tokens and definitions are read
+`RESINA_CLOCK_FONTS` is a colon-separated list of font files that must name one
+family; the shell waits until all of them are loaded. `RESINA_ROOT` selects the repository whose theme tokens and definitions are read
 at runtime. `RESINA_CLOCK_THEME=light` or `dark` fixes the theme. Geometry comes
 from the first output; each window's device scale comes from that window.
 

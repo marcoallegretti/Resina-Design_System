@@ -15,6 +15,7 @@ from check_quickshell_command_lifecycle import OUTSIDE, Session, authored_reques
 from check_quickshell_command_updates import verify_version
 from sway_output import Sway, changed_scale
 from wayland_virtual_input import KEY_SPACE
+import conformance_font
 
 CHANNELS = ("bodyMix", "depthScale")
 
@@ -744,7 +745,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--module-path", type=Path, required=True)
-    parser.add_argument("--font", type=Path, required=True)
+    parser.add_argument("--font-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--scale", type=float, required=True, help="Output scale the compositor presents")
     parser.add_argument("--live-scale", type=float,
@@ -753,7 +754,8 @@ def main():
     session = None
     try:
         live = changed_scale(args.scale, args.live_scale)
-        host, module, font = (path.resolve(strict=True) for path in (args.host, args.module_path, args.font))
+        host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
+        fonts = conformance_font.qml_sources(args.font_dir)
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
             raise ValueError("requires a live Wayland compositor session with layer-shell and virtual input")
         environment = dict(os.environ, RESINA_QUICKSHELL_HOST=str(host), RESINA_QT_RUNTIME_MODULE=str(module),
@@ -761,7 +763,7 @@ def main():
         verify_version(subprocess.run([sys.executable, str(ROOT / "tools/run_qt_availability_probe.py"), "--version"],
                                       env=environment, capture_output=True, text=True, timeout=15))
         args.output_dir.mkdir(parents=True, exist_ok=False)
-        session = Session(host, module, font, args.output_dir)
+        session = Session(host, module, fonts, args.output_dir)
         verify_scale(session.current(), args.scale)
         compositor = Sway(os.environ) if live is not None else None
         motion = Motion(session)

@@ -18,6 +18,7 @@ from check_qt_command_label_runtime import verify_layout
 from check_surface_paint_backend import surface_paint_channel_mismatch
 from check_focus_indicator_backend import contrast
 from check_command_paint_backend import disabled_label_bound, disabled_label_mismatch
+import conformance_font
 
 
 def authored_cases():
@@ -432,7 +433,7 @@ def updates_parser(description):
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--module-path", type=Path, required=True)
-    parser.add_argument("--font", type=Path, required=True)
+    parser.add_argument("--font-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--platform", choices=("offscreen", "xcb", "wayland"), default="offscreen")
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 2])
@@ -445,7 +446,7 @@ def run_updates(component, args, fonts, authored, verify):
         if not args.scales or any(scale not in (1, 1.25, 2) for scale in args.scales):
             raise ValueError("requires device scales 1, 1.25 or 2")
         host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
-        fonts = {f"{prefix}_{name}": path.resolve(strict=True).as_uri() for name, path in fonts.items()}
+        fonts = {f"{prefix}_{name}": source() for name, source in fonts.items()}
         environment = dict(os.environ, RESINA_QUICKSHELL_HOST=str(host), RESINA_QT_RUNTIME_MODULE=str(module))
         environment["QT_QPA_PLATFORM"] = args.platform
         version = subprocess.run([sys.executable, str(ROOT / "tools/run_qt_availability_probe.py"), "--version"],
@@ -498,7 +499,8 @@ def main():
     parser = updates_parser("Verify authored Command replacements in released Quickshell.")
     parser.add_argument("--alternate-font", type=Path, required=True)
     args = parser.parse_args()
-    return run_updates("command", args, {"FONT": args.font, "ALTERNATE_FONT": args.alternate_font},
+    return run_updates("command", args, {"FONTS": lambda: conformance_font.qml_sources(args.font_dir),
+                                         "ALTERNATE_FONT": lambda: args.alternate_font.resolve(strict=True).as_uri()},
                        authored_cases, verify_output)
 
 

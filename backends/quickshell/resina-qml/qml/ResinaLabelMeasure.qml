@@ -81,15 +81,24 @@ Item {
         const paragraphs = [];
         let width = 0;
         let height = 0;
+        let face = null;
         for (const paragraph of nativeText.split("\u2029")) {
             label.text = paragraph;
             label.forceLayout();
             label.width = nativeWidth === null ? label.implicitWidth : nativeWidth;
             label.forceLayout();
             // Qt does not refresh fontInfo for an empty layout, which has no glyphs.
-            if (paragraph.length && (label.fontInfo.family !== family
-                || label.fontInfo.pixelSize !== mapping.pixelSize || label.fontInfo.weight !== weight))
-                throw new Error("Qt Quick label substituted the requested family, pixel size or weight");
+            // fontInfo.weight repeats the requested weight even when Qt matched another
+            // master. The matched master is published by its style so the font mapping
+            // can verify it against the faces it registered.
+            if (paragraph.length) {
+                if (label.fontInfo.family !== family || label.fontInfo.pixelSize !== mapping.pixelSize)
+                    throw new Error("Qt Quick label substituted the requested family or pixel size");
+                if (face === null)
+                    face = { family: label.fontInfo.family, style: label.fontInfo.styleName };
+                else if (face.style !== label.fontInfo.styleName)
+                    throw new Error("Qt Quick label paragraphs resolved different font masters");
+            }
             const paragraphWidth = (nativeWidth === null ? label.implicitWidth : label.contentWidth) * mapping.scale;
             const paragraphHeight = label.implicitHeight * mapping.scale;
             if (label.truncated || !Number.isFinite(paragraphWidth) || paragraphWidth < 0
@@ -106,7 +115,7 @@ Item {
         }
         if (width <= 0)
             throw new Error("Qt Quick complete label advance must be positive");
-        return { width: width, height: height, nativeText: nativeText, paragraphs: paragraphs,
+        return { width: width, height: height, nativeText: nativeText, paragraphs: paragraphs, face: face,
             fontMapping: mapping, nativeLineHeight: nativeHeight, nativeWrappingWidth: nativeWidth };
     }
 

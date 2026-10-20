@@ -12,6 +12,7 @@ from check_command_motion_backend import equation_sample
 from check_spring_trajectory_backend import trajectory_mismatch
 from check_schemas import validator_for
 from check_headless_backend import mismatch
+import conformance_font
 
 
 def fixture_channels():
@@ -103,20 +104,19 @@ QtObject {
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    for name in ('module-path','font','raster','output-dir'):parser.add_argument('--'+name,required=True,type=Path)
+    for name in ('module-path','font-dir','raster','output-dir'):parser.add_argument('--'+name,required=True,type=Path)
     args=parser.parse_args()
     os.environ.setdefault('QT_QPA_PLATFORM','offscreen');os.environ.setdefault('QT_QUICK_BACKEND','software')
     try:
         from PySide6.QtCore import QObject,QPluginLoader,QUrl,Qt
-        from PySide6.QtGui import QGuiApplication,QFontDatabase
+        from PySide6.QtGui import QGuiApplication
         from PySide6.QtQml import QQmlComponent,QQmlEngine
         from PySide6.QtQuick import QQuickWindow
         from PySide6.QtTest import QTest
         app=QGuiApplication([])
         plugin=QPluginLoader(str(args.module_path.resolve()/'Resina/Runtime/libResina_Runtime.so'))
         if plugin.instance() is None:raise ValueError(plugin.errorString())
-        if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ['DejaVu Sans']:
-            raise ValueError('requires explicit DejaVu Sans')
+        conformance_font.register_qt(args.font_dir)
         engine=QQmlEngine();engine.addImportPath(str(args.module_path.resolve()))
         component=QQmlComponent(engine,QUrl.fromLocalFile(str(ROOT/'conformance/quickshell/toggle-control-fixture.qml')))
         window=component.create()

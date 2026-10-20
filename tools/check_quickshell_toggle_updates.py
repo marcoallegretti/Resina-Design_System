@@ -14,6 +14,7 @@ from check_quickshell_command_updates import (
     verify_native_focus, verify_typography,
 )
 from check_surface_paint_backend import surface_paint_channel_mismatch
+import conformance_font
 
 
 def authored_cases():
@@ -335,7 +336,8 @@ def verify_output(output, case, report, scale):
 
 def main():
     args = updates_parser("Verify authored Toggle replacements in released Quickshell.").parse_args()
-    return run_updates("toggle", args, {"FONT": args.font}, authored_cases, verify_output)
+    return run_updates("toggle", args, {"FONTS": lambda: conformance_font.qml_sources(args.font_dir)},
+                       authored_cases, verify_output)
 
 
 if __name__ == "__main__":
