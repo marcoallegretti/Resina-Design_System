@@ -34,6 +34,14 @@ FloatingWindow {
         source: Quickshell.env("RESINA_LABEL_MEASURE_QML")
     }
     Text {
+        id: digitProbe
+        visible: false
+        font.family: fontAsset.name
+        font.pixelSize: 20
+        textFormat: Text.PlainText
+        renderType: Text.QtRendering
+    }
+    Text {
         id: paragraphOracle
         visible: false
         font.family: fontAsset.name
@@ -69,6 +77,21 @@ FloatingWindow {
                         throw new Error("native measurement did not identify its resolved master");
                     faces[weight] = face;
                     console.log("RESINA_LABEL_FACE", JSON.stringify({ weight: weight, face: face }));
+                }
+                for (const tabular of [true, false]) {
+                    digitProbe.font.weight = 500;
+                    digitProbe.font.features = tabular ? { "tnum": 1 } : {};
+                    const advances = [];
+                    for (let digit = 0; digit < 10; digit++) {
+                        digitProbe.text = String(digit);
+                        digitProbe.forceLayout();
+                        if (digitProbe.fontInfo.styleName !== faces[500].style)
+                            throw new Error("digit measurement resolved a different master");
+                        advances.push(digitProbe.implicitWidth);
+                    }
+                    console.log("RESINA_LABEL_DIGITS", JSON.stringify({ tabular: tabular, record: {
+                        schemaVersion: "0.1.0", role: "numeric", fontSize: { value: 20, unit: "px" },
+                        advances: advances } }));
                 }
                 if (Quickshell.env("RESINA_LABEL_MODE") === "faces") {
                     console.log("RESINA_LABEL_FACES_PASS", window.nativeDeviceScale);

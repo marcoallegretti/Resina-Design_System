@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:digit-advance-cases:0.1.0",
+  "title": "Resina Numeric Digit Advance Conformance Cases",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "record",
+          "expected"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "record": {
+            "$ref": "urn:resina:schema:digit-advance-record:0.1.0"
+          },
+          "expected": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "advance"
+                ],
+                "properties": {
+                  "advance": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "error"
+                ],
+                "properties": {
+                  "error": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "narrowest",
+                      "widest"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "unequalAdvances"
+                      },
+                      "narrowest": {
+                        "$ref": "#/$defs/digit"
+                      },
+                      "widest": {
+                        "$ref": "#/$defs/digit"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9
+    }
+  }
+}

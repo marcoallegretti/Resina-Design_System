@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 
+from check_schemas import digit_advance_outcome, validator_for
 import conformance_font
 
 
@@ -27,6 +28,29 @@ def resolved_masters(log, masters):
             for weight in WEIGHTS]
 
 
+def digit_records(log):
+    """Weight-500 digits must be equal with tnum and fail without it on the proportional default."""
+    observed = {}
+    for line in re.findall(r"RESINA_LABEL_DIGITS (\{.*\})", log):
+        digits = json.loads(line)
+        if digits["tabular"] in observed:
+            raise ValueError("native label probe reported digit advances twice")
+        observed[digits["tabular"]] = digits["record"]
+    if sorted(observed) != [False, True]:
+        raise ValueError("native label probe did not report tabular and default digit advances")
+    validator = validator_for("schemas/digit-advance-record.schema.json")
+    for record in observed.values():
+        errors = sorted(error.message for error in validator.iter_errors(record))
+        if errors:
+            raise ValueError(f"native digit-advance record is invalid: {errors[0]}")
+    tabular, default = (digit_advance_outcome(observed[key]["advances"]) for key in (True, False))
+    if "advance" not in tabular:
+        raise ValueError(f"tnum digits are not equal: {tabular['error']}")
+    if "error" not in default:
+        raise ValueError("default digits of the conformance face were expected to be proportional")
+    return {"tabular": {**observed[True], "outcome": tabular}, "default": {**observed[False], "outcome": default}}
+
+
 def check_log(result, scale, masters):
     log = result.stdout + result.stderr
     matches = re.findall(r"RESINA_LABEL_PASS (\d+) (\d+) ([0-9.]+)(?:\s|$)", log)
@@ -35,7 +59,7 @@ def check_log(result, scale, masters):
     count, failures, actual_scale = matches[0]
     if int(count) != 432 or int(failures) != 13 or not math.isclose(float(actual_scale), scale, rel_tol=0, abs_tol=0.00001):
         raise ValueError(f"native label evidence counts or actual scale differ: {matches[0]}")
-    return resolved_masters(log, masters)
+    return {"masters": resolved_masters(log, masters), "digits": digit_records(log)}
 
 
 def check_substitution(result, masters):
@@ -78,7 +102,7 @@ def main():
             environment.update(QT_SCALE_FACTOR=str(scale), RESINA_LABEL_DEVICE_SCALE=str(scale))
             result = subprocess.run(probe, env=environment, capture_output=True, encoding="utf-8",
                                     errors="strict", timeout=20, check=False)
-            evidence["scales"].append({"deviceScale": scale, "masters": check_log(result, scale, masters)})
+            evidence["scales"].append({"deviceScale": scale, **check_log(result, scale, masters)})
         with tempfile.TemporaryDirectory() as directory:
             isolated = dict(environment, **conformance_font.isolated_fontconfig(directory), QT_SCALE_FACTOR="1",
                             RESINA_LABEL_DEVICE_SCALE="1", RESINA_LABEL_MODE="faces",
@@ -92,7 +116,8 @@ def main():
     print(json.dumps(evidence, indent=2))
     print(f"Quickshell native label measurement passed {432 * len(arguments.scales)} cases and "
           f"{13 * len(arguments.scales)} diagnostic cases on {arguments.platform}, resolved distinct Inter masters "
-          "for weights 400, 500 and 600, and rejected a Regular-only registration")
+          "for weights 400, 500 and 600, measured equal tnum digit advances, and rejected a Regular-only "
+          "registration and the proportional default digits")
     return 0
 
 

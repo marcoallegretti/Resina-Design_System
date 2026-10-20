@@ -187,7 +187,13 @@ recovery afterward. At each scale it records the master that weights 400, 500
 and 600 resolve to (family, style, weight, file and SHA-256) and fails unless
 they are the three distinct pinned masters. A second run registers only the
 Regular master, with a fontconfig file that lists no font directories, and must
-report weight 500 as a substitution. Evidence recorded on Quickshell 0.3.1: the extended matrix
+report weight 500 as a substitution. The probe also measures the digits 0 to 9
+in the Medium master at 20 px, once with `font.features: {"tnum": 1}` and once
+without, and publishes both as
+[digit-advance records](../../../schemas/digit-advance-record.schema.json). With
+`tnum` the advances must satisfy the
+[numeric digit rule](../../../spec/11-typography.md#numeric-digits); the face's
+proportional default digits must fail it. Evidence recorded on Quickshell 0.3.1: the extended matrix
 passed software/offscreen with unmodified Quickshell 0.3.1 and Qt 6.11.2. Earlier integer-size evidence passed on
 software in the tested Wayland session; the extended matrix has not been rerun there.
 CI runs this checker with the released Quickshell host at device scales 1, 1.25
