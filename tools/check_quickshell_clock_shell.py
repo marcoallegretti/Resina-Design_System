@@ -194,8 +194,7 @@ class Shell:
             if predicate(observed):
                 return observed
             time.sleep(.1)
-        raise ValueError(f"{description} was not reached: open={observed and observed['open']} "
-                         f"errors={observed and observed['errors']}")
+        raise ValueError(f"{description} was not reached: {shell_state(observed)}")
 
     def click(self, point):
         self.input.move(point["x"], point["y"])
@@ -208,14 +207,50 @@ class Shell:
         self.input.key(code, False)
 
 
+CLOSED = (
+    ("the surface is closed", lambda observed: not observed["open"]),
+    ("Show clock is ready", lambda observed: observed["showClock"]),
+    ("Show clock has a target", lambda observed: observed["targets"]["showClock"]),
+    ("Show clock is enabled",
+     lambda observed: observed["showClock"] and observed["showClock"]["state"]["enabled"]),
+)
+OPENED = (
+    ("the surface is open", lambda observed: observed["open"]),
+    ("the clock surface is published", lambda observed: observed["clock"]),
+    ("Close is ready", lambda observed: observed["close"]),
+    ("Close has active focus", lambda observed: observed["focus"]["close"]),
+    ("Show clock is ready", lambda observed: observed["showClock"]),
+    ("Show clock is disabled",
+     lambda observed: observed["showClock"] and not observed["showClock"]["state"]["enabled"]),
+)
+
+
+def unmet(observed, clauses):
+    return [name for name, holds in clauses if not holds(observed)]
+
+
 def closed(observed):
-    return (not observed["open"] and observed["showClock"] and observed["targets"]["showClock"]
-            and observed["showClock"]["state"]["enabled"])
+    return not unmet(observed, CLOSED)
 
 
 def opened(observed):
-    return (observed["open"] and observed["clock"] and observed["close"] and observed["focus"]["close"]
-            and observed["showClock"] and not observed["showClock"]["state"]["enabled"])
+    return not unmet(observed, OPENED)
+
+
+def shell_state(observed):
+    if observed is None:
+        return "the shell was never observed"
+    controls = {}
+    for part in ("showClock", "close"):
+        control = observed[part]
+        controls[part] = control and {"enabled": control["state"]["enabled"], "focused": control["state"]["focused"],
+                                      "hold": control["state"]["hold"], "hovered": control["hovered"],
+                                      "target": observed["targets"][part], "deviceScale": observed["deviceScale"][part]}
+    return json.dumps({"generation": observed["generation"], "open": observed["open"],
+                       "clockPublished": bool(observed["clock"]), "activeFocus": observed["focus"],
+                       "controls": controls,
+                       "unmet": {"opened": unmet(observed, OPENED), "closed": unmet(observed, CLOSED)},
+                       "errors": {part: error for part, error in observed["errors"].items() if error}})
 
 
 def published(observed, part, request):
