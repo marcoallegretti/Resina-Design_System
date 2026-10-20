@@ -58,8 +58,8 @@ Item {
             throw new Error("Qt command view requires matching native translation and pixel density");
     }
 
-    function prepare(source, optionsSource, motionSource, retargetTime, preparationClock, publicationDelay,
-                     predecessorSpan) {
+    function prepare(source, optionsSource, motionSource, retargetTime, resumeTime, preparationClock,
+                     publicationDelay, predecessorSpan) {
         if (state.preparing || state.executing)
             throw new Error("Qt command view preparation is in progress");
         state.preparing = true;
@@ -103,7 +103,7 @@ Item {
                 throw new Error(preparation.error);
             state.pending = {complete:complete, options:options,
                 motion:motionSource === undefined ? "" : JSON.stringify({
-                    time:JSON.parse(motionSource).time,retargetTime:retargetTime,
+                    time:JSON.parse(motionSource).time,retargetTime:retargetTime,resumeTime:resumeTime,
                     preparationDuration:preparation.time,publicationDelay:publicationDelay,
                     predecessorSpan:predecessorSpan,
                     channels:JSON.parse(motionSource).channels,motion:result.motion})};

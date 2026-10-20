@@ -1349,18 +1349,15 @@ complete, identical to the logged frame with that number and valid for the
 committed state the effect reports; a frame published for the superseded pressed
 request fails. Input reaches the control through the compositor:
 
-- holding Space publishes several unsettled spring frames; the release retarget continues from the position
-  and velocity the previous trajectory had reached at the published `retargetTime`,
-  which does not precede its last published sample or exceed the log time elapsed since the frame before
-  it. That log bound is only as tight as one frame's preparation time; the precision of the restart
-  instant itself comes from the Qt runtime clock check, which compares `CommandClock.restart()` with
-  monotonic time. Each sampled epoch's clock
+- holding Space publishes several unsettled spring frames. Each sampled epoch's clock
   advances with elapsed native time within 10 % or 50 ms; one channel settles
   before the other, both settle, and no frame follows. Every frame logged between
   the press and the effect holds the press, and the first frame after the effect
   presents the effect's committed state and is the release retarget. A Space press
   held through auto-repeat and the Space activation after a live scale change
   meet the same callback and ordering conditions;
+- a press, its release, hover enter and a second press follow while the spring
+  is still moving, so each hands over a moving state;
 - compositor hover enters and leaves the target through spring frames. Qt's
   Wayland client types the seat pointer as a touchpad when the compositor offers
   pointer gestures, so hover accepts mouse events from mouse and touchpad devices;
@@ -1391,6 +1388,47 @@ request fails. Input reaches the control through the compositor:
   `opaqueDimensional`, so a released-host Command never publishes
   `translucentPigmented`; this pair shows that the authored preference, and not
   a fixed host value, selects the representation.
+
+Every logged clock epoch boundary is then checked. A boundary is a frame whose
+retained `channels` or target differ from those of the frame logged before it
+in the same engine generation. It must publish exactly one instant: a
+`retargetTime`, or for an epoch resumed by a reconfiguration a `resumeTime`.
+Its initial position and velocity must equal, within spec/44's tolerance
+`max(1e-9, 1e-9 * abs(expected))`, the state the previous trajectory reaches
+at that instant, sampled with that trajectory's own policy; reduced motion and Cast
+reach their endpoint with zero velocity. The instant must not precede the
+previous frame's sample or exceed the log time elapsed since the frame logged
+before that one. That log bound is only as tight as one frame's preparation
+time; the precision of the restart instant itself comes from the Qt runtime
+clock check, which compares `CommandClock.restart()` with monotonic time. A
+`resumeTime` fails unless the probe logged a configuration request between the
+two frames or their configuration, device scale or target centre differ. Policy
+changes come only from configuration changes, so they are checked this way.
+
+A channel may hand over exactly zero velocity only when the trajectory it
+continues is settled at that instant or uses reduced motion or Cast. An
+activation callback that replaces the configuration or withdraws availability
+supersedes the epoch the runtime prepared for the committed state before it is
+published. Of the effects logged between the two frames, take the last whose
+committed state has, through the request in effect, a policy or target other
+than those of the previous frame: the boundary may instead continue an epoch for
+that state that started from the previous trajectory, and both elapsed times
+together must fit the same log bound. That start is not published: the closest
+of at most 501 evenly spaced instants is refined by ternary search within one
+spacing, and the boundary must continue it within the same tolerance at the
+published instant. Otherwise a `retargetTime` or `resumeTime` that precedes
+the previous sample, or a retarget across a changed configuration, device scale
+or position, fails because the epoch it continues was not logged, as does a
+published instant on the first frame of a generation or a boundary with only
+one earlier frame logged. A rejected configuration fails the control, which
+discards its trajectory and clock: the first boundary after a logged rejection
+must publish no instant and start from the authored channels. The run must
+check at least one boundary each for hover enter, hover exit, press, release, a
+policy change and a reconfiguration, and for each of them at least one boundary
+that hands over a nonzero velocity. `report.json` counts the checked boundaries
+by trigger under `boundaries`, including availability changes and restarts after
+a rejection, and those handing over a nonzero velocity under `movingBoundaries`;
+one boundary can count for several triggers.
 
 The check runs at the output scale given by `--scale` and first requires the
 device pixel ratio of the Command's window to equal it. The probe logs that
@@ -1471,7 +1509,13 @@ was still moving:
 
 At least 20 frames are required. The floor is a median published interval of at
 most 1/30 s (30 Hz); a longer median fails the check unless `--floor report`
-is given, which prints the result without failing. The target is a median
+is given, which prints the result without failing. Without enforcing them, the
+check also reports for each run the 95th and 99th percentile (nearest rank) and
+maximum published interval, the share of intervals longer than 1/30 s (33.3 ms)
+and 1/24 s (41.7 ms), and the longest run of consecutive measured intervals
+longer than 1/30 s, in a `TAIL` line and under `tail` in `report.json`. A run
+whose median meets the floor can still have nearly half of its intervals longer
+than 1/30 s. The target is a median
 `preparationDuration` of at most 8 ms and a median published interval of at most
 17 ms. The target is reported but not enforced. CI runs the check at output
 scales 1 and 2 with `--floor report --require-gap` and keeps each `report.json`
@@ -1541,15 +1585,19 @@ the current activation state and never wait for body motion to settle.
 
 The native read-only `snapshot`, `motion` and `currentFrame` aliases expose a
 coherent selected frame. `motion` is backend observation metadata containing
-elapsed `time`, retained `channels`, `retargetTime`, `preparationDuration`,
-`publicationDelay`, `predecessorSpan` and the
+elapsed `time`, retained `channels`, `retargetTime`, `resumeTime`,
+`preparationDuration`, `publicationDelay`, `predecessorSpan` and the
 complete existing motion IR; it is not a new portable IR or action authorization. `retargetTime`
 is the previous trajectory's elapsed clock time at which the native clock
 restarted and the retained `channels` were sampled from it. Every frame of that
 clock epoch repeats it. It is `null` for the first epoch and after a failure or
-reconfiguration; after a reconfiguration with an unchanged profile the resumed
-`channels` were still sampled from the running trajectory before the clock was
-invalidated. `preparationDuration` is the main-thread time, in seconds from a
+reconfiguration. A reconfiguration with an unchanged motion profile keeps the
+running trajectory and its clock until the next frame is prepared; the clock
+then restarts and the resumed `channels` are that trajectory's state at the
+restart, not at the change. `resumeTime` is the previous trajectory's elapsed
+clock time at that restart, repeated by every frame of the resumed epoch, and
+`null` otherwise.
+`preparationDuration` is the main-thread time, in seconds from a
 separate `CommandClock`, from the start of the refresh that prepared the frame to
 the end of its synchronous snapshot, paint and label preparation. It excludes
 asynchronous image decoding and the later publication. `publicationDelay` is the

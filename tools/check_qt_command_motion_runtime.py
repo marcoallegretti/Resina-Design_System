@@ -16,16 +16,19 @@ from check_qt_command_control_runtime import wait
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
 
 
-def motion_mismatch(actual, source, metadata):
-    family = actual['command']['paint']['body']['materialFamily']
+def authored_motion(source, phase):
     theme = json.loads(source['content']['themeSource'])
-    role = source['body']['surface']['materialRole'].split('.')[1]
-    if family != theme['materialAssignments']['control'][role]:
-        return '/command/materialFamily'
+    family = theme['materialAssignments']['control'][source['body']['surface']['materialRole'].split('.')[1]]
     reduced = source['content']['environment']['accessibilityPreferences']['reducedMotion']
     policy = 'reducedMotion' if reduced else 'castImmediate' if family == 'cast' else 'spring'
-    phase = actual['command']['phase']
     target = {'bodyMix': 0, 'depthScale': 1} if phase == 'rest' else source['body']['commandAppearance']['profiles'][family][phase]
+    return family, policy, target
+
+
+def motion_mismatch(actual, source, metadata):
+    family, policy, target = authored_motion(source, actual['command']['phase'])
+    if actual['command']['paint']['body']['materialFamily'] != family:
+        return '/command/materialFamily'
     if actual['policy'] != policy or actual['target'] != target:
         return '/policy/target'
     for name, lower, upper in (('bodyMix', -1, 1), ('depthScale', 0, 2)):

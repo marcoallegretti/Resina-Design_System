@@ -3,22 +3,26 @@ import unittest
 from unittest import mock
 
 from check_command_motion_backend import equation_sample
-from check_quickshell_command_motion import (CHANNELS, effect_positions, epochs, expected_states, frames, moving,
-                                             settled, verify_activation, verify_callback_frame, verify_clock,
-                                             verify_committed_frame, verify_dynamics, verify_frame_scales,
-                                             verify_publication_scales, verify_retarget, verify_scale,
-                                             verify_reduced_frost, verify_superseding_frames,
-                                             verify_translucent_frost)
+from check_qt_command_motion_runtime import authored_motion
+from check_quickshell_command_lifecycle import authored_requests
+from check_quickshell_command_motion import (CHANNELS, boundaries, committed_epoch, effect_positions, epochs,
+                                             expected_states, frames, moving, settled, verify_activation,
+                                             verify_callback_frame, verify_clock, verify_committed_frame,
+                                             verify_dynamics, verify_frame_scales, verify_publication_scales,
+                                             verify_reduced_frost, verify_retarget, verify_retargets, verify_scale,
+                                             verify_superseding_frames, verify_translucent_frost)
 
 DYNAMICS = {"schemaVersion": "0.1.0", "mass": 1, "stiffness": 4, "damping": 4,
             "positionThreshold": 1e-06, "velocityThreshold": 1e-06}
 REST = {"dynamics": DYNAMICS, "initial": {"position": 0, "velocity": 0}}
 FIXTURE = {"bodyMix": copy.deepcopy(REST), "depthScale": copy.deepcopy(REST)}
+REQUESTS = authored_requests()
 
 
 def frame(time, sample_time, settled_channels=(False, False), policy="spring", target=None, channels=None,
-          hovered=False, focused=True, enabled=True, hold=None, retarget=None):
-    return {"kind": "frame", "time": time, "hovered": hovered,
+          hovered=False, focused=True, enabled=True, hold=None, retarget=None, sequence=0, configuration="motion"):
+    return {"kind": "frame", "generation": "g", "sequence": sequence, "configuration": configuration, "time": time,
+            "hovered": hovered,
             "state": {"enabled": enabled, "focused": focused, "hold": hold},
             "motion": {"time": sample_time, "retargetTime": retarget, "channels": copy.deepcopy(channels or FIXTURE),
                        "motion": {"policy": policy, "target": target or {"bodyMix": 1, "depthScale": .5},
@@ -39,12 +43,6 @@ def callback(effects, sequence, state=COMMITTED, generation="g", presented=None)
     shown = presented or {"snapshot": None, "motion": None, "ready": False}
     return {"kind": "effect", "generation": generation, "effects": effects, "frame": sequence,
             "state": copy.deepcopy(state), **shown}
-
-
-def continued(previous, elapsed):
-    return {name: {"dynamics": DYNAMICS,
-                   "initial": dict(equation_sample(FIXTURE[name], previous["motion"]["motion"]["target"][name],
-                                                   elapsed, False)["state"])} for name in CHANNELS}
 
 
 class CommandMotionEvidenceTests(unittest.TestCase):
@@ -90,46 +88,6 @@ class CommandMotionEvidenceTests(unittest.TestCase):
         changed["depthScale"]["dynamics"]["stiffness"] = 8
         with self.assertRaisesRegex(ValueError, "authored dynamics"):
             verify_dynamics(frame(0, 0, channels=changed), FIXTURE)
-
-    def test_retarget_must_continue_from_the_reached_state(self):
-        earlier, previous = frame(10, .1), frame(10.3, .3)
-        released = {"bodyMix": 0, "depthScale": 0}
-        channels = continued(previous, .35)
-        # Log time lags the runtime clock by unrelated main-thread work.
-        verify_retarget(earlier, previous, frame(10.6, .01, channels=channels, target=released, retarget=.35))
-        for name in CHANNELS:
-            jumped = copy.deepcopy(channels)
-            jumped[name]["initial"]["position"] += .04
-            with self.subTest(name=name), self.assertRaisesRegex(ValueError, "did not continue"):
-                verify_retarget(earlier, previous, frame(10.36, .01, channels=jumped, target=released, retarget=.35))
-        stopped = copy.deepcopy(channels)
-        for name in stopped:
-            stopped[name]["initial"]["velocity"] = 0
-        with self.assertRaisesRegex(ValueError, "did not continue"):
-            verify_retarget(earlier, previous, frame(10.36, .01, channels=stopped, target=released, retarget=.35))
-        with self.assertRaisesRegex(ValueError, "did not continue"):
-            verify_retarget(earlier, previous, frame(10.36, .01, channels=channels, target=released, retarget=.39))
-
-    def test_retarget_instant_must_be_published_after_the_previous_sample(self):
-        earlier, previous = frame(10, .1), frame(10.3, .3)
-        for instant in (None, True, .29, float("inf"), float("nan"), "0.35"):
-            with self.subTest(instant=instant), self.assertRaisesRegex(ValueError, "retarget instant"):
-                verify_retarget(earlier, previous, frame(10.36, .01, target={"bodyMix": 0, "depthScale": 0},
-                                                         retarget=instant))
-
-    def test_retarget_instant_is_bounded_by_the_earlier_log(self):
-        earlier, released = frame(10, .1), {"bodyMix": 0, "depthScale": 0}
-        # The previous frame logged .19 s after its sample, later than the retarget it precedes.
-        lagging = frame(10.5, .3)
-        verify_retarget(earlier, lagging, frame(10.52, .01, channels=continued(lagging, .5), target=released,
-                                                retarget=.5))
-        previous = frame(10.3, .3)
-        for instant in (.9, 1.1):
-            with self.subTest(instant=instant), self.assertRaisesRegex(ValueError, "beyond"):
-                verify_retarget(earlier, previous, frame(10.6, .01, channels=continued(previous, instant),
-                                                         target=released, retarget=instant))
-        verify_retarget(earlier, previous, frame(10.6, .01, channels=continued(previous, .89), target=released,
-                                                 retarget=.89))
 
     def test_the_command_must_be_presented_at_the_requested_device_scale(self):
         verify_scale({"width": 819, "height": 480, "deviceScale": 1.25}, 1.25)
@@ -186,6 +144,270 @@ class CommandMotionEvidenceTests(unittest.TestCase):
                  "no static publication was published at device scale 2")):
             with self.subTest(entries=entries), self.assertRaisesRegex(ValueError, message):
                 verify_publication_scales(self.logged(*entries), 1.25, change, 2 if change else None)
+
+
+def target(phase, configuration="motion"):
+    return authored_motion(REQUESTS[configuration], phase)[2]
+
+
+def reached(previous, instant):
+    immediate = previous["motion"]["motion"]["policy"] != "spring"
+    return {name: {"dynamics": DYNAMICS,
+                   "initial": dict(equation_sample(previous["motion"]["channels"][name],
+                                                   previous["motion"]["motion"]["target"][name], instant,
+                                                   immediate)["state"])} for name in CHANNELS}
+
+
+def later(previous, sequence, time, sample_time):
+    result = copy.deepcopy(previous)
+    result.update(sequence=sequence, time=time)
+    result["motion"]["time"] = sample_time
+    return result
+
+
+def retargeted(previous, sequence, time, instant, phase, configuration="motion", resumed=None, hovered=False,
+               hold=None, enabled=True, sample_time=.001):
+    _, policy, goal = authored_motion(REQUESTS[configuration], phase)
+    result = frame(time, sample_time, policy=policy, target=goal,
+                   channels=reached(previous, instant if resumed is None else resumed), hovered=hovered,
+                   enabled=enabled, hold=hold, retarget=None if resumed is not None else instant, sequence=sequence,
+                   configuration=configuration)
+    result["motion"]["resumeTime"] = resumed
+    return result
+
+
+def committed(state, hovered=False, configuration="motion"):
+    return {"kind": "effect", "generation": "g", "configuration": configuration, "state": copy.deepcopy(state),
+            "hovered": hovered}
+
+
+def at_rest(sequence, time, sample_time, configuration="motion"):
+    _, policy, goal = authored_motion(REQUESTS[configuration], "rest")
+    rest = {name: {"dynamics": DYNAMICS, "initial": {"position": goal[name], "velocity": 0}} for name in CHANNELS}
+    return frame(time, sample_time, (True, True), policy=policy, target=goal, channels=rest, sequence=sequence,
+                 configuration=configuration)
+
+
+KEY = {"kind": "key", "key": "space"}
+
+
+def session_log(settled_press=False):
+    log = [at_rest(1, 10, .5), at_rest(2, 10.1, .6)]
+    log.append(retargeted(log[-1], 3, 10.2, .65, "pressed", hold=KEY))
+    log.append(later(log[-1], 4, 10.4, .15))
+    log.append(committed(COMMITTED))
+    log.append(retargeted(log[-2], 5, 10.5, .2, "rest"))
+    log.append(later(log[-1], 6, 10.6, .08))
+    log.append(retargeted(log[-1], 7, 10.7, .1, "hover", hovered=True))
+    log.append(later(log[-1], 8, 10.8, 30 if settled_press else .08))
+    log.append(retargeted(log[-1], 9, 10.9, 30.05 if settled_press else .1, "pressed", hovered=True, hold=KEY))
+    log.append(later(log[-1], 10, 11, .08))
+    log.append(retargeted(log[-1], 11, 11.1, .1, "pressed", hold=KEY))
+    log.append(later(log[-1], 12, 11.2, .08))
+    log.append({"kind": "configure", "generation": "g", "configuration": "reduced"})
+    log.append(retargeted(log[-2], 13, 11.4, None, "pressed", "reduced", resumed=.15, hold=KEY))
+    return log
+
+
+class CommandRetargetTests(unittest.TestCase):
+    def test_every_logged_boundary_continues_its_predecessor_and_is_counted_by_trigger(self):
+        self.assertEqual(verify_retargets(session_log(), REQUESTS),
+                         ({"press": 2, "release": 1, "hover enter": 1, "hover exit": 1, "policy change": 1,
+                           "reconfiguration": 1},
+                          {"press": 1, "release": 1, "hover enter": 1, "hover exit": 1, "policy change": 1,
+                           "reconfiguration": 1}))
+        self.assertEqual([(previous["sequence"], current["sequence"]) for _, previous, current, _
+                          in boundaries(session_log())], [(2, 3), (4, 5), (6, 7), (8, 9), (10, 11), (12, 13)])
+
+    def test_each_trigger_kind_needs_a_checked_boundary(self):
+        log = session_log()
+        for end, kind in ((7, "hover enter"), (11, "hover exit"), (-2, "policy change")):
+            with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, f"no logged clock epoch boundary was "
+                                                                             f"triggered by {kind}$"):
+                verify_retargets(log[:end], REQUESTS)
+
+    def test_each_trigger_kind_needs_a_moving_hand_over(self):
+        log = session_log(settled_press=True)
+        self.assertEqual([log[index]["motion"]["channels"][name]["initial"]["velocity"]
+                          for index in (2, 9) for name in CHANNELS], [0, 0, 0, 0])
+        with self.assertRaisesRegex(ValueError, "no logged clock epoch boundary triggered by press handed over a "
+                                                "moving state"):
+            verify_retargets(log, REQUESTS)
+
+    def test_a_retarget_continues_its_predecessor_at_the_published_instant_within_spec44_tolerance(self):
+        earlier, previous = frame(10, .1, sequence=1), frame(10.3, .3, sequence=2)
+        exact = retargeted(previous, 3, 10.6, .35, "rest")
+        # Log time lags the runtime clock by unrelated main-thread work.
+        verify_retarget(earlier, previous, exact)
+        velocity = exact["motion"]["channels"]["bodyMix"]["initial"]["velocity"]
+        self.assertGreater(abs(velocity), 1e-3)
+        for field, value in (("velocity", velocity / 2), ("velocity", 1e-9),
+                             ("position", exact["motion"]["channels"]["bodyMix"]["initial"]["position"] + .015)):
+            changed = copy.deepcopy(exact)
+            changed["motion"]["channels"]["bodyMix"]["initial"][field] = value
+            with self.subTest(field=field, value=value), self.assertRaisesRegex(
+                    ValueError, "bodyMix at frame 3 did not continue from the reached state"):
+                verify_retarget(earlier, previous, changed)
+        for name in CHANNELS:
+            jumped = copy.deepcopy(exact)
+            jumped["motion"]["channels"][name]["initial"]["position"] += 2e-9
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, f"{name} at frame 3 did not continue"):
+                verify_retarget(earlier, previous, jumped)
+            within = copy.deepcopy(exact)
+            within["motion"]["channels"][name]["initial"]["velocity"] += 5e-10
+            verify_retarget(earlier, previous, within)
+        late = copy.deepcopy(exact)
+        late["motion"]["retargetTime"] = .3501
+        with self.assertRaisesRegex(ValueError, "did not continue"):
+            verify_retarget(earlier, previous, late)
+
+    def test_a_projected_release_position_is_rejected(self):
+        earlier, previous = frame(10, .1, sequence=1, hold=HELD["hold"]), frame(10.3, .3, sequence=2, hold=HELD["hold"])
+        projected = retargeted(previous, 3, 10.6, .35, "rest")
+        for name in CHANNELS:
+            projected["motion"]["channels"][name]["initial"]["position"] = previous["motion"]["motion"]["target"][name]
+        with self.assertRaisesRegex(ValueError, "bodyMix at frame 3 did not continue from the reached state"):
+            verify_retarget(earlier, previous, projected)
+
+    def test_zero_velocity_is_handed_over_only_by_a_resting_or_immediate_predecessor(self):
+        earlier = frame(12.9, 2.9, hovered=True, target=target("hover"), sequence=1)
+        previous = frame(13, 3, hovered=True, target=target("hover"), sequence=2)
+        exit = retargeted(previous, 3, 13.1, 3.05, "rest")
+        verify_retarget(earlier, previous, exit)
+        for name in CHANNELS:
+            stopped = copy.deepcopy(exit)
+            stopped["motion"]["channels"][name]["initial"]["velocity"] = 0
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, f"{name} at frame 3 "):
+                verify_retarget(earlier, previous, stopped)
+        resting = at_rest(2, 13, 3)
+        verify_retarget(earlier, resting, retargeted(resting, 3, 13.1, 3.05, "pressed"))
+        for configuration in ("reduced", "cast"):
+            immediate = later(retargeted(resting, 2, 13, 3, "hover", configuration), 2, 13, 3)
+            with self.subTest(configuration=configuration):
+                press = retargeted(immediate, 3, 13.1, 3.05, "pressed", configuration)
+                self.assertEqual([press["motion"]["channels"][name]["initial"]["velocity"] for name in CHANNELS],
+                                 [0, 0])
+                verify_retarget(earlier, immediate, press)
+
+    def test_a_published_instant_is_a_finite_elapsed_time_within_the_logged_window(self):
+        earlier, previous = frame(10, .1, sequence=1), frame(10.3, .3, sequence=2)
+        for key, kind in (("retargetTime", "retarget"), ("resumeTime", "resume")):
+            for instant in (True, -.1, float("inf"), float("nan"), "0.35"):
+                invalid = retargeted(previous, 3, 10.36, .35, "rest")
+                invalid["motion"].update(retargetTime=None, resumeTime=None)
+                invalid["motion"][key] = instant
+                with self.subTest(key=key, instant=instant), self.assertRaisesRegex(
+                        ValueError, f"{kind} instant .* is not a finite elapsed time"):
+                    verify_retarget(earlier, previous, invalid, reconfigured=True)
+        # The previous frame logged .19 s after its sample, later than the retarget it precedes.
+        lagging = frame(10.5, .3, sequence=2)
+        verify_retarget(earlier, lagging, retargeted(lagging, 3, 10.52, .5, "rest", sample_time=.01))
+        for instant in (.9, 1.1):
+            with self.subTest(instant=instant), self.assertRaisesRegex(ValueError, "lies beyond the 0.592 s"):
+                verify_retarget(earlier, previous, retargeted(previous, 3, 10.6, instant, "rest", sample_time=.01))
+        verify_retarget(earlier, previous, retargeted(previous, 3, 10.6, .89, "rest", sample_time=.01))
+        with self.assertRaisesRegex(ValueError, "resume instant 1.2 of frame 3 lies beyond the 0.501 s"):
+            verify_retarget(earlier, previous, retargeted(previous, 3, 10.5, None, "rest", "reduced", resumed=1.2),
+                            reconfigured=True)
+
+    def test_motion_restarts_from_the_authored_channels_after_a_rejected_configuration(self):
+        rejected = {"kind": "rejected", "generation": "g", "error": "requires a resolved opaque body"}
+        restarted = later(at_rest(0, 0, 0), 15, 12, .01)
+        restarted["motion"]["channels"] = copy.deepcopy(REQUESTS["channels"])
+        counts = verify_retargets([*session_log(), rejected, restarted], REQUESTS)[0]
+        self.assertEqual(counts["restart after rejection"], 1)
+        for change, message in ((lambda item: item["motion"].update(resumeTime=.02), "continues a clock epoch "
+                                                                                     "across a rejected"),
+                                (lambda item: item["motion"]["channels"]["bodyMix"]["initial"].update(velocity=.1),
+                                 "bodyMix at frame 15 restarts motion after a rejected configuration")):
+            changed = copy.deepcopy(restarted)
+            change(changed)
+            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
+                verify_retargets([*session_log(), rejected, changed], REQUESTS)
+
+    def test_every_boundary_publishes_exactly_one_instant(self):
+        earlier, previous = frame(10, .1, sequence=1), frame(10.3, .3, sequence=2)
+        unpublished = retargeted(previous, 3, 10.6, .35, "rest")
+        unpublished["motion"]["retargetTime"] = None
+        with self.assertRaisesRegex(ValueError, "frame 3 begins a clock epoch without a published retarget or resume "
+                                                "instant"):
+            verify_retarget(earlier, previous, unpublished, reconfigured=True)
+        both = retargeted(previous, 3, 10.6, .35, "rest")
+        both["motion"]["resumeTime"] = .35
+        with self.assertRaisesRegex(ValueError, "publishes both a retarget and a resume instant"):
+            verify_retarget(earlier, previous, both, reconfigured=True)
+
+    def test_a_retarget_whose_predecessor_epoch_was_not_logged_fails(self):
+        earlier, previous = frame(10, .1, sequence=1), frame(10.3, .3, sequence=2)
+        with self.assertRaisesRegex(ValueError, "precedes the sample 0.3 of frame 2: the clock epoch it continues "
+                                                "was not logged"):
+            verify_retarget(earlier, previous, retargeted(previous, 3, 10.36, .29, "rest"))
+        moved = retargeted(previous, 3, 10.36, .35, "rest")
+        moved["center"] = {"x": 1, "y": 1}
+        with self.assertRaisesRegex(ValueError, "its center changed after frame 2: the clock epoch it continues"):
+            verify_retarget(earlier, previous, moved)
+        with self.assertRaisesRegex(ValueError, "only one frame was logged before it"):
+            verify_retarget(None, previous, retargeted(previous, 3, 10.36, .35, "rest"))
+        for resumed in (None, .35):
+            with self.subTest(resumed=resumed), self.assertRaisesRegex(
+                    ValueError, "frame 3 continues a clock epoch of which no frame was logged"):
+                boundaries([retargeted(previous, 3, 10.36, .35, "rest", resumed=resumed)])
+
+    def test_a_reconfiguration_resumes_from_the_state_reached_at_the_published_restart(self):
+        earlier = frame(12.9, 2.9, hold=HELD["hold"], target=target("pressed"), sequence=1)
+        previous = frame(13, 3, hold=HELD["hold"], target=target("pressed"), sequence=2)
+        reduced = retargeted(previous, 3, 13.2, None, "rest", "reduced", resumed=3.05)
+        verify_retarget(earlier, previous, reduced, reconfigured=True)
+        # Channels sampled when the change arrived, before the clock restarted at the published instant.
+        stale = copy.deepcopy(reduced)
+        stale["motion"]["resumeTime"] = 3.17
+        with self.assertRaisesRegex(ValueError, "bodyMix at frame 3 did not continue from the reached state: .* at "
+                                                "3.17"):
+            verify_retarget(earlier, previous, stale, reconfigured=True)
+        released = retargeted(previous, 3, 13.2, None, "rest", resumed=3.05)
+        with self.assertRaisesRegex(ValueError, "frame 3 resumes a clock epoch at 3.05, but no reconfiguration was "
+                                                "logged after frame 2"):
+            verify_retarget(earlier, previous, released)
+        with self.assertRaisesRegex(ValueError, "no reconfiguration was logged"):
+            verify_retargets([earlier, previous, released], REQUESTS)
+        moved = copy.deepcopy(released)
+        moved["center"] = {"x": 1, "y": 1}
+        for evidence in ([earlier, previous, moved],
+                         [earlier, previous, {"kind": "configure", "generation": "g", "configuration": "motion"},
+                          released]):
+            with self.subTest(evidence=evidence[2]["kind"]), self.assertRaisesRegex(ValueError, "triggered by"):
+                verify_retargets(evidence, REQUESTS)
+        dropped = copy.deepcopy(reduced)
+        dropped["motion"]["channels"]["depthScale"]["initial"]["velocity"] = 0
+        with self.assertRaisesRegex(ValueError, "depthScale at frame 3 did not continue from the reached state"):
+            verify_retarget(earlier, previous, dropped, reconfigured=True)
+
+    def test_an_epoch_superseded_before_publication_is_continued_in_its_place(self):
+        earlier = frame(10, .1, hold=KEY, target=target("pressed"), sequence=1)
+        previous = frame(10.3, .3, hold=KEY, target=target("pressed"), sequence=2)
+        # The superseded epoch starts between the grid instants tried first.
+        released = retargeted(previous, 0, 0, .34237, "rest")
+        withdrawn = retargeted(released, 3, 10.5, .06, "disabled", enabled=False)
+        epoch = committed_epoch(committed(COMMITTED), REQUESTS)
+        with self.assertRaisesRegex(ValueError, "precedes the sample 0.3 of frame 2"):
+            verify_retarget(earlier, previous, withdrawn)
+        verify_retarget(earlier, previous, withdrawn, epoch)
+        replaced = retargeted(released, 3, 10.5, None, "rest", "replacement", resumed=.1)
+        with self.assertRaisesRegex(ValueError, "resumes at 0.1, but it precedes the sample 0.3"):
+            verify_retarget(earlier, previous, replaced, reconfigured=True)
+        verify_retarget(earlier, previous, replaced, epoch, True)
+        # Both clock epochs elapse within the logged window.
+        late = retargeted(retargeted(previous, 0, 0, .7, "rest"), 3, 10.5, None, "rest", "replacement", resumed=.4)
+        with self.assertRaisesRegex(ValueError, "at 0.4; through the epoch prepared for the committed state from "):
+            verify_retarget(earlier, previous, late, epoch, True)
+        for field, value in (("position", 1e-6), ("velocity", 1e-6)):
+            drifted = copy.deepcopy(withdrawn)
+            drifted["motion"]["channels"]["bodyMix"]["initial"][field] += value
+            with self.subTest(field=field), self.assertRaisesRegex(
+                    ValueError, "^through the epoch prepared for the committed state from 0.342.*, bodyMix at "
+                                "frame 3 did not continue .*; directly, the retarget at 0.06 is impossible because it "
+                                "precedes the sample 0.3 of frame 2$"):
+                verify_retarget(earlier, previous, drifted, epoch)
 
 
 class CommandCallbackFrameTests(unittest.TestCase):

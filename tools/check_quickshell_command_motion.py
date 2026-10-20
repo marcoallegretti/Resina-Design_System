@@ -2,13 +2,14 @@
 import argparse
 import copy
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
 import sys
 
 from check_command_motion_backend import equation_sample
-from check_qt_command_motion_runtime import motion_mismatch
+from check_qt_command_motion_runtime import authored_motion, motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_quickshell_command_lifecycle import OUTSIDE, Session, authored_requests, expect_effects, effects, focused
 from check_quickshell_command_updates import verify_version
@@ -22,16 +23,19 @@ def frames(events):
     return [event for event in events if event["kind"] == "frame"]
 
 
+def pressed(frame):
+    hold = frame["state"]["hold"]
+    return bool(hold and (hold["kind"] == "key" or hold["inside"]))
+
+
 def expected_states(frame):
-    state, hovered = frame["state"], frame["hovered"]
-    hold = state["hold"]
-    pressed = bool(hold and (hold["kind"] == "key" or hold["inside"]))
-    signals = ["rest"] if not hovered and not pressed else []
+    state, hovered, held = frame["state"], frame["hovered"], pressed(frame)
+    signals = ["rest"] if not hovered and not held else []
     if hovered:
         signals.append("hover")
     if state["focused"]:
         signals.append("focused")
-    if pressed:
+    if held:
         signals.append("pressed")
     if not state["enabled"]:
         if signals == ["rest"]:
@@ -207,24 +211,200 @@ def verify_dynamics(frame, channels):
         raise ValueError("native motion replaced the authored dynamics")
 
 
-def verify_retarget(earlier, previous, retargeted, tolerance=(.02, .1)):
-    instant = retargeted["motion"].get("retargetTime")
-    if type(instant) not in (int, float) or not previous["motion"]["time"] <= instant < float("inf"):
-        raise ValueError(f"retarget instant {instant!r} does not follow the previous sample")
+TRIGGERS = ("hover enter", "hover exit", "press", "release", "policy change", "reconfiguration")
+RECONFIGURED = ("configuration", "deviceScale", "center")
+INSTANTS = ("retargetTime", "resumeTime")
+# spec/44 scalar state tolerance.
+TOLERANCE = 1e-9
+
+
+def triggers(previous, frame):
+    kinds = []
+    if previous["hovered"] != frame["hovered"]:
+        kinds.append("hover enter" if frame["hovered"] else "hover exit")
+    if pressed(previous) != pressed(frame):
+        kinds.append("press" if pressed(frame) else "release")
+    if previous["state"]["enabled"] != frame["state"]["enabled"]:
+        kinds.append("availability change")
+    if previous["motion"]["motion"]["policy"] != frame["motion"]["motion"]["policy"]:
+        kinds.append("policy change")
+    if frame["motion"].get("resumeTime") is not None:
+        kinds.append("reconfiguration")
+    return kinds
+
+
+def hands_over_motion(frame):
+    return any(frame["motion"]["channels"][name]["initial"]["velocity"] != 0 for name in CHANNELS)
+
+
+def boundaries(events):
+    found, logged, between = [], {}, []
+    for event in events:
+        if event["kind"] != "frame":
+            between.append(event)
+            continue
+        recent = logged.setdefault(event["generation"], [])
+        if recent and epochs([recent[-1], event])[1:]:
+            found.append((recent[-2] if len(recent) > 1 else None, recent[-1], event,
+                          [item for item in between if item["generation"] == event["generation"]]))
+        elif not recent and any(event["motion"].get(key) is not None for key in INSTANTS):
+            raise ValueError(f"frame {event['sequence']} continues a clock epoch of which no frame was logged")
+        recent[:] = [*recent[-1:], event]
+        between = []
+    return found
+
+
+def committed_epoch(effect, requests):
+    states = expected_states(effect)["states"]
+    phase = next((name for name in ("disabled", "pressed", "hover") if name in states), "rest")
+    _, policy, target = authored_motion(requests[effect["configuration"]], phase)
+    return {"policy": policy, "target": target}
+
+
+def tolerated(actual, expected):
+    return abs(actual - expected) <= max(TOLERANCE, TOLERANCE * abs(expected))
+
+
+def continuation(previous, frame, instant):
+    immediate = previous["motion"]["motion"]["policy"] != "spring"
+    deviation, error = 0, None
+    for name in CHANNELS:
+        reached = equation_sample(previous["motion"]["channels"][name], previous["motion"]["motion"]["target"][name],
+                                  instant, immediate)
+        state, initial = reached["state"], frame["motion"]["channels"][name]["initial"]
+        deviation = max(deviation, *(abs(initial[field] - state[field]) for field in ("position", "velocity")))
+        if error:
+            continue
+        if not all(tolerated(initial[field], state[field]) for field in ("position", "velocity")):
+            error = (f"{name} at frame {frame['sequence']} did not continue from the reached state: {initial} versus "
+                     f"{state} at {instant!r}")
+        # A trajectory that is still moving cannot hand over exactly zero velocity.
+        elif initial["velocity"] == 0 and not reached["settled"]:
+            error = (f"{name} at frame {frame['sequence']} discarded the velocity {state['velocity']!r} of the "
+                     f"moving {previous['motion']['motion']['policy']} trajectory it continues")
+    return deviation, error
+
+
+def instants(start, span, limit):
+    steps = min(limit, max(1, math.ceil(span / .001)))
+    return [start + span * step / steps for step in range(steps + 1)] if span >= 0 else []
+
+
+def bridge(previous, epoch, instant):
+    immediate = previous["motion"]["motion"]["policy"] != "spring"
+    channels = {name: {"dynamics": previous["motion"]["channels"][name]["dynamics"],
+                       "initial": equation_sample(previous["motion"]["channels"][name],
+                                                  previous["motion"]["motion"]["target"][name], instant,
+                                                  immediate)["state"]} for name in CHANNELS}
+    return {"motion": {"channels": channels, "motion": epoch}}
+
+
+def superseded_start(previous, epoch, frame, instant, start, span):
+    """Refine the closest of at most 501 instants to the unpublished start of a superseded epoch."""
+    grid = instants(start, span, 500)
+    if not grid:
+        return None
+
+    def deviation(moment):
+        return continuation(bridge(previous, epoch, moment), frame, instant)[0]
+    best = min(grid, key=deviation)
+    step = span / max(1, len(grid) - 1)
+    low, high = max(start, best - step), min(start + span, best + step)
+    for _ in range(200):
+        left, right = low + (high - low) / 3, high - (high - low) / 3
+        if deviation(left) <= deviation(right):
+            high = right
+        else:
+            low = left
+    return min((best, (low + high) / 2), key=deviation)
+
+
+def verify_retarget(earlier, previous, retargeted, superseded=None, reconfigured=False):
+    name = f"frame {retargeted['sequence']}"
+    published = [key for key in INSTANTS if retargeted["motion"].get(key) is not None]
+    if not published:
+        raise ValueError(f"{name} begins a clock epoch without a published retarget or resume instant")
+    if len(published) > 1:
+        raise ValueError(f"{name} publishes both a retarget and a resume instant")
+    kind = "retarget" if published[0] == "retargetTime" else "resume"
+    instant = retargeted["motion"][published[0]]
+    if type(instant) not in (int, float) or not 0 <= instant < float("inf"):
+        raise ValueError(f"{kind} instant {instant!r} of {name} is not a finite elapsed time")
+    if kind == "resume" and not reconfigured:
+        raise ValueError(f"{name} resumes a clock epoch at {instant!r}, but no reconfiguration was logged after "
+                         f"frame {previous['sequence']}")
+    if earlier is None:
+        raise ValueError(f"{name} begins a clock epoch, but only one frame was logged before it")
+    start = previous["motion"]["time"]
     # A frame is sampled only after the frame before it was published and logged, and logged only after its
     # own sample, so log lag can loosen this bound but never tighten it. Date.now() truncates to milliseconds.
-    reached = retargeted["time"] - retargeted["motion"]["time"] - earlier["time"] + .002
-    if instant - previous["motion"]["time"] > reached:
-        raise ValueError(f"retarget instant {instant!r} lies beyond the {reached:.3f} s logged after the earlier frame")
+    window = retargeted["time"] - retargeted["motion"]["time"] - earlier["time"] + .002
+    unlogged = None
+    changed = [key for key in RECONFIGURED if previous.get(key) != retargeted.get(key)]
+    if kind == "retarget" and changed:
+        unlogged = f"its {changed[0]} changed after frame {previous['sequence']}"
+    elif instant < start:
+        unlogged = f"it precedes the sample {start!r} of frame {previous['sequence']}"
+    elif instant - start > window:
+        raise ValueError(f"{kind} instant {instant!r} of {name} lies beyond the {window:.3f} s logged after "
+                         f"frame {earlier['sequence']}")
+    failures = []
+    if not unlogged:
+        error = continuation(previous, retargeted, instant)[1]
+        if error is None:
+            return
+        failures.append(error)
+    # An epoch prepared for a committed state and superseded before publication is continued in its place.
+    moment = None if superseded is None else superseded_start(previous, superseded, retargeted, instant, start,
+                                                              window - instant)
+    if moment is not None:
+        error = continuation(bridge(previous, superseded, moment), retargeted, instant)[1]
+        if error is None:
+            return
+        failures.append(f"through the epoch prepared for the committed state from {moment!r}, {error}")
+    if not failures:
+        cause = unlogged if superseded is None else (f"{unlogged}, and the epoch prepared for the committed state "
+                                                     f"cannot also fit the {window:.3f} s logged")
+        raise ValueError(f"{name} {kind}s at {instant!r}, but {cause}: the clock epoch it continues was not logged")
+    if unlogged:
+        failures.append(f"directly, the {kind} at {instant!r} is impossible because {unlogged}")
+    raise ValueError("; ".join(failures))
+
+
+def verify_restart(frame, channels):
+    if any(frame["motion"].get(key) is not None for key in INSTANTS):
+        raise ValueError(f"frame {frame['sequence']} continues a clock epoch across a rejected configuration")
     for name in CHANNELS:
-        expected = equation_sample(previous["motion"]["channels"][name],
-                                   previous["motion"]["motion"]["target"][name], instant, False)["state"]
-        initial = retargeted["motion"]["channels"][name]["initial"]
-        if abs(initial["position"] - expected["position"]) > tolerance[0] \
-                or abs(initial["velocity"] - expected["velocity"]) > tolerance[1]:
-            raise ValueError(f"{name} retarget did not continue from the reached state: {initial} versus {expected}")
-    if not any(retargeted["motion"]["channels"][name]["initial"]["velocity"] for name in CHANNELS):
-        raise ValueError("release retarget discarded retained velocity")
+        restarted = {key: frame["motion"]["channels"][name][key] for key in ("dynamics", "initial")}
+        if restarted != channels[name]:
+            raise ValueError(f"{name} at frame {frame['sequence']} restarts motion after a rejected configuration "
+                             f"from {restarted['initial']}, not the authored channels")
+
+
+def verify_retargets(events, requests):
+    counts, moving = {}, {}
+    for earlier, previous, frame, between in boundaries(events):
+        # A rejected configuration fails the control, which discards its trajectory and clock.
+        if any(event["kind"] == "rejected" for event in between):
+            verify_restart(frame, requests["channels"])
+            counts["restart after rejection"] = counts.get("restart after rejection", 0) + 1
+            moving["restart after rejection"] = 0
+            continue
+        current = {key: previous["motion"]["motion"][key] for key in ("policy", "target")}
+        superseded = [epoch for epoch in (committed_epoch(event, requests) for event in between
+                                          if event["kind"] == "effect") if epoch != current]
+        reconfigured = any(event["kind"] == "configure" for event in between) \
+            or any(previous.get(key) != frame.get(key) for key in RECONFIGURED)
+        verify_retarget(earlier, previous, frame, superseded[-1] if superseded else None, reconfigured)
+        for kind in triggers(previous, frame):
+            counts[kind] = counts.get(kind, 0) + 1
+            moving[kind] = moving.get(kind, 0) + hands_over_motion(frame)
+    for kind in TRIGGERS:
+        if not counts.get(kind):
+            raise ValueError(f"no logged clock epoch boundary was triggered by {kind}")
+        if not moving[kind]:
+            raise ValueError(f"no logged clock epoch boundary triggered by {kind} handed over a moving state")
+    return counts, moving
 
 
 class Motion:
@@ -269,8 +449,6 @@ def spring_cases(session, motion, requests):
     if split != first:
         raise ValueError(f"the retargeted release frame is frame {first}, not frame {split}, the first after the "
                          "activation effect")
-    recorded = motion.frames()
-    verify_retarget(*recorded[first - 2:first + 1])
     motion.settle("both channels settled")
     sequence = motion.frames()[start:]
     if not any(frame["motion"]["motion"]["bodyMix"]["settled"] != frame["motion"]["motion"]["depthScale"]["settled"]
@@ -318,6 +496,27 @@ def spring_cases(session, motion, requests):
     motion.wait_frames(entered + 1, lambda frame: not frame["hovered"] and moving(frame), "hover exit spring frames")
     motion.settle("hover motion settled")
     results.append("compositor hover enters and then leaves through spring frames")
+
+    session.input.move(*OUTSIDE)
+    motion.settle("motion settled before retargets during motion")
+    start = len(motion.frames())
+    before = len(effects(session.events()))
+    session.input.key(KEY_SPACE, True)
+    motion.wait_frames(start, lambda frame: moving(frame) and frame["state"]["hold"], "pressed spring frames")
+    released = len(motion.frames())
+    session.input.key(KEY_SPACE, False)
+    motion.wait_frames(released, lambda frame: moving(frame) and not frame["state"]["hold"], "released spring frames")
+    entered = len(motion.frames())
+    session.point(session.current())
+    motion.wait_frames(entered, lambda frame: moving(frame) and frame["hovered"], "hover spring frames during motion")
+    hovered = len(motion.frames())
+    session.input.key(KEY_SPACE, True)
+    motion.wait_frames(hovered, lambda frame: moving(frame) and frame["state"]["hold"], "press during hover motion")
+    session.input.key(KEY_SPACE, False)
+    expect_effects(session, before, 2, "Command activations during motion")
+    session.input.move(*OUTSIDE)
+    motion.settle("motion settled after retargets during motion")
+    results.append("hover enter and a press while the spring is still moving hand over its moving state")
 
     session.point(session.current())
     start = len(motion.frames())
@@ -576,18 +775,24 @@ def main():
             change, result = live_scale_case(session, motion, requests, compositor, args.scale, live)
             results.append(result)
         recorded = motion.frames()
+        retargets, moving_boundaries = verify_retargets(session.events(), requests)
         verify_publication_scales(session.events(), args.scale, change, live)
         for frame in recorded:
             verify_dynamics(frame, requests["channels"])
             verify_frame(frame, requests)
         (args.output_dir / "report.json").write_text(
-            json.dumps({"scale": args.scale, "liveScale": live, "cases": results, "frames": len(recorded)}, indent=2),
+            json.dumps({"scale": args.scale, "liveScale": live, "cases": results, "frames": len(recorded),
+                        "boundaries": retargets, "movingBoundaries": moving_boundaries}, indent=2),
             encoding="utf-8")
         for result in results:
             print("PASS " + result)
         scales = f"{args.scale:g}" + (f" then {live:g}" if live is not None else "")
         print(f"PASS {len(recorded)} native frames at device scale {scales} keep the authored dynamics and match "
               "independent equations and complete snapshots")
+        print("PASS every logged clock epoch boundary continues the trajectory it replaces at its published instant, "
+              "or the superseded epoch prepared for a committed state, within spec/44 tolerance; boundaries by "
+              "trigger, moving hand-overs in parentheses: "
+              + ", ".join(f"{kind} {count} ({moving_boundaries[kind]})" for kind, count in retargets.items()))
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as error:
         print(f"Quickshell Command motion check failed: {error}", file=sys.stderr)
         return 1
