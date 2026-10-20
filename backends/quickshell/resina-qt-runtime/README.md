@@ -542,7 +542,9 @@ The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
 in released Quickshell 0.3.2 and checks its publications against the reference
 resolver, and composited pixels at points where a flat body or backdrop colour
 is expected, at output scales 1, 1.25, 1.5 and 2,
-and after live output-scale changes between them. Hardware renderers and
+and after live output-scale changes between them. At revision 4cb60fe it ran at
+scales 1 and 2 and with live changes between 1.25 and 2; scale 1.5 and the
+other live changes passed at earlier revisions. Hardware renderers and
 enhanced Frost or Gel treatments beyond their opaque representation are not
 covered.
 
@@ -1464,9 +1466,11 @@ socket) while the shell runs, and requires:
 
 CI runs the check in headless Sway at output scale 1 on a 1024×600 output, and
 at 1.25 and 2 on a 1280×720 output with live changes from 1.25 to 2 and from 2
-to 1.25. With Quickshell 0.3.2 and Qt 6.11.2 it also passes in headless Sway
-1.12 at output scale 1.5, and with live changes from 1 to 2, 2 to 1 and 1.25 to
-1.5.
+to 1.25. With Quickshell 0.3.2 and Qt 6.11.2, at revision 4cb60fe, it passes
+in headless Sway 1.12 at output scale 1 and with live changes from 1.25 to 2 and
+2 to 1.25, and in nested niri 26.04 at scale 1. Output scale 1.5 and live
+changes from 1 to 2, 2 to 1 and 1.25 to 1.5 passed in headless Sway 1.12 at
+earlier revisions and were not repeated at 4cb60fe.
 
 The Command requests keep the authored environment scale of
 `conformance/headless/valid-request.json` at every output scale, so a live
