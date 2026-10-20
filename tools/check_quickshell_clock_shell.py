@@ -1,6 +1,7 @@
 """Verify the Quickshell clock shell with compositor-delivered input, live time, reload and composited pixels."""
 import argparse
 import copy
+from collections import Counter
 from datetime import datetime
 import json
 import os
@@ -16,7 +17,7 @@ from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_qt_native_availability import ACTION, action_names
 from check_qt_platform_appearance import APPEARANCE, session, start_portal, stop, wait_portal
-from check_quickshell_command_accessibility import NativeEvents, ScreenReader, buttons, state, text
+from check_quickshell_command_accessibility import NativeEvents, ScreenReader, buttons, exposed, state, text
 from check_quickshell_command_lifecycle import LOST_REPLY
 from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payload, references, \
     string_value
@@ -440,19 +441,9 @@ class Accessibility:
     def exposed(self):
         nodes = []
         for application in self.applications():
-            if "quickshell" not in text(self.address, application, "Name").lower():
-                continue
-            pending, visited = [application], set()
-            while pending:
-                node = pending.pop(0)
-                if node in visited or len(visited) >= 64:
-                    raise ValueError("cyclic or excessive native tree")
-                visited.add(node)
-                role = payload(call(*node, ACCESSIBLE + ".GetRoleName", address=self.address)).strip('"')
-                name = text(self.address, node, "Name")
-                if node != application:
-                    nodes.append({"role": role.replace("string ", "").strip('"'), "name": name})
-                pending.extend(references(call(*node, ACCESSIBLE + ".GetChildren", address=self.address)))
+            if "quickshell" in text(self.address, application, "Name").lower():
+                nodes += [{field: node[field] for field in ("role", "name", "actions")}
+                          for node in exposed(self.address, application)]
         return nodes
 
     def wait(self, predicate, description):
@@ -470,26 +461,56 @@ class Accessibility:
         except ValueError as error:
             raise ValueError(f"{error}; last native buttons: {last[0]}") from None
 
-    def settled(self, predicate, description):
+    def exact(self, commands, date=None):
         last = [None]
 
         def attempt():
             try:
                 last[0] = self.exposed()
-                return last[0] if predicate(last[0]) else None
+                return last[0] if not tree_mismatch(last[0], commands, date) else None
             except ValueError as error:
                 last[0] = str(error)
                 return None
+        description = "a native tree of exactly " + ", ".join(commands) + (" and the time and date" if date else "")
         try:
             return self.shell.wait_for(attempt, description)
         except ValueError as error:
-            raise ValueError(f"{error}; last native tree: {last[0]}") from None
+            mismatch = tree_mismatch(last[0], commands, date) if isinstance(last[0], list) else None
+            raise ValueError(f"{error}; {mismatch or 'last native tree'}: {last[0]}") from None
 
     def press(self, node):
         actions = action_names(call(*node, ACTION + ".GetActions", address=self.address))
         if payload(call(*node, ACTION + ".DoAction", "int32:" + str(actions.index("Press")),
                         address=self.address)) != "boolean true":
             raise ValueError("native Press was not accepted")
+
+
+# The bar and backdrop windows are always mapped; the clock surface adds a third window.
+CLOSED_FRAMES, OPEN_FRAMES = 2, 3
+TIME = re.compile(r"[0-9]{2}:[0-9]{2}:[0-9]{2}")
+# Qt 6.11.2 makes every static text focusable, which adds SetFocus to its actions (qaccessiblequickitem.cpp:451).
+TEXT_ACTIONS = {"SetFocus"}
+
+
+def tree_mismatch(nodes, commands, date=None):
+    """Describe how a native tree differs from the frames, Command Buttons and time and date it must expose."""
+    actionable = [node for node in nodes if node["role"] != "push button"
+                  and set(node["actions"]) - (TEXT_ACTIONS if node["role"] == "label" else set())]
+    if actionable:
+        return f"actions on nodes other than Buttons beyond static-text SetFocus: {actionable}"
+    pressless = [node for node in nodes if node["role"] == "push button" and "Press" not in node["actions"]]
+    if pressless:
+        return f"Buttons without a Press action: {pressless}"
+    observed = Counter((node["role"], node["name"]) for node in nodes if node["role"] != "label")
+    expected = Counter({("frame", ""): OPEN_FRAMES if date else CLOSED_FRAMES})
+    expected.update(("push button", name) for name in commands)
+    if observed != expected:
+        return f"roles and names {sorted(observed.items())} instead of {sorted(expected.items())}"
+    labels = sorted(node["name"] for node in nodes if node["role"] == "label")
+    if date is None and labels or date is not None and (
+            len(labels) != 2 or date not in labels or not TIME.fullmatch(labels[labels[0] == date])):
+        return f"static text {labels} instead of " + (f"the time and {date!r}" if date else "none")
+    return None
 
 
 def single(found, name, description, enabled):
@@ -513,7 +534,7 @@ def accessibility_cases(shell, report, reader=None):
         closed_tree = tree.wait(lambda found: found if set(found) == {"Show clock"}
                                 and single(found, "Show clock", "Open the clock surface.", True)(tree.address)
                                 else None, "one available native Button named Show clock")
-        report["exposedClosed"] = tree.settled(lambda nodes: True, "a readable native tree while closed")
+        report["exposedClosed"] = tree.exact(["Show clock"])
         events, spoken = focus.mark(), reader.mark() if reader else None
         tree.press(closed_tree["Show clock"][0])
         shell.until(opened, "clock surface opened by a native Press")
@@ -527,20 +548,17 @@ def accessibility_cases(shell, report, reader=None):
         if reader:
             report["screenReader"] = {"version": reader.version, "close": reader.expect(
                 spoken, *reader.focus("Close", "Close the clock surface."), "Orca presentation of Close")}
-
-        def readable(nodes):
-            labels = [node["name"] for node in nodes if node["role"] == "label"]
-            return (shell.observe()["date"] in labels
-                    and any(re.fullmatch(r"[0-9]{2}:[0-9]{2}:[0-9]{2}", name) for name in labels))
-        report["exposedOpen"] = tree.settled(readable, "the displayed time and date as native static text")
+        report["exposedOpen"] = tree.exact(["Show clock", "Close"], shell.observe()["date"])
         tree.press(found["Close"][0])
         shell.until(lambda current: not current["open"] and not current["clock"], "clock closed by a native Press")
         show = tree.wait(lambda found: found if set(found) == {"Show clock"}
                          and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
                          "Show clock available again after closing")["Show clock"][0]
-        report["cases"].append("the native tree exposes exactly the shell's Commands with complete names, "
-                               "descriptions, availability and focus, plus the displayed time and date, and native "
-                               "Press opens and closes the clock surface")
+        report["exposedReclosed"] = tree.exact(["Show clock"])
+        report["cases"].append("the native tree exposes exactly its frames, one Button per mapped Command with its "
+                               "complete name, description, availability and focus, and, while open, the displayed "
+                               "time and date as static text; frames carry no action and static text at most "
+                               "SetFocus; native Press opens and closes the clock surface")
 
         x, y = shell.observe()["probes"]["bar"]
         shell.click({"x": x, "y": y})

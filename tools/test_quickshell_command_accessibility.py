@@ -37,6 +37,48 @@ class FakeTree:
         raise AssertionError(method)
 
 
+class FakeExposedTree:
+    """Nodes are (role name, name, interfaces, actions, state bits, children)."""
+
+    def __init__(self, nodes):
+        self.nodes = nodes
+
+    def __call__(self, destination, path, method, *arguments, address=None):
+        role, name, interfaces, names, bits, kids = self.nodes[path]
+        if method.endswith("GetRoleName"):
+            return REPLY + f'string "{role}"'
+        if method.endswith("GetRole"):
+            return REPLY + f"uint32 {BUTTON_ROLE if role == 'push button' else 23}"
+        if method.endswith("GetChildren"):
+            return children(*kids)
+        if method.endswith("GetInterfaces"):
+            return REPLY + "array [\n" + "".join(f'      string "{item}"\n' for item in interfaces) + "   ]"
+        if method.endswith("GetActions"):
+            return actions(*names)
+        if method.endswith("GetState"):
+            return REPLY + f"array [\n      uint32 {bits & 0xffffffff}\n      uint32 {bits >> 32}\n   ]"
+        if method.endswith("Properties.Get") and arguments[-1] == "string:Name":
+            return REPLY + f'variant       string "{name}"'
+        raise AssertionError(method)
+
+
+PLAIN = ("org.a11y.atspi.Accessible",)
+ACTIONABLE = PLAIN + (accessibility.ACTION,)
+
+
+def withdrawn_tree(**extra):
+    nodes = {"/app": ("application", "quickshell", PLAIN, (), 0, ["/frame", *("/" + path for path in extra)]),
+             "/frame": ("frame", "", ACTIONABLE, (), 0, [])}
+    nodes.update({"/" + path: node for path, node in extra.items()})
+    return FakeExposedTree(nodes)
+
+
+class ImmediateSession:
+    def wait(self, predicate, description, timeout):
+        if not predicate():
+            raise ValueError(description + " was not reached")
+
+
 def action_bus(names, reply):
     def call(destination, path, method, *arguments, address=None):
         return actions(*names) if method.endswith("GetActions") else REPLY + reply
@@ -87,6 +129,137 @@ class CommandAccessibilityEvidenceTests(unittest.TestCase):
         tree = FakeTree({f"/{index}": (23, [f"/{index + 1}"]) for index in range(40)})
         with patch.object(accessibility, "call", tree), self.assertRaisesRegex(ValueError, "excessive"):
             accessibility.buttons("unix:test", (":1.0", "/0"))
+
+    def test_the_exposed_tree_reports_every_node_with_its_role_name_and_actions(self):
+        tree = withdrawn_tree(target=("panel", "Focus target", ACTIONABLE, ("SetFocus",), 0, []))
+        with patch.object(accessibility, "call", tree):
+            self.assertEqual(accessibility.exposed("unix:test", (":1.0", "/app")), [
+                {"node": (":1.0", "/frame"), "role": "frame", "name": "", "actions": []},
+                {"node": (":1.0", "/target"), "role": "panel", "name": "Focus target", "actions": ["SetFocus"]}])
+        tree = FakeExposedTree({"/app": ("application", "", PLAIN, (), 0, ["/frame"]),
+                                "/frame": ("frame", "", PLAIN, (), 0, ["/app"])})
+        with patch.object(accessibility, "call", tree), self.assertRaisesRegex(ValueError, "cyclic"):
+            accessibility.exposed("unix:test", (":1.0", "/app"))
+        self.assertEqual(accessibility.listed_actions(actions()), [])
+        for reply in ("array [ junk ]", "boolean true"):
+            with self.subTest(reply=reply):
+                with self.assertRaises(ValueError):
+                    accessibility.strings(REPLY + reply)
+                with self.assertRaises(ValueError):
+                    accessibility.listed_actions(REPLY + reply)
+
+    def test_a_withdrawn_tree_exposes_no_named_or_actionable_node(self):
+        def node(role, name, names=()):
+            return {"node": (":1.0", "/" + role), "role": role, "name": name, "actions": list(names)}
+        frame, target = node("frame", ""), node("panel", "Focus target")
+        retained = [("panel", "Focus target", ())]
+        self.assertEqual(accessibility.leaked([frame]), [])
+        self.assertEqual(accessibility.leaked([frame, target], retained), [])
+        self.assertEqual(accessibility.leaked([frame, node("label", "Reconnect")]), [("label", "Reconnect", ())])
+        self.assertEqual(accessibility.leaked([node("filler", "", ["Press"])]), [("filler", "", ("Press",))])
+        self.assertEqual(accessibility.leaked([target, target], retained), [("panel", "Focus target", ())])
+        self.assertEqual(accessibility.leaked([frame, node("panel", "Focus target", ["SetFocus"])], [])
+                         , [("panel", "Focus target", ("SetFocus",))])
+        with self.assertRaisesRegex(ValueError, "lost its retained nodes"):
+            accessibility.leaked([frame], retained)
+        with self.assertRaisesRegex(ValueError, "lost its retained nodes"):
+            accessibility.leaked([frame, node("panel", "Focus target", ["SetFocus"])], retained)
+
+    def test_withdrawal_waits_for_a_tree_without_named_or_actionable_nodes(self):
+        tree = accessibility.Tree(ImmediateSession(), "unix:test")
+        tree.application = lambda: (":1.0", "/app")
+        with patch.object(accessibility, "call", withdrawn_tree()):
+            tree.absent("withdrawn")
+        target = ("panel", "Focus target", PLAIN, (), 0, [])
+        with patch.object(accessibility, "call", withdrawn_tree(target=target)):
+            tree.absent("withdrawn", (("panel", "Focus target", ()),))
+        for extra, message in (({"label": ("label", "Reconnect", PLAIN, (), 0, [])},
+                                r"\[\('label', 'Reconnect', \(\)\)\]"),
+                               ({"filler": ("filler", "", ACTIONABLE, ("Press",), 0, [])},
+                                r"\[\('filler', '', \('Press',\)\)\]"),
+                               ({"button": ("push button", "", PLAIN, (), 0, [])}, r"\[\]$"),
+                               ({"target": target}, r"\[\('panel', 'Focus target', \(\)\)\]")):
+            with self.subTest(extra=extra), patch.object(accessibility, "call", withdrawn_tree(**extra)), \
+                    self.assertRaisesRegex(ValueError, "^withdrawn was not reached; named or actionable nodes: "
+                                           + message):
+                tree.absent("withdrawn")
+
+    def test_feedback_must_not_be_exposed_as_native_state(self):
+        available = (1 << 8) | (1 << 11) | (1 << 12) | (1 << 24) | (1 << 2)
+        tree = accessibility.Tree(None, "unix:test")
+        with patch.object(accessibility, "call", FakeExposedTree({"/button": ("push button", "Reconnect", PLAIN, (),
+                                                                               available, [])})):
+            tree.unexposed((":1.0", "/button"), "hover")
+        for bit, name in ((20, "pressed"), (4, "checked"), (23, "selected"), (41, "checkable")):
+            states = FakeExposedTree({"/button": ("push button", "Reconnect", PLAIN, (), available | 1 << bit, [])})
+            with self.subTest(name=name), patch.object(accessibility, "call", states), \
+                    self.assertRaisesRegex(ValueError, f"^the native Command exposes {name} during a Space hold$"):
+                tree.unexposed((":1.0", "/button"), "a Space hold")
+
+    def test_feedback_must_not_emit_toggle_or_press_state_changes(self):
+        def changed(path, kind):
+            return "\n".join((
+                "signal time=1.0 sender=:1.1 -> destination=(null destination) serial=4 "
+                f"path={path}; interface=org.a11y.atspi.Event.Object; member=StateChanged",
+                f'   string "{kind}"', "   int32 1", "   int32 0", "   variant       int32 0"))
+        with tempfile.TemporaryDirectory() as directory:
+            events = accessibility.NativeEvents.__new__(accessibility.NativeEvents)
+            events.log = Path(directory) / "events.log"
+            events.log.write_text("\n".join((changed("/node", "focused"), changed("/other", "checked"),
+                                              changed("/node", "armed"))), encoding="utf-8")
+            events.unexposed(0, (":1.1", "/node"), "hover")
+            for kind in ("checked", "pressed", "selected", "checkable"):
+                events.log.write_text(changed("/node", kind) + "\n" + changed("/node", "focused"), encoding="utf-8")
+                with self.subTest(kind=kind), \
+                        self.assertRaisesRegex(ValueError, f"^hover emitted native StateChanged events for {kind}$"):
+                    events.unexposed(0, (":1.1", "/node"), "hover")
+                events.unexposed(1, (":1.1", "/node"), "hover")
+
+    def test_every_native_press_must_reach_the_consumer_after_committed_activation(self):
+        effect = {"state": {"enabled": True, "hold": None}, "ready": False}
+        self.assertEqual(accessibility.committed([effect], "native Press after replacement"), [effect])
+        for broken in ({"state": {"enabled": False, "hold": None}, "ready": True},
+                       {"state": {"enabled": True, "hold": {"kind": "pointer", "inside": True}}, "ready": True}):
+            with self.subTest(broken=broken), self.assertRaisesRegex(
+                    ValueError, "^native Press after replacement reached the consumer before committed activation"):
+                accessibility.committed([effect, broken], "native Press after replacement")
+
+    def test_every_native_press_leaves_a_ready_available_command_without_a_hold(self):
+        effect = {"kind": "effect", "state": {"enabled": True, "hold": None}, "ready": False}
+        settled = {"ready": True, "state": {"enabled": True, "hold": None}}
+
+        class Session:
+            def __init__(self, observed):
+                self.log, self.observed = [], observed
+
+            def events(self):
+                return self.log
+
+            def wait(self, predicate, description, timeout):
+                if not predicate():
+                    raise ValueError(description)
+
+            def quiet(self):
+                pass
+
+            def until(self, predicate, description, timeout):
+                if not predicate(self.observed):
+                    raise ValueError(description + " was not reached")
+
+        class Pressing:
+            def __init__(self, session):
+                self.session = session
+
+            def press(self, node):
+                self.session.log.append(effect)
+        session = Session(settled)
+        accessibility.press_once(session, Pressing(session), None, "native Press after replacement")
+        for observed in (dict(settled, ready=False), {"ready": True, "state": {"enabled": False, "hold": None}},
+                         {"ready": True, "state": {"enabled": True, "hold": {"kind": "key", "key": "space"}}}):
+            session = Session(observed)
+            with self.subTest(observed=observed), self.assertRaisesRegex(
+                    ValueError, "^ready, available Command without a hold after native Press after replacement"):
+                accessibility.press_once(session, Pressing(session), None, "native Press after replacement")
 
     def test_live_press_requires_one_accepted_press_action(self):
         tree = accessibility.Tree(None, "unix:test")

@@ -17,6 +17,8 @@ from check_slint_native_availability import (
 PREFIX = "resina-qt-native-availability "
 ACTION = "org.a11y.atspi.Action"
 RUNNER = ROOT / "tools/run_qt_availability_probe.py"
+# Qt 6.11.2 clears focusability whenever an item is disabled, so discoverable disabled focus cannot be published.
+KNOWN_DEVIATION = [{"command": "Disabled command", "state": "focusable", "expected": True, "actual": False}]
 
 
 def action_names(reply):
@@ -101,6 +103,12 @@ def report(observed, actions, callbacks, after, binding="reference-protocol", ho
     ):
         raise ValueError("native state did not reflect availability revoked by the first action")
     return dict(result, actions=actions, callbacks=callbacks, after=after, binding=binding, host=host)
+
+
+def verify_known_deviation(result):
+    if json.dumps(result["issues"], sort_keys=True) != json.dumps(KNOWN_DEVIATION, sort_keys=True):
+        raise ValueError("native semantics differ from the single known deviation, a Disabled command that is not "
+                         "focusable: " + json.dumps(result["issues"], sort_keys=True))
 
 
 def parse_report(output):
@@ -203,7 +211,11 @@ def run_session():
 
 def main():
     parser = argparse.ArgumentParser(description="Measure Qt 6.11.2 native AT-SPI command availability and invocation.")
-    parser.add_argument("--report-only", action="store_true", help="report semantic mismatches without certifying conformance")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--report-only", action="store_true",
+                      help="report semantic mismatches without certifying conformance")
+    mode.add_argument("--known-deviation", action="store_true",
+                      help="accept only the known non-focusable Disabled command; any other result fails")
     parser.add_argument("--session", action="store_true", help=argparse.SUPPRESS)
     arguments = parser.parse_args()
     try:
@@ -221,7 +233,9 @@ def main():
         if result["host"] != host:
             raise ValueError("native session host disagrees with the verified runtime")
         print((PREFIX if arguments.session else "") + json.dumps(result, sort_keys=True))
-        if not result["conformant"] and not arguments.report_only:
+        if arguments.known_deviation:
+            verify_known_deviation(result)
+        elif not result["conformant"] and not arguments.report_only:
             raise ValueError("unsupported native enabled/focusable semantics; see reported observations")
     except (OSError, ValueError, subprocess.TimeoutExpired) as error:
         print("FAIL Qt native command availability: " + str(error), file=sys.stderr)

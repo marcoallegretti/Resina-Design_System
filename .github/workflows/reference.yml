@@ -146,7 +146,7 @@ jobs:
         env:
           RESINA_QT_RUNTIME_MODULE: ${{ github.workspace }}/target/qt-runtime-import
         run: |
-          xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --report-only > target/qt-native-availability.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --known-deviation > target/qt-native-availability.json
           cat target/qt-native-availability.json
           xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --module-path target/qt-runtime-import --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf > target/qt-control-accessibility.json
           cat target/qt-control-accessibility.json
@@ -163,7 +163,7 @@ jobs:
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python tools/run_qt_availability_probe.py --version
-          xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --report-only > target/quickshell-native-availability.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --known-deviation > target/quickshell-native-availability.json
           cat target/quickshell-native-availability.json
       - name: Check authored Command updates in released Quickshell
         run: |

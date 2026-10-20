@@ -288,7 +288,7 @@ host defaults to pinned Qt 6.11.2 through PySide6. Setting
 released Quickshell host instead; see the
 [Quickshell hosting boundary](../resina-qt-runtime/README.md#quickshell-hosting-boundary). The
 [`qt-runtime` CI job](../../../.github/workflows/reference.yml) runs both hosts
-with `--report-only`. Reports
+with `--known-deviation`. Reports
 identify the default `reference-protocol` binding. Setting
 `RESINA_QT_RUNTIME_MODULE` to the packaged runtime import root instead runs the
 compiled Rust controller, reported as `rust-qt-runtime`; see its README above.
@@ -301,13 +301,17 @@ python -m pip install -r tools/requirements-schema.txt
 cargo build -p resina-resolver --bin resina-activation --locked
 python tools/check_activation_backend.py -- target/debug/resina-activation -
 python tools/check_qt_native_availability.py --report-only
+python tools/check_qt_native_availability.py --known-deviation
 python tools/check_qt_native_availability.py
 ```
 
 The checker owns a fresh D-Bus session, bounds execution and rejects missing or
 duplicate nodes/actions, invalid state replies, failed action delivery and
 incorrect callback records. `--report-only` permits measured semantic mismatches;
-execution failures still exit nonzero. The strict command retains the existing
+execution failures still exit nonzero. `--known-deviation` exits successfully
+only when the mismatch list is exactly one entry: the Disabled command is not
+focusable. An additional, changed or missing mismatch, including a fully
+conformant result, fails. The strict command retains the existing
 discoverable-disabled expectation and currently fails it.
 
 Executed on Qt 6.11.2 with the native X11 platform, software scene graph and Xvfb:
@@ -316,7 +320,9 @@ neither enabled nor sensitive. Both disabled policies publish non-focusable,
 including the fixture that requests discoverable focus. Qt explicitly
 [clears focusability when the item is disabled](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/accessible/qaccessiblequickitem.cpp#L451-L460).
 The excluded-disabled policy matches; the discoverable-disabled policy remains
-unsupported. Resina semantics have not been changed to accommodate this limit.
+unsupported. Native accessibility evidence for the Qt hosts therefore covers the
+excluded-disabled policy only. Resina semantics have not been changed to
+accommodate this limit.
 
 Native AT-SPI Press is delivered even to disabled items. The diagnostic host
 routes each callback through the existing `resina-activation` public protocol,

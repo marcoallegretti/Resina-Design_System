@@ -661,16 +661,18 @@ Command content, snapshot, keyboard, pointer and control checks. Surface view,
 Command paint, control, motion and view, and Toggle control and motion checks
 run at DPR 1, 1.25, 2 and 1.3; capture artifacts remain available on failure.
 This job's AT-SPI step runs under Xvfb: it measures real invocation and
-availability using `--report-only`, and runs the static and sampled Command
+availability using `--known-deviation`, and runs the static and sampled Command
 control accessibility checks and the horizontal and vertical Slider adapter.
 The released Quickshell host then repeats the availability measurement with
-`--report-only` and runs the authored-update checker. In headless Sway it runs
+`--known-deviation` and runs the authored-update checker. In headless Sway it runs
 the lifecycle, accessibility, motion, platform appearance and
 [clock shell](../../../lab/quickshell/clock-shell/README.md) checkers.
 In the availability measurement, malformed/missing native observations and incorrect action
 delivery still fail; the known disabled-focusability discrepancy is recorded as
-`conformant: false` rather than certified as passing accessibility. The strict
-command above remains the qualification gate. A local reproduction does not
+`conformant: false` rather than certified as passing accessibility, and any
+mismatch list other than that single entry fails the step. The strict command
+above, which fails on that entry, remains the gate for discoverable disabled
+focus; the native accessibility claim covers the excluded-disabled policy only. A local reproduction does not
 prove that the hosted workflow has executed.
 
 Use a fresh import output directory. The packager verifies generated metadata
@@ -812,8 +814,11 @@ measurement and drawing. Released-host Command qualification is described in
 [accessibility](#released-quickshell-command-accessibility) and
 [motion](#released-quickshell-command-motion). Fractional output scales are
 verified on one headless Sway output by the motion and clock shell checks.
-Physical devices and multiple outputs remain unverified. Command screen-reader
-presentation is verified with Orca 46.1 in CI and Orca 50.3 locally
+Native input in these checks is compositor-delivered virtual pointer and
+keyboard input on one seat. Physical devices, touch, stylus, multiple seats and
+multiple outputs remain unverified. Command screen-reader presentation, as the
+speech and braille text Orca generates, is verified with Orca 46.1 in CI and
+Orca 50.3 locally
 ([#165](https://github.com/marcoallegretti/Resina-Design_System/issues/165)).
 The integrated static profile below now verifies composed command input and
 native accessibility in the standalone host. Hosted native runtime checks have
@@ -1227,15 +1232,18 @@ the lifecycle checker and inspects the actual native tree:
   with the complete name and description, enabled, sensitive, focusable and
   focused state, and exactly one `Press` action, which an available or
   unavailable Command must accept;
-- a real AT-SPI `Press` produces exactly one committed consumer effect;
+- a real AT-SPI `Press` produces exactly one consumer effect, delivered while
+  the Command is enabled and holds no gesture, after which the Command is ready,
+  available and without a hold again;
 - withdrawn availability clears `enabled` and `sensitive` on the same node, each
   observed as an AT-SPI `StateChanged` event through a registered event listener,
   leaves a disabled, unfocusable final state, and the next `Press` produces no
   effect;
 - configuration replacement keeps the native node, republishes the current
   non-ASCII name and the replacement's own localized description, and acts
-  exactly once;
-- unmounting the control or destroying its surface removes the Button, and a
+  exactly once under the same conditions as the first `Press`;
+- unmounting the control or destroying its surface removes the Button and
+  leaves no node in the application tree with a name or an action, and a
   `Press` on the retired node fails with `org.freedesktop.DBus.Error.UnknownObject`
   and produces no effect;
 - after a soft and after a hard reload, a `Press` on the Button held from before
@@ -1246,26 +1254,40 @@ the lifecycle checker and inspects the actual native tree:
 - availability withdrawn from the consumer callback of an AT-SPI `Press` rejects
   the next `Press`;
 - the unsupported discoverable-disabled focus policy fails with its diagnostic
-  and exposes no Button;
+  and exposes no Button and no named or actionable node other than the probe's
+  own "Focus target" pane;
 - starting from a focused Command, hover and press feedback, availability
   withdrawal and restoration and label replacement keep the same Button path in
   the tree. The registered listener records no `ChildrenChanged` removal or
   addition of that node and no empty name or description, and each availability
-  change arrives as `enabled` and `sensitive` `StateChanged` events on that node.
+  change arrives as `enabled` and `sensitive` `StateChanged` events on that node;
+- the full AT-SPI `GetState` of that Button, sampled while hovered, during a
+  pointer hold inside and outside the target and during a Space hold, has
+  `checked`, `pressed`, `selected` and `checkable` clear, and none of these
+  updates emits a `StateChanged` event for those states. Qt emits no event for
+  `pressed`, so the sampled state is the evidence for it.
 
-All twelve cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
+Where native focus goes after a focused Command is unmounted or its surface is
+destroyed is recorded, without being asserted, in `withdrawal-focus.json`: the
+focus events received after the withdrawal and the nodes then reporting
+`focused`. In headless Sway 1.12 and nested niri 26.04 the Command was focused
+before each withdrawal; afterwards no focus event arrived and no node of the
+application reported `focused`, so focus did not move to another accessible
+node. Focus recovery is not part of Command qualification.
+
+All thirteen cases pass in headless Sway and nested niri 26.04 with Quickshell 0.3.2
 and Qt 6.11.2. `--screen-reader` additionally starts Orca on the same bus with an
 English locale and isolated settings and reads its generated presentation
 through a pseudo-terminal: Orca block-buffers a regular debug file and never
 flushes it. After focus moves to the probe's accessible focus target and Orca's output stops
 growing, focusing the control must produce the presentation recorded for the
 running Orca release; other releases fail until their presentation is verified.
-Orca 50.3 must speak "Reconnect", "button.", "Connect using saved settings." in
-sequence and show the braille line
+Orca 50.3 must generate the speech "Reconnect", "button.", "Connect using saved
+settings." in sequence and the braille line
 "quickshell application frame Reconnect button Connect using saved settings.".
-Orca 46.1 must speak "Reconnect push button.", "Connect using saved settings."
-in sequence and show "quickshell application frame Reconnect push button": it
-does not braille the description. The release is read from `orca --version`
+Orca 46.1 must generate the speech "Reconnect push button.", "Connect using
+saved settings." in sequence and the braille line "quickshell application frame
+Reconnect push button": it does not braille the description. The release is read from `orca --version`
 before Orca is started, and the clock shell check applies the same rule. If Orca
 exits before "Screen reader on." is read, the failure reports its return code; if
 it is still running after 30 s without that announcement, it receives SIGABRT so
@@ -1280,8 +1302,10 @@ the matched focus output are saved in the same file.
 
 Orca 50.3 with speech-dispatcher passes locally on openSUSE Tumbleweed. CI runs
 Ubuntu 24.04's Orca 46.1 with speech-dispatcher, without the espeak-ng output
-module or an audio device; the debug output records Orca's generated speech
-either way.
+module or an audio device. The check reads the speech and braille text Orca's
+generators produce from its debug output, which records that text whether or not
+a speech server renders it; audible speech and braille devices are not
+verified.
 Orca 46.1 reads its modifier keymap with `xkbcomp` from the X display named by
 `DISPLAY` while it loads its settings, and raises `KeyError` when `DISPLAY` is
 unset: `refresh_orca_modifiers` calls `subprocess.check_output(['xkbcomp',
