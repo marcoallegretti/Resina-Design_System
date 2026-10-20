@@ -260,7 +260,9 @@ front size and positions the label at its Rust-resolved box. It is decorative,
 has no input target and is ignored by accessibility.
 
 The composing owner still must validate the label against the body's uniform
-content contour and supply its guarded foreground, retain common provenance,
+face, the intersection of its edge interior and relief plateau
+([spec/46](../../../spec/46-command-label-layout.md#lit-command-body-content),
+[spec/88](../../../spec/88-lit-control-body.md#guards-and-colors)), and supply its guarded foreground, retain common provenance,
 publish coherent paint/target/semantics, and own native gestures and actions.
 The label helper does not provide any of those channels or a Button.
 
@@ -297,7 +299,8 @@ Rust resolves complete content first, uses its front size for the neutral and
 current body, reserves the target from the neutral body's deepest silhouette at
 the projected depth bound, then
 runs the existing snapshot validator. This checks state/direction coherence,
-complete label-box containment in the uniform body contour, current silhouette
+complete label-box containment in the body's uniform face (edge interior
+intersected with the relief plateau), current silhouette
 coverage, available/occupied target bounds and complete accessibility semantics.
 Contrast, surrounding colors and unsupported geometry retain their diagnostics.
 No padding or contrast threshold is invented to repair an invalid request.
