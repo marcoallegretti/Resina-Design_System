@@ -1,15 +1,18 @@
 import copy
 import math
 import unittest
+from fractions import Fraction
 
 from check_schemas import ROOT, apply_changes, load_json
 from lit_body_arithmetic import (
-    LOGICAL, PHYSICAL, Body, body_invariants, contour_difference, physical_radii, pixels, samples, swept_contour,
+    LOGICAL, PHYSICAL, Body, body_invariants, contour_difference, filled_label_bounds, lit_body_source,
+    lit_containment_outcomes, physical_radii, pixels, samples, swept_contour,
 )
 from material_relief_arithmetic import rectangular_samples
 
 SOURCE = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
 CASES = load_json(ROOT / "conformance/ir/lit-control-body-vectors.json")
+CONTAINMENT = load_json(ROOT / "conformance/content/command-lit-containment.json")
 
 
 def case_source(name):
@@ -281,3 +284,96 @@ class LitBodyPixelTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def containment_case(name):
+    return next(case for case in CONTAINMENT["cases"] if case["name"] == name)
+
+
+def containment_body(case, direction="ltr"):
+    relief = dict(CONTAINMENT["profile"], shoulderWidth=case["shoulderWidth"])
+    return Body(lit_body_source(SOURCE, case["size"], case.get("radius", CONTAINMENT["radius"]), relief,
+                                case.get("edgeWidth", CONTAINMENT["edgeWidth"]), direction))
+
+
+class LitContainmentTests(unittest.TestCase):
+    def test_matrix_outcomes_follow_the_exact_vertex_law(self):
+        expected = {case["name"]: case["contained"] for case in CONTAINMENT["cases"]}
+        outcomes = list(lit_containment_outcomes(CONTAINMENT, SOURCE))
+        self.assertEqual(len(outcomes), 2 * len(expected))
+        for name, direction, contained in outcomes:
+            with self.subTest(case=name, direction=direction):
+                self.assertEqual(contained, expected[name])
+
+    def test_contained_labels_outside_the_published_rectangle_are_the_named_plateau_cases(self):
+        beyond_c = set()
+        for case in CONTAINMENT["cases"]:
+            for direction in ("ltr", "rtl"):
+                body = containment_body(case, direction)
+                box = filled_label_bounds(case["size"], case["padding"], case["labelHeight"], direction)
+                c = body.content_bounds
+                inside_c = (box["x"] >= c["x"] and box["y"] >= c["y"]
+                            and Fraction(box["x"]) + Fraction(box["width"]) <= Fraction(c["x"]) + Fraction(c["width"])
+                            and Fraction(box["y"]) + Fraction(box["height"]) <= Fraction(c["y"]) + Fraction(c["height"]))
+                if inside_c:
+                    self.assertTrue(body.uniform_contains_box(box), case["name"])
+                elif case["contained"]:
+                    beyond_c.add(case["name"])
+        self.assertTrue({
+            "text-scale-1-shoulder-3", "text-scale-2-shoulder-3", "start-padding-10-inside-plateau",
+            "end-padding-10-inside-plateau", "compact-minimum-inline-12-fills-block", "compact-text-scale-1-one-line",
+            "plateau-arc-vertex", "plateau-arc-inside-by-2-40", "plateau-on-edge-interior-boundary",
+        } <= beyond_c, beyond_c)
+
+    def test_vertices_two_to_the_minus_forty_either_side_of_the_plateau_arc(self):
+        body = containment_body(containment_case("plateau-arc-vertex"))
+        tiny = Fraction(2) ** -40
+        # The plateau disc about (24, 24) has squared radius 24*24 - 4*3.65625*24 = 15*15.
+        on = (Fraction(15), Fraction(12))
+        self.assertTrue(body.uniform_contains(on))
+        self.assertTrue(body.uniform_contains((on[0], on[1] + tiny)))
+        self.assertTrue(body.uniform_contains((on[0] + tiny, on[1])))
+        self.assertFalse(body.uniform_contains((on[0], on[1] - tiny)))
+        self.assertFalse(body.uniform_contains((on[0] - tiny, on[1])))
+        self.assertEqual(body.normal((15.0, 12.0 + 2.0 ** -40)), (0.0, 0.0, 1.0))
+        self.assertNotEqual(body.normal((15.0, 12.0 - 2.0 ** -20)), (0.0, 0.0, 1.0))
+
+    def test_straight_shoulder_and_edge_interior_reject_vertices_separately(self):
+        square = containment_body(containment_case("square-body-inside-straight-shoulder"))
+        self.assertTrue(square.exact_contains((Fraction(16), Fraction(3, 2)), square.edge_width))
+        self.assertFalse(square.uniform_contains((Fraction(16), Fraction(3, 2))))
+        self.assertTrue(square.uniform_contains((Fraction(16), Fraction(2))))
+        wide = containment_body(containment_case("plateau-outside-edge-interior-side"))
+        point = (24.0, 4.75)
+        self.assertEqual(wide.normal(point), (0.0, 0.0, 1.0))
+        self.assertEqual(wide.relief_height(point), wide.amplitude)
+        self.assertFalse(wide.uniform_contains((Fraction(24), Fraction(19, 4))))
+        self.assertTrue(wide.uniform_contains((Fraction(24), Fraction(5))))
+        corner = containment_body(containment_case("plateau-outside-edge-interior-corner"))
+        self.assertEqual(corner.normal((10.25, 10.25)), (0.0, 0.0, 1.0))
+        self.assertFalse(corner.uniform_contains((Fraction(41, 4), Fraction(41, 4))))
+        self.assertTrue(corner.uniform_contains((Fraction(43, 4), Fraction(43, 4))))
+
+    def test_plateau_law_agrees_with_the_relief_gates(self):
+        margin = 1e-6
+        checked = {True: 0, False: 0}
+        for name in ("text-scale-1-reference-shoulder", "plateau-arc-vertex", "compact-text-scale-1-one-line",
+                     "plateau-outside-edge-interior-side"):
+            body = containment_body(containment_case(name))
+            steps = 41
+            for i in range(steps + 1):
+                for j in range(steps + 1):
+                    x = body.width * i / steps
+                    y = body.height * j / steps
+                    inside = body.uniform_contains((Fraction(x), Fraction(y)))
+                    nudged = [body.uniform_contains((Fraction(x + dx), Fraction(y + dy)))
+                              for dx in (-margin, margin) for dy in (-margin, margin)]
+                    if any(value != inside for value in nudged) or not body.exact_contains(
+                            (Fraction(x), Fraction(y)), body.edge_width):
+                        continue
+                    flat = body.normal((x, y)) == (0.0, 0.0, 1.0) and body.relief_height((x, y)) == body.amplitude
+                    with self.subTest(case=name, point=(x, y)):
+                        self.assertEqual(flat, inside)
+                    checked[inside] += 1
+        self.assertGreater(min(checked.values()), 300, checked)
+

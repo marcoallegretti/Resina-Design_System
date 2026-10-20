@@ -1,8 +1,10 @@
 """Independent lit control body arithmetic with circular corners and swept regions."""
+import copy
 import itertools
 import math
 from fractions import Fraction
 
+from command_label_arithmetic import layout as label_layout
 from material_light_arithmetic import expected_result, pigment_result
 
 EPSILON = 2.0 ** -52
@@ -169,7 +171,11 @@ class Body:
             slack = min(slack, radius - math.hypot(u, v))
         if abs(slack) > guard:
             return slack > 0
-        x, y = Fraction(x), Fraction(y)
+        return self.exact_contains((Fraction(x), Fraction(y)), inset)
+
+    def exact_contains(self, point, inset):
+        """Closed edge interior membership of an exact rational point."""
+        x, y = point
         inset = Fraction(inset)
         if not (inset <= x <= Fraction(self.width) - inset and inset <= y <= Fraction(self.height) - inset):
             return False
@@ -190,6 +196,33 @@ class Body:
             center = (Fraction(cx) - sx * radius, Fraction(cy) - sy * radius)
             result.append((center, (sx, sy), radius - inset))
         return result
+
+    def uniform_contains(self, point):
+        """Exact closed membership in E and the uniform relief plateau, where every relief gate is one.
+
+        The plateau is the straight band at least the shoulder width from each side, intersected with
+        a disc about every rounded corner's center whose squared radius is r*r*(1 - tau) = r*r - 4*w*r.
+        """
+        if not self.exact_contains(point, self.edge_width):
+            return False
+        if self.kind == "flat":
+            return True
+        x, y = point
+        w = Fraction(self.shoulder)
+        if not (w <= x <= Fraction(self.width) - w and w <= y <= Fraction(self.height) - w):
+            return False
+        for (cx, cy), (sx, sy), radius in self.exact_constraints(0):
+            u = max(sx * (x - cx), 0)
+            v = max(sy * (y - cy), 0)
+            if u * u + v * v > radius * radius - 4 * w * radius:
+                return False
+        return True
+
+    def uniform_contains_box(self, bounds):
+        """spec/46 lit content: the four vertices of the closed box, with exact endpoints, lie in E and the plateau."""
+        x, y = Fraction(bounds["x"]), Fraction(bounds["y"])
+        right, bottom = x + Fraction(bounds["width"]), y + Fraction(bounds["height"])
+        return all(self.uniform_contains((px, py)) for px in (x, right) for py in (y, bottom))
 
     def swept(self, point, inset, band=0.0):
         """Return True, False or None when the decision lies within band of a boundary."""
@@ -613,3 +646,46 @@ def body_invariants(ir):
     if face["colorRanges"][2] != {"lower": color, "upper": color}:
         return "the third color range must be the exact edge"
     return None
+
+
+def filled_label_bounds(size, padding, label_height, direction):
+    """spec/46 label layout whose supplied width advance fits a body of exactly `size`."""
+    advance = {"width": size["width"] * 0.01, "height": label_height}
+    resolved = label_layout({"padding": padding, "minimumSize": size, "maximumSize": size,
+                             "natural": advance, "fitted": advance, "direction": direction})
+    if resolved["size"] != size:
+        raise ValueError("label layout must reproduce the supplied body size")
+    return resolved["labelBounds"]
+
+
+def lit_body_source(source, size, radius, relief, edge_width, direction):
+    body = copy.deepcopy(source)
+    body["size"] = dict(size)
+    body["radii"] = {name: {"x": radius, "y": radius} for name in LOGICAL["ltr"]}
+    body["relief"] = dict(relief)
+    body["edgeWidth"] = edge_width
+    body["environment"]["layoutDirection"] = direction
+    return body
+
+
+def lit_containment_outcomes(matrix, source):
+    """Yield (name, direction, contained) for every case of the lit containment matrix."""
+    for case in matrix["cases"]:
+        relief = dict(matrix["profile"], shoulderWidth=case["shoulderWidth"])
+        for direction in ("ltr", "rtl"):
+            body = Body(lit_body_source(source, case["size"], case.get("radius", matrix["radius"]), relief,
+                                        case.get("edgeWidth", matrix["edgeWidth"]), direction))
+            bounds = filled_label_bounds(case["size"], case["padding"], case["labelHeight"], direction)
+            yield case["name"], direction, body.uniform_contains_box(bounds)
+
+
+def ir_uniform_contains_box(ir, bounds):
+    """spec/46 lit content containment of a label box in a published lit control body IR."""
+    face = ir["face"]
+    outline, profile = face["surface"]["outline"], face["surface"]["profile"]
+    probe = Body.__new__(Body)
+    probe.width, probe.height = outline["size"]["width"], outline["size"]["height"]
+    probe.radii = [outline["corners"][name]["x"] for name in PHYSICAL]
+    probe.edge_width = face["edgeWidth"]
+    probe.kind, probe.shoulder = profile["kind"], profile["shoulderWidth"]
+    return probe.uniform_contains_box(bounds)

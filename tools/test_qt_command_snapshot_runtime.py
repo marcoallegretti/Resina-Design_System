@@ -72,6 +72,13 @@ class NativeSnapshotEvidenceTests(unittest.TestCase):
             with self.subTest(axis=axis), self.assertRaisesRegex(ValueError, "front size/origin"):
                 verify_snapshot(snapshot, request, states)
 
+    def test_label_box_must_stay_on_the_uniform_face(self):
+        for member, value in (("x", 1.5), ("y", 1.5), ("width", 16.5), ("height", 8.5)):
+            snapshot, request, states = copy.deepcopy(self.fixture())
+            snapshot["label"]["labelBounds"][member] = value
+            with self.subTest(member=member), self.assertRaisesRegex(ValueError, "uniform lit body face"):
+                verify_snapshot(snapshot, request, states)
+
     def test_partial_stale_or_inconsistent_channels_fail(self):
         for change in ("missing", "extra", "semantic", "body", "direction", "focus", "target", "available", "occupied"):
             snapshot, request, states = copy.deepcopy(self.fixture())

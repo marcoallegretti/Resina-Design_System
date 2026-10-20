@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 mod edge;
 mod material;
+mod uniform;
 pub use material::{
     MaterialReliefPaint, MaterialReliefPaintResult, resolve_material_relief_paint_source,
 };
@@ -263,6 +264,10 @@ impl ReliefPaint {
 
     fn edge_interior_contains(&self, point: PhysicalVector) -> bool {
         edge::contains(self.surface.outline(), self.edge_width, point)
+    }
+
+    pub(crate) fn uniform_contains_box(&self, bounds: PhysicalBounds) -> bool {
+        uniform::contains_box(&self.surface, self.edge_width, bounds)
     }
 
     fn reserve_content(&self) -> Result<PhysicalBounds, ReliefPaintError> {

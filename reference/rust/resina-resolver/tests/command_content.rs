@@ -246,6 +246,7 @@ fn lit_containment_matrix_resolves_through_command_paint() {
     struct LitMatrix {
         schema_version: String,
         radius: f64,
+        edge_width: f64,
         profile: Value,
         cases: Vec<LitCase>,
     }
@@ -256,6 +257,8 @@ fn lit_containment_matrix_resolves_through_command_paint() {
         text_scale: f64,
         size: SurfaceSize,
         shoulder_width: f64,
+        radius: Option<f64>,
+        edge_width: Option<f64>,
         padding: SafeArea,
         label_height: f64,
         contained: bool,
@@ -265,7 +268,9 @@ fn lit_containment_matrix_resolves_through_command_paint() {
     ))
     .unwrap();
     assert_eq!(matrix.schema_version, "0.1.0");
-    assert_eq!(matrix.cases.len(), 9);
+    assert_eq!(matrix.cases.len(), 30);
+    let mut outcomes = [0; 2];
+    let mut beyond_reserved_rectangle = 0;
     for case in matrix.cases {
         for direction in ["ltr", "rtl"] {
             let mut request = source();
@@ -276,10 +281,18 @@ fn lit_containment_matrix_resolves_through_command_paint() {
             body["surface"]["form"]["shape"] = json!("rounded");
             let mut theme: Value =
                 serde_json::from_str(body["theme"]["themeSource"].as_str().unwrap()).unwrap();
-            theme["tokens"]["radius"]["5"]["$value"]["value"] = json!(matrix.radius);
+            theme["tokens"]["radius"]["5"]["$value"]["value"] =
+                json!(case.radius.unwrap_or(matrix.radius));
             body["theme"]["themeSource"] = json!(theme.to_string());
             body["appearance"]["shapeAssignments"]["profiles"]["rounded"]["radius"] =
                 json!("radius.5");
+            for bands in body["appearance"]["bands"]
+                .as_object_mut()
+                .unwrap()
+                .values_mut()
+            {
+                bands["edgeWidth"] = json!(case.edge_width.unwrap_or(matrix.edge_width));
+            }
             let mut profile = matrix.profile.clone();
             profile["shoulderWidth"] = json!(case.shoulder_width);
             request["relief"]["commandBody"] = profile;
@@ -295,6 +308,18 @@ fn lit_containment_matrix_resolves_through_command_paint() {
             if !case.contained {
                 assert_eq!(result, Err(CommandContentError::OutsideContent));
             }
+            outcomes[usize::from(case.contained)] += 1;
+            let content = paint.paint().body().face().content_bounds();
+            let bounds = label.label_bounds();
+            beyond_reserved_rectangle += usize::from(
+                case.contained
+                    && (bounds.x < content.x
+                        || bounds.y < content.y
+                        || bounds.x + bounds.width > content.x + content.width
+                        || bounds.y + bounds.height > content.y + content.height),
+            );
         }
     }
+    assert_eq!(outcomes, [2 * 12, 2 * 18]);
+    assert_eq!(beyond_reserved_rectangle, 2 * 14);
 }

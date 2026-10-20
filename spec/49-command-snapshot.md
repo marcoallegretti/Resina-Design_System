@@ -33,8 +33,8 @@ measurement as current merely because its dimensions happen to match.
    identify both the expected and supplied state sets diagnostically.
 2. Require label layout direction to equal the supplied environment direction.
 3. Validate the complete label layout box against the same body's outline size
-   and reserved content rectangle using
-   [lit command body content](46-command-label-layout.md#lit-command-body-content).
+   and its uniform face, the edge interior intersected with the relief plateau,
+   using [lit command body content](46-command-label-layout.md#lit-command-body-content).
 4. Revalidate the complete reserved hit rectangle against current environment and
    component minima, available bounds and neighboring reservations using the
    [target law](40-hit-region-ir.md). Reject any required resizing; do not publish

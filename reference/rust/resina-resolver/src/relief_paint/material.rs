@@ -114,6 +114,10 @@ impl MaterialReliefPaint {
         self.face.content_bounds()
     }
 
+    pub(crate) fn uniform_contains_box(&self, bounds: PhysicalBounds) -> bool {
+        self.face.uniform_contains_box(bounds)
+    }
+
     pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {
         self.face.paint_color_ranges()
     }

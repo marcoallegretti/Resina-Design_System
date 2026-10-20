@@ -9,7 +9,7 @@ from pathlib import Path
 from command_label_arithmetic import check_cases as check_label_arithmetic
 from command_layout_arithmetic import resolve as resolve_command_layout
 from command_layout_arithmetic import resolve_extents
-from lit_body_arithmetic import Body as LitBody, body_invariants, relief_profile_violation
+from lit_body_arithmetic import body_invariants, lit_containment_outcomes, relief_profile_violation
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -660,10 +660,15 @@ def check_lit_containment():
     validator = validator_for("schemas/command-lit-containment.schema.json")
     check_case(validator, "lit containment cases", matrix, True)
     checked = 1
+    square = next(index for index, case in enumerate(matrix["cases"]) if "radius" in case)
+    edge = next(index for index, case in enumerate(matrix["cases"]) if "edgeWidth" in case)
     for path, value in [("/schemaVersion", "0.2.0"),
                         ("/radius", 0),
                         ("/profile/kind", "negative-extrusion"),
+                        ("/edgeWidth", 0),
                         ("/cases/0/shoulderWidth", 0),
+                        (f"/cases/{square}/radius", -1),
+                        (f"/cases/{edge}/edgeWidth", 0),
                         ("/cases/0/padding/top", -1),
                         ("/cases/0/padding", [16, 16, 12, 12]),
                         ("/cases/0/labelHeight", 0),
@@ -673,30 +678,15 @@ def check_lit_containment():
         checked += 1
     check_case(validator, "lit containment renderer leakage", dict(matrix, renderer="native"), False)
     checked += 1
+    names = [case["name"] for case in matrix["cases"]]
+    if len(set(names)) != len(names):
+        raise ValueError("duplicate lit containment case")
+    expected = {case["name"]: case["contained"] for case in matrix["cases"]}
     source = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
-    names = set()
-    for case in matrix["cases"]:
-        if case["name"] in names:
-            raise ValueError(f"duplicate lit containment case: {case['name']}")
-        names.add(case["name"])
-        size, padding, height = case["size"], case["padding"], case["labelHeight"]
-        for direction in ("ltr", "rtl"):
-            body_source = copy.deepcopy(source)
-            body_source["size"] = size
-            body_source["radii"] = {name: {"x": matrix["radius"], "y": matrix["radius"]}
-                                    for name in ("topStart", "topEnd", "bottomEnd", "bottomStart")}
-            body_source["relief"] = dict(matrix["profile"], shoulderWidth=case["shoulderWidth"])
-            body_source["environment"]["layoutDirection"] = direction
-            content = LitBody(body_source).content_bounds
-            x = padding["start"] if direction == "ltr" else padding["end"]
-            width = size["width"] - padding["start"] - padding["end"]
-            y = padding["top"] + (size["height"] - padding["top"] - padding["bottom"] - height) / 2
-            contained = (x >= content["x"] and y >= content["y"]
-                         and x + width <= content["x"] + content["width"]
-                         and y + height <= content["y"] + content["height"])
-            if contained != case["contained"]:
-                raise ValueError(f"lit containment {case['name']} {direction}: independent outcome is {contained}")
-            checked += 1
+    for name, direction, contained in lit_containment_outcomes(matrix, source):
+        if contained != expected[name]:
+            raise ValueError(f"lit containment {name} {direction}: independent outcome is {contained}")
+        checked += 1
     return checked
 
 

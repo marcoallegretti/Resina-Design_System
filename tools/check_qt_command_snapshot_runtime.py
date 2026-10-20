@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 from check_schemas import validator_for
-from lit_body_arithmetic import body_invariants
+from lit_body_arithmetic import body_invariants, ir_uniform_contains_box
 from check_qt_command_label_runtime import verify_layout
 from opaque_request_source import pigment_coefficient_failures
 import conformance_font
@@ -38,11 +38,8 @@ def verify_snapshot(snapshot, request, expected_states, motion=None):
     invariant = body_invariants(body)
     if invariant:
         raise ValueError(f"native lit body violates its invariants: {invariant}")
-    content, box = body["face"]["contentBounds"], label["labelBounds"]
-    if box["x"] < content["x"] or box["y"] < content["y"] \
-            or box["x"] + box["width"] > content["x"] + content["width"] \
-            or box["y"] + box["height"] > content["y"] + content["height"]:
-        raise ValueError("native label layout box leaves the lit body content rectangle")
+    if not ir_uniform_contains_box(body, label["labelBounds"]):
+        raise ValueError("native label layout box leaves the uniform lit body face")
     target = snapshot["hitRegion"]["bounds"]
     silhouette = body["geometry"]["silhouette"]["bounds"]
     available = request["availableBounds"]

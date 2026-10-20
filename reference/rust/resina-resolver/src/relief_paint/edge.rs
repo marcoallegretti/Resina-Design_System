@@ -147,7 +147,7 @@ impl<'a> EdgeSampler<'a> {
     }
 }
 
-fn dyadic(value: f64) -> (u64, i32) {
+pub(super) fn dyadic(value: f64) -> (u64, i32) {
     let bits = value.to_bits();
     let exponent = ((bits >> 52) & 0x7ff) as i32;
     let significand = bits & ((1_u64 << 52) - 1);

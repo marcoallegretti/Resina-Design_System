@@ -95,30 +95,71 @@ font or complete styling evidence.
 ## Lit command body content
 
 [Command paint](43-command-paint.md) 0.2.0 publishes a [lit control body](88-lit-control-body.md).
-Its only certified content region is the face's reserved content rectangle C,
-inside the edge interior and the uniform relief plateau, where every admitted
-light paints the exact body. Before using the face foreground, which in the
-disabled phase is the [dimmed disabled label](43-command-paint.md#disabled-label),
-composition MUST contain the complete physical layout box in C with the relief
-face guard above: the label's command size equals the outline size, both share
-the placement origin, and the conservative right/bottom endpoints must not exceed
-C. The swept side plane, the guarded edge and the shoulders are never content,
-and the rounded contour of the spec/36 guard does not apply.
+Its certified content region U is the intersection of the face's closed edge
+interior E and its closed uniform relief plateau, where every
+[relief gate](82-surface-relief.md#height-field) equals one. There the analytic
+face has the flat normal, so every admitted light paints the exact body. Before
+using the face foreground, which in the disabled phase is the
+[dimmed disabled label](43-command-paint.md#disabled-label), composition MUST
+contain the complete physical layout box in U: the label's command size equals
+the outline size, both share the placement origin, and all four box vertices lie
+in U. E and the plateau are intersections of convex sets, so containing the
+vertices contains the box. The swept side plane, the guarded edge and the
+shoulders are never content, and the rounded contour of the spec/36 guard does
+not apply.
+
+For a body of width W and height H with edge width e and shoulder width w, let
+`(dx, dy)` be a vertex's distances from a physical rectangle corner toward the
+interior, r that corner's circular extent, `U = max(r - dx, 0)` and
+`V = max(r - dy, 0)`. The vertex is in U exactly when:
+
+- `e <= x <= W - e` and `e <= y <= H - e`, and `U^2 + V^2 <= (r - e)^2` for
+  every corner with `r > e` (the [spec/83](83-opaque-relief-paint.md) edge
+  interior);
+- unless the profile is flat, `w <= x <= W - w` and `w <= y <= H - w`, and
+  `U^2 + V^2 <= r^2 - 4*w*r` for every nonzero corner. This is the spec/82
+  condition `F >= tau` with `tau = 4*w/r`. It constrains the whole length of
+  both sides meeting that corner, where it requires a distance of at least
+  `r*(1 - sqrt(1 - tau))`, more than w.
+
+Every set is closed. Membership is decided exactly over the rationals that the
+binary64 inputs represent: the right and bottom vertices are the exact sums of
+the box origin and extents, with no rounding and no guard band. The face's
+reserved content rectangle C is a conservative subset of U and remains its
+published member; it is not the containment test. On the plateau arc the
+analytic face is still exactly the body; sampled and raster evidence brackets
+points on that arc from both sides, as spec/88 does for the arcs of F and E,
+instead of treating either color as exact there.
 
 `CommandLabelIr::validate_lit_content(&LitControlBodyIr)` performs this guard for
-a body from static or sampled motion paint. Depth, phase and light do not move C,
-because the relief profile and the outline are independent of them. On failure,
-resolve a suitable size, padding or complete reflow and validate again; do not
-crop, shrink or relocate text.
+a body from static or sampled motion paint. Depth, phase and light do not move U,
+because the relief profile, the edge width and the outline are independent of
+them. On failure, resolve a suitable size, padding or complete reflow and
+validate again; do not crop, shrink or relocate text.
 
 The [supplied lit containment matrix](../conformance/content/command-lit-containment.json)
-uses rounded command bodies of radius 24 px with the label's supplied extents. At
-text scale 1 a 24 px label in a 96 × 48 px body and at text scale 2 a 48 px label
-in a 160 × 72 px body, each with 12 px vertical padding, are contained with the
-reference shoulder width 2, whose plateau begins `24*(1 - sqrt(1/3))`, about
-10.14 px, from each side. Shoulder width 3 moves that inset just beyond 12 px
-through the plateau's conservative eight-epsilon guard, and shoulder width 4
-moves it to about 14.20 px; both fail. A 10 px start or end padding crosses the
-shoulder in both layout directions. Independent arithmetic checks every outcome,
-and the Rust reference resolves each case through command paint. These are
-supplied measurement cases, not native font evidence.
+uses rounded command bodies of radius 24 px and edge width 1 px with labels that
+fill the offered width and the supplied heights; both layout directions consume
+the same physical law. With the reference shoulder width 2 the plateau disc about
+each corner center has radius `sqrt(384)`, about 19.60 px: a 24 px label with
+16 px inline and 12 px block padding in a 96 × 48 px body at text scale 1, and a
+48 px label in a 160 × 72 px body at text scale 2, are contained. Shoulder width
+3, radius `sqrt(288)`, is still contained although C rejects it; shoulder width
+4, radius `sqrt(192)`, is not. A 10 px start or end padding stays on the plateau
+and an 8 px one crosses the shoulder. With 16 px inline and 8 px block padding
+and the label role's line height, one and two label lines at text scales 1, 1.5
+and 2 are contained in bodies from 34.76 to 91.04 px high, whose radius grows
+from 17.38 to 24 px. A 12 px inline padding is contained in a 64 × 32 px body,
+where the radius is 16 px, and crosses the shoulder once the radius reaches
+24 px. Shoulder width 3.65625 gives a plateau disc of radius exactly 15 px: a
+vertex on it is contained, as is one `2^-40` px inside, while one `2^-40` px
+outside is not, whether the start, end, top or bottom padding moves it there. A
+square body rejects a vertex 1.5 px from a side, inside the 2 px straight
+shoulder but in E, and contains one at 2 px; with edge width 3 px it rejects a
+vertex 2.5 px from a side, on the plateau but outside E. With edge width 5 px a
+rounded body rejects vertices on the plateau but outside E both 4.75 px from a
+side and 10.25 px from both sides at a corner, and contains one 5 px from a
+side. Independent exact arithmetic checks every
+outcome and that fourteen contained cases leave C, and the Rust reference
+resolves each case through command paint. These are supplied measurement cases,
+not native font evidence.

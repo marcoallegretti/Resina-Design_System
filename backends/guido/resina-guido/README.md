@@ -319,7 +319,7 @@ Use `prepare_command_content` for a checked `CommandSnapshot`, the same verified
 font family, device scale and sampling count. Resolve the snapshot with current
 activation, explicit hover, a stable reserved target and accessible semantics
 before native preparation. Its existing guards validate shared outline size/origin
-and containment in the lit body's content rectangle. Native preparation remeasures
+and containment in the lit body's uniform face. Native preparation remeasures
 complete text, takes its foreground from the lit body face, and prepares material
 and navigation paint with `prepare_lit_control_paint_at`. A failure returns no command
 pair and preserves its diagnostic cause.
