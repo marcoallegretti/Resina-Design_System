@@ -69,14 +69,23 @@ ResinaCommandInput {
         const probe = clockValue(resolver.resolveMotionSnapshot(request,measurement,options,
             JSON.stringify({schemaVersion:"0.1.0",channels:retained,time:0}),false)).motion;
         if (!state.motionTarget) {
-            clockValue(clock.restart());
+            // A reconfiguration resumes the retained trajectory at the instant its clock restarts.
+            const restart = clockValue(clock.restart()).previousTime;
             state.retargetTime = null;
+            state.resumeTime = null;
+            if (state.resume) {
+                state.channels = clockValue(resolver.retargetMotion(JSON.stringify({channels:state.resume.channels,
+                    target:state.resume.target,policy:state.resume.policy,time:restart}))).channels;
+                state.resumeTime = restart;
+                state.resume = null;
+            }
         } else if (canonical(probe.target) !== canonical(state.motionTarget) || probe.policy !== state.policy) {
             const previousTime = clockValue(clock.restart()).previousTime;
             const previous = clockValue(resolver.retargetMotion(JSON.stringify({channels:state.channels,
                 target:state.motionTarget,policy:state.policy,time:previousTime})));
             state.channels = previous.channels;
             state.retargetTime = previousTime;
+            state.resumeTime = null;
         }
         state.motionTarget = probe.target;
         state.policy = probe.policy;
@@ -96,6 +105,7 @@ ResinaCommandInput {
         state.motionActive = false;
         state.channels = null;
         state.motionTarget = null;
+        state.resume = null;
         state.publishedSpan = null;
         state.frameDue = false;
         clock.invalidate();
@@ -152,9 +162,12 @@ ResinaCommandInput {
         if (motionChannels.length) {
             const channels = clockValue(resolver.validateMotionChannels(motionChannels)).channels;
             const profile = canonical(channels);
-            state.channels = state.resumeChannels && profile === state.profile ? state.resumeChannels : channels;
+            if (profile !== state.profile) {
+                state.resume = null;
+                clock.invalidate();
+            }
+            state.channels = channels;
             state.profile = profile;
-            state.resumeChannels = null;
             state.motionTarget = null;
             if (!state.alternate) {
                 const component = Qt.createComponent("ResinaCommandView.qml");
@@ -224,7 +237,7 @@ ResinaCommandInput {
             candidate.invalidate();
             if (motionChannels.length)
                 candidate.prepare(state.pending,options,motionSource(state.pending,options),state.retargetTime,
-                    preparationClock,publicationDelay,predecessorSpan);
+                    state.resumeTime,preparationClock,publicationDelay,predecessorSpan);
             else
                 candidate.prepare(state.pending,options);
             // Local PNGs may already be decoded. Preserve the asynchronous path otherwise.
@@ -301,12 +314,15 @@ ResinaCommandInput {
         state.running = true;
         try {
             const next = motionChannels.length ? JSON.parse(resolver.validateMotionChannels(motionChannels)) : null;
-            state.resumeChannels = next && !next.error && canonical(next.channels) === state.profile ? captureMotion() : null;
+            // Retain the running trajectory and its clock; the next epoch samples it when the clock restarts.
+            if (!next || next.error || canonical(next.channels) !== state.profile) state.resume = null;
+            else if (state.motionTarget)
+                state.resume = {channels:state.channels,target:state.motionTarget,policy:state.policy};
             state.motionActive = false;
             state.motionTarget = null;
             state.publishedSpan = null;
             state.frameDue = false;
-            clock.invalidate();
+            if (!state.resume) clock.invalidate();
             state.qualified = false;
             state.armed = false;
             resolver.publishSnapshot("");
@@ -403,9 +419,10 @@ ResinaCommandInput {
         property var pendingView: null
         property var alternate: null
         property var channels: null
-        property var resumeChannels: null
+        property var resume: null
         property var motionTarget: null
         property var retargetTime: null
+        property var resumeTime: null
         property string profile: ""
         property string policy: ""
         property bool motionActive: false

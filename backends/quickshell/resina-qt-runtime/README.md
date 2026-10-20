@@ -1579,15 +1579,19 @@ the current activation state and never wait for body motion to settle.
 
 The native read-only `snapshot`, `motion` and `currentFrame` aliases expose a
 coherent selected frame. `motion` is backend observation metadata containing
-elapsed `time`, retained `channels`, `retargetTime`, `preparationDuration`,
-`publicationDelay`, `predecessorSpan` and the
+elapsed `time`, retained `channels`, `retargetTime`, `resumeTime`,
+`preparationDuration`, `publicationDelay`, `predecessorSpan` and the
 complete existing motion IR; it is not a new portable IR or action authorization. `retargetTime`
 is the previous trajectory's elapsed clock time at which the native clock
 restarted and the retained `channels` were sampled from it. Every frame of that
 clock epoch repeats it. It is `null` for the first epoch and after a failure or
-reconfiguration; after a reconfiguration with an unchanged profile the resumed
-`channels` were still sampled from the running trajectory before the clock was
-invalidated. `preparationDuration` is the main-thread time, in seconds from a
+reconfiguration. A reconfiguration with an unchanged motion profile keeps the
+running trajectory and its clock until the next frame is prepared; the clock
+then restarts and the resumed `channels` are that trajectory's state at the
+restart, not at the change. `resumeTime` is the previous trajectory's elapsed
+clock time at that restart, repeated by every frame of the resumed epoch, and
+`null` otherwise.
+`preparationDuration` is the main-thread time, in seconds from a
 separate `CommandClock`, from the start of the refresh that prepared the frame to
 the end of its synchronous snapshot, paint and label preparation. It excludes
 asynchronous image decoding and the later publication. `publicationDelay` is the
