@@ -403,8 +403,16 @@ xdg toplevel `FloatingWindow` was exposed and presented its first frame at the
 fallback ratio 2 and received its scale only afterwards, so a Command or Toggle
 in such a window can publish once at the fallback density; the change of the
 window's ratio then withdraws readiness, as a live output-scale change does, and
-the control prepares again at the new density. The released-host checks host
-their controls only in layer-shell windows.
+the control prepares again at the new density. The compositor-delivered
+checks (Command and Toggle lifecycle, Command accessibility, motion and motion
+frame budget, and the clock shell) host their controls only in layer-shell
+`PanelWindow`s. The authored-update, focus, label, label-render, paint and
+native-availability probes use a `FloatingWindow`. CI runs the update checks on
+Qt's offscreen platform and the native-availability check on xcb under Xvfb;
+with `WAYLAND_DISPLAY` set, the native-availability check, and the Command update
+check with `--platform wayland`, present that window as an xdg toplevel. No
+check asserts the fallback-density first publication described above or the
+preparation that follows it.
 
 Own position, size, parent, window and pixel-density changes withdraw readiness.
 Before scene-graph synchronization, a GUI-thread
@@ -527,7 +535,8 @@ QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
 
 The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
 in released Quickshell 0.3.2 and checks its publications against the reference
-resolver and its sampled composited pixels at output scales 1, 1.25, 1.5 and 2,
+resolver, and composited pixels at points where a flat body or backdrop colour
+is expected, at output scales 1, 1.25, 1.5 and 2,
 and after live output-scale changes between them. Hardware renderers and
 enhanced Frost or Gel treatments beyond their opaque representation are not
 covered.
