@@ -2,7 +2,11 @@ use crate::{OutlineCurvature, SurfaceOutline, resolve_surface_outline_source};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fmt};
+use std::{
+    collections::HashMap,
+    fmt,
+    hash::{BuildHasherDefault, Hasher},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -386,9 +390,9 @@ impl SurfaceRelief {
                     self.axis(size.height / 2.0, Axis::Y),
                 ]
             }),
-            axes: [Vec::new(), Vec::new()],
+            axes: Default::default(),
             corner_gates: Default::default(),
-            lines: [HashMap::new(), HashMap::new()],
+            lines: Default::default(),
         }
     }
 
@@ -556,9 +560,9 @@ const RECENT: usize = 8;
 pub(crate) struct ReliefSampler<'a> {
     relief: &'a SurfaceRelief,
     neutral: Option<[ReliefAxis; 2]>,
-    axes: [Vec<(u64, ReliefAxis)>; 2],
-    corner_gates: [Vec<(SampleNumber, SampleNumber, Gate)>; 4],
-    lines: [HashMap<u64, Result<ReliefSample, SurfaceReliefError>>; 2],
+    axes: [Recalled<ReliefAxis>; 2],
+    corner_gates: [Recent<(SampleNumber, SampleNumber, Gate)>; 4],
+    lines: [CoordinateMap<Result<ReliefSample, SurfaceReliefError>>; 2],
 }
 
 impl ReliefSampler<'_> {
@@ -567,7 +571,7 @@ impl ReliefSampler<'_> {
         point: PhysicalVector,
     ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
         let relief = self.relief;
-        let Some(neutral) = self.neutral else {
+        let Some(neutral) = &self.neutral else {
             return relief.sample(point);
         };
         if !relief
@@ -577,8 +581,9 @@ impl ReliefSampler<'_> {
         {
             return Ok(None);
         }
-        let x = self.axis(point.x, Axis::X);
-        let y = self.axis(point.y, Axis::Y);
+        let [x_axes, y_axes] = &mut self.axes;
+        let x = x_axes.get(point.x, || relief.axis(point.x, Axis::X));
+        let y = y_axes.get(point.y, || relief.axis(point.y, Axis::Y));
         let (line, coordinate) = if x.identical(&neutral[0]) {
             (1, point.y)
         } else if y.identical(&neutral[1]) {
@@ -586,53 +591,122 @@ impl ReliefSampler<'_> {
         } else {
             let gates = &mut self.corner_gates;
             return relief
-                .relief(&x, &y, |corner, u, v| {
-                    recall(
-                        &mut gates[corner],
-                        |(cu, cv, _)| cu.identical(u) && cv.identical(v),
-                        || (u, v, relief.corner_gate(corner, u, v)),
-                    )
-                    .2
+                .relief(x, y, |corner, u, v| {
+                    gates[corner]
+                        .recall(
+                            |(cu, cv, _)| cu.identical(u) && cv.identical(v),
+                            || (u, v, relief.corner_gate(corner, u, v)),
+                        )
+                        .2
                 })
                 .map(Some);
         };
         self.lines[line]
             .entry(coordinate.to_bits())
-            .or_insert_with(|| {
-                relief.relief(&x, &y, |corner, u, v| relief.corner_gate(corner, u, v))
-            })
+            .or_insert_with(|| relief.relief(x, y, |corner, u, v| relief.corner_gate(corner, u, v)))
             .clone()
             .map(Some)
     }
+}
 
-    fn axis(&mut self, coordinate: f64, axis: Axis) -> ReliefAxis {
-        let relief = self.relief;
-        let key = coordinate.to_bits();
-        recall(
-            &mut self.axes[axis as usize],
-            |(bits, _)| *bits == key,
-            || (key, relief.axis(coordinate, axis)),
-        )
-        .1
+/// A map keyed by the bits of a sample coordinate.
+pub(crate) type CoordinateMap<V> = HashMap<u64, V, BuildHasherDefault<CoordinateHasher>>;
+
+/// Mixes the bits of a sample coordinate (the MurmurHash3 finalizer). Sample coordinates are not
+/// adversarial, and SipHash would cost more than the evaluations some of these maps replace.
+#[derive(Default)]
+pub(crate) struct CoordinateHasher(u64);
+
+impl Hasher for CoordinateHasher {
+    fn finish(&self) -> u64 {
+        let mut bits = self.0;
+        bits ^= bits >> 33;
+        bits = bits.wrapping_mul(0xff51_afd7_ed55_8ccd);
+        bits ^= bits >> 33;
+        bits = bits.wrapping_mul(0xc4ce_b9fe_1a85_ec53);
+        bits ^ (bits >> 33)
+    }
+    fn write(&mut self, bytes: &[u8]) {
+        for byte in bytes {
+            self.0 = self.0.rotate_left(8) ^ u64::from(*byte);
+        }
+    }
+    fn write_u64(&mut self, bits: u64) {
+        self.0 ^= bits;
     }
 }
 
-/// The entry among the most recent evaluations that `matches`, evaluating and keeping a new one
-/// when none does.
-pub(crate) fn recall<T: Copy>(
-    recent: &mut Vec<T>,
-    matches: impl Fn(&T) -> bool,
-    evaluate: impl FnOnce() -> T,
-) -> T {
-    if let Some(found) = recent.iter().find(|entry| matches(entry)) {
-        return *found;
+/// Evaluations of a function of one coordinate, keyed by the coordinate's bits. The rows of a
+/// raster revisit the same sample coordinates, so every evaluation is kept, behind a window of the
+/// most recent ones that serves the coordinates of the current pixel.
+pub(crate) struct Recalled<T> {
+    recent: Recent<(u64, usize)>,
+    slots: CoordinateMap<usize>,
+    values: Vec<T>,
+}
+
+impl<T> Default for Recalled<T> {
+    fn default() -> Self {
+        Self {
+            recent: Recent::default(),
+            slots: CoordinateMap::default(),
+            values: Vec::new(),
+        }
     }
-    let entry = evaluate();
-    if recent.len() == RECENT {
-        recent.remove(0);
+}
+
+impl<T> Recalled<T> {
+    pub(crate) fn get(&mut self, coordinate: f64, evaluate: impl FnOnce() -> T) -> &T {
+        let key = coordinate.to_bits();
+        let (slots, values) = (&mut self.slots, &mut self.values);
+        let (_, slot) = self.recent.recall(
+            |(bits, _)| *bits == key,
+            || {
+                let slot = *slots.entry(key).or_insert_with(|| {
+                    values.push(evaluate());
+                    values.len() - 1
+                });
+                (key, slot)
+            },
+        );
+        &self.values[slot]
     }
-    recent.push(entry);
-    entry
+}
+
+/// The [`RECENT`] most recent evaluations, of which the oldest is replaced by a new one.
+pub(crate) struct Recent<T> {
+    entries: Vec<T>,
+    oldest: usize,
+}
+
+impl<T> Default for Recent<T> {
+    fn default() -> Self {
+        Self {
+            entries: Vec::with_capacity(RECENT),
+            oldest: 0,
+        }
+    }
+}
+
+impl<T: Copy> Recent<T> {
+    /// The entry that `matches`, evaluating and keeping a new one when none does.
+    pub(crate) fn recall(
+        &mut self,
+        matches: impl Fn(&T) -> bool,
+        evaluate: impl FnOnce() -> T,
+    ) -> T {
+        if let Some(found) = self.entries.iter().find(|entry| matches(entry)) {
+            return *found;
+        }
+        let entry = evaluate();
+        if self.entries.len() < RECENT {
+            self.entries.push(entry);
+        } else {
+            self.entries[self.oldest] = entry;
+            self.oldest = (self.oldest + 1) % RECENT;
+        }
+        entry
+    }
 }
 
 fn smooth(t: f64) -> (f64, f64) {

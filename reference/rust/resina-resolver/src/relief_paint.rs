@@ -1,6 +1,6 @@
 use crate::{
-    EdgeContrastResult, OpaquePigmentResult, OutlineCurvature, ReliefSample, SrgbFallback,
-    SurfaceRelief, SurfaceReliefError, SurfaceReliefProfile, opaque_contrast_ratio,
+    EdgeContrastResult, FaceNormal, OpaquePigmentResult, OutlineCurvature, ReliefSample,
+    SrgbFallback, SurfaceRelief, SurfaceReliefError, SurfaceReliefProfile, opaque_contrast_ratio,
     resolve_edge_contrast_source, resolve_key_light, resolve_opaque_pigment_source,
     resolve_surface_outline_source, resolve_surface_relief,
     srgb_input::{SrgbInput, SrgbInputError},
@@ -18,11 +18,18 @@ pub use material::{
     MaterialReliefPaint, MaterialReliefPaintResult, resolve_material_relief_paint_source,
 };
 
-/// The face terms a paint sample reads besides its outline: edge-interior containment and relief.
+/// The face terms a paint sample reads besides its outline: edge-interior containment, relief and
+/// the shade of a face normal.
 pub(crate) trait FaceTerms {
     fn edge_interior_contains(&mut self, point: PhysicalVector) -> bool;
     fn relief(&mut self, point: PhysicalVector)
     -> Result<Option<ReliefSample>, SurfaceReliefError>;
+    /// `shade(normal)`, a function of the normal's `x` and `y` alone.
+    fn shade(
+        &mut self,
+        normal: FaceNormal,
+        shade: impl FnOnce(FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<SrgbFallback, ReliefPaintError>;
 }
 
 pub(crate) struct DirectTerms<'a>(&'a ReliefPaint);
@@ -37,12 +44,20 @@ impl FaceTerms for DirectTerms<'_> {
     ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
         self.0.surface.sample(point)
     }
+    fn shade(
+        &mut self,
+        normal: FaceNormal,
+        shade: impl FnOnce(FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<SrgbFallback, ReliefPaintError> {
+        shade(normal)
+    }
 }
 
 /// Face terms equal to [`DirectTerms`] that reuse evaluations shared by many points.
 pub(crate) struct FaceSampler<'a> {
     edge: edge::EdgeSampler<'a>,
     relief: ReliefSampler<'a>,
+    shades: Vec<([u64; 2], SrgbFallback)>,
 }
 
 impl FaceTerms for FaceSampler<'_> {
@@ -55,7 +70,25 @@ impl FaceTerms for FaceSampler<'_> {
     ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
         self.relief.sample(point)
     }
+    fn shade(
+        &mut self,
+        normal: FaceNormal,
+        shade: impl FnOnce(FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<SrgbFallback, ReliefPaintError> {
+        let key = [normal.x.to_bits(), normal.y.to_bits()];
+        if let Some((_, color)) = self.shades.iter().find(|(bits, _)| *bits == key) {
+            return Ok(color.clone());
+        }
+        let color = shade(normal)?;
+        if self.shades.len() == RECENT_SHADES {
+            self.shades.remove(0);
+        }
+        self.shades.push((key, color.clone()));
+        Ok(color)
+    }
 }
+
+const RECENT_SHADES: usize = 8;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReliefPaintError(String);
@@ -367,6 +400,7 @@ impl ReliefPaint {
         FaceSampler {
             edge: edge::EdgeSampler::new(self.surface.outline(), self.edge_width),
             relief: self.surface.sampler(),
+            shades: Vec::new(),
         }
     }
 
@@ -392,7 +426,7 @@ impl ReliefPaint {
             .map_err(|e| ReliefPaintError(e.to_string()))?
             .ok_or_else(|| ReliefPaintError("interior point lost outline containment".into()))?
             .normal;
-        shade(normal).map(Some)
+        terms.shade(normal, shade).map(Some)
     }
 
     pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {

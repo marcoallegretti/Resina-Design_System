@@ -1,4 +1,4 @@
-use crate::{OutlineCurvature, SurfaceOutline, surface_relief::recall};
+use crate::{OutlineCurvature, SurfaceOutline, surface_relief::Recalled};
 use num_bigint::BigUint;
 use resina_model::PhysicalVector;
 
@@ -117,7 +117,7 @@ fn decide(
 pub(super) struct EdgeSampler<'a> {
     outline: &'a SurfaceOutline,
     inset: f64,
-    axes: [Vec<(u64, EdgeAxis)>; 2],
+    axes: [Recalled<EdgeAxis>; 2],
 }
 
 impl<'a> EdgeSampler<'a> {
@@ -125,25 +125,16 @@ impl<'a> EdgeSampler<'a> {
         Self {
             outline,
             inset,
-            axes: [Vec::new(), Vec::new()],
+            axes: Default::default(),
         }
     }
 
     pub(super) fn contains(&mut self, point: PhysicalVector) -> bool {
-        let x = self.axis(point.x, true);
-        let y = self.axis(point.y, false);
-        decide(self.outline, self.inset, point, &x, &y)
-    }
-
-    fn axis(&mut self, coordinate: f64, horizontal: bool) -> EdgeAxis {
-        let key = coordinate.to_bits();
         let (outline, inset) = (self.outline, self.inset);
-        recall(
-            &mut self.axes[usize::from(!horizontal)],
-            |(bits, _)| *bits == key,
-            || (key, axis(outline, inset, coordinate, horizontal)),
-        )
-        .1
+        let [x_axes, y_axes] = &mut self.axes;
+        let x = x_axes.get(point.x, || axis(outline, inset, point.x, true));
+        let y = y_axes.get(point.y, || axis(outline, inset, point.y, false));
+        decide(outline, inset, point, x, y)
     }
 }
 

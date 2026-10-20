@@ -76,7 +76,7 @@ impl MaterialReliefPaint {
             .map_err(|e| ReliefPaintError(e.to_string()))?
             .ok_or_else(|| ReliefPaintError("face color requires a point of the outline".into()))?
             .normal;
-        self.shade(normal)
+        terms.shade(normal, |normal| self.shade(normal))
     }
 
     fn shade(&self, normal: crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError> {
