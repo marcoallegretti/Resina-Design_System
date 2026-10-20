@@ -18,7 +18,7 @@ does. They do not require a literal physics simulation.
 | --- | --- | --- |
 | Cast | Stable structure and persistent content; calm edges and restrained relief. | [Role assignments](../spec/05-materials.md), [opaque pigment](../spec/29-opaque-pigment.md) and [surface IR](../spec/36-opaque-surface-ir.md) provide a static dimensional representation. [Material scenes](../conformance/scenes/README.md) exercise opaque rest and focus. |
 | Frost | Pigmented, diffusive chrome that separates content from its surroundings. | [Fallback](../spec/31-fallback.md) and [readability](../spec/26-frost-surface-readability.md) preserve the family when opaque. The same scenes prove its opaque representation, not rendered backdrop diffusion. [Diffusive paint](https://github.com/marcoallegretti/Resina-Design_System/issues/130) remains a separate contract. |
-| Elastomer | Tactile controls, compression and prompt recovery. | Static pigment and geometry are exercised by the material scenes; [Command motion](../spec/45-command-motion.md) and [Toggle motion](../spec/57-toggle-part-motion.md) define sampled channels. They do not provide calibrated deformation. [Calibration](https://github.com/marcoallegretti/Resina-Design_System/issues/133) and [deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) have distinct ownership. |
+| Elastomer | Tactile controls, compression and prompt recovery. | Static pigment and geometry are exercised by the material scenes; [Command motion](../spec/45-command-motion.md) and [Toggle motion](../spec/57-toggle-part-motion.md) define sampled channels. They do not provide calibrated deformation. The candidate [response calibration](../spec/80-material-response-calibration.md) supplies authored body, depth and travel dynamics; [deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) has distinct ownership. |
 | Gel | Viscous, expressive transient feedback over stable structure. | [Role assignment](../spec/05-materials.md) limits Gel to transient surfaces and feedback. Its static catalog specimen is not a persistent control or evidence of liquid motion. [Emergence and deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) require explicit contracts. |
 
 Components request semantic material roles; themes assign families. Family,
@@ -49,8 +49,11 @@ floating, overlay and modal relationships. The current
 [surface IR](../spec/36-opaque-surface-ir.md) realizes nonnegative side-plane
 extrusion and guarded edge/highlight bands with a uniform content region. It does
 not define bevel relief, a concave well or an independent physical shadow model.
-The [relief proposal](https://github.com/marcoallegretti/Resina-Design_System/issues/128)
-owns those distinctions. Do not treat negative extrusion as a recess or a shadow
+The candidate [continuous outlines](../spec/81-surface-outline.md),
+[bounded surface relief](../spec/82-surface-relief.md),
+[opaque relief face paint](../spec/83-opaque-relief-paint.md) and
+[outline focus geometry](../spec/84-outline-focus-geometry.md) own flat, convex
+and recessed relief separately from elevation and shadow. Do not treat negative extrusion as a recess or a shadow
 as the meaning of elevation.
 
 Depth and light should clarify containment and interaction without competing
@@ -169,11 +172,11 @@ preflight alone does not prove readability over a rendered material or backdrop.
 | Appearance channel | Implemented boundary and evidence | Remaining contract or acceptance work |
 | --- | --- | --- |
 | Material and treatment | [Families](../spec/05-materials.md), [role vectors](../conformance/materials/role-assignment-vectors.json), [treatment stacks](../spec/06-optics.md) | [Frost paint](https://github.com/marcoallegretti/Resina-Design_System/issues/130), [optical realization](https://github.com/marcoallegretti/Resina-Design_System/issues/131) |
-| Geometry and depth | [Opaque IR](../spec/36-opaque-surface-ir.md), [surface vectors](../conformance/ir/opaque-surface-cases.json) | [Dimensional relief](https://github.com/marcoallegretti/Resina-Design_System/issues/128) |
+| Geometry and depth | [Opaque IR](../spec/36-opaque-surface-ir.md), [surface vectors](../conformance/ir/opaque-surface-cases.json), candidate [outlines](../spec/81-surface-outline.md) and [relief](../spec/82-surface-relief.md) with [face paint](../spec/83-opaque-relief-paint.md) and [focus geometry](../spec/84-outline-focus-geometry.md) | Acceptance of the candidate outline and relief contracts in [material identity](https://github.com/marcoallegretti/Resina-Design_System/issues/125) |
 | Light and pigment | [Key light](../spec/34-key-light.md), [light vectors](../conformance/lighting/key-light-vectors.json), [authored themes](../spec/23-authored-themes.md) | [Material light response](https://github.com/marcoallegretti/Resina-Design_System/issues/129), [environmental influence](https://github.com/marcoallegretti/Resina-Design_System/issues/138) |
-| Motion | [Trajectories](../spec/44-spring-trajectories.md), [trajectory cases](../conformance/motion/spring-trajectory-cases.json), sampled component paint | [Calibration](https://github.com/marcoallegretti/Resina-Design_System/issues/133), [bounded deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) |
+| Motion | [Trajectories](../spec/44-spring-trajectories.md), [trajectory cases](../conformance/motion/spring-trajectory-cases.json), sampled component paint, candidate [response calibration](../spec/80-material-response-calibration.md) | [Bounded deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) |
 | Anatomy, layout and hierarchy | [Role bindings](../spec/78-component-anatomy.md), measured labels and checked snapshots | [Profiles](https://github.com/marcoallegretti/Resina-Design_System/issues/134), [icons](https://github.com/marcoallegretti/Resina-Design_System/issues/135), distinct selection components |
-| Visual proof and presentation | [Shared scenes](../conformance/scenes/README.md), [raster evidence](../conformance/raster/README.md), [native static Material Board](../lab/guido/README.md) | [Visual acceptance suite](https://github.com/marcoallegretti/Resina-Design_System/issues/127), [interactive UI Kit](https://github.com/marcoallegretti/Resina-Design_System/issues/141) |
+| Visual proof and presentation | [Shared scenes](../conformance/scenes/README.md), [raster evidence](../conformance/raster/README.md), [native static Material Board](../lab/guido/README.md), [visual acceptance evidence](../conformance/scenes/visual-acceptance.md) | [Interactive UI Kit](https://github.com/marcoallegretti/Resina-Design_System/issues/141) |
 
 The static material catalog compares four families in Light/Dark and opaque
 rest/focus. Its scene checker verifies resolved meaning, geometry, contrast and

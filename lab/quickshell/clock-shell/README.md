@@ -196,19 +196,25 @@ the portal does not provide a listed key. It runs at the output scale given by
   "quickshell application frame Show clock button Open the clock surface.".
 
 With Quickshell 0.3.2 (revision 4f508be), Qt 6.11.2, xdg-desktop-portal 1.22.1
-and xdg-desktop-portal-gnome 50.0:
+and xdg-desktop-portal-gnome 50.0, at revision 4cb60fe:
 
-- all cases pass with the platform-selected theme in headless Sway 1.12, with
-  `grim` composition checks at output scales 1 and 2 on a 1024×600 output, 1.25
-  on a 1280×720 output and 1.5 on a 1920×1080 output, and, at revision
-  9abb974, in nested niri 26.04 at scales 1 and 2;
-- in headless Sway 1.12 the live changes from 1 to 2 and 2 to 1 on a 1024×600
-  output, 2 to 1.25 and 1.25 to 2 on a 1280×720 output and 1.25 to 1.5 on a
-  1920×1080 output pass, including the `grim` checks after the change. The
-  `grim` checks compare, within one 8-bit step, only points where a flat body or
-  backdrop colour is expected. No compared point lies on a rounded corner, an
-  edge or highlight band or a Command's own paint, so the composited arcs and
-  edges are not checked, and complete captures are not compared;
+- all cases pass with the platform-selected theme in headless Sway 1.12 at
+  output scales 1 and 2 on a 1024×600 output and in the live change from 1.25
+  to 2 on a 1280×720 output, including the `grim` composition checks, and in
+  nested niri 26.04 at scale 1, including the native focus-event cases;
+- the fixed dark theme passes in headless Sway 1.12 at output scales 1 and 2
+  and in the live change from 1.25 to 2;
+- `--screen-reader` passes with Orca 50.3 in nested niri 26.04 at scale 1;
+- CI ran the check at 4cb60fe in headless Sway at output scale 1 and in the
+  live changes from 1.25 to 2 and from 2 to 1.25;
+- the 1.5 output on a 1920×1080 output, the live changes from 1 to 2, from 2
+  to 1 and from 1.25 to 1.5, and nested niri at scale 2 passed at earlier
+  revisions and were not repeated at 4cb60fe;
+- CI does not run the clock shell check in niri or with `--screen-reader`;
+- the `grim` checks compare, within one 8-bit step, only points where a flat
+  body or backdrop colour is expected. No compared point lies on a rounded
+  corner, an edge or highlight band or a Command's own paint, so the composited
+  arcs and edges are not checked, and complete captures are not compared;
 - a 1024×600 output at scale 1.25 or 1.5 is 819.2 or 682.67 logical pixels
   wide. Its layer surfaces cover 819 or 682 logical pixels, so the last device
   column is not covered by the backdrop; the capture size check rejects such an
@@ -216,20 +222,13 @@ and xdg-desktop-portal-gnome 50.0:
 - with the software renderer, a frame at scale 2 lasted about as long as the
   spring takes to settle, so a held "Show clock" published one or two unsettled
   frames before settling, against three at scale 1;
-- the fixed dark theme passes in headless Sway at output scale 1;
-- with `--test-settings --require reduced-motion contrast color-scheme`, all
-  cases pass in headless Sway at output scale 1. With `reduced-motion` removed
+- with `--test-settings --require reduced-motion contrast color-scheme`, at the
+  revision that added the test backend (#264), all cases pass in headless Sway
+  at output scale 1. With `reduced-motion` removed
   from the test backend, the check fails on the missing required key, and
   without `--require` the case is a `SKIP`. With the runtime element changed to
   ignore `SettingChanged` for `reduced-motion`, the reduced-motion case fails
-  because the change never reaches the shell environment;
-- the native focus-event cases have been run at output scale 1, in headless Sway
-  with the platform-selected theme and, at revision 9abb974, in nested niri
-  26.04;
-- `--screen-reader` passed with Orca 50.3 in nested niri 26.04 locally at
-  revision 9abb974. The shell and its check have changed since, and neither the
-  niri runs nor the `--screen-reader` run have been repeated; CI does not run
-  the clock shell check in niri or with `--screen-reader`.
+  because the change never reaches the shell environment.
 
 ## Boundaries
 

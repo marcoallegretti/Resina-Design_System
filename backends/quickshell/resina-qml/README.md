@@ -404,7 +404,7 @@ action through the Rust adapter. This does not make Resina own a toolkit
 distribution. Unmodified Quickshell 0.3.2 removes the separate 0.3.1
 accessibility-bootstrap defect; the remaining Switch-role limitation comes from
 the stock Qt 6.11.2 AT-SPI build, not Quickshell.
-[Released-Quickshell Toggle qualification](https://github.com/marcoallegretti/Resina-Design_System/issues/186) accepts the CheckBox role on
+The [decision on #186](https://github.com/marcoallegretti/Resina-Design_System/issues/186) accepts the CheckBox role on
 stock Qt as a Qt-owned limitation.
 
 The Toggle's optional explicit `motionChannels` profile connects checked travel

@@ -542,7 +542,9 @@ The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
 in released Quickshell 0.3.2 and checks its publications against the reference
 resolver, and composited pixels at points where a flat body or backdrop colour
 is expected, at output scales 1, 1.25, 1.5 and 2,
-and after live output-scale changes between them. Hardware renderers and
+and after live output-scale changes between them. At revision 4cb60fe it ran at
+scales 1 and 2 and with live changes between 1.25 and 2; scale 1.5 and the
+other live changes passed at earlier revisions. Hardware renderers and
 enhanced Frost or Gel treatments beyond their opaque representation are not
 covered.
 
@@ -1464,9 +1466,11 @@ socket) while the shell runs, and requires:
 
 CI runs the check in headless Sway at output scale 1 on a 1024×600 output, and
 at 1.25 and 2 on a 1280×720 output with live changes from 1.25 to 2 and from 2
-to 1.25. With Quickshell 0.3.2 and Qt 6.11.2 it also passes in headless Sway
-1.12 at output scale 1.5, and with live changes from 1 to 2, 2 to 1 and 1.25 to
-1.5.
+to 1.25. With Quickshell 0.3.2 and Qt 6.11.2, at revision 4cb60fe, it passes
+in headless Sway 1.12 at output scale 1 and with live changes from 1.25 to 2 and
+2 to 1.25, and in nested niri 26.04 at scale 1. Output scale 1.5 and live
+changes from 1 to 2, 2 to 1 and 1.25 to 1.5 passed in headless Sway 1.12 at
+earlier revisions and were not repeated at 4cb60fe.
 
 The Command requests keep the authored environment scale of
 `conformance/headless/valid-request.json` at every output scale, so a live
@@ -1534,8 +1538,9 @@ than 1/30 s. The target is a median
 `preparationDuration` of at most 8 ms and a median published interval of at most
 17 ms. The target is reported but not enforced. CI runs the check at output
 scales 1 and 2 with `--floor report --require-gap` and keeps each `report.json`
-with every measured frame. Its shared runners measured a median interval of 41.4 ms at
-scale 1 and 50.0 ms at scale 2, with median preparation of 9.1 ms and 17.8 ms.
+with every measured frame. Shared runner timing varies between runs; at
+revision 4cb60fe the median interval was 67.9 ms at scale 1 and 84.8 ms at
+scale 2, with median preparation of 13.0 ms and 28.6 ms.
 Most of each interval there is asynchronous decoding and software rendering, so
 runner timing does not qualify the floor. The floor is qualified by running the
 check without `--floor report` on the qualifying machine.
@@ -1550,18 +1555,21 @@ used the path the bound protects. `--require-gap` makes that a failure. CI
 requires it, so a runner that stops exercising the path fails rather than
 leaving the bound unchecked.
 
-Measured locally in headless Sway 1.12 with the pixman renderer, Quickshell 0.3.2
-and the Qt 6.11.2 software backend:
+Measured locally at revision 4cb60fe in headless Sway 1.12 with the pixman
+renderer on a 1024×600 output, Quickshell 0.3.2 and the Qt 6.11.2 software
+backend, with the floor enforced:
 
 | Release module, scale | Median interval | Median preparation | Publication gap (75th percentile) |
 | --- | ---: | ---: | ---: |
-| 1 | 15.7–16.0 ms | 10.4–11.4 ms | 0.60 ms, not evaluated in one run |
-| 2 | 21.9–23.1 ms | 17.8–18.8 ms | 0.40 ms |
+| 1 | 15.8 ms | 9.3–9.6 ms | not evaluated |
+| 2 | 19.6–22.0 ms | 15.5–17.6 ms | 0.58–0.68 ms |
 
-These are three runs at each scale. At scale 1, 15, 69 and 56 frames had a
-predecessor that spanned a tick. With the call that resumes a due frame after
-publication removed, the publication gap was 12.27 ms at scale 1 and 11.49 ms
-at scale 2, failing the check, and the scale 2 median interval was 31.9 ms.
+These are three runs at each scale, and the floor is met in each. At scale 1,
+only 11, 18 and 12 frames had a predecessor that spanned a tick, fewer than the
+20 the gap requires. At an earlier revision, with the call that resumes a due
+frame after publication removed, the publication gap was 12.27 ms at scale 1
+and 11.49 ms at scale 2, failing the check, and the scale 2 median interval was
+31.9 ms.
 
 ### Integrated sampled command frames
 
@@ -1684,10 +1692,10 @@ samples were inspected. The
 [hosted native checks](https://github.com/marcoallegretti/Resina-Design_System/actions/runs/38121936167)
 also passed. These results apply to the standalone Qt host; GUIdo integration
 requires its own runtime verification. Released Quickshell Command accessibility
-is verified by the ten AT-SPI cases of
-[Released Quickshell Command accessibility](#released-quickshell-command-accessibility).
-Material calibration and screen-reader presentation outside local runs remain
-unverified.
+is verified by the thirteen AT-SPI cases of
+[Released Quickshell Command accessibility](#released-quickshell-command-accessibility),
+which also covers Command screen-reader presentation. Material calibration
+remains unverified here.
 
 ## Integrated static Toggle control
 
