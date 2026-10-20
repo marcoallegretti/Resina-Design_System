@@ -66,6 +66,14 @@ impl MaterialReliefPaint {
         self.face.sampler()
     }
 
+    pub(crate) fn sampler_keeping<'a>(&'a self, shared: Option<Shared<'a>>) -> FaceSampler<'a> {
+        self.face.sampler_keeping(shared)
+    }
+
+    pub(crate) fn keeping<'a>(&self, reuse: &'a ReliefReuse) -> FaceKeeping<'a> {
+        reuse.keeping(&self.face)
+    }
+
     pub(crate) fn face_color_using(
         &self,
         point: PhysicalVector,

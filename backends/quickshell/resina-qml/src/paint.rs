@@ -3,7 +3,9 @@ use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{
     PreparedViewport, RasterError, RasterImage, prepare_viewport, validate_viewport,
 };
-use resina_resolver::{FocusIndicatorIr, LitControlPaintIr, MaterialReliefPaint, SurfacePaintIr};
+use resina_resolver::{
+    FocusIndicatorIr, LitControlPaintIr, MaterialReliefPaint, ReliefReuse, SurfacePaintIr,
+};
 use std::{error::Error, fmt, fmt::Write};
 
 #[derive(Debug)]
@@ -212,16 +214,23 @@ pub fn render_surface_paint(
     render_image(prepared, device_scale, image)
 }
 
-/// Samples after parent placement; emitted paint origins already include that placement.
+/// Samples after parent placement; emitted paint origins already include that placement. Relief
+/// terms `reuse` keeps from earlier renders of the same face, such as motion frames, are reused.
 pub fn render_lit_control_paint(
     ir: &LitControlPaintIr,
     placement: PhysicalVector,
     device_scale: f64,
     samples_per_axis: u8,
+    reuse: &ReliefReuse,
 ) -> Result<String, PaintQmlError> {
     let prepared = prepare_lit_control_paint(ir, placement, device_scale, samples_per_axis)?;
-    let image = resina_raster::render_lit_control_paint(ir, prepared.viewport(), samples_per_axis)
-        .map_err(PaintQmlError::Raster)?;
+    let image = resina_raster::render_lit_control_paint_reusing(
+        ir,
+        prepared.viewport(),
+        samples_per_axis,
+        reuse,
+    )
+    .map_err(PaintQmlError::Raster)?;
     render_image(prepared, device_scale, image)
 }
 

@@ -541,7 +541,8 @@ fn lit_shortcuts_and_samplers_match_point_sampling() {
 }
 
 #[test]
-fn lit_motion_frames_match_point_sampling() {
+fn lit_reuse_across_motion_frames_matches_point_sampling() {
+    let reuse = ReliefReuse::default();
     let mut regions = [0; 4];
     let mut compared = 0_usize;
     for (size, scale) in [
@@ -584,9 +585,10 @@ fn lit_motion_frames_match_point_sampling() {
                 .unwrap();
                 for workers in [1, 4] {
                     REGIONS.with(|counts| counts.set([0; 4]));
-                    let actual =
-                        with_workers(workers, || render_lit_control_paint(paint, viewport, 4))
-                            .unwrap();
+                    let actual = with_workers(workers, || {
+                        render_lit_control_paint_reusing(paint, viewport, 4, &reuse)
+                    })
+                    .unwrap();
                     assert!(
                         actual.rgba() == expected.rgba(),
                         "{size:?} {states} at {time} s and scale {scale} with {workers} workers"

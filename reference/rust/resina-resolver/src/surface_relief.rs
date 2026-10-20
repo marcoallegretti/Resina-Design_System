@@ -1,4 +1,8 @@
-use crate::{OutlineCurvature, SurfaceOutline, resolve_surface_outline_source};
+use crate::{
+    OutlineCurvature, SurfaceOutline,
+    relief_paint::{KeptRow, KeptSamples, Shared},
+    resolve_surface_outline_source,
+};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
@@ -6,6 +10,7 @@ use std::{
     collections::HashMap,
     fmt,
     hash::{BuildHasherDefault, Hasher},
+    sync::PoisonError,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
@@ -380,17 +385,26 @@ impl SurfaceRelief {
         .map(Some)
     }
 
-    pub(crate) fn sampler(&self) -> ReliefSampler<'_> {
+    /// A sampler that reuses the axes and corner samples `shared` keeps for this relief, and adds
+    /// the ones it evaluates.
+    pub(crate) fn sampler_keeping<'a>(&'a self, shared: Option<Shared<'a>>) -> ReliefSampler<'a> {
         let size = self.outline.size();
+        let kept = shared.map(|shared| &shared.kept.relief_axes);
         ReliefSampler {
             relief: self,
+            shared,
+            kept_rows: Recent::default(),
+            added: Vec::new(),
             neutral: (self.profile.kind != ReliefKind::Flat).then(|| {
                 [
                     self.axis(size.width / 2.0, Axis::X),
                     self.axis(size.height / 2.0, Axis::Y),
                 ]
             }),
-            axes: Default::default(),
+            axes: [
+                Recalled::new(kept.map(|axes| &axes[0])),
+                Recalled::new(kept.map(|axes| &axes[1])),
+            ],
             corner_gates: Default::default(),
             lines: Default::default(),
         }
@@ -533,7 +547,7 @@ enum Axis {
 type Gate = (SampleNumber, SampleNumber, SampleNumber);
 
 #[derive(Clone, Copy)]
-struct ReliefAxis {
+pub(crate) struct ReliefAxis {
     gates: [Gate; 2],
     corners: [SampleNumber; 4],
 }
@@ -559,8 +573,11 @@ const RECENT: usize = 8;
 /// it is evaluated once per such coordinate.
 pub(crate) struct ReliefSampler<'a> {
     relief: &'a SurfaceRelief,
+    shared: Option<Shared<'a>>,
+    kept_rows: Recent<(u64, Option<&'a KeptRow>)>,
+    added: Vec<([u64; 2], ReliefSample)>,
     neutral: Option<[ReliefAxis; 2]>,
-    axes: [Recalled<ReliefAxis>; 2],
+    axes: [Recalled<'a, ReliefAxis>; 2],
     corner_gates: [Recent<(SampleNumber, SampleNumber, Gate)>; 4],
     lines: [CoordinateMap<Result<ReliefSample, SurfaceReliefError>>; 2],
 }
@@ -589,23 +606,54 @@ impl ReliefSampler<'_> {
         } else if y.identical(&neutral[1]) {
             (0, point.x)
         } else {
+            let key = [point.x.to_bits(), point.y.to_bits()];
+            if let Some(shared) = self.shared {
+                let samples: &KeptSamples = &shared.kept.samples;
+                let (_, row) = self.kept_rows.recall(
+                    |(y, _)| *y == key[1],
+                    || (key[1], samples.get(&key[1]).map(Vec::as_slice)),
+                );
+                if let Some(row) = row
+                    && let Ok(found) = row.binary_search_by_key(&key[0], |(x, _)| *x)
+                {
+                    return Ok(Some(row[found].1));
+                }
+            }
             let gates = &mut self.corner_gates;
-            return relief
-                .relief(x, y, |corner, u, v| {
-                    gates[corner]
-                        .recall(
-                            |(cu, cv, _)| cu.identical(u) && cv.identical(v),
-                            || (u, v, relief.corner_gate(corner, u, v)),
-                        )
-                        .2
-                })
-                .map(Some);
+            let sample = relief.relief(x, y, |corner, u, v| {
+                gates[corner]
+                    .recall(
+                        |(cu, cv, _)| cu.identical(u) && cv.identical(v),
+                        || (u, v, relief.corner_gate(corner, u, v)),
+                    )
+                    .2
+            })?;
+            if self.shared.is_some() {
+                self.added.push((key, sample));
+            }
+            return Ok(Some(sample));
         };
         self.lines[line]
             .entry(coordinate.to_bits())
             .or_insert_with(|| relief.relief(x, y, |corner, u, v| relief.corner_gate(corner, u, v)))
             .clone()
             .map(Some)
+    }
+}
+
+impl Drop for ReliefSampler<'_> {
+    fn drop(&mut self) {
+        let [x, y] = &mut self.axes;
+        let axes = [x.take_added(), y.take_added()];
+        if let Some(shared) = self.shared
+            && (!self.added.is_empty() || axes.iter().any(|added| !added.is_empty()))
+        {
+            let mut added = shared.added.lock().unwrap_or_else(PoisonError::into_inner);
+            added.samples.append(&mut self.added);
+            for (kept, mut axis) in added.relief_axes.iter_mut().zip(axes) {
+                kept.append(&mut axis);
+            }
+        }
     }
 }
 
@@ -636,40 +684,66 @@ impl Hasher for CoordinateHasher {
     }
 }
 
-/// Evaluations of a function of one coordinate, keyed by the coordinate's bits. The rows of a
-/// raster revisit the same sample coordinates, so every evaluation is kept, behind a window of the
-/// most recent ones that serves the coordinates of the current pixel.
-pub(crate) struct Recalled<T> {
-    recent: Recent<(u64, usize)>,
+/// Evaluations of a function of one coordinate, keyed by the coordinate's bits: those kept from
+/// earlier renders, then those of this sampler. The rows of a raster revisit the same sample
+/// coordinates, so every evaluation is kept, behind a window of the most recent ones that serves
+/// the coordinates of the current pixel.
+pub(crate) struct Recalled<'a, T> {
+    recent: Recent<(u64, Slot<'a, T>)>,
+    kept: Option<&'a CoordinateMap<T>>,
     slots: CoordinateMap<usize>,
-    values: Vec<T>,
+    values: Vec<(u64, T)>,
 }
 
-impl<T> Default for Recalled<T> {
-    fn default() -> Self {
+enum Slot<'a, T> {
+    Kept(&'a T),
+    Evaluated(usize),
+}
+
+impl<T> Clone for Slot<'_, T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl<T> Copy for Slot<'_, T> {}
+
+impl<'a, T> Recalled<'a, T> {
+    pub(crate) fn new(kept: Option<&'a CoordinateMap<T>>) -> Self {
         Self {
             recent: Recent::default(),
+            kept,
             slots: CoordinateMap::default(),
             values: Vec::new(),
         }
     }
-}
 
-impl<T> Recalled<T> {
     pub(crate) fn get(&mut self, coordinate: f64, evaluate: impl FnOnce() -> T) -> &T {
         let key = coordinate.to_bits();
-        let (slots, values) = (&mut self.slots, &mut self.values);
+        let (kept, slots, values) = (self.kept, &mut self.slots, &mut self.values);
         let (_, slot) = self.recent.recall(
             |(bits, _)| *bits == key,
             || {
+                if let Some(value) = kept.and_then(|kept| kept.get(&key)) {
+                    return (key, Slot::Kept(value));
+                }
                 let slot = *slots.entry(key).or_insert_with(|| {
-                    values.push(evaluate());
+                    values.push((key, evaluate()));
                     values.len() - 1
                 });
-                (key, slot)
+                (key, Slot::Evaluated(slot))
             },
         );
-        &self.values[slot]
+        match slot {
+            Slot::Kept(value) => value,
+            Slot::Evaluated(slot) => &self.values[slot].1,
+        }
+    }
+
+    /// The evaluations this sampler added, which a render keeps.
+    pub(crate) fn take_added(&mut self) -> Vec<(u64, T)> {
+        self.recent = Recent::default();
+        self.slots.clear();
+        std::mem::take(&mut self.values)
     }
 }
 
@@ -1236,7 +1310,7 @@ mod tests {
                         PhysicalVector { x: size.0 / 2.0, y },
                     ]);
                 }
-                let mut sampler = relief.sampler();
+                let mut sampler = relief.sampler_keeping(None);
                 for point in points {
                     let expected = bits(unsplit_sample(&relief, point));
                     assert_eq!(bits(relief.sample(point)), expected, "{kind:?} {point:?}");

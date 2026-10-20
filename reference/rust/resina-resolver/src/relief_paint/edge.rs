@@ -1,6 +1,8 @@
+use super::Shared;
 use crate::{OutlineCurvature, SurfaceOutline, surface_relief::Recalled};
 use num_bigint::BigUint;
 use resina_model::PhysicalVector;
+use std::sync::PoisonError;
 
 #[derive(Clone, Copy)]
 struct Bounds(f64, f64);
@@ -45,7 +47,7 @@ pub(super) fn contains(outline: &SurfaceOutline, inset: f64, point: PhysicalVect
 }
 
 #[derive(Clone, Copy)]
-pub(super) struct EdgeAxis {
+pub(crate) struct EdgeAxis {
     outside: bool,
     uncertain: bool,
     ratios: [Option<Bounds>; 4],
@@ -117,15 +119,23 @@ fn decide(
 pub(super) struct EdgeSampler<'a> {
     outline: &'a SurfaceOutline,
     inset: f64,
-    axes: [Recalled<EdgeAxis>; 2],
+    shared: Option<Shared<'a>>,
+    axes: [Recalled<'a, EdgeAxis>; 2],
 }
 
 impl<'a> EdgeSampler<'a> {
-    pub(super) fn new(outline: &'a SurfaceOutline, inset: f64) -> Self {
+    /// A sampler that reuses the axes `shared` keeps for this outline and inset, and adds the ones
+    /// it evaluates.
+    pub(super) fn new(outline: &'a SurfaceOutline, inset: f64, shared: Option<Shared<'a>>) -> Self {
+        let kept = shared.map(|shared| &shared.kept.edge_axes);
         Self {
             outline,
             inset,
-            axes: Default::default(),
+            shared,
+            axes: [
+                Recalled::new(kept.map(|axes| &axes[0])),
+                Recalled::new(kept.map(|axes| &axes[1])),
+            ],
         }
     }
 
@@ -135,6 +145,21 @@ impl<'a> EdgeSampler<'a> {
         let x = x_axes.get(point.x, || axis(outline, inset, point.x, true));
         let y = y_axes.get(point.y, || axis(outline, inset, point.y, false));
         decide(outline, inset, point, x, y)
+    }
+}
+
+impl Drop for EdgeSampler<'_> {
+    fn drop(&mut self) {
+        let [x, y] = &mut self.axes;
+        let axes = [x.take_added(), y.take_added()];
+        if let Some(shared) = self.shared
+            && axes.iter().any(|added| !added.is_empty())
+        {
+            let mut added = shared.added.lock().unwrap_or_else(PoisonError::into_inner);
+            for (kept, mut axis) in added.edge_axes.iter_mut().zip(axes) {
+                kept.append(&mut axis);
+            }
+        }
     }
 }
 
@@ -323,7 +348,7 @@ mod tests {
                     }
                 }
             }
-            let mut sampler = EdgeSampler::new(&outline, inset);
+            let mut sampler = EdgeSampler::new(&outline, inset, None);
             for point in points {
                 let expected = unsplit_contains(&outline, inset, point);
                 assert_eq!(contains(&outline, inset, point), expected, "{point:?}");

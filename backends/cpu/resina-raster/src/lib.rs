@@ -2,8 +2,8 @@ use resina_color::{ColorConversionError, SrgbFallback, linear_srgb_to_srgb, srgb
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_resolver::{
     FocusIndicatorIr, LitControlBodyIr, LitControlPaintIr, LitControlPaintSampleError,
-    MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError, SurfacePaintError,
-    SurfacePaintIr,
+    MaterialReliefPaint, OpaqueSurfaceIr, ReliefPaint, ReliefPaintError, ReliefReuse,
+    SurfacePaintError, SurfacePaintIr,
 };
 use std::{
     collections::TryReserveError,
@@ -265,7 +265,13 @@ pub fn render_lit_body(
     viewport: Viewport,
     samples_per_axis: u8,
 ) -> Result<RasterImage, RasterError> {
-    render_lit(body, None, viewport, samples_per_axis)
+    render_lit(
+        body,
+        None,
+        viewport,
+        samples_per_axis,
+        &ReliefReuse::default(),
+    )
 }
 
 /// Realizes a lit control body and its separated focus ring.
@@ -274,7 +280,24 @@ pub fn render_lit_control_paint(
     viewport: Viewport,
     samples_per_axis: u8,
 ) -> Result<RasterImage, RasterError> {
-    render_lit(paint.body(), paint.focus(), viewport, samples_per_axis)
+    render_lit_control_paint_reusing(paint, viewport, samples_per_axis, &ReliefReuse::default())
+}
+
+/// [`render_lit_control_paint`] that reuses the relief samples `reuse` keeps from earlier renders
+/// of the same relief, such as the frames of a motion, and keeps the ones this render evaluates.
+pub fn render_lit_control_paint_reusing(
+    paint: &LitControlPaintIr,
+    viewport: Viewport,
+    samples_per_axis: u8,
+    reuse: &ReliefReuse,
+) -> Result<RasterImage, RasterError> {
+    render_lit(
+        paint.body(),
+        paint.focus(),
+        viewport,
+        samples_per_axis,
+        reuse,
+    )
 }
 
 fn render_lit(
@@ -282,6 +305,7 @@ fn render_lit(
     focus: Option<&FocusIndicatorIr>,
     viewport: Viewport,
     samples_per_axis: u8,
+    reuse: &ReliefReuse,
 ) -> Result<RasterImage, RasterError> {
     let face = body.face();
     let content = face.content_bounds();
@@ -309,6 +333,7 @@ fn render_lit(
         && uniform::placed_inside(plateau, body.geometry().edge_interior())
         && body.flat_face_over(plateau.min, plateau.max))
     .then_some(plateau);
+    let samplers = body.samplers(reuse);
     let ring_color = focus.map(|focus| focus.indicator().color());
     render_sampled(
         viewport,
@@ -353,7 +378,7 @@ fn render_lit(
             }
         },
         || {
-            let mut sampler = body.sampler();
+            let mut sampler = samplers.sampler();
             move |point| match sampler
                 .sample_paint(point)
                 .map_err(|error| RasterError::LitPaint(LitControlPaintSampleError::Body(error)))?

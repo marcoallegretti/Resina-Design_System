@@ -4,13 +4,16 @@ use crate::{
     resolve_edge_contrast_source, resolve_key_light, resolve_opaque_pigment_source,
     resolve_surface_outline_source, resolve_surface_relief,
     srgb_input::{SrgbInput, SrgbInputError},
-    surface_relief::ReliefSampler,
+    surface_relief::{CoordinateMap, ReliefAxis, ReliefSampler},
 };
 use resina_color::OpaqueSrgbRange;
 use resina_model::{KeyLight, PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{
+    fmt,
+    sync::{Arc, Mutex, PoisonError},
+};
 mod edge;
 mod material;
 mod uniform;
@@ -89,6 +92,150 @@ impl FaceTerms for FaceSampler<'_> {
 }
 
 const RECENT_SHADES: usize = 8;
+
+/// The most corner samples a [`ReliefReuse`] keeps, about 16 MiB.
+const MAX_KEPT_SAMPLES: usize = 1 << 18;
+
+/// Face terms kept between renders: relief and edge-interior axes and corner relief samples,
+/// keyed by the exact bits of the face's relief and edge width and of each coordinate. Motion
+/// frames sample the same face at the same points, and a kept term is exactly the one a new
+/// evaluation returns. The terms of a different face replace the kept ones.
+#[derive(Default)]
+pub struct ReliefReuse {
+    kept: Mutex<Option<Arc<KeptFace>>>,
+}
+
+#[derive(Clone, Default)]
+pub(crate) struct KeptFace {
+    identity: String,
+    pub(crate) relief_axes: [CoordinateMap<ReliefAxis>; 2],
+    pub(crate) edge_axes: [CoordinateMap<edge::EdgeAxis>; 2],
+    pub(crate) samples: KeptSamples,
+}
+
+/// Kept corner samples by the bits of their `y` coordinate, each row ordered by the bits of `x`.
+pub(crate) type KeptSamples = CoordinateMap<Vec<(u64, ReliefSample)>>;
+
+/// One row of [`KeptSamples`].
+pub(crate) type KeptRow = [(u64, ReliefSample)];
+
+/// The terms the samplers of one render evaluated beyond the kept ones.
+#[derive(Default)]
+pub(crate) struct FaceAdditions {
+    pub(crate) relief_axes: [Vec<(u64, ReliefAxis)>; 2],
+    pub(crate) edge_axes: [Vec<(u64, edge::EdgeAxis)>; 2],
+    pub(crate) samples: Vec<([u64; 2], ReliefSample)>,
+}
+
+/// What the samplers of one render share: the kept terms, and where they record their additions.
+#[derive(Clone, Copy)]
+pub(crate) struct Shared<'a> {
+    pub(crate) kept: &'a KeptFace,
+    pub(crate) added: &'a Mutex<FaceAdditions>,
+}
+
+/// One render's use of a [`ReliefReuse`], which keeps the terms its samplers added when it ends.
+pub(crate) struct FaceKeeping<'a> {
+    reuse: &'a ReliefReuse,
+    kept: Arc<KeptFace>,
+    added: Mutex<FaceAdditions>,
+}
+
+impl ReliefReuse {
+    fn keeping(&self, face: &ReliefPaint) -> FaceKeeping<'_> {
+        let identity = format!(
+            "{}|{:016x}",
+            serde_json::to_string(&face.surface).expect("a resolved relief serializes"),
+            face.edge_width.to_bits()
+        );
+        let kept = self
+            .kept
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .as_ref()
+            .filter(|kept| kept.identity == identity)
+            .map(Arc::clone)
+            .unwrap_or_else(|| {
+                Arc::new(KeptFace {
+                    identity,
+                    ..KeptFace::default()
+                })
+            });
+        FaceKeeping {
+            reuse: self,
+            kept,
+            added: Mutex::new(FaceAdditions::default()),
+        }
+    }
+}
+
+#[cfg(test)]
+impl ReliefReuse {
+    /// The kept face's identity and its numbers of corner samples, relief axes and edge axes.
+    pub(crate) fn kept_terms(&self) -> Option<(String, [usize; 3])> {
+        self.kept.lock().unwrap().as_ref().map(|kept| {
+            (
+                kept.identity.clone(),
+                [
+                    kept.samples.values().map(Vec::len).sum(),
+                    kept.relief_axes.iter().map(CoordinateMap::len).sum(),
+                    kept.edge_axes.iter().map(CoordinateMap::len).sum(),
+                ],
+            )
+        })
+    }
+}
+
+impl FaceKeeping<'_> {
+    pub(crate) fn shared(&self) -> Shared<'_> {
+        Shared {
+            kept: &self.kept,
+            added: &self.added,
+        }
+    }
+}
+
+impl Drop for FaceKeeping<'_> {
+    fn drop(&mut self) {
+        let added = std::mem::take(self.added.get_mut().unwrap_or_else(PoisonError::into_inner));
+        let empty = added.samples.is_empty()
+            && added.relief_axes.iter().all(Vec::is_empty)
+            && added.edge_axes.iter().all(Vec::is_empty);
+        let mut kept = self
+            .reuse
+            .kept
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner);
+        if empty
+            && kept
+                .as_ref()
+                .is_some_and(|kept| Arc::ptr_eq(kept, &self.kept))
+        {
+            return;
+        }
+        // Release the kept copy first, so that extending this render's terms does not clone them.
+        *kept = None;
+        let face = Arc::make_mut(&mut self.kept);
+        for (axes, added) in face.relief_axes.iter_mut().zip(added.relief_axes) {
+            axes.extend(added);
+        }
+        for (axes, added) in face.edge_axes.iter_mut().zip(added.edge_axes) {
+            axes.extend(added);
+        }
+        let mut count: usize = face.samples.values().map(Vec::len).sum();
+        for ([x, y], sample) in added.samples {
+            if count >= MAX_KEPT_SAMPLES {
+                break;
+            }
+            let row = face.samples.entry(y).or_default();
+            if let Err(index) = row.binary_search_by_key(&x, |(kept, _)| *kept) {
+                row.insert(index, (x, sample));
+                count += 1;
+            }
+        }
+        *kept = Some(Arc::clone(&self.kept));
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReliefPaintError(String);
@@ -397,9 +544,13 @@ impl ReliefPaint {
     }
 
     pub(crate) fn sampler(&self) -> FaceSampler<'_> {
+        self.sampler_keeping(None)
+    }
+
+    pub(crate) fn sampler_keeping<'a>(&'a self, shared: Option<Shared<'a>>) -> FaceSampler<'a> {
         FaceSampler {
-            edge: edge::EdgeSampler::new(self.surface.outline(), self.edge_width),
-            relief: self.surface.sampler(),
+            edge: edge::EdgeSampler::new(self.surface.outline(), self.edge_width, shared),
+            relief: self.surface.sampler_keeping(shared),
             shades: Vec::new(),
         }
     }

@@ -4,7 +4,7 @@ use crate::{
     SurfaceReliefProfile,
     material_light::{MaterialLightPolicy, ResolvedMaterialLight},
     opaque_paint::{contains, placed_contains},
-    relief_paint::{FaceSampler, FaceTerms},
+    relief_paint::{FaceKeeping, FaceSampler, FaceTerms, ReliefReuse},
     resolve_extruded_contour, resolve_inset_contour, resolve_key_light, resolve_opaque_pigment,
     resolve_relief_paint, resolve_surface_outline, resolve_surface_relief,
 };
@@ -390,6 +390,15 @@ impl LitControlBodyIr {
         }
     }
 
+    /// Samplers for one render of this body that reuse, and add to, the relief samples `reuse`
+    /// keeps. They are equal to [`sample_paint`](Self::sample_paint) at every point.
+    pub fn samplers<'a>(&'a self, reuse: &'a ReliefReuse) -> LitControlBodySamplers<'a> {
+        LitControlBodySamplers {
+            body: self,
+            keeping: self.face.keeping(reuse),
+        }
+    }
+
     fn sample_paint_using(
         &self,
         point: PhysicalVector,
@@ -426,6 +435,21 @@ impl LitControlBodyIr {
             Ok(Some(self.face.pigment().side().clone()))
         } else {
             Ok(Some(self.face.edge().color().clone()))
+        }
+    }
+}
+
+/// See [`LitControlBodyIr::samplers`]. Dropping it keeps the relief samples its samplers added.
+pub struct LitControlBodySamplers<'a> {
+    body: &'a LitControlBodyIr,
+    keeping: FaceKeeping<'a>,
+}
+
+impl LitControlBodySamplers<'_> {
+    pub fn sampler(&self) -> LitControlBodySampler<'_> {
+        LitControlBodySampler {
+            body: self.body,
+            face: self.body.face.sampler_keeping(Some(self.keeping.shared())),
         }
     }
 }
@@ -577,6 +601,64 @@ mod tests {
             depth,
         })
         .unwrap()
+    }
+
+    #[test]
+    fn reused_relief_terms_reproduce_point_paint_across_renders() {
+        let bits = |color: Option<SrgbFallback>| {
+            color.map(|color| {
+                (
+                    color.components().map(f64::to_bits),
+                    color.alpha().to_bits(),
+                )
+            })
+        };
+        let reuse = ReliefReuse::default();
+        let mut kept = Vec::new();
+        for (depth, radii) in [
+            (0.5, [20.0, 12.0, 16.0, 10.0]),
+            (1.5, [20.0, 12.0, 16.0, 10.0]),
+            (1.5, [24.0; 4]),
+            (0.5, [20.0, 12.0, 16.0, 10.0]),
+            (0.5, [20.0, 12.0, 16.0, 10.0]),
+        ] {
+            let body = body(depth, radii, "ltr");
+            let samplers = body.samplers(&reuse);
+            let mut sampler = samplers.sampler();
+            for iy in 0..200 {
+                for ix in 0..350 {
+                    let point = PhysicalVector {
+                        x: f64::from(ix) * 0.29 - 2.0 + 0.0137,
+                        y: f64::from(iy) * 0.29 - 2.0 + 0.0071,
+                    };
+                    assert_eq!(
+                        bits(sampler.sample_paint(point).unwrap()),
+                        bits(body.sample_paint(point).unwrap()),
+                        "{depth} {radii:?} {point:?}"
+                    );
+                }
+            }
+            drop(sampler);
+            drop(samplers);
+            kept.push(reuse.kept_terms().unwrap());
+        }
+        let [first, deeper, other, again, repeated] = kept.try_into().unwrap();
+        assert!(first.1.iter().all(|count| *count > 300), "{:?}", first.1);
+        // A deeper body has the same face, whose kept terms it extends where its deeper sweep
+        // reaches more of the edge band.
+        assert_eq!(deeper.0, first.0);
+        assert!(
+            deeper
+                .1
+                .iter()
+                .zip(first.1)
+                .all(|(deeper, first)| *deeper >= first)
+        );
+        // Another face replaces the kept terms, which are evaluated again when the first returns
+        // and are complete once it has rendered.
+        assert_ne!(other.0, first.0);
+        assert_eq!(again, first);
+        assert_eq!(repeated, again);
     }
 
     #[test]
