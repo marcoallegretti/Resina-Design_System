@@ -1,8 +1,9 @@
 import unittest
 
-from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, edge_points, platform_expectations,
-                                          tree_mismatch, verify_capture_size, verify_command_scale, verify_device_scale,
-                                          verify_platform_preferences, verify_publication_scales)
+from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, Shell, closed, edge_points, opened,
+                                          platform_expectations, tree_mismatch, verify_capture_size,
+                                          verify_command_scale, verify_device_scale, verify_platform_preferences,
+                                          verify_publication_scales)
 
 AUTHORED = {"reducedMotion": False, "reducedTransparency": False, "highContrast": False}
 FULL = {"reducedMotion": True, "highContrast": False, "colorScheme": "light"}
@@ -66,6 +67,57 @@ class ClockShellScaleTests(unittest.TestCase):
         for runs, final, message in cases:
             with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
                 verify_publication_scales(runs, 1.25, final)
+
+
+def control(enabled, focused):
+    return {"state": {"enabled": enabled, "focused": focused, "hold": None}, "hovered": False}
+
+
+def open_shell(**changes):
+    observed = {"generation": "b", "open": True, "clock": {"body": {}}, "showClock": control(False, False),
+                "close": control(True, True), "focus": {"showClock": False, "close": True},
+                "targets": {"showClock": None, "close": {"x": 60, "y": 200}},
+                "deviceScale": {"showClock": 2, "close": 2},
+                "errors": {"backdrop": "", "bar": "", "clock": "", "showClock": "", "close": ""}}
+    observed.update(changes)
+    return observed
+
+
+class Running:
+    def poll(self):
+        return None
+
+
+class ClockShellStateTests(unittest.TestCase):
+    def test_an_open_surface_needs_every_opened_clause(self):
+        self.assertTrue(opened(open_shell()))
+        self.assertFalse(closed(open_shell()))
+        for changes in ({"open": False}, {"clock": None}, {"close": None}, {"showClock": None},
+                        {"focus": {"showClock": False, "close": False}}, {"showClock": control(True, False)}):
+            with self.subTest(changes=changes):
+                self.assertFalse(opened(open_shell(**changes)))
+
+    def test_an_unreached_state_names_the_unmet_clauses_and_the_controls(self):
+        shell = Shell.__new__(Shell)
+        shell.process = Running()
+        shell.observe = lambda: open_shell(focus={"showClock": False, "close": False},
+                                           close=control(True, False))
+        with self.assertRaises(ValueError) as raised:
+            shell.until(opened, "soft reload keeps the clock surface open", timeout=.05)
+        message = str(raised.exception)
+        self.assertIn("soft reload keeps the clock surface open was not reached:", message)
+        self.assertIn('"opened": ["Close has active focus"]', message)
+        self.assertIn('"activeFocus": {"showClock": false, "close": false}', message)
+        self.assertIn('"close": {"enabled": true, "focused": false, "hold": null, "hovered": false, '
+                      '"target": {"x": 60, "y": 200}, "deviceScale": 2}', message)
+        self.assertIn('"generation": "b"', message)
+        self.assertIn('"errors": {}', message)
+
+    def test_an_unobserved_shell_is_reported(self):
+        shell = Shell.__new__(Shell)
+        shell.process = Running()
+        with self.assertRaisesRegex(ValueError, "Show clock ready was not reached: the shell was never observed"):
+            shell.until(closed, "Show clock ready", timeout=0)
 
 
 class ClockShellPlatformTests(unittest.TestCase):
