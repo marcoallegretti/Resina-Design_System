@@ -179,7 +179,11 @@ read-only QML alias avoids reentrant binding evaluation when a notification
 callback withdraws the target. Paint preparation remains consumer-owned.
 
 Only an unmodified primary mouse press inside the complete target starts a
-gesture. Pointer activation does not request or require keyboard focus. Rust
+gesture. Pointer activation does not request or require keyboard focus or an
+active window: Qt's Wayland backend
+[activates a window](https://github.com/qt/qtbase/blob/v6.11.2/src/plugins/platforms/wayland/qwaylanddisplay.cpp#L980)
+only after a later display roundtrip, so the press that gives a surface keyboard
+focus arrives while its window is still inactive. Rust
 commits before the adapter acquires Qt's actual exclusive grab for the delivered
 event point. Native device-object identity plus event-point identity form the
 opaque pointer ID for that live device; different devices cannot release each
@@ -198,8 +202,8 @@ for each controller; other consumers use the semantic invocation path.
 Acceptance connects the stable target, native exclusive capture, Rust activation
 and checked hover/pressed/disabled body and glyph drawing. The Rust bridge
 exercises all shared exact membership vectors. Qt fixtures independently check mapped membership,
-actual grab state per delivered device, outside/re-entry/release, focus
-independence, competing keyboard/device gestures, modified termination, native
+actual grab state per delivered device, outside/re-entry/release, focus and
+window-activation independence, competing keyboard/device gestures, modified termination, native
 ancestor clipping, mapping invalidation, hide/disable, product revocation,
 semantic supersession, capture loss and actual armed QObject destruction. Hover
 checks include independent devices, provisional enter identity, disabled motion,

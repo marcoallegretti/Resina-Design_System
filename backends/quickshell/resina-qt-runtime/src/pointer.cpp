@@ -415,7 +415,7 @@ void CommandPointerItem::captureRequested(QString id, bool acquire) {
 void CommandPointerItem::mousePressEvent(QMouseEvent* event) {
     event->ignore();
     if (!acceptsNewGestures_ || event->button() != Qt::LeftButton || event->modifiers() != Qt::NoModifier
-        || !window() || !window()->isActive() || !contains(event->position())) return;
+        || !window() || !contains(event->position())) return;
     const auto previous = activationState(controller_).value("hold");
     if (!previous.isNull()) return;
     pointerId_ = pointerId(event);
