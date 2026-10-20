@@ -1,9 +1,11 @@
 import copy
 import json
+import math
 import unittest
 
 from jsonschema import ValidationError
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
+from lit_body_arithmetic import ir_uniform_contains_box
 
 
 class NativeSnapshotEvidenceTests(unittest.TestCase):
@@ -78,6 +80,22 @@ class NativeSnapshotEvidenceTests(unittest.TestCase):
             snapshot["label"]["labelBounds"][member] = value
             with self.subTest(member=member), self.assertRaisesRegex(ValueError, "uniform lit body face"):
                 verify_snapshot(snapshot, request, states)
+
+    def test_label_box_right_and_bottom_are_exact_sums(self):
+        body = json.loads((ROOT / "conformance/ir/command-paint-ir.json").read_text())["paint"]["body"]
+        surface = body["face"]["surface"]
+        surface["outline"]["size"] = {"width": 96, "height": 96}
+        for corner in surface["outline"]["corners"].values():
+            corner.update(x=0, y=0)
+        surface["profile"].update(kind="convex", amplitude=0.75, shoulderWidth=1.5)
+        body["face"]["edgeWidth"] = 1
+        past = math.nextafter(1.5, 2)
+        inside = 93 - 2.0 ** -46
+        for x, y, width, height, contained in ((past, 1.5, 93, 93, False), (1.5, past, 93, 93, False),
+                                               (1.5, 1.5, 93, 93, True), (past, past, inside, inside, True)):
+            box = {"x": x, "y": y, "width": width, "height": height}
+            with self.subTest(box=box):
+                self.assertEqual(ir_uniform_contains_box(body, box), contained)
 
     def test_partial_stale_or_inconsistent_channels_fail(self):
         for change in ("missing", "extra", "semantic", "body", "direction", "focus", "target", "available", "occupied"):

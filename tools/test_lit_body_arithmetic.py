@@ -360,6 +360,18 @@ class LitContainmentTests(unittest.TestCase):
         self.assertFalse(corner.uniform_contains((Fraction(41, 4), Fraction(41, 4))))
         self.assertTrue(corner.uniform_contains((Fraction(43, 4), Fraction(43, 4))))
 
+    def test_right_and_bottom_vertices_are_exact_sums(self):
+        relief = {"kind": "convex", "bodyThickness": 2, "amplitude": 0.75, "shoulderWidth": 1.5}
+        body = Body(lit_body_source(SOURCE, {"width": 96, "height": 96}, 0, relief, 1, "ltr"))
+        past = math.nextafter(1.5, 2)
+        self.assertEqual(past + 93, 94.5)
+        inside = 93 - 2.0 ** -46
+        for x, y, width, height, contained in ((past, 1.5, 93, 93, False), (1.5, past, 93, 93, False),
+                                               (1.5, 1.5, 93, 93, True), (past, past, inside, inside, True)):
+            box = {"x": x, "y": y, "width": width, "height": height}
+            with self.subTest(box=box):
+                self.assertEqual(body.uniform_contains_box(box), contained)
+
     def test_plateau_law_agrees_with_the_relief_gates(self):
         margin = 1e-6
         checked = {True: 0, False: 0}

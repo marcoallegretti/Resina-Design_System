@@ -142,3 +142,65 @@ impl Face {
         true
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{SurfaceReliefProfile, resolve_surface_outline, resolve_surface_relief};
+    use resina_environment::LayoutDirection;
+    use resina_model::{CornerRadius, LogicalCornerRadii, SurfaceSize};
+
+    #[test]
+    fn right_and_bottom_vertices_are_exact_sums() {
+        let square = CornerRadius { x: 0.0, y: 0.0 };
+        let outline = resolve_surface_outline(
+            SurfaceSize {
+                width: 96.0,
+                height: 96.0,
+            },
+            LogicalCornerRadii {
+                top_start: square,
+                top_end: square,
+                bottom_end: square,
+                bottom_start: square,
+            },
+            LayoutDirection::Ltr,
+            OutlineCurvature::Circular,
+            1.0,
+        )
+        .unwrap();
+        let surface = resolve_surface_relief(
+            outline,
+            SurfaceReliefProfile {
+                kind: ReliefKind::Convex,
+                body_thickness: 2.0,
+                amplitude: 0.75,
+                shoulder_width: 1.5,
+            },
+        )
+        .unwrap();
+        let past = 1.5_f64.next_up();
+        assert_eq!(past + 93.0, 94.5);
+        let cases = [
+            (past, 1.5, 93.0, 93.0, false),
+            (1.5, past, 93.0, 93.0, false),
+            (1.5, 1.5, 93.0, 93.0, true),
+            (
+                past,
+                past,
+                93.0 - 2.0_f64.powi(-46),
+                93.0 - 2.0_f64.powi(-46),
+                true,
+            ),
+        ];
+        for (x, y, width, height, contained) in cases {
+            let bounds = PhysicalBounds {
+                x,
+                y,
+                width,
+                height,
+            };
+            assert_eq!(contains_box(&surface, 1.0, bounds), contained, "{bounds:?}");
+        }
+    }
+}
