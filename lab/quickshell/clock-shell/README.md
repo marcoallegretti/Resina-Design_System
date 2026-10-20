@@ -42,9 +42,10 @@ focus, layout and preference policy belong to this shell, not to Resina.
   node before announcing readiness, so assistive technology receives that focus.
   "Close" and Escape unmap it.
 - The bar and the clock surface size themselves from their Commands and text, and
-  the clock text follows the authored text scale. Each Command, including its
-  focus ring, is placed within its surface's content region and is surrounded by
-  that surface's body colour.
+  the clock text is sized by the `textScale` authored in
+  [`preferences.json`](preferences.json); the shell reads no platform text
+  scale. Each Command, including its focus ring, is placed within its surface's
+  content region and is surrounded by that surface's body colour.
 - `SystemClock` runs at second precision only while the surface is open. The time
   uses the pattern `HH:mm:ss`; the date uses the long date format of the authored
   locale. This text is shell content, not a Resina text contract (#196). It uses
@@ -187,13 +188,15 @@ and xdg-desktop-portal-gnome 50.0:
 
 - all cases pass with the platform-selected theme in headless Sway 1.12, with
   `grim` composition checks at output scales 1 and 2 on a 1024×600 output, 1.25
-  on a 1280×720 output and 1.5 on a 1920×1080 output, and in nested niri 26.04
-  at scales 1 and 2;
+  on a 1280×720 output and 1.5 on a 1920×1080 output, and, at revision
+  9abb974, in nested niri 26.04 at scales 1 and 2;
 - in headless Sway 1.12 the live changes from 1 to 2 and 2 to 1 on a 1024×600
   output, 2 to 1.25 and 1.25 to 2 on a 1280×720 output and 1.25 to 1.5 on a
   1920×1080 output pass, including the `grim` checks after the change. The
-  `grim` checks sample flat body and backdrop colour within one 8-bit step; they
-  do not compare complete captures byte for byte;
+  `grim` checks compare, within one 8-bit step, only points where a flat body or
+  backdrop colour is expected. No compared point lies on a rounded corner, an
+  edge or highlight band or a Command's own paint, so the composited arcs and
+  edges are not checked, and complete captures are not compared;
 - a 1024×600 output at scale 1.25 or 1.5 is 819.2 or 682.67 logical pixels
   wide. Its layer surfaces cover 819 or 682 logical pixels, so the last device
   column is not covered by the backdrop; the capture size check rejects such an
@@ -203,17 +206,27 @@ and xdg-desktop-portal-gnome 50.0:
   frames before settling, against three at scale 1;
 - the fixed dark theme passes in headless Sway at output scale 1;
 - the native focus-event cases have been run at output scale 1, in headless Sway
-  with the platform-selected theme and in nested niri 26.04;
-- `--screen-reader` passes with Orca 50.3 in nested niri 26.04 locally. CI does
-  not run the clock shell check with `--screen-reader`.
+  with the platform-selected theme and, at revision 9abb974, in nested niri
+  26.04;
+- `--screen-reader` passed with Orca 50.3 in nested niri 26.04 locally at
+  revision 9abb974. The shell and its check have changed since, and neither the
+  niri runs nor the `--screen-reader` run have been repeated; CI does not run
+  the clock shell check in niri or with `--screen-reader`.
 
 ## Boundaries
 
 - No Command is focused when the clock surface closes. In headless Sway keyboard
   focus does not return to the bar; in nested niri the bar was observed to regain
   keyboard focus without a focused item. In both compositors, Space after closing did not
-  activate "Show clock". Layer surfaces cannot request activation, so returning
-  focus is compositor policy.
+  activate "Show clock". Removing the focused Command requires its owner to
+  choose explicit focus recovery ([focus traversal](../../../spec/41-focus-traversal.md)).
+  [Command activation](../../../spec/42-command-activation.md) leaves focus
+  recovery to the component or product, and
+  [Command accessibility](../../../spec/47-command-accessibility.md) keeps it a
+  separate requirement. That owner is this shell, which chooses
+  no recovery, so closing the surface leaves focus unrecovered. The check makes
+  no assertion about focus after closing; it reports whether Space then
+  activates "Show clock" as `spaceActivatesShowClockAfterClose`.
 - Each window is mapped once the shell's sources and preferences have loaded,
   before its theme is resolved, because its environment needs that window's
   device scale. If a window's theme resolution fails, the window stays mapped,
@@ -221,14 +234,22 @@ and xdg-desktop-portal-gnome 50.0:
   error is logged as `RESINA_CLOCK_PREPARATION backdrop:` and reported by
   `observe` under `errors.backdrop`.
 - xdg-desktop-portal-gnome before 50 does not provide `reduced-motion`; the
-  authored value is then used. Every platform case that cannot run, because the
-  portal does not provide its key or `--theme` fixes the theme, is printed as a
-  `SKIP` line with its reason and kept under `skips` in `report.json`.
-- One output, with text scale 1 and the `en-GB` locale, is verified. CI runs the
-  check in headless Sway at output scale 1 on a 1024×600 output, and at 1.25
-  and 2 on a 1280×720 output with live changes from 1.25 to 2 and from 2 to
-  1.25. Larger text scales, other locales,
-  multiple outputs and output hot-plug are not covered.
+  authored value is then used, so with xdg-desktop-portal-gnome 46 to 49 turning
+  animations off in GNOME does not reduce the shell's motion. Neither the shell
+  nor the platform appearance element reads GSettings directly, including
+  `org.gnome.desktop.interface enable-animations`, as a fallback. CI runs the
+  GNOME 46 backend, so its platform reduced-motion case is a `SKIP` there and is
+  verified only locally with xdg-desktop-portal-gnome 50.0. Every platform case
+  that cannot run, because the portal does not provide its key or `--theme`
+  fixes the theme, is printed as a `SKIP` line with its reason and kept under
+  `skips` in `report.json`.
+- One output is verified, with the authored text scale 1, the `en-GB` locale and
+  left-to-right layout direction of [`preferences.json`](preferences.json). The
+  shell reads no platform text scale, and no check runs it at another text
+  scale, locale or direction. CI runs the check in headless Sway at output scale
+  1 on a 1024×600 output, and at 1.25 and 2 on a 1280×720 output with live
+  changes from 1.25 to 2 and from 2 to 1.25. Multiple outputs and output
+  hot-plug are not covered.
 - The time and date text and its locale handling are shell content. Its value
   changes every second without being announced; live-value semantics belong to
   #196. Screen-reader presentation is verified only for the focused Commands,

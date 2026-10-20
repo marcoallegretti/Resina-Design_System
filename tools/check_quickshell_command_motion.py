@@ -447,13 +447,56 @@ def policy_cases(session, motion):
     session.reset("frost", True)
     start = len(motion.frames())
     session.input.key(KEY_SPACE, True)
-    sample = motion.wait_frames(start, moving, "Frost spring frames with reduced transparency")[0]
-    if sample["snapshot"]["paint"]["paint"]["body"]["materialFamily"] != "frost":
-        raise ValueError("reduced-transparency Frost lost its bound family")
+    motion.wait_frames(start, moving, "Frost spring frames with reduced transparency")
     session.input.key(KEY_SPACE, False)
     session.quiet()
-    results.append("reduced-transparency Frost keeps its family and spring policy")
+    verify_reduced_frost([frame for frame in motion.frames()[start:] if frame["configuration"] == "frost"])
+    results.append("Frost with authored reduced transparency keeps its family and spring policy, and every frame "
+                   "publishes the opaqueDimensional representation with an opaque body and no content fallback")
+
+    marker = len(session.events())
+    session.call("configure", "translucentFrost")
+    session.wait(lambda: any(event["kind"] == "rejected" for event in session.events()[marker:]),
+                 "rejection of Frost without reduced transparency", 10)
+    session.quiet()
+    verify_translucent_frost(session.current(), session.events()[marker:])
+    results.append("the same Frost Command without reduced transparency selects a translucent body, which the opaque "
+                   "Command profile rejects: it is withdrawn and publishes no frame")
     return results
+
+
+OPAQUE_BODY = "requires a resolved opaque body"
+
+
+def verify_reduced_frost(sequence):
+    if not sequence:
+        raise ValueError("no Frost frame with reduced transparency was logged")
+    for frame in sequence:
+        body = frame["snapshot"]["paint"]["paint"]["body"]
+        name = f"Frost frame {frame['sequence']} with reduced transparency"
+        if body["materialFamily"] != "frost":
+            raise ValueError(f"{name} lost its bound family: {body['materialFamily']!r}")
+        if body.get("frostRepresentation") != "opaqueDimensional":
+            raise ValueError(f"{name} publishes Frost representation {body.get('frostRepresentation')!r}, not "
+                             "'opaqueDimensional'")
+        if body["pigment"]["body"]["alpha"] != 1:
+            raise ValueError(f"{name} publishes body alpha {body['pigment']['body']['alpha']!r}, not 1")
+        if body["contentFallbackApplied"] is not False:
+            raise ValueError(f"{name} reached its opaque body through the content fallback, not the preference")
+
+
+def verify_translucent_frost(observed, events):
+    published = [event for event in events if event["kind"] == "published"
+                 or event["kind"] == "frame" and event["configuration"] == "translucentFrost"]
+    if published:
+        raise ValueError(f"Frost without reduced transparency was published: {published[0]['kind']} event "
+                         f"{json.dumps(published[0])[:300]}")
+    rejected = [event["error"] for event in events if event["kind"] == "rejected"]
+    if not rejected or any(OPAQUE_BODY not in error for error in rejected):
+        raise ValueError(f"Frost without reduced transparency was not rejected for its translucent body: {rejected!r}")
+    if observed["ready"] or observed["target"] or OPAQUE_BODY not in observed["error"]:
+        raise ValueError("Frost without reduced transparency was not withdrawn by the opaque body rejection: ready "
+                         f"{observed['ready']!r}, target {observed['target']!r}, error {observed['error']!r}")
 
 
 def live_scale_case(session, motion, requests, compositor, initial, final):

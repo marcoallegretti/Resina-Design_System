@@ -403,8 +403,17 @@ xdg toplevel `FloatingWindow` was exposed and presented its first frame at the
 fallback ratio 2 and received its scale only afterwards, so a Command or Toggle
 in such a window can publish once at the fallback density; the change of the
 window's ratio then withdraws readiness, as a live output-scale change does, and
-the control prepares again at the new density. The released-host checks host
-their controls only in layer-shell windows.
+the control prepares again at the new density. The compositor-delivered
+checks (Command and Toggle lifecycle, Command accessibility, motion and motion
+frame budget, and the clock shell) host their controls only in layer-shell
+`PanelWindow`s. The authored-update, focus, label, label-render, paint and
+native-availability probes use a `FloatingWindow`. CI runs the update checks on
+Qt's offscreen platform and the native-availability check on xcb under Xvfb;
+the native-availability check with `WAYLAND_DISPLAY` set, and the Command and
+Toggle update, label, label-render and paint checks with `--platform wayland`,
+present that window as an xdg toplevel. No
+check asserts the fallback-density first publication described above or the
+preparation that follows it.
 
 Own position, size, parent, window and pixel-density changes withdraw readiness.
 Before scene-graph synchronization, a GUI-thread
@@ -527,7 +536,8 @@ QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
 
 The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
 in released Quickshell 0.3.2 and checks its publications against the reference
-resolver and its sampled composited pixels at output scales 1, 1.25, 1.5 and 2,
+resolver, and composited pixels at points where a flat body or backdrop colour
+is expected, at output scales 1, 1.25, 1.5 and 2,
 and after live output-scale changes between them. Hardware renderers and
 enhanced Frost or Gel treatments beyond their opaque representation are not
 covered.
@@ -1369,8 +1379,18 @@ request fails. Input reaches the control through the compositor:
   are unavailable;
 - moving the control during a press cancels the held gesture without an effect
   and publishes frames at the new position;
-- reduced motion and Cast publish immediate settled frames, and Frost with
-  reduced transparency keeps its family and spring policy.
+- reduced motion and Cast publish immediate settled frames;
+- Frost with authored reduced transparency keeps its family and spring policy,
+  and every frame publishes the `opaqueDimensional` Frost representation with
+  body alpha 1 and no content fallback;
+- the same Frost Command without reduced transparency, whose environment
+  declares `translucentSurfaces`, selects a translucent body that the opaque
+  Command profile rejects: the Command reports the opaque-body preparation
+  error, is not ready, has no target and publishes no frame.
+  [Command paint](../../../spec/43-command-paint.md) accepts Frost only as
+  `opaqueDimensional`, so a released-host Command never publishes
+  `translucentPigmented`; this pair shows that the authored preference, and not
+  a fixed host value, selects the representation.
 
 The check runs at the output scale given by `--scale` and first requires the
 device pixel ratio of the Command's window to equal it. The probe logs that
