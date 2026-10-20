@@ -340,7 +340,7 @@ impl fmt::Display for DigitAdvanceError {
 impl std::error::Error for DigitAdvanceError {}
 
 /// Checks the measured advances of the digits 0 to 9, in that order, for the
-/// numeric role and returns the widest advance.
+/// `numeric` typography role and returns the widest advance.
 pub fn tabular_digit_advance(advances: &[f64; 10]) -> Result<f64, DigitAdvanceError> {
     if let Some(digit) = advances
         .iter()
