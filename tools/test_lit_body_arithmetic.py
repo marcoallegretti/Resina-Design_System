@@ -282,10 +282,6 @@ class LitBodyPixelTests(unittest.TestCase):
         self.assertEqual(settled[0], settled[1])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 def containment_case(name):
     return next(case for case in CONTAINMENT["cases"] if case["name"] == name)
 
@@ -417,3 +413,7 @@ class LayoutLitMatrixTests(unittest.TestCase):
             for density, scale, lines, direction, bounds, contained in outcomes:
                 with self.subTest(theme=theme_path, density=density, scale=scale, lines=lines, direction=direction):
                     self.assertTrue(contained, bounds)
+
+
+if __name__ == "__main__":
+    unittest.main()
