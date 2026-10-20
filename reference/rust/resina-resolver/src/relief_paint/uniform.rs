@@ -55,7 +55,13 @@ pub(super) fn contains_box(surface: &SurfaceRelief, inset: f64, bounds: Physical
         box_width,
         box_height,
         radii @ ..,
-    ] = parts.map(|(mantissa, exponent)| BigUint::from(mantissa) << (exponent - scale) as usize);
+    ] = parts.map(|(mantissa, exponent)| {
+        if mantissa == 0 {
+            BigUint::ZERO
+        } else {
+            BigUint::from(mantissa) << (exponent - scale) as usize
+        }
+    });
     let face = Face {
         width,
         height,
