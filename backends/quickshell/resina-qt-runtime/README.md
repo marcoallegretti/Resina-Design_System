@@ -1471,7 +1471,13 @@ was still moving:
 
 At least 20 frames are required. The floor is a median published interval of at
 most 1/30 s (30 Hz); a longer median fails the check unless `--floor report`
-is given, which prints the result without failing. The target is a median
+is given, which prints the result without failing. Without enforcing them, the
+check also reports for each run the 95th and 99th percentile (nearest rank) and
+maximum published interval, the share of intervals longer than 1/30 s (33.3 ms)
+and 1/24 s (41.7 ms), and the longest run of consecutive measured intervals
+longer than 1/30 s, in a `TAIL` line and under `tail` in `report.json`. A run
+whose median meets the floor can still have nearly half of its intervals longer
+than 1/30 s. The target is a median
 `preparationDuration` of at most 8 ms and a median published interval of at most
 17 ms. The target is reported but not enforced. CI runs the check at output
 scales 1 and 2 with `--floor report --require-gap` and keeps each `report.json`

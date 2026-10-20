@@ -15,6 +15,7 @@ from check_quickshell_command_updates import verify_version
 from wayland_virtual_input import KEY_SPACE
 
 FLOOR_INTERVAL = 1 / 30
+TAIL_INTERVALS = (FLOOR_INTERVAL, 1 / 24)
 TARGET_INTERVAL = .017
 TARGET_PREPARATION = .008
 MINIMUM_FRAMES = 20
@@ -68,6 +69,19 @@ def summary(values):
             "max": ordered[-1]}
 
 
+def tail(intervals):
+    ordered = sorted(intervals)
+    longest = run = 0
+    for interval in intervals:
+        run = run + 1 if interval > FLOOR_INTERVAL else 0
+        longest = max(longest, run)
+    return {"p95": ordered[math.ceil(.95 * len(ordered)) - 1], "p99": ordered[math.ceil(.99 * len(ordered)) - 1],
+            "max": ordered[-1],
+            "above": [{"interval": bound, "share": sum(value > bound for value in intervals) / len(intervals)}
+                      for bound in TAIL_INTERVALS],
+            "longestRunAbove": {"interval": FLOOR_INTERVAL, "frames": longest}}
+
+
 def evaluate(measured, minimum=MINIMUM_FRAMES):
     if len(measured) < minimum:
         raise ValueError(f"only {len(measured)} continued spring frames were published; {minimum} are required")
@@ -80,7 +94,8 @@ def evaluate(measured, minimum=MINIMUM_FRAMES):
     if gap["evaluated"]:
         gap["delay"] = delays[math.ceil(GAP_PERCENTILE * len(delays)) - 1]
         gap["met"] = gap["delay"] <= GAP_BOUND
-    return {"frames": len(measured), "interval": interval, "preparation": preparation,
+    return {"frames": len(measured), "interval": interval, "tail": tail([item["interval"] for item in measured]),
+            "preparation": preparation,
             "floor": {"interval": FLOOR_INTERVAL, "met": floor}, "gap": gap,
             "target": {"interval": TARGET_INTERVAL, "preparation": TARGET_PREPARATION,
                        "met": interval["median"] <= TARGET_INTERVAL and preparation["median"] <= TARGET_PREPARATION}}
@@ -106,6 +121,15 @@ def measure(session, motion, presses, frames_per_phase):
 def describe(name, values, unit=1000):
     return f"{name} median {values['median'] * unit:.1f} ms, p90 {values['p90'] * unit:.1f} ms, " \
            f"max {values['max'] * unit:.1f} ms"
+
+
+def describe_tail(scale, values):
+    shares = ", ".join(f"{bound['share']:.1%} above {bound['interval'] * 1000:.1f} ms" for bound in values["above"])
+    longest = values["longestRunAbove"]
+    return (f"TAIL scale {scale:g}: published interval p95 {values['p95'] * 1000:.1f} ms, "
+            f"p99 {values['p99'] * 1000:.1f} ms, max {values['max'] * 1000:.1f} ms; {shares}; longest run of "
+            f"{longest['frames']} consecutive intervals above {longest['interval'] * 1000:.1f} ms "
+            "(reported, not enforced)")
 
 
 def main():
@@ -144,6 +168,7 @@ def main():
         print(f"MEASURED scale {args.scale:g}: {result['frames']} continued spring frames; "
               + describe("published interval", result["interval"]) + "; "
               + describe("synchronous preparation", result["preparation"]))
+        print(describe_tail(args.scale, result["tail"]))
         print(("MET" if result["target"]["met"] else "NOT MET") + " target: median preparation at most "
               f"{TARGET_PREPARATION * 1000:g} ms and median interval at most {TARGET_INTERVAL * 1000:g} ms "
               "(reported, not enforced)")

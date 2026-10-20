@@ -1,8 +1,8 @@
 import copy
 import unittest
 
-from check_quickshell_command_motion_budget import (FLOOR_INTERVAL, GAP_BOUND, TICK, continuations, evaluate, summary,
-                                                     verify_scale)
+from check_quickshell_command_motion_budget import (FLOOR_INTERVAL, GAP_BOUND, TICK, continuations, describe_tail,
+                                                     evaluate, summary, tail, verify_scale)
 from test_quickshell_command_motion import FIXTURE, REST, frame
 
 RETARGETED = {"bodyMix": {**REST, "initial": {"position": .4, "velocity": 1}}, "depthScale": copy.deepcopy(REST)}
@@ -124,6 +124,28 @@ class CommandMotionBudgetTests(unittest.TestCase):
         self.assertFalse(evaluate(measured(FLOOR_INTERVAL + 1e-4))["floor"]["met"])
         self.assertTrue(evaluate(measured(.02, count=11) + measured(.05, count=10))["floor"]["met"])
         self.assertFalse(evaluate(measured(.02, count=10) + measured(.05, count=11))["floor"]["met"])
+
+    def test_tail_reports_high_percentiles_shares_and_the_longest_slow_run(self):
+        intervals = [.016] * 90 + [.034, .05, .016, .034, .034, .034, .042, .016, .016, .060]
+        result = tail(intervals)
+        self.assertEqual((result["p95"], result["p99"], result["max"]), (.034, .05, .060))
+        self.assertEqual([(bound["interval"], bound["share"]) for bound in result["above"]],
+                         [(FLOOR_INTERVAL, .07), (1 / 24, .03)])
+        self.assertEqual(result["longestRunAbove"], {"interval": FLOOR_INTERVAL, "frames": 4})
+        self.assertEqual(tail([.016] * 20)["longestRunAbove"]["frames"], 0)
+        # An interval at a bound is not above it.
+        self.assertEqual([bound["share"] for bound in tail([FLOOR_INTERVAL, 1 / 24])["above"]], [.5, 0])
+
+    def test_a_median_floor_that_is_met_still_publishes_its_slow_tail(self):
+        result = evaluate(measured(.02, count=11) + measured(.05, count=10))
+        self.assertTrue(result["floor"]["met"])
+        self.assertEqual(result["tail"]["max"], .05)
+        self.assertEqual([bound["share"] for bound in result["tail"]["above"]], [10 / 21, 10 / 21])
+        self.assertEqual(result["tail"]["longestRunAbove"]["frames"], 10)
+        self.assertEqual(describe_tail(2, result["tail"]),
+                         "TAIL scale 2: published interval p95 50.0 ms, p99 50.0 ms, max 50.0 ms; 47.6% above "
+                         "33.3 ms, 47.6% above 41.7 ms; longest run of 10 consecutive intervals above 33.3 ms "
+                         "(reported, not enforced)")
 
     def test_target_requires_both_preparation_and_interval(self):
         self.assertTrue(evaluate(measured(.017, .008))["target"]["met"])
