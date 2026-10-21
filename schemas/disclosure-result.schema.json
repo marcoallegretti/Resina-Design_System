@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:disclosure-result:0.1.0",
+  "title": "Resina Disclosure Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "activation",
+    "expanded",
+    "accessibility"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "activation": {
+      "$ref": "urn:resina:schema:activation-result:0.1.0"
+    },
+    "expanded": {
+      "type": "boolean"
+    },
+    "accessibility": {
+      "$ref": "urn:resina:schema:disclosure-accessibility-ir:0.1.0"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "expanded": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "expanded": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "expanded": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "expanded": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "activation": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "enabled": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "enabled": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "activation": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "enabled": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "enabled": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "activation": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "focused": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "focused": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "activation": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "focused": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "accessibility": {
+            "properties": {
+              "state": {
+                "properties": {
+                  "focused": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@ use resina_model::{ActivationState, CommandContent, CommandContentForm};
 use serde::Serialize;
 use std::fmt;
 
+#[derive(Clone, Copy)]
 pub struct CommandAccessibilityInput<'a> {
     pub label: &'a CommandLabelIr,
     pub activation: &'a ActivationState,
@@ -134,7 +135,7 @@ impl From<CommandAccessibilityError> for CommandContentAccessibilityError {
 pub fn resolve_command_accessibility(
     input: CommandAccessibilityInput<'_>,
 ) -> Result<CommandAccessibilityIr, CommandAccessibilityError> {
-    snapshot(
+    resolve_command_accessibility_name(
         input.label.text(),
         input.activation,
         input.description,
@@ -160,7 +161,7 @@ pub fn resolve_command_content_accessibility(
         }
         _ => {}
     }
-    Ok(snapshot(
+    Ok(resolve_command_accessibility_name(
         input.content.text(),
         input.activation,
         input.description,
@@ -168,7 +169,7 @@ pub fn resolve_command_content_accessibility(
     )?)
 }
 
-fn snapshot(
+pub(crate) fn resolve_command_accessibility_name(
     name: &str,
     activation: &ActivationState,
     description: Option<&str>,

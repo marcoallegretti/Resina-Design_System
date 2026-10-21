@@ -220,6 +220,13 @@ pub use activation::{
     ActivationError, ActivationResult, CaptureChange, resolve_activation, resolve_activation_source,
 };
 
+mod disclosure;
+pub use disclosure::{
+    DisclosureAccessibilityAction, DisclosureAccessibilityIr, DisclosureAccessibilityState,
+    DisclosureError, DisclosureInput, DisclosureRelationship, DisclosureResult, resolve_disclosure,
+    resolve_disclosure_source,
+};
+
 mod background_contrast;
 mod edge_contrast;
 mod elevation;
