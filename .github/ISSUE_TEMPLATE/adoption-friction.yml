@@ -1,0 +1,60 @@
+name: Adoption friction
+description: Report a barrier you met while integrating or using Resina.
+labels:
+  - adoption-friction
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues for the same friction before filing.
+        Report what slowed you down, even if you found a way through. Recorded friction is the evidence that admits work into the adoption releases.
+        Use the defect form for incorrect behavior and the architectural proposal form for changes to public contracts.
+  - type: textarea
+    id: goal
+    attributes:
+      label: What you were trying to do
+      description: Describe the task, for example adding a component to a shell or running the conformance tooling.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Backend, host version and the Resina version or commit you used.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: Describe what you expected to happen or to find.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Include the commands you ran and their output.
+    validations:
+      required: true
+  - type: input
+    id: cost
+    attributes:
+      label: Time it cost
+      description: Approximate time lost to this barrier.
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Describe how you got past it, or write none.
+    validations:
+      required: true
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation
+      description: State whether documentation was involved. Name the pages you read and what was missing, unclear or wrong.
+    validations:
+      required: true
