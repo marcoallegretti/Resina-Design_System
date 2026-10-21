@@ -215,3 +215,10 @@ failures that occur only because of the band, with a no-shadow control in which
 the same minimum holds. Raster evidence at several scales, opaque surface
 integration and native captures are subsequent evidence; this headless
 operation alone does not establish them.
+
+The independent [external checker](../tools/check_elevation_shadow_backend.py)
+re-derives every member from the request, checks the hull against its own
+spec/35 canonical record and the support identity, checks the pigment and guard
+arithmetic, and rejects a light mirrored in RTL, a centered blur inside the
+band, a guard that ignores the band and a focus guard without the
+`outline.strong` fallback.
