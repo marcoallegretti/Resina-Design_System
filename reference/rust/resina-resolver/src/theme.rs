@@ -209,6 +209,14 @@ impl CompiledTheme {
         &self.space
     }
 
+    pub fn color_fallbacks(&self) -> &BTreeMap<ColorRole, SrgbFallback> {
+        &self.color_fallbacks
+    }
+
+    pub fn opaque_color_fallbacks(&self) -> &BTreeMap<ColorRole, SrgbFallback> {
+        &self.opaque_color_fallbacks
+    }
+
     pub fn resolve(
         &self,
         environment: &EnvironmentSnapshot,

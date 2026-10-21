@@ -500,6 +500,78 @@ def check_legibility_guard_vectors():
     return 5
 
 
+def check_theme_derivation_schemas():
+    from check_theme_derivation_backend import build_request
+    from theme_derivation import derive
+
+    checked = 0
+
+    def check(validator, name, document, expected_valid):
+        nonlocal checked
+        check_case(validator, name, document, expected_valid)
+        checked += 1
+
+    case_validator = validator_for("schemas/theme-derivation-case.schema.json")
+    request_validator = validator_for("schemas/theme-derivation-request.schema.json")
+    result_validator = validator_for("schemas/theme-derivation-result.schema.json")
+    cases = load_json(ROOT / "conformance/themes/derivation-vectors.json")
+    names = set()
+    baseline = None
+    for case in cases:
+        check(case_validator, f"theme derivation case: {case.get('name')}", case, True)
+        if case["name"] in names:
+            raise ValueError(f"duplicate theme derivation case name: {case['name']}")
+        names.add(case["name"])
+        source, request = build_request(case)
+        document = parse_json(source, case["name"]) if request is None else request
+        check(request_validator, f"theme derivation request: {case['name']}", document,
+                   case["requestSchemaValid"])
+        if baseline is None and case["outcome"] == "valid":
+            baseline = (case, request)
+    for name, change in [
+        ("valid case with failing themes", ("failingThemes", ["dark"])),
+        ("valid case with request document", ("requestDocument", {})),
+        ("unknown case member", ("extra", True)),
+        ("unknown failing theme", ("failingThemes", ["contrast"])),
+    ]:
+        invalid = copy.deepcopy(baseline[0])
+        invalid[change[0]] = change[1]
+        check(case_validator, name, invalid, False)
+    invalid = copy.deepcopy(baseline[0])
+    invalid["outcome"] = "invalid"
+    check(case_validator, "invalid case with expected result", invalid, False)
+    invalid = {"name": "document and seed", "outcome": "invalid", "requestSchemaValid": False,
+               "requestDocument": [], "seed": {}}
+    check(case_validator, invalid["name"], invalid, False)
+
+    result = derive(baseline[1])
+    check(result_validator, "theme derivation result", result, True)
+    for name, pointer, value in [
+        ("guard ratio below minimum", "/themes/light/legibilityGuard/0/contrastRatio", 4.4),
+        ("guard pair out of order", "/themes/dark/legibilityGuard/0/foreground", "content.secondary"),
+        ("component above one", "/themes/light/roles/focus/color/components/0", 1.0000001),
+        ("hue of 360 degrees", "/themes/dark/roles/accent.primary/targetOklch/2", 360),
+        ("unsupported result version", "/schemaVersion", "0.2.0"),
+        ("non-boolean achromatic flag", "/seed/achromatic", "false"),
+    ]:
+        invalid = copy.deepcopy(result)
+        replace_at_pointer(invalid, pointer, value)
+        check(result_validator, name, invalid, False)
+    invalid = copy.deepcopy(result)
+    del invalid["themes"]["dark"]["roles"]["focus"]
+    check(result_validator, "missing derived focus", invalid, False)
+    invalid = copy.deepcopy(result)
+    invalid["themes"]["light"]["legibilityGuard"].pop(27)
+    check(result_validator, "dropped guard pair", invalid, False)
+    invalid = copy.deepcopy(result)
+    invalid["themes"]["light"]["roles"]["outline"] = invalid["themes"]["light"]["roles"]["focus"]
+    check(result_validator, "derived neutral role", invalid, False)
+    invalid = copy.deepcopy(result)
+    del invalid["themes"]["dark"]
+    check(result_validator, "partial derivation result", invalid, False)
+    return checked
+
+
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
@@ -728,6 +800,9 @@ def main():
         "schemas/theme-source-case.schema.json",
         "schemas/theme-resolution-case.schema.json",
         "schemas/theme-resolution-request.schema.json",
+        "schemas/theme-derivation-request.schema.json",
+        "schemas/theme-derivation-result.schema.json",
+        "schemas/theme-derivation-case.schema.json",
         "schemas/theme-legibility-guard.schema.json",
         "schemas/theme-legibility-guard-case.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
@@ -3328,6 +3403,7 @@ def main():
         check_case(slider_request_validator, name, apply_changes(slider_part_request, case["requestChanges"]), case["requestSchemaValid"])
         checked += 2
     checked += check_legibility_guard_vectors()
+    checked += check_theme_derivation_schemas()
     print(f"Validated {len(schema_paths)} normative schemas, 4 visual tool schemas and {checked} conformance cases")
 
 

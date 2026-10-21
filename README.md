@@ -28,6 +28,8 @@ Run `cargo run -p resina-tokens --bin resina-token-compose -- <path>` to compose
 
 Run `cargo run -p resina-resolver --bin resina-theme-resolve -- <path>` to compile a theme and resolve it against an environment using a [theme resolution request](schemas/theme-resolution-request.schema.json); use `-` for stdin. `python tools/check_theme_backend.py -- <backend-command> -` tests the language-neutral boundary, including external foundation reuse.
 
+Run `cargo run -p resina-resolver --bin resina-theme-derive -- <path>` to [derive Light and Dark themes from an explicit seed](spec/91-theme-derivation.md) using a [theme derivation request](schemas/theme-derivation-request.schema.json); use `-` for stdin. `python tools/check_theme_derivation_backend.py -- <backend-command> -` checks the command against the hostile seed corpus with an independent implementation.
+
 Run `python tools/check_token_backend.py -- <backend-command> -` to check any token resolver that implements the public [token command boundary](spec/03-tokens.md). Build `resina-token-resolve` first to check the Rust reference through the same external boundary.
 
 The Rust reference caps group-extension expansion and token-reference resolution at 100,000 constructed JSON value nodes and 8 MiB of cloned string and member-name bytes each. The reference-resolution budget covers the complete document. An over-limit source fails explicitly without token output. These resource guards do not define Resina or DTCG format limits.

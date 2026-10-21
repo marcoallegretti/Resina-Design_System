@@ -338,6 +338,12 @@ mod theme;
 pub use theme::{
     CompiledTheme, ThemeCompilationError, compile_theme_source, compile_theme_source_with_sources,
 };
+mod theme_derivation;
+pub use theme_derivation::{
+    ACHROMATIC_SEED_CHROMA, DERIVED_COLOR_GROUP, DERIVED_COLOR_ROLES, DerivedSeed, DerivedTheme,
+    DerivedThemeError, ThemeDerivation, ThemeDerivationError, derive_seed,
+    derive_theme_request_source,
+};
 mod theme_legibility;
 pub use theme_legibility::{
     LEGIBILITY_NON_TEXT_CONTRAST, LEGIBILITY_TEXT_CONTRAST, LegibilityGuardError,
