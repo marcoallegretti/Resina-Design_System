@@ -14,7 +14,42 @@ permissions:
 
 jobs:
   qt-runtime:
+    name: qt-runtime-${{ matrix.shard }}
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: core
+            rust_cache_suffix: ''
+            save_rust_cache: false
+            paint_scales: '1 2'
+            output_scales: ''
+            groups: [snapshots, atspi, publication, label]
+          - shard: updates
+            rust_cache_suffix: '-lint'
+            save_rust_cache: true
+            paint_scales: '1.25 1.3'
+            output_scales: ''
+            groups: [lint, command-updates, toggle-updates]
+          - shard: lifecycle
+            rust_cache_suffix: ''
+            save_rust_cache: false
+            paint_scales: ''
+            output_scales: ''
+            groups: [command-lifecycle]
+          - shard: output-scales-up
+            rust_cache_suffix: ''
+            save_rust_cache: true
+            paint_scales: ''
+            output_scales: '1.25:2'
+            groups: [release-module, frame-timing]
+          - shard: output-scales-down
+            rust_cache_suffix: ''
+            save_rust_cache: false
+            paint_scales: ''
+            output_scales: '2:1.25'
+            groups: [toggle-lifecycle]
     env:
       QMAKE: ${{ github.workspace }}/target/qt-sdk/6.11.2/gcc_64/bin/qmake
       CARGO_TARGET_DIR: ${{ github.workspace }}/target/qt-runtime-build
@@ -38,8 +73,9 @@ jobs:
           echo "version=$ImageVersion" >> "$GITHUB_OUTPUT"
       - uses: Swatinem/rust-cache@v2.9.2
         with:
-          key: ${{ steps.runner-image.outputs.name }}-${{ hashFiles('tools/ci/install_qt_sdk.sh') }}-${{ hashFiles('Cargo.lock') }}-debug-release
+          key: ${{ steps.runner-image.outputs.name }}-${{ hashFiles('tools/ci/install_qt_sdk.sh') }}-${{ hashFiles('Cargo.lock') }}-debug-release${{ matrix.rust_cache_suffix }}
           workspaces: backends/quickshell/resina-qt-runtime -> ../../../target/qt-runtime-build
+          save-if: ${{ github.ref == 'refs/heads/master' && matrix.save_rust_cache }}
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -104,23 +140,29 @@ jobs:
         with:
           path: target/quickshell-build
           key: ${{ steps.quickshell-build.outputs.cache-primary-key }}
-      - name: Build and check the separate Qt workspace
+      - name: Check the separate Qt workspace
+        if: contains(matrix.groups, 'lint')
         run: |
           export LD_LIBRARY_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           cargo fmt --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml -- --check
           cargo test --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
           cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
+      - name: Build the separate Qt workspace
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           cargo build --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
           cargo build -p resina-raster --bin resina-command-raster --bin resina-command-motion-raster --bin resina-toggle-part-raster --bin resina-toggle-part-motion-raster --bin resina-paint-raster --locked
           cargo build -p resina-resolver --bin resina-theme-resolve --bin resina-surface-paint --bin resina-command-paint --locked
           python tools/material_scenarios.py -- target/qt-runtime-build/debug/resina-theme-resolve - > target/material-scenes.json
           python tools/prepare_qt_runtime_module.py --library target/qt-runtime-build/debug/libresina_qt_runtime.so --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime --output-dir target/qt-runtime-import
       - name: Build the release runtime module for motion timing
+        if: contains(matrix.groups, 'release-module')
         run: |
           export LD_LIBRARY_PATH="$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           cargo build --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --release --locked
           python tools/prepare_qt_runtime_module.py --library target/qt-runtime-build/release/libresina_qt_runtime.so --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime --output-dir target/qt-runtime-release-import
       - name: Check compiled controller, native content and coherent snapshots
+        if: contains(matrix.groups, 'snapshots')
         run: |
           python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import
           python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import --controller ToggleController
@@ -133,8 +175,11 @@ jobs:
           python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
           python tools/check_qt_command_control_runtime.py --motion --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir target/qt-control-motion
       - name: Check actual Qt paint and command composition at native scales
+        if: matrix.paint_scales != ''
+        env:
+          PAINT_SCALES: ${{ matrix.paint_scales }}
         run: |
-          for scale in 1 1.25 2 1.3; do
+          for scale in $PAINT_SCALES; do
             QT_SCALE_FACTOR="$scale" python tools/check_qt_surface_view_runtime.py --module-path target/qt-runtime-import --raster target/qt-runtime-build/debug/resina-paint-raster --resolver target/qt-runtime-build/debug/resina-surface-paint --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve --scenes target/material-scenes.json --output-dir "target/qt-surface-view-$scale"
             QT_SCALE_FACTOR="$scale" python tools/check_qt_command_paint_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --raster target/qt-runtime-build/debug/resina-command-raster --output-dir "target/qt-paint-$scale"
             QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_motion_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir "target/qt-toggle-motion-$scale"
@@ -144,6 +189,7 @@ jobs:
             QT_SCALE_FACTOR="$scale" python tools/check_qt_command_view_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir "target/qt-view-$scale"
           done
       - name: Measure native AT-SPI availability and invocation
+        if: contains(matrix.groups, 'atspi')
         env:
           RESINA_QT_RUNTIME_MODULE: ${{ github.workspace }}/target/qt-runtime-import
         run: |
@@ -158,6 +204,7 @@ jobs:
           xvfb-run -a -e /dev/stderr python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation vertical > target/qt-slider-vertical-accessibility.json
           cat target/qt-slider-vertical-accessibility.json
       - name: Measure released Quickshell native publication and invocation
+        if: contains(matrix.groups, 'publication')
         env:
           RESINA_QT_RUNTIME_MODULE: ${{ github.workspace }}/target/qt-runtime-import
           RESINA_QUICKSHELL_HOST: ${{ github.workspace }}/target/quickshell-build/src/quickshell
@@ -167,6 +214,7 @@ jobs:
           xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --known-deviation > target/quickshell-native-availability.json
           cat target/quickshell-native-availability.json
       - name: Check authored Command updates in released Quickshell
+        if: contains(matrix.groups, 'command-updates')
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python tools/check_quickshell_command_updates.py \
@@ -175,6 +223,7 @@ jobs:
             --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
             --output-dir target/quickshell-command-updates --scales 1 1.25 2
       - name: Check native label measurement, drawing and resolved Inter masters in released Quickshell
+        if: contains(matrix.groups, 'label')
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python tools/check_quickshell_label_runtime.py --quickshell target/quickshell-build/src/quickshell \
@@ -182,6 +231,7 @@ jobs:
           python tools/check_quickshell_label_render_runtime.py --quickshell target/quickshell-build/src/quickshell \
             --font-dir /usr/share/fonts/opentype/inter --scales 1 1.25 2 --output-dir target/quickshell-label-render
       - name: Check authored Toggle updates in released Quickshell
+        if: contains(matrix.groups, 'toggle-updates')
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python tools/check_quickshell_toggle_updates.py \
@@ -189,6 +239,7 @@ jobs:
             --font-dir /usr/share/fonts/opentype/inter \
             --output-dir target/quickshell-toggle-updates --scales 1 1.25 2
       - name: Check compositor-delivered Command lifecycle, accessibility and motion and platform appearance
+        if: contains(matrix.groups, 'command-lifecycle')
         timeout-minutes: 35
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -228,6 +279,7 @@ jobs:
             --output-dir target/quickshell-clock-shell --scale 1 \
             --test-settings --require reduced-motion contrast color-scheme
       - name: Check compositor-delivered Toggle lifecycle in released Quickshell
+        if: contains(matrix.groups, 'toggle-lifecycle')
         timeout-minutes: 15
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -246,14 +298,16 @@ jobs:
             --font-dir /usr/share/fonts/opentype/inter \
             --output-dir target/quickshell-toggle-lifecycle
       - name: Check compositor-delivered Command motion and the clock shell at output scales 1.25 and 2 with a live scale change
+        if: matrix.output_scales != ''
+        env:
+          OUTPUT_SCALES: ${{ matrix.output_scales }}
         timeout-minutes: 30
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           status=0
-          for scales in "1.25 2" "2 1.25"; do
-            set -- $scales
-            scale=$1
-            live=$2
+          for scales in $OUTPUT_SCALES; do
+            scale=${scales%%:*}
+            live=${scales##*:}
             XDG_RUNTIME_DIR="$(mktemp -d)"
             export XDG_RUNTIME_DIR
             chmod 700 "$XDG_RUNTIME_DIR"
@@ -289,6 +343,7 @@ jobs:
           done
           exit "$status"
       - name: Qualify Command motion frame timing with the release module in released Quickshell
+        if: contains(matrix.groups, 'frame-timing')
         timeout-minutes: 20
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -321,7 +376,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: qt-native-command-evidence
+          name: qt-native-command-evidence-${{ matrix.shard }}
           path: |
             target/qt-toggle-*/*.png
             target/qt-paint-*/*.png
@@ -353,6 +408,16 @@ jobs:
             target/quickshell-toggle-lifecycle/
             target/toggle-lifecycle-sway.log
           if-no-files-found: warn
+  qt-runtime-result:
+    name: qt-runtime
+    needs: qt-runtime
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require every qt-runtime shard to succeed
+        env:
+          SHARDS_RESULT: ${{ needs.qt-runtime.result }}
+        run: test "$SHARDS_RESULT" = success
   guido:
     runs-on: ubuntu-24.04
     steps:
