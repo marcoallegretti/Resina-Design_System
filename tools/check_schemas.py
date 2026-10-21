@@ -679,6 +679,10 @@ def main():
         "schemas/material-light-request.schema.json",
         "schemas/material-light-result.schema.json",
         "schemas/material-light-case.schema.json",
+        "schemas/shadow-profiles.schema.json",
+        "schemas/elevation-shadow-request.schema.json",
+        "schemas/elevation-shadow-result.schema.json",
+        "schemas/elevation-shadow-case.schema.json",
         "schemas/shape-fallback-assignments.schema.json",
         "schemas/shape-fallback-assignment-case.schema.json",
         "schemas/shape-fallback-case.schema.json",
@@ -1064,6 +1068,21 @@ def main():
         check_case(light_request_schema, case["name"], case["request"], case["requestSchemaValid"])
         if "expected" in case:
             check_case(light_result_schema, case["name"], case["expected"], True)
+    shadow_profiles_schema = validator_for("schemas/shadow-profiles.schema.json")
+    for theme in ("light", "dark"):
+        check_case(shadow_profiles_schema, f"reference {theme} shadow profiles", load_json(ROOT / f"definitions/shadow-{theme}.json"), True)
+    shadow_case_schema = validator_for("schemas/elevation-shadow-case.schema.json")
+    shadow_request_schema = validator_for("schemas/elevation-shadow-request.schema.json")
+    shadow_result_schema = validator_for("schemas/elevation-shadow-result.schema.json")
+    shadow_names = set()
+    for case in load_json(ROOT / "conformance/elevation/shadow-vectors.json"):
+        check_case(shadow_case_schema, case["name"], case, True)
+        if case["name"] in shadow_names:
+            raise ValueError(f"duplicate elevation shadow case: {case['name']}")
+        shadow_names.add(case["name"])
+        check_case(shadow_request_schema, case["name"], case["request"], case["requestSchemaValid"])
+        if "expected" in case:
+            check_case(shadow_result_schema, case["name"], case["expected"], True)
     contour_cases = load_json(ROOT / "conformance/geometry/inset-contour-vectors.json")
     contour_case_schema = validator_for("schemas/inset-contour-case.schema.json")
     contour_request_schema = validator_for("schemas/inset-contour-request.schema.json")

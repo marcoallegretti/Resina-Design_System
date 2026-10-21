@@ -82,6 +82,15 @@ raster and native realization remain separate work.
 
 Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for an [extruded contour request](schemas/extruded-contour-request.schema.json). It resolves the swept silhouette as portable lines and elliptical arcs, including physical corner mapping and split curves. `python tools/check_extruded_contour_backend.py -- <backend-command> -` checks the public geometry protocol.
 
+Run `cargo run -p resina-resolver --bin resina-elevation-shadow -- <path>` for an
+[elevation shadow request](schemas/elevation-shadow-request.schema.json). The
+[elevation shadow](spec/92-elevation-shadow.md) sweeps the front along the key
+light and final depth into an opaque contact band at every tier, adds an
+outward penumbra only with `advancedShadow`, and guards the edge and focus over
+the band. `python tools/check_elevation_shadow_backend.py -- <backend-command> -`
+checks its geometry, pigment and guards independently. Opaque surface
+integration and raster evidence remain separate work.
+
 Run `cargo run -p resina-resolver --bin resina-opaque-surface -- <path>` for an [opaque base-state surface request](schemas/opaque-surface-request.schema.json). It resolves one complete static opaque surface appearance from a theme, actual environment and surroundings, and explicit appearance profile. `python tools/check_opaque_surface_backend.py -- <backend-command> -` checks its portable IR and diagnostic failures. The Rust `resolve_opaque_surface` API reuses a compiled theme across surfaces.
 
 The Rust `OpaqueSurfaceIr::sample_paint` API evaluates that surface's opaque paint color at one logical physical point, including directional highlights and tied corner normals. It provides headless reference evidence for the paint law. Static raster evidence uses the separate conformance tool; renderer conformance remains separate work.

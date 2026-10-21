@@ -221,6 +221,7 @@ pub use activation::{
 mod background_contrast;
 mod edge_contrast;
 mod elevation;
+mod elevation_shadow;
 mod extruded_contour;
 mod focus_indicator;
 mod focus_ir;
@@ -238,6 +239,9 @@ pub use edge_contrast::{
 pub use elevation::{
     ElevationDepthError, ElevationDepthResolutionError, ElevationDepthResolutionErrorKind,
     ElevationDepthResult, resolve_elevation_depth, resolve_elevation_depth_source,
+};
+pub use elevation_shadow::{
+    ElevationShadowError, ElevationShadowResult, resolve_elevation_shadow_source,
 };
 pub use extruded_contour::{
     ExtrudedContourError, ExtrudedContourResult, PlacedContour, resolve_extruded_contour,
