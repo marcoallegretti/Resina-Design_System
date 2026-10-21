@@ -19,7 +19,7 @@ use resina_guido::{
     LabelMeasureError, LabelPrepareError, PrepareError, SliderContentPrepareError,
     measure_command_label, prepare_slider_content,
 };
-use resina_model::PhysicalVector;
+use resina_model::{PhysicalVector, SurfaceSize};
 use resina_raster::{Viewport, render_surface_paint};
 use resina_resolver::{
     SliderOrientation, SrgbFallback, opaque_contrast_ratio, resolve_slider_snapshot,
@@ -184,6 +184,62 @@ fn unsupported_labels_and_invalid_raster_inputs_fail_before_publication() {
         ))
     ));
 }
+#[test]
+fn glyph_ink_moved_past_any_slot_edge_is_reported() {
+    let font = load_font();
+    let mut frames = Frames::new();
+    let mut options = config();
+    options.direction = LayoutDirection::Rtl;
+    options.focused = false;
+    options.text = "مستوى الصوت";
+    let f = Fixture::resolve(options, |input| measure_command_label(font, input));
+    let snapshot = resolve_slider_snapshot(f.input()).unwrap();
+    let scale = 1.25;
+    let commands = prepare_slider_content(&snapshot, font, scale, 4).unwrap();
+    let (origin, slot) = (f.input().label_origin, f.label.size());
+    let output_width = (640.0 * scale) as u32;
+    let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
+    assert_eq!(escaped_ink(&mask, output_width, scale, origin, slot), None);
+    let inked: Vec<_> = mask
+        .as_chunks::<4>()
+        .0
+        .iter()
+        .enumerate()
+        .filter(|(_, p)| p[3] > 0)
+        .map(|(i, _)| (i as u32 % output_width, i as u32 / output_width))
+        .collect();
+    let device = |value: f64, placement: f64| (value + placement) * f64::from(scale);
+    let left = f64::from(inked.iter().map(|p| p.0).min().unwrap());
+    let right = f64::from(inked.iter().map(|p| p.0).max().unwrap() + 1);
+    let top = f64::from(inked.iter().map(|p| p.1).min().unwrap());
+    let bottom = f64::from(inked.iter().map(|p| p.1).max().unwrap() + 1);
+    let (start, end) = (
+        device(origin.x, 220.0),
+        device(origin.x + slot.width, 220.0),
+    );
+    let (above, below) = (
+        device(origin.y, 200.0),
+        device(origin.y + slot.height, 200.0),
+    );
+    for (dx, dy) in [
+        (-((left - start).ceil() + 1.0), 0.0),
+        ((end - right).ceil() + 1.0, 0.0),
+        (0.0, -((top - above).ceil() + 1.0)),
+        (0.0, (below - bottom).ceil() + 1.0),
+    ] {
+        let mut moved = commands[2].clone();
+        let DrawCommand::Text { rect, .. } = &mut moved else {
+            panic!("complete measured label required")
+        };
+        rect.x += (dx / f64::from(scale)) as f32;
+        rect.y += (dy / f64::from(scale)) as f32;
+        let mask = frames.render(&[moved], scale, Color::TRANSPARENT);
+        assert!(
+            escaped_ink(&mask, output_width, scale, origin, slot).is_some(),
+            "ink moved by ({dx}, {dy}) device pixels must leave the slot"
+        );
+    }
+}
 struct Frames {
     target: RenderTarget,
     renderer: Renderer,
@@ -219,6 +275,34 @@ fn color(value: &SrgbFallback) -> Color {
 }
 fn pixel_color(pixel: &[u8]) -> SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":pixel[..3].iter().map(|v|f64::from(*v)/255.0).collect::<Vec<_>>(),"alpha":1})).unwrap()
+}
+/// The first device pixel whose coverage exceeds the share of its footprint inside
+/// the slot. An unaligned slot edge splits a pixel, which may then carry ink lying
+/// entirely inside; a pixel wholly outside may carry none.
+fn escaped_ink(
+    mask: &[u8],
+    output_width: u32,
+    scale: f32,
+    origin: PhysicalVector,
+    slot: SurfaceSize,
+) -> Option<(u32, u32, u8)> {
+    let scale = f64::from(scale);
+    let inside = |pixel: u32, placement: f64, start: f64, extent: f64| {
+        let low = (start + placement) * scale;
+        let high = (start + extent + placement) * scale;
+        let pixel = f64::from(pixel);
+        (high.min(pixel + 1.0) - low.max(pixel)).max(0.0)
+    };
+    mask.as_chunks::<4>()
+        .0
+        .iter()
+        .enumerate()
+        .map(|(i, p)| (i as u32 % output_width, i as u32 / output_width, p[3]))
+        .find(|&(x, y, alpha)| {
+            let share =
+                inside(x, 220.0, origin.x, slot.width) * inside(y, 200.0, origin.y, slot.height);
+            f64::from(alpha) > (255.0 * share).ceil()
+        })
 }
 fn check_commands(
     frames: &mut Frames,
@@ -379,6 +463,11 @@ fn check_commands(
     }
     let parts = frames.render(&commands[..2], scale, background);
     let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
+    assert_eq!(
+        escaped_ink(&mask, output_width, scale, origin, f.label.size()),
+        None,
+        "{name}: native glyph escaped reserved label slot"
+    );
     let line_height = f.label.typography().font_size() * f.label.typography().line_height();
     let mut ink = vec![0; (label.height / line_height).round() as usize];
     let mut solids = 0;
@@ -389,15 +478,7 @@ fn check_commands(
         .enumerate()
         .filter(|(_, p)| p[3] > 0)
     {
-        let x = (i as u32 % output_width) as f64 / f64::from(scale) - 220.0;
         let y = (i as u32 / output_width) as f64 / f64::from(scale) - 200.0;
-        assert!(
-            x >= origin.x
-                && x + 1.0 / f64::from(scale) <= origin.x + f.label.size().width
-                && y >= origin.y
-                && y + 1.0 / f64::from(scale) <= origin.y + f.label.size().height,
-            "{name}: native glyph escaped reserved label slot"
-        );
         let line = ((y - origin.y - label.y) / line_height)
             .floor()
             .clamp(0.0, (ink.len() - 1) as f64) as usize;
