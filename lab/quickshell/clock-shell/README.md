@@ -212,7 +212,12 @@ pixel, which lies on the backdrop, waits until the cursor is hidden and no
 Command is hovered, and observes the shell again. After the capture the
 publications, placements and text bounds must be unchanged. It compares every
 pixel of each capture with an expected capture that it builds independently of
-the shell's own images, saved beside it as `<capture>-expected.png`:
+the shell's own images, saved beside it as `<capture>-expected.png`. The shell
+and this check rasterize with the same reference crates, so the comparison shows
+that the published IR reaches the screen unchanged, through the Qt image
+pipeline, placement, scaling, layer order, the compositor and `grim`. It does not
+test the rasterizers themselves; their correctness belongs to the raster
+vectors and checkers:
 
 - The expected capture starts as the backdrop's resolved `surface.base` colour.
   The bar and the clock window are opaque buffers of the same colour, which
