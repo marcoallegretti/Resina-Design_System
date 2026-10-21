@@ -1586,10 +1586,18 @@ refreshes at 60 Hz, so a predecessor whose `predecessorSpan` is at least 1/60 s
 saw an animation tick while it was prepared. For those frames the 75th
 percentile publication delay must be at most 4 ms. A predecessor published
 within one tick may correctly wait for the next tick and is not counted. How
-many frames qualify depends on how long preparation takes, so a faster host
-yields fewer per press. The check therefore runs at least `--presses` cycles
-(10) and then continues, up to `--max-presses` (40), until 20 frames
-qualify. If fewer than 20 still qualify, the gap is reported as not evaluated
+many frames qualify depends on how long preparation takes relative to the
+tick, so a faster host yields fewer per press. On shared CI runners at scale 1
+the median predecessor span was 12 to 15 ms, just under the tick, and between
+1.3 % and 6.4 % of frames, 0.3 to 2.7 per press, qualified in the runs that
+did not qualify most of their frames; in other runs 36 % to 98 % did. The check
+therefore runs at least `--presses` cycles (10) and then continues, counting
+every five cycles, until 20 frames qualify or `--max-presses` (600) cycles or
+`--max-seconds` (300) have been used. A cycle publishes about 15 frames at
+scale 1 and a shared runner took 17 s for 40 of them, so 600 cycles are about
+9000 frames and about four minutes at most, enough for 20 qualifying frames at
+0.22 % of frames, about six times below the lowest rate observed. If
+fewer than 20 still qualify, the gap is reported as not evaluated
 and `--require-gap` makes that a failure. The one exception is a host on which
 the observed predecessor spans prove that none of at least 20 predecessors
 spanned a tick: no frame could then wait for a tick it had not seen, so the
