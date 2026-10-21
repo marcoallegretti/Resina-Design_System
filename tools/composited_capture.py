@@ -64,7 +64,7 @@ def whole(value, description):
 def compositor_origin(value, scale, description):
     """The output device pixel at which Sway places a surface's whole logical coordinate.
 
-    wlroots 0.20 scene rendering (types/scene/wlr_scene.c, scale_box) scales an
+    wlroots 0.17 to 0.20 scene rendering (types/scene/wlr_scene.c, scale_box) scales an
     integer logical box edge by the single-precision output scale and rounds it
     half away from zero, so a fractional device edge such as 123.75 lands on 124.
     """
@@ -72,7 +72,7 @@ def compositor_origin(value, scale, description):
 
 
 def compositor_length(length, offset, scale, description):
-    """The device extent of a logical box in the wlroots 0.20 scene: its rounded far edge minus its near edge."""
+    """The device extent of a logical box in the wlroots scene: its rounded far edge minus its near edge."""
     return compositor_origin(whole(offset, description) + whole(length, description), scale, description) \
         - compositor_origin(offset, scale, description)
 

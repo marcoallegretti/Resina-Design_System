@@ -443,11 +443,30 @@ def rgb(color):
     return tuple(round(channel * 255) for channel in color["components"])
 
 
-def verify_composition(shell, observed, backdrop, grim, tools, path):
+CURSOR_HIDE_MS = 100
+
+
+def parked(observed):
+    return not any(observed[part] and observed[part]["hovered"] for part in SURFACE_WINDOWS)
+
+
+def painted(observed):
+    return {key: observed[key] for key in ("bar", "clock", "showClock", "close", "windows", "placements", "samples",
+                                           "texts")}
+
+
+def verify_composition(shell, ready, description, backdrop, grim, tools, path):
+    """Park the hidden pointer on the backdrop, then compare a capture with the reference composition."""
+    # Sway draws its cursor into the output that grim captures; it hides it CURSOR_HIDE_MS after the last motion.
+    shell.input.move(shell.input.width - 1, shell.input.height - 1)
+    time.sleep(5 * CURSOR_HIDE_MS / 1000)
+    observed = shell.until(lambda current: ready(current) and parked(current), description)
     # Every window paints the backdrop colour that its surfaces declare as adjacent (verify_surfaces).
     color = rgb(backdrop)
     windows = composition_windows(shell, observed, tools, color)
     subprocess.run([grim, str(path)], env=shell.environment, check=True, timeout=20)
+    if painted(shell.observe()) != painted(observed):
+        raise ValueError(f"the shell's paint or placement changed while {path.name} was captured")
     with Image.open(path) as captured:
         verify_capture_size(captured.size, (observed["outputWidth"], observed["outputHeight"]), shell.scale)
         summary, expected = compare(captured, color, windows)
@@ -784,8 +803,9 @@ def live_scale_case(shell, compositor, resolvers, grim, final, report):
         raise ValueError(f"the Show clock target moved from {before} to {observed['targets']['showClock']} when the "
                          "device scale changed")
     if grim:
-        report["composition"].append(verify_composition(shell, observed, backdrop, grim, resolvers,
-                                                        shell.output / "rescaled.png"))
+        report["composition"].append(verify_composition(
+            shell, closed, f"Show clock ready for the capture at device scale {final:g}", backdrop, grim, resolvers,
+            shell.output / "rescaled.png"))
     tree = Accessibility(shell)
     tree.wait(lambda found: found if set(found) == {"Show clock"}
               and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
@@ -829,13 +849,14 @@ def main():
     parser.add_argument("--live-scale", type=float,
                         help="Output scale Sway changes to while the shell runs, before the accessibility cases")
     args = parser.parse_args()
-    shell = reader = None
+    shell = reader = compositor = None
+    hidden = False
     processes = []
     try:
         live = changed_scale(args.scale, args.live_scale)
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
             raise ValueError("requires a live Wayland compositor session with layer-shell and virtual input")
-        compositor = Sway(os.environ) if live is not None else None
+        compositor = Sway(os.environ) if live is not None or args.grim else None
         host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
         fonts = os.pathsep.join(str(master["path"]) for master in conformance_font.masters(args.font_dir))
         resolvers = {"surface": str(args.surface_resolver.resolve(strict=True)),
@@ -859,6 +880,9 @@ def main():
         settings = start_settings(args, platform, processes, log)
         require_keys(wait_portal(platform, None, "portal Settings interface"), args.require)
         shell = Shell(host, module, fonts, args.theme, args.output_dir, platform, args.scale)
+        if args.grim:
+            compositor.message("seat", "*", "hide_cursor", str(CURSOR_HIDE_MS))
+            hidden = True
         report = {"theme": args.theme or "platform", "scale": args.scale, "liveScale": live,
                   "settingsBackend": settings.name, "cases": [], "composition": []}
 
@@ -869,8 +893,9 @@ def main():
             raise ValueError("SystemClock runs while the clock surface is closed")
         backdrop = verify_surfaces(shell, observed, resolvers)
         if args.grim:
-            report["composition"].append(verify_composition(shell, observed, backdrop, args.grim, resolvers,
-                                                            args.output_dir / "closed.png"))
+            report["composition"].append(verify_composition(
+                shell, closed, "Show clock ready for the closed capture", backdrop, args.grim, resolvers,
+                args.output_dir / "closed.png"))
         report["cases"].append("bar and backdrop publish the reference paint and truthful adjacent colours")
         if args.grim:
             report["cases"].append(COMPOSITION_CASE)
@@ -882,8 +907,9 @@ def main():
             raise ValueError("SystemClock is paused while the clock surface is open")
         verify_time(shell)
         if args.grim:
-            report["composition"].append(verify_composition(shell, shell.observe(), backdrop, args.grim, resolvers,
-                                                            args.output_dir / "open.png"))
+            report["composition"].append(verify_composition(
+                shell, opened, "the clock surface open for the open capture", backdrop, args.grim, resolvers,
+                args.output_dir / "open.png"))
         report["cases"].append("pointer activation opens the clock surface with keyboard focus on Close and live time")
 
         shell.key(KEY_SPACE)
@@ -1027,6 +1053,8 @@ def main():
             reader.close()
         if shell:
             shell.close()
+        if hidden:
+            compositor.message("seat", "*", "hide_cursor", "0")
         for process in reversed(processes):
             if isinstance(process, subprocess.Popen):
                 stop(process)

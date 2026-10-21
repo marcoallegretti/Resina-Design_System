@@ -204,9 +204,15 @@ With `--grim`, which also needs `--paint-raster` (`resina-paint-raster`),
 `--command-raster` (`resina-command-raster`) and `--command-resolver`
 (`resina-command-paint`), the check captures the output while closed
 (`closed.png`), while open (`open.png`) and, with `--live-scale`, after the
-scale change (`rescaled.png`). It compares every pixel of each capture with an
-expected capture that it builds independently of the shell's own images, saved
-beside it as `<capture>-expected.png`:
+scale change (`rescaled.png`). Sway draws its cursor into the captured output,
+so with `--grim` the check needs the single Sway IPC socket described for
+`--live-scale`. It sets `seat * hide_cursor 100` for the run and restores `0`
+at the end. Before each capture it moves the pointer to the output's last
+pixel, which lies on the backdrop, waits until the cursor is hidden and no
+Command is hovered, and observes the shell again. After the capture the
+publications, placements and text bounds must be unchanged. It compares every
+pixel of each capture with an expected capture that it builds independently of
+the shell's own images, saved beside it as `<capture>-expected.png`:
 
 - The expected capture starts as the backdrop's resolved `surface.base` colour.
   The bar and the clock window are opaque buffers of the same colour, which
@@ -231,7 +237,7 @@ beside it as `<capture>-expected.png`:
   is the exactly rounded blend `(c·a + d·(255 − a)) / 255`.
 - Each window buffer is placed where Sway places it. Every edge of its logical
   box, which must be whole, is multiplied by the output scale and rounded half
-  away from zero, as the wlroots 0.20 scene does
+  away from zero, as the wlroots scene does from 0.17 to 0.20
   ([`scale_box`](https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/0.20.2/types/scene/wlr_scene.c#L352-L361)).
   Qt sizes the buffer as the logical size times the scale rounded by `qRound`
   ([`QWaylandShmBackingStore`](https://github.com/qt/qtbase/blob/v6.11.2/src/plugins/platforms/wayland/qwaylandshmbackingstore.cpp#L409-L410)).

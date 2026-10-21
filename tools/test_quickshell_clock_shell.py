@@ -3,7 +3,7 @@ from unittest import mock
 
 import check_quickshell_clock_shell
 from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, DesktopBackend, PortalTestBackend, Shell,
-                                          closed, command_paint_request, label_foreground, opened, paint_bounds,
+                                          closed, command_paint_request, label_foreground, opened, paint_bounds, parked,
                                           platform_expectations, require_keys,
                                           tree_mismatch, verify_capture_size, verify_command_scale,
                                           verify_device_scale, verify_platform_preferences, verify_publication_scales)
@@ -106,6 +106,10 @@ class CommandPaintRequestTests(unittest.TestCase):
         color = {"colorSpace": "srgb", "components": [0.1, 0.2, 0.3], "alpha": 1}
         self.assertEqual(label_foreground({"foreground": color}), color)
         self.assertEqual(label_foreground({"face": {"foreground": color}}), color)
+
+    def test_a_capture_waits_until_no_command_is_hovered(self):
+        self.assertTrue(parked({"showClock": {"hovered": False}, "close": None}))
+        self.assertFalse(parked({"showClock": {"hovered": False}, "close": {"hovered": True}}))
 
     def test_paint_bounds_include_the_focus_ring(self):
         body = {"geometry": {"silhouette": {"bounds": {"x": 0, "y": 0, "width": 96, "height": 48}}}}
