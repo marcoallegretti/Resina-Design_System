@@ -1569,11 +1569,19 @@ The check also bounds the publication gap, on every host. The headless output
 refreshes at 60 Hz, so a predecessor whose `predecessorSpan` is at least 1/60 s
 saw an animation tick while it was prepared. For those frames the 75th
 percentile publication delay must be at most 4 ms. A predecessor published
-within one tick may correctly wait for the next tick and is not counted. With
-fewer than 20 such frames the gap is reported as not evaluated: the host rarely
-used the path the bound protects. `--require-gap` makes that a failure. CI
-requires it, so a runner that stops exercising the path fails rather than
-leaving the bound unchecked.
+within one tick may correctly wait for the next tick and is not counted. How
+many frames qualify depends on how long preparation takes, so a faster host
+yields fewer per press. The check therefore runs at least `--presses` cycles
+(10) and then continues, up to `--max-presses` (40), until 20 frames
+qualify. If fewer than 20 still qualify, the gap is reported as not evaluated
+and `--require-gap` makes that a failure. The one exception is a host on which
+the observed predecessor spans prove that none of at least 20 predecessors
+spanned a tick: no frame could then wait for a tick it had not seen, so the
+gap is reported as not applicable, `--require-gap` accepts it, and `gap` in
+`report.json` records `observed` and `longestSpan`. A host with even one
+predecessor that spanned a tick and fewer than 20 of them still fails. CI
+requires the gap, so a runner that exercises the path too rarely to bound it
+fails rather than leaving the bound unchecked.
 
 Measured locally at revision 4cb60fe in headless Sway 1.12 with the pixman
 renderer on a 1024×600 output, Quickshell 0.3.2 and the Qt 6.11.2 software
@@ -1585,8 +1593,8 @@ backend, with the floor enforced:
 | 2 | 19.6–22.0 ms | 15.5–17.6 ms | 0.58–0.68 ms |
 
 These are three runs at each scale, and the floor is met in each. At scale 1,
-only 11, 18 and 12 frames had a predecessor that spanned a tick, fewer than the
-20 the gap requires. At an earlier revision, with the call that resumes a due
+with ten presses, only 11, 18 and 12 frames had a predecessor that spanned a
+tick, fewer than the 20 the gap requires; continuing presses collects them. At an earlier revision, with the call that resumes a due
 frame after publication removed, the publication gap was 12.27 ms at scale 1
 and 11.49 ms at scale 2, failing the check, and the scale 2 median interval was
 31.9 ms.
