@@ -7,10 +7,11 @@ use resina_model::{
     OpaqueSurfaceAppearance, PhysicalVector, SurfaceIntent, SurfaceSize, TypographyRole,
 };
 use resina_resolver::{
-    HeadlessResolution, OpaquePigmentError, OpaqueSurfaceInput, bind_surface,
-    compile_theme_source_with_sources, opaque_contrast_ratio, resolve_edge_contrast,
-    resolve_focus_indicator, resolve_frost_legibility, resolve_frost_surface_readability,
-    resolve_key_light, resolve_opaque_pigment, resolve_opaque_surface, resolve_surface_readability,
+    HeadlessResolution, LegibilityGuardError, OpaquePigmentError, OpaqueSurfaceInput, bind_surface,
+    compile_theme_source_with_sources, resolve_edge_contrast, resolve_focus_indicator,
+    resolve_frost_legibility, resolve_frost_surface_readability, resolve_key_light,
+    resolve_legibility_guard, resolve_opaque_pigment, resolve_opaque_surface,
+    resolve_surface_readability,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -180,15 +181,6 @@ fn base_state_intent(material_role: &str, color_role: &str) -> SurfaceIntent {
     .unwrap()
 }
 
-fn minimum_contrast(result: &HeadlessResolution, front: ColorRole, back: ColorRole, minimum: f64) {
-    let colors = result.opaque_color_fallbacks();
-    let ratio = opaque_contrast_ratio(&colors[&front], &colors[&back]).unwrap();
-    assert!(
-        ratio >= minimum,
-        "{front:?} over {back:?}: {ratio} < {minimum}"
-    );
-}
-
 fn verify_srgb_hex(node: &Value) -> usize {
     let Some(object) = node.as_object() else {
         return 0;
@@ -302,44 +294,57 @@ fn authored_themes_compile_with_foundation_and_preserve_hierarchy() {
 }
 
 #[test]
-fn authored_opaque_role_pairs_clear_contrast_preflight() {
+fn authored_themes_pass_the_legibility_guard_vectors() {
+    let vectors: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/themes/legibility-guard-vectors.json"
+    ))
+    .unwrap();
+    assert_eq!(vectors.len(), 2);
     let environment = environment_for_scale(1.0);
-    for source in [LIGHT, DARK] {
+    for (vector, source) in vectors.iter().zip([LIGHT, DARK]) {
         let result = resolve(source, &environment);
-        for background in [
-            ColorRole::SurfaceBase,
-            ColorRole::SurfaceLow,
-            ColorRole::SurfaceHigh,
-            ColorRole::SurfaceChrome,
-        ] {
-            for foreground in [
-                ColorRole::ContentPrimary,
-                ColorRole::ContentSecondary,
-                ColorRole::ContentMuted,
-                ColorRole::StatusError,
-                ColorRole::StatusWarning,
-                ColorRole::StatusSuccess,
-                ColorRole::StatusInfo,
-            ] {
-                minimum_contrast(&result, foreground, background, 4.5);
-            }
-            minimum_contrast(&result, ColorRole::Outline, background, 3.0);
-            minimum_contrast(&result, ColorRole::Focus, background, 3.0);
-        }
-        minimum_contrast(
-            &result,
-            ColorRole::ContentPrimary,
-            ColorRole::Selection,
-            4.5,
-        );
-        for background in [
-            ColorRole::AccentPrimary,
-            ColorRole::AccentSecondary,
-            ColorRole::AccentTertiary,
-        ] {
-            minimum_contrast(&result, ColorRole::ContentInverse, background, 4.5);
+        let guard = resolve_legibility_guard(result.opaque_color_fallbacks()).unwrap();
+        let expected = vector["legibilityGuard"].as_array().unwrap();
+        assert_eq!(guard.len(), expected.len(), "{}", vector["name"]);
+        for (pair, expected) in guard.iter().zip(expected) {
+            let actual = serde_json::to_value(pair).unwrap();
+            assert_eq!(actual["foreground"], expected["foreground"]);
+            assert_eq!(actual["background"], expected["background"]);
+            assert_eq!(actual["minimumContrast"], expected["minimumContrast"]);
+            let ratio = expected["contrastRatio"].as_f64().unwrap();
+            assert!(
+                (pair.contrast_ratio() - ratio).abs() <= 1e-9,
+                "{}",
+                vector["name"]
+            );
+            assert!(pair.passed());
         }
     }
+}
+
+#[test]
+fn legibility_guard_rejects_a_failing_pair_without_results() {
+    let environment = environment_for_scale(1.0);
+    let result = resolve(LIGHT, &environment);
+    let mut colors = result.opaque_color_fallbacks().clone();
+    colors.insert(
+        ColorRole::ContentInverse,
+        colors[&ColorRole::AccentPrimary].clone(),
+    );
+    let Err(LegibilityGuardError::BelowMinimum(failed)) = resolve_legibility_guard(&colors) else {
+        panic!("guard accepted inverse content equal to the accents");
+    };
+    assert_eq!(failed.len(), 3);
+    assert!(
+        failed
+            .iter()
+            .all(|pair| pair.foreground() == ColorRole::ContentInverse)
+    );
+    colors.remove(&ColorRole::Focus);
+    assert_eq!(
+        resolve_legibility_guard(&colors),
+        Err(LegibilityGuardError::MissingRole(ColorRole::Focus))
+    );
 }
 
 #[test]

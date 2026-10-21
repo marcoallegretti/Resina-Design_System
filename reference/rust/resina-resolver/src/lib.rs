@@ -338,6 +338,11 @@ mod theme;
 pub use theme::{
     CompiledTheme, ThemeCompilationError, compile_theme_source, compile_theme_source_with_sources,
 };
+mod theme_legibility;
+pub use theme_legibility::{
+    LEGIBILITY_NON_TEXT_CONTRAST, LEGIBILITY_TEXT_CONTRAST, LegibilityGuardError,
+    LegibilityGuardPair, legibility_guard_pairs, resolve_legibility_guard,
+};
 mod theme_request;
 pub use theme_request::{ThemeResolutionError, resolve_theme_request_source};
 mod typography;

@@ -164,8 +164,8 @@ Opaque Frost remains Frost. Reduced transparency or high contrast does not
 replace its family with Cast. Focus remains identifiable without animation.
 [Actual content and edge contrast](../spec/28-surface-readability.md),
 [focus contrast](../spec/27-focus-indicator.md), measured text and
-[minimum targets](../spec/15-targets.md) take priority over appearance. Palette
-preflight alone does not prove readability over a rendered material or backdrop.
+[minimum targets](../spec/15-targets.md) take priority over appearance. The theme
+legibility guard alone does not prove readability over a rendered material or backdrop.
 
 ## Find the owning contract
 

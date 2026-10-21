@@ -480,6 +480,26 @@ def check_command_content(vectors, cases):
     return checked
 
 
+def check_legibility_guard_vectors():
+    validator = validator_for("schemas/theme-legibility-guard-case.schema.json")
+    vectors = load_json(ROOT / "conformance/themes/legibility-guard-vectors.json")
+    check_case(validator, "authored legibility guard vectors", vectors, True)
+    if [vector["theme"] for vector in vectors] != ["tokens/themes/light.json", "tokens/themes/dark.json"]:
+        raise ValueError("legibility guard vectors must cover the Light and Dark themes in order")
+    for name, index, member, value in [
+        ("lowered guard minimum", 38, "minimumContrast", 3),
+        ("reordered guard pair", 0, "foreground", "content.secondary"),
+        ("guard ratio below minimum", 8, "contrastRatio", 2.9),
+    ]:
+        invalid = copy.deepcopy(vectors)
+        invalid[0]["legibilityGuard"][index][member] = value
+        check_case(validator, name, invalid, False)
+    invalid = copy.deepcopy(vectors)
+    invalid[1]["legibilityGuard"].pop()
+    check_case(validator, "dropped guard pair", invalid, False)
+    return 5
+
+
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
@@ -708,6 +728,8 @@ def main():
         "schemas/theme-source-case.schema.json",
         "schemas/theme-resolution-case.schema.json",
         "schemas/theme-resolution-request.schema.json",
+        "schemas/theme-legibility-guard.schema.json",
+        "schemas/theme-legibility-guard-case.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
         "schemas/versions/surface-binding-0.1.0.schema.json",
         "schemas/versions/surface-binding-result-0.1.0.schema.json",
@@ -3305,6 +3327,7 @@ def main():
         check_case(slider_case_validator, name, case, True)
         check_case(slider_request_validator, name, apply_changes(slider_part_request, case["requestChanges"]), case["requestSchemaValid"])
         checked += 2
+    checked += check_legibility_guard_vectors()
     print(f"Validated {len(schema_paths)} normative schemas, 4 visual tool schemas and {checked} conformance cases")
 
 

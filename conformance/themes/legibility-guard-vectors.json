@@ -1,0 +1,454 @@
+[
+  {
+    "name": "authored Light theme",
+    "theme": "tokens/themes/light.json",
+    "legibilityGuard": [
+      {
+        "foreground": "content.primary",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 13.203061625783684
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.360707064230111
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.30761425132998
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.468787547277558
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.044867269450346
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.377782253665616
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.8714248718973705
+      },
+      {
+        "foreground": "outline",
+        "background": "surface.base",
+        "minimumContrast": 3.0,
+        "contrastRatio": 3.6071443966287937
+      },
+      {"foreground": "focus", "background": "surface.base", "minimumContrast": 3.0, "contrastRatio": 5.37768299675124},
+      {
+        "foreground": "content.primary",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 12.056594520180285
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.721551634807392
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 4.846735909559728
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 4.993913975662681
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 4.606804148903731
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 4.910810983692513
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.361588921006515
+      },
+      {"foreground": "outline", "background": "surface.low", "minimumContrast": 3.0, "contrastRatio": 3.293923682137804},
+      {"foreground": "focus", "background": "surface.low", "minimumContrast": 3.0, "contrastRatio": 4.9107203455962996},
+      {
+        "foreground": "content.primary",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 14.558678723037238
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 8.116463617290437
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.852570628014504
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.0302923035576566
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.562846244151663
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.929943091432147
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.474270194230811
+      },
+      {
+        "foreground": "outline",
+        "background": "surface.high",
+        "minimumContrast": 3.0,
+        "contrastRatio": 3.977505965401832
+      },
+      {"foreground": "focus", "background": "surface.high", "minimumContrast": 3.0, "contrastRatio": 5.929833643368631},
+      {
+        "foreground": "content.primary",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 12.598561258914499
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.0236981001838945
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.064605860316835
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.218399859000545
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 4.81388871298935
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.131561230283056
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 5.60260248889981
+      },
+      {
+        "foreground": "outline",
+        "background": "surface.chrome",
+        "minimumContrast": 3.0,
+        "contrastRatio": 3.441991784839571
+      },
+      {
+        "foreground": "focus",
+        "background": "surface.chrome",
+        "minimumContrast": 3.0,
+        "contrastRatio": 5.131466517832901
+      },
+      {
+        "foreground": "content.primary",
+        "background": "selection",
+        "minimumContrast": 4.5,
+        "contrastRatio": 10.362342114291135
+      },
+      {
+        "foreground": "content.inverse",
+        "background": "accent.primary",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.4540984368576595
+      },
+      {
+        "foreground": "content.inverse",
+        "background": "accent.secondary",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.241124933448053
+      },
+      {
+        "foreground": "content.inverse",
+        "background": "accent.tertiary",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.118236911427114
+      }
+    ]
+  },
+  {
+    "name": "authored Dark theme",
+    "theme": "tokens/themes/dark.json",
+    "legibilityGuard": [
+      {
+        "foreground": "content.primary",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 15.286348180607115
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 11.514109157906127
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 8.925043362573179
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 9.154324730946536
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 10.668804529910881
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 10.175222985055694
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.base",
+        "minimumContrast": 4.5,
+        "contrastRatio": 9.959800319558024
+      },
+      {
+        "foreground": "outline",
+        "background": "surface.base",
+        "minimumContrast": 3.0,
+        "contrastRatio": 6.963086890509236
+      },
+      {"foreground": "focus", "background": "surface.base", "minimumContrast": 3.0, "contrastRatio": 12.250976956697793},
+      {
+        "foreground": "content.primary",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 16.55846960346638
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 12.472306940126911
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 9.667780524342206
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 9.916142561108309
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 11.556656529515053
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 11.021999402073384
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.low",
+        "minimumContrast": 4.5,
+        "contrastRatio": 10.788649381754848
+      },
+      {"foreground": "outline", "background": "surface.low", "minimumContrast": 3.0, "contrastRatio": 7.542551122122434},
+      {"foreground": "focus", "background": "surface.low", "minimumContrast": 3.0, "contrastRatio": 13.270496468711912},
+      {
+        "foreground": "content.primary",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 10.926275115946442
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 8.229978990922358
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.379383620539335
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.543267844567815
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.62577772498652
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.272978764271794
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.high",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.119000372465689
+      },
+      {
+        "foreground": "outline",
+        "background": "surface.high",
+        "minimumContrast": 3.0,
+        "contrastRatio": 4.977029315507998
+      },
+      {"foreground": "focus", "background": "surface.high", "minimumContrast": 3.0, "contrastRatio": 8.756672495384969},
+      {
+        "foreground": "content.primary",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 11.145509988211307
+      },
+      {
+        "foreground": "content.secondary",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 8.395112888217703
+      },
+      {
+        "foreground": "content.muted",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.507385463650199
+      },
+      {
+        "foreground": "status.error",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 6.67455801206552
+      },
+      {
+        "foreground": "status.warning",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.778788370217088
+      },
+      {
+        "foreground": "status.success",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.418910525411791
+      },
+      {
+        "foreground": "status.info",
+        "background": "surface.chrome",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.261842568982709
+      },
+      {
+        "foreground": "outline",
+        "background": "surface.chrome",
+        "minimumContrast": 3.0,
+        "contrastRatio": 5.076893027035031
+      },
+      {
+        "foreground": "focus",
+        "background": "surface.chrome",
+        "minimumContrast": 3.0,
+        "contrastRatio": 8.932374457455204
+      },
+      {
+        "foreground": "content.primary",
+        "background": "selection",
+        "minimumContrast": 4.5,
+        "contrastRatio": 7.1290477091249835
+      },
+      {
+        "foreground": "content.inverse",
+        "background": "accent.primary",
+        "minimumContrast": 4.5,
+        "contrastRatio": 9.584778120855594
+      },
+      {
+        "foreground": "content.inverse",
+        "background": "accent.secondary",
+        "minimumContrast": 4.5,
+        "contrastRatio": 9.320795437322317
+      },
+      {
+        "foreground": "content.inverse",
+        "background": "accent.tertiary",
+        "minimumContrast": 4.5,
+        "contrastRatio": 9.250754599011698
+      }
+    ]
+  }
+]

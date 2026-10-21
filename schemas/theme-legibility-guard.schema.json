@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:theme-legibility-guard:0.1.0",
+  "title": "Resina Theme Legibility Guard Results",
+  "type": "array",
+  "minItems": 40,
+  "maxItems": 40,
+  "items": false,
+  "prefixItems": [
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.primary"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.secondary"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.muted"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.error"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.warning"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.success"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.info"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "outline"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "focus"}, "background": {"const": "surface.base"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.primary"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.secondary"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.muted"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.error"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.warning"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.success"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.info"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "outline"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "focus"}, "background": {"const": "surface.low"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.primary"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.secondary"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.muted"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.error"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.warning"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.success"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.info"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "outline"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "focus"}, "background": {"const": "surface.high"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.primary"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.secondary"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.muted"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.error"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.warning"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.success"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "status.info"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "outline"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/nonText", "properties": {"foreground": {"const": "focus"}, "background": {"const": "surface.chrome"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.primary"}, "background": {"const": "selection"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.inverse"}, "background": {"const": "accent.primary"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.inverse"}, "background": {"const": "accent.secondary"}}},
+    {"$ref": "#/$defs/text", "properties": {"foreground": {"const": "content.inverse"}, "background": {"const": "accent.tertiary"}}}
+  ],
+  "$defs": {
+    "pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["foreground", "background", "minimumContrast", "contrastRatio"],
+      "properties": {
+        "foreground": {"type": "string"},
+        "background": {"type": "string"},
+        "minimumContrast": {"type": "number"},
+        "contrastRatio": {"type": "number", "maximum": 21}
+      }
+    },
+    "text": {
+      "$ref": "#/$defs/pair",
+      "properties": {"minimumContrast": {"const": 4.5}, "contrastRatio": {"minimum": 4.5}}
+    },
+    "nonText": {
+      "$ref": "#/$defs/pair",
+      "properties": {"minimumContrast": {"const": 3}, "contrastRatio": {"minimum": 3}}
+    }
+  }
+}
