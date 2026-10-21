@@ -134,6 +134,23 @@ def evaluate(measured, minimum=MINIMUM_FRAMES):
                        "met": interval["median"] <= TARGET_INTERVAL and preparation["median"] <= TARGET_PREPARATION}}
 
 
+def gap_report(gap, presses, require):
+    if gap["evaluated"]:
+        return (f"MEASURED publication gap: 75th percentile {gap['delay'] * 1000:.2f} ms from publication to the "
+                f"next preparation over {gap['frames']} frames whose predecessor spanned an animation tick")
+    shortfall = (f"only {gap['frames']} of {gap['observed']} frames had a predecessor that spanned an animation tick "
+                 f"(longest {gap['longestSpan'] * 1000:.1f} ms against {TICK * 1000:.1f} ms) after {presses} press "
+                 f"cycles; {MINIMUM_FRAMES} are required to bound the publication gap"
+                 if gap["observed"] else f"no frame published its predecessor span after {presses} press cycles")
+    if require:
+        raise ValueError(shortfall + "; measure at a larger output scale, where preparation outlasts a tick")
+    if gap["unexercised"]:
+        return (f"NOT APPLICABLE publication gap: none of {gap['observed']} predecessors spanned an animation "
+                f"tick (longest {gap['longestSpan'] * 1000:.1f} ms against {TICK * 1000:.1f} ms), so no frame "
+                "could wait for a tick it had not seen")
+    return f"NOT EVALUATED publication gap: {shortfall}"
+
+
 def measure(session, motion, presses, max_presses, frames_per_phase, budget=MAX_SECONDS):
     session.input.move(*OUTSIDE)
     session.reset("motion", True)
@@ -187,7 +204,7 @@ def main():
     parser.add_argument("--floor", choices=("enforce", "report"), default="enforce",
                         help="Report the 30 Hz floor without failing, for hosts that do not qualify frame timing")
     parser.add_argument("--require-gap", action="store_true",
-                        help="Fail when too few frames exercise the publication path to bound its gap")
+                        help="Fail unless enough frames whose predecessor spanned an animation tick bound the publication gap")
     args = parser.parse_args()
     session = None
     try:
@@ -220,20 +237,7 @@ def main():
               f"{TARGET_PREPARATION * 1000:g} ms and median interval at most {TARGET_INTERVAL * 1000:g} ms "
               "(reported, not enforced)")
         gap = result["gap"]
-        if gap["evaluated"]:
-            print(f"MEASURED publication gap: 75th percentile {gap['delay'] * 1000:.2f} ms from publication to the "
-                  f"next preparation over {gap['frames']} frames whose predecessor spanned an animation tick")
-        elif gap["unexercised"]:
-            print(f"NOT APPLICABLE publication gap: none of {gap['observed']} predecessors spanned an animation "
-                  f"tick (longest {gap['longestSpan'] * 1000:.1f} ms against {TICK * 1000:.1f} ms), so no frame "
-                  "could wait for a tick it had not seen")
-        elif args.require_gap:
-            raise ValueError(f"only {gap['frames']} frames had a predecessor that spanned an animation tick after "
-                             f"{presses} press cycles; {MINIMUM_FRAMES} are "
-                             "required to bound the publication gap")
-        else:
-            print(f"NOT EVALUATED publication gap: only {gap['frames']} frames had a predecessor that spanned an "
-                  f"animation tick; {MINIMUM_FRAMES} are required")
+        print(gap_report(gap, presses, args.require_gap))
         if gap["evaluated"] and not gap["met"]:
             raise ValueError(f"the next preparation started {gap['delay'] * 1000:.2f} ms after publication at the "
                              f"75th percentile, beyond {GAP_BOUND * 1000:g} ms; frames wait for another animation tick")

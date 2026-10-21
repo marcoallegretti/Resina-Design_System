@@ -5,8 +5,8 @@ import tempfile
 import unittest
 
 from check_quickshell_command_motion_budget import (AppendedMotion, FLOOR_INTERVAL, GAP_BOUND, TICK,
-                                                     continuations, describe_tail, evaluate, measure, summary,
-                                                     tail, verify_scale)
+                                                     continuations, describe_tail, evaluate, gap_report,
+                                                     measure, summary, tail, verify_scale)
 from test_quickshell_command_motion import FIXTURE, HELD, REST, frame
 
 RETARGETED = {"bodyMix": {**REST, "initial": {"position": .4, "velocity": 1}}, "depthScale": copy.deepcopy(REST)}
@@ -178,6 +178,38 @@ class CommandMotionBudgetTests(unittest.TestCase):
         gap = evaluate(measured(.02, count=19, delay=.012, span=.01) + measured(.03, count=30))["gap"]
         self.assertEqual((gap["observed"], gap["unexercised"]), (19, False))
         self.assertTrue(evaluate(measured(.02, count=20, delay=.012, span=.01))["gap"]["unexercised"])
+
+    def test_a_required_gap_fails_for_every_count_below_the_minimum(self):
+        spanned = TICK + .02
+        for count in (0, 1, 5, 19):
+            result = evaluate(measured(.02, count=200, delay=.001, span=.01)
+                              + measured(.04, count=count, delay=.001, span=spanned))
+            with self.subTest(count=count):
+                self.assertEqual(result["gap"]["frames"], count)
+                with self.assertRaisesRegex(ValueError, rf"only {count} of 2\d\d frames"):
+                    gap_report(result["gap"], 600, True)
+                self.assertTrue(gap_report(result["gap"], 600, False).startswith(
+                    "NOT EVALUATED" if count else "NOT APPLICABLE"))
+
+    def test_a_required_gap_rejects_a_host_that_never_spanned_a_tick(self):
+        gap = evaluate(measured(.02, count=200, delay=.012, span=TICK - 1e-4))["gap"]
+        self.assertTrue(gap["unexercised"])
+        with self.assertRaisesRegex(ValueError, "only 0 of 200 frames.*larger output scale"):
+            gap_report(gap, 600, True)
+        self.assertTrue(gap_report(gap, 600, False).startswith("NOT APPLICABLE"))
+
+    def test_a_required_gap_without_published_spans_fails(self):
+        gap = evaluate(measured(.02, count=200))["gap"]
+        with self.assertRaisesRegex(ValueError, "no frame published its predecessor span"):
+            gap_report(gap, 10, True)
+        self.assertTrue(gap_report(gap, 10, False).startswith("NOT EVALUATED"))
+
+    def test_an_evaluated_gap_is_reported_whether_or_not_it_is_required(self):
+        gap = evaluate(measured(.04, count=20, delay=.002, span=.03))["gap"]
+        for require in (False, True):
+            self.assertEqual(gap_report(gap, 10, require),
+                             "MEASURED publication gap: 75th percentile 2.00 ms from publication to the next "
+                             "preparation over 20 frames whose predecessor spanned an animation tick")
 
     def test_a_slow_host_evaluates_a_delayed_publication(self):
         gap = evaluate(measured(.04, count=300, delay=.012, span=.028))["gap"]
