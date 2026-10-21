@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     fmt,
-    hash::{BuildHasherDefault, Hasher},
+    hash::{BuildHasherDefault, Hash, Hasher},
     sync::PoisonError,
 };
 
@@ -633,8 +633,15 @@ impl ReliefSampler<'_> {
             }
             return Ok(Some(sample));
         };
+        let bits = coordinate.to_bits();
+        if let Some(sample) = self
+            .shared
+            .and_then(|shared| shared.kept.lines[line].get(&bits))
+        {
+            return Ok(Some(*sample));
+        }
         self.lines[line]
-            .entry(coordinate.to_bits())
+            .entry(bits)
             .or_insert_with(|| relief.relief(x, y, |corner, u, v| relief.corner_gate(corner, u, v)))
             .clone()
             .map(Some)
@@ -643,16 +650,95 @@ impl ReliefSampler<'_> {
 
 impl Drop for ReliefSampler<'_> {
     fn drop(&mut self) {
+        let Some(shared) = self.shared else {
+            return;
+        };
         let [x, y] = &mut self.axes;
         let axes = [x.take_added(), y.take_added()];
-        if let Some(shared) = self.shared
-            && (!self.added.is_empty() || axes.iter().any(|added| !added.is_empty()))
+        // Only evaluated samples are kept, so a failing one is diagnosed again by a later render.
+        let lines = self.lines.each_mut().map(|line| {
+            line.drain()
+                .filter_map(|(bits, sample)| Some((bits, sample.ok()?)))
+                .collect::<Vec<_>>()
+        });
+        if !self.added.is_empty()
+            || axes.iter().any(|added| !added.is_empty())
+            || lines.iter().any(|added| !added.is_empty())
         {
             let mut added = shared.added.lock().unwrap_or_else(PoisonError::into_inner);
             added.samples.append(&mut self.added);
             for (kept, mut axis) in added.relief_axes.iter_mut().zip(axes) {
                 kept.append(&mut axis);
             }
+            for (kept, mut line) in added.lines.iter_mut().zip(lines) {
+                kept.append(&mut line);
+            }
+        }
+    }
+}
+
+/// The exact bits of a sample box's `min.x`, `min.y`, `max.x` and `max.y`.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) struct BoxKey([u64; 4]);
+
+impl Hash for BoxKey {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        let [a, b, c, d] = self.0;
+        state.write_u64(
+            a.rotate_left(48) ^ b.rotate_left(32) ^ c.rotate_left(16) ^ d ^ (a ^ c).rotate_left(5),
+        );
+    }
+}
+
+/// Flat-box certifications by the exact bits of their boxes.
+pub(crate) type FlatBoxes = HashMap<BoxKey, bool, BuildHasherDefault<CoordinateHasher>>;
+
+/// Evaluates [`SurfaceRelief::flat_over`] for many boxes, reusing the certifications `shared`
+/// keeps for this relief and adding the ones it evaluates.
+pub(crate) struct FlatnessSampler<'a> {
+    relief: &'a SurfaceRelief,
+    shared: Option<Shared<'a>>,
+    added: Vec<(BoxKey, bool)>,
+}
+
+impl SurfaceRelief {
+    pub(crate) fn flatness_keeping<'a>(
+        &'a self,
+        shared: Option<Shared<'a>>,
+    ) -> FlatnessSampler<'a> {
+        FlatnessSampler {
+            relief: self,
+            shared,
+            added: Vec::new(),
+        }
+    }
+}
+
+impl FlatnessSampler<'_> {
+    pub(crate) fn flat_over(&mut self, min: PhysicalVector, max: PhysicalVector) -> bool {
+        if self.relief.profile.kind == ReliefKind::Flat {
+            return true;
+        }
+        let Some(shared) = self.shared else {
+            return self.relief.flat_over(min, max);
+        };
+        let key = BoxKey([min.x, min.y, max.x, max.y].map(f64::to_bits));
+        if let Some(flat) = shared.kept.flat_boxes.get(&key) {
+            return *flat;
+        }
+        let flat = self.relief.flat_over(min, max);
+        self.added.push((key, flat));
+        flat
+    }
+}
+
+impl Drop for FlatnessSampler<'_> {
+    fn drop(&mut self) {
+        if let Some(shared) = self.shared
+            && !self.added.is_empty()
+        {
+            let mut added = shared.added.lock().unwrap_or_else(PoisonError::into_inner);
+            added.flat_boxes.append(&mut self.added);
         }
     }
 }

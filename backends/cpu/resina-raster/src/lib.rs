@@ -340,41 +340,44 @@ fn render_lit(
         samples_per_axis,
         face.pigment().body(),
         ring_color.as_slice(),
-        |region| {
-            if region.min.x >= content.x
-                && region.min.y >= content.y
-                && region.max.x <= content.x + content.width
-                && region.max.y <= content.y + content.height
-            {
-                return UniformRegion::Solid;
-            }
-            // Outside the silhouette the body paints nothing, so the focus ring decides.
-            if supported && uniform::outside(region, silhouette) {
-                match ring {
-                    None => return UniformRegion::Clear,
-                    Some(ring)
-                        if uniform::placed_outside(region, ring.outer())
-                            || uniform::placed_inside(region, ring.inner()) =>
-                    {
-                        return UniformRegion::Clear;
-                    }
-                    Some(ring)
-                        if uniform::placed_inside(region, ring.outer())
-                            && uniform::placed_outside(region, ring.inner()) =>
-                    {
-                        return UniformRegion::Fill(0);
-                    }
-                    Some(_) => {}
+        || {
+            let mut flatness = samplers.flatness();
+            move |region: SampleBox| {
+                if region.min.x >= content.x
+                    && region.min.y >= content.y
+                    && region.max.x <= content.x + content.width
+                    && region.max.y <= content.y + content.height
+                {
+                    return UniformRegion::Solid;
                 }
-            }
-            if plateau.is_some_and(|plateau| plateau.contains(region))
-                || supported
-                    && uniform::placed_inside(region, body.geometry().edge_interior())
-                    && body.flat_face_over(region.min, region.max)
-            {
-                UniformRegion::Solid
-            } else {
-                UniformRegion::Sample
+                // Outside the silhouette the body paints nothing, so the focus ring decides.
+                if supported && uniform::outside(region, silhouette) {
+                    match ring {
+                        None => return UniformRegion::Clear,
+                        Some(ring)
+                            if uniform::placed_outside(region, ring.outer())
+                                || uniform::placed_inside(region, ring.inner()) =>
+                        {
+                            return UniformRegion::Clear;
+                        }
+                        Some(ring)
+                            if uniform::placed_inside(region, ring.outer())
+                                && uniform::placed_outside(region, ring.inner()) =>
+                        {
+                            return UniformRegion::Fill(0);
+                        }
+                        Some(_) => {}
+                    }
+                }
+                if plateau.is_some_and(|plateau| plateau.contains(region))
+                    || supported
+                        && uniform::placed_inside(region, body.geometry().edge_interior())
+                        && flatness.flat_face_over(region.min, region.max)
+                {
+                    UniformRegion::Solid
+                } else {
+                    UniformRegion::Sample
+                }
             }
         },
         || {
@@ -440,21 +443,23 @@ fn render(
         samples_per_axis,
         solid_color,
         &[],
-        uniform,
+        || &uniform,
         || &sample,
     )
 }
 
-/// Renders with one sampler per painting thread, so a sampler may keep evaluations it reuses.
-fn render_sampled<S>(
+/// Renders with one uniform-region classifier and one sampler per painting thread, so each may
+/// keep evaluations it reuses.
+fn render_sampled<U, S>(
     viewport: Viewport,
     samples_per_axis: u8,
     solid_color: &SrgbFallback,
     fills: &[&SrgbFallback],
-    uniform: impl Fn(SampleBox) -> UniformRegion + Sync,
+    uniform: impl Fn() -> U + Sync,
     sampler: impl Fn() -> S + Sync,
 ) -> Result<RasterImage, RasterError>
 where
+    U: FnMut(SampleBox) -> UniformRegion,
     S: FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
 {
     let byte_count = validate(viewport, samples_per_axis)?;
@@ -473,7 +478,7 @@ where
             samples_per_axis,
             solid_color,
             fills,
-            uniform: &uniform,
+            uniform: uniform(),
             sample: sampler(),
             decoded: DecodedColors::default(),
             solid_pixel: None,
@@ -583,7 +588,7 @@ struct RowPainter<'a, U, S> {
     samples_per_axis: u8,
     solid_color: &'a SrgbFallback,
     fills: &'a [&'a SrgbFallback],
-    uniform: &'a U,
+    uniform: U,
     sample: S,
     decoded: DecodedColors,
     solid_pixel: Option<[u8; 4]>,
@@ -592,7 +597,7 @@ struct RowPainter<'a, U, S> {
 
 impl<U, S> RowPainter<'_, U, S>
 where
-    U: Fn(SampleBox) -> UniformRegion,
+    U: FnMut(SampleBox) -> UniformRegion,
     S: FnMut(PhysicalVector) -> Result<Option<SrgbFallback>, RasterError>,
 {
     fn paint(&mut self, row: &mut [u8], y: u32) -> Result<(), RasterError> {

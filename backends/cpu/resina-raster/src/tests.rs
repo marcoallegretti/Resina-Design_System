@@ -545,10 +545,13 @@ fn lit_reuse_across_motion_frames_matches_point_sampling() {
     let reuse = ReliefReuse::default();
     let mut regions = [0; 4];
     let mut compared = 0_usize;
+    // The first face returns after another and at another scale, whose boxes and samples it
+    // must not take for its own.
     for (size, scale) in [
         ([120.0, 44.0], 2.0_f64),
         ([96.0, 40.0], 1.25),
         ([120.0, 44.0], 2.0),
+        ([120.0, 44.0], 1.25),
     ] {
         for states in [json!(["pressed", "focused"]), json!(["focused"])] {
             for time in [0.0, 0.3] {

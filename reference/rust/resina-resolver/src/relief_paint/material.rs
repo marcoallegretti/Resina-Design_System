@@ -70,6 +70,13 @@ impl MaterialReliefPaint {
         self.face.sampler_keeping(shared)
     }
 
+    pub(crate) fn flatness_keeping<'a>(
+        &'a self,
+        shared: Option<Shared<'a>>,
+    ) -> crate::surface_relief::FlatnessSampler<'a> {
+        self.face.surface.flatness_keeping(shared)
+    }
+
     pub(crate) fn keeping<'a>(&self, reuse: &'a ReliefReuse) -> FaceKeeping<'a> {
         reuse.keeping(&self.face)
     }

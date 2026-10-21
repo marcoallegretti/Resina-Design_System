@@ -4,13 +4,14 @@ use crate::{
     resolve_edge_contrast_source, resolve_key_light, resolve_opaque_pigment_source,
     resolve_surface_outline_source, resolve_surface_relief,
     srgb_input::{SrgbInput, SrgbInputError},
-    surface_relief::{CoordinateMap, ReliefAxis, ReliefSampler},
+    surface_relief::{BoxKey, CoordinateMap, FlatBoxes, ReliefAxis, ReliefSampler},
 };
 use resina_color::OpaqueSrgbRange;
 use resina_model::{KeyLight, PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
 use std::{
+    collections::hash_map::Entry,
     fmt,
     sync::{Arc, Mutex, PoisonError},
 };
@@ -93,16 +94,22 @@ impl FaceTerms for FaceSampler<'_> {
 
 const RECENT_SHADES: usize = 8;
 
-/// The most corner samples a [`ReliefReuse`] keeps, about 16 MiB.
-const MAX_KEPT_SAMPLES: usize = 1 << 18;
+/// The most corner samples and flat-box certifications a [`ReliefReuse`] keeps across its faces,
+/// about 16 MiB.
+pub(crate) const MAX_KEPT_TERMS: usize = 1 << 18;
 
-/// Face terms kept between renders: relief and edge-interior axes and corner relief samples,
-/// keyed by the exact bits of the face's relief and edge width and of each coordinate. Motion
-/// frames sample the same face at the same points, and a kept term is exactly the one a new
-/// evaluation returns. The terms of a different face replace the kept ones.
+/// The most faces a [`ReliefReuse`] keeps, such as those of several controls in motion at once.
+const KEPT_FACES: usize = 4;
+
+/// Face terms kept between renders: relief and edge-interior axes, relief samples along the
+/// midlines, corner relief samples and flat-box certifications, keyed by the exact bits of the
+/// face's relief and edge width and of each coordinate. Motion frames sample the same face at the
+/// same points, and a kept term is exactly the one a new evaluation returns. The terms of the
+/// [`KEPT_FACES`] most recently rendered faces are kept.
 #[derive(Default)]
 pub struct ReliefReuse {
-    kept: Mutex<Option<Arc<KeptFace>>>,
+    /// Least recently rendered first.
+    kept: Mutex<Vec<Arc<KeptFace>>>,
 }
 
 #[derive(Clone, Default)]
@@ -110,7 +117,16 @@ pub(crate) struct KeptFace {
     identity: String,
     pub(crate) relief_axes: [CoordinateMap<ReliefAxis>; 2],
     pub(crate) edge_axes: [CoordinateMap<edge::EdgeAxis>; 2],
+    pub(crate) lines: [CoordinateMap<ReliefSample>; 2],
     pub(crate) samples: KeptSamples,
+    pub(crate) flat_boxes: FlatBoxes,
+}
+
+impl KeptFace {
+    /// The kept terms [`MAX_KEPT_TERMS`] bounds.
+    fn bounded_terms(&self) -> usize {
+        self.samples.values().map(Vec::len).sum::<usize>() + self.flat_boxes.len()
+    }
 }
 
 /// Kept corner samples by the bits of their `y` coordinate, each row ordered by the bits of `x`.
@@ -124,7 +140,19 @@ pub(crate) type KeptRow = [(u64, ReliefSample)];
 pub(crate) struct FaceAdditions {
     pub(crate) relief_axes: [Vec<(u64, ReliefAxis)>; 2],
     pub(crate) edge_axes: [Vec<(u64, edge::EdgeAxis)>; 2],
+    pub(crate) lines: [Vec<(u64, ReliefSample)>; 2],
     pub(crate) samples: Vec<([u64; 2], ReliefSample)>,
+    pub(crate) flat_boxes: Vec<(BoxKey, bool)>,
+}
+
+impl FaceAdditions {
+    fn is_empty(&self) -> bool {
+        self.samples.is_empty()
+            && self.flat_boxes.is_empty()
+            && self.relief_axes.iter().all(Vec::is_empty)
+            && self.edge_axes.iter().all(Vec::is_empty)
+            && self.lines.iter().all(Vec::is_empty)
+    }
 }
 
 /// What the samplers of one render share: the kept terms, and where they record their additions.
@@ -148,19 +176,18 @@ impl ReliefReuse {
             serde_json::to_string(&face.surface).expect("a resolved relief serializes"),
             face.edge_width.to_bits()
         );
-        let kept = self
-            .kept
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .as_ref()
-            .filter(|kept| kept.identity == identity)
-            .map(Arc::clone)
-            .unwrap_or_else(|| {
-                Arc::new(KeptFace {
-                    identity,
-                    ..KeptFace::default()
-                })
-            });
+        let mut faces = self.kept.lock().unwrap_or_else(PoisonError::into_inner);
+        let kept = match faces.iter().position(|kept| kept.identity == identity) {
+            Some(index) => {
+                let kept = faces.remove(index);
+                faces.push(Arc::clone(&kept));
+                kept
+            }
+            None => Arc::new(KeptFace {
+                identity,
+                ..KeptFace::default()
+            }),
+        };
         FaceKeeping {
             reuse: self,
             kept,
@@ -171,15 +198,24 @@ impl ReliefReuse {
 
 #[cfg(test)]
 impl ReliefReuse {
-    /// The kept face's identity and its numbers of corner samples, relief axes and edge axes.
-    pub(crate) fn kept_terms(&self) -> Option<(String, [usize; 3])> {
-        self.kept.lock().unwrap().as_ref().map(|kept| {
+    /// The identities of the kept faces, least recently rendered first.
+    pub(crate) fn kept_faces(&self) -> Vec<String> {
+        let faces = self.kept.lock().unwrap();
+        faces.iter().map(|kept| kept.identity.clone()).collect()
+    }
+
+    /// The most recently rendered face's identity and its numbers of corner samples, relief axes,
+    /// edge axes, midline samples and flat-box certifications.
+    pub(crate) fn kept_terms(&self) -> Option<(String, [usize; 5])> {
+        self.kept.lock().unwrap().last().map(|kept| {
             (
                 kept.identity.clone(),
                 [
                     kept.samples.values().map(Vec::len).sum(),
                     kept.relief_axes.iter().map(CoordinateMap::len).sum(),
                     kept.edge_axes.iter().map(CoordinateMap::len).sum(),
+                    kept.lines.iter().map(CoordinateMap::len).sum(),
+                    kept.flat_boxes.len(),
                 ],
             )
         })
@@ -198,23 +234,16 @@ impl FaceKeeping<'_> {
 impl Drop for FaceKeeping<'_> {
     fn drop(&mut self) {
         let added = std::mem::take(self.added.get_mut().unwrap_or_else(PoisonError::into_inner));
-        let empty = added.samples.is_empty()
-            && added.relief_axes.iter().all(Vec::is_empty)
-            && added.edge_axes.iter().all(Vec::is_empty);
-        let mut kept = self
+        let mut faces = self
             .reuse
             .kept
             .lock()
             .unwrap_or_else(PoisonError::into_inner);
-        if empty
-            && kept
-                .as_ref()
-                .is_some_and(|kept| Arc::ptr_eq(kept, &self.kept))
-        {
+        if added.is_empty() && faces.iter().any(|kept| Arc::ptr_eq(kept, &self.kept)) {
             return;
         }
-        // Release the kept copy first, so that extending this render's terms does not clone them.
-        *kept = None;
+        // Release the kept copies first, so that extending this render's terms does not clone them.
+        faces.retain(|kept| kept.identity != self.kept.identity);
         let face = Arc::make_mut(&mut self.kept);
         for (axes, added) in face.relief_axes.iter_mut().zip(added.relief_axes) {
             axes.extend(added);
@@ -222,9 +251,20 @@ impl Drop for FaceKeeping<'_> {
         for (axes, added) in face.edge_axes.iter_mut().zip(added.edge_axes) {
             axes.extend(added);
         }
-        let mut count: usize = face.samples.values().map(Vec::len).sum();
+        for (lines, added) in face.lines.iter_mut().zip(added.lines) {
+            lines.extend(added);
+        }
+        let mut count =
+            faces.iter().map(|kept| kept.bounded_terms()).sum::<usize>() + face.bounded_terms();
+        // Room for one more bounded term, made by forgetting the least recently rendered faces.
+        let mut room = |count: &mut usize| {
+            while *count >= MAX_KEPT_TERMS && !faces.is_empty() {
+                *count -= faces.remove(0).bounded_terms();
+            }
+            *count < MAX_KEPT_TERMS
+        };
         for ([x, y], sample) in added.samples {
-            if count >= MAX_KEPT_SAMPLES {
+            if !room(&mut count) {
                 break;
             }
             let row = face.samples.entry(y).or_default();
@@ -233,7 +273,19 @@ impl Drop for FaceKeeping<'_> {
                 count += 1;
             }
         }
-        *kept = Some(Arc::clone(&self.kept));
+        for (key, flat) in added.flat_boxes {
+            if !room(&mut count) {
+                break;
+            }
+            if let Entry::Vacant(entry) = face.flat_boxes.entry(key) {
+                entry.insert(flat);
+                count += 1;
+            }
+        }
+        if faces.len() == KEPT_FACES {
+            faces.remove(0);
+        }
+        faces.push(Arc::clone(&self.kept));
     }
 }
 

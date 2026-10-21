@@ -1574,10 +1574,12 @@ check without `--floor report` on the qualifying machine.
 
 Successive frames of one Command paint the same lit face at the same samples;
 only light, pigment, depth and focus change. The runtime therefore keeps that
-face's relief and edge-interior terms between renders on the GUI thread, keyed
-by the exact bits of the face and of each sample coordinate, and a different
-face replaces them. A kept term is the one a new evaluation returns, so every
-frame is byte-identical to one rendered without them.
+face's relief and edge-interior terms, midline relief samples and flat-box
+certifications between renders on the GUI thread, keyed by the exact bits of
+the face and of each sample coordinate or box. It keeps the four most recently
+rendered faces, so Commands in motion together do not displace each other,
+within a bound of about 16 MiB. A kept term is the one a new evaluation
+returns, so every frame is byte-identical to one rendered without them.
 
 The check also bounds the publication gap, on every host. The headless output
 refreshes at 60 Hz, so a predecessor whose `predecessorSpan` is at least 1/60 s

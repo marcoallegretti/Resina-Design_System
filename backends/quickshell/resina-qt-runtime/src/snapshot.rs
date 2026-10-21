@@ -192,7 +192,7 @@ thread_local! {
     static PARSED: RefCell<Option<(String, Rc<ParsedRequest>)>> = const { RefCell::new(None) };
     static RESERVATION: RefCell<Option<(String, CommandLabelIr, HitRegionIr)>> =
         const { RefCell::new(None) };
-    // Motion frames paint the same lit face; its relief terms are kept between them.
+    // Motion frames paint the same lit faces; their relief terms are kept between them.
     static RELIEF: ReliefReuse = ReliefReuse::default();
 }
 

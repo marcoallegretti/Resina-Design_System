@@ -7,6 +7,7 @@ use crate::{
     relief_paint::{FaceKeeping, FaceSampler, FaceTerms, ReliefReuse},
     resolve_extruded_contour, resolve_inset_contour, resolve_key_light, resolve_opaque_pigment,
     resolve_relief_paint, resolve_surface_outline, resolve_surface_relief,
+    surface_relief::FlatnessSampler,
 };
 use resina_color::OpaqueSrgbRange;
 use resina_environment::EnvironmentSnapshot;
@@ -452,6 +453,22 @@ impl LitControlBodySamplers<'_> {
             face: self.body.face.sampler_keeping(Some(self.keeping.shared())),
         }
     }
+
+    /// An evaluator of [`flat_face_over`](LitControlBodyIr::flat_face_over) that reuses, and adds
+    /// to, the certifications kept for this face.
+    pub fn flatness(&self) -> LitControlBodyFlatness<'_> {
+        LitControlBodyFlatness(self.body.face.flatness_keeping(Some(self.keeping.shared())))
+    }
+}
+
+/// See [`LitControlBodySamplers::flatness`].
+pub struct LitControlBodyFlatness<'a>(FlatnessSampler<'a>);
+
+impl LitControlBodyFlatness<'_> {
+    /// Equal to [`LitControlBodyIr::flat_face_over`] for every box.
+    pub fn flat_face_over(&mut self, min: PhysicalVector, max: PhysicalVector) -> bool {
+        self.0.flat_over(min, max)
+    }
 }
 
 /// See [`LitControlBodyIr::sampler`].
@@ -547,6 +564,7 @@ impl std::error::Error for LitControlPaintSampleError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::relief_paint::MAX_KEPT_TERMS;
     use serde_json::{Value, json};
 
     fn body(depth: f64, radii: [f64; 4], layout: &str) -> LitControlBodyIr {
@@ -625,6 +643,8 @@ mod tests {
             let body = body(depth, radii, "ltr");
             let samplers = body.samplers(&reuse);
             let mut sampler = samplers.sampler();
+            let mut flatness = samplers.flatness();
+            let mut flat = 0;
             for iy in 0..200 {
                 for ix in 0..350 {
                     let point = PhysicalVector {
@@ -636,14 +656,33 @@ mod tests {
                         bits(body.sample_paint(point).unwrap()),
                         "{depth} {radii:?} {point:?}"
                     );
+                    // Boxes of two extents share each corner point, so a box keyed by its
+                    // minimum alone would return the other's certification.
+                    if ix % 3 != 0 || iy % 3 != 0 {
+                        continue;
+                    }
+                    for extent in [0.21, 2.9] {
+                        let max = PhysicalVector {
+                            x: point.x + extent,
+                            y: point.y + extent,
+                        };
+                        let certified = body.flat_face_over(point, max);
+                        assert_eq!(
+                            flatness.flat_face_over(point, max),
+                            certified,
+                            "{depth} {radii:?} {point:?} {extent}"
+                        );
+                        flat += usize::from(certified);
+                    }
                 }
             }
-            drop(sampler);
+            assert!(flat > 5_000 && flat < 12_000, "{flat}");
+            drop((sampler, flatness));
             drop(samplers);
             kept.push(reuse.kept_terms().unwrap());
         }
         let [first, deeper, other, again, repeated] = kept.try_into().unwrap();
-        assert!(first.1.iter().all(|count| *count > 300), "{:?}", first.1);
+        assert!(first.1.iter().all(|count| *count > 250), "{:?}", first.1);
         // A deeper body has the same face, whose kept terms it extends where its deeper sweep
         // reaches more of the edge band.
         assert_eq!(deeper.0, first.0);
@@ -654,11 +693,70 @@ mod tests {
                 .zip(first.1)
                 .all(|(deeper, first)| *deeper >= first)
         );
-        // Another face replaces the kept terms, which are evaluated again when the first returns
-        // and are complete once it has rendered.
+        // Another face is kept beside the first, whose terms are complete when it returns.
         assert_ne!(other.0, first.0);
-        assert_eq!(again, first);
+        assert_eq!(again, deeper);
         assert_eq!(repeated, again);
+        assert_eq!(reuse.kept_faces(), [other.0.clone(), first.0.clone()]);
+    }
+
+    #[test]
+    fn reuse_keeps_the_most_recently_rendered_faces() {
+        let reuse = ReliefReuse::default();
+        let point = PhysicalVector { x: 3.1, y: 2.7 };
+        let mut identities = Vec::new();
+        for radius in [10.0, 12.0, 14.0, 16.0, 18.0, 10.0] {
+            let body = body(0.5, [radius; 4], "ltr");
+            let samplers = body.samplers(&reuse);
+            assert_eq!(
+                samplers.sampler().sample_paint(point).unwrap(),
+                body.sample_paint(point).unwrap()
+            );
+            drop(samplers);
+            identities.push(reuse.kept_terms().unwrap().0);
+        }
+        // The fifth face forgot the first, the least recently rendered; rendering it again keeps
+        // it as the most recent and forgets the second.
+        assert_ne!(identities[0], identities[1]);
+        assert_eq!(identities[5], identities[0]);
+        assert_eq!(reuse.kept_faces(), identities[2..].to_vec());
+    }
+
+    #[test]
+    fn reuse_forgets_older_faces_to_stay_within_its_bound() {
+        let reuse = ReliefReuse::default();
+        let mut identities = Vec::new();
+        for radii in [[20.0, 12.0, 16.0, 10.0], [24.0; 4]] {
+            let body = body(0.5, radii, "ltr");
+            let samplers = body.samplers(&reuse);
+            let mut flatness = samplers.flatness();
+            for iy in 0..400 {
+                for ix in 0..400 {
+                    let min = PhysicalVector {
+                        x: f64::from(ix) * 0.24 + 0.0137,
+                        y: f64::from(iy) * 0.12 + 0.0071,
+                    };
+                    let max = PhysicalVector {
+                        x: min.x + 0.1,
+                        y: min.y + 0.1,
+                    };
+                    assert_eq!(
+                        flatness.flat_face_over(min, max),
+                        body.flat_face_over(min, max)
+                    );
+                }
+            }
+            drop(flatness);
+            drop(samplers);
+            identities.push(reuse.kept_terms().unwrap());
+        }
+        let [first, second] = identities.try_into().unwrap();
+        // Together the two faces' certifications exceed the bound, so keeping the second's
+        // forgets the first, the least recently rendered.
+        const { assert!(2 * 160_000 > MAX_KEPT_TERMS && 160_000 < MAX_KEPT_TERMS) };
+        assert_eq!(first.1[4], 160_000);
+        assert_eq!(second.1[4], 160_000);
+        assert_eq!(reuse.kept_faces(), [second.0]);
     }
 
     #[test]

@@ -17,9 +17,9 @@ pub use relief_paint::{
 };
 mod lit_control_body;
 pub use lit_control_body::{
-    ControlRelief, LitControlBodyError, LitControlBodyGeometry, LitControlBodyInput,
-    LitControlBodyIr, LitControlBodySampler, LitControlBodySamplers, LitControlIdentity,
-    LitControlPaintIr, LitControlPaintSampleError, parse_control_relief_source,
+    ControlRelief, LitControlBodyError, LitControlBodyFlatness, LitControlBodyGeometry,
+    LitControlBodyInput, LitControlBodyIr, LitControlBodySampler, LitControlBodySamplers,
+    LitControlIdentity, LitControlPaintIr, LitControlPaintSampleError, parse_control_relief_source,
     parse_light_channels_source, resolve_lit_control_body,
 };
 mod surface_relief;
