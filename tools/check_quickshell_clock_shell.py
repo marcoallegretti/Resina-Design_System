@@ -417,6 +417,8 @@ def composition_windows(shell, observed, tools, background):
             if run([tools["command"], "-"], json.dumps(request)) != snapshot["paint"]:
                 raise ValueError(f"the captured {part} paint is not the reference resolution of its request")
             placement = observed["placements"][part]
+            if placement is None:
+                raise ValueError(f"the {part} Command is published but has no window placement")
             layers.append(layer(part, tools["commandRaster"], request, snapshot["paint"]["paint"], placement, scale,
                                 observed["samples"][part]))
             label = snapshot["label"]["labelBounds"]

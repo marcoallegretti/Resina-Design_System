@@ -142,6 +142,13 @@ ShellRoot {
         return {x: point.x, y: point.y};
     }
 
+    function controlPlacement(control) {
+        if (!control || !control.ready)
+            return null;
+        const point = control.coordinateFrame.mapToItem(null, 0, 0);
+        return {x: point.x, y: point.y};
+    }
+
     function bounds(item) {
         const point = placement(item);
         return point ? {x: point.x, y: point.y, width: item.width, height: item.height} : null;
@@ -458,8 +465,8 @@ ShellRoot {
                 windows: {bar: {x: 0, y: 0, width: bar.width, height: bar.height},
                     clock: {x: 0, y: clockWindow.margins.top, width: clockWindow.width, height: clockWindow.height}},
                 placements: {bar: root.placement(barSurface), clock: root.placement(clockSurface),
-                    showClock: show && show.ready ? root.placement(show.coordinateFrame) : null,
-                    close: close && close.ready ? root.placement(close.coordinateFrame) : null},
+                    showClock: root.controlPlacement(show),
+                    close: root.controlPlacement(close)},
                 samples: {bar: barSurface.samplesPerAxis, clock: clockSurface.samplesPerAxis,
                     showClock: show ? show.samplesPerAxis : null, close: close ? close.samplesPerAxis : null},
                 texts: {time: clockSurface.paintReady ? root.bounds(time) : null,
