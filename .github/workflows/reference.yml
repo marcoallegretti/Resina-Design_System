@@ -112,7 +112,7 @@ jobs:
           cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
           cargo build --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --locked
           cargo build -p resina-raster --bin resina-command-raster --bin resina-command-motion-raster --bin resina-toggle-part-raster --bin resina-toggle-part-motion-raster --bin resina-paint-raster --locked
-          cargo build -p resina-resolver --bin resina-theme-resolve --bin resina-surface-paint --locked
+          cargo build -p resina-resolver --bin resina-theme-resolve --bin resina-surface-paint --bin resina-command-paint --locked
           python tools/material_scenarios.py -- target/qt-runtime-build/debug/resina-theme-resolve - > target/material-scenes.json
           python tools/prepare_qt_runtime_module.py --library target/qt-runtime-build/debug/libresina_qt_runtime.so --metadata-dir target/qt-runtime-export/qml_modules/Resina/Runtime --output-dir target/qt-runtime-import
       - name: Build the release runtime module for motion timing
@@ -222,7 +222,10 @@ jobs:
             --font-dir /usr/share/fonts/opentype/inter \
             --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
             --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
-            --grim /usr/bin/grim --output-dir target/quickshell-clock-shell --scale 1 \
+            --grim /usr/bin/grim --paint-raster target/qt-runtime-build/debug/resina-paint-raster \
+            --command-raster target/qt-runtime-build/debug/resina-command-raster \
+            --command-resolver target/qt-runtime-build/debug/resina-command-paint \
+            --output-dir target/quickshell-clock-shell --scale 1 \
             --test-settings --require reduced-motion contrast color-scheme
       - name: Check compositor-delivered Toggle lifecycle in released Quickshell
         timeout-minutes: 15
@@ -276,7 +279,10 @@ jobs:
               --font-dir /usr/share/fonts/opentype/inter \
               --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
               --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
-              --grim /usr/bin/grim --output-dir "target/quickshell-clock-shell-$scale" \
+              --grim /usr/bin/grim --paint-raster target/qt-runtime-build/debug/resina-paint-raster \
+              --command-raster target/qt-runtime-build/debug/resina-command-raster \
+              --command-resolver target/qt-runtime-build/debug/resina-command-paint \
+              --output-dir "target/quickshell-clock-shell-$scale" \
               --scale "$scale" --live-scale "$live" --require contrast color-scheme || status=1
             kill "$sway_pid" || true
             wait "$sway_pid" || true
@@ -337,6 +343,8 @@ jobs:
             target/quickshell-command-motion-*/
             target/scale-sway-*.log
             target/quickshell-command-motion-budget-*/
+            target/quickshell-clock-shell*/*.png
+            target/quickshell-clock-shell*/report.json
             target/budget-sway-*.log
             target/qt-platform-appearance/
             target/quickshell-clock-shell/
