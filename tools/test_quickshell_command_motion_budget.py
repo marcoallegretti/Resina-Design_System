@@ -191,16 +191,19 @@ class CommandMotionBudgetTests(unittest.TestCase):
         self.assertEqual((gap["frames"], gap["evaluated"], gap["unexercised"]), (19, False, False))
 
     def test_presses_continue_until_enough_frames_spanned_a_tick(self):
-        motion = FakeMotion(spanning_every=20)
-        session = FakeSession(motion)
-        frames, presses = measure(session, motion, 3, 100, 6)
-        qualifying = evaluate(continuations(frames))["gap"]["frames"]
-        self.assertEqual((qualifying, session.cycles, presses), (20, 34, 34))
+        # Each press publishes 12 frames, so one spanning frame in every 12, 40 or 120 is 1, 0.3 or 0.1 per press.
+        for every, qualifying, cycles in ((12, 22, 23), (40, 20, 68), (120, 20, 203)):
+            with self.subTest(every=every):
+                motion = FakeMotion(spanning_every=every)
+                session = FakeSession(motion)
+                frames, presses = measure(session, motion, 3, 600, 6)
+                self.assertEqual((evaluate(continuations(frames))["gap"]["frames"], session.cycles, presses),
+                                 (qualifying, cycles, cycles))
 
     def test_presses_stop_at_the_minimum_when_enough_frames_already_spanned_a_tick(self):
         motion = FakeMotion(spanning_every=2)
         session = FakeSession(motion)
-        measure(session, motion, 5, 100, 6)
+        measure(session, motion, 5, 600, 6)
         self.assertEqual(session.cycles, 5)
 
     def test_presses_stop_at_the_cap_when_a_host_never_spans_a_tick(self):
@@ -209,6 +212,12 @@ class CommandMotionBudgetTests(unittest.TestCase):
         frames, presses = measure(session, motion, 3, 8, 6)
         self.assertEqual((session.cycles, presses), (8, 8))
         self.assertTrue(evaluate(continuations(frames))["gap"]["unexercised"])
+
+    def test_presses_stop_when_the_time_budget_is_spent(self):
+        motion = FakeMotion(spanning_every=0)
+        session = FakeSession(motion)
+        measure(session, motion, 3, 600, 6, budget=-1)
+        self.assertEqual(session.cycles, 3)
 
     def test_motion_frames_are_parsed_once_from_the_complete_lines_of_a_growing_log(self):
         def line(event):

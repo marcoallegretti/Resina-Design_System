@@ -7,6 +7,7 @@ from pathlib import Path
 import statistics
 import subprocess
 import sys
+import time
 
 from check_qt_command_snapshot_runtime import ROOT
 from check_quickshell_command_lifecycle import OUTSIDE, Session, read_events
@@ -26,8 +27,12 @@ TICK = 1 / 60
 GAP_PERCENTILE = .75
 GAP_BOUND = .004
 # A host whose preparation rarely outlasts a tick yields few qualifying frames per press, so the measured phase
-# continues past the minimum presses until the gap has enough frames or this many presses have run.
-MAX_PRESSES = 40
+# continues past the minimum presses until the gap has enough frames, this many presses have run or the time
+# budget is spent. The budget plus the overshoot of one stride must fit the CI step timeout for both scales.
+MAX_PRESSES = 600
+MAX_SECONDS = 240
+# Counting qualifying frames walks every frame, so it runs once per stride of presses.
+CHECK_STRIDE = 5
 
 
 class AppendedMotion(Motion):
@@ -129,14 +134,17 @@ def evaluate(measured, minimum=MINIMUM_FRAMES):
                        "met": interval["median"] <= TARGET_INTERVAL and preparation["median"] <= TARGET_PREPARATION}}
 
 
-def measure(session, motion, presses, max_presses, frames_per_phase):
+def measure(session, motion, presses, max_presses, frames_per_phase, budget=MAX_SECONDS):
     session.input.move(*OUTSIDE)
     session.reset("motion", True)
     session.settle(lambda current: not current["hovered"], "pointer outside the Command")
     start = len(motion.frames())
     press = 0
-    while press < max_presses and (press < presses or len(qualifying(continuations(motion.frames()[start:])))
-                                   < MINIMUM_FRAMES):
+    deadline = time.monotonic() + budget
+    while press < max_presses and not (
+            press >= presses and (press - presses) % CHECK_STRIDE == 0
+            and (len(qualifying(continuations(motion.frames()[start:]))) >= MINIMUM_FRAMES
+                 or time.monotonic() > deadline)):
         for pressed in (True, False):
             phase = len(motion.frames())
             session.input.key(KEY_SPACE, pressed)
@@ -173,6 +181,8 @@ def main():
     parser.add_argument("--presses", type=int, default=10, help="Minimum number of press and release cycles")
     parser.add_argument("--max-presses", type=int, default=MAX_PRESSES,
                         help="Cycles after which measuring stops even if the publication gap lacks frames")
+    parser.add_argument("--max-seconds", type=float, default=MAX_SECONDS,
+                        help="Seconds after which measuring stops once the minimum has run, checked every five cycles")
     parser.add_argument("--frames-per-phase", type=int, default=6)
     parser.add_argument("--floor", choices=("enforce", "report"), default="enforce",
                         help="Report the 30 Hz floor without failing, for hosts that do not qualify frame timing")
@@ -181,6 +191,7 @@ def main():
     args = parser.parse_args()
     session = None
     try:
+        seconds(args.max_seconds, "--max-seconds")
         host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
         fonts = conformance_font.qml_sources(args.font_dir)
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
@@ -194,7 +205,7 @@ def main():
         verify_scale(session.current(), args.scale)
         motion = AppendedMotion(session)
         frames, presses = measure(session, motion, args.presses, max(args.presses, args.max_presses),
-                                  args.frames_per_phase)
+                                  args.frames_per_phase, args.max_seconds)
         measured = continuations(frames)
         (args.output_dir / "report.json").write_text(
             json.dumps({"scale": args.scale, "presses": presses, "measured": measured}), encoding="utf-8")
