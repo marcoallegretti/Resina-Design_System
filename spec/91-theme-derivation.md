@@ -1,6 +1,6 @@
 # Theme derivation from explicit seeds (candidate, schema 0.1.0)
 
-A consumer can derive Light and Dark theme sources from one explicit sRGB seed. The [authored themes](23-authored-themes.md), or other complete theme sources, act as templates. The derivation replaces the accent, selection and focus roles and keeps every other role as authored. It runs in Oklch with a fixed gamut-mapping rule, and every derived theme must pass the [legibility guard](23-authored-themes.md#legibility-guard).
+A consumer can derive Light and Dark theme sources from one explicit sRGB seed. The [authored themes](23-authored-themes.md), or other complete theme sources, act as templates. The derivation replaces the accent, selection and focus roles and keeps every other role as authored. It runs in Oklch with a fixed gamut-mapping rule, and every derived theme must pass the [legibility guard](23-authored-themes.md#legibility-guard). The reasons for this model are recorded in [ADR 0007](../docs/adr/0007-dynamic-colour-model.md).
 
 Core does not acquire seeds. Reading a wallpaper or image, extracting and quantizing candidates, scoring them and reading a platform accent all belong to consumers and backends. One platform seed source is the XDG Desktop Portal `org.freedesktop.appearance` `accent-color` key. Its value is an sRGB tuple, and a component outside `[0, 1]` means the key is unset. A consumer passes an accepted value through unchanged; there is no hidden default seed.
 
