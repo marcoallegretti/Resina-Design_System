@@ -533,7 +533,10 @@ both axes and directions, rest/focused/disabled/read-only/pointer-preview states
 scales 1/1.25/2, and wrapped English/Arabic labels at textScale 2. Every part's
 placed sampling grid is checked against the canonical CPU paint, opaque native
 pixels against the prepared image, and actual glyph coverage against the
-reserved label slot and checked backdrop. Labels use nonzero tracking.
+reserved label slot and checked backdrop. A device pixel split by a slot edge
+that is off the device grid may hold at most the coverage of its share inside
+the slot; a pixel wholly outside holds none. Ink moved one device pixel past
+any slot edge is reported. Labels use nonzero tracking.
 Unrepresentable spacing, approximate measurements and invalid raster inputs fail
 before command publication.
 `RESINA_SLIDER_CAPTURE_DIR` saves the tested PPM frames.
