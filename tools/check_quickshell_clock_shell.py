@@ -87,6 +87,12 @@ def verify_publication_scales(runs, initial, final=None):
                              + (f"{initial!r}" if final is None else f"{initial!r} and then {final!r}"))
 
 
+def require_placements(observed):
+    for part in SURFACE_WINDOWS:
+        if observed[part] and observed["placements"][part] is None:
+            raise ValueError(f"the {part} Command is published but has no window placement")
+
+
 class Shell:
     def __init__(self, host, module, fonts, theme, output, platform, scale):
         self.host, self.output, self.scale, self.initial_scale = host, output, scale, scale
@@ -172,6 +178,7 @@ class Shell:
         errors = {part: error for part, error in observed["errors"].items() if error}
         if observed["loadError"] or (errors and observed["open"] and observed["clock"]):
             raise ValueError(f"clock shell reported errors: {observed['loadError'] or errors}")
+        require_placements(observed)
         return observed
 
     def check_log(self):
@@ -417,8 +424,6 @@ def composition_windows(shell, observed, tools, background):
             if run([tools["command"], "-"], json.dumps(request)) != snapshot["paint"]:
                 raise ValueError(f"the captured {part} paint is not the reference resolution of its request")
             placement = observed["placements"][part]
-            if placement is None:
-                raise ValueError(f"the {part} Command is published but has no window placement")
             layers.append(layer(part, tools["commandRaster"], request, snapshot["paint"]["paint"], placement, scale,
                                 observed["samples"][part]))
             label = snapshot["label"]["labelBounds"]

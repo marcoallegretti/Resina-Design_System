@@ -313,17 +313,19 @@ class ClockShellAccessibilityTests(unittest.TestCase):
         self.assertRegex(tree_mismatch(nodes, ["Show clock", "Close"], DATE), "^Buttons without a Press action")
 
 
-
-class CompositionPlacementTests(unittest.TestCase):
+class PlacementTests(unittest.TestCase):
     def test_a_published_command_without_a_placement_is_named(self):
-        shell = mock.Mock(scale=1, call=mock.Mock(return_value="{}"))
-        observed = {"bar": {"paint": 1}, "clock": None, "showClock": {"snapshot": {"paint": {"paint": 1}, "label": {"labelBounds": {"x": 0, "y": 0, "width": 1, "height": 1}}}},
-                    "close": None, "placements": {"bar": {"x": 0, "y": 0}, "showClock": None},
-                    "samples": {"bar": 2, "showClock": 4}}
-        with mock.patch.object(check_quickshell_clock_shell, "run", return_value=observed["bar"]),                 mock.patch.object(check_quickshell_clock_shell, "layer"),                 mock.patch.object(check_quickshell_clock_shell, "command_paint_request", return_value={}),                 mock.patch.object(check_quickshell_clock_shell, "expected_states", return_value={"states": []}):
-            with self.assertRaisesRegex(ValueError, "showClock Command is published but has no window placement"):
-                check_quickshell_clock_shell.composition_windows(shell, observed, {"surface": "s", "paintRaster": "p",
-                                                                                    "command": "c", "commandRaster": "r"}, None)
+        observed = {"showClock": {"snapshot": {}}, "close": None, "placements": {"showClock": None, "close": None}}
+        with self.assertRaisesRegex(ValueError, "showClock Command is published but has no window placement"):
+            check_quickshell_clock_shell.require_placements(observed)
+
+    def test_an_absent_command_needs_no_placement(self):
+        check_quickshell_clock_shell.require_placements(
+            {"showClock": None, "close": None, "placements": {"showClock": None, "close": None}})
+
+    def test_a_placed_command_is_accepted(self):
+        check_quickshell_clock_shell.require_placements(
+            {"showClock": {}, "close": {}, "placements": {"showClock": {"x": 1, "y": 2}, "close": {"x": 3, "y": 4}}})
 
 
 if __name__ == "__main__":
