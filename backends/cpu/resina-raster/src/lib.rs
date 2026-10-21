@@ -22,6 +22,8 @@ mod outline_focus;
 pub use outline_focus::render_outline_focus;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod uniform_tests;
 
 pub const MAX_PIXELS: u64 = 4_194_304;
 pub const MAX_SAMPLES: u64 = 16_777_216;
