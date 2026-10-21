@@ -20,3 +20,8 @@ pub use conversion::{
     oklch_to_oklab, prophoto_rgb_to_extended_srgb, rec2020_to_extended_srgb, srgb_to_linear_srgb,
     srgb_to_oklab, xyz_d50_to_extended_srgb, xyz_d65_to_extended_srgb,
 };
+
+mod gamut;
+pub use gamut::{
+    GAMUT_MAPPING_EPSILON, GAMUT_MAPPING_JND, gamut_map_oklch_to_srgb, normalize_hue, srgb_to_oklch,
+};

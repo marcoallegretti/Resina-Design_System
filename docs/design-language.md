@@ -79,6 +79,10 @@ The authored [Light and Dark themes](../spec/23-authored-themes.md) pair a warm
 mineral base and a deep blue-black base with teal primary, blue secondary and
 amber tertiary accents. They supply semantic assignments, not physical fonts,
 component proportions or a universal production motion profile.
+[Theme derivation](../spec/91-theme-derivation.md) uses them as templates for an
+explicit seed: the seed's Oklch hue replaces the accent, selection and focus hues
+at template lightness and chroma, and both themes must pass the
+[legibility guard](../spec/23-authored-themes.md#legibility-guard).
 [Environmental pigment adaptation](https://github.com/marcoallegretti/Resina-Design_System/issues/138)
 must preserve role ownership and actual readability; it is not permission for
 undocumented color mixing.
@@ -164,8 +168,8 @@ Opaque Frost remains Frost. Reduced transparency or high contrast does not
 replace its family with Cast. Focus remains identifiable without animation.
 [Actual content and edge contrast](../spec/28-surface-readability.md),
 [focus contrast](../spec/27-focus-indicator.md), measured text and
-[minimum targets](../spec/15-targets.md) take priority over appearance. Palette
-preflight alone does not prove readability over a rendered material or backdrop.
+[minimum targets](../spec/15-targets.md) take priority over appearance. The theme
+legibility guard alone does not prove readability over a rendered material or backdrop.
 
 ## Find the owning contract
 
@@ -173,7 +177,7 @@ preflight alone does not prove readability over a rendered material or backdrop.
 | --- | --- | --- |
 | Material and treatment | [Families](../spec/05-materials.md), [role vectors](../conformance/materials/role-assignment-vectors.json), [treatment stacks](../spec/06-optics.md) | [Frost paint](https://github.com/marcoallegretti/Resina-Design_System/issues/130), [optical realization](https://github.com/marcoallegretti/Resina-Design_System/issues/131) |
 | Geometry and depth | [Opaque IR](../spec/36-opaque-surface-ir.md), [surface vectors](../conformance/ir/opaque-surface-cases.json), candidate [outlines](../spec/81-surface-outline.md) and [relief](../spec/82-surface-relief.md) with [face paint](../spec/83-opaque-relief-paint.md) and [focus geometry](../spec/84-outline-focus-geometry.md) | Acceptance of the candidate outline and relief contracts in [material identity](https://github.com/marcoallegretti/Resina-Design_System/issues/125) |
-| Light and pigment | [Key light](../spec/34-key-light.md), [light vectors](../conformance/lighting/key-light-vectors.json), [authored themes](../spec/23-authored-themes.md) | [Material light response](https://github.com/marcoallegretti/Resina-Design_System/issues/129), [environmental influence](https://github.com/marcoallegretti/Resina-Design_System/issues/138) |
+| Light and pigment | [Key light](../spec/34-key-light.md), [light vectors](../conformance/lighting/key-light-vectors.json), [authored themes](../spec/23-authored-themes.md), [seed derivation](../spec/91-theme-derivation.md) | [Material light response](https://github.com/marcoallegretti/Resina-Design_System/issues/129), [environmental influence](https://github.com/marcoallegretti/Resina-Design_System/issues/138) |
 | Motion | [Trajectories](../spec/44-spring-trajectories.md), [trajectory cases](../conformance/motion/spring-trajectory-cases.json), sampled component paint, candidate [response calibration](../spec/80-material-response-calibration.md) | [Bounded deformation](https://github.com/marcoallegretti/Resina-Design_System/issues/132) |
 | Anatomy, layout and hierarchy | [Role bindings](../spec/78-component-anatomy.md), measured labels and checked snapshots | [Profiles](https://github.com/marcoallegretti/Resina-Design_System/issues/134), [icons](https://github.com/marcoallegretti/Resina-Design_System/issues/135), distinct selection components |
 | Visual proof and presentation | [Shared scenes](../conformance/scenes/README.md), [raster evidence](../conformance/raster/README.md), [native static Material Board](../lab/guido/README.md), [visual acceptance evidence](../conformance/scenes/visual-acceptance.md) | [Interactive UI Kit](https://github.com/marcoallegretti/Resina-Design_System/issues/141) |

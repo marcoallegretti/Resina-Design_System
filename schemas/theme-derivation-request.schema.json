@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:theme-derivation-request:0.1.0",
+  "title": "Resina Theme Derivation Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "seed", "templates", "externalSources"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorSpace", "components"],
+      "properties": {
+        "colorSpace": {"const": "srgb"},
+        "components": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      }
+    },
+    "templates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["light", "dark"],
+      "properties": {
+        "light": {"type": "string", "minLength": 1},
+        "dark": {"type": "string", "minLength": 1}
+      }
+    },
+    "externalSources": {"type": "object", "additionalProperties": {"type": "string"}}
+  }
+}
