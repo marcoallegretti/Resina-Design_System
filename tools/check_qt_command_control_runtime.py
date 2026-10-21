@@ -169,11 +169,15 @@ def main():
                           if child is not primary and child.metaObject().indexOfProperty("paintReady") >= 0]
             if len(alternates) != 1:
                 raise ValueError("a motion control must own one alternate frame view")
-            wait(app, lambda: observe()["ready"] and alternates[0].isVisible(), "alternate motion frame presented")
-            if primary.isVisible():
-                raise ValueError("the primary and alternate frame views are both presented")
-            if primary.mapToScene(QPointF(0, 0)) != alternates[0].mapToScene(QPointF(0, 0)):
-                raise ValueError("the primary frame view is not placed where the presented alternate frame is")
+            def verify_alternate_presented():
+                wait(app, lambda: observe()["ready"] and alternates[0].isVisible(), "alternate motion frame presented")
+                if primary.isVisible():
+                    raise ValueError("the primary and alternate frame views are both presented")
+                if primary.mapToScene(QPointF(0, 0)) != alternates[0].mapToScene(QPointF(0, 0)):
+                    raise ValueError("the primary frame view is not placed where the presented alternate frame is")
+            verify_alternate_presented()
+            wait(app, lambda: primary.isVisible(), "primary motion frame presented again")
+            verify_alternate_presented()
         if capture("pressed.png") == hover_image:
             raise ValueError("native pressed feedback did not change the drawing")
         mouse(QEvent.MouseMove, 480, 380)
