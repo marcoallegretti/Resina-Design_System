@@ -6,8 +6,8 @@ use resina_model::{
 };
 use resina_resolver::{
     CommandLabelIr, CommandMotionChannels, CommandMotionInput, CommandPaintInput,
-    CommandSnapshotInput, ControlRelief, HitRegionBody, HitRegionIr, OpaqueSurfaceInput, ReliefReuse,
-    SrgbFallback, SurfaceHitRegionInput, SurfacePaintInput, resolve_command_motion,
+    CommandSnapshotInput, ControlRelief, HitRegionBody, HitRegionIr, OpaqueSurfaceInput,
+    ReliefReuse, SrgbFallback, SurfaceHitRegionInput, SurfacePaintInput, resolve_command_motion,
     resolve_command_paint, resolve_command_reservation_body, resolve_command_snapshot,
     resolve_command_states, resolve_srgb_fallback, resolve_surface_hit_region,
 };
@@ -428,19 +428,20 @@ fn prepare(
         )
         .map_err(|error| error.to_string())?;
         if render {
-            let source = RELIEF.with(|reuse| {
-                resina_qml::render_lit_control_paint(
-                    snapshot.paint().paint(),
-                    resina_model::PhysicalVector {
-                        x: options.x,
-                        y: options.y,
-                    },
-                    options.device_scale,
-                    options.samples_per_axis,
-                    reuse,
-                )
-            })
-            .map_err(|error| error.to_string())?;
+            let source = RELIEF
+                .with(|reuse| {
+                    resina_qml::render_lit_control_paint(
+                        snapshot.paint().paint(),
+                        resina_model::PhysicalVector {
+                            x: options.x,
+                            y: options.y,
+                        },
+                        options.device_scale,
+                        options.samples_per_axis,
+                        reuse,
+                    )
+                })
+                .map_err(|error| error.to_string())?;
             result["paintSource"] = Value::String(source);
         }
     }
