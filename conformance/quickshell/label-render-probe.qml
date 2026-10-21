@@ -10,11 +10,31 @@ FloatingWindow {
     property int frameIndex: 0
     property var oracle: null
     property bool showOracle: false
+    property var face: null
     readonly property real nativeDeviceScale: capture.Window.window ? capture.Window.window.devicePixelRatio : 0
     readonly property string renderer: capture.GraphicsInfo.api === GraphicsInfo.Software ? "software"
         : capture.GraphicsInfo.api === GraphicsInfo.OpenGL ? "opengl" : "unsupported"
 
-    FontLoader { id: fontAsset; source: Quickshell.env("RESINA_LABEL_FONT") }
+    readonly property var fontSources: JSON.parse(Quickshell.env("RESINA_LABEL_FONTS") || "[]")
+    Instantiator {
+        id: fontAssets
+        model: window.fontSources
+        delegate: FontLoader { required property string modelData; source: modelData }
+    }
+    QtObject {
+        id: fontAsset
+        readonly property string name: "Inter"
+        function loaded() {
+            if (!window.fontSources.length || fontAssets.count !== window.fontSources.length)
+                return false;
+            for (let index = 0; index < fontAssets.count; index++) {
+                const loader = fontAssets.objectAt(index);
+                if (loader.status !== FontLoader.Ready || loader.name !== name)
+                    return false;
+            }
+            return true;
+        }
+    }
     Loader { id: measure; source: Quickshell.env("RESINA_LABEL_MEASURE_QML") }
     Item {
         id: capture
@@ -24,7 +44,7 @@ FloatingWindow {
         Loader {
             id: rendered
             visible: !window.showOracle
-            active: fontAsset.status === FontLoader.Ready
+            active: fontAsset.loaded()
             source: Quickshell.env("RESINA_LABEL_QML")
         }
         Repeater {
@@ -128,6 +148,13 @@ FloatingWindow {
             const fitted = measure.item.measure(frame.text, fontAsset.name, frame.pixelSize, 400, frame.spacing, 1.4, width);
             if (fitted.height > 600)
                 throw new Error("fixture exceeds its complete capture viewport");
+            if (!fitted.face || fitted.face.family !== fontAsset.name || natural.face.style !== fitted.face.style)
+                throw new Error("native measurement did not identify one resolved master");
+            if (window.face === null) {
+                window.face = fitted.face;
+                console.log("RESINA_LABEL_FACE", JSON.stringify({ weight: 400, face: fitted.face }));
+            } else if (fitted.face.style !== window.face.style)
+                throw new Error("native measurement resolved a different master");
             const request = {text:frame.text, family:fontAsset.name, pixelSize:frame.pixelSize, weight:400,
                 spacing:frame.spacing, lineHeight:1.4, wrappingWidth:width, height:fitted.height,
                 color:[0,0,0,1], x:20, y:40};
@@ -159,7 +186,7 @@ FloatingWindow {
                         paragraph.forceLayout();
                         if (paragraph.text.length && (paragraph.fontInfo.family !== fontAsset.name
                             || paragraph.fontInfo.pixelSize !== window.oracle.pixelSize
-                            || paragraph.fontInfo.weight !== 400))
+                            || paragraph.fontInfo.styleName !== window.face.style))
                             throw new Error("independent native drawing substituted its font");
                     }
                     captureFrame(false);
@@ -175,7 +202,7 @@ FloatingWindow {
             try {
                 const scale = Number(Quickshell.env("RESINA_LABEL_DEVICE_SCALE"));
                 const expectedRenderer = Quickshell.env("RESINA_LABEL_SCENE_GRAPH") === "rhi" ? "opengl" : "software";
-                if (fontAsset.status !== FontLoader.Ready || fontAsset.name !== "DejaVu Sans"
+                if (!fontAsset.loaded()
                     || measure.status !== Loader.Ready || rendered.status !== Loader.Ready
                     || Math.abs(window.nativeDeviceScale - scale) > 0.00001 || renderer !== expectedRenderer)
                     throw new Error("font, components, actual device scale or renderer differ");

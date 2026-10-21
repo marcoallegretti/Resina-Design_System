@@ -9,6 +9,8 @@ import subprocess
 import tempfile
 import time
 
+import conformance_font
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -100,6 +102,10 @@ class ParentInput:
             self.display = None
 
 
+def conformance_fonts(directory):
+    return os.pathsep.join(str(master["path"]) for master in conformance_font.masters(directory))
+
+
 def check(args):
     outputs = json.loads(subprocess.check_output([str(args.swaymsg), "-s", str(args.sway_socket),
         "-t", "get_outputs", "-r"], text=True))
@@ -112,11 +118,11 @@ def check(args):
     with tempfile.TemporaryFile() as log:
         peer_process = None
         process = subprocess.Popen([str(args.probe.resolve()), str(ROOT), str(args.scenes.resolve()),
-            str(args.font.resolve())], stdout=log, stderr=log)
+            conformance_fonts(args.font_dir)], stdout=log, stderr=log)
         parent = None
         try:
             peer_process = subprocess.Popen([str(args.probe.resolve()), str(ROOT), str(args.scenes.resolve()),
-                str(args.font.resolve()), "--focus-peer"], stdout=log, stderr=log)
+                conformance_fonts(args.font_dir), "--focus-peer"], stdout=log, stderr=log)
             def log_text():
                 # Popen shares this open-file description. Reading must not move
                 # the child's write offset, including while it emits a new event.
@@ -317,7 +323,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--probe", required=True, type=Path)
     parser.add_argument("--scenes", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--swaymsg", default="swaymsg", type=Path)
     parser.add_argument("--sway-socket", required=True, type=Path)
     parser.add_argument("--parent-display", required=True)

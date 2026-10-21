@@ -51,7 +51,7 @@ def session(args):
         call("org.a11y.Bus", "/org/a11y/bus", PROPERTIES + ".Set", "string:org.a11y.Status", "string:" + name, "variant:boolean:true")
     with tempfile.TemporaryFile(mode="w+") as log:
         process = subprocess.Popen([sys.executable, str(ROOT / "tools/run_qt_toggle_control_probe.py"),
-            "--module-path", str(args.module_path.resolve()), "--font", str(args.font.resolve()), *(["--motion"] if args.motion else [])], stdout=log, stderr=log)
+            "--module-path", str(args.module_path.resolve()), "--font-dir", str(args.font_dir.resolve()), *(["--motion"] if args.motion else [])], stdout=log, stderr=log)
         try:
             def until(predicate, description):
                 deadline = time.monotonic() + 10
@@ -136,7 +136,7 @@ def session(args):
 def main():
     parser = argparse.ArgumentParser(description="Verify real AT-SPI publication/action for the integrated Qt excluding-disabled static Toggle profile.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--motion",action="store_true")
     parser.add_argument("--action", choices=("Toggle","Press"),default="Toggle")
     parser.add_argument("--session", action="store_true", help=argparse.SUPPRESS)
@@ -160,7 +160,7 @@ def main():
                     QT_QPA_PLATFORM="wayland" if environment.get("WAYLAND_DISPLAY") else "xcb",
                     QT_QUICK_BACKEND="software",QT_LINUX_ACCESSIBILITY_ALWAYS_ON="1")
                 process = subprocess.Popen(["dbus-run-session", "--", sys.executable, str(Path(__file__).resolve()),
-                    "--module-path", str(args.module_path.resolve()), "--font", str(args.font.resolve()), "--session", "--action", args.action, *(["--motion"] if args.motion else [])],
+                    "--module-path", str(args.module_path.resolve()), "--font-dir", str(args.font_dir.resolve()), "--session", "--action", args.action, *(["--motion"] if args.motion else [])],
                     env=environment,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True)
                 try:
                     output, diagnostics = process.communicate(timeout=35)

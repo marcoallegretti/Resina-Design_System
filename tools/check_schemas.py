@@ -2,6 +2,7 @@ import copy
 import json
 import math
 import re
+from fractions import Fraction
 from functools import lru_cache
 from pathlib import Path
 
@@ -242,6 +243,50 @@ def check_label_expansion(expansion):
     return 1 + len(expansion["cases"])
 
 
+DIGIT_ADVANCE_TOLERANCE = Fraction(1, 1024)
+
+
+def digit_advance_outcome(advances):
+    """Evaluate equal digit advances exactly; the lowest digit names tied extremes."""
+    exact = [Fraction(advance) for advance in advances]
+    narrowest = min(range(10), key=lambda digit: (exact[digit], digit))
+    widest = min(range(10), key=lambda digit: (-exact[digit], digit))
+    if exact[widest] - exact[narrowest] > DIGIT_ADVANCE_TOLERANCE:
+        return {"error": {"kind": "unequalAdvances", "narrowest": narrowest, "widest": widest}}
+    return {"advance": advances[widest]}
+
+
+def check_digit_advances():
+    document = load_json(ROOT / "conformance/typography/digit-advance-vectors.json")
+    check_case(validator_for("schemas/digit-advance-cases.schema.json"), "digit advance cases", document, True)
+    record_validator = validator_for("schemas/digit-advance-record.schema.json")
+    names, outcomes = set(), set()
+    for case in document["cases"]:
+        if case["name"] in names:
+            raise ValueError(f"duplicate digit advance case {case['name']}")
+        names.add(case["name"])
+        check_case(record_validator, f"digit advance record: {case['name']}", case["record"], True)
+        if digit_advance_outcome(case["record"]["advances"]) != case["expected"]:
+            raise ValueError(f"digit advance case {case['name']} disagrees with the equal-advance rule")
+        outcomes.add(next(iter(case["expected"])))
+    if outcomes != {"advance", "error"}:
+        raise ValueError("digit advance cases need accepted and rejected records")
+    record = document["cases"][0]["record"]
+    for name, pointer, value in (
+        ("digit advances belong to the numeric role", "/role", "label"),
+        ("digit advance record needs all ten digits", "/advances", record["advances"][:9]),
+        ("digit advance record has no eleventh digit", "/advances", record["advances"] + [1]),
+        ("digit advances must be positive", "/advances/3", 0),
+        ("digit advances cannot be negative", "/advances/3", -12.953125),
+        ("digit advances are numbers", "/advances/3", "12.953125"),
+        ("digit advance font size is logical px", "/fontSize/unit", "rem"),
+        ("digit advance font size must be positive", "/fontSize/value", 0),
+        ("digit advance record version is pinned", "/schemaVersion", "0.2.0"),
+    ):
+        check_case(record_validator, name, apply_changes(record, [{"path": pointer, "value": value}]), False)
+    return len(document["cases"]) + 10
+
+
 def check_visual_record_schemas():
     from check_surface_paint_backend import baseline, expected_result
 
@@ -324,7 +369,7 @@ def check_visual_record_schemas():
             "typography": load_json(ROOT / "conformance/headless/expected-resolution.json")["typography"]["label"],
             "size": {"width": 64, "height": 44}, "labelBounds": {"x": 16, "y": 8, "width": 36, "height": 28}
         },
-        "font": {"family": "DejaVu Sans", "gitBlob": "b" * 40},
+        "font": {"family": "Inter", "postScriptName": "Inter-Regular", "weight": 400, "file": "Inter-Regular.otf", "gitBlob": "b" * 40},
         "renderer": {"name": "guido-native-label-test", "gitBlob": "c" * 40,
                      "gpu": {"name": "schema-fixture", "vendor": 0, "device": 0, "backend": "Vulkan", "deviceType": "Cpu", "driver": "test", "driverInfo": "test"}},
         "runtime": {"system": "test", "machine": "test"}, "colorEncoding": "rgba8-srgb-straight",
@@ -340,6 +385,9 @@ def check_visual_record_schemas():
     for name, path, value in (
         ("native fixture cannot self-accept", "/purpose", "accepted"),
         ("native font must identify its file", "/font/gitBlob", "unknown"),
+        ("native font must be a pinned Inter master", "/font/family", "DejaVu Sans"),
+        ("native font cannot record a substituted weight", "/font/weight", 500),
+        ("native font cannot record an unpinned master", "/font/file", "Inter-Bold.otf"),
         ("native readback needs actual GPU metadata", "/renderer/gpu", None),
         ("native image cannot escape directory", "/image/file", "../image.png"),
         ("native text cannot lose semantic result", "/semanticResult", {}),
@@ -442,6 +490,8 @@ def main():
         "schemas/slider-part-paint-request.schema.json",
         "schemas/slider-part-paint-case.schema.json",
         "schemas/command-label-expansion.schema.json",
+        "schemas/digit-advance-record.schema.json",
+        "schemas/digit-advance-cases.schema.json",
         "schemas/command-label-arithmetic.schema.json",
         "schemas/command-label-ir.schema.json",
         "schemas/command-relief-containment.schema.json",
@@ -2655,6 +2705,7 @@ def main():
         checked += 1
     expansion = load_json(ROOT / "conformance/content/command-label-expansion.json")
     checked += check_label_expansion(expansion)
+    checked += check_digit_advances()
     accessibility_validator = validator_for("schemas/command-accessibility-ir.schema.json")
     accessibility_names = set()
     for case in load_json(ROOT / "conformance/accessibility/command-cases.json"):

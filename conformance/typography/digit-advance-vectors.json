@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "name": "tabular-feature-face",
+      "record": {
+        "schemaVersion": "0.1.0",
+        "role": "numeric",
+        "fontSize": {"value": 20, "unit": "px"},
+        "advances": [12.953125, 12.953125, 12.953125, 12.953125, 12.953125, 12.953125, 12.953125, 12.953125, 12.953125, 12.953125]
+      },
+      "expected": {"advance": 12.953125}
+    },
+    {
+      "name": "proportional-face-without-tabular-feature",
+      "record": {
+        "schemaVersion": "0.1.0",
+        "role": "numeric",
+        "fontSize": {"value": 20, "unit": "px"},
+        "advances": [12.90625, 8.296875, 12.3125, 12.53125, 13.125, 12.359375, 12.59375, 11.421875, 12.578125, 12.59375]
+      },
+      "expected": {"error": {"kind": "unequalAdvances", "narrowest": 1, "widest": 4}}
+    },
+    {
+      "name": "spread-at-tolerance",
+      "record": {
+        "schemaVersion": "0.1.0",
+        "role": "numeric",
+        "fontSize": {"value": 16, "unit": "px"},
+        "advances": [10, 10, 10, 10, 10, 10, 10, 10, 10.0009765625, 10]
+      },
+      "expected": {"advance": 10.0009765625}
+    },
+    {
+      "name": "spread-beyond-tolerance",
+      "record": {
+        "schemaVersion": "0.1.0",
+        "role": "numeric",
+        "fontSize": {"value": 16, "unit": "px"},
+        "advances": [10, 10, 10, 10, 10, 10, 10, 10, 10.000976563, 10]
+      },
+      "expected": {"error": {"kind": "unequalAdvances", "narrowest": 0, "widest": 8}}
+    },
+    {
+      "name": "lowest-digit-names-tied-extremes",
+      "record": {
+        "schemaVersion": "0.1.0",
+        "role": "numeric",
+        "fontSize": {"value": 28, "unit": "px"},
+        "advances": [17, 16.5, 16.5, 17, 17, 16.5, 17, 16.5, 17, 16.5]
+      },
+      "expected": {"error": {"kind": "unequalAdvances", "narrowest": 1, "widest": 0}}
+    },
+    {
+      "name": "fractional-scaled-size",
+      "record": {
+        "schemaVersion": "0.1.0",
+        "role": "numeric",
+        "fontSize": {"value": 25.0125, "unit": "px"},
+        "advances": [16.2, 16.2, 16.2, 16.2, 16.2, 16.2, 16.2, 16.2, 16.2, 16.2]
+      },
+      "expected": {"advance": 16.2}
+    }
+  ]
+}

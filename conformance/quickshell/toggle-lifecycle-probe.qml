@@ -31,7 +31,7 @@ ShellRoot {
     }
 
     function start() {
-        if (!requests || font.status !== FontLoader.Ready) return;
+        if (!requests || !fonts.ready) return;
         configuration = JSON.stringify(requests.standard);
         log("started");
     }
@@ -96,14 +96,21 @@ ShellRoot {
         function onSnapshotChanged() { if (!root.toggle.snapshot.length) ++root.retractions; }
     }
 
-    FontLoader {
-        id: font
-        source: Quickshell.env("RESINA_TOGGLE_FONT")
-        onStatusChanged: {
-            if (status === FontLoader.Error) root.fail("font could not be loaded");
-            if (status === FontLoader.Ready) {
-                if (name !== "DejaVu Sans") root.fail("requires explicit DejaVu Sans");
-                else Qt.callLater(root.start);
+    Instantiator {
+        id: fonts
+        readonly property var sources: JSON.parse(Quickshell.env("RESINA_TOGGLE_FONTS") || "[]")
+        readonly property bool ready: sources.length > 0 && loaded === sources.length
+        property int loaded: 0
+        model: sources
+        delegate: FontLoader {
+            required property string modelData
+            source: modelData
+            onStatusChanged: {
+                if (status === FontLoader.Error) root.fail("font could not be loaded");
+                if (status === FontLoader.Ready) {
+                    if (name !== "Inter") root.fail("requires the explicit Inter masters");
+                    else if (++fonts.loaded === fonts.sources.length) Qt.callLater(root.start);
+                }
             }
         }
     }

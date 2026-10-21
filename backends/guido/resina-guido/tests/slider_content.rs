@@ -1,4 +1,6 @@
 #![cfg(feature = "testing")]
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
 #[path = "../../../../reference/rust/resina-resolver/tests/common/slider_snapshot.rs"]
 mod fixture;
 #[path = "common/readback.rs"]
@@ -33,11 +35,7 @@ const UNWRAPPED: LineFit = LineFit {
     wrap: false,
 };
 fn load_font() -> FontFamily {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
-            .unwrap(),
-    );
-    FontFamily::name("DejaVu Sans")
+    conformance_font::load()
 }
 fn config() -> FixtureConfig<'static> {
     FixtureConfig {

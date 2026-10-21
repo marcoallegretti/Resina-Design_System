@@ -9,6 +9,7 @@ import time
 from PIL import Image
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
 from check_quickshell_paint_runtime import compare_images
+import conformance_font
 
 
 def present(application):
@@ -35,14 +36,14 @@ def prepare(window, application, source, options):
 def main():
     parser = argparse.ArgumentParser(description="Verify coherent command body/glyph publication in native Qt.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     args = parser.parse_args()
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     os.environ.setdefault("QT_QUICK_BACKEND", "software")
     try:
         from PySide6.QtCore import QCoreApplication, QEvent, QObject, QPluginLoader, QUrl, qVersion
-        from PySide6.QtGui import QFontDatabase, QGuiApplication
+        from PySide6.QtGui import QGuiApplication
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from PySide6.QtQuick import QQuickWindow
         if qVersion() != "6.11.2":
@@ -51,8 +52,7 @@ def main():
         plugin = QPluginLoader(str(args.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
             raise ValueError("native Qt plugin factory failed: " + plugin.errorString())
-        if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ["DejaVu Sans"]:
-            raise ValueError("requires explicitly loaded DejaVu Sans")
+        conformance_font.register_qt(args.font_dir)
         engine = QQmlEngine()
         engine.addImportPath(str(args.module_path.resolve()))
         component = QQmlComponent(engine)
@@ -120,7 +120,7 @@ Window {
         reference.body.y = reference.body.paintOriginY-placement.y;
         const label = result.snapshot.label;
         const color = result.snapshot.paint.paint.body.foreground;
-        glyphs.prepare({text:label.text, family:"DejaVu Sans", pixelSize:label.typography.fontSize.value,
+        glyphs.prepare({text:label.text, family:@@FAMILY@@, pixelSize:label.typography.fontSize.value,
             weight:label.typography.fontWeight, spacing:label.typography.letterSpacing.value,
             lineHeight:label.typography.lineHeight, wrappingWidth:label.labelBounds.width,
             height:label.labelBounds.height, x:label.labelBounds.x,y:label.labelBounds.y,
@@ -173,7 +173,7 @@ Window {
     function mappedBasis() { return JSON.stringify([view.mapToItem(null,0,0),view.mapToItem(null,1,0),
         view.mapToItem(null,0,1),view.mapToItem(null,50,50)]); }
 }
-''').replace("@@VIEW_SOURCE@@", json.dumps((ROOT / "backends/quickshell/resina-qml/qml/ResinaCommandView.qml").as_uri())).encode(), QUrl())
+''').replace("@@FAMILY@@", json.dumps(conformance_font.FAMILY)).replace("@@VIEW_SOURCE@@", json.dumps((ROOT / "backends/quickshell/resina-qml/qml/ResinaCommandView.qml").as_uri())).encode(), QUrl())
         window = component.create()
         if not isinstance(window, QQuickWindow):
             raise ValueError("native view fixture failed: " + repr(component.errors()))

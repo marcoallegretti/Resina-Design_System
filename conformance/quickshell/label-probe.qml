@@ -8,14 +8,38 @@ FloatingWindow {
     color: "white"
     readonly property real nativeDeviceScale: paragraphOracle.Window.window
         ? paragraphOracle.Window.window.devicePixelRatio : 0
+    readonly property var fontSources: JSON.parse(Quickshell.env("RESINA_LABEL_FONTS") || "[]")
 
-    FontLoader {
+    Instantiator {
+        id: fontAssets
+        model: window.fontSources
+        delegate: FontLoader { required property string modelData; source: modelData }
+    }
+    QtObject {
         id: fontAsset
-        source: Quickshell.env("RESINA_LABEL_FONT")
+        readonly property string name: "Inter"
+        function loaded() {
+            if (!window.fontSources.length || fontAssets.count !== window.fontSources.length)
+                return false;
+            for (let index = 0; index < fontAssets.count; index++) {
+                const loader = fontAssets.objectAt(index);
+                if (loader.status !== FontLoader.Ready || loader.name !== name)
+                    return false;
+            }
+            return true;
+        }
     }
     Loader {
         id: measurement
         source: Quickshell.env("RESINA_LABEL_MEASURE_QML")
+    }
+    Text {
+        id: digitProbe
+        visible: false
+        font.family: fontAsset.name
+        font.pixelSize: 20
+        textFormat: Text.PlainText
+        renderType: Text.QtRendering
     }
     Text {
         id: paragraphOracle
@@ -34,8 +58,8 @@ FloatingWindow {
         running: true
         onTriggered: {
             try {
-                if (fontAsset.status !== FontLoader.Ready || fontAsset.name !== "DejaVu Sans")
-                    throw new Error("the explicit DejaVu Sans font must be loaded first");
+                if (!fontAsset.loaded())
+                    throw new Error("the explicit Inter masters must be loaded first");
                 if (measurement.status !== Loader.Ready)
                     throw new Error("the native measurement component must be loaded");
                 const measurer = measurement.item;
@@ -46,6 +70,34 @@ FloatingWindow {
                 if (measurer.visible || measurer.focus || measurer.activeFocusOnTab
                     || !measurer.Accessible.ignored)
                     throw new Error("measurement must remain invisible and decorative");
+                const faces = {};
+                for (const weight of [400, 500, 600]) {
+                    const face = measurer.measure("Reconnect", fontAsset.name, 20, weight, 0, 1.4, null).face;
+                    if (!face || face.family !== fontAsset.name || !face.style)
+                        throw new Error("native measurement did not identify its resolved master");
+                    faces[weight] = face;
+                    console.log("RESINA_LABEL_FACE", JSON.stringify({ weight: weight, face: face }));
+                }
+                for (const tabular of [true, false]) {
+                    digitProbe.font.weight = 500;
+                    digitProbe.font.features = tabular ? { "tnum": 1 } : {};
+                    const advances = [];
+                    for (let digit = 0; digit < 10; digit++) {
+                        digitProbe.text = String(digit);
+                        digitProbe.forceLayout();
+                        if (digitProbe.fontInfo.styleName !== faces[500].style)
+                            throw new Error("digit measurement resolved a different master");
+                        advances.push(digitProbe.implicitWidth);
+                    }
+                    console.log("RESINA_LABEL_DIGITS", JSON.stringify({ tabular: tabular, record: {
+                        schemaVersion: "0.1.0", role: "numeric", fontSize: { value: 20, unit: "px" },
+                        advances: advances } }));
+                }
+                if (Quickshell.env("RESINA_LABEL_MODE") === "faces") {
+                    console.log("RESINA_LABEL_FACES_PASS", window.nativeDeviceScale);
+                    Qt.quit();
+                    return;
+                }
                 const texts = ["Reconnect", "Erneut mit dem Netzwerk verbinden", "مرحبا بالعالم",
                     "Reconnect now", "Reconnect to Wi-Fi", "<b>Reconnect</b>",
                     "a\nb", "a\n", "\na", "a\n\nb", "a\r\nb", "a\r\n",
@@ -68,6 +120,8 @@ FloatingWindow {
                                 throw new Error("complete reflow extent is inconsistent");
                             if (fitted.nativeText !== natural.nativeText)
                                 throw new Error("natural and fitted shaping text differ");
+                            if (natural.face.style !== faces[400].style || fitted.face.style !== faces[400].style)
+                                throw new Error("complete measurement resolved a different master");
                             const explicitLines = text.split(/\r\n|[\n\r\u2028\u2029\u000b\u000c\u0085]/).length;
                             if (Math.abs(natural.height - explicitLines * size * 1.4) > 1)
                                 throw new Error("explicit line breaks lost their complete height");
@@ -107,7 +161,8 @@ FloatingWindow {
                     paragraphOracle.text = paragraph.nativeText;
                     paragraphOracle.forceLayout();
                     if (paragraphOracle.fontInfo.family !== fontAsset.name
-                        || paragraphOracle.fontInfo.pixelSize !== 20 || paragraphOracle.fontInfo.weight !== 400
+                        || paragraphOracle.fontInfo.pixelSize !== 20
+                        || paragraphOracle.fontInfo.styleName !== faces[400].style
                         || paragraphOracle.implicitWidth !== paragraph.width
                         || paragraphOracle.implicitHeight !== paragraph.height
                         || paragraphOracle.effectiveHorizontalAlignment
@@ -120,8 +175,11 @@ FloatingWindow {
                 const spaced = measurer.measure("Reconnect", fontAsset.name, 20, 400, 2, 1.4, null);
                 if (spaced.width < base.width + 10)
                     throw new Error("letter spacing did not reach native shaping");
-                for (const weight of [100, 600, 900])
-                    measurer.measure("\u2029Reconnect\u2029", fontAsset.name, 20, weight, 0, 1.4, null);
+                for (const weight of [400, 500, 600]) {
+                    const separated = measurer.measure("\u2029Reconnect\u2029", fontAsset.name, 20, weight, 0, 1.4, null);
+                    if (separated.face.style !== faces[weight].style)
+                        throw new Error("blank paragraphs changed the resolved master");
+                }
                 const fractional = measurer.measure("a\u2029\u2029b", fontAsset.name, 20, 400, 0, 1.405, null);
                 for (let index = 0; index < fractional.paragraphs.length; index++) {
                     if (Math.abs(fractional.paragraphs[index].height - 28.1) > 1e-9

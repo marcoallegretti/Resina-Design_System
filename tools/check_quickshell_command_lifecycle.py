@@ -11,6 +11,7 @@ import time
 from check_qt_command_snapshot_runtime import ROOT, request_for
 from check_quickshell_command_updates import verify_qml_line, verify_version
 from wayland_virtual_input import KEY_ENTER, KEY_SPACE, KEY_TAB, VirtualInput
+import conformance_font
 
 OUTSIDE = (360, 160)
 EVENT = "RESINA_LIFECYCLE "
@@ -99,16 +100,16 @@ class Session:
     component = "command"
     outside = OUTSIDE
 
-    def __init__(self, host, module, font, output):
+    def __init__(self, host, module, fonts, output):
         self.host, self.output = host, output
         self.shell = self.input = None
         try:
-            self.start(module, font, output)
+            self.start(module, fonts, output)
         except BaseException:
             self.close()
             raise
 
-    def start(self, module, font, output):
+    def start(self, module, fonts, output):
         self.config = output / "config"
         self.config.mkdir()
         probe = ROOT / f"conformance/quickshell/{self.component}-lifecycle-probe.qml"
@@ -120,7 +121,7 @@ class Session:
         # and IPC refuses queries while more than one generation exists.
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
                                 QML_IMPORT_PATH=str(module), RESINA_LIFECYCLE_REQUESTS=str(requests),
-                                QS_NO_RELOAD_POPUP="1", **{f"RESINA_{self.component.upper()}_FONT": font.as_uri()})
+                                QS_NO_RELOAD_POPUP="1", **{f"RESINA_{self.component.upper()}_FONTS": fonts})
         self.environment.pop("DISPLAY", None)
         self.environment.pop("QT_SCALE_FACTOR", None)
         self.log = output / "shell.log"
@@ -423,12 +424,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--module-path", type=Path, required=True)
-    parser.add_argument("--font", type=Path, required=True)
+    parser.add_argument("--font-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     session = None
     try:
-        host, module, font = (path.resolve(strict=True) for path in (args.host, args.module_path, args.font))
+        host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
+        fonts = conformance_font.qml_sources(args.font_dir)
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
             raise ValueError("requires a live Wayland compositor session with layer-shell and virtual input")
         environment = dict(os.environ, RESINA_QUICKSHELL_HOST=str(host), RESINA_QT_RUNTIME_MODULE=str(module),
@@ -436,7 +438,7 @@ def main():
         verify_version(subprocess.run([sys.executable, str(ROOT / "tools/run_qt_availability_probe.py"), "--version"],
                                       env=environment, capture_output=True, text=True, timeout=15))
         args.output_dir.mkdir(parents=True, exist_ok=False)
-        session = Session(host, module, font, args.output_dir)
+        session = Session(host, module, fonts, args.output_dir)
         report = {}
         for name, cases in (("activation", activation_cases), ("focus", focus_cases),
                             ("interruption", interruption_cases), ("reentrancy", reentrancy_cases)):

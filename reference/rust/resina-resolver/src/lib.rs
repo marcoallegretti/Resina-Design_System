@@ -342,8 +342,9 @@ mod theme_request;
 pub use theme_request::{ThemeResolutionError, resolve_theme_request_source};
 mod typography;
 pub use typography::{
-    PxDimension, ResolvedTypography, TypographyResolutionError, TypographyResolutionErrorKind,
-    resolve_semantic_typography,
+    DIGIT_ADVANCE_TOLERANCE, DigitAdvanceError, PxDimension, ResolvedTypography,
+    TypographyResolutionError, TypographyResolutionErrorKind, resolve_semantic_typography,
+    tabular_digit_advance,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

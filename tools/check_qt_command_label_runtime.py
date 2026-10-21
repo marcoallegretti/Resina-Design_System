@@ -6,9 +6,20 @@ from pathlib import Path
 import sys
 
 from command_label_arithmetic import layout
+import conformance_font
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def resolved_master(masters, calls):
+    """Identify the one registered master that resolved every native measurement call."""
+    weights = {call["request"]["weight"] for call in calls}
+    faces = {(call["face"]["family"], call["face"]["style"]) for call in calls}
+    if len(weights) != 1 or len(faces) != 1:
+        raise ValueError("native measurement calls resolved different weights or masters")
+    (family, style), = faces
+    return conformance_font.resolve(masters, family, style, weights.pop())
 
 
 def verify_layout(label, calls, request):
@@ -39,12 +50,12 @@ def verify_layout(label, calls, request):
 def main():
     parser = argparse.ArgumentParser(description="Verify Rust command layout through actual Qt text measurement and preparation.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     arguments = parser.parse_args()
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     try:
         from PySide6.QtCore import QPluginLoader, QUrl, qVersion
-        from PySide6.QtGui import QFontDatabase, QGuiApplication
+        from PySide6.QtGui import QGuiApplication
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from PySide6 import QtQuick  # Load the pinned host's native plugin dependency.
         if qVersion() != "6.11.2":
@@ -53,9 +64,9 @@ def main():
         loader = QPluginLoader(str(arguments.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if loader.instance() is None:
             raise ValueError("Qt plugin factory failed: " + loader.errorString())
-        font_id = QFontDatabase.addApplicationFont(str(arguments.font.resolve()))
-        if font_id < 0 or QFontDatabase.applicationFontFamilies(font_id) != ["DejaVu Sans"]:
-            raise ValueError("requires explicitly loaded DejaVu Sans")
+        masters = conformance_font.register_qt(arguments.font_dir)
+        visible = conformance_font.check_fontconfig(masters)
+        family = conformance_font.FAMILY
         engine = QQmlEngine()
         engine.addImportPath(str(arguments.module_path.resolve()))
         component = QQmlComponent(engine)
@@ -85,7 +96,10 @@ Item {
         property var calls: []
         function measureJson(source) {
             const result = measurement.measureJson(source);
-            calls.push({request:JSON.parse(source), result:JSON.parse(result)});
+            const request = JSON.parse(source);
+            const face = JSON.parse(result).kind === "extent" ? measurement.measure(request.text, request.family,
+                request.pixelSize, request.weight, request.spacing, request.lineHeight, request.maximumWidth).face : null;
+            calls.push({request:request, result:JSON.parse(result), face:face});
             return result;
         }
     }
@@ -111,6 +125,7 @@ Item {
             raise ValueError("native content fixture failed: " + repr(component.errors()))
         baseline_environment = json.loads((ROOT / "conformance/headless/valid-request.json").read_text())["environment"]
         count = 0
+        resolved = set()
         for theme in ("light", "dark"):
             for scale in (1, 1.0006, 1.5, 2):
                 for direction in ("ltr", "rtl"):
@@ -119,7 +134,7 @@ Item {
                         request = {"themeSource": (ROOT / f"tokens/themes/{theme}.json").read_text(),
                                    "externalSources": {"foundation.json": (ROOT / "tokens/foundation.json").read_text()},
                                    "environment": {**baseline_environment, "textScale": scale, "layoutDirection": direction},
-                                   "text": text, "fontFamily": {"role": "sans", "name": "DejaVu Sans"},
+                                   "text": text, "fontFamily": {"role": "sans", "name": family},
                                    "minimumSize": {"width": 64, "height": 80},
                                    "maximumSize": {"width": 180, "height": 600},
                                    "padding": {"start": 12, "end": 8, "top": 6, "bottom": 10}}
@@ -129,6 +144,8 @@ Item {
                             raise ValueError(observed["result"]["error"])
                         label = observed["result"]["label"]
                         verify_layout(label, observed["calls"], request)
+                        master = resolved_master(masters, observed["calls"])
+                        resolved.add(tuple(master.items()))
                         expected_style = {"familyRole": "sans", "fontSize": {"value": 14 * scale, "unit": "px"},
                                           "fontWeight": 500, "lineHeight": 1.34,
                                           "letterSpacing": {"value": 0.15 * scale, "unit": "px"}}
@@ -146,11 +163,11 @@ Item {
                         count += 1
         valid = source
         invalid = []
-        for changes in ({"text": " "}, {"fontFamily": {"role": "numeric", "name": "DejaVu Sans"}},
+        for changes in ({"text": " "}, {"fontFamily": {"role": "numeric", "name": family}},
                         {"fontFamily": {"role": "sans", "name": "Missing Resina Native Family"}},
                         {"maximumSize": {"width": 180, "height": 1}},
                         {"minimumSize": {"width": 64, "height": 1}, "maximumSize": {"width": 180, "height": 20}},
-                        {"fontFamily": ["sans", "DejaVu Sans"]}, {"padding": [12, 8, 6, 10]},
+                        {"fontFamily": ["sans", family]}, {"padding": [12, 8, 6, 10]},
                         {"unexpected": True}):
             invalid.append(json.dumps({**request, **changes}))
         invalid.extend((source[:-1] + ',"text":"duplicate"}', json.dumps(list(request.values())),
@@ -181,9 +198,12 @@ Item {
             raise ValueError("recursive preparation changed the outer content publication")
         root.deleteLater()
         application.processEvents()
+        if len(resolved) != 1:
+            raise ValueError("Command labels resolved more than one master")
     except (ImportError, OSError, ValueError, KeyError, TypeError) as error:
         print("FAIL Qt command label runtime: " + str(error), file=sys.stderr)
         return 1
+    print(json.dumps({"visibleFaces": visible, "resolvedMaster": dict(resolved.pop())}, indent=2))
     print(f"Rust/Qt command content passed {count} actual native layout/drawing preparations, strict rejection and recovery")
     return 0
 

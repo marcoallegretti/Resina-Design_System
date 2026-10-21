@@ -8,6 +8,7 @@ import sys
 from check_schemas import validator_for
 from check_qt_command_label_runtime import verify_layout
 from opaque_request_source import pigment_coefficient_failures
+import conformance_font
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -79,7 +80,7 @@ def request_for(theme, text):
     return {"content": {"themeSource": (ROOT / f"tokens/themes/{theme}.json").read_text(),
                         "externalSources": {"foundation.json": (ROOT / "tokens/foundation.json").read_text()},
                         "environment": environment, "text": text,
-                        "fontFamily": {"role": "sans", "name": "DejaVu Sans"},
+                        "fontFamily": {"role": "sans", "name": conformance_font.FAMILY},
                         "minimumSize": {"width": 160, "height": 80},
                         "maximumSize": {"width": 240, "height": 600},
                         "padding": {"start": 32, "end": 32, "top": 26, "bottom": 26}},
@@ -102,12 +103,12 @@ def request_for(theme, text):
 def main():
     parser = argparse.ArgumentParser(description="Verify complete Qt/Rust command preparation with actual native font extents.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     arguments = parser.parse_args()
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     try:
         from PySide6.QtCore import QPluginLoader, QUrl, qVersion
-        from PySide6.QtGui import QFontDatabase, QGuiApplication
+        from PySide6.QtGui import QGuiApplication
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from check_qt_toggle_control_runtime import request_for as toggle_request_for
         from PySide6 import QtQuick  # Load the pinned host's native plugin dependency.
@@ -117,9 +118,7 @@ def main():
         plugin = QPluginLoader(str(arguments.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
             raise ValueError("Qt plugin factory failed: " + plugin.errorString())
-        font_id = QFontDatabase.addApplicationFont(str(arguments.font.resolve()))
-        if font_id < 0 or QFontDatabase.applicationFontFamilies(font_id) != ["DejaVu Sans"]:
-            raise ValueError("requires explicitly loaded DejaVu Sans")
+        conformance_font.register_qt(arguments.font_dir)
         engine = QQmlEngine()
         engine.addImportPath(str(arguments.module_path.resolve()))
         component = QQmlComponent(engine)

@@ -1,5 +1,7 @@
 #![cfg(feature = "testing")]
 
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
 #[path = "common/label.rs"]
 mod label_style;
 #[path = "common/readback.rs"]
@@ -11,7 +13,7 @@ use guido::{
         DrawCommand, FlattenScratch, GpuContext, RenderNode, RenderTarget, Renderer,
         flatten_root_into,
     },
-    widgets::{Color, ContentFit, Rect, font::FontFamily},
+    widgets::{Color, ContentFit, Rect},
 };
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{measure_command_label, prepare_outline_focus_at, prepare_relief_content_at};
@@ -43,8 +45,7 @@ fn frame(
 
 #[test]
 fn composed_relief_retains_the_complete_label_and_opaque_focus_ring() {
-    guido::load_font(std::fs::read(std::env::var("RESINA_LABEL_FONT").unwrap()).unwrap());
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let vectors: Value = serde_json::from_str(include_str!(
         "../../../../conformance/ir/relief-paint-vectors.json"
     ))

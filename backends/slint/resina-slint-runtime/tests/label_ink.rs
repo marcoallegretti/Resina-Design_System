@@ -42,9 +42,10 @@ impl Platform for SoftwarePlatform {
 fn native_advance_box_ink_diagnostic() {
     slint::platform::set_platform(Box::new(SoftwarePlatform)).unwrap();
     let ui = InkWindow::new().unwrap();
-    let bytes =
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT is required"))
-            .unwrap();
+    let directory = std::path::PathBuf::from(
+        std::env::var_os("RESINA_LABEL_FONT_DIR").expect("RESINA_LABEL_FONT_DIR is required"),
+    );
+    let bytes = std::fs::read(directory.join("Inter-Regular.otf")).unwrap();
     let mut collection = slint::fontique_011::shared_collection();
     let fonts = collection.register_fonts(fontique::Blob::new(std::sync::Arc::new(bytes)), None);
     let (family, _) = fonts.first().expect("test font must be registered");

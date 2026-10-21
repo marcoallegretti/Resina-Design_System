@@ -310,6 +310,62 @@ fn error(
     }
 }
 
+/// Largest spread between digit advances that still counts as equal, in logical px.
+pub const DIGIT_ADVANCE_TOLERANCE: f64 = 1.0 / 1024.0;
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum DigitAdvanceError {
+    /// A measured advance is nonfinite or not positive.
+    InvalidAdvance { digit: u8 },
+    /// The widest and narrowest digits differ by more than [`DIGIT_ADVANCE_TOLERANCE`].
+    /// Tied extremes name the lowest digit.
+    UnequalAdvances { narrowest: u8, widest: u8 },
+}
+
+impl fmt::Display for DigitAdvanceError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::InvalidAdvance { digit } => write!(
+                formatter,
+                "measured advance of digit {digit} is not finite and positive"
+            ),
+            Self::UnequalAdvances { narrowest, widest } => write!(
+                formatter,
+                "numeric text needs equal digit advances, but digit {widest} is wider than digit {narrowest} by more than 1/1024 logical px"
+            ),
+        }
+    }
+}
+
+impl std::error::Error for DigitAdvanceError {}
+
+/// Checks the measured advances of the digits 0 to 9, in that order, for the
+/// `numeric` typography role and returns the widest advance.
+pub fn tabular_digit_advance(advances: &[f64; 10]) -> Result<f64, DigitAdvanceError> {
+    if let Some(digit) = advances
+        .iter()
+        .position(|advance| !advance.is_finite() || *advance <= 0.0)
+    {
+        return Err(DigitAdvanceError::InvalidAdvance { digit: digit as u8 });
+    }
+    let (mut narrowest, mut widest) = (0, 0);
+    for digit in 1..advances.len() {
+        if advances[digit] < advances[narrowest] {
+            narrowest = digit;
+        }
+        if advances[digit] > advances[widest] {
+            widest = digit;
+        }
+    }
+    if advances[widest] - advances[narrowest] > DIGIT_ADVANCE_TOLERANCE {
+        return Err(DigitAdvanceError::UnequalAdvances {
+            narrowest: narrowest as u8,
+            widest: widest as u8,
+        });
+    }
+    Ok(advances[widest])
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -450,6 +506,40 @@ mod tests {
                     vector["name"]
                 );
             }
+        }
+    }
+
+    #[test]
+    fn numeric_digit_advance_conformance_vectors() {
+        let document: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/typography/digit-advance-vectors.json"
+        ))
+        .unwrap();
+        for case in document["cases"].as_array().unwrap() {
+            let advances: [f64; 10] =
+                serde_json::from_value(case["record"]["advances"].clone()).unwrap();
+            let expected = &case["expected"];
+            match tabular_digit_advance(&advances) {
+                Ok(advance) => assert_eq!(advance, expected["advance"].as_f64().unwrap()),
+                Err(DigitAdvanceError::UnequalAdvances { narrowest, widest }) => {
+                    assert_eq!(expected["error"]["kind"], "unequalAdvances");
+                    assert_eq!(u64::from(narrowest), expected["error"]["narrowest"]);
+                    assert_eq!(u64::from(widest), expected["error"]["widest"]);
+                }
+                Err(error) => panic!("{}: {error}", case["name"]),
+            }
+        }
+    }
+
+    #[test]
+    fn numeric_digit_advances_must_be_finite_and_positive() {
+        for (digit, advance) in [(0, 0.0), (4, -1.0), (9, f64::NAN), (2, f64::INFINITY)] {
+            let mut advances = [10.0; 10];
+            advances[digit] = advance;
+            assert_eq!(
+                tabular_digit_advance(&advances),
+                Err(DigitAdvanceError::InvalidAdvance { digit: digit as u8 })
+            );
         }
     }
 }

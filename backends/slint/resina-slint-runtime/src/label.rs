@@ -12,8 +12,16 @@ pub enum LabelMeasureError {
     FontUnavailable(String),
     FontMetrics,
     FontWeight,
+    /// The family has no face of the requested weight; the matched face has another weight.
+    FontWeightSubstituted {
+        requested: i32,
+        matched: f32,
+    },
     Extent,
-    Wrapping { offered: f32, minimum: f32 },
+    Wrapping {
+        offered: f32,
+        minimum: f32,
+    },
     Precision(&'static str),
 }
 
@@ -27,6 +35,10 @@ impl fmt::Display for LabelMeasureError {
                 f.write_str("selected Slint font has invalid natural line metrics")
             }
             Self::FontWeight => f.write_str("Slint font weight must be an integer in 1..=1000"),
+            Self::FontWeightSubstituted { requested, matched } => write!(
+                f,
+                "Slint font weight {requested} has no registered face; the matched face has weight {matched}"
+            ),
             Self::Extent => f.write_str("Slint complete label extent is empty, nonfinite or exceeds the wrapping constraint"),
             Self::Wrapping { offered, minimum } => write!(f, "Slint label wrap width {offered} is smaller than the measured word minimum {minimum}"),
             Self::Precision(field) => write!(f, "Slint label {field} exceeds coordinate precision"),
@@ -168,8 +180,29 @@ impl<'window> LabelMeasurer<'window> {
             matched = Some(font.clone());
             fontique::QueryStatus::Stop
         });
+        drop(query);
         let font =
             matched.ok_or_else(|| LabelMeasureError::FontUnavailable(font_family.to_owned()))?;
+        let matched_weight = self
+            .collection
+            .family(font.family.0)
+            .and_then(|info| {
+                info.fonts()
+                    .get(font.family.1)
+                    .map(|face| face.weight().value())
+            })
+            .ok_or_else(|| LabelMeasureError::FontUnavailable(font_family.to_owned()))?;
+        let varied = font
+            .synthesis
+            .variation_settings()
+            .iter()
+            .any(|(axis, value)| axis.to_be_bytes() == *b"wght" && *value == weight as f32);
+        if font.synthesis.embolden() || (matched_weight != weight as f32 && !varied) {
+            return Err(LabelMeasureError::FontWeightSubstituted {
+                requested: weight as i32,
+                matched: matched_weight,
+            });
+        }
         let face = FontRef::from_index(font.blob.data(), font.index)
             .map_err(|_| LabelMeasureError::FontMetrics)?;
         let location = face.axes().location(font.synthesis.variation_settings());

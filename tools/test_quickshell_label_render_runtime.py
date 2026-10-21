@@ -6,6 +6,11 @@ import unittest
 from PIL import Image, ImageDraw
 
 from check_quickshell_label_render_runtime import check_image, check_probe_output
+import conformance_font
+
+
+MASTERS = [{"family": "Inter", "style": master["style"], "weight": master["weight"], "file": master["file"],
+            "sha256": master["sha256"]} for master in conformance_font.MANIFEST["masters"]]
 
 
 def ink_image(x=5):
@@ -63,18 +68,22 @@ class NativeLabelCaptureTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     check_image(path, 1)
 
-    def test_native_success_requires_exact_counts_scale_and_terminal_status(self):
-        success = "RESINA_LABEL_RENDER_PASS 36 9 1.25 software\n"
-        check_probe_output(SimpleNamespace(stdout=success, stderr="", returncode=0), 1.25)
+    def test_native_success_requires_exact_counts_scale_master_and_terminal_status(self):
+        face = 'RESINA_LABEL_FACE {"weight": 400, "face": {"family": "Inter", "style": "Regular"}}\n'
+        success = face + "RESINA_LABEL_RENDER_PASS 36 9 1.25 software\n"
+        resolved = check_probe_output(SimpleNamespace(stdout=success, stderr="", returncode=0), 1.25, MASTERS)
+        self.assertEqual((resolved["style"], resolved["weight"], resolved["file"]), ("Regular", 400, "Inter-Regular.otf"))
         for log, status in (("", 0), (success + success, 0), (success, 1),
             (success + "RESINA_LABEL_RENDER_FAIL failed\n", 0),
             (success.replace("software", "opengl"), 0),
-            (success.replace("PASS 36", "PASS 35"), 0), (success.replace("1.25", "1"), 0)):
+            (success.replace("PASS 36", "PASS 35"), 0), (success.replace("1.25", "1"), 0),
+            (success.replace(face, ""), 0), (face + success, 0),
+            (success.replace("Regular", "Medium"), 0), (success.replace("Inter", "DejaVu Sans"), 0)):
             with self.subTest(log=log, status=status):
                 with self.assertRaises(ValueError):
-                    check_probe_output(SimpleNamespace(stdout=log, stderr="", returncode=status), 1.25)
+                    check_probe_output(SimpleNamespace(stdout=log, stderr="", returncode=status), 1.25, MASTERS)
         check_probe_output(SimpleNamespace(stdout=success.replace("software", "opengl"),
-                                          stderr="", returncode=0), 1.25, "rhi")
+                                          stderr="", returncode=0), 1.25, MASTERS, "rhi")
 
 
 if __name__ == "__main__":

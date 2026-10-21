@@ -79,14 +79,15 @@ existing scales and text scales 1, 1.5 and 2.
 With `RESINA_LABEL_CAPTURE_DIR` set to a new ignored directory, the complete
 label test also writes tagged PNGs and [native label records](../../tools/schemas/native-label-capture.schema.json).
 Each record contains the actual measured label IR, scales, static sample state,
-source commit, validated font family/file identity, test-binary identity,
+source commit, the resolved font master (family, PostScript name, weight and
+file identity), test-binary identity,
 runtime and the GPU adapter/driver from the context that rendered the frame.
 File identities use Git blob hashes; they identify bytes, not acceptance.
 The producer rejects an uncommitted tree and never overwrites an existing image
 or record. Existing PPM diagnostic captures remain available.
 
 ```sh
-RESINA_LABEL_FONT=/path/to/DejaVuSans.ttf \
+RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter \
 RESINA_LABEL_CAPTURE_DIR="$PWD/target/native-label-candidate-1" \
 cargo test --manifest-path backends/guido/resina-guido/Cargo.toml \
   --features testing --locked --test label_render --test label_ink

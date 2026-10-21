@@ -27,6 +27,29 @@ slint::slint! {
 
 }
 
+/// Registers the pinned Inter static masters and returns their shared family name.
+fn register_conformance_masters() -> String {
+    let directory = std::path::PathBuf::from(
+        std::env::var_os("RESINA_LABEL_FONT_DIR").expect("RESINA_LABEL_FONT_DIR is required"),
+    );
+    let mut collection = slint::fontique_011::shared_collection();
+    let mut families = Vec::new();
+    for file in [
+        "Inter-Regular.otf",
+        "Inter-Medium.otf",
+        "Inter-SemiBold.otf",
+    ] {
+        let bytes = std::fs::read(directory.join(file)).unwrap();
+        let fonts =
+            collection.register_fonts(fontique::Blob::new(std::sync::Arc::new(bytes)), None);
+        let (id, infos) = fonts.first().expect("test font must be registered");
+        assert_eq!(infos.len(), 1);
+        families.push(collection.family_name(*id).unwrap().to_owned());
+    }
+    assert_eq!(families, ["Inter"; 3]);
+    families.remove(0)
+}
+
 struct SoftwarePlatform;
 impl Platform for SoftwarePlatform {
     fn create_window_adapter(&self) -> Result<Rc<dyn WindowAdapter>, PlatformError> {
@@ -86,14 +109,7 @@ fn measure(
 fn actual_font_measurement_preserves_complete_text_and_typography() {
     slint::platform::set_platform(Box::new(SoftwarePlatform)).unwrap();
     let ui = MeasureWindow::new().unwrap();
-    let bytes =
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT is required"))
-            .unwrap();
-    let mut collection = slint::fontique_011::shared_collection();
-    let fonts = collection.register_fonts(fontique::Blob::new(std::sync::Arc::new(bytes)), None);
-    let (id, infos) = fonts.first().expect("test font must be registered");
-    assert!(!infos.is_empty());
-    let family = collection.family_name(*id).unwrap().to_owned();
+    let family = register_conformance_masters();
     let mut measurer = LabelMeasurer::new(ui.window());
     let expansion: serde_json::Value = serde_json::from_str(include_str!(
         "../../../../conformance/content/command-label-expansion.json"
@@ -239,7 +255,7 @@ fn actual_font_measurement_preserves_complete_text_and_typography() {
             "{text:?}: {extent:?}, expected {expected}"
         );
     }
-    for weight in [100.0, 600.0, 900.0] {
+    for weight in [400.0, 500.0, 600.0] {
         let typography = style(1.5, 0.5, weight, 1.4);
         let measured = measure(
             &ui,
@@ -289,6 +305,29 @@ fn actual_font_measurement_preserves_complete_text_and_typography() {
             ),
             Err(LabelMeasureError::Precision("wrap width"))
         ));
+    }
+    for (weight, matched) in [
+        (100.0, 400.0),
+        (300.0, 400.0),
+        (700.0, 600.0),
+        (900.0, 600.0),
+    ] {
+        let substituted = style(1.0, 0.0, weight, 1.4);
+        assert_eq!(
+            measurer
+                .prepare(
+                    &family,
+                    LabelMeasureInput {
+                        typography: &substituted,
+                        ..input()
+                    }
+                )
+                .unwrap_err(),
+            LabelMeasureError::FontWeightSubstituted {
+                requested: weight as i32,
+                matched
+            }
+        );
     }
     let fractional = style(1.0, 0.0, 400.5, 1.4);
     assert!(matches!(

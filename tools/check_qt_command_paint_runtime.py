@@ -12,12 +12,13 @@ from urllib.parse import unquote_to_bytes
 from PIL import Image
 from check_qt_command_snapshot_runtime import request_for, verify_snapshot
 from check_quickshell_paint_runtime import compare_images, read_backend_output
+import conformance_font
 
 
 def main():
     parser = argparse.ArgumentParser(description="Verify checked Rust command paint in an actual Qt window.")
     parser.add_argument("--module-path", required=True, type=Path)
-    parser.add_argument("--font", required=True, type=Path)
+    parser.add_argument("--font-dir", required=True, type=Path)
     parser.add_argument("--raster", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     args = parser.parse_args()
@@ -25,7 +26,7 @@ def main():
     os.environ.setdefault("QT_QUICK_BACKEND", "software")
     try:
         from PySide6.QtCore import QPluginLoader, QUrl, qVersion
-        from PySide6.QtGui import QFontDatabase, QGuiApplication
+        from PySide6.QtGui import QGuiApplication
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from PySide6.QtQuick import QQuickWindow
         if qVersion() != "6.11.2":
@@ -34,8 +35,7 @@ def main():
         plugin = QPluginLoader(str(args.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
             raise ValueError("native Qt plugin factory failed: " + plugin.errorString())
-        if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ["DejaVu Sans"]:
-            raise ValueError("requires explicitly loaded DejaVu Sans")
+        conformance_font.register_qt(args.font_dir)
         engine = QQmlEngine()
         engine.addImportPath(str(args.module_path.resolve()))
         component = QQmlComponent(engine)

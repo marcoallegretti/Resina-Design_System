@@ -14,6 +14,7 @@ from check_headless_backend import mismatch
 from check_quickshell_paint_runtime import compare_images, read_backend_output
 from check_qt_command_control_runtime import wait
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
+import conformance_font
 
 
 def authored_motion(source, phase):
@@ -180,7 +181,7 @@ def check_bindings(engine, app, channels):
 def main():
     parser = argparse.ArgumentParser(description='Verify guarded Qt command frames against independent spring equations.')
     parser.add_argument('--module-path', required=True, type=Path)
-    parser.add_argument('--font', required=True, type=Path)
+    parser.add_argument('--font-dir', required=True, type=Path)
     parser.add_argument('--raster', required=True, type=Path)
     parser.add_argument('--output-dir', required=True, type=Path)
     args = parser.parse_args()
@@ -188,7 +189,7 @@ def main():
     os.environ.setdefault('QT_QUICK_BACKEND', 'software')
     try:
         from PySide6.QtCore import QCoreApplication, QEvent, QPluginLoader, QObject, Qt, QUrl
-        from PySide6.QtGui import QFontDatabase, QGuiApplication, QKeyEvent
+        from PySide6.QtGui import QGuiApplication, QKeyEvent
         from PySide6.QtQml import QQmlComponent, QQmlEngine
         from PySide6.QtQuick import QQuickWindow
         from PySide6.QtCore import qVersion
@@ -198,8 +199,7 @@ def main():
         plugin = QPluginLoader(str(args.module_path.resolve() / 'Resina/Runtime/libResina_Runtime.so'))
         if plugin.instance() is None:
             raise ValueError(plugin.errorString())
-        if QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(args.font.resolve()))) != ['DejaVu Sans']:
-            raise ValueError('requires explicitly loaded DejaVu Sans')
+        conformance_font.register_qt(args.font_dir)
         engine = QQmlEngine()
         engine.addImportPath(str(args.module_path.resolve()))
         component = QQmlComponent(engine, QUrl.fromLocalFile(str(ROOT / 'conformance/quickshell/command-control-fixture.qml')))

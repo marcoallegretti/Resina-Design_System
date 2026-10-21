@@ -1,6 +1,8 @@
 #![cfg(feature = "testing")]
 
-use guido::widgets::{Color, font::FontFamily};
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
+use guido::widgets::Color;
 use resina_environment::{LayoutDirection, SafeArea};
 use resina_guido::{
     LabelMeasureError, LabelPrepareError, measure_command_label, prepare_command_label,
@@ -15,9 +17,7 @@ use label_style::style;
 
 #[test]
 fn actual_font_shapes_complete_scaled_and_expanded_labels() {
-    let font = std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT is required");
-    guido::load_font(std::fs::read(font).expect("explicit label font must be readable"));
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     for scale in [1.0, 1.5, 2.0] {
         let typography = style(scale, 0.0, 400.0, 1.4);
         assert_eq!(typography.font_size(), 20.0 * scale);

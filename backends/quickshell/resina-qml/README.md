@@ -89,7 +89,7 @@ The component is invisible, has no input target and is ignored by accessibility.
 Call its synchronous `measure(text, family, pixelSize, weight, spacing,
 lineHeight, maximumWidth)` method on the Qt UI thread for each natural/fitted
 request from the [portable label policy](../../../spec/46-command-label-layout.md).
-It returns `{width, height, nativeText, paragraphs, fontMapping,
+It returns `{width, height, nativeText, paragraphs, face, fontMapping,
 nativeLineHeight, nativeWrappingWidth}` or throws a diagnostic error;
 an error publishes no extent. `maximumWidth` is explicitly `null` for natural
 measurement or a finite positive logical wrapping constraint.
@@ -120,12 +120,25 @@ limit. `implicitHeight` preserves trailing blank lines that `contentHeight`
 omits on Qt 6.11.2. Natural width is the native implicit width; fitted width is
 the complete content width, checked against the unchanged offered constraint.
 
-The selected primary family, mapped native pixel size and reported weight must
-match for every nonempty paragraph. [Qt's empty-layout path](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L430-L455)
+The selected primary family and mapped native pixel size must match for every
+nonempty paragraph. [Qt's empty-layout path](https://github.com/qt/qtdeclarative/blob/v6.11.2/src/quick/items/qquicktext.cpp#L430-L455)
 uses current native font metrics without refreshing `fontInfo`; blank entries
 retain those metrics, while nonempty entries validate the actual selected face.
-Qt's native font selection/synthesis supplies the weight; per-glyph
-fallback availability remains the application's explicit font mapping policy.
+`fontInfo.weight` cannot detect a substituted weight: on Qt 6.11.2 it repeats
+the requested weight even when only a Regular master is registered, while
+`fontInfo.styleName` names the master Qt matched. `face` therefore publishes
+`{family, style}` of that master, and every nonempty paragraph must resolve the
+same one. The font mapping owns the registered masters and must reject a face
+whose own weight differs from the requested weight; the label checks do this
+against the pinned Inter masters. A style name identifies a file only when no
+other visible face of the family has that style, so the label checks also list
+the fontconfig-visible faces of the family in the probe's environment and fail
+unless every upright, normal-width face at weight 400, 500 or 600 is
+byte-identical to that weight's pinned master. `measureJson`, the production
+entry point of the Rust Command path, returns only `{kind, width, height}`: it
+drops `face`, so production measurement cannot detect a substituted weight. Only
+the label checks, which call `measure`, verify it. Per-glyph fallback availability remains the
+application's explicit font mapping policy.
 Preserve that context, typography and wrapping constraint for drawing, allow
 glyph overhang and invalidate measurements when the font environment changes.
 Use `Text.QtRendering`, upright mixed-case text with no underline or strikeout,
@@ -158,12 +171,15 @@ plain-text U+2029 break by using independent native layouts, consistent with
 Native limits do not narrow IR.
 
 ```sh
-python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf
-python tools/check_quickshell_label_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --platform wayland
+python tools/check_quickshell_label_runtime.py --font-dir /usr/share/fonts/opentype/inter
+python tools/check_quickshell_label_runtime.py --font-dir /usr/share/fonts/opentype/inter --platform wayland
 ```
 
-The native probe checks 27 labels, four text scales and four signed spacing
-values on each of five actual device scales (0.5, 1, 1.25, 2 and 1.3). It includes
+The checker takes the directory holding the pinned Inter static masters
+(`tools/conformance_font.json`; `python tools/conformance_font.py fetch --output DIR`
+provides them where no package does). The native probe registers all three and
+checks 27 labels, four text scales and four signed spacing values on each
+requested actual device scale (by default 0.5, 1, 1.25, 2 and 1.3). It includes
 100.06% text scaling and the authored 0.15 px wide tracking, alongside
 Latin, expanded German, Arabic, 100/150/200% string-length fixtures, literal
 markup, LF/CRLF/CR, VT/FF/NEL, line separators and leading/trailing/consecutive
@@ -173,13 +189,27 @@ each fitted paragraph also matches its isolated native measurement. The probe
 checks complete line heights, contiguous paragraph offsets, wide-word reflow,
 spacing effects, weights with blank paragraphs, fractional line heights and
 13 invalid/unsupported inputs, including failure after a valid paragraph and
-recovery afterward. Evidence recorded on Quickshell 0.3.1: the extended matrix
+recovery afterward. Before the runs the checker lists the Inter faces
+fontconfig makes visible in the probe's environment and fails on an upright,
+normal-width face at weight 400, 500 or 600 that is not byte-identical to that
+weight's pinned master. At each scale it records the master that weights 400, 500
+and 600 resolve to (family, style, weight, file and SHA-256) and fails unless
+they are the three distinct pinned masters. A second run registers only the
+Regular master, with a fontconfig file that lists no font directories, and must
+report weight 500 as a substitution. The probe also measures the digits 0 to 9
+in the Medium master at 20 px, once with `font.features: {"tnum": 1}` and once
+without, and publishes both as
+[digit-advance records](../../../schemas/digit-advance-record.schema.json). With
+`tnum` the advances must satisfy the
+[numeric digit rule](../../../spec/11-typography.md#numeric-digits); the face's
+proportional default digits must fail it. Evidence recorded on Quickshell 0.3.1: the extended matrix
 passed software/offscreen with unmodified Quickshell 0.3.1 and Qt 6.11.2. Earlier integer-size evidence passed on
 software in the tested Wayland session; the extended matrix has not been rerun there.
-Runtime CI and other
-fonts/compositors remain unverified. This checker is not run in CI and takes the
-host from `PATH` or `--quickshell` without a version check. The checker itself is covered by portable
-CI tests that reject incomplete, duplicate, failed and wrong-scale evidence.
+CI runs this checker with the released Quickshell host at device scales 1, 1.25
+and 2 on offscreen software. Other fonts and compositors remain unverified. The
+host comes from `PATH` or `--quickshell` without a version check. The checker
+itself is covered by portable CI tests that reject incomplete, duplicate,
+failed, wrong-scale and substituted-master evidence.
 
 ## Native label drawing
 
@@ -216,8 +246,8 @@ clipping, font fallback, overhang background and guarded color remain the
 composition owner's responsibility.
 
 ```sh
-python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --output-dir target/qt-label-software
-python tools/check_quickshell_label_render_runtime.py --font /usr/share/fonts/truetype/DejaVuSans.ttf --scene-graph rhi --scales 0.5 1 1.25 2 1.3 --output-dir target/qt-label-rhi
+python tools/check_quickshell_label_render_runtime.py --font-dir /usr/share/fonts/opentype/inter --output-dir target/qt-label-software
+python tools/check_quickshell_label_render_runtime.py --font-dir /usr/share/fonts/opentype/inter --scene-graph rhi --scales 0.5 1 1.25 2 1.3 --output-dir target/qt-label-rhi
 ```
 
 Use fresh output directories. The probe compares 36 actual drawing/reference
@@ -245,10 +275,12 @@ software/Wayland and OpenGL RHI on Mesa software graphics; those prior captures
 did not assert the reference's selected font, so their font-mapping evidence is
 limited. Software `grabToImage` at 0.5 produces
 an invalid partially black capture and fails the checker when requested.
-Live software presentation at 0.5, hardware GPUs, runtime CI, arbitrary font
-mapping, other fonts and complete component/accessibility conformance remain
-unverified. This checker is not run in CI and takes the host from `PATH` or
-`--quickshell` without a version check.
+Each run also records the master that its weight-400 measurement resolved and
+rejects any other. CI runs the software captures with the released Quickshell
+host at device scales 1, 1.25 and 2. Live software presentation at 0.5,
+hardware GPUs, arbitrary font mapping, other fonts and complete
+component/accessibility conformance remain unverified. The host comes from
+`PATH` or `--quickshell` without a version check.
 
 ## Complete opaque paint
 

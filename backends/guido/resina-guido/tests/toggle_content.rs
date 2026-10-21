@@ -1,5 +1,7 @@
 #![cfg(feature = "testing")]
 
+#[path = "common/conformance_font.rs"]
+mod conformance_font;
 #[path = "common/readback.rs"]
 mod readback;
 
@@ -624,11 +626,7 @@ fn check_commands(
 }
 #[test]
 fn checked_toggle_content_preserves_placed_paint_and_complete_native_labels() {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
-            .unwrap(),
-    );
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let scenes: Value = serde_json::from_str(
         &std::fs::read_to_string(std::env::var("RESINA_SCENES").expect("RESINA_SCENES required"))
             .unwrap(),
@@ -867,11 +865,7 @@ fn calibrated_toggle_frames_keep_current_adjacency_semantics_and_raw_retarget_st
 }
 
 fn check_sampled_toggle_frames(calibrated: bool) {
-    guido::load_font(
-        std::fs::read(std::env::var("RESINA_LABEL_FONT").expect("RESINA_LABEL_FONT required"))
-            .unwrap(),
-    );
-    let family = FontFamily::name("DejaVu Sans");
+    let family = conformance_font::load();
     let scenes: Value = serde_json::from_str(
         &std::fs::read_to_string(std::env::var("RESINA_SCENES").expect("RESINA_SCENES required"))
             .unwrap(),

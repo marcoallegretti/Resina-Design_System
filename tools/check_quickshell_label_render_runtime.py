@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+import json
 import math
 import os
 from pathlib import Path
@@ -8,6 +9,8 @@ import subprocess
 import sys
 
 from PIL import Image, ImageChops
+
+import conformance_font
 
 
 def check_image(path, scale, overhang=False):
@@ -36,26 +39,29 @@ def check_image(path, scale, overhang=False):
     return hashlib.sha256(image.tobytes()).digest()
 
 
-def check_probe_output(result, scale, scene_graph="software"):
+def check_probe_output(result, scale, masters, scene_graph="software"):
     log = result.stdout + result.stderr
     matches = re.findall(r"RESINA_LABEL_RENDER_PASS 36 9 ([0-9.]+) (software|opengl)(?:\s|$)", log)
     if result.returncode or "RESINA_LABEL_RENDER_FAIL" in log or len(matches) != 1 \
         or not math.isclose(float(matches[0][0]), scale, rel_tol=0, abs_tol=0.00001) \
         or matches[0][1] != ("opengl" if scene_graph == "rhi" else "software"):
         raise ValueError(f"native drawing probe failed (exit {result.returncode}): {log[-2000:]}")
+    faces = [json.loads(line) for line in re.findall(r"RESINA_LABEL_FACE (\{.*\})", log)]
+    if len(faces) != 1 or faces[0]["weight"] != 400:
+        raise ValueError("native drawing probe did not report its resolved master")
+    face = faces[0]["face"]
+    return conformance_font.resolve(masters, face["family"], face["style"], 400)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Verify complete native Qt label drawing against independent Text items.")
-    parser.add_argument("--font", type=Path, required=True)
+    parser.add_argument("--font-dir", type=Path, required=True, help="directory with the pinned Inter static masters")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--quickshell", default="quickshell")
     parser.add_argument("--platform", choices=("offscreen", "wayland"), default="offscreen")
     parser.add_argument("--scene-graph", choices=("software", "rhi"), default="software")
     parser.add_argument("--scales", nargs="+", type=float, default=[1, 1.25, 2, 1.3])
     arguments = parser.parse_args()
-    if not arguments.font.is_file():
-        parser.error("provide the DejaVu Sans font file")
     for scale in arguments.scales:
         if not math.isfinite(scale) or scale <= 0 or scale > 4:
             parser.error("device scale must be positive and capture must remain within 4194304 pixels")
@@ -66,10 +72,13 @@ def main():
     environment.update(QT_QPA_PLATFORM=arguments.platform, QT_QUICK_BACKEND=arguments.scene_graph,
         QSG_RHI_BACKEND="opengl",
         RESINA_LABEL_SCENE_GRAPH=arguments.scene_graph,
-        RESINA_LABEL_FONT=arguments.font.resolve().as_uri(),
         RESINA_LABEL_MEASURE_QML=(root / "backends/quickshell/resina-qml/qml/ResinaLabelMeasure.qml").as_uri(),
         RESINA_LABEL_QML=(root / "backends/quickshell/resina-qml/qml/ResinaLabel.qml").as_uri())
+    resolved = []
     try:
+        masters = conformance_font.masters(arguments.font_dir)
+        environment["RESINA_LABEL_FONTS"] = json.dumps([master["path"].as_uri() for master in masters])
+        visible = conformance_font.check_fontconfig(masters, environment)
         arguments.output_dir.mkdir(parents=True, exist_ok=False)
         for index, scale in enumerate(arguments.scales):
             directory = arguments.output_dir / str(index)
@@ -79,13 +88,14 @@ def main():
             result = subprocess.run([arguments.quickshell, "--no-color", "--path",
                 str(root / "conformance/quickshell/label-render-probe.qml")], env=environment,
                 capture_output=True, encoding="utf-8", errors="strict", timeout=60, check=False)
-            check_probe_output(result, scale, arguments.scene_graph)
+            resolved.append({"deviceScale": scale, "master": check_probe_output(result, scale, masters, arguments.scene_graph)})
             hashes = {check_image(directory / f"frame-{frame}.png", scale, frame in (0, 35)) for frame in range(36)}
             if len(hashes) != 36:
                 raise ValueError("native drawing reused a stale or duplicate capture")
-    except (OSError, UnicodeError, ValueError, subprocess.TimeoutExpired) as error:
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
         print(f"FAIL Quickshell label drawing: {error}", file=sys.stderr)
         return 1
+    print(json.dumps({"visibleFaces": visible, "resolved": resolved}, indent=2))
     print(f"Quickshell native label drawing passed {36 * len(arguments.scales)} complete capture pairs and {9 * len(arguments.scales)} rejection cases on {arguments.platform} ({arguments.scene_graph})")
     return 0
 

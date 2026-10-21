@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 
 from PIL import Image
 from check_schemas import ROOT, load_json, parse_json
+import conformance_font
 
 
 def diagnostic_request():
@@ -114,6 +115,10 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
         env = dict(os.environ, XDG_RUNTIME_DIR=runtime, WAYLAND_DISPLAY=str(parent),
                    WLR_BACKENDS="wayland", WLR_RENDERER="pixman", WLR_LIBINPUT_NO_DEVICES="1")
         if content:
+            masters = conformance_font.masters(content[0].parent)
+            if content[0] != masters[0]["path"]:
+                raise ValueError("the content font must be the pinned Inter Regular master beside its other masters")
+            board_fonts = os.pathsep.join(str(master["path"]) for master in masters)
             fonts = Path(runtime) / "fonts"
             fonts.mkdir()
             fontconfig = Path(runtime) / "fonts.conf"
@@ -123,9 +128,9 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
             env["FONTCONFIG_FILE"] = str(fontconfig)
         logical_board = None
         if board:
-            font, text_scale = content
+            text_scale = content[1]
             layout_path = output / f"layout-{scale}.png"
-            preflight = subprocess.run([str(probe), "relief-board", str(request), str(font), "DejaVu Sans", str(layout_path), str(scale), str(text_scale), *board], env=env, cwd=ROOT, capture_output=True, text=True, timeout=preparation_seconds)
+            preflight = subprocess.run([str(probe), "relief-board", str(request), board_fonts, conformance_font.FAMILY, str(layout_path), str(scale), str(text_scale), *board], env=env, cwd=ROOT, capture_output=True, text=True, timeout=preparation_seconds)
             if preflight.returncode != 0 or preflight.stderr:
                 raise ValueError(f"board preflight failed: {preflight.stderr[:400]}")
             layout = Image.open(layout_path).convert("RGBA")
@@ -163,8 +168,8 @@ def check_scale(probe, request, output, parent, scale, content=None, outline_foc
                 arguments = [str(probe), str(request), str(scale), str(prepared_path)]
                 marker = "RESINA_RELIEF_PREPARED "
                 if board:
-                    font, text_scale = content
-                    arguments = [str(probe), "relief-board-native", str(request), str(font), "DejaVu Sans", str(prepared_path), str(scale), str(text_scale), *board]
+                    text_scale = content[1]
+                    arguments = [str(probe), "relief-board-native", str(request), board_fonts, conformance_font.FAMILY, str(prepared_path), str(scale), str(text_scale), *board]
                     marker = "RESINA_RELIEF_BOARD_PREPARED "
                 elif content:
                     font, text_scale = content
@@ -240,7 +245,7 @@ def main():
     parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--request", type=Path)
-    parser.add_argument("--content-font", type=Path, help="use the complete-content probe with an explicit regular DejaVu Sans file")
+    parser.add_argument("--content-font", type=Path, help="use the complete-content probe with the pinned Inter Regular master; the Relief Board also registers the Medium and SemiBold masters beside it")
     parser.add_argument("--outline-focus", action="store_true", help="check the continuous-outline focus probe against its full opaque GPU reference")
     parser.add_argument("--content-focus", action="store_true", help="compose a guarded focus ring around the actual complete-content footprint")
     parser.add_argument("--material-light", action="store_true", help="use material-lit relief in the complete-content probe")
