@@ -1,9 +1,13 @@
 import copy
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
-from check_quickshell_command_motion_budget import (FLOOR_INTERVAL, GAP_BOUND, TICK, continuations, describe_tail,
-                                                     evaluate, summary, tail, verify_scale)
-from test_quickshell_command_motion import FIXTURE, REST, frame
+from check_quickshell_command_motion_budget import (AppendedMotion, FLOOR_INTERVAL, GAP_BOUND, TICK,
+                                                     continuations, describe_tail, evaluate, measure, summary,
+                                                     tail, verify_scale)
+from test_quickshell_command_motion import FIXTURE, HELD, REST, frame
 
 RETARGETED = {"bodyMix": {**REST, "initial": {"position": .4, "velocity": 1}}, "depthScale": copy.deepcopy(REST)}
 RELEASED = {"bodyMix": 0, "depthScale": 0}
@@ -22,6 +26,44 @@ def measured(interval, preparation=.005, count=20, delay=None, span=None):
         span = interval - delay
     return [{"interval": interval, "preparation": preparation, "publicationDelay": delay,
              "predecessorSpan": span}] * count
+
+
+class FakeMotion:
+    def __init__(self, spanning_every):
+        self.log, self.spanning_every, self.clock = [], spanning_every, 0
+
+    def frames(self):
+        return list(self.log)
+
+    def publish(self, pressed, count=6):
+        for _ in range(count):
+            self.clock += .02
+            spans = self.spanning_every and len(self.log) % self.spanning_every == 0
+            self.log.append(timed(self.clock, span=TICK + .01 if spans else .01, delay=.001,
+                                  hold=HELD["hold"] if pressed else None))
+
+
+class FakeSession:
+    def __init__(self, motion):
+        self.motion = motion
+        self.input = self
+        self.cycles = 0
+
+    def move(self, *position):
+        pass
+
+    def reset(self, *arguments):
+        pass
+
+    def settle(self, *arguments):
+        pass
+
+    def key(self, key, pressed):
+        self.cycles += not pressed
+        self.motion.publish(pressed)
+
+    def wait(self, condition, description, timeout):
+        assert condition(), description
 
 
 class CommandMotionBudgetTests(unittest.TestCase):
@@ -112,8 +154,81 @@ class CommandMotionBudgetTests(unittest.TestCase):
     def test_publication_gap_requires_enough_frames_that_spanned_a_tick(self):
         result = evaluate(measured(.02, count=19, delay=.001) + measured(.01, count=30, delay=.009)
                           + measured(.03, count=30))
-        self.assertEqual(result["gap"], {"frames": 19, "bound": GAP_BOUND, "evaluated": False})
+        self.assertEqual(result["gap"], {"frames": 19, "bound": GAP_BOUND, "evaluated": False, "observed": 49,
+                                         "longestSpan": .019, "unexercised": False})
         self.assertTrue(evaluate(measured(.02, delay=.001))["gap"]["evaluated"])
+
+    def test_a_host_whose_predecessors_never_spanned_a_tick_leaves_the_gap_unexercised(self):
+        fast = TICK - 1e-4
+        result = evaluate(measured(.02, count=200, delay=.012, span=fast))
+        self.assertEqual((result["gap"]["evaluated"], result["gap"]["unexercised"], result["gap"]["frames"]),
+                         (False, True, 0))
+        self.assertEqual(result["gap"]["longestSpan"], fast)
+        self.assertFalse(evaluate(measured(.02, count=200, delay=.012, span=TICK))["gap"]["unexercised"])
+
+    def test_some_frames_that_spanned_a_tick_are_never_unexercised(self):
+        fast = TICK - 1e-4
+        for spanned in (1, 19):
+            with self.subTest(spanned=spanned):
+                gap = evaluate(measured(.02, count=200, delay=.001, span=fast)
+                               + measured(.04, count=spanned, delay=.001, span=TICK + .01))["gap"]
+                self.assertEqual((gap["evaluated"], gap["unexercised"], gap["frames"]), (False, False, spanned))
+
+    def test_unexercised_requires_enough_observed_predecessors_to_show_it(self):
+        gap = evaluate(measured(.02, count=19, delay=.012, span=.01) + measured(.03, count=30))["gap"]
+        self.assertEqual((gap["observed"], gap["unexercised"]), (19, False))
+        self.assertTrue(evaluate(measured(.02, count=20, delay=.012, span=.01))["gap"]["unexercised"])
+
+    def test_a_slow_host_evaluates_a_delayed_publication(self):
+        gap = evaluate(measured(.04, count=300, delay=.012, span=.028))["gap"]
+        self.assertEqual((gap["evaluated"], gap["met"], gap["unexercised"]), (True, False, False))
+
+    def test_a_borderline_host_evaluates_exactly_at_the_minimum(self):
+        fast = measured(.02, count=400, delay=.012, span=.012)
+        gap = evaluate(fast + measured(.04, count=20, delay=.001, span=TICK))["gap"]
+        self.assertEqual((gap["frames"], gap["evaluated"], gap["met"]), (20, True, True))
+        gap = evaluate(fast + measured(.04, count=19, delay=.001, span=TICK))["gap"]
+        self.assertEqual((gap["frames"], gap["evaluated"], gap["unexercised"]), (19, False, False))
+
+    def test_presses_continue_until_enough_frames_spanned_a_tick(self):
+        motion = FakeMotion(spanning_every=20)
+        session = FakeSession(motion)
+        frames, presses = measure(session, motion, 3, 100, 6)
+        qualifying = evaluate(continuations(frames))["gap"]["frames"]
+        self.assertEqual((qualifying, session.cycles, presses), (20, 34, 34))
+
+    def test_presses_stop_at_the_minimum_when_enough_frames_already_spanned_a_tick(self):
+        motion = FakeMotion(spanning_every=2)
+        session = FakeSession(motion)
+        measure(session, motion, 5, 100, 6)
+        self.assertEqual(session.cycles, 5)
+
+    def test_presses_stop_at_the_cap_when_a_host_never_spans_a_tick(self):
+        motion = FakeMotion(spanning_every=0)
+        session = FakeSession(motion)
+        frames, presses = measure(session, motion, 3, 8, 6)
+        self.assertEqual((session.cycles, presses), (8, 8))
+        self.assertTrue(evaluate(continuations(frames))["gap"]["unexercised"])
+
+    def test_motion_frames_are_parsed_once_from_the_complete_lines_of_a_growing_log(self):
+        def line(event):
+            return "RESINA_LIFECYCLE " + json.dumps(event) + "\n"
+
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "shell.log"
+            session = type("Session", (), {"log": log})()
+            motion = AppendedMotion(session)
+            log.write_text("", encoding="utf-8")
+            self.assertEqual(motion.frames(), [])
+            first, second = timed(.1), timed(.2)
+            with log.open("a", encoding="utf-8") as output:
+                output.write(line(first) + line({"kind": "started", "generation": "g"}))
+                output.write(line(second)[:30])
+            self.assertEqual([item["motion"]["time"] for item in motion.frames()], [.1])
+            with log.open("a", encoding="utf-8") as output:
+                output.write(line(second)[30:] + "unrelated output\n")
+            self.assertEqual([item["motion"]["time"] for item in motion.frames()], [.1, .2])
+            self.assertEqual(len(motion.frames()), 2)
 
     def test_summary_uses_nearest_rank_percentiles(self):
         self.assertEqual(summary(list(range(10, 0, -1))), {"median": 5.5, "p90": 9, "max": 10})

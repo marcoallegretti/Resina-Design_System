@@ -9,8 +9,8 @@ import subprocess
 import sys
 
 from check_qt_command_snapshot_runtime import ROOT
-from check_quickshell_command_lifecycle import OUTSIDE, Session
-from check_quickshell_command_motion import Motion, epochs, moving, verify_scale
+from check_quickshell_command_lifecycle import OUTSIDE, Session, read_events
+from check_quickshell_command_motion import Motion, epochs, frames, moving, verify_scale
 from check_quickshell_command_updates import verify_version
 from wayland_virtual_input import KEY_SPACE
 import conformance_font
@@ -25,6 +25,27 @@ MINIMUM_FRAMES = 20
 TICK = 1 / 60
 GAP_PERCENTILE = .75
 GAP_BOUND = .004
+# A host whose preparation rarely outlasts a tick yields few qualifying frames per press, so the measured phase
+# continues past the minimum presses until the gap has enough frames or this many presses have run.
+MAX_PRESSES = 40
+
+
+class AppendedMotion(Motion):
+    """Motion frames parsed once from the shell log, so long measurements do not reread it for every poll."""
+
+    def __init__(self, session):
+        super().__init__(session)
+        self.offset = 0
+        self.logged = []
+
+    def frames(self):
+        with self.session.log.open("rb") as log:
+            log.seek(self.offset)
+            appended = log.read()
+        complete = appended[:appended.rfind(b"\n") + 1]
+        self.offset += len(complete)
+        self.logged += frames(read_events(complete.decode("utf-8", errors="replace")))
+        return self.logged
 
 
 def seconds(value, name):
@@ -83,15 +104,21 @@ def tail(intervals):
             "longestRunAbove": {"interval": FLOOR_INTERVAL, "frames": longest}}
 
 
+def qualifying(measured):
+    return [item for item in measured if item["publicationDelay"] is not None and item["predecessorSpan"] >= TICK]
+
+
 def evaluate(measured, minimum=MINIMUM_FRAMES):
     if len(measured) < minimum:
         raise ValueError(f"only {len(measured)} continued spring frames were published; {minimum} are required")
     interval = summary([item["interval"] for item in measured])
     preparation = summary([item["preparation"] for item in measured])
     floor = interval["median"] <= FLOOR_INTERVAL
-    delays = sorted(item["publicationDelay"] for item in measured if item["publicationDelay"] is not None
-                    and item["predecessorSpan"] >= TICK)
-    gap = {"frames": len(delays), "bound": GAP_BOUND, "evaluated": len(delays) >= minimum}
+    delays = sorted(item["publicationDelay"] for item in qualifying(measured))
+    spans = [item["predecessorSpan"] for item in measured if item["predecessorSpan"] is not None]
+    gap = {"frames": len(delays), "bound": GAP_BOUND, "evaluated": len(delays) >= minimum,
+           "observed": len(spans), "longestSpan": max(spans, default=None)}
+    gap["unexercised"] = not gap["evaluated"] and len(spans) >= minimum and gap["longestSpan"] < TICK
     if gap["evaluated"]:
         gap["delay"] = delays[math.ceil(GAP_PERCENTILE * len(delays)) - 1]
         gap["met"] = gap["delay"] <= GAP_BOUND
@@ -102,12 +129,14 @@ def evaluate(measured, minimum=MINIMUM_FRAMES):
                        "met": interval["median"] <= TARGET_INTERVAL and preparation["median"] <= TARGET_PREPARATION}}
 
 
-def measure(session, motion, presses, frames_per_phase):
+def measure(session, motion, presses, max_presses, frames_per_phase):
     session.input.move(*OUTSIDE)
     session.reset("motion", True)
     session.settle(lambda current: not current["hovered"], "pointer outside the Command")
     start = len(motion.frames())
-    for press in range(presses):
+    press = 0
+    while press < max_presses and (press < presses or len(qualifying(continuations(motion.frames()[start:])))
+                                   < MINIMUM_FRAMES):
         for pressed in (True, False):
             phase = len(motion.frames())
             session.input.key(KEY_SPACE, pressed)
@@ -116,7 +145,8 @@ def measure(session, motion, presses, frames_per_phase):
                          >= frames_per_phase,
                          f"{frames_per_phase} {'pressed' if pressed else 'released'} spring frames of press "
                          f"{press + 1}", timeout=60)
-    return motion.frames()[start:]
+        press += 1
+    return motion.frames()[start:], press
 
 
 def describe(name, values, unit=1000):
@@ -140,7 +170,9 @@ def main():
     parser.add_argument("--font-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--scale", type=float, required=True, help="Output scale the compositor presents")
-    parser.add_argument("--presses", type=int, default=10)
+    parser.add_argument("--presses", type=int, default=10, help="Minimum number of press and release cycles")
+    parser.add_argument("--max-presses", type=int, default=MAX_PRESSES,
+                        help="Cycles after which measuring stops even if the publication gap lacks frames")
     parser.add_argument("--frames-per-phase", type=int, default=6)
     parser.add_argument("--floor", choices=("enforce", "report"), default="enforce",
                         help="Report the 30 Hz floor without failing, for hosts that do not qualify frame timing")
@@ -160,14 +192,16 @@ def main():
         args.output_dir.mkdir(parents=True, exist_ok=False)
         session = Session(host, module, fonts, args.output_dir)
         verify_scale(session.current(), args.scale)
-        motion = Motion(session)
-        measured = continuations(measure(session, motion, args.presses, args.frames_per_phase))
-        (args.output_dir / "report.json").write_text(json.dumps({"scale": args.scale, "measured": measured}),
-                                                     encoding="utf-8")
+        motion = AppendedMotion(session)
+        frames, presses = measure(session, motion, args.presses, max(args.presses, args.max_presses),
+                                  args.frames_per_phase)
+        measured = continuations(frames)
+        (args.output_dir / "report.json").write_text(
+            json.dumps({"scale": args.scale, "presses": presses, "measured": measured}), encoding="utf-8")
         result = evaluate(measured)
         (args.output_dir / "report.json").write_text(
-            json.dumps(dict(result, scale=args.scale, measured=measured), indent=2), encoding="utf-8")
-        print(f"MEASURED scale {args.scale:g}: {result['frames']} continued spring frames; "
+            json.dumps(dict(result, scale=args.scale, presses=presses, measured=measured), indent=2), encoding="utf-8")
+        print(f"MEASURED scale {args.scale:g}: {result['frames']} continued spring frames over {presses} presses; "
               + describe("published interval", result["interval"]) + "; "
               + describe("synchronous preparation", result["preparation"]))
         print(describe_tail(args.scale, result["tail"]))
@@ -178,9 +212,14 @@ def main():
         if gap["evaluated"]:
             print(f"MEASURED publication gap: 75th percentile {gap['delay'] * 1000:.2f} ms from publication to the "
                   f"next preparation over {gap['frames']} frames whose predecessor spanned an animation tick")
+        elif gap["unexercised"]:
+            print(f"NOT APPLICABLE publication gap: none of {gap['observed']} predecessors spanned an animation "
+                  f"tick (longest {gap['longestSpan'] * 1000:.1f} ms against {TICK * 1000:.1f} ms), so no frame "
+                  "could wait for a tick it had not seen")
         elif args.require_gap:
-            raise ValueError(f"only {gap['frames']} frames had a predecessor that spanned an animation tick; "
-                             f"{MINIMUM_FRAMES} are required to bound the publication gap")
+            raise ValueError(f"only {gap['frames']} frames had a predecessor that spanned an animation tick after "
+                             f"{presses} press cycles; {MINIMUM_FRAMES} are "
+                             "required to bound the publication gap")
         else:
             print(f"NOT EVALUATED publication gap: only {gap['frames']} frames had a predecessor that spanned an "
                   f"animation tick; {MINIMUM_FRAMES} are required")
