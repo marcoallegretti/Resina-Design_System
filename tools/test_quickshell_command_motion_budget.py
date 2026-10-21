@@ -216,8 +216,28 @@ class CommandMotionBudgetTests(unittest.TestCase):
     def test_presses_stop_when_the_time_budget_is_spent(self):
         motion = FakeMotion(spanning_every=0)
         session = FakeSession(motion)
-        measure(session, motion, 3, 600, 6, seconds=-1)
+        measure(session, motion, 3, 600, 6, budget=-1)
         self.assertEqual(session.cycles, 3)
+
+    def test_motion_frames_are_parsed_once_from_the_complete_lines_of_a_growing_log(self):
+        def line(event):
+            return "RESINA_LIFECYCLE " + json.dumps(event) + "\n"
+
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "shell.log"
+            session = type("Session", (), {"log": log})()
+            motion = AppendedMotion(session)
+            log.write_text("", encoding="utf-8")
+            self.assertEqual(motion.frames(), [])
+            first, second = timed(.1), timed(.2)
+            with log.open("a", encoding="utf-8") as output:
+                output.write(line(first) + line({"kind": "started", "generation": "g"}))
+                output.write(line(second)[:30])
+            self.assertEqual([item["motion"]["time"] for item in motion.frames()], [.1])
+            with log.open("a", encoding="utf-8") as output:
+                output.write(line(second)[30:] + "unrelated output\n")
+            self.assertEqual([item["motion"]["time"] for item in motion.frames()], [.1, .2])
+            self.assertEqual(len(motion.frames()), 2)
 
     def test_summary_uses_nearest_rank_percentiles(self):
         self.assertEqual(summary(list(range(10, 0, -1))), {"median": 5.5, "p90": 9, "max": 10})

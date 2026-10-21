@@ -1587,17 +1587,19 @@ saw an animation tick while it was prepared. For those frames the 75th
 percentile publication delay must be at most 4 ms. A predecessor published
 within one tick may correctly wait for the next tick and is not counted. How
 many frames qualify depends on how long preparation takes relative to the
-tick, so a faster host yields fewer per press. On shared CI runners at scale 1
-the median predecessor span was 12 to 15 ms, just under the tick, and between
-0.74 % and 6.4 % of frames, 0.1 to 2.7 per press, qualified in the runs that
-did not qualify most of their frames; in other runs 36 % to 98 % did. The check
-therefore runs at least `--presses` cycles (10) and then continues, counting
-every five cycles, until 20 frames qualify or `--max-presses` (600) cycles or
-`--max-seconds` (300) have been used. A cycle publishes about 15 frames at
-scale 1 and a shared runner took 17 s for 40 of them, so 600 cycles are about
-9000 frames and about four minutes at most, enough for 20 qualifying frames at
-0.22 % of frames, about three times below the lowest rate observed. If
-fewer than 20 still qualify, the gap is reported as not evaluated
+tick, so a faster host yields fewer per press. In the `report.json` files of
+CI runs 39585621193, 39572140225, 39575497873, 39563133144, 39569240322 and
+39595045567, the scale 1 median
+predecessor span was 12 to 16 ms, just under the tick, and 0.74 % to 6.4 % of
+frames, 0.1 to 2.7 per cycle, qualified; other runs qualified 36 % to 98 %. The
+check therefore runs at least `--presses` cycles (10) and then continues,
+counting every five cycles, until 20 frames qualify or `--max-presses` (600)
+cycles have run or `--max-seconds` (240) have passed. At scale 1 a cycle
+publishes at least 12 frames and about 15 were observed, so 600 cycles are about
+9000 frames, enough for 20 qualifying frames at about 0.2 % of frames, about
+three times below the lowest share observed. The CI step runs both scales
+serially with a 20 minute timeout, so a slow host fails with this diagnostic
+rather than a timeout. If fewer than 20 still qualify, the gap is reported as not evaluated
 and `--require-gap` makes that a failure. The one exception is a host on which
 the observed predecessor spans prove that none of at least 20 predecessors
 spanned a tick: no frame could then wait for a tick it had not seen, so the

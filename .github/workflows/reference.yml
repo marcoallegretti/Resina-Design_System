@@ -289,7 +289,7 @@ jobs:
           done
           exit "$status"
       - name: Qualify Command motion frame timing with the release module in released Quickshell
-        timeout-minutes: 10
+        timeout-minutes: 20
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           status=0
