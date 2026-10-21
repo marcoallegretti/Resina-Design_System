@@ -23,12 +23,12 @@ use resina_guido::{
     measure_command_label, prepare_command_content, prepare_command_content_at,
 };
 use resina_model::{
-    ActivationState, CommandAnatomy, CommandEmphasis, ContourSegment, PhysicalBounds,
-    PhysicalVector, PressHold, StateSet, SurfaceSize, TypographyRole,
+    ActivationState, CommandAnatomy, CommandEmphasis, PhysicalBounds, PhysicalVector, PressHold,
+    StateSet, SurfaceSize, TypographyRole,
 };
 use resina_resolver::{
     CommandContentError, CommandLabelInput, CommandLabelIr, CommandMotionPolicy, CommandPaintIr,
-    CommandSnapshot, CommandSnapshotError, CommandSnapshotInput, PlacedContour,
+    CommandSnapshot, CommandSnapshotError, CommandSnapshotInput, HitRegionBody,
     SurfaceHitRegionInput, opaque_contrast_ratio, resolve_command_label,
     resolve_command_motion_source, resolve_command_paint_source,
     resolve_command_reservation_body_source, resolve_command_snapshot, resolve_srgb_fallback,
@@ -129,7 +129,7 @@ fn placed_command_content_samples_material_before_native_translation() {
                 );
                 assert!((f64::from(rect.x) * dpr - left).abs() <= dpr / 1024.0);
                 assert!((f64::from(rect.y) * dpr - top).abs() <= dpr / 1024.0);
-                let expected = resina_raster::render_surface_paint(
+                let expected = resina_raster::render_lit_control_paint(
                     paint.paint(),
                     resina_raster::Viewport {
                         origin: PhysicalVector {
@@ -331,7 +331,12 @@ fn command_request(scene: &Value, phase: &str, scale: f64, direction: LayoutDire
             include_str!("../../../../definitions/command-appearance-light.json")
         })
         .unwrap();
-    json!({"schemaVersion":"0.1.0", "surface":surface, "commandAppearance":appearance})
+    let template: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-paint-request.json"
+    ))
+    .unwrap();
+    json!({"schemaVersion":"0.2.0", "surface":surface, "commandAppearance":appearance,
+        "light":template["light"], "relief":template["relief"]})
 }
 fn resolve_label(
     request: &mut Value,
@@ -398,6 +403,8 @@ fn snapshot<'a>(
         "schemaVersion": request["schemaVersion"],
         "surface": request["surface"],
         "commandAppearance": request["commandAppearance"],
+        "light": request["light"],
+        "relief": request["relief"],
     });
     rest["surface"]["body"]["surface"]["states"]["states"] = json!(["rest"]);
     let deepest = resolve_command_reservation_body_source(&rest.to_string()).unwrap();
@@ -413,7 +420,7 @@ fn snapshot<'a>(
     };
     let hit_region = resolve_surface_hit_region(SurfaceHitRegionInput {
         environment: &environment,
-        body: &deepest,
+        body: HitRegionBody::Lit(&deepest),
         available_bounds,
         component_minimum,
         occupied_regions: &[],
@@ -482,38 +489,6 @@ impl NativeFrames {
         readback::read_frame(&self.target)
     }
 }
-fn in_content(contour: &PlacedContour, point: PhysicalVector) -> bool {
-    let point = PhysicalVector {
-        x: point.x - contour.offset().x,
-        y: point.y - contour.offset().y,
-    };
-    let bounds = contour.contour().bounds().unwrap();
-    if point.x < bounds.x
-        || point.y < bounds.y
-        || point.x > bounds.x + bounds.width
-        || point.y > bounds.y + bounds.height
-    {
-        return false;
-    }
-    for segment in contour.contour().segments() {
-        if let ContourSegment::Arc {
-            center,
-            radii,
-            start,
-            end,
-        } = segment
-        {
-            assert_eq!(radii.x, radii.y);
-            assert_eq!(start.x * end.x + start.y * end.y, 0.0);
-            let x = point.x - center.x;
-            let y = point.y - center.y;
-            if x * (start.x + end.x) > 0.0 && y * (start.y + end.y) > 0.0 && x.hypot(y) > radii.x {
-                return false;
-            }
-        }
-    }
-    true
-}
 fn pixel_color(pixel: &[u8]) -> resina_resolver::SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb", "components":pixel[..3].iter().map(|v| f64::from(*v)/255.0).collect::<Vec<_>>(), "alpha":1})).unwrap()
 }
@@ -551,9 +526,9 @@ fn check_frame(
     let paint = snapshot.paint();
     let label = snapshot.label();
     let disabled_label = (paint.phase() == resina_model::CommandPhase::Disabled)
-        .then(|| paint.paint().body().foreground());
+        .then(|| paint.paint().body().face().foreground());
     if disabled_label.is_some() {
-        let ratio = paint.paint().body().content_contrast_ratio();
+        let ratio = paint.paint().body().face().content_contrast_ratio();
         assert!(
             [
                 resina_resolver::DISABLED_LABEL_CONTRAST,
@@ -647,6 +622,7 @@ fn check_frame(
         paint
             .paint()
             .body()
+            .face()
             .foreground()
             .components()
             .map(|value| value as f32)
@@ -670,8 +646,8 @@ fn check_frame(
             );
         }
     }
-    let body_ir = paint.paint().body();
-    let expected = body_ir
+    let face = paint.paint().body().face();
+    let expected = face
         .pigment()
         .body()
         .components()
@@ -694,20 +670,7 @@ fn check_frame(
             }
             continue;
         }
-        let x = index as u32 % width;
         let y = index as u32 / width;
-        for dx in [0.0, 1.0] {
-            for dy in [0.0, 1.0] {
-                let point = PhysicalVector {
-                    x: (f64::from(x) + dx) / f64::from(scale) - 16.0,
-                    y: (f64::from(y) + dy) / f64::from(scale) - 16.0,
-                };
-                assert!(
-                    in_content(body_ir.geometry().content(), point),
-                    "{name}: glyph footprint crossed content contour at {x},{y}"
-                );
-            }
-        }
         assert_eq!(baseline[3], 255, "{name}: glyph background is translucent");
         for channel in 0..3 {
             assert!(

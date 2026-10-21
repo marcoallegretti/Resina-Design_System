@@ -38,8 +38,8 @@ use guido::{layout::Size, prelude::ImageSource};
 use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{RasterError, RasterImage, Viewport, prepare_viewport};
 use resina_resolver::{
-    FocusIndicatorIr, MaterialReliefPaint, OpaqueSurfaceIr, OutlineFocusIr, ReliefPaint,
-    SurfacePaintIr,
+    FocusIndicatorIr, LitControlPaintIr, MaterialReliefPaint, OpaqueSurfaceIr, OutlineFocusIr,
+    ReliefPaint, SurfacePaintIr,
 };
 use std::fmt;
 
@@ -180,22 +180,66 @@ pub fn prepare_surface_paint_at(
     device_scale: f32,
     samples_per_axis: u8,
 ) -> Result<PreparedPaint, PrepareError> {
-    let bounds = if let Some(focus) = ir.focus() {
-        let outer = focus.geometry().outer();
-        let mut bounds = outer.contour().bounds().expect("validated focus bounds");
-        bounds.x += outer.offset().x;
-        bounds.y += outer.offset().y;
-        bounds
-    } else {
+    let bounds = paint_bounds(ir.focus(), || {
         ir.body()
             .geometry()
             .silhouette()
             .bounds()
             .expect("validated surface bounds")
-    };
+    });
     prepare_at(bounds, origin, device_scale, |viewport| {
         resina_raster::render_surface_paint(ir, viewport, samples_per_axis)
     })
+}
+
+pub fn prepare_lit_control_paint(
+    ir: &LitControlPaintIr,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<PreparedPaint, PrepareError> {
+    prepare_lit_control_paint_at(
+        ir,
+        PhysicalVector { x: 0.0, y: 0.0 },
+        device_scale,
+        samples_per_axis,
+    )
+}
+
+/// Applies parent placement before sampling a lit control body and its focus ring; the returned
+/// origin includes it.
+pub fn prepare_lit_control_paint_at(
+    ir: &LitControlPaintIr,
+    origin: PhysicalVector,
+    device_scale: f32,
+    samples_per_axis: u8,
+) -> Result<PreparedPaint, PrepareError> {
+    let bounds = paint_bounds(ir.focus(), || {
+        ir.body()
+            .geometry()
+            .silhouette()
+            .bounds()
+            .expect("validated lit body bounds")
+    });
+    prepare_at(bounds, origin, device_scale, |viewport| {
+        resina_raster::render_lit_control_paint(ir, viewport, samples_per_axis)
+    })
+}
+
+/// The focus ring's outer bounds when present, which contain the separated body, else the body's.
+fn paint_bounds(
+    focus: Option<&FocusIndicatorIr>,
+    body: impl FnOnce() -> PhysicalBounds,
+) -> PhysicalBounds {
+    match focus {
+        Some(focus) => {
+            let outer = focus.geometry().outer();
+            let mut bounds = outer.contour().bounds().expect("validated focus bounds");
+            bounds.x += outer.offset().x;
+            bounds.y += outer.offset().y;
+            bounds
+        }
+        None => body(),
+    }
 }
 
 pub fn prepare_relief_paint_at(

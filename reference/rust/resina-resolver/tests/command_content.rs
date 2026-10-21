@@ -3,6 +3,7 @@ use resina_model::{SurfaceSize, TypographyRole};
 use resina_resolver::{
     CommandContentError, CommandLabelInput, CommandLabelIr, compile_theme_source,
     resolve_command_label, resolve_command_motion_source, resolve_command_paint_source,
+    resolve_surface_paint_source,
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -39,6 +40,9 @@ fn label(source: &Value, padding: SafeArea, height: f64) -> CommandLabelIr {
         },
     )
     .unwrap()
+}
+fn surface(request: &Value) -> resina_resolver::SurfacePaintIr {
+    resolve_surface_paint_source(&request["surface"].to_string()).unwrap()
 }
 fn padding(start: f64, end: f64) -> SafeArea {
     SafeArea {
@@ -92,8 +96,8 @@ fn public_containment_cases_use_actual_curved_content_not_its_bounds() {
                 "edgeWidth": matrix.edge_width, "highlightWidth": matrix.highlight_width
             });
             let label = label(&request, padding(case.padding, case.padding), case.height);
-            let paint = resolve_command_paint_source(&request.to_string()).unwrap();
-            let result = label.validate_content(paint.paint().body());
+            let paint = surface(&request);
+            let result = label.validate_content(paint.body());
             assert_eq!(
                 result.is_ok(),
                 case.contained,
@@ -125,18 +129,32 @@ fn physical_padding_and_front_size_are_checked_independently_of_extrusion() {
             label.label_bounds().x,
             if direction == "ltr" { 2.0 } else { 5.0 }
         );
-        let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+        let opaque = surface(&request);
         assert_ne!(
-            paint.paint().body().geometry().front().bounds(),
-            paint.paint().body().geometry().silhouette().bounds()
+            opaque.body().geometry().front().bounds(),
+            opaque.body().geometry().silhouette().bounds()
         );
-        label.validate_content(paint.paint().body()).unwrap();
+        label.validate_content(opaque.body()).unwrap();
+        let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+        let lit = paint.paint().body();
+        assert_ne!(
+            lit.face().surface().outline().size(),
+            SurfaceSize {
+                width: lit.geometry().silhouette().bounds().unwrap().width,
+                height: lit.geometry().silhouette().bounds().unwrap().height,
+            }
+        );
+        label.validate_lit_content(lit).unwrap();
         for axis in ["width", "height"] {
             let mut mismatch = request.clone();
             mismatch["surface"]["body"]["size"][axis] = json!(80.0);
+            assert_eq!(
+                label.validate_content(surface(&mismatch).body()),
+                Err(CommandContentError::SizeMismatch)
+            );
             let paint = resolve_command_paint_source(&mismatch.to_string()).unwrap();
             assert_eq!(
-                label.validate_content(paint.paint().body()),
+                label.validate_lit_content(paint.paint().body()),
                 Err(CommandContentError::SizeMismatch)
             );
         }
@@ -159,7 +177,7 @@ fn all_command_phases_and_supported_opaque_materials_keep_containment() {
             request["surface"]["body"]["surface"]["states"]["states"] = json!([state]);
             let label = label(&request, padding(8.0, 8.0), 24.0);
             let paint = resolve_command_paint_source(&request.to_string()).unwrap();
-            label.validate_content(paint.paint().body()).unwrap();
+            label.validate_lit_content(paint.paint().body()).unwrap();
         }
     }
 }
@@ -177,7 +195,7 @@ fn sampled_motion_body_uses_the_same_containment_contract() {
         request["time"] = json!(time);
         let motion = resolve_command_motion_source(&request.to_string()).unwrap();
         label
-            .validate_content(motion.command().paint().body())
+            .validate_lit_content(motion.command().paint().body())
             .unwrap();
     }
 }
@@ -187,17 +205,17 @@ fn circular_boundary_is_closed_and_nearby_outside_boxes_are_rejected() {
     let mut request = source();
     request["surface"]["body"]["size"] = json!({"width":14,"height":14});
     request["surface"]["body"]["surface"]["form"]["shape"] = json!("capsule");
-    let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+    let paint = surface(&request);
     // The inset circle has radius 5; each box corner has offsets 3 and 4.
     label(&request, padding(4.0, 4.0), 8.0)
-        .validate_content(paint.paint().body())
+        .validate_content(paint.body())
         .unwrap();
     assert_eq!(
-        label(&request, padding(3.99, 3.99), 8.0).validate_content(paint.paint().body()),
+        label(&request, padding(3.99, 3.99), 8.0).validate_content(paint.body()),
         Err(CommandContentError::OutsideContent)
     );
     assert_eq!(
-        label(&request, padding(4.0, 4.0), 8.02).validate_content(paint.paint().body()),
+        label(&request, padding(4.0, 4.0), 8.02).validate_content(paint.body()),
         Err(CommandContentError::OutsideContent)
     );
 }
@@ -210,14 +228,98 @@ fn containment_preserves_small_and_large_representable_extents() {
         body["surface"]["form"]["elevation"] = json!("base");
         body["appearance"]["bands"]["elastomer"] =
             json!({"edgeWidth":scale,"highlightWidth":scale});
-        let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+        let paint = surface(&request);
         label(&request, padding(2.0 * scale, 2.0 * scale), 32.0 * scale)
-            .validate_content(paint.paint().body())
+            .validate_content(paint.body())
             .unwrap();
         assert_eq!(
-            label(&request, padding(scale, scale), 32.0 * scale)
-                .validate_content(paint.paint().body()),
+            label(&request, padding(scale, scale), 32.0 * scale).validate_content(paint.body()),
             Err(CommandContentError::OutsideContent)
         );
     }
+}
+
+#[test]
+fn lit_containment_matrix_resolves_through_command_paint() {
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct LitMatrix {
+        schema_version: String,
+        radius: f64,
+        edge_width: f64,
+        profile: Value,
+        cases: Vec<LitCase>,
+    }
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct LitCase {
+        name: String,
+        text_scale: f64,
+        size: SurfaceSize,
+        shoulder_width: f64,
+        radius: Option<f64>,
+        edge_width: Option<f64>,
+        padding: SafeArea,
+        label_height: f64,
+        contained: bool,
+    }
+    let matrix: LitMatrix = serde_json::from_str(include_str!(
+        "../../../../conformance/content/command-lit-containment.json"
+    ))
+    .unwrap();
+    assert_eq!(matrix.schema_version, "0.1.0");
+    assert_eq!(matrix.cases.len(), 30);
+    let mut outcomes = [0; 2];
+    let mut beyond_reserved_rectangle = 0;
+    for case in matrix.cases {
+        for direction in ["ltr", "rtl"] {
+            let mut request = source();
+            let body = &mut request["surface"]["body"];
+            body["size"] = serde_json::to_value(case.size).unwrap();
+            body["theme"]["environment"]["layoutDirection"] = json!(direction);
+            body["theme"]["environment"]["textScale"] = json!(case.text_scale);
+            body["surface"]["form"]["shape"] = json!("rounded");
+            let mut theme: Value =
+                serde_json::from_str(body["theme"]["themeSource"].as_str().unwrap()).unwrap();
+            theme["tokens"]["radius"]["5"]["$value"]["value"] =
+                json!(case.radius.unwrap_or(matrix.radius));
+            body["theme"]["themeSource"] = json!(theme.to_string());
+            body["appearance"]["shapeAssignments"]["profiles"]["rounded"]["radius"] =
+                json!("radius.5");
+            for bands in body["appearance"]["bands"]
+                .as_object_mut()
+                .unwrap()
+                .values_mut()
+            {
+                bands["edgeWidth"] = json!(case.edge_width.unwrap_or(matrix.edge_width));
+            }
+            let mut profile = matrix.profile.clone();
+            profile["shoulderWidth"] = json!(case.shoulder_width);
+            request["relief"]["commandBody"] = profile;
+            let label = label(&request, case.padding.clone(), case.label_height);
+            let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+            let result = label.validate_lit_content(paint.paint().body());
+            assert_eq!(
+                result.is_ok(),
+                case.contained,
+                "{} {direction}: {result:?}",
+                case.name
+            );
+            if !case.contained {
+                assert_eq!(result, Err(CommandContentError::OutsideContent));
+            }
+            outcomes[usize::from(case.contained)] += 1;
+            let content = paint.paint().body().face().content_bounds();
+            let bounds = label.label_bounds();
+            beyond_reserved_rectangle += usize::from(
+                case.contained
+                    && (bounds.x < content.x
+                        || bounds.y < content.y
+                        || bounds.x + bounds.width > content.x + content.width
+                        || bounds.y + bounds.height > content.y + content.height),
+            );
+        }
+    }
+    assert_eq!(outcomes, [2 * 12, 2 * 18]);
+    assert_eq!(beyond_reserved_rectangle, 2 * 14);
 }

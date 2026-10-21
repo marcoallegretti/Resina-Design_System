@@ -99,11 +99,14 @@ body may be smaller than that region and is never enlarged to reach it.
 
 The [layout cases](../conformance/layout/command-layout-cases.json) use the
 authored Command profile, its extent tokens and the spatial binding shared by
-the authored light and dark themes. They cover every density mode at text
-scales 1 and 2, fine and coarse input, and both layout directions. Every mode
-keeps the 24-unit fine and 48-unit coarse target, including compact, whose
-visual minimum height is 32, and direct touch without a coarse pointer selects
-the 48-unit target.
+the authored light and dark themes. That binding gives compact 16 px inline and
+8 px block insets: compact lowers the body height but keeps the standard inline
+inset. With the 8 px block inset, a 12 px inline inset would cross the lit
+body's corner shoulder once the corner radius reaches 24 px. The layout cases
+cover every density mode at text scales 1 and 2, fine and coarse input, and
+both layout directions. Every mode keeps the 24-unit fine and 48-unit coarse
+target, including compact, whose visual minimum height is 32, and direct touch
+without a coarse pointer selects the 48-unit target.
 Further cases clamp the maximum to a narrow container, accept a container equal
 to the minimum, reject a container below the profile minimum, reject a text
 scale whose maximum overflows, reject insets that leave no label space, reject
@@ -116,7 +119,12 @@ of Rust. Rust integration tests compile both authored themes, confirm that
 their binding, the authored profile and its extent tokens are the ones these
 cases use, and pass resolved policies to
 complete label layout with supplied advances, not a font, to show reflow and
-explicit rejection.
+explicit rejection. For every density, text scales 1, 1.5 and 2, one and two
+supplied label lines and both layout directions, the resolved policy and label
+layout place the label inside the
+[lit command body content](46-command-label-layout.md#lit-command-body-content)
+of a rounded Tier 0 Command body with the reference control relief and edge
+width; exact rational arithmetic and the Rust reference each check this matrix.
 
 `resina-command-layout <path|->` reads strict UTF-8 JSON up to 1 MiB. Success
 exits 0 with complete JSON and no diagnostic; invalid input exits 1 with no

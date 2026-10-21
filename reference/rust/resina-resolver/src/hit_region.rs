@@ -1,4 +1,4 @@
-use crate::{OpaqueSurfaceIr, resolve_minimum_hit_target};
+use crate::{ExtrudedContourResult, LitControlBodyIr, OpaqueSurfaceIr, resolve_minimum_hit_target};
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{PhysicalBounds, PhysicalVector, SurfaceSize};
 use resina_tokens::parse_token_document;
@@ -13,9 +13,25 @@ pub struct HitRegionInput<'a> {
     pub occupied_regions: &'a [PhysicalBounds],
 }
 
+/// A validated body whose complete resolved silhouette bounds the target.
+#[derive(Clone, Copy)]
+pub enum HitRegionBody<'a> {
+    Opaque(&'a OpaqueSurfaceIr),
+    Lit(&'a LitControlBodyIr),
+}
+
+impl HitRegionBody<'_> {
+    fn silhouette(&self) -> &ExtrudedContourResult {
+        match self {
+            Self::Opaque(body) => body.geometry().silhouette(),
+            Self::Lit(body) => body.geometry().silhouette(),
+        }
+    }
+}
+
 pub struct SurfaceHitRegionInput<'a> {
     pub environment: &'a EnvironmentSnapshot,
-    pub body: &'a OpaqueSurfaceIr,
+    pub body: HitRegionBody<'a>,
     pub available_bounds: PhysicalBounds,
     pub component_minimum: SurfaceSize,
     pub occupied_regions: &'a [PhysicalBounds],
@@ -27,7 +43,6 @@ pub fn resolve_surface_hit_region(
 ) -> Result<HitRegionIr, HitRegionError> {
     let visual_bounds = input
         .body
-        .geometry()
         .silhouette()
         .bounds()
         .ok_or(HitRegionError::UnsupportedBodyGeometry)?;

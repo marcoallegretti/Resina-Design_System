@@ -1,0 +1,530 @@
+{
+  "schemaVersion": "0.1.0",
+  "radius": 24,
+  "edgeWidth": 1,
+  "profile": {
+    "kind": "convex",
+    "bodyThickness": 2,
+    "amplitude": 1,
+    "shoulderWidth": 2
+  },
+  "cases": [
+    {
+      "name": "text-scale-1-reference-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": true
+    },
+    {
+      "name": "text-scale-1-shoulder-3",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 3,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": true
+    },
+    {
+      "name": "text-scale-1-shoulder-4",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 4,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "text-scale-2-reference-shoulder",
+      "textScale": 2,
+      "size": {
+        "width": 160,
+        "height": 72
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 48,
+      "contained": true
+    },
+    {
+      "name": "text-scale-2-shoulder-3",
+      "textScale": 2,
+      "size": {
+        "width": 160,
+        "height": 72
+      },
+      "shoulderWidth": 3,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 48,
+      "contained": true
+    },
+    {
+      "name": "text-scale-2-shoulder-4",
+      "textScale": 2,
+      "size": {
+        "width": 160,
+        "height": 72
+      },
+      "shoulderWidth": 4,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 48,
+      "contained": false
+    },
+    {
+      "name": "start-padding-10-inside-plateau",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 10,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": true
+    },
+    {
+      "name": "end-padding-10-inside-plateau",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 10,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": true
+    },
+    {
+      "name": "start-padding-8-crosses-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 8,
+        "end": 16,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "end-padding-8-crosses-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 8,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "minimal-vertical-padding",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 10.5,
+        "bottom": 10.5
+      },
+      "labelHeight": 27,
+      "contained": true
+    },
+    {
+      "name": "compact-minimum-inline-12-fills-block",
+      "textScale": 1,
+      "size": {
+        "width": 64,
+        "height": 32
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 12,
+        "end": 12,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 16,
+      "contained": true
+    },
+    {
+      "name": "compact-text-scale-1-one-line",
+      "textScale": 1,
+      "size": {
+        "width": 88,
+        "height": 34.760000000000005
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 18.76,
+      "contained": true
+    },
+    {
+      "name": "compact-text-scale-1-two-lines",
+      "textScale": 1,
+      "size": {
+        "width": 88,
+        "height": 53.52
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 37.52,
+      "contained": true
+    },
+    {
+      "name": "compact-text-scale-1-5-one-line",
+      "textScale": 1.5,
+      "size": {
+        "width": 116,
+        "height": 44.14
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 28.14,
+      "contained": true
+    },
+    {
+      "name": "compact-text-scale-1-5-two-lines",
+      "textScale": 1.5,
+      "size": {
+        "width": 116,
+        "height": 72.28
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 56.28,
+      "contained": true
+    },
+    {
+      "name": "compact-text-scale-2-one-line",
+      "textScale": 2,
+      "size": {
+        "width": 144,
+        "height": 53.52
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 37.52,
+      "contained": true
+    },
+    {
+      "name": "compact-text-scale-2-two-lines",
+      "textScale": 2,
+      "size": {
+        "width": 144,
+        "height": 91.04
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 75.04,
+      "contained": true
+    },
+    {
+      "name": "compact-inline-12-radius-24-crosses-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 80,
+        "height": 53.52
+      },
+      "shoulderWidth": 2,
+      "padding": {
+        "start": 12,
+        "end": 12,
+        "top": 8,
+        "bottom": 8
+      },
+      "labelHeight": 37.52,
+      "contained": false
+    },
+    {
+      "name": "plateau-arc-vertex",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 3.65625,
+      "padding": {
+        "start": 15,
+        "end": 15,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": true
+    },
+    {
+      "name": "plateau-arc-inside-by-2-40",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 3.65625,
+      "padding": {
+        "start": 15,
+        "end": 15,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 23.99999999999818,
+      "contained": true
+    },
+    {
+      "name": "plateau-arc-outside-by-2-40",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 3.65625,
+      "padding": {
+        "start": 15,
+        "end": 15,
+        "top": 11.99999999999909,
+        "bottom": 11.99999999999909
+      },
+      "labelHeight": 24.00000000000182,
+      "contained": false
+    },
+    {
+      "name": "plateau-arc-end-outside-by-2-40",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 3.65625,
+      "padding": {
+        "start": 15,
+        "end": 14.99999999999909,
+        "top": 12,
+        "bottom": 12
+      },
+      "labelHeight": 24,
+      "contained": false
+    },
+    {
+      "name": "plateau-arc-bottom-outside-by-2-40",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 3.65625,
+      "padding": {
+        "start": 15,
+        "end": 15,
+        "top": 12,
+        "bottom": 11.99999999999909
+      },
+      "labelHeight": 24.00000000000091,
+      "contained": false
+    },
+    {
+      "name": "square-body-straight-shoulder-boundary",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "radius": 0,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 2,
+        "bottom": 2
+      },
+      "labelHeight": 44,
+      "contained": true
+    },
+    {
+      "name": "square-body-inside-straight-shoulder",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "radius": 0,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 1.5,
+        "bottom": 1.5
+      },
+      "labelHeight": 45,
+      "contained": false
+    },
+    {
+      "name": "square-body-outside-edge-interior",
+      "textScale": 1,
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "radius": 0,
+      "edgeWidth": 3,
+      "padding": {
+        "start": 16,
+        "end": 16,
+        "top": 2.5,
+        "bottom": 2.5
+      },
+      "labelHeight": 43,
+      "contained": false
+    },
+    {
+      "name": "plateau-on-edge-interior-boundary",
+      "textScale": 1,
+      "size": {
+        "width": 160,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "edgeWidth": 5,
+      "padding": {
+        "start": 24,
+        "end": 24,
+        "top": 5,
+        "bottom": 5
+      },
+      "labelHeight": 38,
+      "contained": true
+    },
+    {
+      "name": "plateau-outside-edge-interior-side",
+      "textScale": 1,
+      "size": {
+        "width": 160,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "edgeWidth": 5,
+      "padding": {
+        "start": 24,
+        "end": 24,
+        "top": 4.75,
+        "bottom": 4.75
+      },
+      "labelHeight": 38.5,
+      "contained": false
+    },
+    {
+      "name": "plateau-outside-edge-interior-corner",
+      "textScale": 1,
+      "size": {
+        "width": 160,
+        "height": 48
+      },
+      "shoulderWidth": 2,
+      "edgeWidth": 5,
+      "padding": {
+        "start": 10.25,
+        "end": 10.25,
+        "top": 10.25,
+        "bottom": 10.25
+      },
+      "labelHeight": 27.5,
+      "contained": false
+    }
+  ]
+}

@@ -1,8 +1,11 @@
 """Independent lit control body arithmetic with circular corners and swept regions."""
+import copy
 import itertools
 import math
 from fractions import Fraction
 
+from command_label_arithmetic import layout as label_layout
+from command_layout_arithmetic import resolve as resolve_command_layout
 from material_light_arithmetic import expected_result, pigment_result
 
 EPSILON = 2.0 ** -52
@@ -169,7 +172,11 @@ class Body:
             slack = min(slack, radius - math.hypot(u, v))
         if abs(slack) > guard:
             return slack > 0
-        x, y = Fraction(x), Fraction(y)
+        return self.exact_contains((Fraction(x), Fraction(y)), inset)
+
+    def exact_contains(self, point, inset):
+        """Closed edge interior membership of an exact rational point."""
+        x, y = point
         inset = Fraction(inset)
         if not (inset <= x <= Fraction(self.width) - inset and inset <= y <= Fraction(self.height) - inset):
             return False
@@ -190,6 +197,33 @@ class Body:
             center = (Fraction(cx) - sx * radius, Fraction(cy) - sy * radius)
             result.append((center, (sx, sy), radius - inset))
         return result
+
+    def uniform_contains(self, point):
+        """Exact closed membership in E and the uniform relief plateau, where every relief gate is one.
+
+        The plateau is the straight band at least the shoulder width from each side, intersected with
+        a disc about every rounded corner's center whose squared radius is r*r*(1 - tau) = r*r - 4*w*r.
+        """
+        if not self.exact_contains(point, self.edge_width):
+            return False
+        if self.kind == "flat":
+            return True
+        x, y = point
+        w = Fraction(self.shoulder)
+        if not (w <= x <= Fraction(self.width) - w and w <= y <= Fraction(self.height) - w):
+            return False
+        for (cx, cy), (sx, sy), radius in self.exact_constraints(0):
+            u = max(sx * (x - cx), 0)
+            v = max(sy * (y - cy), 0)
+            if u * u + v * v > radius * radius - 4 * w * radius:
+                return False
+        return True
+
+    def uniform_contains_box(self, bounds):
+        """spec/46 lit content: the four vertices of the closed box, with exact endpoints, lie in E and the plateau."""
+        x, y = Fraction(bounds["x"]), Fraction(bounds["y"])
+        right, bottom = x + Fraction(bounds["width"]), y + Fraction(bounds["height"])
+        return all(self.uniform_contains((px, py)) for px in (x, right) for py in (y, bottom))
 
     def swept(self, point, inset, band=0.0):
         """Return True, False or None when the decision lies within band of a boundary."""
@@ -403,11 +437,38 @@ def samples(source):
     return body, [dict(zip(("rule", "color"), body.sample(point)), point=point) for point in source["points"]]
 
 
-def pixels(source, width, height, origin, scale, samples_per_axis, band=None):
-    """Supersampled RGBA8 bounds: one (lower, upper) pair per pixel, equal unless a subsample is tie-bracketed."""
+def pixels(source, width, height, origin, scale, samples_per_axis, band=None, ring=None):
+    """Supersampled RGBA8 bounds: one (lower, upper) pair per pixel, equal unless a subsample is tie-bracketed.
+
+    A ring (color, gap, stroke) adds the spec/37 focus ring: the swept silhouette dilated by gap + stroke, minus
+    its dilation by gap, painted only where the body paints nothing. The outer boundary is closed, the inner open.
+    """
     body = Body(source)
     if band is None:
-        band = 64 * EPSILON * max(body.width, body.height, abs(body.offset[0]), abs(body.offset[1]), 1.0)
+        extent = 0 if ring is None else ring[1] + ring[2]
+        band = 64 * EPSILON * max(body.width + extent, body.height + extent,
+                                  abs(body.offset[0]), abs(body.offset[1]), 1.0)
+
+    def decisions(point, outset):
+        decision = body.swept(point, -outset, band)
+        return (True, False) if decision is None else (decision,)
+
+    def ring_colors(point):
+        color, gap, stroke = ring
+        return {tuple(color) if outer and not inner else None
+                for outer in decisions(point, gap + stroke) for inner in decisions(point, gap)}
+
+    def paints(point):
+        colors = set()
+        for rule in body.classify(point, band):
+            color = body.rule_color(rule, point)
+            if color is not None:
+                colors.add(tuple(color["components"]))
+            elif ring is None:
+                colors.add(None)
+            else:
+                colors |= ring_colors(point)
+        return colors
 
     def linear(value):
         return value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
@@ -425,9 +486,7 @@ def pixels(source, width, height, origin, scale, samples_per_axis, band=None):
                 for sx in range(samples_per_axis):
                     point = (origin[0] + (column + (sx + 0.5) / samples_per_axis) / scale,
                              origin[1] + (row + (sy + 0.5) / samples_per_axis) / scale)
-                    colors = {None if (c := body.rule_color(rule, point)) is None else tuple(c["components"])
-                              for rule in body.classify(point, band)}
-                    candidates.append(sorted(colors, key=lambda c: (c is not None, c or ())))
+                    candidates.append(sorted(paints(point), key=lambda c: (c is not None, c or ())))
             ambiguous = sum(len(options) > 1 for options in candidates)
             if ambiguous > 8:
                 raise ValueError("too many tie-bracketed subsamples in one pixel")
@@ -588,3 +647,71 @@ def body_invariants(ir):
     if face["colorRanges"][2] != {"lower": color, "upper": color}:
         return "the third color range must be the exact edge"
     return None
+
+
+def filled_label_bounds(size, padding, label_height, direction):
+    """spec/46 label layout whose supplied width advance fits a body of exactly `size`."""
+    advance = {"width": size["width"] * 0.01, "height": label_height}
+    resolved = label_layout({"padding": padding, "minimumSize": size, "maximumSize": size,
+                             "natural": advance, "fitted": advance, "direction": direction})
+    if resolved["size"] != size:
+        raise ValueError("label layout must reproduce the supplied body size")
+    return resolved["labelBounds"]
+
+
+def lit_body_source(source, size, radius, relief, edge_width, direction):
+    body = copy.deepcopy(source)
+    body["size"] = dict(size)
+    body["radii"] = {name: {"x": radius, "y": radius} for name in LOGICAL["ltr"]}
+    body["relief"] = dict(relief)
+    body["edgeWidth"] = edge_width
+    body["environment"]["layoutDirection"] = direction
+    return body
+
+
+def lit_containment_outcomes(matrix, source):
+    """Yield (name, direction, contained) for every case of the lit containment matrix."""
+    for case in matrix["cases"]:
+        relief = dict(matrix["profile"], shoulderWidth=case["shoulderWidth"])
+        for direction in ("ltr", "rtl"):
+            body = Body(lit_body_source(source, case["size"], case.get("radius", matrix["radius"]), relief,
+                                        case.get("edgeWidth", matrix["edgeWidth"]), direction))
+            bounds = filled_label_bounds(case["size"], case["padding"], case["labelHeight"], direction)
+            yield case["name"], direction, body.uniform_contains_box(bounds)
+
+
+def layout_lit_outcomes(layout_request, label, source, radius, relief, edge_width, scales, lines):
+    """Run spec/89 layout, spec/46 label layout with supplied advances and the lit body for each density,
+    text scale, line count and direction; yield (density, scale, lines, direction, label bounds, contained).
+
+    `label` holds the label role's unscaled font size and line height; every line is one font size
+    times the line height and the supplied width is four font sizes.
+    """
+    for density in ("compact", "standard", "comfortable", "immersive"):
+        for scale in scales:
+            for count in lines:
+                for direction in ("ltr", "rtl"):
+                    request = copy.deepcopy(layout_request)
+                    environment = request["environment"]
+                    environment.update(densityPreference=density, textScale=scale, layoutDirection=direction)
+                    policy = resolve_command_layout(request)
+                    font_size = label["fontSize"] * scale
+                    measured = {"width": font_size * 4, "height": count * (font_size * label["lineHeight"])}
+                    resolved = label_layout({"padding": policy["padding"], "minimumSize": policy["minimumSize"],
+                                             "maximumSize": policy["maximumSize"], "natural": measured,
+                                             "fitted": measured, "direction": direction})
+                    body = Body(lit_body_source(source, resolved["size"], radius, relief, edge_width, direction))
+                    bounds = resolved["labelBounds"]
+                    yield density, scale, count, direction, bounds, body.uniform_contains_box(bounds)
+
+
+def ir_uniform_contains_box(ir, bounds):
+    """spec/46 lit content containment of a label box in a published lit control body IR."""
+    face = ir["face"]
+    outline, profile = face["surface"]["outline"], face["surface"]["profile"]
+    probe = Body.__new__(Body)
+    probe.width, probe.height = outline["size"]["width"], outline["size"]["height"]
+    probe.radii = [outline["corners"][name]["x"] for name in PHYSICAL]
+    probe.edge_width = face["edgeWidth"]
+    probe.kind, probe.shoulder = profile["kind"], profile["shoulderWidth"]
+    return probe.uniform_contains_box(bounds)

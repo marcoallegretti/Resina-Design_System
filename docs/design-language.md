@@ -67,8 +67,13 @@ Keep one physical key direction within a visual context. The
 does not mirror with RTL layout. Logical corners are mapped to physical corners
 before their normals are evaluated. Its directional weights are a portable
 perceptual convention, not calibrated reflectance or a three-dimensional light.
-[Ambient and interaction response](https://github.com/marcoallegretti/Resina-Design_System/issues/129)
-needs its own shared contract.
+[Bounded material light](../spec/85-bounded-material-light.md) adds optional
+ambient and interaction response to that key light, and
+[material-lit relief paint](../spec/86-material-relief-paint.md) applies it to a
+relief face. Command bodies are [lit control bodies](../spec/88-lit-control-body.md):
+the lit relief face projected with the side plane and guarded edge, with
+interaction light admitted only while hovered or pressed. Light never replaces a
+state cue, and the reserved content stays the exact body colour.
 
 Semantic color communicates emphasis and status; material pigment expresses the
 selected family's surface. [Opaque pigment profiles](../spec/29-opaque-pigment.md)

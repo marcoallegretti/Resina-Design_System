@@ -403,7 +403,7 @@
       "space.control.inline": "space.2",
       "space.control.block": "space.2",
       "space.control.inset.inline": {
-        "compact": "space.3",
+        "compact": "space.4",
         "standard": "space.4",
         "comfortable": "space.5",
         "immersive": "space.6"

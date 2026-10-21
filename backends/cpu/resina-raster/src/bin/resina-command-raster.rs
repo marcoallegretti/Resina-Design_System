@@ -1,6 +1,6 @@
 mod common;
 
-use resina_raster::render_surface_paint;
+use resina_raster::render_lit_control_paint;
 use resina_resolver::resolve_command_paint_source;
 use std::process::ExitCode;
 
@@ -10,6 +10,6 @@ fn main() -> ExitCode {
     common::run(
         USAGE,
         resolve_command_paint_source,
-        |command, viewport, samples| render_surface_paint(command.paint(), viewport, samples),
+        |command, viewport, samples| render_lit_control_paint(command.paint(), viewport, samples),
     )
 }

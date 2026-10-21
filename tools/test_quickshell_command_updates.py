@@ -11,8 +11,14 @@ import unittest
 from unittest.mock import patch
 from PIL import Image
 
+from check_schemas import ROOT, load_json
+from command_label_arithmetic import layout as label_layout
+from command_layout_arithmetic import resolve as resolve_command_layout
+from lit_body_arithmetic import PHYSICAL, Body, lit_body_source
+from test_lit_body_arithmetic import SOURCE, token_value
+
 from check_quickshell_command_updates import (
-    authored_cases, main, read_reports, verify_capture, verify_case,
+    authored_cases, capture_body_probe, main, read_reports, verify_capture, verify_case,
     verify_stable_targets, verify_typography, verify_version,
     verify_authored_paint,
 )
@@ -162,8 +168,8 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                 "materialFamily": "elastomer", "lighting": {
                     "direction": {"x": -math.sqrt(0.5), "y": -math.sqrt(0.5)},
                     "sideOffset": {"x": offset, "y": offset}},
+                "face": {"surface": {"outline": {"size": {"width": 160, "height": 80}}}},
                 "geometry": {
-                    "front": {"bounds": {"x": 0, "y": 0, "width": 160, "height": 80}},
                     "silhouette": {"bounds": {"x": 0, "y": 0, "width": 160 + offset, "height": 80 + offset}},
                     "edgeInterior": {"offset": {"x": 1, "y": 1}, "contour": {"bounds": {
                         "x": 0, "y": 0, "width": 158 + offset, "height": 78 + offset}}}}}}}}
@@ -283,11 +289,14 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             "paint": {"body": {"materialFamily": "elastomer", "materialRole": "control.interactive",
                 "colorRole": "surface.high", "foregroundRole": "content.primary",
                 "form": {"schemaVersion": "0.1.0", "shape": "rounded", "elevation": "raised"},
-                "pigment": {"body": {"colorSpace": "srgb", "alpha": 1,
-                    "components": [252/255, 251/255, 248/255]}},
-                "foreground": {"colorSpace": "srgb", "alpha": 1, "components": [24/255, 41/255, 45/255]},
-                "edge": {"color": {"colorSpace": "srgb", "alpha": 1, "components": [109/255, 129/255, 128/255]}}}}}}
-        with patch("check_quickshell_command_updates.verify_authored_geometry"):
+                "face": {
+                    "pigment": {"body": {"colorSpace": "srgb", "alpha": 1,
+                        "components": [252/255, 251/255, 248/255]}},
+                    "foreground": {"colorSpace": "srgb", "alpha": 1, "components": [24/255, 41/255, 45/255]},
+                    "edge": {"color": {"colorSpace": "srgb", "alpha": 1, "components": [109/255, 129/255, 128/255]}},
+                    "surface": {"profile": request["body"]["relief"]["commandBody"]}}}}}}
+        with patch("check_quickshell_command_updates.verify_authored_geometry"), \
+                patch("check_quickshell_command_updates.body_invariants", return_value=None):
             verify_authored_paint(request, snapshot)
             request["content"]["themeSource"] = authored_cases()[12]["request"]["content"]["themeSource"]
             with self.assertRaisesRegex(ValueError, "authored"):
@@ -306,11 +315,14 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                               "size": {"width": 80, "height": 60},
                               "typography": {"fontSize": {"value": 10}, "lineHeight": 1}},
                     "hitRegion": {"bounds": {"x": 0, "y": 0}},
-                    "paint": {"paint": {"body": {
-                        "geometry": {"content": {"offset": {"x": 3, "y": 3}}},
+                    "paint": {"paint": {"body": {"geometry": {}, "face": {
+                        "edgeWidth": 1,
+                        "surface": {"outline": {"size": {"width": 80, "height": 60}, "corners": {
+                            name: {"x": 0, "y": 0} for name in ("topLeft", "topRight", "bottomRight", "bottomLeft")}},
+                            "profile": {"kind": "convex", "shoulderWidth": 2}},
                         "pigment": {"body": {"colorSpace": "srgb", "alpha": 1, "components": [1, 1, 1]}},
                         "foreground": {
-                        "colorSpace": "srgb", "alpha": 1, "components": [0, 0, 0]}}}}}
+                        "colorSpace": "srgb", "alpha": 1, "components": [0, 0, 0]}}}}}}
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "capture.png"
             for points in ([], [(65, 65)], [(65, 65), (65, 75)], [(5, 5), (5, 15)]):
@@ -333,6 +345,10 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
             image.save(path)
             with self.assertRaisesRegex(ValueError, "body pigment"):
                 verify_capture(path, snapshot, 1)
+            crowded = copy.deepcopy(snapshot)
+            crowded["label"]["labelBounds"]["y"] = 2.5
+            with self.assertRaisesRegex(ValueError, "no whole body pixel"):
+                verify_capture(path, crowded, 1)
             snapshot["paint"]["paint"]["body"]["geometry"]["silhouette"] = {
                 "bounds": {"x": 0, "y": 0, "width": 80, "height": 60}}
             snapshot["paint"]["paint"]["focus"] = {"indicator": {
@@ -360,6 +376,67 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                     else:
                         with self.assertRaisesRegex(ValueError, "focus indicator|focus surroundings"):
                             verify_capture(path, snapshot, 1, surrounding)
+
+    def test_capture_probe_finds_a_whole_uniform_body_pixel_above_every_authored_label(self):
+        foundation = load_json(ROOT / "tokens/foundation.json")
+        cases = load_json(ROOT / "conformance/layout/command-layout-cases.json")
+        relief = load_json(ROOT / "definitions/control-relief.json")["commandBody"]
+        shape = load_json(ROOT / "definitions/tier0-shapes.json")["profiles"]["rounded"]["radius"]
+        radius = token_value([foundation], shape)["value"]
+        edge = load_json(ROOT / "definitions/tier0-surface-appearance.json")["bands"]["elastomer"]["edgeWidth"]
+        theme = load_json(ROOT / "tokens/themes/light.json")
+        trees = [foundation] + theme["tokenResolver"]["sets"]["theme"]["sources"]
+        typography = theme["typographyAssignments"]["roles"]["label"]
+        font_size = token_value(trees, typography["fontSize"])["value"]
+        line_height = token_value(trees, typography["lineHeight"])
+        checked = failures = 0
+        for pointer in ("fine", "coarse"):
+            layout_request = next(case for case in cases if case["name"] == f"compact text 1 {pointer} ltr")["request"]
+            for density in ("compact", "standard", "comfortable", "immersive"):
+                for text_scale in (1, 1.0006, 1.5, 2, 3):
+                    for lines in (1, 2, 3):
+                        for direction in ("ltr", "rtl"):
+                            request = copy.deepcopy(layout_request)
+                            request["environment"].update(densityPreference=density, textScale=text_scale,
+                                                          layoutDirection=direction)
+                            policy = resolve_command_layout(request)
+                            size = font_size * text_scale
+                            measured = {"width": size * 4, "height": lines * size * line_height}
+                            resolved = label_layout({
+                                "padding": policy["padding"], "minimumSize": policy["minimumSize"],
+                                "maximumSize": policy["maximumSize"], "natural": measured, "fitted": measured,
+                                "direction": direction})
+                            body = Body(lit_body_source(SOURCE, resolved["size"], radius, relief, edge, direction))
+                            visual = {"x": min(0, body.offset[0]), "y": min(0, body.offset[1]),
+                                      "width": body.width + abs(body.offset[0]),
+                                      "height": body.height + abs(body.offset[1])}
+                            target = {}
+                            for axis, extent, minimum in (("x", "width", policy["targetMinimum"]["width"]),
+                                                          ("y", "height", policy["targetMinimum"]["height"])):
+                                target[axis] = visual[axis] - (max(visual[extent], minimum) - visual[extent]) / 2
+                            snapshot = {
+                                "label": {"labelBounds": resolved["labelBounds"], "size": resolved["size"]},
+                                "hitRegion": {"bounds": target},
+                                "paint": {"paint": {"body": {"face": {
+                                    "edgeWidth": edge,
+                                    "surface": {"profile": relief, "outline": {
+                                        "size": resolved["size"],
+                                        "corners": {name: {"x": value, "y": value}
+                                                    for name, value in zip(PHYSICAL, body.radii)}}}}}}}}
+                            for scale in (1, 1.25, 2):
+                                with self.subTest(pointer=pointer, density=density, text_scale=text_scale,
+                                                  lines=lines, direction=direction, scale=scale):
+                                    checked += 1
+                                    try:
+                                        column, row = capture_body_probe(snapshot, scale)
+                                    except ValueError:
+                                        failures += 1
+                                        raise
+                                    top = 50 - target["y"] + resolved["labelBounds"]["y"]
+                                    self.assertLessEqual((row + 1) / scale, top + 1e-9)
+                                    self.assertGreater(row / scale, 50 - target["y"])
+                                    self.assertTrue(0 <= column < 500 * scale)
+        self.assertEqual((checked, failures), (2 * 4 * 5 * 3 * 2 * 3, 0))
 
     def test_host_execution_failure_is_distinct_from_unsupported_version(self):
         with self.assertRaisesRegex(ValueError, "verification failed:.*timed out"):

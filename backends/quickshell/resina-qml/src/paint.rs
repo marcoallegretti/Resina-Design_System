@@ -3,7 +3,9 @@ use resina_model::{PhysicalBounds, PhysicalVector};
 use resina_raster::{
     PreparedViewport, RasterError, RasterImage, prepare_viewport, validate_viewport,
 };
-use resina_resolver::{MaterialReliefPaint, SurfacePaintIr};
+use resina_resolver::{
+    FocusIndicatorIr, LitControlPaintIr, MaterialReliefPaint, ReliefReuse, SurfacePaintIr,
+};
 use std::{error::Error, fmt, fmt::Write};
 
 #[derive(Debug)]
@@ -90,20 +92,51 @@ pub fn prepare_surface_paint(
     if !device_scale.is_finite() || device_scale <= 0.0 {
         return Err(PaintQmlError::InvalidScale);
     }
-    let bounds = if let Some(focus) = ir.focus() {
-        let outer = focus.geometry().outer();
-        let mut bounds = outer.contour().bounds().expect("validated focus bounds");
-        bounds.x += outer.offset().x;
-        bounds.y += outer.offset().y;
-        bounds
-    } else {
+    let bounds = paint_bounds(ir.focus(), || {
         ir.body()
             .geometry()
             .silhouette()
             .bounds()
             .expect("validated body bounds")
-    };
+    });
     prepare_bounds(bounds, placement, device_scale, samples_per_axis)
+}
+
+/// Check a lit control body and its focus ring for native placement and sampling limits.
+pub fn prepare_lit_control_paint(
+    ir: &LitControlPaintIr,
+    placement: PhysicalVector,
+    device_scale: f64,
+    samples_per_axis: u8,
+) -> Result<PreparedViewport, PaintQmlError> {
+    if !device_scale.is_finite() || device_scale <= 0.0 {
+        return Err(PaintQmlError::InvalidScale);
+    }
+    let bounds = paint_bounds(ir.focus(), || {
+        ir.body()
+            .geometry()
+            .silhouette()
+            .bounds()
+            .expect("validated body bounds")
+    });
+    prepare_bounds(bounds, placement, device_scale, samples_per_axis)
+}
+
+/// The focus ring's outer bounds when present, which contain the separated body, else the body's.
+fn paint_bounds(
+    focus: Option<&FocusIndicatorIr>,
+    body: impl FnOnce() -> PhysicalBounds,
+) -> PhysicalBounds {
+    match focus {
+        Some(focus) => {
+            let outer = focus.geometry().outer();
+            let mut bounds = outer.contour().bounds().expect("validated focus bounds");
+            bounds.x += outer.offset().x;
+            bounds.y += outer.offset().y;
+            bounds
+        }
+        None => body(),
+    }
 }
 
 /// Check the complete relief face's native placement and sampling limits.
@@ -178,6 +211,26 @@ pub fn render_surface_paint(
     let prepared = prepare_surface_paint(ir, placement, device_scale, samples_per_axis)?;
     let image = resina_raster::render_surface_paint(ir, prepared.viewport(), samples_per_axis)
         .map_err(PaintQmlError::Raster)?;
+    render_image(prepared, device_scale, image)
+}
+
+/// Samples after parent placement; emitted paint origins already include that placement. Relief
+/// terms `reuse` keeps from earlier renders of the same face, such as motion frames, are reused.
+pub fn render_lit_control_paint(
+    ir: &LitControlPaintIr,
+    placement: PhysicalVector,
+    device_scale: f64,
+    samples_per_axis: u8,
+    reuse: &ReliefReuse,
+) -> Result<String, PaintQmlError> {
+    let prepared = prepare_lit_control_paint(ir, placement, device_scale, samples_per_axis)?;
+    let image = resina_raster::render_lit_control_paint_reusing(
+        ir,
+        prepared.viewport(),
+        samples_per_axis,
+        reuse,
+    )
+    .map_err(PaintQmlError::Raster)?;
     render_image(prepared, device_scale, image)
 }
 

@@ -84,7 +84,7 @@ Item {
             candidate.y = candidate.paintOriginY - options.y;
             const complete = result.snapshot;
             const content = complete.label;
-            const foreground = complete.paint.paint.body.foreground;
+            const foreground = complete.paint.paint.body.face.foreground;
             if (foreground.colorSpace !== "srgb")
                 throw new Error("Qt command view requires the checked sRGB foreground");
             label.prepare({text:content.text, family:JSON.parse(source).content.fontFamily.name,

@@ -32,6 +32,29 @@ pub(crate) fn validate_pigment_source(
     Ok(())
 }
 
+/// Validates the original ambient and interaction strength sources of a light channels object,
+/// including channels that policy or phase later suppresses.
+pub(crate) fn validate_light_channel_source(
+    source: &str,
+    path: &[&str],
+) -> Result<(), serde_json::Error> {
+    let Some(channels) = member(source, path)? else {
+        return Ok(());
+    };
+    if let Some(ambient) = member(channels.get(), &["ambient"])?
+        && ambient.get() != "null"
+    {
+        validate_nonnegative_coefficient(ambient.get(), "ambient")?;
+    }
+    if let Some(interaction) = member(channels.get(), &["interaction"])?
+        && interaction.get() != "null"
+        && let Some(strength) = member(interaction.get(), &["strength"])?
+    {
+        validate_nonnegative_coefficient(strength.get(), "interaction strength")?;
+    }
+    Ok(())
+}
+
 pub(crate) fn validate_nonnegative_coefficient(
     literal: &str,
     field: &str,

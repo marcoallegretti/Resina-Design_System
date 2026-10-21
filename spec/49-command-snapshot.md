@@ -32,8 +32,9 @@ measurement as current merely because its dimensions happen to match.
    actual focus must remain coherent. Reject stale or additional signals and
    identify both the expected and supplied state sets diagnostically.
 2. Require label layout direction to equal the supplied environment direction.
-3. Validate the complete label layout box against the same body's front size and
-   uniform content contour using [content containment](46-command-label-layout.md).
+3. Validate the complete label layout box against the same body's outline size
+   and its uniform face, the edge interior intersected with the relief plateau,
+   using [lit command body content](46-command-label-layout.md#lit-command-body-content).
 4. Revalidate the complete reserved hit rectangle against current environment and
    component minima, available bounds and neighboring reservations using the
    [target law](40-hit-region-ir.md). Reject any required resizing; do not publish
@@ -65,9 +66,11 @@ coherently. A disabled command still occupies its reserved rectangle.
 Static depth responses and sampled depth projections both remain in `[0,2]`, so
 a hovered or overshooting body may extrude beyond the rest body. Layout therefore
 reserves the target from the deepest silhouette the command can paint: the
-neutral surface resolved at the projected depth bound, `depthScale` 2. No static
-response or projected motion sample can extrude further. The Rust reference
-exposes this body as `resolve_command_reservation_body`. The same
+neutral surface resolved at the projected depth bound, `depthScale` 2, as a
+[lit control body](88-lit-control-body.md). Its silhouette is the outline swept by
+the key-light offset, so neither the relief nor the light changes the
+reservation. No static response or projected motion sample can extrude further.
+The Rust reference exposes this body as `resolve_command_reservation_body`. The same
 front/form/light/profile and physical origin must reach later paint. Each
 snapshot still checks actual body coverage; do not assume the reservation
 remains valid after a shape/profile change.

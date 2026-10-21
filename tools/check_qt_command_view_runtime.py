@@ -119,7 +119,7 @@ Window {
         reference.body.x = reference.body.paintOriginX-placement.x;
         reference.body.y = reference.body.paintOriginY-placement.y;
         const label = result.snapshot.label;
-        const color = result.snapshot.paint.paint.body.foreground;
+        const color = result.snapshot.paint.paint.body.face.foreground;
         glyphs.prepare({text:label.text, family:@@FAMILY@@, pixelSize:label.typography.fontSize.value,
             weight:label.typography.fontWeight, spacing:label.typography.letterSpacing.value,
             lineHeight:label.typography.lineHeight, wrappingWidth:label.labelBounds.width,

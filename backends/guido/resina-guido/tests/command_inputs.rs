@@ -29,6 +29,8 @@ fn inputs() -> CommandInputs {
         emphasis: CommandEmphasis::Standard,
         appearance: serde_json::from_value(body["appearance"].clone()).unwrap(),
         command_appearance: serde_json::from_value(source["commandAppearance"].clone()).unwrap(),
+        light: serde_json::from_value(source["light"].clone()).unwrap(),
+        relief: serde_json::from_value(source["relief"].clone()).unwrap(),
         font: conformance_font::load(),
         text: "Reconnect".into(),
         description: Some("Reconnect to the configured network.".into()),
@@ -336,7 +338,7 @@ fn weaker_requirements_cannot_publish_invisible_content_or_insufficient_edges() 
         }
         match requested.prepare(&state, false, origin) {
             Ok(publication) => {
-                let body = publication.paint().paint().body();
+                let body = publication.paint().paint().body().face();
                 accepted.push(format!(
                     "weakened requirement accepted: content {}, edge {}",
                     body.content_contrast_ratio(),
@@ -415,7 +417,7 @@ fn stricter_authored_contrast_requirements_are_preserved() {
     let state = ActivationState::try_new(true, false, None).unwrap();
     let origin = PhysicalVector { x: 0.0, y: 0.0 };
     let valid = requested.prepare(&state, false, origin).unwrap();
-    let body = valid.paint().paint().body();
+    let body = valid.paint().paint().body().face();
     assert!(body.content_contrast_ratio() >= 4.5 && body.content_contrast_ratio() < 7.0);
     assert!(body.edge().contrast_ratio() >= 3.0 && body.edge().contrast_ratio() < 7.0);
     for (content, edge) in [(7.0, 3.0), (4.5, 7.0)] {

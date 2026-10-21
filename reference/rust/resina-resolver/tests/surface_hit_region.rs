@@ -4,10 +4,11 @@ use resina_model::{
     SurfaceSize, TypographyRole,
 };
 use resina_resolver::{
-    CommandAccessibilityInput, CommandLabelInput, HitRegionError, HitRegionIr, OpaqueSurfaceIr,
-    SurfaceHitRegionInput, compile_theme_source, resolve_activation, resolve_command_accessibility,
-    resolve_command_label, resolve_command_motion_source, resolve_command_paint_source,
-    resolve_command_states, resolve_surface_hit_region,
+    CommandAccessibilityInput, CommandLabelInput, HitRegionBody, HitRegionError, HitRegionInput,
+    HitRegionIr, LitControlBodyIr, SurfaceHitRegionInput, compile_theme_source, resolve_activation,
+    resolve_command_accessibility, resolve_command_label, resolve_command_motion_source,
+    resolve_command_paint_source, resolve_command_states, resolve_hit_region,
+    resolve_opaque_surface_source, resolve_surface_hit_region,
 };
 use serde_json::{Value, json};
 use std::convert::Infallible;
@@ -34,10 +35,13 @@ fn available() -> PhysicalBounds {
     }
 }
 
-fn input<'a>(env: &'a EnvironmentSnapshot, body: &'a OpaqueSurfaceIr) -> SurfaceHitRegionInput<'a> {
+fn input<'a>(
+    env: &'a EnvironmentSnapshot,
+    body: &'a LitControlBodyIr,
+) -> SurfaceHitRegionInput<'a> {
     SurfaceHitRegionInput {
         environment: env,
-        body,
+        body: HitRegionBody::Lit(body),
         available_bounds: available(),
         component_minimum: SurfaceSize {
             width: 24.0,
@@ -103,6 +107,57 @@ fn static_targets_include_material_depth_and_exclude_independent_focus() {
             assert_eq!(targets[0], targets[1]);
         }
     }
+}
+
+#[test]
+fn opaque_and_lit_bodies_bound_the_target_by_their_own_silhouette() {
+    let opaque_request: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/opaque-surface-request.json"
+    ))
+    .unwrap();
+    let opaque = resolve_opaque_surface_source(&opaque_request.to_string()).unwrap();
+    let request = request();
+    let env = environment(&request);
+    let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+    for (body, silhouette) in [
+        (
+            HitRegionBody::Opaque(&opaque),
+            opaque.geometry().silhouette().bounds().unwrap(),
+        ),
+        (
+            HitRegionBody::Lit(paint.paint().body()),
+            paint
+                .paint()
+                .body()
+                .geometry()
+                .silhouette()
+                .bounds()
+                .unwrap(),
+        ),
+    ] {
+        let hit = resolve_surface_hit_region(SurfaceHitRegionInput {
+            body,
+            ..input(&env, paint.paint().body())
+        })
+        .unwrap();
+        let direct = resolve_hit_region(HitRegionInput {
+            environment: &env,
+            visual_bounds: silhouette,
+            available_bounds: available(),
+            component_minimum: SurfaceSize {
+                width: 24.0,
+                height: 24.0,
+            },
+            occupied_regions: &[],
+        })
+        .unwrap();
+        assert_eq!(hit, direct);
+        assert!(hit.contains_bounds(silhouette).unwrap());
+    }
+    assert_ne!(
+        opaque.geometry().silhouette().bounds(),
+        paint.paint().body().geometry().silhouette().bounds()
+    );
 }
 
 #[test]
@@ -253,7 +308,7 @@ fn live_target_membership_routes_through_current_activation_and_accessibility() 
                 .unwrap();
         let paint = resolve_command_paint_source(&request.to_string()).unwrap();
         assert_eq!(paint.phase(), phase);
-        label.validate_content(paint.paint().body()).unwrap();
+        label.validate_lit_content(paint.paint().body()).unwrap();
         let hit = resolve_surface_hit_region(input(&env, paint.paint().body())).unwrap();
         let inside = hit.contains(point).unwrap();
         assert!(inside);

@@ -44,22 +44,54 @@ impl MaterialReliefPaint {
         Self { face, light }
     }
 
+    pub(crate) fn dim_disabled_label(&mut self, bound: f64) {
+        let face = &mut self.face;
+        face.foreground =
+            crate::disabled_label::dim_disabled_label(&face.foreground, face.pigment.body(), bound);
+        face.content_contrast_ratio =
+            crate::opaque_contrast_ratio(&face.foreground, face.pigment.body())
+                .expect("the dimmed label and resolved body are opaque");
+    }
+
+    #[cfg(test)]
     pub(crate) fn edge_interior_contains(&self, point: PhysicalVector) -> bool {
         self.face.edge_interior_contains(point)
     }
 
-    pub(crate) fn face_color(
+    pub(crate) fn terms(&self) -> DirectTerms<'_> {
+        self.face.terms()
+    }
+
+    pub(crate) fn sampler(&self) -> FaceSampler<'_> {
+        self.face.sampler()
+    }
+
+    pub(crate) fn sampler_keeping<'a>(&'a self, shared: Option<Shared<'a>>) -> FaceSampler<'a> {
+        self.face.sampler_keeping(shared)
+    }
+
+    pub(crate) fn flatness_keeping<'a>(
+        &'a self,
+        shared: Option<Shared<'a>>,
+    ) -> crate::surface_relief::FlatnessSampler<'a> {
+        self.face.surface.flatness_keeping(shared)
+    }
+
+    pub(crate) fn keeping<'a>(&self, reuse: &'a ReliefReuse) -> FaceKeeping<'a> {
+        reuse.keeping(&self.face)
+    }
+
+    pub(crate) fn face_color_using(
         &self,
         point: PhysicalVector,
+        terms: &mut impl FaceTerms,
     ) -> Result<SrgbFallback, ReliefPaintError> {
-        let normal = self
-            .face
-            .surface
-            .sample(point)
+        let normal = terms
+            .relief(point)
             .map_err(|e| ReliefPaintError(e.to_string()))?
             .ok_or_else(|| ReliefPaintError("face color requires a point of the outline".into()))?
             .normal;
-        self.shade(normal)
+        terms.shade(normal, |normal| self.shade(normal))
     }
 
     fn shade(&self, normal: crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError> {
@@ -85,8 +117,20 @@ impl MaterialReliefPaint {
         self.face.foreground()
     }
 
+    pub fn content_contrast_ratio(&self) -> f64 {
+        self.face.content_contrast_ratio
+    }
+
+    pub fn edge_width(&self) -> f64 {
+        self.face.edge_width
+    }
+
     pub fn content_bounds(&self) -> PhysicalBounds {
         self.face.content_bounds()
+    }
+
+    pub(crate) fn uniform_contains_box(&self, bounds: PhysicalBounds) -> bool {
+        self.face.uniform_contains_box(bounds)
     }
 
     pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {
@@ -99,6 +143,15 @@ impl MaterialReliefPaint {
     ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
         self.face
             .sample_paint_with(point, |normal| self.shade(normal))
+    }
+
+    pub(crate) fn sample_paint_using(
+        &self,
+        point: PhysicalVector,
+        terms: &mut impl FaceTerms,
+    ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
+        self.face
+            .sample_paint_using(point, terms, |normal| self.shade(normal))
     }
 }
 

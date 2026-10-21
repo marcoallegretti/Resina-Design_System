@@ -260,7 +260,9 @@ front size and positions the label at its Rust-resolved box. It is decorative,
 has no input target and is ignored by accessibility.
 
 The composing owner still must validate the label against the body's uniform
-content contour and supply its guarded foreground, retain common provenance,
+face, the intersection of its edge interior and relief plateau
+([spec/46](../../../spec/46-command-label-layout.md#lit-command-body-content),
+[spec/88](../../../spec/88-lit-control-body.md#guards-and-colors)), and supply its guarded foreground, retain common provenance,
 publish coherent paint/target/semantics, and own native gestures and actions.
 The label helper does not provide any of those channels or a Button.
 
@@ -275,11 +277,15 @@ Supply every field explicitly:
 
 - `content`: the complete `CommandLabelResolver` request above. Its single
   compiled theme/environment owns typography, paint and target resolution.
-- `body`: `surface`, `appearance`, `commandAppearance`, `foregroundRole`,
-  `adjacentColor`, `postTreatmentBackdrop`, `surroundingColor`,
+- `body`: `surface`, `appearance`, `commandAppearance`, `light`, `relief`,
+  `foregroundRole`, `adjacentColor`, `postTreatmentBackdrop`, `surroundingColor`,
   `minimumContentContrast` and `minimumEdgeContrast`. These are existing authored
-  surface/appearance inputs and color records. Both nullable backdrop fields
-  are required. Color conversion uses the existing sRGB fallback resolver.
+  surface/appearance inputs, the [command paint](../../../spec/43-command-paint.md#light-and-relief)
+  light channels and control relief, and color records. Both nullable backdrop
+  fields are required, and so are both light channels; absent observations are
+  explicit null. Light coefficient sources are validated before rounding, also
+  where the phase or policy suppresses them. Color conversion uses the existing
+  sRGB fallback resolver. The body is drawn as a lit control body.
   The surface template must have exactly the neutral rest state; current states
   come exclusively from the canonical activation/hover projection.
 - `activation`, `hovered`, nullable `description`, and `focusable`: existing
@@ -293,7 +299,8 @@ Rust resolves complete content first, uses its front size for the neutral and
 current body, reserves the target from the neutral body's deepest silhouette at
 the projected depth bound, then
 runs the existing snapshot validator. This checks state/direction coherence,
-complete label-box containment in the uniform body contour, current silhouette
+complete label-box containment in the body's uniform face (edge interior
+intersected with the relief plateau), current silhouette
 coverage, available/occupied target bounds and complete accessibility semantics.
 Contrast, surrounding colors and unsupported geometry retain their diagnostics.
 No padding or contrast threshold is invented to repair an invalid request.
@@ -1564,6 +1571,15 @@ scale 2, with median preparation of 13.0 ms and 28.6 ms.
 Most of each interval there is asynchronous decoding and software rendering, so
 runner timing does not qualify the floor. The floor is qualified by running the
 check without `--floor report` on the qualifying machine.
+
+Successive frames of one Command paint the same lit face at the same samples;
+only light, pigment, depth and focus change. The runtime therefore keeps that
+face's relief and edge-interior terms, midline relief samples and flat-box
+certifications between renders on the GUI thread, keyed by the exact bits of
+the face and of each sample coordinate or box. It keeps the four most recently
+rendered faces, so Commands in motion together do not displace each other,
+within a bound of about 16 MiB. A kept term is the one a new evaluation
+returns, so every frame is byte-identical to one rendered without them.
 
 The check also bounds the publication gap, on every host. The headless output
 refreshes at 60 Hz, so a predecessor whose `predecessorSpan` is at least 1/60 s

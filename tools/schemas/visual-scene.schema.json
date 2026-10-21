@@ -14,6 +14,6 @@
     {"if": {"properties": {"kind": {"const": "opaqueSurface"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:opaque-surface-request:0.1.0"}}}},
     {"if": {"properties": {"kind": {"const": "focusRing"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:focus-ir-request:0.1.0"}}}},
     {"if": {"properties": {"kind": {"const": "surfacePaint"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:surface-paint-request:0.1.0"}}}},
-    {"if": {"properties": {"kind": {"const": "commandMotion"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:command-motion-request:0.1.0"}}}}
+    {"if": {"properties": {"kind": {"const": "commandMotion"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:command-motion-request:0.2.0"}}}}
   ]
 }

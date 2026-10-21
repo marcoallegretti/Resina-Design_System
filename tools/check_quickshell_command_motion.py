@@ -679,8 +679,9 @@ def verify_reduced_frost(sequence):
         if body.get("frostRepresentation") != "opaqueDimensional":
             raise ValueError(f"{name} publishes Frost representation {body.get('frostRepresentation')!r}, not "
                              "'opaqueDimensional'")
-        if body["pigment"]["body"]["alpha"] != 1:
-            raise ValueError(f"{name} publishes body alpha {body['pigment']['body']['alpha']!r}, not 1")
+        alpha = body["face"]["pigment"]["body"]["alpha"]
+        if alpha != 1:
+            raise ValueError(f"{name} publishes body alpha {alpha!r}, not 1")
         if body["contentFallbackApplied"] is not False:
             raise ValueError(f"{name} reached its opaque body through the content fallback, not the preference")
 

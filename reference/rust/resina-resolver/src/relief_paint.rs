@@ -1,19 +1,293 @@
 use crate::{
-    EdgeContrastResult, OpaquePigmentResult, OutlineCurvature, SrgbFallback, SurfaceRelief,
-    SurfaceReliefProfile, opaque_contrast_ratio, resolve_edge_contrast_source, resolve_key_light,
-    resolve_opaque_pigment_source, resolve_surface_outline_source, resolve_surface_relief,
+    EdgeContrastResult, FaceNormal, OpaquePigmentResult, OutlineCurvature, ReliefSample,
+    SrgbFallback, SurfaceRelief, SurfaceReliefError, SurfaceReliefProfile, opaque_contrast_ratio,
+    resolve_edge_contrast_source, resolve_key_light, resolve_opaque_pigment_source,
+    resolve_surface_outline_source, resolve_surface_relief,
     srgb_input::{SrgbInput, SrgbInputError},
+    surface_relief::{BoxKey, CoordinateMap, FlatBoxes, ReliefAxis, ReliefSampler},
 };
 use resina_color::OpaqueSrgbRange;
 use resina_model::{KeyLight, PhysicalBounds, PhysicalVector};
 use resina_tokens::parse_token_document;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{
+    collections::hash_map::Entry,
+    fmt,
+    sync::{Arc, Mutex, PoisonError},
+};
 mod edge;
 mod material;
+mod uniform;
 pub use material::{
     MaterialReliefPaint, MaterialReliefPaintResult, resolve_material_relief_paint_source,
 };
+
+/// The face terms a paint sample reads besides its outline: edge-interior containment, relief and
+/// the shade of a face normal.
+pub(crate) trait FaceTerms {
+    fn edge_interior_contains(&mut self, point: PhysicalVector) -> bool;
+    fn relief(&mut self, point: PhysicalVector)
+    -> Result<Option<ReliefSample>, SurfaceReliefError>;
+    /// `shade(normal)`, a function of the normal's `x` and `y` alone.
+    fn shade(
+        &mut self,
+        normal: FaceNormal,
+        shade: impl FnOnce(FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<SrgbFallback, ReliefPaintError>;
+}
+
+pub(crate) struct DirectTerms<'a>(&'a ReliefPaint);
+
+impl FaceTerms for DirectTerms<'_> {
+    fn edge_interior_contains(&mut self, point: PhysicalVector) -> bool {
+        self.0.edge_interior_contains(point)
+    }
+    fn relief(
+        &mut self,
+        point: PhysicalVector,
+    ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
+        self.0.surface.sample(point)
+    }
+    fn shade(
+        &mut self,
+        normal: FaceNormal,
+        shade: impl FnOnce(FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<SrgbFallback, ReliefPaintError> {
+        shade(normal)
+    }
+}
+
+/// Face terms equal to [`DirectTerms`] that reuse evaluations shared by many points.
+pub(crate) struct FaceSampler<'a> {
+    edge: edge::EdgeSampler<'a>,
+    relief: ReliefSampler<'a>,
+    shades: Vec<([u64; 2], SrgbFallback)>,
+}
+
+impl FaceTerms for FaceSampler<'_> {
+    fn edge_interior_contains(&mut self, point: PhysicalVector) -> bool {
+        self.edge.contains(point)
+    }
+    fn relief(
+        &mut self,
+        point: PhysicalVector,
+    ) -> Result<Option<ReliefSample>, SurfaceReliefError> {
+        self.relief.sample(point)
+    }
+    fn shade(
+        &mut self,
+        normal: FaceNormal,
+        shade: impl FnOnce(FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<SrgbFallback, ReliefPaintError> {
+        let key = [normal.x.to_bits(), normal.y.to_bits()];
+        if let Some((_, color)) = self.shades.iter().find(|(bits, _)| *bits == key) {
+            return Ok(color.clone());
+        }
+        let color = shade(normal)?;
+        if self.shades.len() == RECENT_SHADES {
+            self.shades.remove(0);
+        }
+        self.shades.push((key, color.clone()));
+        Ok(color)
+    }
+}
+
+const RECENT_SHADES: usize = 8;
+
+/// The most corner samples and flat-box certifications a [`ReliefReuse`] keeps across its faces,
+/// about 16 MiB.
+pub(crate) const MAX_KEPT_TERMS: usize = 1 << 18;
+
+/// The most faces a [`ReliefReuse`] keeps, such as those of several controls in motion at once.
+const KEPT_FACES: usize = 4;
+
+/// Face terms kept between renders: relief and edge-interior axes, relief samples along the
+/// midlines, corner relief samples and flat-box certifications, keyed by the exact bits of the
+/// face's relief and edge width and of each coordinate. Motion frames sample the same face at the
+/// same points, and a kept term is exactly the one a new evaluation returns. The terms of the
+/// [`KEPT_FACES`] most recently rendered faces are kept.
+#[derive(Default)]
+pub struct ReliefReuse {
+    /// Least recently rendered first.
+    kept: Mutex<Vec<Arc<KeptFace>>>,
+}
+
+#[derive(Clone, Default)]
+pub(crate) struct KeptFace {
+    identity: String,
+    pub(crate) relief_axes: [CoordinateMap<ReliefAxis>; 2],
+    pub(crate) edge_axes: [CoordinateMap<edge::EdgeAxis>; 2],
+    pub(crate) lines: [CoordinateMap<ReliefSample>; 2],
+    pub(crate) samples: KeptSamples,
+    pub(crate) flat_boxes: FlatBoxes,
+}
+
+impl KeptFace {
+    /// The kept terms [`MAX_KEPT_TERMS`] bounds.
+    fn bounded_terms(&self) -> usize {
+        self.samples.values().map(Vec::len).sum::<usize>() + self.flat_boxes.len()
+    }
+}
+
+/// Kept corner samples by the bits of their `y` coordinate, each row ordered by the bits of `x`.
+pub(crate) type KeptSamples = CoordinateMap<Vec<(u64, ReliefSample)>>;
+
+/// One row of [`KeptSamples`].
+pub(crate) type KeptRow = [(u64, ReliefSample)];
+
+/// The terms the samplers of one render evaluated beyond the kept ones.
+#[derive(Default)]
+pub(crate) struct FaceAdditions {
+    pub(crate) relief_axes: [Vec<(u64, ReliefAxis)>; 2],
+    pub(crate) edge_axes: [Vec<(u64, edge::EdgeAxis)>; 2],
+    pub(crate) lines: [Vec<(u64, ReliefSample)>; 2],
+    pub(crate) samples: Vec<([u64; 2], ReliefSample)>,
+    pub(crate) flat_boxes: Vec<(BoxKey, bool)>,
+}
+
+impl FaceAdditions {
+    fn is_empty(&self) -> bool {
+        self.samples.is_empty()
+            && self.flat_boxes.is_empty()
+            && self.relief_axes.iter().all(Vec::is_empty)
+            && self.edge_axes.iter().all(Vec::is_empty)
+            && self.lines.iter().all(Vec::is_empty)
+    }
+}
+
+/// What the samplers of one render share: the kept terms, and where they record their additions.
+#[derive(Clone, Copy)]
+pub(crate) struct Shared<'a> {
+    pub(crate) kept: &'a KeptFace,
+    pub(crate) added: &'a Mutex<FaceAdditions>,
+}
+
+/// One render's use of a [`ReliefReuse`], which keeps the terms its samplers added when it ends.
+pub(crate) struct FaceKeeping<'a> {
+    reuse: &'a ReliefReuse,
+    kept: Arc<KeptFace>,
+    added: Mutex<FaceAdditions>,
+}
+
+impl ReliefReuse {
+    fn keeping(&self, face: &ReliefPaint) -> FaceKeeping<'_> {
+        let identity = format!(
+            "{}|{:016x}",
+            serde_json::to_string(&face.surface).expect("a resolved relief serializes"),
+            face.edge_width.to_bits()
+        );
+        let mut faces = self.kept.lock().unwrap_or_else(PoisonError::into_inner);
+        let kept = match faces.iter().position(|kept| kept.identity == identity) {
+            Some(index) => {
+                let kept = faces.remove(index);
+                faces.push(Arc::clone(&kept));
+                kept
+            }
+            None => Arc::new(KeptFace {
+                identity,
+                ..KeptFace::default()
+            }),
+        };
+        FaceKeeping {
+            reuse: self,
+            kept,
+            added: Mutex::new(FaceAdditions::default()),
+        }
+    }
+}
+
+#[cfg(test)]
+impl ReliefReuse {
+    /// The identities of the kept faces, least recently rendered first.
+    pub(crate) fn kept_faces(&self) -> Vec<String> {
+        let faces = self.kept.lock().unwrap();
+        faces.iter().map(|kept| kept.identity.clone()).collect()
+    }
+
+    /// The most recently rendered face's identity and its numbers of corner samples, relief axes,
+    /// edge axes, midline samples and flat-box certifications.
+    pub(crate) fn kept_terms(&self) -> Option<(String, [usize; 5])> {
+        self.kept.lock().unwrap().last().map(|kept| {
+            (
+                kept.identity.clone(),
+                [
+                    kept.samples.values().map(Vec::len).sum(),
+                    kept.relief_axes.iter().map(CoordinateMap::len).sum(),
+                    kept.edge_axes.iter().map(CoordinateMap::len).sum(),
+                    kept.lines.iter().map(CoordinateMap::len).sum(),
+                    kept.flat_boxes.len(),
+                ],
+            )
+        })
+    }
+}
+
+impl FaceKeeping<'_> {
+    pub(crate) fn shared(&self) -> Shared<'_> {
+        Shared {
+            kept: &self.kept,
+            added: &self.added,
+        }
+    }
+}
+
+impl Drop for FaceKeeping<'_> {
+    fn drop(&mut self) {
+        let added = std::mem::take(self.added.get_mut().unwrap_or_else(PoisonError::into_inner));
+        let mut faces = self
+            .reuse
+            .kept
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner);
+        if added.is_empty() && faces.iter().any(|kept| Arc::ptr_eq(kept, &self.kept)) {
+            return;
+        }
+        // Release the kept copies first, so that extending this render's terms does not clone them.
+        faces.retain(|kept| kept.identity != self.kept.identity);
+        let face = Arc::make_mut(&mut self.kept);
+        for (axes, added) in face.relief_axes.iter_mut().zip(added.relief_axes) {
+            axes.extend(added);
+        }
+        for (axes, added) in face.edge_axes.iter_mut().zip(added.edge_axes) {
+            axes.extend(added);
+        }
+        for (lines, added) in face.lines.iter_mut().zip(added.lines) {
+            lines.extend(added);
+        }
+        let mut count =
+            faces.iter().map(|kept| kept.bounded_terms()).sum::<usize>() + face.bounded_terms();
+        // Room for one more bounded term, made by forgetting the least recently rendered faces.
+        let mut room = |count: &mut usize| {
+            while *count >= MAX_KEPT_TERMS && !faces.is_empty() {
+                *count -= faces.remove(0).bounded_terms();
+            }
+            *count < MAX_KEPT_TERMS
+        };
+        for ([x, y], sample) in added.samples {
+            if !room(&mut count) {
+                break;
+            }
+            let row = face.samples.entry(y).or_default();
+            if let Err(index) = row.binary_search_by_key(&x, |(kept, _)| *kept) {
+                row.insert(index, (x, sample));
+                count += 1;
+            }
+        }
+        for (key, flat) in added.flat_boxes {
+            if !room(&mut count) {
+                break;
+            }
+            if let Entry::Vacant(entry) = face.flat_boxes.entry(key) {
+                entry.insert(flat);
+                count += 1;
+            }
+        }
+        if faces.len() == KEPT_FACES {
+            faces.remove(0);
+        }
+        faces.push(Arc::clone(&self.kept));
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReliefPaintError(String);
@@ -224,6 +498,10 @@ impl ReliefPaint {
         edge::contains(self.surface.outline(), self.edge_width, point)
     }
 
+    pub(crate) fn uniform_contains_box(&self, bounds: PhysicalBounds) -> bool {
+        uniform::contains_box(&self.surface, self.edge_width, bounds)
+    }
+
     fn reserve_content(&self) -> Result<PhysicalBounds, ReliefPaintError> {
         let inset = self.edge_width;
         let diagonal = match self.surface.outline().curvature() {
@@ -310,6 +588,31 @@ impl ReliefPaint {
         point: PhysicalVector,
         shade: impl FnOnce(crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
     ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
+        self.sample_paint_using(point, &mut self.terms(), shade)
+    }
+
+    pub(crate) fn terms(&self) -> DirectTerms<'_> {
+        DirectTerms(self)
+    }
+
+    pub(crate) fn sampler(&self) -> FaceSampler<'_> {
+        self.sampler_keeping(None)
+    }
+
+    pub(crate) fn sampler_keeping<'a>(&'a self, shared: Option<Shared<'a>>) -> FaceSampler<'a> {
+        FaceSampler {
+            edge: edge::EdgeSampler::new(self.surface.outline(), self.edge_width, shared),
+            relief: self.surface.sampler_keeping(shared),
+            shades: Vec::new(),
+        }
+    }
+
+    pub(crate) fn sample_paint_using(
+        &self,
+        point: PhysicalVector,
+        terms: &mut impl FaceTerms,
+        shade: impl FnOnce(crate::FaceNormal) -> Result<SrgbFallback, ReliefPaintError>,
+    ) -> Result<Option<SrgbFallback>, ReliefPaintError> {
         if !self
             .surface
             .outline()
@@ -318,16 +621,15 @@ impl ReliefPaint {
         {
             return Ok(None);
         }
-        if !self.edge_interior_contains(point) {
+        if !terms.edge_interior_contains(point) {
             return Ok(Some(self.edge.color().clone()));
         }
-        let normal = self
-            .surface
-            .sample(point)
+        let normal = terms
+            .relief(point)
             .map_err(|e| ReliefPaintError(e.to_string()))?
             .ok_or_else(|| ReliefPaintError("interior point lost outline containment".into()))?
             .normal;
-        shade(normal).map(Some)
+        terms.shade(normal, shade).map(Some)
     }
 
     pub fn paint_color_ranges(&self) -> Vec<OpaqueSrgbRange> {

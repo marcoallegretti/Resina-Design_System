@@ -534,6 +534,9 @@ def verify_theme_files(shell, theme):
     if bar["body"]["theme"]["themeSource"] != source or command["content"]["themeSource"] != source \
             or command["body"]["commandAppearance"] != appearance:
         raise ValueError(f"requests do not use the {theme} theme source and Command appearance")
+    relief = json.loads((ROOT / "definitions/control-relief.json").read_text(encoding="utf-8"))
+    if command["body"]["relief"] != relief or command["body"]["light"] != {"ambient": None, "interaction": None}:
+        raise ValueError("Command requests must carry the reference control relief and explicit absent light")
 
 
 class Accessibility:

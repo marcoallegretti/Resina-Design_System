@@ -8,8 +8,8 @@ from control_paint_source import positional_control_request
 class ControlPaintSourceTests(unittest.TestCase):
     def test_full_positional_records_are_schema_invalid_without_other_changes(self):
         consumers = (
-            ("command-paint", ("schemaVersion", "surface", "commandAppearance")),
-            ("command-motion", ("schemaVersion", "surface", "commandAppearance", "channels", "time")),
+            ("command-paint", ("schemaVersion", "surface", "commandAppearance", "light", "relief")),
+            ("command-motion", ("schemaVersion", "surface", "commandAppearance", "light", "relief", "channels", "time")),
             ("toggle-part-paint", ("schemaVersion", "part", "surface", "checkedColorRole", "interactionAppearance")),
             ("toggle-part-motion", ("schemaVersion", "surface", "interactionAppearance", "part", "checkedColorRole", "channels", "time")),
         )

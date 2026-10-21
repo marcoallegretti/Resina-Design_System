@@ -14,6 +14,18 @@ from check_qt_command_snapshot_runtime import request_for, verify_snapshot
 from check_quickshell_paint_runtime import compare_images, read_backend_output
 import conformance_font
 
+ADMITTED_LIGHT = {"ambient": 0.25, "interaction": {"direction": {"x": 1, "y": 0.5}, "strength": 0.5}}
+
+
+def admit_light(request):
+    """Admits both light channels: no reduced motion or high contrast, dynamic lighting, balanced quality."""
+    environment = request["content"]["environment"]
+    environment["accessibilityPreferences"].update(highContrast=False, reducedMotion=False)
+    environment["rendererCapabilities"]["dynamicLighting"] = True
+    environment["qualityPolicy"] = "balanced"
+    request["body"]["light"] = copy.deepcopy(ADMITTED_LIGHT)
+    return request
+
 
 def main():
     parser = argparse.ArgumentParser(description="Verify checked Rust command paint in an actual Qt window.")
@@ -70,8 +82,11 @@ Window {
         count = 0
         dpr = window.devicePixelRatio()
         for theme in ("light", "dark"):
-            for states in (["rest"], ["hover"], ["pressed"], ["disabled"], ["rest", "focused"]):
+            for states, admitted in ((["rest"], False), (["hover"], False), (["pressed"], False),
+                                     (["disabled"], False), (["rest", "focused"], False), (["hover"], True)):
                 request = request_for(theme, "Erneut mit dem Netzwerk verbinden")
+                if admitted:
+                    admit_light(request)
                 request["activation"].update(enabled="disabled" not in states, focused="focused" in states)
                 request["hovered"] = "hover" in states
                 if "pressed" in states:
@@ -81,6 +96,9 @@ Window {
                 if set(result) != {"snapshot", "paintSource"}:
                     raise ValueError("checked native rendering failed: " + str(result))
                 verify_snapshot(result["snapshot"], request, {"schemaVersion": "0.1.0", "states": states})
+                face_light = result["snapshot"]["paint"]["paint"]["body"]["face"]["light"]
+                if admitted != (face_light["ambient"] > 0 and face_light["interaction"] is not None):
+                    raise ValueError(f"native snapshot light {face_light} does not follow the admitted channels")
                 body = window.property("body")
                 deadline = time.monotonic() + 5
                 while not body.property("paintReady") and time.monotonic() < deadline:
@@ -102,20 +120,25 @@ Window {
                     raise ValueError("native paint source is not the prepared PNG")
                 body_request = copy.deepcopy(request["body"])
                 command_appearance = body_request.pop("commandAppearance")
+                light, relief = body_request.pop("light"), body_request.pop("relief")
                 surrounding = body_request.pop("surroundingColor")
                 body_request.update(schemaVersion="0.1.0", size=result["snapshot"]["label"]["size"],
                                     theme={"schemaVersion": "0.1.0", **{key: request["content"][key]
                                            for key in ("themeSource", "externalSources", "environment")}})
                 body_request["surface"]["states"] = {"schemaVersion": "0.1.0", "states": states}
-                portable = {"schemaVersion": "0.1.0", "surface": {"schemaVersion": "0.1.0",
+                portable = {"schemaVersion": "0.2.0", "surface": {"schemaVersion": "0.1.0",
                             "body": body_request, "surroundingColor": surrounding},
-                            "commandAppearance": command_appearance}
+                            "commandAppearance": command_appearance, "light": light, "relief": relief}
                 with Image.open(io.BytesIO(unquote_to_bytes(encoded.group(1)))) as source:
-                    oracle = read_backend_output([str(args.raster.resolve()), "-", str(source.width), str(source.height),
-                        str(body.property("paintOriginX") - options["x"]),
-                        str(body.property("paintOriginY") - options["y"]), str(dpr), "4"], json.dumps(portable).encode())
+                    raster = [str(args.raster.resolve()), "-", str(source.width), str(source.height),
+                              str(body.property("paintOriginX") - options["x"]),
+                              str(body.property("paintOriginY") - options["y"]), str(dpr), "4"]
+                    oracle = read_backend_output(raster, json.dumps(portable).encode())
                     with Image.open(io.BytesIO(oracle)) as independent:
                         compare_images(independent, source)
+                    if admitted and oracle == read_backend_output(raster, json.dumps(
+                            dict(portable, light={"ambient": None, "interaction": None})).encode()):
+                        raise ValueError("admitted light leaves the native paint unchanged")
                 with Image.open(io.BytesIO(unquote_to_bytes(encoded.group(1)))) as source:
                     expected = Image.new("RGBA", (round(400 * dpr), round(220 * dpr)))
                     expected.paste(source.convert("RGBA"), (round(body.property("paintOriginX") * dpr), round(body.property("paintOriginY") * dpr)))
@@ -143,7 +166,8 @@ Window {
     except Exception as error:
         print("FAIL Qt command paint runtime: " + str(error), file=sys.stderr)
         return 1
-    print(f"Checked Rust command paint matched actual Qt software readback for {count} Light/Dark state frames at DPR {dpr}; invalid rendering failed without partial channels")
+    print(f"Checked Rust command paint matched actual Qt software readback for {count} Light/Dark state frames, "
+          f"one per theme with admitted light, at DPR {dpr}; invalid rendering failed without partial channels")
     return 0
 
 

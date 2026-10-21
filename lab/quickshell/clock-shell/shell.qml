@@ -24,6 +24,7 @@ ShellRoot {
         ["appearance", "definitions/tier0-surface-appearance.json", ""],
         ["commandAppearance", "definitions/command-appearance-" + theme + ".json", theme],
         ["command", "definitions/components/command.json", ""],
+        ["controlRelief", "definitions/control-relief.json", ""],
         ["motionBody", "definitions/motion/elastomer-body.json", ""],
         ["motionDepth", "definitions/motion/elastomer-depth.json", ""],
         ["preferences", decodeURIComponent(Qt.resolvedUrl("preferences.json").toString().replace("file://", "")), ""]
@@ -192,6 +193,8 @@ ShellRoot {
                     treatmentStack: {schemaVersion: "0.1.0", treatments: ["none"]}},
                 appearance: JSON.parse(text("appearance")),
                 commandAppearance: JSON.parse(text("commandAppearance")),
+                light: {ambient: null, interaction: null},
+                relief: JSON.parse(text("controlRelief")),
                 foregroundRole: definition.contentRole, adjacentColor: body,
                 postTreatmentBackdrop: body, surroundingColor: body,
                 minimumContentContrast: 4.5, minimumEdgeContrast: 3},

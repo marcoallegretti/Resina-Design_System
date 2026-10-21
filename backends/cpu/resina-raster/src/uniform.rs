@@ -8,6 +8,13 @@ pub(crate) struct SampleBox {
 }
 
 impl SampleBox {
+    pub(crate) fn contains(self, other: Self) -> bool {
+        self.min.x <= other.min.x
+            && self.min.y <= other.min.y
+            && other.max.x <= self.max.x
+            && other.max.y <= self.max.y
+    }
+
     fn translated(self, offset: PhysicalVector) -> Self {
         Self {
             min: subtract(self.min, offset),
@@ -153,6 +160,75 @@ pub(crate) fn placed_inside(region: SampleBox, contour: &PlacedContour) -> bool 
         }
     }
     true
+}
+
+/// Whether every point of the box lies outside the convex contour by more than the tolerance:
+/// beyond its bounds, beyond the supporting line of one of its line segments, or beyond the
+/// circle of one of its arcs inside that arc's sector, where the arc is the contour's boundary.
+/// Each separation exceeds the arithmetic error of point evaluation, so every point of the box is
+/// evaluated as outside.
+pub(crate) fn outside(region: SampleBox, contour: &ExtrudedContourResult) -> bool {
+    if disjoint(region, contour) {
+        return true;
+    }
+    let Some(bounds) = contour.bounds() else {
+        return false;
+    };
+    let magnitude = region
+        .magnitude()
+        .max(bounds.x.abs())
+        .max(bounds.y.abs())
+        .max(bounds.width)
+        .max(bounds.height);
+    if !(1e-100..=1e100).contains(&magnitude) {
+        return false;
+    }
+    let tolerance = 64.0 * f64::EPSILON * magnitude;
+    let vertices = [
+        region.min,
+        PhysicalVector {
+            x: region.max.x,
+            y: region.min.y,
+        },
+        region.max,
+        PhysicalVector {
+            x: region.min.x,
+            y: region.max.y,
+        },
+    ];
+    contour.segments().iter().any(|segment| match *segment {
+        ContourSegment::Line { from, to } => {
+            let normal = PhysicalVector {
+                x: to.y - from.y,
+                y: from.x - to.x,
+            };
+            let nearest = region.support(PhysicalVector {
+                x: -normal.x,
+                y: -normal.y,
+            });
+            dot(subtract(nearest, from), normal) > tolerance * (normal.x.abs() + normal.y.abs())
+        }
+        ContourSegment::Arc {
+            center,
+            radii,
+            start,
+            end,
+        } => {
+            let nearest = PhysicalVector {
+                x: center.x.clamp(region.min.x, region.max.x),
+                y: center.y.clamp(region.min.y, region.max.y),
+            };
+            let offset = subtract(nearest, center);
+            vertices.iter().all(|vertex| {
+                let offset = subtract(*vertex, center);
+                cross(start, offset) > tolerance && cross(offset, end) > tolerance
+            }) && offset.x.hypot(offset.y) - radii.x > tolerance
+        }
+    })
+}
+
+pub(crate) fn placed_outside(region: SampleBox, contour: &PlacedContour) -> bool {
+    outside(region.translated(contour.offset()), contour.contour())
 }
 
 fn subtract(a: PhysicalVector, b: PhysicalVector) -> PhysicalVector {

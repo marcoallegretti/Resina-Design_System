@@ -1,25 +1,25 @@
 import copy
 import json
+import math
 import unittest
 
 from jsonschema import ValidationError
 from check_qt_command_snapshot_runtime import ROOT, request_for, verify_snapshot
+from lit_body_arithmetic import ir_uniform_contains_box
 
 
 class NativeSnapshotEvidenceTests(unittest.TestCase):
     def fixture(self):
         load = lambda path: json.loads((ROOT / path).read_text())
         # Supplied public pieces exercise checker invariants; no native font claim.
-        body = load("conformance/ir/opaque-surface-expected.json")
-        body["materialRole"] = "control.interactive"
+        paint = load("conformance/ir/command-paint-ir.json")
+        body = paint["paint"]["body"]
         label = load("conformance/ir/command-label-ir.json")
         label.update(size={"width": 20, "height": 12},
                      labelBounds={"x": 2, "y": 2, "width": 16, "height": 8})
         semantic = load("conformance/accessibility/command-cases.json")[0]["expected"]
         target = load("conformance/interaction/hit-region-cases.json")[0]["expected"]
-        snapshot = {"label": label, "paint": {"schemaVersion": "0.1.0", "phase": "rest",
-                    "response": {"bodyMix": 0, "depthScale": 1},
-                    "paint": {"schemaVersion": "0.1.0", "body": body}},
+        snapshot = {"label": label, "paint": paint,
                     "hitRegion": target, "accessibility": semantic}
         request = request_for("light", "Reconnect")
         request.update(description=None, componentMinimum={"width": 24, "height": 24})
@@ -62,6 +62,40 @@ class NativeSnapshotEvidenceTests(unittest.TestCase):
                 with self.subTest(capability=capability, axis=axis), self.assertRaisesRegex(
                         ValueError, "resolved target minimum"):
                     verify_snapshot(snapshot, request, states)
+
+    def test_body_front_must_share_the_label_origin_and_size(self):
+        for axis, delta in (("x", 1), ("y", -0.5), ("width", 1)):
+            snapshot, request, states = copy.deepcopy(self.fixture())
+            body = snapshot["paint"]["paint"]["body"]
+            if axis == "width":
+                body["face"]["surface"]["outline"]["size"]["width"] += delta
+            else:
+                body["geometry"]["silhouette"]["bounds"][axis] += delta
+            with self.subTest(axis=axis), self.assertRaisesRegex(ValueError, "front size/origin"):
+                verify_snapshot(snapshot, request, states)
+
+    def test_label_box_must_stay_on_the_uniform_face(self):
+        for member, value in (("x", 1.5), ("y", 1.5), ("width", 16.5), ("height", 8.5)):
+            snapshot, request, states = copy.deepcopy(self.fixture())
+            snapshot["label"]["labelBounds"][member] = value
+            with self.subTest(member=member), self.assertRaisesRegex(ValueError, "uniform lit body face"):
+                verify_snapshot(snapshot, request, states)
+
+    def test_label_box_right_and_bottom_are_exact_sums(self):
+        body = json.loads((ROOT / "conformance/ir/command-paint-ir.json").read_text())["paint"]["body"]
+        surface = body["face"]["surface"]
+        surface["outline"]["size"] = {"width": 96, "height": 96}
+        for corner in surface["outline"]["corners"].values():
+            corner.update(x=0, y=0)
+        surface["profile"].update(kind="convex", amplitude=0.75, shoulderWidth=1.5)
+        body["face"]["edgeWidth"] = 1
+        past = math.nextafter(1.5, 2)
+        inside = 93 - 2.0 ** -46
+        for x, y, width, height, contained in ((past, 1.5, 93, 93, False), (1.5, past, 93, 93, False),
+                                               (1.5, 1.5, 93, 93, True), (past, past, inside, inside, True)):
+            box = {"x": x, "y": y, "width": width, "height": height}
+            with self.subTest(box=box):
+                self.assertEqual(ir_uniform_contains_box(body, box), contained)
 
     def test_partial_stale_or_inconsistent_channels_fail(self):
         for change in ("missing", "extra", "semantic", "body", "direction", "focus", "target", "available", "occupied"):

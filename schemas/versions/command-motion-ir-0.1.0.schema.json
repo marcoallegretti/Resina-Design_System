@@ -1,0 +1,336 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:command-motion-ir:0.1.0",
+  "title": "Resina Command Motion IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policy",
+    "target",
+    "bodyMix",
+    "depthScale",
+    "bodyMixProjection",
+    "depthScaleProjection",
+    "command"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "policy": {
+      "enum": [
+        "spring",
+        "castImmediate",
+        "reducedMotion"
+      ]
+    },
+    "target": {
+      "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+    },
+    "bodyMix": {
+      "$ref": "urn:resina:schema:spring-trajectory-result:0.1.0"
+    },
+    "depthScale": {
+      "$ref": "urn:resina:schema:spring-trajectory-result:0.1.0"
+    },
+    "bodyMixProjection": {
+      "enum": [
+        "none",
+        "lowerBound",
+        "upperBound"
+      ]
+    },
+    "depthScaleProjection": {
+      "enum": [
+        "none",
+        "lowerBound",
+        "upperBound"
+      ]
+    },
+    "command": {
+      "title": "Resina Sampled Command Paint",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "phase",
+        "response",
+        "paint"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "0.1.0"
+        },
+        "phase": {
+          "enum": [
+            "rest",
+            "hover",
+            "pressed",
+            "disabled"
+          ]
+        },
+        "response": {
+          "$ref": "urn:resina:schema:command-appearance:0.1.0#/$defs/response"
+        },
+        "paint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "body"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": "0.1.0"
+            },
+            "body": {
+              "$ref": "urn:resina:schema:command-body-ir:0.1.0"
+            },
+            "focus": {
+              "$ref": "urn:resina:schema:focus-indicator-ir:0.1.0"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "body": {
+                    "properties": {
+                      "states": {
+                        "properties": {
+                          "states": {
+                            "contains": {
+                              "const": "focused"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "focus"
+                ]
+              },
+              "else": {
+                "not": {
+                  "required": [
+                    "focus"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "paint": {
+                "properties": {
+                  "body": {
+                    "properties": {
+                      "states": {
+                        "properties": {
+                          "states": {
+                            "contains": {
+                              "const": "disabled"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "phase": {
+                "const": "disabled"
+              }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "paint": {
+                  "properties": {
+                    "body": {
+                      "properties": {
+                        "states": {
+                          "properties": {
+                            "states": {
+                              "contains": {
+                                "const": "pressed"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "phase": {
+                  "const": "pressed"
+                }
+              }
+            },
+            "else": {
+              "if": {
+                "properties": {
+                  "paint": {
+                    "properties": {
+                      "body": {
+                        "properties": {
+                          "states": {
+                            "properties": {
+                              "states": {
+                                "contains": {
+                                  "const": "hover"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "phase": {
+                    "const": "hover"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "phase": {
+                    "const": "rest"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "policy": {
+            "const": "spring"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "bodyMix": {
+            "properties": {
+              "representation": {
+                "const": "spring"
+              }
+            }
+          },
+          "depthScale": {
+            "properties": {
+              "representation": {
+                "const": "spring"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "policy": {
+            "const": "castImmediate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "bodyMix": {
+            "properties": {
+              "representation": {
+                "const": "immediate"
+              }
+            }
+          },
+          "depthScale": {
+            "properties": {
+              "representation": {
+                "const": "immediate"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "policy": {
+            "const": "reducedMotion"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "bodyMix": {
+            "properties": {
+              "representation": {
+                "const": "immediate"
+              }
+            }
+          },
+          "depthScale": {
+            "properties": {
+              "representation": {
+                "const": "immediate"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "properties": {
+              "phase": {
+                "const": "rest"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "const": {
+              "bodyMix": 0,
+              "depthScale": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

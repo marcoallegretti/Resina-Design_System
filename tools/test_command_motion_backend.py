@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 from check_command_motion_backend import equation_sample, motion_mismatch
 from check_schemas import ROOT, load_json, validator_for
-from check_surface_paint_backend import baseline, expected_result
 
 
 class CommandMotionComparisonTests(unittest.TestCase):
@@ -22,7 +21,7 @@ class CommandMotionComparisonTests(unittest.TestCase):
     def test_metadata_is_exact_before_paint_comparison(self):
         request = load_json(ROOT / "conformance/ir/command-motion-request.json")
         target = request["commandAppearance"]["profiles"]["elastomer"]["pressed"]
-        actual = {"schemaVersion": "0.1.0", "policy": "spring", "target": copy.deepcopy(target)}
+        actual = {"schemaVersion": "0.2.0", "policy": "spring", "target": copy.deepcopy(target)}
         actual["target"]["bodyMix"] += 1e-13
         self.assertEqual(motion_mismatch(actual, request), "/target")
         actual["target"] = target
@@ -31,18 +30,15 @@ class CommandMotionComparisonTests(unittest.TestCase):
 
     def test_static_rest_identity_is_retained_only_for_target(self):
         schema = validator_for("schemas/command-motion-ir.schema.json")
-        source = baseline()
-        source["body"]["surface"]["states"]["states"] = ["rest", "focused"]
-        command = {"schemaVersion": "0.1.0", "paint": expected_result(source)}
-        command["paint"]["body"]["materialRole"] = "control.interactive"
-        command["paint"]["focus"]["indicator"]["binding"]["materialRole"] = "control.interactive"
-        command["phase"] = "rest"
-        command["paint"]["body"]["states"]["states"] = ["rest", "focused"]
-        command["paint"]["focus"]["indicator"]["binding"]["states"]["states"] = ["rest", "focused"]
-        command["response"] = {"bodyMix": 0.1, "depthScale": 0.5}
+        body = load_json(ROOT / "conformance/ir/lit-control-body-ir.json")
+        body["states"]["states"] = ["rest", "focused"]
+        paint = {"schemaVersion": "0.1.0", "body": body,
+                 "focus": load_json(ROOT / "conformance/ir/focus-ir-expected.json")}
+        command = {"schemaVersion": "0.2.0", "phase": "rest", "response": {"bodyMix": 0.1, "depthScale": 0.5},
+                   "paint": paint}
         channel = {"schemaVersion": "0.1.0", "representation": "spring", "target": 0,
                    "state": {"position": 0.1, "velocity": 0.2}, "settled": False}
-        result = {"schemaVersion": "0.1.0", "policy": "spring", "target": {"bodyMix": 0, "depthScale": 1},
+        result = {"schemaVersion": "0.2.0", "policy": "spring", "target": {"bodyMix": 0, "depthScale": 1},
                   "bodyMix": channel, "depthScale": {**channel, "target": 1},
                   "bodyMixProjection": "none", "depthScaleProjection": "none", "command": command}
         self.assertFalse(list(schema.iter_errors(result)))
@@ -57,7 +53,7 @@ class CommandMotionComparisonTests(unittest.TestCase):
         request["time"] = 0
         request["channels"]["depthScale"]["initial"]["position"] = 2
         target = request["commandAppearance"]["profiles"]["elastomer"]["pressed"]
-        result = {"schemaVersion": "0.1.0", "policy": "spring", "target": target, "command": {}}
+        result = {"schemaVersion": "0.2.0", "policy": "spring", "target": target, "command": {}}
         for name in ("bodyMix", "depthScale"):
             result[name] = equation_sample(request["channels"][name], target[name], 0, False)
             result[name + "Projection"] = "none"

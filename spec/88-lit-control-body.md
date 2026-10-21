@@ -119,8 +119,12 @@ and the uniform relief plateau is the exact body color for every admitted light,
 boundary included; outside the disabled dimming below, the foreground must
 meet the minimum content contrast against the exact body; the edge candidate is
 selected against the supplied adjacent color. Light never changes the body,
-edge or foreground. Component contracts own label containment against C and
-disabled label dimming.
+edge or foreground. The same holds on the whole intersection of E and the
+certified plateau, where every relief gate equals one; C is a conservative
+rectangle inside it and remains the published member. Component contracts own
+label containment in the certified plateau intersected with E, such as the
+exact vertex law of [lit command body content](46-command-label-layout.md#lit-command-body-content),
+and disabled label dimming.
 
 The body never dims on its own. Under the `disabled` phase, and only there, a
 component contract may replace exactly `face.foreground` and
@@ -203,7 +207,8 @@ vectors without the reference: circular per-corner relief gates and normals,
 exact rational F and E membership near their boundaries, sweep membership by
 intersecting the
 parameter intervals of `{p - t*d : t in [0,1]}` with each convex constraint, the
-signed law, guards, content reservation, the published IR invariants with
+signed law, guards, content reservation, exact closed membership in E
+intersected with the plateau, the published IR invariants with
 independently derived canonical swept contours, and supersampled pixels with
 tie-bracketed bounds. Its
 [tests](../tools/test_lit_body_arithmetic.py) also check normals against height

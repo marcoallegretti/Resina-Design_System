@@ -541,10 +541,10 @@ class CommandCallbackFrameTests(unittest.TestCase):
 
 def frost_frame(sequence, field=None, value=None):
     body = {"materialFamily": "frost", "frostRepresentation": "opaqueDimensional",
-            "pigment": {"body": {"colorSpace": "srgb", "components": [.94, .94, .92], "alpha": 1}},
+            "face": {"pigment": {"body": {"colorSpace": "srgb", "components": [.94, .94, .92], "alpha": 1}}},
             "contentFallbackApplied": False}
     if field == "alpha":
-        body["pigment"]["body"]["alpha"] = value
+        body["face"]["pigment"]["body"]["alpha"] = value
     elif field == "frostRepresentation" and value is None:
         del body[field]
     elif field:

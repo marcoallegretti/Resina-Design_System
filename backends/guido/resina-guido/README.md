@@ -287,7 +287,9 @@ checked accessibility semantics before preparing either drawing channel. It
 returns a read-only `CommandPublication` only after every operation succeeds.
 The publication owns its members; a later preparation cannot change an earlier
 publication. All inputs are explicit, including layout limits, logical padding,
-neighbor reservations, contrast requirements and native font mapping.
+neighbor reservations, contrast requirements, native font mapping, the control
+relief profiles and the light channels, which the product sets to explicit null
+channels when it has no ambient or pointer observation.
 Content requirements below 4.5:1 and edge requirements below 3:1 are rejected,
 including for disabled and sampled publications. Stronger authored requirements
 reach the paint guards unchanged; invalid requirements are not clamped.
@@ -316,10 +318,10 @@ frames, observe focus, route input or publish a native accessibility tree.
 Use `prepare_command_content` for a checked `CommandSnapshot`, the same verified
 font family, device scale and sampling count. Resolve the snapshot with current
 activation, explicit hover, a stable reserved target and accessible semantics
-before native preparation. Its existing guards validate shared front size/origin
-and actual content-contour containment. Native preparation remeasures complete
-text, takes its foreground from the body's readability
-result, and prepares material and navigation paint. A failure returns no command
+before native preparation. Its existing guards validate shared outline size/origin
+and containment in the lit body's uniform face. Native preparation remeasures
+complete text, takes its foreground from the lit body face, and prepares material
+and navigation paint with `prepare_lit_control_paint_at`. A failure returns no command
 pair and preserves its diagnostic cause.
 
 The result is exactly two native draw commands, in order: the prepared RGBA image
@@ -359,8 +361,12 @@ Every composition consumes a checked snapshot with an explicit test interaction
 state and a reservation derived from the same profile's deepest neutral
 silhouette at the projected depth bound.
 Compositions use the authored surrounding color. Subsequent material-only and
-text-only readbacks identify actual glyph coverage. Every covered pixel footprint
-must remain inside the content contour on uniform opaque pigment; solid native
+text-only readbacks identify actual glyph coverage. Every glyph-covered pixel's
+opaque background must lie within one 8-bit step of the face's body pigment
+(`face.pigment.body`); label-box containment in the uniform face is checked by
+the snapshot's `validate_lit_content`, per the
+[lit command body content](../../../spec/46-command-label-layout.md#lit-command-body-content)
+law. Solid native
 foreground/background pairs must retain at least 4.5 contrast; the dimmed disabled
 label sits exactly at its contrast bound, which 8-bit quantization can undercut, so
 its solid glyph pixels must instead match the quantized published color within one
@@ -504,10 +510,11 @@ Reduced-motion policy is tested separately in the portable snapshot matrix.
 
 ## Placed surface and text preparation
 
-The public `prepare_surface_paint_at` and `prepare_command_label_at` functions
-accept a parent-relative origin. Their returned image/text command already
+The public `prepare_surface_paint_at`, `prepare_lit_control_paint_at` and
+`prepare_command_label_at` functions accept a parent-relative origin. Their
+returned image/text command already
 includes that placement; do not translate it a second time. Surface placement
-precedes device-grid sampling, and both functions apply the existing coordinate
+precedes device-grid sampling, and all three functions apply the existing coordinate
 precision checks. The separate [native Material Board](../../../lab/guido/README.md)
 uses these APIs to inspect the public opaque material catalog at real device
 scales.

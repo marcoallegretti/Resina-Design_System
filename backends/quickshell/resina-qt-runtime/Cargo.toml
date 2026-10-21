@@ -24,3 +24,9 @@ resina-qml = { path = "../resina-qml" }
 
 [build-dependencies]
 cxx-qt-build = "=0.8.1"
+
+[profile.dev.package.resina-raster]
+opt-level = 3
+
+[profile.dev.package.resina-resolver]
+opt-level = 3

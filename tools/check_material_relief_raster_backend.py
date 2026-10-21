@@ -23,6 +23,25 @@ def check_png(result, width, height, expected):
         raise ValueError(f"raster failed with status {result.returncode}: {result.stderr.decode('utf-8', errors='replace')[:300]}")
     if len(expected) != width * height:
         raise ValueError("independent pixels must cover the complete requested image")
+    pixels = decoded_png(result, width, height)
+    worst = 0
+    for index, wanted in enumerate(expected):
+        actual = tuple(pixels[4 * index:4 * index + 4])
+        if wanted[3] == 0 and actual != (0, 0, 0, 0):
+            raise ValueError(f"pixel {index}: transparent pixels must be clear")
+        if actual[3] != wanted[3]:
+            raise ValueError(f"pixel {index}: coverage differs: {actual[3]} != {wanted[3]}")
+        difference = max(abs(actual[channel] - wanted[channel]) for channel in range(3))
+        worst = max(worst, difference)
+        if difference > 1:
+            raise ValueError(f"pixel {index}: color differs: {actual} != {wanted}")
+    return worst
+
+
+def decoded_png(result, width, height):
+    """The RGBA8 bytes of one complete perceptual-sRGB PNG with the requested dimensions."""
+    if result.returncode != 0 or result.stderr:
+        raise ValueError(f"raster failed with status {result.returncode}: {result.stderr.decode('utf-8', errors='replace')[:300]}")
     if len(result.stdout) < 33 or result.stdout[:8] != b"\x89PNG\r\n\x1a\n" or result.stdout[12:16] != b"IHDR" or result.stdout[24:26] != bytes((8, 6)):
         raise ValueError("result must declare 8-bit RGBA in its PNG header")
     offset = 8
@@ -47,19 +66,7 @@ def check_png(result, width, height, expected):
         image.load()
         if image.format != "PNG" or image.mode != "RGBA" or image.size != (width, height) or image.info.get("srgb") != 0:
             raise ValueError("result must be an RGBA8 perceptual-sRGB PNG with the requested dimensions")
-        worst = 0
-        pixels = image.tobytes()
-        for index, wanted in enumerate(expected):
-            actual = tuple(pixels[4 * index:4 * index + 4])
-            if wanted[3] == 0 and actual != (0, 0, 0, 0):
-                raise ValueError(f"pixel {index}: transparent pixels must be clear")
-            if actual[3] != wanted[3]:
-                raise ValueError(f"pixel {index}: coverage differs: {actual[3]} != {wanted[3]}")
-            difference = max(abs(actual[channel] - wanted[channel]) for channel in range(3))
-            worst = max(worst, difference)
-            if difference > 1:
-                raise ValueError(f"pixel {index}: color differs: {actual} != {wanted}")
-        return worst
+        return image.tobytes()
 
 
 def main():

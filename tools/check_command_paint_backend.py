@@ -4,7 +4,7 @@ import json
 import math
 import sys
 
-from backend_source import duplicate_member_source, nonfinite_member_source
+from backend_source import duplicate_member_source, negative_underflow_member_source, nonfinite_member_source
 from opaque_request_source import opaque_request_failures
 from surface_paint_source import positional_paint_request
 from control_paint_source import positional_control_request
@@ -12,10 +12,13 @@ from check_color_guard_backend import check_failure
 from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
 from check_surface_paint_backend import surface_paint_channel_mismatch
+from lit_body_arithmetic import Body, body_invariants
+from material_light_arithmetic import expected_result
 
 MINIMUM_STATE_COLOR_DIFFERENCE = 0.04
 MINIMUM_STATE_DEPTH_CHANGE = 1
 DEPTH_TOLERANCE = 1e-12
+LOGICAL_CORNERS = ("topStart", "topEnd", "bottomEnd", "bottomStart")
 
 
 def oklab(components):
@@ -77,19 +80,99 @@ def disabled_label_mismatch(label, background, undimmed, bound):
     return None
 
 
+def fixture_theme(request):
+    return parse_json(request["surface"]["body"]["theme"]["themeSource"], "command fixture theme")
+
+
+def fixture_token(theme, path):
+    group, name = path.split(".")
+    return theme["tokens"][group][name]["$value"]
+
+
 def fixture_color(request, role):
     """Resolves an opaque role in the public arithmetic fixture, whose palette is literal sRGB."""
-    theme = parse_json(request["surface"]["body"]["theme"]["themeSource"], "command fixture theme")
-    group, name = theme["opaqueColorAssignments"]["roles"][role].split(".")
-    return theme["tokens"][group][name]["$value"]["components"]
+    theme = fixture_theme(request)
+    return fixture_token(theme, theme["opaqueColorAssignments"]["roles"][role])["components"]
 
 
 def fixture_depth(request):
     """Resolves the semantic elevation depth of the public arithmetic fixture in logical px."""
     body = request["surface"]["body"]
-    theme = parse_json(body["theme"]["themeSource"], "command fixture theme")
-    group, name = body["appearance"]["depthAssignments"]["roles"][body["surface"]["form"]["elevation"]].split(".")
-    return theme["tokens"][group][name]["$value"]["value"]
+    path = body["appearance"]["depthAssignments"]["roles"][body["surface"]["form"]["elevation"]]
+    return fixture_token(fixture_theme(request), path)["value"]
+
+
+def fixture_radii(request):
+    """Resolves the logical Tier 0 shape fallback radii of the public arithmetic fixture."""
+    body = request["surface"]["body"]
+    profile = body["appearance"]["shapeAssignments"]["profiles"][body["surface"]["form"]["shape"]]
+    theme = fixture_theme(request)
+    if profile["kind"] == "capsule":
+        values = dict.fromkeys(LOGICAL_CORNERS, min(body["size"]["width"], body["size"]["height"]) / 2)
+    elif profile["kind"] == "uniform":
+        values = dict.fromkeys(LOGICAL_CORNERS, fixture_token(theme, profile["radius"])["value"])
+    else:
+        values = {name: fixture_token(theme, profile["radii"][name])["value"] for name in LOGICAL_CORNERS}
+    return {name: {"x": value, "y": value} for name, value in values.items()}
+
+
+def phase_of(states):
+    return next((state for state in ("disabled", "pressed", "hover") if state in states), "rest")
+
+
+def command_body_source(request, response):
+    """The lit control body source of one fixture command request, derived without the reference."""
+    body = request["surface"]["body"]
+    theme = fixture_theme(request)
+    family = theme["materialAssignments"]["control"][body["surface"]["materialRole"].split(".")[1]]
+
+    def color(components):
+        return {"colorSpace": "srgb", "components": list(components), "alpha": 1}
+
+    identity = {
+        "materialRole": body["surface"]["materialRole"], "colorRole": body["surface"]["colorRole"],
+        "materialFamily": family, "form": body["surface"]["form"],
+        "states": body["surface"]["states"], "foregroundRole": body["foregroundRole"],
+        "contentFallbackApplied": False,
+    }
+    if family == "frost":
+        identity["frostRepresentation"] = "opaqueDimensional"
+    return {
+        "identity": identity,
+        "size": body["size"],
+        "radii": fixture_radii(request),
+        "relief": request["relief"]["commandBody"],
+        "body": color(mix_body(fixture_color(request, body["surface"]["colorRole"]), response["bodyMix"])),
+        "pigmentProfiles": body["appearance"]["pigmentProfiles"],
+        "keyLight": body["appearance"]["keyLight"],
+        "light": request["light"],
+        "environment": body["theme"]["environment"],
+        "edge": {
+            "schemaVersion": "0.1.0",
+            "outline": color(fixture_color(request, "outline")),
+            "outlineStrong": color(fixture_color(request, "outline.strong")),
+            "adjacentColor": body["adjacentColor"],
+            "minimumContrast": body["minimumEdgeContrast"],
+        },
+        "edgeWidth": body["appearance"]["bands"][family]["edgeWidth"],
+        "foreground": color(fixture_color(request, body["foregroundRole"])),
+        "minimumContentContrast": body["minimumContentContrast"],
+        "depth": fixture_depth(request) * response["depthScale"],
+        "points": [],
+    }
+
+
+def expected_light(source, phase):
+    light = expected_result({
+        "pigment": {"materialFamily": source["identity"]["materialFamily"],
+                    "profiles": source["pigmentProfiles"], "body": source["body"]},
+        "light": {"keyLight": source["keyLight"], **source["light"]},
+        "environment": source["environment"],
+        "enabled": True,
+        "interactionActive": phase in ("hover", "pressed"),
+        "normals": [],
+    })
+    return {name: light[name] for name in ("keyDirection", "ambient", "interaction")}
 
 
 def imperceptible_phase(rest_color, rest_depth, profile):
@@ -103,19 +186,48 @@ def imperceptible_phase(rest_color, rest_depth, profile):
     return None
 
 
+def lit_face_mismatch(body, request, response, phase):
+    """Compares the published lit body with independent spec/88 arithmetic for this request."""
+    source = command_body_source(request, response)
+    oracle = Body(source)
+    face = body["face"]
+    if mismatch(face["light"], expected_light(source, phase)):
+        return "/paint/body/face/light"
+    if mismatch(face["pigment"], oracle.pigment):
+        return "/paint/body/face/pigment"
+    if face["edge"]["color"] != oracle.edge or face["edgeWidth"] != source["edgeWidth"]:
+        return "/paint/body/face/edge"
+    if face["surface"]["profile"] != request["relief"]["commandBody"]:
+        return "/paint/body/face/surface/profile"
+    if face["surface"]["outline"]["size"] != source["size"]:
+        return "/paint/body/face/surface/outline/size"
+    if mismatch(face["contentBounds"], oracle.content_bounds):
+        return "/paint/body/face/contentBounds"
+    if mismatch(face["colorRanges"], oracle.color_ranges()):
+        return "/paint/body/face/colorRanges"
+    if mismatch(body["depth"], source["depth"]):
+        return "/paint/body/depth"
+    invariant = body_invariants(body)
+    if invariant:
+        return "/paint/body (" + invariant + ")"
+    return None
+
+
 def command_mismatch(actual, request, response=None):
     states = request["surface"]["body"]["surface"]["states"]["states"]
     ordered = [state for state in ("rest", "hover", "focused", "pressed", "disabled") if state in states]
-    phase = next((state for state in ("disabled", "pressed", "hover") if state in states), "rest")
+    phase = phase_of(states)
     body = actual["paint"]["body"]
     family = body["materialFamily"]
-    theme = parse_json(request["surface"]["body"]["theme"]["themeSource"], "command fixture theme")
+    theme = fixture_theme(request)
     role = request["surface"]["body"]["surface"]["materialRole"].split(".")[1]
     if family != theme["materialAssignments"]["control"][role]:
         return "/paint/body/materialFamily"
     authored = response is None
     if authored:
         response = {"bodyMix": 0, "depthScale": 1} if phase == "rest" else request["commandAppearance"]["profiles"][family][phase]
+    if actual["schemaVersion"] != "0.2.0" or actual["paint"]["schemaVersion"] != "0.1.0":
+        return "/schemaVersion"
     if actual["phase"] != phase:
         return "/phase"
     if mismatch(actual["response"], response):
@@ -127,22 +239,22 @@ def command_mismatch(actual, request, response=None):
             return "/paint/body/" + field
     rest_color = fixture_color(request, request["surface"]["body"]["surface"]["colorRole"])
     guarded = fixture_color(request, request["surface"]["body"]["foregroundRole"])
-    mix = response["bodyMix"]
-    color = mix_body(rest_color, mix)
-    if mismatch(body["pigment"]["body"], {"colorSpace": "srgb", "components": color, "alpha": 1}):
-        return "/paint/body/pigment/body"
-    foreground = body["foreground"]
+    color = mix_body(rest_color, response["bodyMix"])
+    face = body["face"]
+    if mismatch(face["pigment"]["body"], {"colorSpace": "srgb", "components": color, "alpha": 1}):
+        return "/paint/body/face/pigment/body"
+    foreground = face["foreground"]
     if foreground["colorSpace"] != "srgb" or foreground["alpha"] != 1:
-        return "/paint/body/foreground"
+        return "/paint/body/face/foreground"
     if phase == "disabled":
         if disabled_label_mismatch(foreground["components"], color, guarded,
                                    disabled_label_bound(request["surface"]["body"]["theme"]["environment"])):
-            return "/paint/body/foreground (disabled label)"
+            return "/paint/body/face/foreground (disabled label)"
     elif foreground["components"] != guarded:
-        return "/paint/body/foreground"
+        return "/paint/body/face/foreground"
     ratio = contrast_ratio(foreground["components"], color)
-    if not math.isclose(body["contentContrastRatio"], ratio, rel_tol=1e-12, abs_tol=1e-12):
-        return "/paint/body/contentContrastRatio"
+    if not math.isclose(face["contentContrastRatio"], ratio, rel_tol=1e-12, abs_tol=1e-12):
+        return "/paint/body/face/contentContrastRatio"
     offset = body["lighting"]["sideOffset"]
     rest_depth = fixture_depth(request)
     depth = rest_depth * response["depthScale"]
@@ -152,13 +264,17 @@ def command_mismatch(actual, request, response=None):
         return "/commandAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != ("focused" in states):
         return "/paint/focus"
+    difference = lit_face_mismatch(body, request, response, phase)
+    if difference:
+        return difference
     return surface_paint_channel_mismatch(actual["paint"])
 
 
-def check_success(command, request, timeout, name):
+def check_success(command, request, timeout, name, source=None):
+    """Resolves one request, or its equivalent source text, twice and checks it independently."""
     outputs = []
     for _ in range(2):
-        completed = run_backend(command, json.dumps(request, allow_nan=False), timeout)
+        completed = run_backend(command, source or json.dumps(request, allow_nan=False), timeout)
         if completed.returncode != 0 or completed.stderr:
             raise AssertionError(f"{name}: {completed.returncode}: {completed.stderr[:200]}")
         actual = parse_json(completed.stdout, name)
@@ -169,10 +285,72 @@ def check_success(command, request, timeout, name):
         outputs.append(actual)
     if outputs[0] != outputs[1]:
         raise AssertionError(f"{name}: nondeterministic output")
+    return outputs[0]
+
+
+def admitting(request):
+    """The fixture environment with every interaction-light condition admitted."""
+    environment = request["surface"]["body"]["theme"]["environment"]
+    environment["accessibilityPreferences"].update(highContrast=False, reducedMotion=False)
+    environment["rendererCapabilities"]["dynamicLighting"] = True
+    environment["qualityPolicy"] = "balanced"
+    return request
+
+
+def without_light(result):
+    changed = copy.deepcopy(result)
+    del changed["paint"]["body"]["face"]["light"]
+    return changed
+
+
+def check_light_differential(command, request, timeout, name):
+    """In an admitting environment, light channels change nothing but face.light."""
+    lit = check_success(command, admitting(copy.deepcopy(request)), timeout, name + " admitted")
+    unlit_request = admitting(copy.deepcopy(request))
+    unlit_request["light"] = {"ambient": None, "interaction": None}
+    unlit = check_success(command, unlit_request, timeout, name + " admitted without light")
+    if without_light(lit) != without_light(unlit):
+        raise AssertionError(f"{name}: light changed more than face.light")
+
+
+def state_requests(base):
+    states = ("rest", "hover", "focused", "pressed", "disabled")
+    for family in ("cast", "frost", "elastomer"):
+        for bits in range(1, 32):
+            request = copy.deepcopy(base)
+            theme = fixture_theme(request)
+            theme["materialAssignments"]["control"]["interactive"] = family
+            request["surface"]["body"]["theme"]["themeSource"] = json.dumps(theme)
+            request["surface"]["body"]["surface"]["states"]["states"] = [s for i, s in enumerate(states) if bits & (1 << i)]
+            if family == "frost":
+                request["surface"]["body"]["postTreatmentBackdrop"] = {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1}
+            yield f"{family} states {bits}", request
+
+
+def coefficient_sources(command, base, timeout):
+    """Negative-zero channel coefficient sources fail even where policy or phase suppresses them."""
+    checked = 0
+    environment = "/surface/body/theme/environment"
+    for label, changes in (
+        ("rest", [{"path": "/surface/body/surface/states/states", "value": ["rest"]}]),
+        ("disabled", [{"path": "/surface/body/surface/states/states", "value": ["disabled"]}]),
+        ("high contrast", [{"path": environment + "/accessibilityPreferences/highContrast", "value": True},
+                           {"path": "/surface/body/surface/states/states", "value": ["hover"]}]),
+    ):
+        request = apply_changes(admitting(copy.deepcopy(base)), changes)
+        for pointer in ("/light/ambient", "/light/interaction/strength"):
+            source = negative_underflow_member_source(request, pointer)
+            check_failure(command, source, timeout, f"{label} {pointer} negative zero source")
+            zero = apply_changes(request, [{"path": pointer, "value": 0}])
+            for literal in ("-0", "-0e-400", "1e-400"):
+                check_success(command, zero, timeout, f"{label} {pointer} {literal}",
+                              source=source.replace("-1e-400", literal, 1))
+            checked += 4
+    return checked
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Check opaque command paint through its public protocol.")
+    parser = argparse.ArgumentParser(description="Check lit command paint through its public protocol.")
     parser.add_argument("--timeout", type=float, default=30)
     parser.add_argument("command", nargs=argparse.REMAINDER)
     arguments = parser.parse_args()
@@ -183,6 +361,7 @@ def main():
         parser.error("provide a backend command and a positive finite timeout")
     base = load_json(ROOT / "conformance/ir/command-paint-request.json")
     cases = load_json(ROOT / "conformance/ir/command-paint-cases.json")
+    checked = 0
     try:
         names = set()
         for case in cases:
@@ -197,31 +376,31 @@ def main():
                 check_failure(command, json.dumps(request), arguments.timeout, name)
             else:
                 check_success(command, request, arguments.timeout, name)
-        states = ("rest", "hover", "focused", "pressed", "disabled")
-        for family in ("cast", "frost", "elastomer"):
-            for bits in range(1, 32):
-                request = copy.deepcopy(base)
-                theme = parse_json(request["surface"]["body"]["theme"]["themeSource"], family)
-                theme["materialAssignments"]["control"]["interactive"] = family
-                request["surface"]["body"]["theme"]["themeSource"] = json.dumps(theme)
-                request["surface"]["body"]["surface"]["states"]["states"] = [s for i, s in enumerate(states) if bits & (1 << i)]
-                if family == "frost":
-                    request["surface"]["body"]["postTreatmentBackdrop"] = {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1}
-                check_success(command, request, arguments.timeout, f"{family} states {bits}")
+            checked += 1
+        for name, request in state_requests(base):
+            check_success(command, request, arguments.timeout, name)
+            check_light_differential(command, request, arguments.timeout, name)
+            checked += 3
+        checked += coefficient_sources(command, base, arguments.timeout)
         failures = (
             ("duplicate response", duplicate_member_source(base, "/commandAppearance/profiles/cast/hover/bodyMix")),
             ("nonfinite response", nonfinite_member_source(base, "/commandAppearance/profiles/frost/pressed/depthScale")),
+            ("duplicate light channel", duplicate_member_source(base, "/light/ambient")),
+            ("nonfinite light channel", nonfinite_member_source(base, "/light/interaction/strength")),
             ("unknown root", json.dumps({**base, "unexpected": True})),
         ) + opaque_request_failures(base, "/surface/body") + (
             ("positional surface paint request", positional_paint_request(base, "/surface")),
-            ("positional command-paint request", positional_control_request(base, ("schemaVersion", "surface", "commandAppearance"))),
+            ("positional command-paint request", positional_control_request(
+                base, ("schemaVersion", "surface", "commandAppearance", "light", "relief"))),
+            ("positional relief", json.dumps(dict(base, relief=list(base["relief"].values())))),
         )
         for name, source in failures:
             check_failure(command, source, arguments.timeout, name)
+        checked += len(failures)
     except (AssertionError, KeyError, TypeError, OSError, ValueError) as error:
         print(f"FAIL command paint: {error}", file=sys.stderr)
         return 1
-    print(f"Command paint backend passed {len(cases) + 93 + len(failures)} conformance cases")
+    print(f"Command paint backend passed {checked} conformance cases")
     return 0
 
 

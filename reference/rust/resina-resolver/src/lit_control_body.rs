@@ -1,10 +1,13 @@
 use crate::{
-    EdgeContrastResult, ExtrudedContourResult, KeyLightResult, MaterialReliefPaint,
-    OutlineCurvature, PlacedContour, SrgbFallback, SurfaceReliefProfile,
+    EdgeContrastResult, ExtrudedContourResult, FocusIndicatorIr, KeyLightResult,
+    MaterialReliefPaint, OutlineCurvature, PlacedContour, SrgbFallback, SurfacePaintError,
+    SurfaceReliefProfile,
     material_light::{MaterialLightPolicy, ResolvedMaterialLight},
     opaque_paint::{contains, placed_contains},
+    relief_paint::{FaceKeeping, FaceSampler, FaceTerms, ReliefReuse},
     resolve_extruded_contour, resolve_inset_contour, resolve_key_light, resolve_opaque_pigment,
     resolve_relief_paint, resolve_surface_outline, resolve_surface_relief,
+    surface_relief::FlatnessSampler,
 };
 use resina_color::OpaqueSrgbRange;
 use resina_environment::EnvironmentSnapshot;
@@ -29,6 +32,12 @@ impl std::error::Error for LitControlBodyError {}
 
 fn fail(error: impl fmt::Display) -> LitControlBodyError {
     LitControlBodyError(error.to_string())
+}
+
+impl LitControlBodyError {
+    pub(crate) fn for_part(self, part: &str) -> Self {
+        Self(format!("{part}: {}", self.0))
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
@@ -61,13 +70,37 @@ impl ControlRelief {
 }
 
 pub fn parse_control_relief_source(source: &str) -> Result<ControlRelief, LitControlBodyError> {
-    let document = parse_token_document(source).map_err(fail)?;
+    control_relief(parse_token_document(source).map_err(fail)?)
+}
+
+/// Parses one light channels object, validating the original ambient and interaction strength
+/// sources even for channels that policy or phase later suppresses.
+pub fn parse_light_channels_source(
+    source: &str,
+) -> Result<MaterialLightChannels, LitControlBodyError> {
+    crate::pigment_source::validate_light_channel_source(source, &[]).map_err(fail)?;
+    serde_json::from_str(source).map_err(fail)
+}
+
+impl<'de> Deserialize<'de> for ControlRelief {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        control_relief(serde_json::Value::deserialize(deserializer)?)
+            .map_err(serde::de::Error::custom)
+    }
+}
+
+fn control_relief(document: serde_json::Value) -> Result<ControlRelief, LitControlBodyError> {
     for pointer in ["", "/commandBody", "/toggleTrack", "/toggleThumb"] {
         if !document
             .pointer(pointer)
             .is_some_and(serde_json::Value::is_object)
         {
-            return Err(fail(format!("control relief {pointer} must be an object")));
+            let part = pointer.trim_start_matches('/');
+            return Err(fail(if part.is_empty() {
+                "control relief must be an object".to_owned()
+            } else {
+                format!("control relief {part} must be an object")
+            }));
         }
     }
     let members: ControlReliefMembers = serde_json::from_value(document).map_err(fail)?;
@@ -291,8 +324,29 @@ pub fn resolve_lit_control_body(
 }
 
 impl LitControlBodyIr {
+    pub(crate) fn dim_disabled_label(&mut self, bound: f64) {
+        self.face.dim_disabled_label(bound);
+    }
     pub fn face(&self) -> &MaterialReliefPaint {
         &self.face
+    }
+    pub fn material_role(&self) -> MaterialRole {
+        self.material_role
+    }
+    pub fn color_role(&self) -> ColorRole {
+        self.color_role
+    }
+    pub fn form(&self) -> &SurfaceForm {
+        &self.form
+    }
+    pub fn frost_representation(&self) -> Option<FrostRepresentation> {
+        self.frost_representation
+    }
+    pub fn foreground_role(&self) -> ColorRole {
+        self.foreground_role
+    }
+    pub fn content_fallback_applied(&self) -> bool {
+        self.content_fallback_applied
     }
     pub fn lighting(&self) -> &KeyLightResult {
         &self.lighting
@@ -314,16 +368,49 @@ impl LitControlBodyIr {
         self.face.paint_color_ranges()
     }
 
+    /// Whether every point of the closed box from `min` to `max` is certified to have the exactly
+    /// flat face normal. This is an evaluation aid for realizations that skip sampling such regions;
+    /// it adds nothing to `sample_paint`, which remains the definition of the body's paint.
+    pub fn flat_face_over(&self, min: PhysicalVector, max: PhysicalVector) -> bool {
+        self.face.surface().flat_over(min, max)
+    }
+
     pub fn sample_paint(
         &self,
         point: PhysicalVector,
+    ) -> Result<Option<SrgbFallback>, LitControlBodyError> {
+        self.sample_paint_using(point, &mut self.face.terms())
+    }
+
+    /// An evaluator of [`sample_paint`](Self::sample_paint) for many points of one realization,
+    /// which reuses the face terms that many points share.
+    pub fn sampler(&self) -> LitControlBodySampler<'_> {
+        LitControlBodySampler {
+            body: self,
+            face: self.face.sampler(),
+        }
+    }
+
+    /// Samplers for one render of this body that reuse, and add to, the relief samples `reuse`
+    /// keeps. They are equal to [`sample_paint`](Self::sample_paint) at every point.
+    pub fn samplers<'a>(&'a self, reuse: &'a ReliefReuse) -> LitControlBodySamplers<'a> {
+        LitControlBodySamplers {
+            body: self,
+            keeping: self.face.keeping(reuse),
+        }
+    }
+
+    fn sample_paint_using(
+        &self,
+        point: PhysicalVector,
+        terms: &mut impl FaceTerms,
     ) -> Result<Option<SrgbFallback>, LitControlBodyError> {
         if !point.x.is_finite() || !point.y.is_finite() {
             return Err(fail("paint point must be finite"));
         }
         let offset = self.lighting.side_offset();
         if offset.x == 0.0 && offset.y == 0.0 {
-            return self.face.sample_paint(point).map_err(fail);
+            return self.face.sample_paint_using(point, terms).map_err(fail);
         }
         let swept_interior = |point| placed_contains(&self.geometry.edge_interior, point);
         if self
@@ -333,8 +420,12 @@ impl LitControlBodyIr {
             .contains(point)
             .map_err(fail)?
         {
-            if self.face.edge_interior_contains(point) || swept_interior(point).map_err(fail)? {
-                return self.face.face_color(point).map(Some).map_err(fail);
+            if terms.edge_interior_contains(point) || swept_interior(point).map_err(fail)? {
+                return self
+                    .face
+                    .face_color_using(point, terms)
+                    .map(Some)
+                    .map_err(fail);
             }
             return Ok(Some(self.face.edge().color().clone()));
         }
@@ -349,9 +440,131 @@ impl LitControlBodyIr {
     }
 }
 
+/// See [`LitControlBodyIr::samplers`]. Dropping it keeps the relief samples its samplers added.
+pub struct LitControlBodySamplers<'a> {
+    body: &'a LitControlBodyIr,
+    keeping: FaceKeeping<'a>,
+}
+
+impl LitControlBodySamplers<'_> {
+    pub fn sampler(&self) -> LitControlBodySampler<'_> {
+        LitControlBodySampler {
+            body: self.body,
+            face: self.body.face.sampler_keeping(Some(self.keeping.shared())),
+        }
+    }
+
+    /// An evaluator of [`flat_face_over`](LitControlBodyIr::flat_face_over) that reuses, and adds
+    /// to, the certifications kept for this face.
+    pub fn flatness(&self) -> LitControlBodyFlatness<'_> {
+        LitControlBodyFlatness(self.body.face.flatness_keeping(Some(self.keeping.shared())))
+    }
+}
+
+/// See [`LitControlBodySamplers::flatness`].
+pub struct LitControlBodyFlatness<'a>(FlatnessSampler<'a>);
+
+impl LitControlBodyFlatness<'_> {
+    /// Equal to [`LitControlBodyIr::flat_face_over`] for every box.
+    pub fn flat_face_over(&mut self, min: PhysicalVector, max: PhysicalVector) -> bool {
+        self.0.flat_over(min, max)
+    }
+}
+
+/// See [`LitControlBodyIr::sampler`].
+pub struct LitControlBodySampler<'a> {
+    body: &'a LitControlBodyIr,
+    face: FaceSampler<'a>,
+}
+
+impl LitControlBodySampler<'_> {
+    /// Equal to [`LitControlBodyIr::sample_paint`] at every point.
+    pub fn sample_paint(
+        &mut self,
+        point: PhysicalVector,
+    ) -> Result<Option<SrgbFallback>, LitControlBodyError> {
+        self.body.sample_paint_using(point, &mut self.face)
+    }
+}
+
+/// The [lit control body](LitControlBodyIr) with its independent navigation ring, present exactly
+/// when the body states include `focused`.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LitControlPaintIr {
+    schema_version: &'static str,
+    body: LitControlBodyIr,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    focus: Option<FocusIndicatorIr>,
+}
+
+impl LitControlPaintIr {
+    pub(crate) fn new(body: LitControlBodyIr, focus: Option<FocusIndicatorIr>) -> Self {
+        Self {
+            schema_version: "0.1.0",
+            body,
+            focus,
+        }
+    }
+    pub(crate) fn body_mut(&mut self) -> &mut LitControlBodyIr {
+        &mut self.body
+    }
+    pub fn body(&self) -> &LitControlBodyIr {
+        &self.body
+    }
+    pub fn focus(&self) -> Option<&FocusIndicatorIr> {
+        self.focus.as_ref()
+    }
+
+    /// Samples the body, then the separated focus ring where the body paints nothing.
+    pub fn sample_paint(
+        &self,
+        point: PhysicalVector,
+    ) -> Result<Option<SrgbFallback>, LitControlPaintSampleError> {
+        if let Some(color) = self
+            .body
+            .sample_paint(point)
+            .map_err(LitControlPaintSampleError::Body)?
+        {
+            return Ok(Some(color));
+        }
+        match &self.focus {
+            Some(focus) => focus
+                .sample_paint(point)
+                .map_err(LitControlPaintSampleError::Focus),
+            None => Ok(None),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LitControlPaintSampleError {
+    Body(LitControlBodyError),
+    Focus(SurfacePaintError),
+}
+
+impl fmt::Display for LitControlPaintSampleError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Body(error) => error.fmt(f),
+            Self::Focus(error) => write!(f, "lit control focus: {error}"),
+        }
+    }
+}
+
+impl std::error::Error for LitControlPaintSampleError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Body(error) => Some(error),
+            Self::Focus(error) => Some(error),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::relief_paint::MAX_KEPT_TERMS;
     use serde_json::{Value, json};
 
     fn body(depth: f64, radii: [f64; 4], layout: &str) -> LitControlBodyIr {
@@ -406,6 +619,144 @@ mod tests {
             depth,
         })
         .unwrap()
+    }
+
+    #[test]
+    fn reused_relief_terms_reproduce_point_paint_across_renders() {
+        let bits = |color: Option<SrgbFallback>| {
+            color.map(|color| {
+                (
+                    color.components().map(f64::to_bits),
+                    color.alpha().to_bits(),
+                )
+            })
+        };
+        let reuse = ReliefReuse::default();
+        let mut kept = Vec::new();
+        for (depth, radii) in [
+            (0.5, [20.0, 12.0, 16.0, 10.0]),
+            (1.5, [20.0, 12.0, 16.0, 10.0]),
+            (1.5, [24.0; 4]),
+            (0.5, [20.0, 12.0, 16.0, 10.0]),
+            (0.5, [20.0, 12.0, 16.0, 10.0]),
+        ] {
+            let body = body(depth, radii, "ltr");
+            let samplers = body.samplers(&reuse);
+            let mut sampler = samplers.sampler();
+            let mut flatness = samplers.flatness();
+            let mut flat = 0;
+            for iy in 0..200 {
+                for ix in 0..350 {
+                    let point = PhysicalVector {
+                        x: f64::from(ix) * 0.29 - 2.0 + 0.0137,
+                        y: f64::from(iy) * 0.29 - 2.0 + 0.0071,
+                    };
+                    assert_eq!(
+                        bits(sampler.sample_paint(point).unwrap()),
+                        bits(body.sample_paint(point).unwrap()),
+                        "{depth} {radii:?} {point:?}"
+                    );
+                    // Boxes of two extents share each corner point, so a box keyed by its
+                    // minimum alone would return the other's certification.
+                    if ix % 3 != 0 || iy % 3 != 0 {
+                        continue;
+                    }
+                    for extent in [0.21, 2.9] {
+                        let max = PhysicalVector {
+                            x: point.x + extent,
+                            y: point.y + extent,
+                        };
+                        let certified = body.flat_face_over(point, max);
+                        assert_eq!(
+                            flatness.flat_face_over(point, max),
+                            certified,
+                            "{depth} {radii:?} {point:?} {extent}"
+                        );
+                        flat += usize::from(certified);
+                    }
+                }
+            }
+            assert!(flat > 5_000 && flat < 12_000, "{flat}");
+            drop((sampler, flatness));
+            drop(samplers);
+            kept.push(reuse.kept_terms().unwrap());
+        }
+        let [first, deeper, other, again, repeated] = kept.try_into().unwrap();
+        assert!(first.1.iter().all(|count| *count > 250), "{:?}", first.1);
+        // A deeper body has the same face, whose kept terms it extends where its deeper sweep
+        // reaches more of the edge band.
+        assert_eq!(deeper.0, first.0);
+        assert!(
+            deeper
+                .1
+                .iter()
+                .zip(first.1)
+                .all(|(deeper, first)| *deeper >= first)
+        );
+        // Another face is kept beside the first, whose terms are complete when it returns.
+        assert_ne!(other.0, first.0);
+        assert_eq!(again, deeper);
+        assert_eq!(repeated, again);
+        assert_eq!(reuse.kept_faces(), [other.0.clone(), first.0.clone()]);
+    }
+
+    #[test]
+    fn reuse_keeps_the_most_recently_rendered_faces() {
+        let reuse = ReliefReuse::default();
+        let point = PhysicalVector { x: 3.1, y: 2.7 };
+        let mut identities = Vec::new();
+        for radius in [10.0, 12.0, 14.0, 16.0, 18.0, 10.0] {
+            let body = body(0.5, [radius; 4], "ltr");
+            let samplers = body.samplers(&reuse);
+            assert_eq!(
+                samplers.sampler().sample_paint(point).unwrap(),
+                body.sample_paint(point).unwrap()
+            );
+            drop(samplers);
+            identities.push(reuse.kept_terms().unwrap().0);
+        }
+        // The fifth face forgot the first, the least recently rendered; rendering it again keeps
+        // it as the most recent and forgets the second.
+        assert_ne!(identities[0], identities[1]);
+        assert_eq!(identities[5], identities[0]);
+        assert_eq!(reuse.kept_faces(), identities[2..].to_vec());
+    }
+
+    #[test]
+    fn reuse_forgets_older_faces_to_stay_within_its_bound() {
+        let reuse = ReliefReuse::default();
+        let mut identities = Vec::new();
+        for radii in [[20.0, 12.0, 16.0, 10.0], [24.0; 4]] {
+            let body = body(0.5, radii, "ltr");
+            let samplers = body.samplers(&reuse);
+            let mut flatness = samplers.flatness();
+            for iy in 0..400 {
+                for ix in 0..400 {
+                    let min = PhysicalVector {
+                        x: f64::from(ix) * 0.24 + 0.0137,
+                        y: f64::from(iy) * 0.12 + 0.0071,
+                    };
+                    let max = PhysicalVector {
+                        x: min.x + 0.1,
+                        y: min.y + 0.1,
+                    };
+                    assert_eq!(
+                        flatness.flat_face_over(min, max),
+                        body.flat_face_over(min, max)
+                    );
+                }
+            }
+            drop(flatness);
+            drop(samplers);
+            identities.push(reuse.kept_terms().unwrap());
+        }
+        let [first, second] = identities.try_into().unwrap();
+        // Together the two faces' certifications exceed the bound, so keeping the second's
+        // forgets the first, the least recently rendered.
+        const { assert!(2 * 160_000 > MAX_KEPT_TERMS && 160_000 < MAX_KEPT_TERMS) };
+        assert_eq!(first.1[4], 160_000);
+        assert_eq!(second.1[4], 160_000);
+        assert_eq!(reuse.kept_faces(), [second.0]);
     }
 
     #[test]

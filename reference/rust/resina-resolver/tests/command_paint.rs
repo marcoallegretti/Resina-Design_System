@@ -97,18 +97,15 @@ fn every_command_state_combination_preserves_signals_and_matches_focus_geometry(
                 }
             });
             assert_eq!(
-                result.paint().body().pigment().body().components(),
+                result.paint().body().face().pigment().body().components(),
                 expected
             );
             let offset = result.paint().body().lighting().side_offset();
             assert!((offset.x.hypot(offset.y) - 2.0 * scale).abs() < 1e-12);
+            let face = result.paint().body().face();
             assert_eq!(
-                result.paint().body().content_contrast_ratio(),
-                opaque_contrast_ratio(
-                    result.paint().body().foreground(),
-                    result.paint().body().pigment().body()
-                )
-                .unwrap()
+                face.content_contrast_ratio(),
+                opaque_contrast_ratio(face.foreground(), face.pigment().body()).unwrap()
             );
             if states.contains(&"focused") {
                 let focus = result.paint().focus().unwrap();
@@ -124,10 +121,15 @@ fn every_command_state_combination_preserves_signals_and_matches_focus_geometry(
                 assert!(result.paint().focus().is_none());
             }
             if phase == "rest" {
-                assert_eq!(
-                    result.paint(),
-                    &resolve_surface_paint_source(&request["surface"].to_string()).unwrap()
-                );
+                let surface =
+                    resolve_surface_paint_source(&request["surface"].to_string()).unwrap();
+                let (lit, opaque) = (result.paint().body(), surface.body());
+                assert_eq!(lit.face().pigment(), opaque.pigment());
+                assert_eq!(lit.face().edge(), opaque.edge());
+                assert_eq!(lit.face().foreground(), opaque.foreground());
+                assert_eq!(lit.lighting(), opaque.lighting());
+                assert_eq!(lit.geometry().silhouette(), opaque.geometry().silhouette());
+                assert_eq!(result.paint().focus(), surface.focus());
             }
         }
     }
@@ -163,7 +165,7 @@ fn frost_uses_actual_capabilities_and_state_adjusted_legibility_fallback() {
         serde_json::to_value(result.paint().body()).unwrap()["frostRepresentation"],
         "opaqueDimensional"
     );
-    assert!(result.paint().body().content_contrast_ratio() >= 7.0);
+    assert!(result.paint().body().face().content_contrast_ratio() >= 7.0);
 }
 
 #[test]
@@ -214,6 +216,8 @@ fn typed_and_source_boundaries_share_the_actual_environment() {
     let surface = serde_json::from_value(body["surface"].clone()).unwrap();
     let appearance = serde_json::from_value(body["appearance"].clone()).unwrap();
     let command_appearance = serde_json::from_value(request["commandAppearance"].clone()).unwrap();
+    let light = serde_json::from_value(request["light"].clone()).unwrap();
+    let relief = serde_json::from_value(request["relief"].clone()).unwrap();
     let adjacent = resolve_srgb_fallback(&body["adjacentColor"]).unwrap();
     let surrounding = resolve_srgb_fallback(&request["surface"]["surroundingColor"]).unwrap();
     let typed = resolve_command_paint(
@@ -235,6 +239,8 @@ fn typed_and_source_boundaries_share_the_actual_environment() {
                 surrounding_color: Some(&surrounding),
             },
             command_appearance: &command_appearance,
+            light: &light,
+            relief: &relief,
         },
     )
     .unwrap();
@@ -391,12 +397,15 @@ fn disabled_label_mixes_toward_the_body_down_to_its_bound() {
         for state in ["rest", "hover", "pressed"] {
             request["surface"]["body"]["surface"]["states"]["states"] = json!([state]);
             let paint = resolve_command_paint_source(&request.to_string()).unwrap();
-            assert_eq!(paint.paint().body().foreground().components(), [0.0; 3]);
-            assert!(paint.paint().body().content_contrast_ratio() > 4.5);
+            assert_eq!(
+                paint.paint().body().face().foreground().components(),
+                [0.0; 3]
+            );
+            assert!(paint.paint().body().face().content_contrast_ratio() > 4.5);
         }
         request["surface"]["body"]["surface"]["states"]["states"] = json!(["disabled", "focused"]);
         let paint = resolve_command_paint_source(&request.to_string()).unwrap();
-        let body = paint.paint().body();
+        let body = paint.paint().body().face();
         let ratio = opaque_contrast_ratio(body.foreground(), body.pigment().body()).unwrap();
         assert_eq!(body.content_contrast_ratio(), ratio);
         assert!(
@@ -411,6 +420,106 @@ fn disabled_label_mixes_toward_the_body_down_to_its_bound() {
         }
         request["surface"]["body"]["minimumContentContrast"] = json!(2);
         let paint = resolve_command_paint_source(&request.to_string()).unwrap();
-        assert!((bound..bound + 1e-9).contains(&paint.paint().body().content_contrast_ratio()));
+        assert!(
+            (bound..bound + 1e-9).contains(&paint.paint().body().face().content_contrast_ratio())
+        );
     }
+}
+
+fn admitting(mut request: Value) -> Value {
+    let environment = &mut request["surface"]["body"]["theme"]["environment"];
+    environment["accessibilityPreferences"]["highContrast"] = json!(false);
+    environment["accessibilityPreferences"]["reducedMotion"] = json!(false);
+    environment["rendererCapabilities"]["dynamicLighting"] = json!(true);
+    environment["qualityPolicy"] = json!("balanced");
+    request
+}
+
+#[test]
+fn interaction_light_is_admitted_only_in_the_hover_and_pressed_phases() {
+    let state_names = ["rest", "hover", "focused", "pressed", "disabled"];
+    for bits in 1..32 {
+        let states: Vec<_> = state_names
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| bits & (1 << i) != 0)
+            .map(|(_, state)| *state)
+            .collect();
+        let mut request = admitting(request());
+        request["surface"]["body"]["surface"]["states"]["states"] = json!(states);
+        let lit = serde_json::to_value(resolve_command_paint_source(&request.to_string()).unwrap())
+            .unwrap();
+        let phase = lit["phase"].as_str().unwrap();
+        let light = &lit["paint"]["body"]["face"]["light"];
+        assert_eq!(light["ambient"], json!(0.25), "{states:?}");
+        assert_eq!(
+            light["interaction"].is_object(),
+            matches!(phase, "hover" | "pressed"),
+            "{states:?}"
+        );
+        request["light"] = json!({"ambient": null, "interaction": null});
+        let mut unlit =
+            serde_json::to_value(resolve_command_paint_source(&request.to_string()).unwrap())
+                .unwrap();
+        assert_eq!(
+            unlit["paint"]["body"]["face"]["light"],
+            json!({"keyDirection": light["keyDirection"], "ambient": 0.0, "interaction": null})
+        );
+        let mut lit = lit;
+        for paint in [&mut lit, &mut unlit] {
+            paint["paint"]["body"]["face"]
+                .as_object_mut()
+                .unwrap()
+                .remove("light");
+        }
+        assert_eq!(lit, unlit, "{states:?}: light changes only face.light");
+    }
+}
+
+#[test]
+fn suppressed_channel_sources_are_still_validated() {
+    for (states, high_contrast) in [("rest", false), ("disabled", false), ("hover", true)] {
+        let mut request = admitting(request());
+        request["surface"]["body"]["surface"]["states"]["states"] = json!([states]);
+        request["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["highContrast"] =
+            json!(high_contrast);
+        let source = request.to_string();
+        for (member, escaped) in [
+            (r#""ambient":0.25"#, r#""amb\u0069ent":"#),
+            (r#""strength":0.5"#, r#""str\u0065ngth":"#),
+        ] {
+            assert!(source.contains(member), "{member}");
+            let plain = member.split(':').next().unwrap().to_owned() + ":";
+            for (name, literal, valid) in [
+                (plain, "-1e-400", false),
+                (escaped.to_owned(), "-1e-400", false),
+                (escaped.to_owned(), "-0e-400", true),
+                (escaped.to_owned(), "1e-400", true),
+            ] {
+                let changed = source.replacen(member, &(name + literal), 1);
+                let result = resolve_command_paint_source(&changed);
+                assert_eq!(result.is_ok(), valid, "{states} {member} {literal}");
+                if !valid {
+                    assert!(
+                        result
+                            .unwrap_err()
+                            .to_string()
+                            .contains("nonnegative before numeric rounding")
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn published_command_paint_ir_is_the_reference_result_of_the_public_request() {
+    let published: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-paint-ir.json"
+    ))
+    .unwrap();
+    let resolved =
+        serde_json::to_value(resolve_command_paint_source(&request().to_string()).unwrap())
+            .unwrap();
+    assert_eq!(resolved, published);
 }
