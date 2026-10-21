@@ -1,9 +1,14 @@
+import contextlib
 import copy
+import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
+import check_quickshell_command_motion_budget as budget
 from check_quickshell_command_motion_budget import (AppendedMotion, FLOOR_INTERVAL, GAP_BOUND, TICK,
                                                      continuations, describe_tail, evaluate, gap_report,
                                                      measure, summary, tail, verify_scale)
@@ -187,29 +192,53 @@ class CommandMotionBudgetTests(unittest.TestCase):
             with self.subTest(count=count):
                 self.assertEqual(result["gap"]["frames"], count)
                 with self.assertRaisesRegex(ValueError, rf"only {count} of 2\d\d frames"):
-                    gap_report(result["gap"], 600, True)
-                self.assertTrue(gap_report(result["gap"], 600, False).startswith(
+                    gap_report(result["gap"], 600, True, 1)
+                self.assertTrue(gap_report(result["gap"], 600, False, 1).startswith(
                     "NOT EVALUATED" if count else "NOT APPLICABLE"))
 
     def test_a_required_gap_rejects_a_host_that_never_spanned_a_tick(self):
         gap = evaluate(measured(.02, count=200, delay=.012, span=TICK - 1e-4))["gap"]
         self.assertTrue(gap["unexercised"])
         with self.assertRaisesRegex(ValueError, "only 0 of 200 frames.*larger output scale"):
-            gap_report(gap, 600, True)
-        self.assertTrue(gap_report(gap, 600, False).startswith("NOT APPLICABLE"))
+            gap_report(gap, 600, True, 1)
+        self.assertTrue(gap_report(gap, 600, False, 1).startswith("NOT APPLICABLE"))
 
     def test_a_required_gap_without_published_spans_fails(self):
         gap = evaluate(measured(.02, count=200))["gap"]
         with self.assertRaisesRegex(ValueError, "no frame published its predecessor span"):
-            gap_report(gap, 10, True)
-        self.assertTrue(gap_report(gap, 10, False).startswith("NOT EVALUATED"))
+            gap_report(gap, 10, True, 1)
+        self.assertTrue(gap_report(gap, 10, False, 1).startswith("NOT EVALUATED"))
 
     def test_an_evaluated_gap_is_reported_whether_or_not_it_is_required(self):
         gap = evaluate(measured(.04, count=20, delay=.002, span=.03))["gap"]
         for require in (False, True):
-            self.assertEqual(gap_report(gap, 10, require),
+            self.assertEqual(gap_report(gap, 10, require, 1),
                              "MEASURED publication gap: 75th percentile 2.00 ms from publication to the next "
                              "preparation over 20 frames whose predecessor spanned an animation tick")
+
+    def test_a_gap_failure_suggests_a_larger_scale_only_below_the_gap_scale(self):
+        gap = evaluate(measured(.02, count=200, delay=.001, span=.01))["gap"]
+        with self.assertRaisesRegex(ValueError, "larger output scale"):
+            gap_report(gap, 10, True, budget.GAP_SCALE - 1)
+        with self.assertRaises(ValueError) as raised:
+            gap_report(gap, 10, True, budget.GAP_SCALE)
+        self.assertNotIn("larger output scale", str(raised.exception))
+
+    def test_main_requires_the_gap_only_when_asked(self):
+        sparse = measured(.02, count=200, delay=.001, span=.01) + measured(.04, count=5, delay=.001, span=.03)
+        for flag, status in (([], 0), (["--require-gap"], 1)):
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "host").touch()
+                (root / "module").mkdir()
+                arguments = ["check", "--host", str(root / "host"), "--module-path", str(root / "module"),
+                             "--font-dir", str(root), "--output-dir", str(root / "out"), "--scale", "1",
+                             "--floor", "report"] + flag
+                environment = {"WAYLAND_DISPLAY": "wayland-0", "XDG_RUNTIME_DIR": directory}
+                session = mock.Mock()
+                with mock.patch("sys.argv", arguments), mock.patch.dict(os.environ, environment),                         mock.patch.object(budget.conformance_font, "qml_sources", return_value=""),                         mock.patch.object(budget.subprocess, "run"), mock.patch.object(budget, "verify_version"),                         mock.patch.object(budget, "Session", return_value=session),                         mock.patch.object(budget, "verify_scale"), mock.patch.object(budget, "AppendedMotion"),                         mock.patch.object(budget, "measure", return_value=([], 10)),                         mock.patch.object(budget, "continuations", return_value=sparse),                         contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(budget.main(), status)
+                session.close.assert_called_once()
 
     def test_a_slow_host_evaluates_a_delayed_publication(self):
         gap = evaluate(measured(.04, count=300, delay=.012, span=.028))["gap"]

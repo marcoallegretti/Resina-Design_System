@@ -26,9 +26,11 @@ MINIMUM_FRAMES = 20
 TICK = 1 / 60
 GAP_PERCENTILE = .75
 GAP_BOUND = .004
+# The output scale at which CI requires the gap; below it, preparation may not outlast a tick.
+GAP_SCALE = 6
 # A host whose preparation rarely outlasts a tick yields few qualifying frames per press, so the measured phase
 # continues past the minimum presses until the gap has enough frames, this many presses have run or the time
-# budget is spent. The budget plus the overshoot of one stride must fit the CI step timeout for both scales.
+# budget is spent. About 3 x (the budget plus one stride) must fit the 20 minute CI step timeout.
 MAX_PRESSES = 600
 MAX_SECONDS = 240
 # Counting qualifying frames walks every frame, so it runs once per stride of presses.
@@ -134,7 +136,7 @@ def evaluate(measured, minimum=MINIMUM_FRAMES):
                        "met": interval["median"] <= TARGET_INTERVAL and preparation["median"] <= TARGET_PREPARATION}}
 
 
-def gap_report(gap, presses, require):
+def gap_report(gap, presses, require, scale):
     if gap["evaluated"]:
         return (f"MEASURED publication gap: 75th percentile {gap['delay'] * 1000:.2f} ms from publication to the "
                 f"next preparation over {gap['frames']} frames whose predecessor spanned an animation tick")
@@ -143,7 +145,8 @@ def gap_report(gap, presses, require):
                  f"cycles; {MINIMUM_FRAMES} are required to bound the publication gap"
                  if gap["observed"] else f"no frame published its predecessor span after {presses} press cycles")
     if require:
-        raise ValueError(shortfall + "; measure at a larger output scale, where preparation outlasts a tick")
+        raise ValueError(shortfall + ("; measure at a larger output scale, where preparation outlasts a tick"
+                                      if scale < GAP_SCALE else ""))
     if gap["unexercised"]:
         return (f"NOT APPLICABLE publication gap: none of {gap['observed']} predecessors spanned an animation "
                 f"tick (longest {gap['longestSpan'] * 1000:.1f} ms against {TICK * 1000:.1f} ms), so no frame "
@@ -237,7 +240,7 @@ def main():
               f"{TARGET_PREPARATION * 1000:g} ms and median interval at most {TARGET_INTERVAL * 1000:g} ms "
               "(reported, not enforced)")
         gap = result["gap"]
-        print(gap_report(gap, presses, args.require_gap))
+        print(gap_report(gap, presses, args.require_gap, args.scale))
         if gap["evaluated"] and not gap["met"]:
             raise ValueError(f"the next preparation started {gap['delay'] * 1000:.2f} ms after publication at the "
                              f"75th percentile, beyond {GAP_BOUND * 1000:g} ms; frames wait for another animation tick")
