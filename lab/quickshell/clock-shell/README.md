@@ -107,7 +107,10 @@ from the first output; each window's device scale comes from that window.
   input recovers; the affected part stays withdrawn meanwhile, and no fallback
   colour or placeholder is painted.
 - `qs ipc call clock observe` reports the current error of every part, the
-  portal state, the preferences in effect and each Command's device scale.
+  portal state, the preferences in effect and each Command's device scale. It
+  also reports each window's logical bounds, the window placement and samples
+  per axis of each surface and Command view, and the bounds of the time and
+  date text.
 
 ## Verification
 
@@ -140,10 +143,8 @@ the portal does not provide a listed key. It runs at the output scale given by
 - every declared adjacent and surrounding colour to be the colour actually
   painted next to it; with `--grim`, the capture to be exactly the logical
   output at the checked scale, so the output's logical size must be whole at
-  that scale, and the composited output to be sampled on the backdrop, at every
-  corner and edge midpoint of the capture, on the bar body and the clock body,
-  and on a ring just outside each Command's complete footprint, including its
-  focus ring;
+  that scale, and every pixel of the capture to equal the reference composition
+  described under [composited captures](#composited-captures);
 - each surface publication to be compared only once it matches its current
   request;
 - a pointer click on "Show clock" to map the surface with keyboard focus on
@@ -197,6 +198,134 @@ the portal does not provide a listed key. It runs at the output scale given by
   surface.", and "Show clock", "button.", "Open the clock surface." with
   "quickshell application frame Show clock button Open the clock surface.".
 
+### Composited captures
+
+With `--grim`, which also needs `--paint-raster` (`resina-paint-raster`),
+`--command-raster` (`resina-command-raster`) and `--command-resolver`
+(`resina-command-paint`), the check captures the output while closed
+(`closed.png`), while open (`open.png`) and, with `--live-scale`, after the
+scale change (`rescaled.png`). Sway draws its cursor into the captured output,
+so with `--grim` the check needs the single Sway IPC socket described for
+`--live-scale`. It sets `seat * hide_cursor 100` for the run and restores `0`
+at the end. Before each capture it moves the pointer to the output's last
+pixel, which lies on the backdrop, waits until the cursor is hidden and no
+Command is hovered, and observes the shell again. After the capture the
+publications, placements and text bounds must be unchanged. It compares every
+pixel of each capture with an expected capture that it builds independently of
+the shell's own images, saved beside it as `<capture>-expected.png`. The shell
+and this check rasterize with the same reference crates, so the comparison shows
+that the published IR reaches the screen unchanged, through the Qt image
+pipeline, placement, scaling, layer order, the compositor and `grim`. It does not
+test the rasterizers themselves; their correctness belongs to the raster
+vectors and checkers:
+
+- The expected capture starts as the backdrop's resolved `surface.base` colour.
+  The bar and the clock window are opaque buffers of the same colour, which
+  their surfaces declare as adjacent.
+- Each published surface and Command is rendered by the CPU reference raster:
+  a surface from its request with `resina-paint-raster`, and a Command from
+  the Command paint request formed from its shell request, its published label
+  size and its current state. The members that
+  [`command-paint-request`](../../../schemas/command-paint-request.schema.json)
+  carries beside the surface are taken from the Command body, and the request
+  must validate against that schema. `resina-surface-paint` and
+  `resina-command-paint` must reproduce the captured publications exactly, so
+  each raster is the raster of the published IR. Each raster uses the device
+  scale, the samples per axis and the window placement that the view was
+  prepared with, and its paint bounds, including a focus ring, are rounded
+  outward on the device grid after placement, as the Qt realization prepares
+  them.
+- In each window buffer the rasters are composited source-over in 8-bit sRGB:
+  the bar's surface and then "Show clock", and the clock surface and then
+  "Close". A pixel that a raster covers completely takes the raster's colour,
+  and a pixel it leaves clear keeps the colour below. A partially covered pixel
+  is the exactly rounded blend `(c·a + d·(255 − a)) / 255`.
+- Each window buffer is placed where Sway places it. Every edge of its logical
+  box, which must be whole, is multiplied by the output scale and rounded half
+  away from zero, as the wlroots scene does from 0.17 to 0.20
+  ([`scale_box`](https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/0.20.2/types/scene/wlr_scene.c#L352-L361)).
+  Qt sizes the buffer as the logical size times the scale rounded by `qRound`
+  ([`QWaylandShmBackingStore`](https://github.com/qt/qtbase/blob/v6.11.2/src/plugins/platforms/wayland/qwaylandshmbackingstore.cpp#L409-L410)).
+  At scale 1.25 on the 1280×720 output the clock window's top margin is 99
+  logical pixels, so its origin of 123.75 device pixels lands on 124. Where the
+  rounded box has the buffer's size, every buffer pixel lands on one capture
+  pixel; this held for every window in the runs below. Where it does not, for
+  example a 198 px high window at 99, whose 247.5 device pixels give a 248 px
+  buffer in a 247 px box, Sway resamples the buffer. Each pixel of such a window
+  is then only bracketed: every channel must lie within the bounds of the buffer
+  pixels between which its sample position falls on the scaled axis, and of its
+  own buffer pixel on an unscaled axis. Where the position falls beyond the
+  buffer's edge, the pixel may also darken towards black: Sway was observed to
+  darken such an edge row below both the buffer and the colour beneath it, as
+  when an opaque buffer is copied without blending. `observe` reports
+  each window's logical bounds, and `report.json` names every resampled window.
+
+The tolerance is stated per pixel, in the manner of a
+[WPT fuzzy reftest](https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching)
+(maximum channel difference and number of differing pixels):
+
+- a pixel covered completely or not at all by every raster, which includes the
+  whole backdrop, every flat body, the opaque edge and highlight bands and the
+  opaque part of every focus ring, must match exactly: maximum difference 0;
+- a partially covered pixel, on a corner arc or the antialiased border of a
+  footprint, may differ by one 8-bit step per raster that covers it partially.
+  Qt's software renderer premultiplies the source and scales the destination
+  with its own rounding; each of those roundings is within half a step, so its
+  result is within one step of the exactly rounded blend, and an error below
+  carries into the next blend by less than one step;
+- only partially covered pixels may differ, so the number of differing pixels is
+  at most the number of partially covered pixels, which the check reports;
+- in a resampled window, the bracketing bounds above replace these bounds. They
+  still fail a flat colour that changes by one step and a raster moved by one
+  buffer pixel, but they admit smaller changes along a scaled edge.
+
+Native text is drawn by Qt, not by the reference raster, so its glyphs are not
+compared. The excluded regions are exactly the device pixels touched by the
+published bounds of each Command label (`labelBounds` in its snapshot, placed
+at the Command) and of the clock surface's time and date text (`texts` in
+`observe`), widened by one pixel on each side in a resampled window. Every
+channel of a pixel in such a region must lie between the bounds of the expected
+colour below it and the text's foreground colour, widened by one step for the
+text's own blend. Text that escapes its
+published bounds is therefore compared with the raster and fails, as does a
+pixel in a text region outside that range. A difference in a text region that
+stays between the background and the foreground is not detected.
+
+Each comparison is recorded under `composition` in `report.json` with each
+window's device origin, box and buffer size, footprints and text regions, the
+number of compared, partially covered, differing, resampled and excluded pixels
+and the largest difference, and is printed as an `INFO` line.
+
+At the revision that added this comparison (#254), with Quickshell 0.3.2, Qt
+6.11.2 and the pinned Inter masters, in headless Sway 1.12 with the pixman
+renderer:
+
+| Run | Capture | Scale | Compared | Partially covered | Differing (max) | Text pixels |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1024×600, `--test-settings` | closed | 1 | 612,820 | 1,251 | 1,161 (1) | 1,580 |
+| | open | 1 | 597,018 | 1,915 | 1,544 (1) | 17,382 |
+| 1024×600 | closed | 2 | 608,434 | 1,579 | 1,237 (1) | 5,966 |
+| | open | 2 | 545,548 | 3,683 | 3,002 (1) | 68,852 |
+| 1280×720, 1.25 then 2 | closed | 1.25 | 919,224 | 402 | 194 (1) | 2,376 |
+| | open | 1.25 | 894,344 | 1,791 | 1,300 (1) | 27,256 |
+| | rescaled | 2 | 915,634 | 1,835 | 1,493 (1) | 5,966 |
+| 1280×720, 2 then 1.25 | closed | 2 | 915,634 | 1,835 | 1,493 (1) | 5,966 |
+| | open | 2 | 852,748 | 3,939 | 3,258 (1) | 68,852 |
+| | rescaled | 1.25 | 919,224 | 402 | 194 (1) | 2,376 |
+
+The fixed dark theme passes at scale 1 on 1024×600. Each of these changes to the realization, made in a copy of the checkout,
+fails the comparison with the unchanged checker:
+
+- the Command image moved by one device pixel at scale 1.25, and the bar's
+  surface image moved by one device pixel at scale 2;
+- every opaque pixel on the outer border of each prepared image made 2 steps
+  lighter at scale 1, which fails on the first edge band pixel of the bar;
+- every corner radius made 2 px larger in the resolver of the Qt runtime at
+  scale 2, which fails because the bar publication is no longer the reference
+  surface paint; with that publication check and the Command paint check
+  removed from the copy, the comparison fails at scale 1.25 on the bar's
+  corner arcs.
+
 With Quickshell 0.3.2 (revision 4f508be), Qt 6.11.2, xdg-desktop-portal 1.22.1
 and xdg-desktop-portal-gnome 50.0, at revision 4cb60fe:
 
@@ -213,10 +342,9 @@ and xdg-desktop-portal-gnome 50.0, at revision 4cb60fe:
   to 1 and from 1.25 to 1.5, and nested niri at scale 2 passed at earlier
   revisions and were not repeated at 4cb60fe;
 - CI does not run the clock shell check in niri or with `--screen-reader`;
-- the `grim` checks compare, within one 8-bit step, only points where a flat
-  body or backdrop colour is expected. No compared point lies on a rounded
-  corner, an edge or highlight band or a Command's own paint, so the composited
-  arcs and edges are not checked, and complete captures are not compared;
+- at 4cb60fe the `grim` checks compared, within one 8-bit step, only points
+  where a flat body or backdrop colour is expected; the complete comparison
+  under [composited captures](#composited-captures) replaced them;
 - a 1024×600 output at scale 1.25 or 1.5 is 819.2 or 682.67 logical pixels
   wide. Its layer surfaces cover 819 or 682 logical pixels, so the last device
   column is not covered by the backdrop; the capture size check rejects such an

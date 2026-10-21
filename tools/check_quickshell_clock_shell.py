@@ -3,6 +3,7 @@ import argparse
 import copy
 from collections import Counter
 from datetime import datetime
+import io
 import json
 import os
 import re
@@ -15,6 +16,7 @@ import time
 from PIL import Image
 from check_qt_command_motion_runtime import motion_mismatch
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
+from check_schemas import validator_for
 from check_qt_native_availability import ACTION, action_names
 from check_qt_platform_appearance import APPEARANCE, PROPERTIES as PORTAL_KEYS, SETTINGS as DESKTOP_SETTINGS, \
     session, start_portal, stop, wait_portal
@@ -22,6 +24,7 @@ from check_quickshell_command_accessibility import NativeEvents, ScreenReader, b
 from check_quickshell_command_lifecycle import LOST_REPLY
 from check_slint_native_availability import ACCESSIBLE, PROPERTIES, call, payload, references, \
     string_value
+from composited_capture import Layer, TextRegion, Window, compare, placed_viewport, text_rectangle
 import portal_settings_backend
 from sway_output import Sway, changed_scale
 from wayland_virtual_input import KEY_SPACE, KEY_TAB, VirtualInput
@@ -327,35 +330,14 @@ def verify_time(shell):
         raise ValueError("SystemClock differs from host wall time")
 
 
-def footprint(snapshot, origin):
-    paint = snapshot["paint"]["paint"]
+def paint_bounds(paint):
     if "focus" in paint:
         outer = paint["focus"]["geometry"]["outer"]
         bounds = dict(outer["contour"]["bounds"])
         bounds["x"] += outer["offset"]["x"]
         bounds["y"] += outer["offset"]["y"]
-    else:
-        bounds = paint["body"]["geometry"]["silhouette"]["bounds"]
-    return (origin["x"] + bounds["x"], origin["y"] + bounds["y"], bounds["width"], bounds["height"])
-
-
-def ring(rectangle, distance=2, step=4):
-    x, y, width, height = rectangle
-    left, top, right, bottom = x - distance, y - distance, x + width + distance, y + height + distance
-    points = []
-    position = left
-    while position <= right:
-        points += [(position, top), (position, bottom)]
-        position += step
-    position = top
-    while position <= bottom:
-        points += [(left, position), (right, position)]
-        position += step
-    return points + [(left, top), (right, top), (left, bottom), (right, bottom)]
-
-
-def pixel(image, point):
-    return image.getpixel((round(point[0]), round(point[1])))[:3]
+        return bounds
+    return paint["body"]["geometry"]["silhouette"]["bounds"]
 
 
 def verify_capture_size(capture, output, scale):
@@ -365,35 +347,131 @@ def verify_capture_size(capture, output, scale):
                              f"at device scale {scale:g}; its logical size must be whole at that scale")
 
 
-def edge_points(width, height):
-    return [(0, 0), (width // 2, 0), (width - 1, 0), (0, height // 2), (width - 1, height // 2),
-            (0, height - 1), (width // 2, height - 1), (width - 1, height - 1)]
+def schema_properties(name):
+    return json.loads((ROOT / f"schemas/{name}.schema.json").read_text(encoding="utf-8"))["properties"]
 
 
-def verify_composition(shell, observed, backdrop, grim, path):
+def command_paint_request(request, snapshot, states):
+    """The portable Command paint request of a shell Command request in its published state and size.
+
+    Members that the public Command paint request carries beside the surface move there from the
+    Command body, so the request follows that schema's current version.
+    """
+    properties = schema_properties("command-paint-request")
+    body = copy.deepcopy(request["body"])
+    members = {name: body.pop(name) for name in properties if name not in ("schemaVersion", "surface")}
+    surrounding = body.pop("surroundingColor")
+    body.update(schemaVersion=schema_properties("opaque-surface-request")["schemaVersion"]["const"],
+                size=snapshot["label"]["size"],
+                theme={"schemaVersion": schema_properties("theme-resolution-request")["schemaVersion"]["const"],
+                       **{key: request["content"][key] for key in ("themeSource", "externalSources", "environment")}})
+    body["surface"]["states"] = {"schemaVersion": body["surface"]["states"]["schemaVersion"], "states": states}
+    portable = {"schemaVersion": properties["schemaVersion"]["const"],
+                "surface": {"schemaVersion": schema_properties("surface-paint-request")["schemaVersion"]["const"],
+                            "body": body, "surroundingColor": surrounding}, **members}
+    validator_for("schemas/command-paint-request.schema.json").validate(portable)
+    return portable
+
+
+def raster(command, request, viewport, origin, scale, samples):
+    result = subprocess.run([command, "-", str(viewport[2]), str(viewport[3]), repr(origin[0]), repr(origin[1]),
+                             repr(float(scale)), str(samples)], input=json.dumps(request).encode(),
+                            capture_output=True, timeout=120)
+    if result.returncode or result.stderr:
+        raise ValueError(f"{Path(command).name} failed: {result.stderr.decode(errors='replace')[-1000:]}")
+    with Image.open(io.BytesIO(result.stdout)) as image:
+        return image.convert("RGBA") if image.mode != "RGBA" else image.copy()
+
+
+def layer(name, raster_command, request, paint, placement, scale, samples):
+    viewport, origin = placed_viewport(paint_bounds(paint), (placement["x"], placement["y"]), scale)
+    image = raster(raster_command, request, viewport, origin, scale, samples)
+    if image.size != viewport[2:]:
+        raise ValueError(f"the {name} reference raster is {image.size}, not its {viewport[2:]} device viewport")
+    return Layer(name, viewport[0], viewport[1], image)
+
+
+SURFACE_WINDOWS = {"showClock": "bar", "close": "clock"}
+
+
+def composition_windows(shell, observed, tools, background):
+    """Each mapped window with the reference rasters of its published surface and Command and its text regions."""
+    scale = shell.scale
+    windows = []
+    for surface in ("bar", "clock"):
+        if not observed[surface]:
+            continue
+        request = json.loads(shell.call("request", surface))
+        if observed[surface] != run([tools["surface"], "-"], json.dumps(request)):
+            raise ValueError(f"the captured {surface} publication differs from the reference surface paint")
+        layers = [layer(surface, tools["paintRaster"], request, observed[surface], observed["placements"][surface],
+                        scale, observed["samples"][surface])]
+        texts = []
+        for part, owner in SURFACE_WINDOWS.items():
+            control = observed[part]
+            if owner != surface or not control:
+                continue
+            snapshot = control["snapshot"]
+            request = command_paint_request(json.loads(shell.call("request", part)), snapshot,
+                                            expected_states(control)["states"])
+            if run([tools["command"], "-"], json.dumps(request)) != snapshot["paint"]:
+                raise ValueError(f"the captured {part} paint is not the reference resolution of its request")
+            placement = observed["placements"][part]
+            layers.append(layer(part, tools["commandRaster"], request, snapshot["paint"]["paint"], placement, scale,
+                                observed["samples"][part]))
+            label = snapshot["label"]["labelBounds"]
+            texts.append(TextRegion(f"{part} label", text_rectangle({
+                "x": placement["x"] + label["x"], "y": placement["y"] + label["y"],
+                "width": label["width"], "height": label["height"]}, scale),
+                rgb(label_foreground(snapshot["paint"]["paint"]["body"]))))
+        if surface == "clock":
+            foreground = rgb(observed["clock"]["body"]["foreground"])
+            texts += [TextRegion(f"clock {name}", text_rectangle(observed["texts"][name], scale), foreground)
+                      for name in ("time", "date")]
+        windows.append(Window(surface, observed["windows"][surface], scale, background, layers, texts))
+    return windows
+
+
+def label_foreground(body):
+    """The label colour of a Command body: an opaque body's foreground, or a lit body's face foreground."""
+    return body["face"]["foreground"] if "face" in body else body["foreground"]
+
+
+def rgb(color):
+    if color["colorSpace"] != "srgb" or color["alpha"] != 1:
+        raise ValueError(f"composited colour {color} is not an opaque sRGB colour")
+    return tuple(round(channel * 255) for channel in color["components"])
+
+
+CURSOR_HIDE_MS = 100
+
+
+def parked(observed):
+    return not any(observed[part] and observed[part]["hovered"] for part in SURFACE_WINDOWS)
+
+
+def painted(observed):
+    return {key: observed[key] for key in ("bar", "clock", "showClock", "close", "windows", "placements", "samples",
+                                           "texts")}
+
+
+def verify_composition(shell, ready, description, backdrop, grim, tools, path):
+    """Park the hidden pointer on the backdrop, then compare a capture with the reference composition."""
+    # Sway draws its cursor into the output that grim captures; it hides it CURSOR_HIDE_MS after the last motion.
+    shell.input.move(shell.input.width - 1, shell.input.height - 1)
+    time.sleep(5 * CURSOR_HIDE_MS / 1000)
+    observed = shell.until(lambda current: ready(current) and parked(current), description)
+    # Every window paints the backdrop colour that its surfaces declare as adjacent (verify_surfaces).
+    color = rgb(backdrop)
+    windows = composition_windows(shell, observed, tools, color)
     subprocess.run([grim, str(path)], env=shell.environment, check=True, timeout=20)
+    if painted(shell.observe()) != painted(observed):
+        raise ValueError(f"the shell's paint or placement changed while {path.name} was captured")
     with Image.open(path) as captured:
-        image = captured.convert("RGB")
-        scale = shell.scale
-        verify_capture_size(image.size, (observed["outputWidth"], observed["outputHeight"]), scale)
-
-        def expect(point, color, description, device=False):
-            expected = tuple(round(channel * 255) for channel in color["components"])
-            actual = pixel(image, point if device else (point[0] * scale, point[1] * scale))
-            if any(abs(a - e) > 1 for a, e in zip(actual, expected)):
-                raise ValueError(f"composited {description} {actual} differs from declared {expected}")
-
-        expect((observed["outputWidth"] - 4, observed["outputHeight"] - 4), backdrop, "backdrop")
-        for point in edge_points(image.width, image.height):
-            expect(point, backdrop, f"output edge pixel {point}", device=True)
-        expect(observed["probes"]["bar"], observed["bar"]["body"]["pigment"]["body"], "bar body")
-        if observed["clock"]:
-            expect(observed["probes"]["clock"], observed["clock"]["body"]["pigment"]["body"], "clock body")
-        for part, surface in (("showClock", "bar"), ("close", "clock")):
-            if observed[part] and observed[surface] and observed["frames"][part]:
-                color = observed[surface]["body"]["pigment"]["body"]
-                for point in ring(footprint(observed[part]["snapshot"], observed["frames"][part])):
-                    expect(point, color, f"{surface} body around the {part} Command")
+        verify_capture_size(captured.size, (observed["outputWidth"], observed["outputHeight"]), shell.scale)
+        summary, expected = compare(captured, color, windows)
+    expected.save(path.with_name(path.stem + "-expected.png"))
+    return dict(summary, capture=path.name, scale=shell.scale)
 
 
 def held_frames(shell, part):
@@ -621,6 +699,11 @@ def accessibility_cases(shell, report, reader=None):
         focus.close()
 
 
+COMPOSITION_CASE = ("each grim capture, closed, open and after any live scale change, equals the backdrop with "
+                    "the CPU reference raster of every published surface and Command composited at its device "
+                    "placement; pixels covered completely or not at all match exactly, partially covered pixels "
+                    "within one 8-bit step per partial layer and resampled windows within their bracketing bounds; "
+                    "native text stays within its published bounds")
 PLATFORM_CASES = {
     "reducedMotion": ("reduced-motion", "the platform reduced-motion setting switches the Commands to immediate "
                                         "settled frames and its reset restores calibrated spring frames"),
@@ -705,7 +788,7 @@ def start_settings(args, platform, processes, log):
     return PortalTestBackend(platform)
 
 
-def live_scale_case(shell, compositor, resolvers, grim, final):
+def live_scale_case(shell, compositor, resolvers, grim, final, report):
     initial = shell.scale
     observed = shell.until(closed, "Show clock ready before the scale change")
     before = observed["targets"]["showClock"]
@@ -720,7 +803,9 @@ def live_scale_case(shell, compositor, resolvers, grim, final):
         raise ValueError(f"the Show clock target moved from {before} to {observed['targets']['showClock']} when the "
                          "device scale changed")
     if grim:
-        verify_composition(shell, observed, backdrop, grim, shell.output / "rescaled.png")
+        report["composition"].append(verify_composition(
+            shell, closed, f"Show clock ready for the capture at device scale {final:g}", backdrop, grim, resolvers,
+            shell.output / "rescaled.png"))
     tree = Accessibility(shell)
     tree.wait(lambda found: found if set(found) == {"Show clock"}
               and single(found, "Show clock", "Open the clock surface.", True)(tree.address) else None,
@@ -752,7 +837,11 @@ def main():
                         help="serve the frontend's Settings from tools/portal_settings_backend.py instead of --backend")
     parser.add_argument("--require", nargs="*", choices=list(PORTAL_KEYS), default=[],
                         help="fail instead of skipping when the portal does not provide a listed key")
-    parser.add_argument("--grim", type=Path)
+    parser.add_argument("--grim", type=Path,
+                        help="capture the output and compare it with the reference composition")
+    parser.add_argument("--paint-raster", type=Path, help="resina-paint-raster, required with --grim")
+    parser.add_argument("--command-raster", type=Path, help="resina-command-raster, required with --grim")
+    parser.add_argument("--command-resolver", type=Path, help="resina-command-paint, required with --grim")
     parser.add_argument("--screen-reader", action="store_true",
                         help="also verify Orca presentation of the focused Close and Show clock")
     parser.add_argument("--output-dir", type=Path, required=True)
@@ -760,17 +849,26 @@ def main():
     parser.add_argument("--live-scale", type=float,
                         help="Output scale Sway changes to while the shell runs, before the accessibility cases")
     args = parser.parse_args()
-    shell = reader = None
+    shell = reader = compositor = None
+    hidden = False
     processes = []
     try:
         live = changed_scale(args.scale, args.live_scale)
         if not os.environ.get("WAYLAND_DISPLAY") or not os.environ.get("XDG_RUNTIME_DIR"):
             raise ValueError("requires a live Wayland compositor session with layer-shell and virtual input")
-        compositor = Sway(os.environ) if live is not None else None
+        compositor = Sway(os.environ) if live is not None or args.grim else None
         host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
         fonts = os.pathsep.join(str(master["path"]) for master in conformance_font.masters(args.font_dir))
         resolvers = {"surface": str(args.surface_resolver.resolve(strict=True)),
                      "theme": str(args.theme_resolver.resolve(strict=True))}
+        if args.grim:
+            missing = [name for name in ("paint_raster", "command_raster", "command_resolver")
+                       if getattr(args, name) is None]
+            if missing:
+                raise ValueError("--grim requires " + ", ".join("--" + name.replace("_", "-") for name in missing))
+            resolvers.update(paintRaster=str(args.paint_raster.resolve(strict=True)),
+                             commandRaster=str(args.command_raster.resolve(strict=True)),
+                             command=str(args.command_resolver.resolve(strict=True)))
         args.output_dir.mkdir(parents=True, exist_ok=False)
         platform = session(args.output_dir, processes)
         os.environ["DBUS_SESSION_BUS_ADDRESS"] = platform["DBUS_SESSION_BUS_ADDRESS"]
@@ -782,8 +880,11 @@ def main():
         settings = start_settings(args, platform, processes, log)
         require_keys(wait_portal(platform, None, "portal Settings interface"), args.require)
         shell = Shell(host, module, fonts, args.theme, args.output_dir, platform, args.scale)
+        if args.grim:
+            compositor.message("seat", "*", "hide_cursor", str(CURSOR_HIDE_MS))
+            hidden = True
         report = {"theme": args.theme or "platform", "scale": args.scale, "liveScale": live,
-                  "settingsBackend": settings.name, "cases": []}
+                  "settingsBackend": settings.name, "cases": [], "composition": []}
 
         observed = shell.until(closed, "published bar with a ready Show clock Command")
         shell.input = VirtualInput(observed["outputWidth"], observed["outputHeight"],
@@ -792,8 +893,12 @@ def main():
             raise ValueError("SystemClock runs while the clock surface is closed")
         backdrop = verify_surfaces(shell, observed, resolvers)
         if args.grim:
-            verify_composition(shell, observed, backdrop, args.grim, args.output_dir / "closed.png")
+            report["composition"].append(verify_composition(
+                shell, closed, "Show clock ready for the closed capture", backdrop, args.grim, resolvers,
+                args.output_dir / "closed.png"))
         report["cases"].append("bar and backdrop publish the reference paint and truthful adjacent colours")
+        if args.grim:
+            report["cases"].append(COMPOSITION_CASE)
 
         shell.click(observed["targets"]["showClock"])
         observed = shell.until(opened, "clock surface opened by a compositor pointer click")
@@ -802,7 +907,9 @@ def main():
             raise ValueError("SystemClock is paused while the clock surface is open")
         verify_time(shell)
         if args.grim:
-            verify_composition(shell, shell.observe(), backdrop, args.grim, args.output_dir / "open.png")
+            report["composition"].append(verify_composition(
+                shell, opened, "the clock surface open for the open capture", backdrop, args.grim, resolvers,
+                args.output_dir / "open.png"))
         report["cases"].append("pointer activation opens the clock surface with keyboard focus on Close and live time")
 
         shell.key(KEY_SPACE)
@@ -907,7 +1014,7 @@ def main():
             report["cases"].append(COLOR_SCHEME_CASE)
 
         if live is not None:
-            motion, case = live_scale_case(shell, compositor, resolvers, args.grim, live)
+            motion, case = live_scale_case(shell, compositor, resolvers, args.grim, live, report)
             report["motion"].append(motion)
             report["cases"].append(case)
 
@@ -926,6 +1033,15 @@ def main():
         for skip in report["skips"]:
             print(f"SKIP {skip['case']}: {skip['reason']}")
         print(f"INFO Space after closing activates Show clock: {report['spaceActivatesShowClockAfterClose']}")
+        for capture in report["composition"]:
+            resampled = (f"; {capture['resampledPixels']} pixels of the resampled "
+                         f"{' and '.join(capture['resampled'])} window lie within their bracketing bounds"
+                         if capture["resampled"] else "")
+            print(f"INFO {capture['capture']} at device scale {capture['scale']:g}: {capture['pixels']} pixels "
+                  f"compared; {capture['differing']} of {capture['partiallyCovered']} partially covered pixels "
+                  f"differ by up to {capture['maxDifference']} step and every other placed pixel is exact"
+                  f"{resampled}; {capture['masked']} native text pixels lie between their background and "
+                  "foreground")
         for press in report["motion"]:
             print(f"INFO {press['policy']} press at device scale {press['scale']:g}: {press['heldFrames']} held frames, "
                   f"{press['unsettled']} unsettled")
@@ -937,6 +1053,8 @@ def main():
             reader.close()
         if shell:
             shell.close()
+        if hidden:
+            compositor.message("seat", "*", "hide_cursor", "0")
         for process in reversed(processes):
             if isinstance(process, subprocess.Popen):
                 stop(process)

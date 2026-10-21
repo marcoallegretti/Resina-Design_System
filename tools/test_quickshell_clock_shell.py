@@ -3,7 +3,8 @@ from unittest import mock
 
 import check_quickshell_clock_shell
 from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, DesktopBackend, PortalTestBackend, Shell,
-                                          closed, edge_points, opened, platform_expectations, require_keys,
+                                          closed, command_paint_request, label_foreground, opened, paint_bounds, parked,
+                                          platform_expectations, require_keys,
                                           tree_mismatch, verify_capture_size, verify_command_scale,
                                           verify_device_scale, verify_platform_preferences, verify_publication_scales)
 
@@ -49,12 +50,6 @@ class ClockShellScaleTests(unittest.TestCase):
             with self.subTest(output=output, scale=scale), self.assertRaisesRegex(ValueError, "must be whole"):
                 verify_capture_size(capture, output, scale)
 
-    def test_edge_points_include_the_last_row_and_column(self):
-        points = edge_points(1280, 720)
-        self.assertEqual({x for x, _ in points}, {0, 640, 1279})
-        self.assertEqual({y for _, y in points}, {0, 360, 719})
-        self.assertIn((1279, 719), points)
-
     def test_publications_from_startup_use_the_window_device_scale(self):
         verify_publication_scales({"bar": [[1.25, 2]], "showClock": [[1.25, 9]]}, 1.25)
         verify_publication_scales({"bar": [[1.25, 1], [2, 1]], "showClock": [[1.25, 3], [2, 4]],
@@ -69,6 +64,59 @@ class ClockShellScaleTests(unittest.TestCase):
         for runs, final, message in cases:
             with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
                 verify_publication_scales(runs, 1.25, final)
+
+
+class CommandPaintRequestTests(unittest.TestCase):
+    def setUp(self):
+        from check_qt_command_snapshot_runtime import request_for
+        self.request = request_for("light", "Show clock")
+        self.snapshot = {"label": {"size": {"width": 120, "height": 48}}}
+
+    def test_the_portable_request_takes_the_published_size_and_states(self):
+        portable = command_paint_request(self.request, self.snapshot, ["rest", "focused"])
+        body = portable["surface"]["body"]
+        self.assertEqual(portable["commandAppearance"], self.request["body"]["commandAppearance"])
+        self.assertEqual(portable["surface"]["surroundingColor"], self.request["body"]["surroundingColor"])
+        self.assertEqual(body["size"], {"width": 120, "height": 48})
+        self.assertEqual(body["surface"]["states"]["states"], ["rest", "focused"])
+        self.assertEqual(body["theme"]["environment"], self.request["content"]["environment"])
+        self.assertNotIn("commandAppearance", body)
+        self.assertNotIn("surroundingColor", body)
+
+    def test_members_beside_the_surface_follow_the_command_paint_request_schema(self):
+        self.request["body"]["light"] = {"ambient": None, "interaction": None}
+        properties = {"schemaVersion": {"const": "0.2.0"}, "surface": {}, "commandAppearance": {}, "light": {}}
+        versions = {"command-paint-request": properties}
+        original = check_quickshell_clock_shell.schema_properties
+        with (mock.patch.object(check_quickshell_clock_shell, "schema_properties",
+                                side_effect=lambda name: versions.get(name) or original(name)),
+              mock.patch.object(check_quickshell_clock_shell, "validator_for") as validator):
+            portable = command_paint_request(self.request, self.snapshot, ["rest"])
+        validator.return_value.validate.assert_called_once_with(portable)
+        self.assertEqual(portable["schemaVersion"], "0.2.0")
+        self.assertEqual(portable["light"], {"ambient": None, "interaction": None})
+        self.assertNotIn("light", portable["surface"]["body"])
+
+    def test_a_request_the_schema_rejects_fails(self):
+        self.request["body"]["unknown"] = True
+        with self.assertRaisesRegex(Exception, "unknown"):
+            command_paint_request(self.request, self.snapshot, ["rest"])
+
+    def test_the_label_colour_is_the_foreground_of_an_opaque_or_lit_body(self):
+        color = {"colorSpace": "srgb", "components": [0.1, 0.2, 0.3], "alpha": 1}
+        self.assertEqual(label_foreground({"foreground": color}), color)
+        self.assertEqual(label_foreground({"face": {"foreground": color}}), color)
+
+    def test_a_capture_waits_until_no_command_is_hovered(self):
+        self.assertTrue(parked({"showClock": {"hovered": False}, "close": None}))
+        self.assertFalse(parked({"showClock": {"hovered": False}, "close": {"hovered": True}}))
+
+    def test_paint_bounds_include_the_focus_ring(self):
+        body = {"geometry": {"silhouette": {"bounds": {"x": 0, "y": 0, "width": 96, "height": 48}}}}
+        self.assertEqual(paint_bounds({"body": body}), {"x": 0, "y": 0, "width": 96, "height": 48})
+        focus = {"geometry": {"outer": {"contour": {"bounds": {"x": 0, "y": 0, "width": 104, "height": 56}},
+                                        "offset": {"x": -4, "y": -4}}}}
+        self.assertEqual(paint_bounds({"body": body, "focus": focus}), {"x": -4, "y": -4, "width": 104, "height": 56})
 
 
 def control(enabled, focused):

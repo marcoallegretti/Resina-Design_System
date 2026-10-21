@@ -540,11 +540,15 @@ QT_SCALE_FACTOR=1.25 python tools/check_qt_surface_view_runtime.py \
 
 The [clock shell](../../../lab/quickshell/clock-shell/README.md) hosts the view
 in released Quickshell 0.3.2 and checks its publications against the reference
-resolver, and composited pixels at points where a flat body or backdrop colour
-is expected, at output scales 1, 1.25, 1.5 and 2,
+resolver, at output scales 1, 1.25, 1.5 and 2,
 and after live output-scale changes between them. At revision 4cb60fe it ran at
 scales 1 and 2 and with live changes between 1.25 and 2; scale 1.5 and the
-other live changes passed at earlier revisions. Hardware renderers and
+other live changes passed at earlier revisions. Its `grim` captures are
+compared pixel for pixel, within a stated per-pixel tolerance, with the CPU
+reference rasters of the published surfaces and Commands composited at their
+device placement, at scales 1, 1.25 and 2 and after live changes between 1.25
+and 2 ([composited captures](../../../lab/quickshell/clock-shell/README.md#composited-captures)).
+Hardware renderers and
 enhanced Frost or Gel treatments beyond their opaque representation are not
 covered.
 

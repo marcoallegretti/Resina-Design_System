@@ -134,11 +134,16 @@ ShellRoot {
         return {x: originX + point.x, y: originY + point.y};
     }
 
-    function frame(control, originX, originY) {
-        if (!control || !control.ready)
+    function placement(item) {
+        if (!item || !item.visible)
             return null;
-        const point = control.coordinateFrame.mapToItem(null, 0, 0);
-        return {x: originX + point.x, y: originY + point.y};
+        const point = item.mapToItem(null, 0, 0);
+        return {x: point.x, y: point.y};
+    }
+
+    function bounds(item) {
+        const point = placement(item);
+        return point ? {x: point.x, y: point.y, width: item.width, height: item.height} : null;
     }
 
     function hex(color) {
@@ -444,12 +449,18 @@ ShellRoot {
                 outputWidth: root.screen ? root.screen.width : 0, outputHeight: root.screen ? root.screen.height : 0,
                 probes: {
                     bar: [barSurface.x + barSurface.contentBounds.x + barSurface.contentBounds.width - 24,
-                        barSurface.y + barSurface.contentBounds.y + barSurface.contentBounds.height / 2],
-                    clock: [clockSurface.x + clockSurface.contentBounds.x + clockSurface.contentBounds.width - 24,
-                        root.barHeight + clockSurface.y + clockSurface.contentBounds.y + clockSurface.contentBounds.height - 24]
+                        barSurface.y + barSurface.contentBounds.y + barSurface.contentBounds.height / 2]
                 },
                 targets: {showClock: root.target(show, 0, 0), close: root.target(close, 0, root.barHeight)},
-                frames: {showClock: root.frame(show, 0, 0), close: root.frame(close, 0, root.barHeight)},
+                windows: {bar: {x: 0, y: 0, width: bar.width, height: bar.height},
+                    clock: {x: 0, y: clockWindow.margins.top, width: clockWindow.width, height: clockWindow.height}},
+                placements: {bar: root.placement(barSurface), clock: root.placement(clockSurface),
+                    showClock: show && show.ready ? root.placement(show.coordinateFrame) : null,
+                    close: close && close.ready ? root.placement(close.coordinateFrame) : null},
+                samples: {bar: barSurface.samplesPerAxis, clock: clockSurface.samplesPerAxis,
+                    showClock: show ? show.samplesPerAxis : null, close: close ? close.samplesPerAxis : null},
+                texts: {time: clockSurface.paintReady ? root.bounds(time) : null,
+                    date: clockSurface.paintReady ? root.bounds(date) : null},
                 deviceScale: {showClock: root.deviceScale(show), close: root.deviceScale(close)},
                 loadError: root.loadError, backdrop: backdropEnvironment.backdrop,
                 errors: {backdrop: backdropEnvironment.error || barEnvironment.error || clockEnvironment.error,
