@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:shadow-profiles:0.1.0",
+  "title": "Resina Elevation Shadow Profiles",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "roles"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["embedded", "base", "raised", "floating", "overlay", "modal"],
+      "properties": {
+        "embedded": {"$ref": "#/$defs/profile"},
+        "base": {"$ref": "#/$defs/profile"},
+        "raised": {"$ref": "#/$defs/profile"},
+        "floating": {"$ref": "#/$defs/profile"},
+        "overlay": {"$ref": "#/$defs/profile"},
+        "modal": {"$ref": "#/$defs/profile"}
+      }
+    }
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shadowShade", "contactMargin"],
+      "properties": {
+        "shadowShade": {"type": "number", "minimum": 0, "exclusiveMaximum": 1},
+        "contactMargin": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

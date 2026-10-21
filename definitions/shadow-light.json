@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "0.1.0",
+  "roles": {
+    "embedded": {
+      "shadowShade": 0.062,
+      "contactMargin": 0
+    },
+    "base": {
+      "shadowShade": 0.062,
+      "contactMargin": 0
+    },
+    "raised": {
+      "shadowShade": 0.062,
+      "contactMargin": 0
+    },
+    "floating": {
+      "shadowShade": 0.062,
+      "contactMargin": 0
+    },
+    "overlay": {
+      "shadowShade": 0.062,
+      "contactMargin": 0
+    },
+    "modal": {
+      "shadowShade": 0.062,
+      "contactMargin": 0
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:elevation-shadow-result:0.1.0",
+  "title": "Resina Elevation Shadow Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "elevation", "keyDirection", "finalDepth", "sideOffset", "shadowShade", "contactMargin", "shadow", "edge", "focus", "samples"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "elevation": {"enum": ["embedded", "base", "raised", "floating", "overlay", "modal"]},
+    "keyDirection": {"$ref": "urn:resina:schema:key-light-result:0.1.0#/properties/direction"},
+    "finalDepth": {"type": "number", "minimum": 0},
+    "sideOffset": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
+    "shadowShade": {"type": "number", "minimum": 0, "exclusiveMaximum": 1},
+    "contactMargin": {"type": "number", "minimum": 0},
+    "shadow": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sweep", "hull", "bandThickness", "bandColor", "colorRange", "deltaEOk", "penumbraWidth", "paintBounds"],
+          "properties": {
+            "sweep": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
+            "hull": {
+              "allOf": [
+                {"$ref": "urn:resina:schema:extruded-contour-result:0.1.0"},
+                {"properties": {"bounds": {"type": "object"}}}
+              ]
+            },
+            "bandThickness": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["top", "right", "bottom", "left"],
+              "properties": {
+                "top": {"type": "number", "minimum": 0},
+                "right": {"type": "number", "minimum": 0},
+                "bottom": {"type": "number", "minimum": 0},
+                "left": {"type": "number", "minimum": 0}
+              }
+            },
+            "bandColor": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+            "colorRange": {"$ref": "urn:resina:schema:opaque-srgb-range:0.1.0"},
+            "deltaEOk": {"type": "number", "minimum": 0},
+            "penumbraWidth": {"type": "number", "minimum": 0},
+            "paintBounds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["x", "y", "width", "height"],
+              "properties": {
+                "x": {"type": "number"},
+                "y": {"type": "number"},
+                "width": {"type": "number", "exclusiveMinimum": 0},
+                "height": {"type": "number", "exclusiveMinimum": 0}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "edge": {
+      "allOf": [
+        {"$ref": "#/$defs/guard"},
+        {"properties": {"colorRole": {"enum": ["outline", "outline.strong"]}}}
+      ]
+    },
+    "focus": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "allOf": [
+            {"$ref": "#/$defs/guard"},
+            {"properties": {"colorRole": {"enum": ["focus", "outline.strong"]}}}
+          ]
+        }
+      ]
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["weight", "color"],
+        "properties": {
+          "weight": {"type": "number", "minimum": 0, "maximum": 1},
+          "color": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "guard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorRole", "color", "contrastRatio", "fallbackApplied"],
+      "properties": {
+        "colorRole": {"enum": ["outline", "outline.strong", "focus"]},
+        "color": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+        "contrastRatio": {"type": "number", "minimum": 1, "maximum": 21},
+        "fallbackApplied": {"type": "boolean"}
+      },
+      "if": {"properties": {"colorRole": {"const": "outline.strong"}}},
+      "then": {"properties": {"fallbackApplied": {"const": true}}},
+      "else": {"properties": {"fallbackApplied": {"const": false}}}
+    }
+  },
+  "$comment": "Hull support, band pigment, guard ranges, penumbra weights and paint bounds are semantic requirements of spec/92-elevation-shadow.md beyond structural validation."
+}

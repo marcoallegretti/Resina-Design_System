@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:elevation-shadow-request:0.1.0",
+  "title": "Resina Elevation Shadow Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "environment", "keyLight", "profiles", "elevation", "elevationDepth", "depthScale", "size", "radii", "adjacentColor", "edge", "focus", "distanceSamples"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "environment": {"$ref": "urn:resina:schema:environment:0.2.0"},
+    "keyLight": {"$ref": "urn:resina:schema:key-light:0.1.0"},
+    "profiles": {"$ref": "urn:resina:schema:shadow-profiles:0.1.0"},
+    "elevation": {"enum": ["embedded", "base", "raised", "floating", "overlay", "modal"]},
+    "elevationDepth": {"type": "number", "minimum": 0},
+    "depthScale": {"type": "number", "minimum": 0, "maximum": 2},
+    "size": {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+    "radii": {"$ref": "urn:resina:schema:logical-corner-radii:0.1.0"},
+    "adjacentColor": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outline", "outlineStrong", "minimumContrast"],
+      "properties": {
+        "outline": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+        "outlineStrong": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+        "minimumContrast": {"type": "number", "minimum": 1, "maximum": 21}
+      }
+    },
+    "focus": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["color", "minimumContrast"],
+          "properties": {
+            "color": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+            "minimumContrast": {"type": "number", "minimum": 1, "maximum": 21}
+          }
+        }
+      ]
+    },
+    "distanceSamples": {"type": "array", "items": {"type": "number"}}
+  },
+  "$comment": "Final depth, sweep and paint-bound finiteness are semantic constraints defined by spec/92-elevation-shadow.md."
+}
