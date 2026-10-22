@@ -336,6 +336,9 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
             argv = ["check", "--host", str(root / "host"), "--font-dir", str(root / "fonts"),
                     "--module-path", str(root / "module"), "--output-dir", str(root / "output"), "--scales", "1"]
             with patch("sys.argv", argv), redirect_stderr(io.StringIO()) as stderr, \
+                    patch("conformance_font.isolate_process"), \
+                    patch("conformance_font.script_masters", return_value=[]), \
+                    patch("conformance_font.check_script_fontconfig"), \
                     patch("conformance_font.qml_sources", return_value='["file:///fonts/Inter-Regular.otf"]') as sources, \
                     patch("check_quickshell_command_updates.subprocess.run", side_effect=[
                         SimpleNamespace(returncode=0, stdout="Quickshell 0.3.2 / Qt Quick 6.11.2\n", stderr=""),

@@ -60,12 +60,14 @@ def main():
         from PySide6 import QtQuick  # Load the pinned host's native plugin dependency.
         if qVersion() != "6.11.2":
             raise ValueError("requires Qt 6.11.2")
+        conformance_font.isolate_process(arguments.font_dir)
         application = QGuiApplication([])
         loader = QPluginLoader(str(arguments.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if loader.instance() is None:
             raise ValueError("Qt plugin factory failed: " + loader.errorString())
         masters = conformance_font.register_qt(arguments.font_dir)
         visible = conformance_font.check_fontconfig(masters)
+        visible_scripts = conformance_font.check_script_fontconfig(conformance_font.script_masters(arguments.font_dir))
         family = conformance_font.FAMILY
         engine = QQmlEngine()
         engine.addImportPath(str(arguments.module_path.resolve()))
@@ -203,7 +205,7 @@ Item {
     except (ImportError, OSError, ValueError, KeyError, TypeError) as error:
         print("FAIL Qt command label runtime: " + str(error), file=sys.stderr)
         return 1
-    print(json.dumps({"visibleFaces": visible, "resolvedMaster": dict(resolved.pop())}, indent=2))
+    print(json.dumps({"visibleFaces": visible, "visibleScriptFaces": visible_scripts, "resolvedMaster": dict(resolved.pop())}, indent=2))
     print(f"Rust/Qt command content passed {count} actual native layout/drawing preparations, strict rejection and recovery")
     return 0
 

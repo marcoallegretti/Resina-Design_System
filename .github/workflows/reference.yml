@@ -95,12 +95,15 @@ jobs:
             libxkbcommon-dev libxkbcommon-x11-0 libx11-xcb1 \
             libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
             libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-shm0 \
-            libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core fonts-inter \
+            libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 fonts-dejavu-core \
             at-spi2-core dbus-bin dbus-daemon gsettings-desktop-schemas xvfb xauth sway \
             xdg-desktop-portal xdg-desktop-portal-gnome dconf-service libglib2.0-bin grim \
             orca speech-dispatcher
           python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-render.txt -r tools/requirements-schema.txt
-          python tools/conformance_font.py verify /usr/share/fonts/opentype/inter
+      - name: Fetch the pinned conformance masters
+        run: |
+          python tools/conformance_font.py fetch --output "$RUNNER_TEMP/conformance-fonts"
+          echo "CONFORMANCE_FONTS=$RUNNER_TEMP/conformance-fonts" >> "$GITHUB_ENV"
       - name: Install the Qt 6.11.2 SDK
         if: steps.qt-sdk.outputs.cache-hit != 'true'
         run: tools/ci/install_qt_sdk.sh
@@ -168,12 +171,12 @@ jobs:
           python tools/check_qt_controller_lifetime.py --module-path target/qt-runtime-import --controller ToggleController
           python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
           python tools/check_qt_toggle_runtime.py --module-path target/qt-runtime-import
-          python tools/check_qt_toggle_control_runtime.py --motion --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir target/qt-toggle-moving-control
-          python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
-          python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
-          python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
-          python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
-          python tools/check_qt_command_control_runtime.py --motion --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir target/qt-control-motion
+          python tools/check_qt_toggle_control_runtime.py --motion --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --output-dir target/qt-toggle-moving-control
+          python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS"
+          python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS"
+          python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS"
+          python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS"
+          python tools/check_qt_command_control_runtime.py --motion --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --output-dir target/qt-control-motion
       - name: Check actual Qt paint and command composition at native scales
         if: matrix.paint_scales != ''
         env:
@@ -181,12 +184,12 @@ jobs:
         run: |
           for scale in $PAINT_SCALES; do
             QT_SCALE_FACTOR="$scale" python tools/check_qt_surface_view_runtime.py --module-path target/qt-runtime-import --raster target/qt-runtime-build/debug/resina-paint-raster --resolver target/qt-runtime-build/debug/resina-surface-paint --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve --scenes target/material-scenes.json --output-dir "target/qt-surface-view-$scale"
-            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_paint_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --raster target/qt-runtime-build/debug/resina-command-raster --output-dir "target/qt-paint-$scale"
-            QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_motion_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir "target/qt-toggle-motion-$scale"
-            QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_control_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-raster --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir "target/qt-toggle-$scale"
-            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_control_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir "target/qt-control-$scale"
-            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_motion_runtime.py --raster target/qt-runtime-build/debug/resina-command-motion-raster --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir "target/qt-motion-$scale"
-            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_view_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter --output-dir "target/qt-view-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_paint_runtime.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --raster target/qt-runtime-build/debug/resina-command-raster --output-dir "target/qt-paint-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_motion_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-motion-raster --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --output-dir "target/qt-toggle-motion-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_toggle_control_runtime.py --raster target/qt-runtime-build/debug/resina-toggle-part-raster --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --output-dir "target/qt-toggle-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_control_runtime.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --output-dir "target/qt-control-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_motion_runtime.py --raster target/qt-runtime-build/debug/resina-command-motion-raster --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --output-dir "target/qt-motion-$scale"
+            QT_SCALE_FACTOR="$scale" python tools/check_qt_command_view_runtime.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" --output-dir "target/qt-view-$scale"
           done
       - name: Measure native AT-SPI availability and invocation
         if: contains(matrix.groups, 'atspi')
@@ -195,9 +198,9 @@ jobs:
         run: |
           xvfb-run -a -e /dev/stderr python tools/check_qt_native_availability.py --known-deviation > target/qt-native-availability.json
           cat target/qt-native-availability.json
-          xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter > target/qt-control-accessibility.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" > target/qt-control-accessibility.json
           cat target/qt-control-accessibility.json
-          xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --motion --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter > target/qt-motion-accessibility.json
+          xvfb-run -a -e /dev/stderr python tools/check_qt_command_control_accessibility.py --motion --module-path target/qt-runtime-import --font-dir "$CONFORMANCE_FONTS" > target/qt-motion-accessibility.json
           cat target/qt-motion-accessibility.json
           xvfb-run -a -e /dev/stderr python tools/check_qt_slider_accessibility_adapter.py --module-path target/qt-runtime-import --orientation horizontal > target/qt-slider-horizontal-accessibility.json
           cat target/qt-slider-horizontal-accessibility.json
@@ -219,7 +222,7 @@ jobs:
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python tools/check_quickshell_command_updates.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-            --font-dir /usr/share/fonts/opentype/inter \
+            --font-dir "$CONFORMANCE_FONTS" \
             --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
             --output-dir target/quickshell-command-updates --scales 1 1.25 2
       - name: Check native label measurement, drawing and resolved Inter masters in released Quickshell
@@ -227,16 +230,16 @@ jobs:
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python tools/check_quickshell_label_runtime.py --quickshell target/quickshell-build/src/quickshell \
-            --font-dir /usr/share/fonts/opentype/inter --scales 1 1.25 2
+            --font-dir "$CONFORMANCE_FONTS" --scales 1 1.25 2
           python tools/check_quickshell_label_render_runtime.py --quickshell target/quickshell-build/src/quickshell \
-            --font-dir /usr/share/fonts/opentype/inter --scales 1 1.25 2 --output-dir target/quickshell-label-render
+            --font-dir "$CONFORMANCE_FONTS" --scales 1 1.25 2 --output-dir target/quickshell-label-render
       - name: Check authored Toggle updates in released Quickshell
         if: contains(matrix.groups, 'toggle-updates')
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python tools/check_quickshell_toggle_updates.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-            --font-dir /usr/share/fonts/opentype/inter \
+            --font-dir "$CONFORMANCE_FONTS" \
             --output-dir target/quickshell-toggle-updates --scales 1 1.25 2
       - name: Check compositor-delivered Command lifecycle, accessibility and motion and platform appearance
         if: contains(matrix.groups, 'command-lifecycle')
@@ -255,22 +258,22 @@ jobs:
           export WAYLAND_DISPLAY
           python tools/check_quickshell_command_lifecycle.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-            --font-dir /usr/share/fonts/opentype/inter \
+            --font-dir "$CONFORMANCE_FONTS" \
             --output-dir target/quickshell-command-lifecycle
           # Orca 46.1 reads its modifier keymap from an X display with xkbcomp and fails without DISPLAY.
           xvfb-run -a -e /dev/stderr python tools/check_quickshell_command_accessibility.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-            --font-dir /usr/share/fonts/opentype/inter \
+            --font-dir "$CONFORMANCE_FONTS" \
             --output-dir target/quickshell-command-accessibility --screen-reader
           python tools/check_quickshell_command_motion.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-            --font-dir /usr/share/fonts/opentype/inter \
+            --font-dir "$CONFORMANCE_FONTS" \
             --output-dir target/quickshell-command-motion --scale 1
           python tools/check_qt_platform_appearance.py --module-path target/qt-runtime-import \
             --output-dir target/qt-platform-appearance --require contrast color-scheme
           python tools/check_quickshell_clock_shell.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-            --font-dir /usr/share/fonts/opentype/inter \
+            --font-dir "$CONFORMANCE_FONTS" \
             --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
             --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
             --grim /usr/bin/grim --paint-raster target/qt-runtime-build/debug/resina-paint-raster \
@@ -295,7 +298,7 @@ jobs:
           export WAYLAND_DISPLAY
           python tools/check_quickshell_toggle_lifecycle.py \
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-            --font-dir /usr/share/fonts/opentype/inter \
+            --font-dir "$CONFORMANCE_FONTS" \
             --output-dir target/quickshell-toggle-lifecycle
       - name: Check compositor-delivered Command motion and the clock shell at the shard output scales with a live scale change
         if: matrix.output_scales != ''
@@ -325,12 +328,12 @@ jobs:
             export WAYLAND_DISPLAY
             python tools/check_quickshell_command_motion.py \
               --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-              --font-dir /usr/share/fonts/opentype/inter \
+              --font-dir "$CONFORMANCE_FONTS" \
               --output-dir "target/quickshell-command-motion-$scale" --scale "$scale" --live-scale "$live" || status=1
             swaymsg -s "$(ls "$XDG_RUNTIME_DIR"/sway-ipc.*.sock)" output HEADLESS-1 scale "$scale" || status=1
             python tools/check_quickshell_clock_shell.py \
               --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
-              --font-dir /usr/share/fonts/opentype/inter \
+              --font-dir "$CONFORMANCE_FONTS" \
               --surface-resolver target/qt-runtime-build/debug/resina-surface-paint \
               --theme-resolver target/qt-runtime-build/debug/resina-theme-resolve \
               --grim /usr/bin/grim --paint-raster target/qt-runtime-build/debug/resina-paint-raster \
@@ -367,7 +370,7 @@ jobs:
             export WAYLAND_DISPLAY
             python tools/check_quickshell_command_motion_budget.py \
               --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-release-import \
-              --font-dir /usr/share/fonts/opentype/inter \
+              --font-dir "$CONFORMANCE_FONTS" \
               --output-dir "target/quickshell-command-motion-budget-$scale" --scale "$scale" --floor report $gap || status=1
             kill "$sway_pid" || true
             wait "$sway_pid" || true
@@ -450,23 +453,26 @@ jobs:
       - name: Install GUIdo build and software GPU dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends --no-upgrade -y libwayland-dev libxkbcommon-dev libvulkan1 mesa-vulkan-drivers fonts-dejavu-core fonts-inter
+          sudo apt-get install --no-install-recommends --no-upgrade -y libwayland-dev libxkbcommon-dev libvulkan1 mesa-vulkan-drivers fonts-dejavu-core
       - run: cargo fmt --manifest-path backends/guido/resina-guido/Cargo.toml -- --check
       - run: python -m pip install -r tools/requirements-schema.txt
-      - run: python tools/conformance_font.py verify /usr/share/fonts/opentype/inter
+      - name: Fetch the pinned conformance masters
+        run: |
+          python tools/conformance_font.py fetch --output "$RUNNER_TEMP/conformance-fonts"
+          echo "CONFORMANCE_FONTS=$RUNNER_TEMP/conformance-fonts" >> "$GITHUB_ENV"
       - run: cargo build -p resina-resolver --bin resina-theme-resolve --locked
       - run: python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
       - name: Check preparation and required GPU rendering
         env:
           RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
-          RESINA_LABEL_FONT_DIR: /usr/share/fonts/opentype/inter
+          RESINA_LABEL_FONT_DIR: ${{ env.CONFORMANCE_FONTS }}
         run: cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
       - run: cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
       - run: cargo fmt --manifest-path lab/guido/Cargo.toml -- --check
       - name: Check native Material Board
         env:
           RESINA_SCENES: ${{ github.workspace }}/target/material-scenes.json
-          RESINA_LABEL_FONT_DIR: /usr/share/fonts/opentype/inter
+          RESINA_LABEL_FONT_DIR: ${{ env.CONFORMANCE_FONTS }}
         run: cargo test --manifest-path lab/guido/Cargo.toml --locked
       - run: cargo clippy --manifest-path lab/guido/Cargo.toml --all-targets --locked -- -D warnings
   rust:
@@ -543,20 +549,17 @@ jobs:
       - run: python -m unittest discover -s tools -p 'test_*.py'
       - run: python tools/check_slider_snapshot_ir.py --capture "${{ runner.temp }}/slider-snapshot-ir.json"
       - run: cargo build -p resina-resolver --bins --locked
-      - name: Install Slint build and test font dependencies
+      - name: Install Slint build dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends --no-upgrade -y libfontconfig-dev fonts-dejavu-core fonts-inter
+          sudo apt-get install --no-install-recommends --no-upgrade -y libfontconfig-dev fonts-dejavu-core
           pkg-config --modversion fontconfig
-          python tools/conformance_font.py verify /usr/share/fonts/opentype/inter
-          echo "RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter" >> "$GITHUB_ENV"
-      - name: Fetch the pinned Inter conformance masters
-        if: runner.os != 'Linux'
+      - name: Fetch the pinned conformance masters
         shell: bash
         run: |
-          python tools/conformance_font.py fetch --output "$RUNNER_TEMP/inter"
-          echo "RESINA_LABEL_FONT_DIR=$RUNNER_TEMP/inter" >> "$GITHUB_ENV"
+          python tools/conformance_font.py fetch --output "$RUNNER_TEMP/conformance-fonts"
+          echo "RESINA_LABEL_FONT_DIR=$RUNNER_TEMP/conformance-fonts" >> "$GITHUB_ENV"
       - name: Check compiled Slint runtime publication and measurement
         shell: bash
         env:

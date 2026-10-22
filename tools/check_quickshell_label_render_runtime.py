@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 from PIL import Image, ImageChops
 
@@ -39,7 +40,7 @@ def check_image(path, scale, overhang=False):
     return hashlib.sha256(image.tobytes()).digest()
 
 
-def check_probe_output(result, scale, masters, scene_graph="software"):
+def check_probe_output(result, scale, masters, scripts, scene_graph="software"):
     log = result.stdout + result.stderr
     matches = re.findall(r"RESINA_LABEL_RENDER_PASS 36 9 ([0-9.]+) (software|opengl)(?:\s|$)", log)
     if result.returncode or "RESINA_LABEL_RENDER_FAIL" in log or len(matches) != 1 \
@@ -50,12 +51,13 @@ def check_probe_output(result, scale, masters, scene_graph="software"):
     if len(faces) != 1 or faces[0]["weight"] != 400:
         raise ValueError("native drawing probe did not report its resolved master")
     face = faces[0]["face"]
-    return conformance_font.resolve(masters, face["family"], face["style"], 400)
+    return {"master": conformance_font.resolve(masters, face["family"], face["style"], 400),
+            "scriptFaces": conformance_font.resolved_script_faces(log, scripts, (400,))}
 
 
 def main():
     parser = argparse.ArgumentParser(description="Verify complete native Qt label drawing against independent Text items.")
-    parser.add_argument("--font-dir", type=Path, required=True, help="directory with the pinned Inter static masters")
+    parser.add_argument("--font-dir", type=Path, required=True, help="directory with the pinned static masters")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--quickshell", default="quickshell")
     parser.add_argument("--platform", choices=("offscreen", "wayland"), default="offscreen")
@@ -77,25 +79,31 @@ def main():
     resolved = []
     try:
         masters = conformance_font.masters(arguments.font_dir)
-        environment["RESINA_LABEL_FONTS"] = json.dumps([master["path"].as_uri() for master in masters])
-        visible = conformance_font.check_fontconfig(masters, environment)
+        scripts = conformance_font.script_masters(arguments.font_dir)
         arguments.output_dir.mkdir(parents=True, exist_ok=False)
-        for index, scale in enumerate(arguments.scales):
-            directory = arguments.output_dir / str(index)
-            directory.mkdir()
-            environment.update(QT_SCALE_FACTOR=str(scale), RESINA_LABEL_DEVICE_SCALE=str(scale),
-                RESINA_LABEL_CAPTURE_DIR=str(directory.resolve()))
-            result = subprocess.run([arguments.quickshell, "--no-color", "--path",
-                str(root / "conformance/quickshell/label-render-probe.qml")], env=environment,
-                capture_output=True, encoding="utf-8", errors="strict", timeout=60, check=False)
-            resolved.append({"deviceScale": scale, "master": check_probe_output(result, scale, masters, arguments.scene_graph)})
-            hashes = {check_image(directory / f"frame-{frame}.png", scale, frame in (0, 35)) for frame in range(36)}
-            if len(hashes) != 36:
-                raise ValueError("native drawing reused a stale or duplicate capture")
-    except (OSError, UnicodeError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
+        with tempfile.TemporaryDirectory() as fontconfig:
+            environment.update(conformance_font.isolated_fontconfig(fontconfig, arguments.font_dir),
+                RESINA_LABEL_FONTS=json.dumps([master["path"].as_uri() for master in masters]),
+                RESINA_LABEL_SCRIPT_FACES=conformance_font.qml_script_faces(root))
+            visible = conformance_font.check_fontconfig(masters, environment)
+            visible_scripts = conformance_font.check_script_fontconfig(scripts, environment)
+            for index, scale in enumerate(arguments.scales):
+                directory = arguments.output_dir / str(index)
+                directory.mkdir()
+                environment.update(QT_SCALE_FACTOR=str(scale), RESINA_LABEL_DEVICE_SCALE=str(scale),
+                    RESINA_LABEL_CAPTURE_DIR=str(directory.resolve()))
+                result = subprocess.run([arguments.quickshell, "--no-color", "--path",
+                    str(root / "conformance/quickshell/label-render-probe.qml")], env=environment,
+                    capture_output=True, encoding="utf-8", errors="strict", timeout=60, check=False)
+                resolved.append({"deviceScale": scale, **check_probe_output(
+                    result, scale, masters, scripts, arguments.scene_graph)})
+                hashes = {check_image(directory / f"frame-{frame}.png", scale, frame in (0, 35)) for frame in range(36)}
+                if len(hashes) != 36:
+                    raise ValueError("native drawing reused a stale or duplicate capture")
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
         print(f"FAIL Quickshell label drawing: {error}", file=sys.stderr)
         return 1
-    print(json.dumps({"visibleFaces": visible, "resolved": resolved}, indent=2))
+    print(json.dumps({"visibleFaces": visible, "visibleScriptFaces": visible_scripts, "resolved": resolved}, indent=2))
     print(f"Quickshell native label drawing passed {36 * len(arguments.scales)} complete capture pairs and {9 * len(arguments.scales)} rejection cases on {arguments.platform} ({arguments.scene_graph})")
     return 0
 

@@ -45,14 +45,15 @@ Slint's allocation API itself does not expose recoverable allocation failure.
 
 ## Conformance
 
-On Ubuntu, install `libfontconfig-dev` and `fonts-inter` before building
-this crate. The locked native font dependency discovers Fontconfig
+On Ubuntu, install `libfontconfig-dev` before building this crate. The locked native font dependency discovers Fontconfig
 through `pkg-config`; runtime libraries or a font file alone are insufficient.
 
 ```sh
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter cargo test --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --features testing --locked
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
+RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=$CONFORMANCE_FONTS cargo test --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --features testing --locked
 cargo clippy --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
 
@@ -138,12 +139,16 @@ The measurement test covers seven complete labels, including expanded German,
 Arabic and explicit line breaks, at three text scales, five actual window
 scales and three spacing values (315 combinations), plus weight matching,
 blank paragraphs, CRLF and invalid input. `RESINA_LABEL_FONT_DIR` is required
-and must hold the Inter 4.0 static Regular, Medium and SemiBold masters pinned in
+and must hold the Inter 4.0 static Regular, Medium and SemiBold masters and the Noto
+Sans Arabic and Noto Sans Hebrew static masters pinned in
 [`tools/conformance_font.json`](../../../tools/conformance_font.json). The test
-registers all three, so weights 400, 500 and 600 measure real masters, while
-100, 300, 700 and 900 fail as substituted weights. CI installs `fonts-inter` on
-Linux and fetches the same masters by pinned URL and SHA-256 in the other matrix
-job. This proves layout measurement at those tested contexts, not visual
+registers them, makes the Noto families Slint's sans-serif families, which it appends
+after the requested family, and fails when another face of those families is visible.
+Weights 400, 500 and 600 therefore measure real masters, and Arabic and Hebrew letters
+measure as their pinned Noto master does, while 100, 300, 700 and 900 fail as
+substituted weights. The script proof is advance equality with the pinned master, not
+a reading of the glyph runs. CI fetches the masters by pinned URL and SHA-256 in every
+matrix job. This proves layout measurement at those tested contexts, not visual
 shaping fidelity or full script coverage.
 
 **Drawing limitation:** the pinned SDK's

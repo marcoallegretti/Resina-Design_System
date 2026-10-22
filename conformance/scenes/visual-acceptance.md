@@ -87,7 +87,9 @@ The producer rejects an uncommitted tree and never overwrites an existing image
 or record. Existing PPM diagnostic captures remain available.
 
 ```sh
-RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter \
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
+RESINA_LABEL_FONT_DIR=$CONFORMANCE_FONTS \
 RESINA_LABEL_CAPTURE_DIR="$PWD/target/native-label-candidate-1" \
 cargo test --manifest-path backends/guido/resina-guido/Cargo.toml \
   --features testing --locked --test label_render --test label_ink

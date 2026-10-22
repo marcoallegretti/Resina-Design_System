@@ -51,7 +51,7 @@ def digit_records(log):
     return {"tabular": {**observed[True], "outcome": tabular}, "default": {**observed[False], "outcome": default}}
 
 
-def check_log(result, scale, masters):
+def check_log(result, scale, masters, scripts):
     log = result.stdout + result.stderr
     matches = re.findall(r"RESINA_LABEL_PASS (\d+) (\d+) ([0-9.]+)(?:\s|$)", log)
     if result.returncode or "RESINA_LABEL_FAIL" in log or len(matches) != 1:
@@ -59,7 +59,8 @@ def check_log(result, scale, masters):
     count, failures, actual_scale = matches[0]
     if int(count) != 432 or int(failures) != 13 or not math.isclose(float(actual_scale), scale, rel_tol=0, abs_tol=0.00001):
         raise ValueError(f"native label evidence counts or actual scale differ: {matches[0]}")
-    return {"masters": resolved_masters(log, masters), "digits": digit_records(log)}
+    return {"masters": resolved_masters(log, masters), "scriptFaces": conformance_font.resolved_script_faces(
+        log, scripts, WEIGHTS), "digits": digit_records(log)}
 
 
 def check_substitution(result, masters):
@@ -78,7 +79,7 @@ def check_substitution(result, masters):
 
 def main():
     parser = argparse.ArgumentParser(description="Check complete native Qt Quick label measurement on actual device scales.")
-    parser.add_argument("--font-dir", type=Path, required=True, help="directory with the pinned Inter static masters")
+    parser.add_argument("--font-dir", type=Path, required=True, help="directory with the pinned static masters")
     parser.add_argument("--quickshell", default="quickshell")
     parser.add_argument("--platform", choices=("offscreen", "wayland"), default="offscreen")
     parser.add_argument("--scales", nargs="+", type=float, default=[0.5, 1, 1.25, 2, 1.3])
@@ -97,28 +98,34 @@ def main():
     evidence = {"platform": arguments.platform, "scales": []}
     try:
         masters = conformance_font.masters(arguments.font_dir)
-        environment["RESINA_LABEL_FONTS"] = json.dumps([master["path"].as_uri() for master in masters])
-        evidence["visibleFaces"] = conformance_font.check_fontconfig(masters, environment)
-        for scale in arguments.scales:
-            environment.update(QT_SCALE_FACTOR=str(scale), RESINA_LABEL_DEVICE_SCALE=str(scale))
-            result = subprocess.run(probe, env=environment, capture_output=True, encoding="utf-8",
-                                    errors="strict", timeout=20, check=False)
-            evidence["scales"].append({"deviceScale": scale, **check_log(result, scale, masters)})
+        scripts = conformance_font.script_masters(arguments.font_dir)
         with tempfile.TemporaryDirectory() as directory:
-            isolated = dict(environment, **conformance_font.isolated_fontconfig(directory), QT_SCALE_FACTOR="1",
+            environment.update(conformance_font.isolated_fontconfig(directory, arguments.font_dir),
+                               RESINA_LABEL_FONTS=json.dumps([master["path"].as_uri() for master in masters]),
+                               RESINA_LABEL_SCRIPT_FACES=conformance_font.qml_script_faces(root))
+            evidence["visibleFaces"] = conformance_font.check_fontconfig(masters, environment)
+            evidence["visibleScriptFaces"] = conformance_font.check_script_fontconfig(scripts, environment)
+            for scale in arguments.scales:
+                environment.update(QT_SCALE_FACTOR=str(scale), RESINA_LABEL_DEVICE_SCALE=str(scale))
+                result = subprocess.run(probe, env=environment, capture_output=True, encoding="utf-8",
+                                        errors="strict", timeout=20, check=False)
+                evidence["scales"].append({"deviceScale": scale, **check_log(result, scale, masters, scripts)})
+            isolated = dict(environment, **conformance_font.isolated_fontconfig(Path(directory) / "regular-only"),
+                            QT_SCALE_FACTOR="1",
                             RESINA_LABEL_DEVICE_SCALE="1", RESINA_LABEL_MODE="faces",
                             RESINA_LABEL_FONTS=json.dumps([masters[0]["path"].as_uri()]))
             result = subprocess.run(probe, env=isolated, capture_output=True, encoding="utf-8",
                                     errors="strict", timeout=20, check=False)
             evidence["regularOnly"] = check_substitution(result, masters)
-    except (OSError, UnicodeError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
         print(f"FAIL Quickshell label runtime: {error}", file=sys.stderr)
         return 1
     print(json.dumps(evidence, indent=2))
     print(f"Quickshell native label measurement passed {432 * len(arguments.scales)} cases and "
           f"{13 * len(arguments.scales)} diagnostic cases on {arguments.platform}, resolved distinct Inter masters "
-          "for weights 400, 500 and 600, measured equal tnum digit advances, and rejected a Regular-only "
-          "registration and the proportional default digits")
+          "for weights 400, 500 and 600, drew Arabic and Hebrew with their pinned Noto masters at the same weights, "
+          "measured equal tnum digit advances, and rejected a Regular-only registration and the proportional "
+          "default digits")
     return 0
 
 

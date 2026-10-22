@@ -3,6 +3,8 @@
 mod conformance_font;
 #[path = "../../../../reference/rust/resina-resolver/tests/common/slider_snapshot.rs"]
 mod fixture;
+#[path = "common/glyph_extent.rs"]
+mod glyph_extent;
 #[path = "common/readback.rs"]
 mod readback;
 use fixture::{Fixture, FixtureConfig, size};
@@ -22,8 +24,8 @@ use resina_guido::{
 use resina_model::{PhysicalVector, SurfaceSize};
 use resina_raster::{Viewport, render_surface_paint};
 use resina_resolver::{
-    SliderOrientation, SrgbFallback, opaque_contrast_ratio, resolve_slider_snapshot,
-    resolve_srgb_fallback,
+    CommandLabelIr, SliderOrientation, SrgbFallback, opaque_contrast_ratio,
+    resolve_slider_snapshot, resolve_srgb_fallback,
 };
 use serde_json::json;
 use std::{convert::Infallible, path::Path, rc::Rc};
@@ -198,8 +200,12 @@ fn glyph_ink_moved_past_any_slot_edge_is_reported() {
     let commands = prepare_slider_content(&snapshot, font, scale, 4).unwrap();
     let (origin, slot) = (f.input().label_origin, f.label.size());
     let output_width = (640.0 * scale) as u32;
+    let allowance = descent_allowance(&f.label);
     let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
-    assert_eq!(escaped_ink(&mask, output_width, scale, origin, slot), None);
+    assert_eq!(
+        escaped_ink(&mask, output_width, scale, origin, slot, allowance),
+        None
+    );
     let inked: Vec<_> = mask
         .as_chunks::<4>()
         .0
@@ -225,7 +231,10 @@ fn glyph_ink_moved_past_any_slot_edge_is_reported() {
         (-((left - start).ceil() + 1.0), 0.0),
         ((end - right).ceil() + 1.0, 0.0),
         (0.0, -((top - above).ceil() + 1.0)),
-        (0.0, (below - bottom).ceil() + 1.0),
+        (
+            0.0,
+            (below + allowance * f64::from(scale) - bottom).ceil() + 1.0,
+        ),
     ] {
         let mut moved = commands[2].clone();
         let DrawCommand::Text { rect, .. } = &mut moved else {
@@ -235,10 +244,82 @@ fn glyph_ink_moved_past_any_slot_edge_is_reported() {
         rect.y += (dy / f64::from(scale)) as f32;
         let mask = frames.render(&[moved], scale, Color::TRANSPARENT);
         assert!(
-            escaped_ink(&mask, output_width, scale, origin, slot).is_some(),
+            escaped_ink(&mask, output_width, scale, origin, slot, allowance).is_some(),
             "ink moved by ({dx}, {dy}) device pixels must leave the slot"
         );
     }
+}
+/// Ink one device pixel past the derived extent must be reported, whatever the grid
+/// fitting tolerance, and the tolerance must stay below a pixel row.
+#[test]
+fn ink_past_the_derived_descent_extent_is_reported() {
+    let font = load_font();
+    let mut frames = Frames::new();
+    let mut options = config();
+    options.direction = LayoutDirection::Rtl;
+    options.focused = false;
+    options.text_scale = 2.0;
+    options.text = "مستوى الصوت الخارج";
+    let f = Fixture::resolve(options, |input| measure_command_label(font, input));
+    let snapshot = resolve_slider_snapshot(f.input()).unwrap();
+    let scale = 1.25;
+    let commands = prepare_slider_content(&snapshot, font, scale, 4).unwrap();
+    let (origin, slot) = (f.input().label_origin, f.label.size());
+    let output_width = (640.0 * scale) as u32;
+    let allowance = descent_allowance(&f.label);
+    assert!(allowance > 0.0);
+    let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
+    assert_eq!(
+        escaped_ink(&mask, output_width, scale, origin, slot, allowance),
+        None
+    );
+    let bottom = f64::from(
+        mask.as_chunks::<4>()
+            .0
+            .iter()
+            .enumerate()
+            .filter(|(_, p)| p[3] > 0)
+            .map(|(i, _)| i as u32 / output_width)
+            .max()
+            .unwrap()
+            + 1,
+    );
+    let derived =
+        (origin.y + slot.height + 200.0) * f64::from(scale) + allowance * f64::from(scale);
+    assert!(
+        bottom - derived <= PLACEMENT_ROUNDING,
+        "ink ends {} device pixels below the derived extent",
+        bottom - derived
+    );
+    let shift = (derived - bottom).ceil() + 1.0;
+    let mut moved = commands[2].clone();
+    let DrawCommand::Text { rect, .. } = &mut moved else {
+        panic!("complete measured label required")
+    };
+    rect.y += (shift / f64::from(scale)) as f32;
+    let mask = frames.render(&[moved], scale, Color::TRANSPARENT);
+    assert!(
+        escaped_ink(&mask, output_width, scale, origin, slot, allowance).is_some(),
+        "ink {shift} device pixels lower must leave the allowed extent"
+    );
+}
+/// Noto Sans Arabic leaves 0.382 em under the baseline of a 1.4 line and its deepest
+/// glyph of these labels reaches 0.394 em; Inter stays inside its room.
+#[test]
+fn descent_allowance_is_derived_from_the_shaped_glyphs() {
+    let font = load_font();
+    let allowance = |direction, text| {
+        let mut options = config();
+        options.direction = direction;
+        options.text = text;
+        let f = Fixture::resolve(options, |input| measure_command_label(font, input));
+        let allowance = descent_allowance(&f.label);
+        (allowance, allowance / f.label.typography().font_size())
+    };
+    assert_eq!(allowance(LayoutDirection::Ltr, "Volume gjpqy").0, 0.0);
+    let (logical, em) = allowance(LayoutDirection::Rtl, "مستوى الصوت الخارج");
+    assert!((em - 0.012).abs() < 0.001, "{em} em");
+    assert!(logical > 0.0);
 }
 struct Frames {
     target: RenderTarget,
@@ -276,17 +357,45 @@ fn color(value: &SrgbFallback) -> Color {
 fn pixel_color(pixel: &[u8]) -> SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":pixel[..3].iter().map(|v|f64::from(*v)/255.0).collect::<Vec<_>>(),"alpha":1})).unwrap()
 }
+/// The logical distance below its slot that the pinned masters' shaped glyphs of a
+/// label reach. The slot is the layout box of the line, not the ink (spec/46), and a
+/// line that holds Noto Sans Arabic leaves less room under the baseline than the
+/// deepest Arabic glyphs reach. Bounding that ink overhang is owned by #292; until
+/// then this is the derived extent of the glyphs, zero for any label they stay inside.
+fn descent_allowance(label: &CommandLabelIr) -> f64 {
+    let typography = label.typography();
+    glyph_extent::descent_beyond_line_em(
+        label.text(),
+        typography.font_weight() as u16,
+        typography.line_height(),
+    ) * typography.font_size()
+}
+
+/// Half a device pixel, the most that fitting a glyph to the device grid moves its ink
+/// from the extent derived from the font. The wrapped Arabic Slider label ends exactly
+/// on a pixel boundary (row 460 holds ink up to alpha 252, row 461 none) 0.4 device
+/// pixel (98 coverage levels) below the derived extent, so a nonzero descent allowance
+/// tolerates up to half a pixel. A whole extra pixel row is not tolerated.
+const PLACEMENT_ROUNDING: f64 = 0.5;
+
 /// The first device pixel whose coverage exceeds the share of its footprint inside
-/// the slot. An unaligned slot edge splits a pixel, which may then carry ink lying
-/// entirely inside; a pixel wholly outside may carry none.
+/// the slot, extended below by `descent_overshoot` logical px and, when that is
+/// nonzero, by `PLACEMENT_ROUNDING`. An unaligned slot edge splits a pixel, which may
+/// then carry ink lying entirely inside; a pixel wholly outside may carry none.
 fn escaped_ink(
     mask: &[u8],
     output_width: u32,
     scale: f32,
     origin: PhysicalVector,
     slot: SurfaceSize,
+    descent_overshoot: f64,
 ) -> Option<(u32, u32, u8)> {
     let scale = f64::from(scale);
+    let descent_overshoot = if descent_overshoot > 0.0 {
+        descent_overshoot + PLACEMENT_ROUNDING / scale
+    } else {
+        0.0
+    };
     let inside = |pixel: u32, placement: f64, start: f64, extent: f64| {
         let low = (start + placement) * scale;
         let high = (start + extent + placement) * scale;
@@ -299,8 +408,8 @@ fn escaped_ink(
         .enumerate()
         .map(|(i, p)| (i as u32 % output_width, i as u32 / output_width, p[3]))
         .find(|&(x, y, alpha)| {
-            let share =
-                inside(x, 220.0, origin.x, slot.width) * inside(y, 200.0, origin.y, slot.height);
+            let share = inside(x, 220.0, origin.x, slot.width)
+                * inside(y, 200.0, origin.y, slot.height + descent_overshoot);
             f64::from(alpha) > (255.0 * share).ceil()
         })
 }
@@ -463,8 +572,16 @@ fn check_commands(
     }
     let parts = frames.render(&commands[..2], scale, background);
     let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
+    let descent_overshoot = descent_allowance(&f.label);
     assert_eq!(
-        escaped_ink(&mask, output_width, scale, origin, f.label.size()),
+        escaped_ink(
+            &mask,
+            output_width,
+            scale,
+            origin,
+            f.label.size(),
+            descent_overshoot
+        ),
         None,
         "{name}: native glyph escaped reserved label slot"
     );

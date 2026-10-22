@@ -39,11 +39,13 @@ def main():
         from PySide6.QtQuick import QQuickWindow
         if qVersion() != "6.11.2":
             raise ValueError("requires Qt 6.11.2")
+        conformance_font.isolate_process(args.font_dir)
         app = QGuiApplication([])
         plugin = QPluginLoader(str(args.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
             raise ValueError(plugin.errorString())
         conformance_font.register_qt(args.font_dir)
+        conformance_font.check_script_fontconfig(conformance_font.script_masters(args.font_dir))
         engine = QQmlEngine()
         engine.addImportPath(str(args.module_path.resolve()))
         component = QQmlComponent(engine, QUrl.fromLocalFile(str(ROOT / "conformance/quickshell/command-control-fixture.qml")))

@@ -472,6 +472,8 @@ def run_updates(component, args, fonts, authored, verify):
             raise ValueError("requires device scales 1, 1.25 or 2")
         host, module = (path.resolve(strict=True) for path in (args.host, args.module_path))
         fonts = {f"{prefix}_{name}": source() for name, source in fonts.items()}
+        conformance_font.isolate_process(args.font_dir)
+        conformance_font.check_script_fontconfig(conformance_font.script_masters(args.font_dir))
         environment = dict(os.environ, RESINA_QUICKSHELL_HOST=str(host), RESINA_QT_RUNTIME_MODULE=str(module))
         environment["QT_QPA_PLATFORM"] = args.platform
         version = subprocess.run([sys.executable, str(ROOT / "tools/run_qt_availability_probe.py"), "--version"],
