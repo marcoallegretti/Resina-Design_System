@@ -26,8 +26,8 @@ fails instead of publishing an incoherent snapshot.
 `controlledContent.identity` is a stable, nonempty opaque identity owned by the
 producer. It is compared exactly, is not trimmed or normalized (a
 whitespace-only identity is nonempty and accepted) and MUST NOT be derived from
-the label, a renderer object or a platform handle. `present` MUST be true: before resolution,
-the producer confirms that this identity resolves to the current semantic
+the label, a renderer object or a platform handle. `present` MUST be true:
+before resolution, the producer confirms that this identity resolves to the current semantic
 content node even when that node is visually hidden. Missing, empty and stale
 targets fail rather than publishing a broken relationship. The presence bit is
 evidence supplied at this public boundary; headless resolution cannot inspect a
@@ -53,17 +53,19 @@ A larger popup, dialog or navigation contract owns any such movement.
 
 Focus inside the controlled content is outside this profile. That content, or a
 larger contract that hosts it, owns that focus; this profile neither moves nor
-reports it. A producer collapsing a disclosure MUST resolve such focus before
-publishing a collapsed snapshot. Not redirecting focus does not forbid a hosting
-contract from restoring focus to the Command. Moving focus out of collapsed
-content is an explicit non-goal of this profile.
+reports it. The hosting contract that owns the controlled content is
+responsible for resolving focus inside content that becomes hidden; this profile
+supplies no input for it and states no conformance rule about it. Not
+redirecting focus does not forbid that contract from restoring focus to the
+Command. Moving focus out of collapsed content is an explicit non-goal of this
+profile.
 
 Commit the complete next state before changing content visibility or delivering
 the activation side effect. The committed state is the producer-owned semantic
-visibility state, the value published in `expanded`. One activation changes visibility once. Do not feed
-both raw events and a synthesized invocation for the same gesture. Content
-removal or replacement requires a new coherent target record before another
-snapshot is published.
+visibility state, the value published in `expanded`. One activation changes visibility once. Do
+not feed both raw events and a synthesized invocation for the same gesture.
+Content removal or replacement requires a new coherent target record before
+another snapshot is published.
 
 ## Output
 
