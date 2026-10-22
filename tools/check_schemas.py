@@ -693,6 +693,10 @@ def check_lit_containment():
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/disclosure-request.schema.json",
+        "schemas/disclosure-result.schema.json",
+        "schemas/disclosure-accessibility-ir.schema.json",
+        "schemas/disclosure-case.schema.json",
         "schemas/slider-snapshot-ir.schema.json",
         "schemas/slider-snapshot-ir-case.schema.json",
         "schemas/slider-part-body-ir.schema.json",
@@ -2791,6 +2795,72 @@ def main():
         if "expected" in case:
             check_case(validator_for("schemas/toggle-activation-result.schema.json"), name, case["expected"], True)
             checked += 1
+
+    from check_disclosure_backend import expected_result as disclosure_expected
+    disclosure_names = set()
+    disclosure_cases = load_json(ROOT / "conformance/interaction/disclosure-cases.json")
+    disclosure_result_validator = validator_for("schemas/disclosure-result.schema.json")
+    for case in disclosure_cases:
+        name = case["name"]
+        check_case(validator_for("schemas/disclosure-case.schema.json"), name, case, True)
+        if name in disclosure_names:
+            raise ValueError(f"duplicate disclosure case: {name}")
+        disclosure_names.add(name)
+        check_case(validator_for("schemas/disclosure-request.schema.json"), name,
+                   case["request"], case["requestSchemaValid"])
+        checked += 2
+        if "expected" in case:
+            if disclosure_expected(case["request"]) != case["expected"]:
+                raise AssertionError(f"{name}: disclosure vector differs from its inputs")
+            check_case(disclosure_result_validator, name, case["expected"], True)
+            checked += 1
+    disclosure_result = next(case["expected"] for case in disclosure_cases if "expected" in case)
+    for name, changes in [
+        ("disclosure expansion mismatch", [{"path": "/expanded", "value": True}]),
+        ("disclosure state expansion mismatch",
+         [{"path": "/accessibility/state/expanded", "value": True}]),
+        ("disclosure unavailable enabled action",
+         [{"path": "/accessibility/actions/0/available", "value": False}]),
+        ("disclosure missing relationship", [{"path": "/accessibility/relationships", "value": []}]),
+        ("disclosure empty relationship target",
+         [{"path": "/accessibility/relationships/0/target", "value": ""}]),
+        ("disclosure unsupported relationship",
+         [{"path": "/accessibility/relationships/0/kind", "value": "owns"}]),
+    ]:
+        check_case(disclosure_result_validator, name,
+                   apply_changes(disclosure_result, changes), False)
+        checked += 1
+    disclosure_disabled = next(
+        case["expected"] for case in disclosure_cases
+        if case["name"] == "disabled invoke preserves collapsed state"
+    )
+    disclosure_focused = next(
+        case["expected"] for case in disclosure_cases
+        if case["name"] == "enter collapses and retains focus"
+    )
+    for name, document in [
+        ("disclosure enabled activation cannot publish disabled accessibility",
+         apply_changes(disclosure_result, [
+             {"path": "/accessibility/state/enabled", "value": False},
+             {"path": "/accessibility/actions/0/available", "value": False},
+         ])),
+        ("disclosure disabled activation cannot publish enabled accessibility",
+         apply_changes(disclosure_disabled, [
+             {"path": "/accessibility/state/enabled", "value": True},
+             {"path": "/accessibility/actions/0/available", "value": True},
+             {"path": "/accessibility/focusable", "value": True},
+         ])),
+        ("disclosure unfocused activation cannot publish focused accessibility",
+         apply_changes(disclosure_result, [
+             {"path": "/accessibility/state/focused", "value": True},
+         ])),
+        ("disclosure focused activation cannot publish unfocused accessibility",
+         apply_changes(disclosure_focused, [
+             {"path": "/accessibility/state/focused", "value": False},
+         ])),
+    ]:
+        check_case(disclosure_result_validator, name, document, False)
+        checked += 1
 
     toggle_state_names = set()
     for case in load_json(ROOT / "conformance/interaction/toggle-states-cases.json"):

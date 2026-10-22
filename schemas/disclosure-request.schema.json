@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:disclosure-request:0.1.0",
+  "title": "Resina Disclosure Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "name",
+    "description",
+    "activation",
+    "focusable",
+    "expanded",
+    "controlledContent",
+    "event"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
+    },
+    "activation": {
+      "$ref": "urn:resina:schema:activation-state:0.1.0"
+    },
+    "focusable": {
+      "type": "boolean"
+    },
+    "expanded": {
+      "type": "boolean"
+    },
+    "controlledContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "present"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "present": {
+          "const": true
+        }
+      }
+    },
+    "event": {
+      "$ref": "urn:resina:schema:activation-request:0.1.0#/properties/event"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "activation": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "focusable": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "activation": {
+            "properties": {
+              "focused": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "focusable": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}
