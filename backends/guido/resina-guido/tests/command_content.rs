@@ -493,7 +493,8 @@ fn pixel_color(pixel: &[u8]) -> resina_resolver::SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb", "components":pixel[..3].iter().map(|v| f64::from(*v)/255.0).collect::<Vec<_>>(), "alpha":1})).unwrap()
 }
 /// A dimmed disabled label is published at its contrast bound, which 8-bit quantization can
-/// undercut; its solid glyph pixels must instead reproduce the quantized published color.
+/// undercut; its solid glyph pixels must instead reproduce the published color as GUIdo
+/// quantizes it, by truncation, within one level of blending rounding.
 fn assert_solid_glyph(
     name: &str,
     pixel: &[u8],
@@ -504,7 +505,7 @@ fn assert_solid_glyph(
         Some(published) => {
             for (channel, value) in published.components().iter().enumerate() {
                 assert!(
-                    pixel[channel].abs_diff((value * 255.0).round() as u8) <= 1,
+                    pixel[channel].abs_diff((value * 255.0) as u8) <= 1,
                     "{name}: solid disabled glyph differs from the published label"
                 );
             }
