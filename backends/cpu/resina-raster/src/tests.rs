@@ -661,8 +661,10 @@ fn a_flat_relief_paints_the_side_plane_outside_the_face_like_point_sampling() {
             assert!(
                 expected
                     .rgba()
-                    .chunks_exact(4)
-                    .any(|pixel| pixel[3] == 255 && pixel[..3] != body_rgb),
+                    .as_chunks::<4>()
+                    .0
+                    .iter()
+                    .any(|pixel| pixel[3] == 255 && pixel[..3] != body_rgb[..]),
                 "no side-plane pixel at scale {scale} with {samples} samples"
             );
         }
