@@ -66,8 +66,13 @@ ResinaToggleInput {
     function motionSource(request, options) {
         // Resolve policy/target through Rust; no material policy is implemented in QML.
         const retained = state.motionTarget ? captureMotion() : state.channels;
-        const probe = clockValue(resolver.resolveMotionSnapshot(request,measurement,options,
-            JSON.stringify({channels:retained,time:0}),false)).motion;
+        // Targets and policies follow the request alone, so frames of one request resolve them once.
+        if (state.probeRequest !== request) {
+            state.probe = clockValue(resolver.resolveMotionSnapshot(request,measurement,options,
+                JSON.stringify({channels:retained,time:0}),false)).motion;
+            state.probeRequest = request;
+        }
+        const probe = state.probe;
         const targets = {track:{target:probe.track.target,policy:probe.track.policy},
             thumb:{target:probe.thumb.target,policy:probe.thumb.policy},
             travel:{target:probe.travel.target,policy:probe.travel.policy}};
@@ -87,6 +92,7 @@ ResinaToggleInput {
         state.awaitingWindow = false;
         state.revision = {};
         state.prepared = "";
+        state.probeRequest = "";
         state.qualified = false;
         state.armed = false;
         resolver.publishSnapshot("");
@@ -283,6 +289,7 @@ ResinaToggleInput {
         if (!state.started) return;
         state.revision = {};
         state.prepared = "";
+        state.probeRequest = "";
         const running = state.running;
         state.running = true;
         try {
@@ -384,6 +391,8 @@ ResinaToggleInput {
         property var resumeChannels: null
         property var motionTarget: null
         property string profile: ""
+        property var probe: null
+        property string probeRequest: ""
         property bool motionActive: false
         property bool started: false
         property bool qualified: false
