@@ -24,13 +24,17 @@ event. Enabling or focusing an explicitly non-focusable disclosure therefore
 fails instead of publishing an incoherent snapshot.
 
 `controlledContent.identity` is a stable, nonempty opaque identity owned by the
-producer. It is compared exactly and MUST NOT be derived from the label, a
-renderer object or a platform handle. `present` MUST be true: before resolution,
+producer. It is compared exactly, is not trimmed or normalized (a
+whitespace-only identity is nonempty and accepted) and MUST NOT be derived from
+the label, a renderer object or a platform handle. `present` MUST be true: before resolution,
 the producer confirms that this identity resolves to the current semantic
 content node even when that node is visually hidden. Missing, empty and stale
 targets fail rather than publishing a broken relationship. The presence bit is
 evidence supplied at this public boundary; headless resolution cannot inspect a
 native accessibility tree or prove that a backend later publishes the target.
+Staleness is therefore not independently detectable by a headless
+implementation: `present` is the producer's assertion, the schema fixes it to
+`true`, and a `false` value is rejected only because the producer declared it.
 
 ## Transition
 
@@ -47,8 +51,16 @@ focused expanded disclosure collapses it while keeping actual focus on the
 Command. This profile does not move focus into controlled content on expansion.
 A larger popup, dialog or navigation contract owns any such movement.
 
+Focus inside the controlled content is outside this profile. That content, or a
+larger contract that hosts it, owns that focus; this profile neither moves nor
+reports it. A producer collapsing a disclosure MUST resolve such focus before
+publishing a collapsed snapshot. Not redirecting focus does not forbid a hosting
+contract from restoring focus to the Command. Moving focus out of collapsed
+content is an explicit non-goal of this profile.
+
 Commit the complete next state before changing content visibility or delivering
-the activation side effect. One activation changes visibility once. Do not feed
+the activation side effect. The committed state is the producer-owned semantic
+visibility state, the value published in `expanded`. One activation changes visibility once. Do not feed
 both raw events and a synthesized invocation for the same gesture. Content
 removal or replacement requires a new coherent target record before another
 snapshot is published.
@@ -71,7 +83,8 @@ Command activation result, next `expanded` value and a coherent
 | relationships | Exactly one `controls` relationship to the supplied identity |
 
 The relationship remains present in collapsed and expanded snapshots. The
-expanded state describes actual committed visibility, not an animation target.
+expanded state describes the committed semantic visibility state, not an
+animation target; presentation may lag it while content animates.
 Momentary press remains interaction feedback and is not exposed as an
 accessibility state.
 

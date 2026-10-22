@@ -859,5 +859,433 @@
     },
     "requestSchemaValid": false,
     "errorContains": "pointer ID must not be empty"
+  },
+  {
+    "name": "disabled focused expanded invoke stays expanded",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": true,
+        "hold": null
+      },
+      "focusable": true,
+      "expanded": true,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "invoke"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": false,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "expanded": true,
+      "accessibility": {
+        "schemaVersion": "0.1.0",
+        "role": "button",
+        "name": "Details",
+        "description": null,
+        "value": null,
+        "state": {
+          "enabled": false,
+          "focused": true,
+          "expanded": true
+        },
+        "actions": [
+          {
+            "kind": "invoke",
+            "available": false
+          }
+        ],
+        "focusable": true,
+        "relationships": [
+          {
+            "kind": "controls",
+            "target": "details-panel"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "availability loss while expanded disarms press",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": true,
+        "hold": {
+          "kind": "pointer",
+          "id": "mouse-primary",
+          "inside": true
+        }
+      },
+      "focusable": true,
+      "expanded": true,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "availability",
+        "enabled": false
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": false,
+          "focused": true,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "mouse-primary"
+        }
+      },
+      "expanded": true,
+      "accessibility": {
+        "schemaVersion": "0.1.0",
+        "role": "button",
+        "name": "Details",
+        "description": null,
+        "value": null,
+        "state": {
+          "enabled": false,
+          "focused": true,
+          "expanded": true
+        },
+        "actions": [
+          {
+            "kind": "invoke",
+            "available": false
+          }
+        ],
+        "focusable": true,
+        "relationships": [
+          {
+            "kind": "controls",
+            "target": "details-panel"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "disabled focusable collapsed invoke stays collapsed",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true,
+      "expanded": false,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "invoke"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": false,
+          "focused": false,
+          "hold": null
+        },
+        "activate": false,
+        "pressed": false,
+        "capture": null
+      },
+      "expanded": false,
+      "accessibility": {
+        "schemaVersion": "0.1.0",
+        "role": "button",
+        "name": "Details",
+        "description": null,
+        "value": null,
+        "state": {
+          "enabled": false,
+          "focused": false,
+          "expanded": false
+        },
+        "actions": [
+          {
+            "kind": "invoke",
+            "available": false
+          }
+        ],
+        "focusable": true,
+        "relationships": [
+          {
+            "kind": "controls",
+            "target": "details-panel"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "pointer release collapses without pulling focus",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "mouse-primary",
+          "inside": true
+        }
+      },
+      "focusable": true,
+      "expanded": true,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "pointerUp",
+        "id": "mouse-primary",
+        "inside": true
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": false,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": {
+          "kind": "release",
+          "id": "mouse-primary"
+        }
+      },
+      "expanded": false,
+      "accessibility": {
+        "schemaVersion": "0.1.0",
+        "role": "button",
+        "name": "Details",
+        "description": null,
+        "value": null,
+        "state": {
+          "enabled": true,
+          "focused": false,
+          "expanded": false
+        },
+        "actions": [
+          {
+            "kind": "invoke",
+            "available": true
+          }
+        ],
+        "focusable": true,
+        "relationships": [
+          {
+            "kind": "controls",
+            "target": "details-panel"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "semantic invoke collapses without pulling focus",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": null
+      },
+      "focusable": true,
+      "expanded": true,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "invoke"
+      }
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "enabled": true,
+          "focused": false,
+          "hold": null
+        },
+        "activate": true,
+        "pressed": false,
+        "capture": null
+      },
+      "expanded": false,
+      "accessibility": {
+        "schemaVersion": "0.1.0",
+        "role": "button",
+        "name": "Details",
+        "description": null,
+        "value": null,
+        "state": {
+          "enabled": true,
+          "focused": false,
+          "expanded": false
+        },
+        "actions": [
+          {
+            "kind": "invoke",
+            "available": true
+          }
+        ],
+        "focusable": true,
+        "relationships": [
+          {
+            "kind": "controls",
+            "target": "details-panel"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "disabled state holding a press fails",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": false,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "mouse-primary",
+          "inside": true
+        }
+      },
+      "focusable": true,
+      "expanded": false,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "cancel"
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "disabled state must not hold a press"
+  },
+  {
+    "name": "unfocused keyboard hold fails",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "key",
+          "key": "space"
+        }
+      },
+      "focusable": true,
+      "expanded": false,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "cancel"
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "keyboard hold requires actual focus"
+  },
+  {
+    "name": "empty held pointer identity fails",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "name": "Details",
+      "description": null,
+      "activation": {
+        "schemaVersion": "0.1.0",
+        "enabled": true,
+        "focused": false,
+        "hold": {
+          "kind": "pointer",
+          "id": "",
+          "inside": true
+        }
+      },
+      "focusable": true,
+      "expanded": false,
+      "controlledContent": {
+        "identity": "details-panel",
+        "present": true
+      },
+      "event": {
+        "kind": "cancel"
+      }
+    },
+    "requestSchemaValid": false,
+    "errorContains": "pointer ID must not be empty"
   }
 ]

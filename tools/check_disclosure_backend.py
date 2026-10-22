@@ -97,6 +97,13 @@ def expected_result(request):
     event = request["event"]
     if event["kind"].startswith("pointer") and not event["id"]:
         raise ValueError("pointer ID must not be empty")
+    hold = state["hold"]
+    if hold is not None and hold["kind"] == "pointer" and not hold["id"]:
+        raise ValueError("pointer ID must not be empty")
+    if not state["enabled"] and hold is not None:
+        raise ValueError("disabled state must not hold a press")
+    if not state["focused"] and hold is not None and hold["kind"] == "key":
+        raise ValueError("keyboard hold requires actual focus")
     if not request["focusable"] and state["enabled"]:
         raise ValueError("enabled disclosure must be focusable")
     if not request["focusable"] and state["focused"]:
