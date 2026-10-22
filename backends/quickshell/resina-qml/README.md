@@ -134,7 +134,11 @@ against the pinned Inter masters. A style name identifies a file only when no
 other visible face of the family has that style, so the label checks also list
 the fontconfig-visible faces of the family in the probe's environment and fail
 unless every upright, normal-width face at weight 400, 500 or 600 is
-byte-identical to that weight's pinned master. `measureJson`, the production
+byte-identical to that weight's pinned master. They run the probe with a fontconfig
+file that lists only the directory of the pinned masters, so Arabic and Hebrew text,
+which the Inter masters have no glyphs for, can fall back only to the pinned Noto Sans
+Arabic and Noto Sans Hebrew masters. They fail when a face that supports either
+language is visible and is not one of those masters. `measureJson`, the production
 entry point of the Rust Command path, returns only `{kind, width, height}`: it
 drops `face`, so production measurement cannot detect a substituted weight. Only
 the label checks, which call `measure`, verify it. Per-glyph fallback availability remains the
@@ -171,13 +175,13 @@ plain-text U+2029 break by using independent native layouts, consistent with
 Native limits do not narrow IR.
 
 ```sh
-python tools/check_quickshell_label_runtime.py --font-dir /usr/share/fonts/opentype/inter
-python tools/check_quickshell_label_runtime.py --font-dir /usr/share/fonts/opentype/inter --platform wayland
+python tools/check_quickshell_label_runtime.py --font-dir $CONFORMANCE_FONTS
+python tools/check_quickshell_label_runtime.py --font-dir $CONFORMANCE_FONTS --platform wayland
 ```
 
-The checker takes the directory holding the pinned Inter static masters
+The checker takes the directory holding the pinned static masters
 (`tools/conformance_font.json`; `python tools/conformance_font.py fetch --output DIR`
-provides them where no package does). The native probe registers all three and
+provides them). The native probe registers the three Inter masters and
 checks 27 labels, four text scales and four signed spacing values on each
 requested actual device scale (by default 0.5, 1, 1.25, 2 and 1.3). It includes
 100.06% text scaling and the authored 0.15 px wide tracking, alongside
@@ -194,7 +198,9 @@ fontconfig makes visible in the probe's environment and fails on an upright,
 normal-width face at weight 400, 500 or 600 that is not byte-identical to that
 weight's pinned master. At each scale it records the master that weights 400, 500
 and 600 resolve to (family, style, weight, file and SHA-256) and fails unless
-they are the three distinct pinned masters. A second run registers only the
+they are the three distinct pinned masters. It also records, for Arabic and Hebrew at
+each of those weights, the Noto master whose advances the probe's fallback text equals
+(family, style, weight, file and SHA-256), and fails on a different face or weight. A second run registers only the
 Regular master, with a fontconfig file that lists no font directories, and must
 report weight 500 as a substitution. The probe also measures the digits 0 to 9
 in the Medium master at 20 px, once with `font.features: {"tnum": 1}` and once
@@ -246,8 +252,8 @@ clipping, font fallback, overhang background and guarded color remain the
 composition owner's responsibility.
 
 ```sh
-python tools/check_quickshell_label_render_runtime.py --font-dir /usr/share/fonts/opentype/inter --output-dir target/qt-label-software
-python tools/check_quickshell_label_render_runtime.py --font-dir /usr/share/fonts/opentype/inter --scene-graph rhi --scales 0.5 1 1.25 2 1.3 --output-dir target/qt-label-rhi
+python tools/check_quickshell_label_render_runtime.py --font-dir $CONFORMANCE_FONTS --output-dir target/qt-label-software
+python tools/check_quickshell_label_render_runtime.py --font-dir $CONFORMANCE_FONTS --scene-graph rhi --scales 0.5 1 1.25 2 1.3 --output-dir target/qt-label-rhi
 ```
 
 Use fresh output directories. The probe compares 36 actual drawing/reference

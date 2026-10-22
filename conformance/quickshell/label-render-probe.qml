@@ -35,6 +35,7 @@ FloatingWindow {
             return true;
         }
     }
+    ScriptFaceOracle { id: scriptFaces }
     Loader { id: measure; source: Quickshell.env("RESINA_LABEL_MEASURE_QML") }
     Item {
         id: capture
@@ -206,6 +207,8 @@ FloatingWindow {
                     || measure.status !== Loader.Ready || rendered.status !== Loader.Ready
                     || Math.abs(window.nativeDeviceScale - scale) > 0.00001 || renderer !== expectedRenderer)
                     throw new Error("font, components, actual device scale or renderer differ");
+                for (const resolved of scriptFaces.resolve(fontAsset.name, [400]))
+                    console.log("RESINA_LABEL_SCRIPT_FACE", JSON.stringify(resolved));
                 frames = [{text:"j", pixelSize:60, spacing:0, ink:true}];
                 for (const textScale of [1, 1.5, 2]) {
                     for (const text of ["Reconnect", "Erneut mit dem Netzwerk verbinden", "مرحبا بالعالم",

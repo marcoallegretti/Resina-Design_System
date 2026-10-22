@@ -125,11 +125,13 @@ def main():
         from PySide6 import QtQuick  # Load the pinned host's native plugin dependency.
         if qVersion() != "6.11.2":
             raise ValueError("requires Qt 6.11.2")
+        conformance_font.isolate_process(arguments.font_dir)
         application = QGuiApplication([])
         plugin = QPluginLoader(str(arguments.module_path.resolve() / "Resina/Runtime/libResina_Runtime.so"))
         if plugin.instance() is None:
             raise ValueError("Qt plugin factory failed: " + plugin.errorString())
         conformance_font.register_qt(arguments.font_dir)
+        conformance_font.check_script_fontconfig(conformance_font.script_masters(arguments.font_dir))
         engine = QQmlEngine()
         engine.addImportPath(str(arguments.module_path.resolve()))
         component = QQmlComponent(engine)

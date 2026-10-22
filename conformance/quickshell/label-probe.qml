@@ -29,6 +29,7 @@ FloatingWindow {
             return true;
         }
     }
+    ScriptFaceOracle { id: scriptFaces }
     Loader {
         id: measurement
         source: Quickshell.env("RESINA_LABEL_MEASURE_QML")
@@ -98,6 +99,8 @@ FloatingWindow {
                     Qt.quit();
                     return;
                 }
+                for (const resolved of scriptFaces.resolve(fontAsset.name, [400, 500, 600]))
+                    console.log("RESINA_LABEL_SCRIPT_FACE", JSON.stringify(resolved));
                 const texts = ["Reconnect", "Erneut mit dem Netzwerk verbinden", "مرحبا بالعالم",
                     "Reconnect now", "Reconnect to Wi-Fi", "<b>Reconnect</b>",
                     "a\nb", "a\n", "\na", "a\n\nb", "a\r\nb", "a\r\n",

@@ -11,6 +11,11 @@ import conformance_font
 
 MASTERS = [{"family": "Inter", "style": master["style"], "weight": master["weight"], "file": master["file"],
             "sha256": master["sha256"]} for master in conformance_font.MANIFEST["masters"]]
+SCRIPTS = [{"script": script["script"], "family": script["family"], "style": master["style"],
+            "weight": master["weight"], "file": master["file"], "sha256": master["sha256"]}
+           for script in conformance_font.MANIFEST["scripts"] for master in script["masters"]]
+ARABIC = 'RESINA_LABEL_SCRIPT_FACE {"script": "Arabic", "weight": 400, "face": {"family": "Noto Sans Arabic", "style": "Regular"}}\n'
+HEBREW = 'RESINA_LABEL_SCRIPT_FACE {"script": "Hebrew", "weight": 400, "face": {"family": "Noto Sans Hebrew", "style": "Regular"}}\n'
 
 
 def ink_image(x=5):
@@ -70,20 +75,26 @@ class NativeLabelCaptureTests(unittest.TestCase):
 
     def test_native_success_requires_exact_counts_scale_master_and_terminal_status(self):
         face = 'RESINA_LABEL_FACE {"weight": 400, "face": {"family": "Inter", "style": "Regular"}}\n'
-        success = face + "RESINA_LABEL_RENDER_PASS 36 9 1.25 software\n"
-        resolved = check_probe_output(SimpleNamespace(stdout=success, stderr="", returncode=0), 1.25, MASTERS)
-        self.assertEqual((resolved["style"], resolved["weight"], resolved["file"]), ("Regular", 400, "Inter-Regular.otf"))
+        success = face + ARABIC + HEBREW + "RESINA_LABEL_RENDER_PASS 36 9 1.25 software\n"
+        resolved = check_probe_output(SimpleNamespace(stdout=success, stderr="", returncode=0), 1.25, MASTERS, SCRIPTS)
+        self.assertEqual((resolved["master"]["style"], resolved["master"]["weight"], resolved["master"]["file"]),
+                         ("Regular", 400, "Inter-Regular.otf"))
+        self.assertEqual([(face["script"], face["file"]) for face in resolved["scriptFaces"]],
+                         [("Arabic", "NotoSansArabic-Regular.ttf"), ("Hebrew", "NotoSansHebrew-Regular.ttf")])
         for log, status in (("", 0), (success + success, 0), (success, 1),
             (success + "RESINA_LABEL_RENDER_FAIL failed\n", 0),
             (success.replace("software", "opengl"), 0),
             (success.replace("PASS 36", "PASS 35"), 0), (success.replace("1.25", "1"), 0),
             (success.replace(face, ""), 0), (face + success, 0),
+            (success.replace(ARABIC, ""), 0), (success.replace(HEBREW, ""), 0), (success + ARABIC, 0),
+            (success.replace(HEBREW, HEBREW.replace("Regular", "Bold")), 0),
+            (success.replace("Noto Sans Hebrew", "DejaVu Sans"), 0),
             (success.replace("Regular", "Medium"), 0), (success.replace("Inter", "DejaVu Sans"), 0)):
             with self.subTest(log=log, status=status):
                 with self.assertRaises(ValueError):
-                    check_probe_output(SimpleNamespace(stdout=log, stderr="", returncode=status), 1.25, MASTERS)
+                    check_probe_output(SimpleNamespace(stdout=log, stderr="", returncode=status), 1.25, MASTERS, SCRIPTS)
         check_probe_output(SimpleNamespace(stdout=success.replace("software", "opengl"),
-                                          stderr="", returncode=0), 1.25, MASTERS, "rhi")
+                                          stderr="", returncode=0), 1.25, MASTERS, SCRIPTS, "rhi")
 
 
 if __name__ == "__main__":
