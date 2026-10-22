@@ -100,6 +100,8 @@ fn consumers() -> Vec<(&'static str, Value, &'static [&'static str])> {
                 "surface",
                 "checkedColorRole",
                 "interactionAppearance",
+                "light",
+                "relief",
             ],
         ),
         (
@@ -112,6 +114,8 @@ fn consumers() -> Vec<(&'static str, Value, &'static [&'static str])> {
                 "schemaVersion",
                 "surface",
                 "interactionAppearance",
+                "light",
+                "relief",
                 "part",
                 "checkedColorRole",
                 "channels",

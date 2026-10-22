@@ -120,9 +120,14 @@ def phase_of(states):
     return next((state for state in ("disabled", "pressed", "hover") if state in states), "rest")
 
 
-def command_body_source(request, response):
-    """The lit control body source of one fixture command request, derived without the reference."""
+def control_body_source(request, response, relief_part="commandBody", color_role=None):
+    """The lit control body source of one fixture control part request, derived without the reference.
+
+    `relief_part` names the part's profile in the request relief, and `color_role` the selected color
+    role when it is not the surface's own.
+    """
     body = request["surface"]["body"]
+    color_role = color_role or body["surface"]["colorRole"]
     theme = fixture_theme(request)
     family = theme["materialAssignments"]["control"][body["surface"]["materialRole"].split(".")[1]]
 
@@ -130,7 +135,7 @@ def command_body_source(request, response):
         return {"colorSpace": "srgb", "components": list(components), "alpha": 1}
 
     identity = {
-        "materialRole": body["surface"]["materialRole"], "colorRole": body["surface"]["colorRole"],
+        "materialRole": body["surface"]["materialRole"], "colorRole": color_role,
         "materialFamily": family, "form": body["surface"]["form"],
         "states": body["surface"]["states"], "foregroundRole": body["foregroundRole"],
         "contentFallbackApplied": False,
@@ -141,8 +146,8 @@ def command_body_source(request, response):
         "identity": identity,
         "size": body["size"],
         "radii": fixture_radii(request),
-        "relief": request["relief"]["commandBody"],
-        "body": color(mix_body(fixture_color(request, body["surface"]["colorRole"]), response["bodyMix"])),
+        "relief": request["relief"][relief_part],
+        "body": color(mix_body(fixture_color(request, color_role), response["bodyMix"])),
         "pigmentProfiles": body["appearance"]["pigmentProfiles"],
         "keyLight": body["appearance"]["keyLight"],
         "light": request["light"],
@@ -186,9 +191,9 @@ def imperceptible_phase(rest_color, rest_depth, profile):
     return None
 
 
-def lit_face_mismatch(body, request, response, phase):
+def lit_face_mismatch(body, request, response, phase, relief_part="commandBody", color_role=None):
     """Compares the published lit body with independent spec/88 arithmetic for this request."""
-    source = command_body_source(request, response)
+    source = control_body_source(request, response, relief_part, color_role)
     oracle = Body(source)
     face = body["face"]
     if mismatch(face["light"], expected_light(source, phase)):
@@ -197,7 +202,7 @@ def lit_face_mismatch(body, request, response, phase):
         return "/paint/body/face/pigment"
     if face["edge"]["color"] != oracle.edge or face["edgeWidth"] != source["edgeWidth"]:
         return "/paint/body/face/edge"
-    if face["surface"]["profile"] != request["relief"]["commandBody"]:
+    if face["surface"]["profile"] != request["relief"][relief_part]:
         return "/paint/body/face/surface/profile"
     if face["surface"]["outline"]["size"] != source["size"]:
         return "/paint/body/face/surface/outline/size"

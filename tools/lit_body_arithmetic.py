@@ -715,3 +715,28 @@ def ir_uniform_contains_box(ir, bounds):
     probe.edge_width = face["edgeWidth"]
     probe.kind, probe.shoulder = profile["kind"], profile["shoulderWidth"]
     return probe.uniform_contains_box(bounds)
+
+
+def toggle_thumb_footprints(case):
+    """spec/55: the thumb silhouette rectangle placed at both logical endpoints of a Toggle layout.
+
+    The silhouette is the thumb front swept by the key side offset `-l*D` of the final depth `D`.
+    """
+    key = case["keyDirection"]
+    length = math.hypot(key["x"], key["y"])
+    offset = (-key["x"] / length * case["depth"], -key["y"] / length * case["depth"])
+    track, thumb, insets = case["trackSize"], case["thumbSize"], case["insets"]
+    starts = (insets["start"], track["width"] - insets["end"] - thumb["width"])
+    return [{"x": start + min(0.0, offset[0]), "y": insets["top"] + min(0.0, offset[1]),
+             "width": thumb["width"] + abs(offset[0]), "height": thumb["height"] + abs(offset[1])}
+            for start in starts]
+
+
+def toggle_lit_containment_outcomes(matrix, source):
+    """Yield (name, contained): both thumb footprints lie in the track's edge interior and uniform plateau."""
+    for case in matrix["cases"]:
+        track = case["trackSize"]
+        shape = case["trackShape"]
+        radius = min(track["width"], track["height"]) / 2 if shape["kind"] == "capsule" else shape["radius"]
+        body = Body(lit_body_source(source, track, radius, case["trackRelief"], matrix["edgeWidth"], "ltr"))
+        yield case["name"], all(body.uniform_contains_box(box) for box in toggle_thumb_footprints(case))

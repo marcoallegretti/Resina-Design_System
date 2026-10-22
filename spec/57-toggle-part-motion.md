@@ -1,4 +1,4 @@
-# Sampled Toggle interaction paint (candidate, 0.1.0)
+# Sampled Toggle interaction paint (candidate, 0.2.0)
 
 Blueprint sections 55–58, 59–62, 85–86, 98 and 180 require material response,
 independent state feedback and reduced-motion adaptation. This contract connects
@@ -8,12 +8,14 @@ selection color between roles, thumb travel, shape deformation or component sema
 
 ## Ownership and inputs
 
-The [request](../schemas/toggle-part-motion-request.schema.json) requires the complete
-static part inputs, explicit bodyMix/depthScale dynamics and initial states, and
-finite nonnegative elapsed seconds. Channels are dimensionless; velocity uses
-inverse seconds. They use the same response vocabulary and bounds as
-[command motion](45-command-motion.md), without adopting ordinary-command state
-restrictions. No spring coefficients, previous state or elapsed time have defaults.
+The [request](../schemas/toggle-part-motion-request.schema.json), version 0.2.0,
+requires the complete static part inputs of [part paint](54-toggle-part-paint.md),
+including its `light` and `relief` members, explicit bodyMix/depthScale dynamics
+and initial states, and finite nonnegative elapsed seconds. Version 0.1.0
+requests are rejected. Channels are dimensionless; velocity uses inverse seconds.
+They use the same response vocabulary and bounds as
+[command motion](45-command-motion.md), whose current channels definition the
+request references, without adopting ordinary-command state restrictions. No spring coefficients, previous state or elapsed time have defaults.
 Unknown, duplicate, missing, nonfinite and unsupported-version input fails.
 
 The request MUST be a JSON object. Its `part` and `checkedColorRole` MUST be string names from their respective schemas, as in static part paint. Positional requests and object-encoded names are invalid.
@@ -45,17 +47,25 @@ unprojected returned states on retargeting; reset elapsed time to zero. Never
 manufacture zero velocity or feed projected paint coefficients back into motion.
 
 Apply the projected response to the actually selected theme-bound pigment and
-semantic depth, then rerun body, adjacent-edge, content and track-navigation
-geometry/contrast guards on this sample. A valid endpoint cannot certify a path.
+semantic depth, then resolve the [lit control body](88-lit-control-body.md) and
+rerun body, adjacent-edge, content and track-navigation geometry/contrast guards
+on this sample. Each sample admits light from the current target phase, so
+interaction light steps at retargeting while depth is still springing; a caller
+may vary channel strength between requests, because no light timeline is
+defined. The part-keyed relief is never animated or scaled. A settled sample
+equals static part paint, including `face.light`. A valid endpoint cannot certify a path.
 On failure return a diagnostic and no partial IR. Do not hide a failure by changing
 preferences, clipping paint, omitting focus or weakening contrast minima.
 
-The [result](../schemas/toggle-part-motion-ir.schema.json) contains policy, current
+The [result](../schemas/toggle-part-motion-ir.schema.json), version 0.2.0, contains policy, current
 authored target, both scalar trajectories/projections and complete partPaint. The
 nested phase is the current target phase; its response is the actual rendered
 sample. A moving rest phase may therefore have a nonidentity response. Static
 part paint retains its exact rest identity requirement. Both shapes retain checked
-state agreement, full supported states and track-only focus ownership.
+state agreement, full supported states and track-only focus ownership. The
+superseded 0.1.0 [request](../schemas/versions/toggle-part-motion-request-0.1.0.schema.json)
+and [result](../schemas/versions/toggle-part-motion-ir-0.1.0.schema.json) schemas
+remain archived.
 
 ## Component composition
 
@@ -81,7 +91,9 @@ Toggle state and selection ownership remain in the Toggle operation.
 [Public cases](../conformance/ir/toggle-part-motion-cases.json) and the
 [request fixture](../conformance/ir/toggle-part-motion-request.json) cover both
 parts, selection, all interaction phases, retained projection velocity, damping
-regimes, reduced motion and diagnostic failures. These explicit dynamics exercise
+regimes, reduced motion, light admitted from the target phase while depth
+springs, release to rest, disabled and keyboard presses, settled samples equal
+to static paint and diagnostic failures. These explicit dynamics exercise
 arithmetic and are not calibrated material defaults.
 The separate [authored response calibration](80-material-response-calibration.md)
 provides explicit body/depth dynamics without replacing these fixtures.

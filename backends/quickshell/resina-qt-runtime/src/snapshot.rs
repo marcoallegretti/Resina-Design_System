@@ -107,7 +107,7 @@ struct Body {
     minimum_edge_contrast: f64,
 }
 
-fn light_source<'de, D: serde::Deserializer<'de>>(
+pub(crate) fn light_source<'de, D: serde::Deserializer<'de>>(
     deserializer: D,
 ) -> Result<MaterialLightChannels, D::Error> {
     let source = Box::<serde_json::value::RawValue>::deserialize(deserializer)?;
@@ -193,7 +193,7 @@ thread_local! {
     static RESERVATION: RefCell<Option<(String, CommandLabelIr, HitRegionIr)>> =
         const { RefCell::new(None) };
     // Motion frames paint the same lit faces; their relief terms are kept between them.
-    static RELIEF: ReliefReuse = ReliefReuse::default();
+    pub(crate) static RELIEF: ReliefReuse = ReliefReuse::default();
 }
 
 #[cfg(test)]

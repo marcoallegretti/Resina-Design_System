@@ -1,10 +1,10 @@
 use crate::{
-    CommandMotionChannels, CommandMotionPolicy, CommandProjection, CompiledTheme,
+    CommandMotionChannels, CommandMotionPolicy, CommandProjection, CompiledTheme, ControlRelief,
     TogglePartPaintError, TogglePartPaintInput, TogglePartPaintIr,
     toggle_part_paint::resolve_toggle_part_paint_with_response,
 };
 use resina_environment::EnvironmentSnapshot;
-use resina_model::{CommandAppearance, CommandResponse};
+use resina_model::{CommandAppearance, CommandResponse, MaterialLightChannels};
 use resina_motion::SpringTrajectorySample;
 use serde::{
     Deserialize, Deserializer, Serialize,
@@ -73,7 +73,7 @@ pub fn resolve_toggle_part_motion(
         },
     )?;
     Ok(TogglePartMotionIr {
-        schema_version: "0.1.0",
+        schema_version: "0.2.0",
         policy: sample.policy,
         target,
         body_mix: sample.body_mix,
@@ -89,6 +89,8 @@ struct Request {
     interaction_appearance: CommandAppearance,
     part: crate::TogglePart,
     checked_color_role: resina_model::ColorRole,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
     channels: CommandMotionChannels,
     time: f64,
 }
@@ -103,6 +105,8 @@ struct RequestMembers {
     part: crate::TogglePart,
     #[serde(deserialize_with = "crate::toggle_part_paint::checked_color_role_name")]
     checked_color_role: resina_model::ColorRole,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
     channels: CommandMotionChannels,
     time: f64,
 }
@@ -123,6 +127,8 @@ impl<'de> Deserialize<'de> for Request {
                     interaction_appearance: input.interaction_appearance,
                     part: input.part,
                     checked_color_role: input.checked_color_role,
+                    light: input.light,
+                    relief: input.relief,
                     channels: input.channels,
                     time: input.time,
                 })
@@ -138,12 +144,8 @@ pub fn resolve_toggle_part_motion_source(
         resina_tokens::parse_token_document(source).map_err(TogglePartPaintError::Parse)?;
     let request: Request =
         serde_json::from_value(document).map_err(TogglePartPaintError::Request)?;
-    crate::pigment_source::validate_pigment_source(
-        source,
-        &["surface", "body", "appearance", "pigmentProfiles"],
-    )
-    .map_err(TogglePartPaintError::Request)?;
-    if request.schema_version != "0.1.0" {
+    crate::toggle_part_paint::validate_toggle_part_sources(source)?;
+    if request.schema_version != "0.2.0" {
         return Err(TogglePartPaintError::UnsupportedVersion);
     }
     let (theme, environment, owned) =
@@ -157,6 +159,8 @@ pub fn resolve_toggle_part_motion_source(
                 interaction_appearance: &request.interaction_appearance,
                 part: request.part,
                 checked_color_role: request.checked_color_role,
+                light: &request.light,
+                relief: &request.relief,
             },
             channels: &request.channels,
             time: request.time,

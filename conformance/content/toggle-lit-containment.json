@@ -1,0 +1,621 @@
+{
+  "schemaVersion": "0.1.0",
+  "edgeWidth": 1,
+  "cases": [
+    {
+      "name": "illustrative-track-shoulder-1.5-diagonal-key",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 12.25,
+        "bottom": 12.25
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "illustrative-track-shoulder-1.5-near-vertical-key",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 12.25,
+        "bottom": 12.25
+      },
+      "keyDirection": {
+        "x": -0.34,
+        "y": -0.94
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "illustrative-track-shoulder-2-diagonal-key",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 1,
+        "shoulderWidth": 2
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 12.25,
+        "bottom": 12.25
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "illustrative-track-shoulder-2-near-vertical-key",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 1,
+        "shoulderWidth": 2
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 12.25,
+        "bottom": 12.25
+      },
+      "keyDirection": {
+        "x": -0.34,
+        "y": -0.94
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "wide-track-24px-thumb-diagonal-key",
+      "trackSize": {
+        "width": 128,
+        "height": 80
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 24,
+        "height": 24
+      },
+      "insets": {
+        "start": 40,
+        "end": 40,
+        "top": 28,
+        "bottom": 28
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "wide-track-24px-thumb-near-vertical-key",
+      "trackSize": {
+        "width": 128,
+        "height": 80
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 24,
+        "height": 24
+      },
+      "insets": {
+        "start": 40,
+        "end": 40,
+        "top": 28,
+        "bottom": 28
+      },
+      "keyDirection": {
+        "x": -0.34,
+        "y": -0.94
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "start-inset-crosses-the-capsule-cap",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 4,
+        "end": 12.25,
+        "top": 12.25,
+        "bottom": 12.25
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": false
+    },
+    {
+      "name": "end-inset-crosses-the-capsule-cap",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 4,
+        "top": 12.25,
+        "bottom": 12.25
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": false
+    },
+    {
+      "name": "lowered-thumb-shoulder-1.5-diagonal-key",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 14,
+        "bottom": 10.5
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "lowered-thumb-shoulder-1.5-near-vertical-key",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 14,
+        "bottom": 10.5
+      },
+      "keyDirection": {
+        "x": -0.34,
+        "y": -0.94
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "lowered-thumb-shoulder-2-diagonal-key",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 1,
+        "shoulderWidth": 2
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 14,
+        "bottom": 10.5
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": false
+    },
+    {
+      "name": "lowered-thumb-shoulder-1.5-near-vertical-key-beyond-the-plateau",
+      "trackSize": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "trackShape": {
+        "kind": "capsule"
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 12.25,
+        "end": 12.25,
+        "top": 15.25,
+        "bottom": 9.25
+      },
+      "keyDirection": {
+        "x": -0.34,
+        "y": -0.94
+      },
+      "depth": 4,
+      "contained": false
+    },
+    {
+      "name": "square-track-top-vertex-on-the-shoulder-boundary",
+      "trackSize": {
+        "width": 200,
+        "height": 40
+      },
+      "trackShape": {
+        "kind": "uniform",
+        "radius": 0
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 24,
+        "end": 24,
+        "top": 1.5,
+        "bottom": 22.5
+      },
+      "keyDirection": {
+        "x": 0,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "square-track-top-vertex-2-20-above-the-shoulder-boundary",
+      "trackSize": {
+        "width": 200,
+        "height": 40
+      },
+      "trackShape": {
+        "kind": "uniform",
+        "radius": 0
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 24,
+        "end": 24,
+        "top": 1.4999990463256836,
+        "bottom": 22.500000953674316
+      },
+      "keyDirection": {
+        "x": 0,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": false
+    },
+    {
+      "name": "square-track-swept-bottom-vertex-on-the-shoulder-boundary",
+      "trackSize": {
+        "width": 200,
+        "height": 40
+      },
+      "trackShape": {
+        "kind": "uniform",
+        "radius": 0
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 24,
+        "end": 24,
+        "top": 18.5,
+        "bottom": 5.5
+      },
+      "keyDirection": {
+        "x": 0,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "square-track-swept-bottom-vertex-2-20-below-the-shoulder-boundary",
+      "trackSize": {
+        "width": 200,
+        "height": 40
+      },
+      "trackShape": {
+        "kind": "uniform",
+        "radius": 0
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 24,
+        "end": 24,
+        "top": 18.500000953674316,
+        "bottom": 5.499999046325684
+      },
+      "keyDirection": {
+        "x": 0,
+        "y": -1
+      },
+      "depth": 4,
+      "contained": false
+    },
+    {
+      "name": "square-track-start-vertex-on-the-shoulder-boundary",
+      "trackSize": {
+        "width": 100,
+        "height": 40
+      },
+      "trackShape": {
+        "kind": "uniform",
+        "radius": 0
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 1.5,
+        "end": 5.5,
+        "top": 12,
+        "bottom": 12
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": 0
+      },
+      "depth": 4,
+      "contained": true
+    },
+    {
+      "name": "square-track-start-vertex-2-20-outside-the-shoulder",
+      "trackSize": {
+        "width": 100,
+        "height": 40
+      },
+      "trackShape": {
+        "kind": "uniform",
+        "radius": 0
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 1.4999990463256836,
+        "end": 5.5,
+        "top": 12,
+        "bottom": 12
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": 0
+      },
+      "depth": 4,
+      "contained": false
+    },
+    {
+      "name": "square-track-swept-right-vertex-2-20-outside-the-shoulder",
+      "trackSize": {
+        "width": 100,
+        "height": 40
+      },
+      "trackShape": {
+        "kind": "uniform",
+        "radius": 0
+      },
+      "trackRelief": {
+        "kind": "recessed",
+        "bodyThickness": 2,
+        "amplitude": 0.75,
+        "shoulderWidth": 1.5
+      },
+      "thumbSize": {
+        "width": 16,
+        "height": 16
+      },
+      "insets": {
+        "start": 1.5,
+        "end": 5.499999046325684,
+        "top": 12,
+        "bottom": 12
+      },
+      "keyDirection": {
+        "x": -1,
+        "y": 0
+      },
+      "depth": 4,
+      "contained": false
+    }
+  ]
+}

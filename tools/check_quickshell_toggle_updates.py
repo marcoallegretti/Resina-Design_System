@@ -15,6 +15,7 @@ from check_quickshell_command_updates import (
 )
 from check_surface_paint_backend import surface_paint_channel_mismatch
 import conformance_font
+from lit_body_arithmetic import body_invariants
 
 
 def authored_cases():
@@ -124,11 +125,14 @@ def verify_part_paint(request, name, part, states):
             or part["response"] != response or body["states"] != states \
             or body["materialFamily"] != family or body["colorRole"] != color_role \
             or any(body[field] != surface[field] for field in ("materialRole", "form")) \
-            or body["foregroundRole"] != config["foregroundRole"] or body["pigment"]["body"] != color:
-        raise ValueError(f"native {name} paint differs from the authored theme, selection or response")
+            or body["foregroundRole"] != config["foregroundRole"] or body["face"]["pigment"]["body"] != color \
+            or body["face"]["surface"]["profile"] != config["relief"]["toggleTrack" if name == "track" else "toggleThumb"]:
+        raise ValueError(f"native {name} paint differs from the authored theme, selection, relief or response")
+    if body_invariants(body):
+        raise ValueError(f"native {name} lit body violates its invariants: {body_invariants(body)}")
     size = request["layout"][name + "Size"]
-    if body["geometry"]["front"]["bounds"] != {"x": 0, "y": 0, **size}:
-        raise ValueError(f"native {name} front differs from the authored part allocation")
+    if body["face"]["surface"]["outline"]["size"] != size:
+        raise ValueError(f"native {name} outline differs from the authored part allocation")
     if surface_paint_channel_mismatch(part["paint"]):
         raise ValueError(f"native {name} focus binding or silhouette differs from the current body")
     if ("focus" in part["paint"]) != (name == "track" and request["activation"]["focused"]):
@@ -285,7 +289,7 @@ def verify_capture(path, snapshot, scale, background):
     thumb = layout["thumbBounds"]
     uncovered = layout["onThumbBounds"] if not layout["checked"] else layout["offThumbBounds"]
     for name, bounds in (("thumb", thumb), ("track", uncovered)):
-        color = snapshot[name]["paint"]["body"]["pigment"]["body"]
+        color = snapshot[name]["paint"]["body"]["face"]["pigment"]["body"]
         if color["colorSpace"] != "srgb" or color["alpha"] != 1:
             raise ValueError("capture requires opaque sRGB part pigment")
         if not matches(pixel(bounds["x"] + bounds["width"] / 2, bounds["y"] + bounds["height"] / 2, name),

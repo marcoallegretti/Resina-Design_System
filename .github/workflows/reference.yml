@@ -647,6 +647,7 @@ jobs:
       - run: python tools/check_material_relief_paint_backend.py -- target/debug/resina-material-relief-paint${{ matrix.executableSuffix }} -
       - run: python tools/check_material_relief_raster_backend.py -- target/debug/resina-material-relief-raster${{ matrix.executableSuffix }}
       - run: python tools/check_lit_body_raster_backend.py -- target/debug/resina-command-raster${{ matrix.executableSuffix }}
+      - run: python tools/check_lit_body_raster_backend.py --component toggle -- target/debug/resina-toggle-part-raster${{ matrix.executableSuffix }}
       - run: python tools/check_material_relief_qml_backend.py -- target/debug/resina-material-relief-qml${{ matrix.executableSuffix }}
       - run: python tools/check_extruded_contour_backend.py -- target/debug/resina-extruded-contour${{ matrix.executableSuffix }} -
       - run: python tools/check_opaque_surface_backend.py -- target/debug/resina-opaque-surface${{ matrix.executableSuffix }} -

@@ -438,7 +438,9 @@ native capture-effect execution, compositor input or accessibility verification.
 Call `prepare_toggle_content` with a checked `ToggleSnapshot`, the verified font
 family, actual device scale and sampling count. It returns exactly three commands:
 track material/navigation image, selected thumb image, then complete measured
-external label. Insert them into one render node in that order and replace all
+external label. The track and thumb images are [lit control bodies](../../../spec/88-lit-control-body.md)
+prepared with `prepare_lit_control_paint_at`; the thumb's containment in the
+track's uniform face is checked by the snapshot. Insert them into one render node in that order and replace all
 three together after preparation succeeds. A failure returns no array and
 preserves the label, track or thumb diagnostic cause.
 
@@ -615,8 +617,8 @@ and does not replace existing circular/square focus preparation.
 ## Sampled Toggle part paint
 
 `resolve_toggle_part_motion` returns complete checked part paint with retained raw
-pigment/depth motion state. Pass `part_paint().paint()` to the existing surface
-preparation path; no native interpolation is required. The [portable contract](../../../spec/57-toggle-part-motion.md)
+pigment/depth motion state. Pass `part_paint().paint()` to `prepare_lit_control_paint`;
+no native interpolation is required. The [portable contract](../../../spec/57-toggle-part-motion.md)
 owns motion policy and each sample's contrast/geometry checks. Resolve the current
 track first and supply its actual pigment as thumb adjacency before complete
 snapshot assembly and optional checked thumb travel.

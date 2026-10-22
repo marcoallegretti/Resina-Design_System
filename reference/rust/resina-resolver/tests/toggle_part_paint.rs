@@ -1,3 +1,6 @@
+#[path = "support/diagnostics.rs"]
+mod diagnostics;
+
 use resina_resolver::{
     ImperceptibleResponse, TogglePartPaintError, resolve_command_paint_source,
     resolve_toggle_part_paint_source,
@@ -67,6 +70,7 @@ fn checked_selection_preserves_every_channel_and_single_track_navigation() {
                 for (actual, channel) in ir
                     .paint()
                     .body()
+                    .face()
                     .pigment()
                     .body()
                     .components()
@@ -141,7 +145,7 @@ fn checked_frost_uses_actual_capabilities_and_legibility_fallback() {
     r["surface"]["body"]["minimumContentContrast"] = json!(4.5);
     let ir = resolve_toggle_part_paint_source(&r.to_string()).unwrap();
     assert!(ir.paint().body().content_fallback_applied());
-    assert!(ir.paint().body().content_contrast_ratio() >= 4.5);
+    assert!(ir.paint().body().face().content_contrast_ratio() >= 4.5);
     assert!(ir.checked());
     assert!(ir.paint().focus().is_some());
     assert_eq!(
@@ -249,5 +253,232 @@ fn profiles_are_validated_against_both_role_bodies_in_either_selection() {
         request["interactionAppearance"]["profiles"]["elastomer"]["hover"] =
             json!({"bodyMix": -0.0783, "depthScale": 1});
         resolve_toggle_part_paint_source(&request.to_string()).unwrap();
+    }
+}
+
+#[test]
+fn public_toggle_part_cases_keep_failures_diagnostic() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/toggle-part-paint-cases.json"
+    ))
+    .unwrap();
+    for case in cases {
+        let mut request = request();
+        for change in case["requestChanges"].as_array().unwrap() {
+            *request
+                .pointer_mut(change["path"].as_str().unwrap())
+                .unwrap() = change["value"].clone();
+        }
+        let result = resolve_toggle_part_paint_source(&request.to_string());
+        if let Some(expected) = case.get("expectedPhase") {
+            assert_eq!(
+                serde_json::to_value(result.unwrap().phase()).unwrap(),
+                *expected,
+                "{}",
+                case["name"]
+            );
+        } else {
+            let error = result.unwrap_err().to_string();
+            assert!(
+                error.contains(&diagnostics::expected("toggle_part_paint", &case["name"])),
+                "{}: {error}",
+                case["name"]
+            );
+        }
+    }
+}
+
+fn admitting(mut request: Value) -> Value {
+    let environment = &mut request["surface"]["body"]["theme"]["environment"];
+    environment["accessibilityPreferences"]["highContrast"] = json!(false);
+    environment["accessibilityPreferences"]["reducedMotion"] = json!(false);
+    environment["rendererCapabilities"]["dynamicLighting"] = json!(true);
+    environment["qualityPolicy"] = json!("balanced");
+    request
+}
+
+#[test]
+fn interaction_light_is_admitted_only_in_the_hover_and_pressed_phases() {
+    let names = ["rest", "hover", "focused", "pressed", "checked", "disabled"];
+    for part in ["track", "thumb"] {
+        for bits in 1..64 {
+            let states: Vec<_> = names
+                .iter()
+                .enumerate()
+                .filter(|(i, _)| bits & (1 << i) != 0)
+                .map(|(_, state)| *state)
+                .collect();
+            let mut request = admitting(request());
+            request["part"] = json!(part);
+            request["surface"]["body"]["surface"]["states"]["states"] = json!(states);
+            let lit = serde_json::to_value(
+                resolve_toggle_part_paint_source(&request.to_string()).unwrap(),
+            )
+            .unwrap();
+            let phase = lit["phase"].as_str().unwrap();
+            let light = &lit["paint"]["body"]["face"]["light"];
+            assert_eq!(light["ambient"], json!(0.25), "{part} {states:?}");
+            assert_eq!(
+                light["interaction"].is_object(),
+                matches!(phase, "hover" | "pressed"),
+                "{part} {states:?}"
+            );
+            request["light"] = json!({"ambient": null, "interaction": null});
+            let mut unlit = serde_json::to_value(
+                resolve_toggle_part_paint_source(&request.to_string()).unwrap(),
+            )
+            .unwrap();
+            assert_eq!(
+                unlit["paint"]["body"]["face"]["light"],
+                json!({"keyDirection": light["keyDirection"], "ambient": 0.0, "interaction": null})
+            );
+            let mut lit = lit;
+            for paint in [&mut lit, &mut unlit] {
+                paint["paint"]["body"]["face"]
+                    .as_object_mut()
+                    .unwrap()
+                    .remove("light");
+            }
+            assert_eq!(
+                lit, unlit,
+                "{part} {states:?}: light changes only face.light"
+            );
+        }
+    }
+}
+
+#[test]
+fn each_part_paints_its_own_relief_profile_without_state_or_family_selection() {
+    let relief = request()["relief"].clone();
+    for (part, profile) in [("track", "toggleTrack"), ("thumb", "toggleThumb")] {
+        for family in ["cast", "frost", "elastomer"] {
+            for states in [
+                json!(["rest"]),
+                json!(["pressed", "checked"]),
+                json!(["disabled"]),
+            ] {
+                let mut request = request();
+                request["part"] = json!(part);
+                request["surface"]["body"]["surface"]["states"]["states"] = states;
+                let mut theme: Value = serde_json::from_str(
+                    request["surface"]["body"]["theme"]["themeSource"]
+                        .as_str()
+                        .unwrap(),
+                )
+                .unwrap();
+                theme["materialAssignments"]["control"]["interactive"] = json!(family);
+                request["surface"]["body"]["theme"]["themeSource"] = json!(theme.to_string());
+                if family == "frost" {
+                    request["surface"]["body"]["postTreatmentBackdrop"] =
+                        json!({"colorSpace":"srgb","components":[1,1,1],"alpha":1});
+                }
+                let ir = serde_json::to_value(
+                    resolve_toggle_part_paint_source(&request.to_string()).unwrap(),
+                )
+                .unwrap();
+                let painted = &ir["paint"]["body"]["face"]["surface"]["profile"];
+                assert_eq!(painted["kind"], relief[profile]["kind"], "{part} {family}");
+                for member in ["bodyThickness", "amplitude", "shoulderWidth"] {
+                    assert_eq!(
+                        painted[member].as_f64(),
+                        relief[profile][member].as_f64(),
+                        "{part} {family} {member}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn suppressed_channel_sources_are_still_validated() {
+    for (states, high_contrast) in [("rest", false), ("disabled", false), ("hover", true)] {
+        let mut request = admitting(request());
+        request["surface"]["body"]["surface"]["states"]["states"] = json!([states]);
+        request["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["highContrast"] =
+            json!(high_contrast);
+        let source = request.to_string();
+        for (member, escaped) in [
+            (r#""ambient":0.25"#, r#""ambient":"#),
+            (r#""strength":0.5"#, r#""strength":"#),
+        ] {
+            assert!(source.contains(member), "{member}");
+            let plain = member.split(':').next().unwrap().to_owned() + ":";
+            for (name, literal, valid) in [
+                (plain, "-1e-400", false),
+                (escaped.to_owned(), "-1e-400", false),
+                (escaped.to_owned(), "-0e-400", true),
+                (escaped.to_owned(), "1e-400", true),
+            ] {
+                let changed = source.replacen(member, &(name + literal), 1);
+                let result = resolve_toggle_part_paint_source(&changed);
+                assert_eq!(result.is_ok(), valid, "{states} {member} {literal}");
+                if !valid {
+                    assert!(
+                        result
+                            .unwrap_err()
+                            .to_string()
+                            .contains("nonnegative before numeric rounding")
+                    );
+                }
+            }
+        }
+    }
+}
+
+fn published_requests() -> [(&'static str, Value); 2] {
+    let mut track = admitting(request());
+    track["surface"]["body"]["surface"]["states"]["states"] =
+        json!(["hover", "focused", "checked"]);
+    let mut thumb = admitting(request());
+    thumb["part"] = json!("thumb");
+    thumb["surface"]["body"]["size"] = json!({"width": 16, "height": 16});
+    thumb["surface"]["body"]["surface"]["states"]["states"] = json!(["pressed", "checked"]);
+    [("track", track), ("thumb", thumb)]
+}
+
+#[test]
+fn published_toggle_part_paint_ir_is_the_reference_result_of_the_public_requests() {
+    let published: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/toggle-part-paint-ir.json"
+    ))
+    .unwrap();
+    for (part, request) in published_requests() {
+        let resolved =
+            serde_json::to_value(resolve_toggle_part_paint_source(&request.to_string()).unwrap())
+                .unwrap();
+        assert_eq!(resolved, published[part], "{part}");
+    }
+}
+
+#[test]
+fn disabled_parts_keep_the_guarded_foreground_that_they_do_not_draw() {
+    for part in ["track", "thumb"] {
+        for high_contrast in [false, true] {
+            let mut request = request();
+            request["part"] = json!(part);
+            request["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["highContrast"] =
+                json!(high_contrast);
+            request["surface"]["body"]["surface"]["states"]["states"] = json!(["rest"]);
+            let rest = serde_json::to_value(
+                resolve_toggle_part_paint_source(&request.to_string()).unwrap(),
+            )
+            .unwrap();
+            request["surface"]["body"]["surface"]["states"]["states"] =
+                json!(["disabled", "checked"]);
+            let disabled = serde_json::to_value(
+                resolve_toggle_part_paint_source(&request.to_string()).unwrap(),
+            )
+            .unwrap();
+            let foreground = &disabled["paint"]["body"]["face"]["foreground"];
+            assert_eq!(foreground, &rest["paint"]["body"]["face"]["foreground"]);
+            assert_eq!(foreground["components"], json!([0.0, 0.0, 0.0]));
+            assert!(
+                disabled["paint"]["body"]["face"]["contentContrastRatio"]
+                    .as_f64()
+                    .unwrap()
+                    > 4.5
+            );
+        }
     }
 }
