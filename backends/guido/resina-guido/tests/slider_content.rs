@@ -199,7 +199,10 @@ fn glyph_ink_moved_past_any_slot_edge_is_reported() {
     let (origin, slot) = (f.input().label_origin, f.label.size());
     let output_width = (640.0 * scale) as u32;
     let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
-    assert_eq!(escaped_ink(&mask, output_width, scale, origin, slot), None);
+    assert_eq!(
+        escaped_ink(&mask, output_width, scale, origin, slot, 0.0),
+        None
+    );
     let inked: Vec<_> = mask
         .as_chunks::<4>()
         .0
@@ -235,7 +238,7 @@ fn glyph_ink_moved_past_any_slot_edge_is_reported() {
         rect.y += (dy / f64::from(scale)) as f32;
         let mask = frames.render(&[moved], scale, Color::TRANSPARENT);
         assert!(
-            escaped_ink(&mask, output_width, scale, origin, slot).is_some(),
+            escaped_ink(&mask, output_width, scale, origin, slot, 0.0).is_some(),
             "ink moved by ({dx}, {dy}) device pixels must leave the slot"
         );
     }
@@ -276,15 +279,23 @@ fn color(value: &SrgbFallback) -> Color {
 fn pixel_color(pixel: &[u8]) -> SrgbFallback {
     resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":pixel[..3].iter().map(|v|f64::from(*v)/255.0).collect::<Vec<_>>(),"alpha":1})).unwrap()
 }
+/// How far Arabic descenders may cross the slot's bottom edge, in em. A line that holds
+/// Noto Sans Arabic centers its 1.374 em ascent and 0.738 em descent in the 1.4 em line
+/// height, which leaves 0.382 em below the baseline; the deepest glyph of the Slider
+/// labels reaches 0.394 em below it.
+const ARABIC_DESCENT_OVERSHOOT_EM: f64 = 0.02;
+
 /// The first device pixel whose coverage exceeds the share of its footprint inside
-/// the slot. An unaligned slot edge splits a pixel, which may then carry ink lying
-/// entirely inside; a pixel wholly outside may carry none.
+/// the slot, extended below by `descent_overshoot`. An unaligned slot edge splits a
+/// pixel, which may then carry ink lying entirely inside; a pixel wholly outside may
+/// carry none.
 fn escaped_ink(
     mask: &[u8],
     output_width: u32,
     scale: f32,
     origin: PhysicalVector,
     slot: SurfaceSize,
+    descent_overshoot: f64,
 ) -> Option<(u32, u32, u8)> {
     let scale = f64::from(scale);
     let inside = |pixel: u32, placement: f64, start: f64, extent: f64| {
@@ -299,8 +310,8 @@ fn escaped_ink(
         .enumerate()
         .map(|(i, p)| (i as u32 % output_width, i as u32 / output_width, p[3]))
         .find(|&(x, y, alpha)| {
-            let share =
-                inside(x, 220.0, origin.x, slot.width) * inside(y, 200.0, origin.y, slot.height);
+            let share = inside(x, 220.0, origin.x, slot.width)
+                * inside(y, 200.0, origin.y, slot.height + descent_overshoot);
             f64::from(alpha) > (255.0 * share).ceil()
         })
 }
@@ -463,8 +474,20 @@ fn check_commands(
     }
     let parts = frames.render(&commands[..2], scale, background);
     let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
+    let descent_overshoot = if f.label.layout_direction() == LayoutDirection::Rtl {
+        ARABIC_DESCENT_OVERSHOOT_EM * f.label.typography().font_size()
+    } else {
+        0.0
+    };
     assert_eq!(
-        escaped_ink(&mask, output_width, scale, origin, f.label.size()),
+        escaped_ink(
+            &mask,
+            output_width,
+            scale,
+            origin,
+            f.label.size(),
+            descent_overshoot
+        ),
         None,
         "{name}: native glyph escaped reserved label slot"
     );
