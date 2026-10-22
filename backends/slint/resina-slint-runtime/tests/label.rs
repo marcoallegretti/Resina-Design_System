@@ -27,7 +27,31 @@ slint::slint! {
 
 }
 
-/// Registers the pinned Inter static masters and returns their shared family name.
+/// Arabic and Hebrew faces: family, letters of the label evidence, master files.
+const SCRIPT_FACES: [(&str, &str, [&str; 3]); 2] = [
+    (
+        "Noto Sans Arabic",
+        "\u{625}\u{639}\u{627}\u{62f}\u{629}\u{627}\u{644}\u{627}\u{62a}\u{635}\u{627}\u{644}\u{628}\u{627}\u{644}\u{634}\u{628}\u{643}\u{629}",
+        [
+            "NotoSansArabic-Regular.ttf",
+            "NotoSansArabic-Medium.ttf",
+            "NotoSansArabic-SemiBold.ttf",
+        ],
+    ),
+    (
+        "Noto Sans Hebrew",
+        "\u{5e9}\u{5de}\u{5d5}\u{5e8}",
+        [
+            "NotoSansHebrew-Regular.ttf",
+            "NotoSansHebrew-Medium.ttf",
+            "NotoSansHebrew-SemiBold.ttf",
+        ],
+    ),
+];
+
+/// Registers the pinned Inter static masters and the pinned Arabic and Hebrew masters, makes the
+/// latter the sans-serif families that Slint appends after the requested family, and returns
+/// the shared Inter family name.
 fn register_conformance_masters() -> String {
     let directory = std::path::PathBuf::from(
         std::env::var_os("RESINA_LABEL_FONT_DIR").expect("RESINA_LABEL_FONT_DIR is required"),
@@ -47,6 +71,36 @@ fn register_conformance_masters() -> String {
         families.push(collection.family_name(*id).unwrap().to_owned());
     }
     assert_eq!(families, ["Inter"; 3]);
+    let mut generic = Vec::new();
+    for (family, _, files) in SCRIPT_FACES {
+        let pinned: Vec<_> = files
+            .iter()
+            .map(|file| std::fs::read(directory.join(file)).unwrap())
+            .collect();
+        let mut id = None;
+        for bytes in &pinned {
+            let fonts = collection.register_fonts(
+                fontique::Blob::new(std::sync::Arc::new(bytes.clone())),
+                None,
+            );
+            let (registered, infos) = fonts.first().expect("test font must be registered");
+            assert_eq!(infos.len(), 1);
+            assert_eq!(collection.family_name(*registered).unwrap(), family);
+            id = Some(*registered);
+        }
+        let id = id.unwrap();
+        generic.push(id);
+        let mut cache = fontique::SourceCache::default();
+        for font in collection.family(id).unwrap().fonts() {
+            let data = font.load(Some(&mut cache)).unwrap();
+            assert!(
+                pinned.iter().any(|bytes| bytes.as_slice() == data.data()),
+                "{family} {:?} is visible but is not a pinned master",
+                font.source()
+            );
+        }
+    }
+    collection.set_generic_families(fontique::GenericFamily::SansSerif, generic.into_iter());
     families.remove(0)
 }
 
@@ -111,6 +165,30 @@ fn actual_font_measurement_preserves_complete_text_and_typography() {
     let ui = MeasureWindow::new().unwrap();
     let family = register_conformance_masters();
     let mut measurer = LabelMeasurer::new(ui.window());
+    for weight in [400.0, 500.0, 600.0] {
+        let typography = style(1.0, 0.0, weight, 1.4);
+        for (script_family, letters, _) in SCRIPT_FACES {
+            let natural = |measurer: &mut LabelMeasurer<'_>, family: &str| {
+                measure(
+                    &ui,
+                    measurer,
+                    family,
+                    LabelMeasureInput {
+                        text: letters,
+                        typography: &typography,
+                        maximum_width: None,
+                    },
+                )
+                .unwrap()
+                .width
+            };
+            assert_eq!(
+                natural(&mut measurer, &family),
+                natural(&mut measurer, script_family),
+                "{script_family} letters at weight {weight} were not drawn with the pinned master"
+            );
+        }
+    }
     let expansion: serde_json::Value = serde_json::from_str(include_str!(
         "../../../../conformance/content/command-label-expansion.json"
     ))
