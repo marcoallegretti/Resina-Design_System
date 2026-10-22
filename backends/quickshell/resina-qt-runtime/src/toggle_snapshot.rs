@@ -1,21 +1,23 @@
-use crate::label::{parse_label_request, prepare_content};
+use crate::label::{PreparedContent, parse_label_request, prepare_content};
 use crate::snapshot::{RELIEF, Rectangle, RenderOptions, light_source};
 use cxx_qt_lib::QString;
 use resina_environment::SafeArea;
 use resina_model::{
     ActivationState, ColorRole, CommandAppearance, MaterialLightChannels, OpaqueSurfaceAppearance,
-    PhysicalVector, SurfaceIntent, SurfaceSize,
+    PhysicalBounds, PhysicalVector, SurfaceIntent, SurfaceSize,
 };
 use resina_resolver::{
-    CommandMotionChannel, CommandMotionChannels, ControlRelief, HitRegionInput, OpaqueSurfaceInput,
-    SurfacePaintInput, ToggleLayoutInput, TogglePart, TogglePartMotionInput, TogglePartPaintInput,
-    ToggleSnapshotInput, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
-    resolve_toggle_part_motion, resolve_toggle_part_paint, resolve_toggle_part_reservation_paint,
+    CommandLabelIr, CommandMotionChannel, CommandMotionChannels, ControlRelief, HitRegionInput,
+    HitRegionIr, OpaqueSurfaceInput, SrgbFallback, SurfacePaintInput, ToggleLayoutInput,
+    ToggleLayoutIr, TogglePart, TogglePartMotionInput, TogglePartPaintInput, ToggleSnapshotInput,
+    resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout, resolve_toggle_part_motion,
+    resolve_toggle_part_paint, resolve_toggle_part_reservation_paint,
     resolve_toggle_snapshot as resolve_snapshot_ir, resolve_toggle_states, resolve_toggle_travel,
 };
 use resina_tokens::parse_token_document;
 use serde::Deserialize;
 use serde_json::{Value, json};
+use std::{cell::RefCell, rc::Rc};
 
 #[cxx::bridge(namespace = "resina::qt")]
 mod ffi {
@@ -197,6 +199,181 @@ fn document(source: &str) -> Result<Value, String> {
     Ok(value)
 }
 
+#[cfg(test)]
+mod request_cache_tests {
+    use super::*;
+
+    fn source(checked: bool) -> String {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/toggle-part-paint-request.json"
+        ))
+        .unwrap();
+        let body = &request["surface"]["body"];
+        let part = json!({
+            "surface": body["surface"], "appearance": body["appearance"],
+            "checkedColorRole": request["checkedColorRole"],
+            "interactionAppearance": request["interactionAppearance"],
+            "light": request["light"], "relief": request["relief"],
+            "foregroundRole": body["foregroundRole"],
+            "minimumContentContrast": 4.5, "minimumEdgeContrast": 3,
+        });
+        let bounds = json!({"x": 0, "y": 0, "width": 200, "height": 100});
+        json!({
+            "content": {}, "track": part, "thumb": part,
+            "layout": {"trackSize": {"width": 64, "height": 40}, "thumbSize": {"width": 16, "height": 16},
+                "insets": {"start": 12, "end": 12, "top": 12, "bottom": 12}},
+            "labelOrigin": {"x": 80, "y": 0}, "labelForegroundRole": "content.primary",
+            "background": body["adjacentColor"], "minimumLabelContrast": 4.5, "minimumThumbContrast": 3,
+            "targetBounds": bounds, "availableBounds": bounds,
+            "activation": {"schemaVersion": "0.1.0", "enabled": true, "focused": false, "hold": null},
+            "hovered": false, "checked": checked, "description": null, "focusable": true,
+            "componentMinimum": {"width": 48, "height": 48}, "occupiedRegions": [],
+        })
+        .to_string()
+    }
+
+    #[test]
+    fn one_source_is_parsed_once_and_a_changed_or_invalid_source_is_not_kept() {
+        let first = parse_request(&source(false)).unwrap();
+        assert!(Rc::ptr_eq(&first, &parse_request(&source(false)).unwrap()));
+        let changed = parse_request(&source(true)).unwrap();
+        assert!(!Rc::ptr_eq(&first, &changed));
+        assert!(changed.checked && !first.checked);
+        assert!(parse_request("{").is_err());
+        assert!(parse_request("{}").is_err());
+        assert!(Rc::ptr_eq(&changed, &parse_request(&source(true)).unwrap()));
+    }
+}
+
+thread_local! {
+    // Frames of one motion repeat one request source, so its parse and its validated reservation
+    // are kept. Only successes are kept: a failure is diagnosed again exactly as before.
+    static PARSED: RefCell<Option<(String, Rc<Request>)>> = const { RefCell::new(None) };
+    static RESERVED: RefCell<Option<(String, CommandLabelIr)>> = const { RefCell::new(None) };
+}
+
+fn parse_request(source: &str) -> Result<Rc<Request>, String> {
+    let cached = PARSED
+        .try_with(|entry| {
+            entry
+                .borrow()
+                .as_ref()
+                .filter(|(cached, _)| cached == source)
+                .map(|(_, parsed)| Rc::clone(parsed))
+        })
+        .ok()
+        .flatten();
+    if let Some(parsed) = cached {
+        return Ok(parsed);
+    }
+    document(source)?;
+    let request: Rc<Request> =
+        Rc::new(serde_json::from_str(source).map_err(|error| error.to_string())?);
+    let _ =
+        PARSED.try_with(|entry| *entry.borrow_mut() = Some((source.to_owned(), request.clone())));
+    Ok(request)
+}
+
+/// Resolves both parts at the projected depth bound and requires the complete snapshot checks to
+/// pass with them, so that the reserved target covers every state the control can paint.
+fn validate_reservation(
+    request: &Request,
+    content: &PreparedContent,
+    label_foreground: &SrgbFallback,
+    background: &SrgbFallback,
+    (layout, target): (&ToggleLayoutIr, HitRegionIr),
+    occupied: &[PhysicalBounds],
+    description: Option<&str>,
+) -> Result<(), String> {
+    let neutral_focus =
+        ActivationState::try_new(true, true, None).expect("valid focused neutral activation");
+    let deepest_states = resolve_toggle_states(&neutral_focus, false, request.checked);
+    let deepest_track_surface = request
+        .track
+        .surface
+        .clone()
+        .with_states(deepest_states.clone());
+    let deepest_thumb_surface = request.thumb.surface.clone().with_states(deepest_states);
+    let deepest_track = resolve_toggle_part_reservation_paint(
+        &content.theme,
+        &content.environment,
+        TogglePartPaintInput {
+            part: TogglePart::Track,
+            checked_color_role: request.track.checked_color_role,
+            interaction_appearance: &request.track.interaction_appearance,
+            light: &request.track.light,
+            relief: &request.track.relief,
+            surface: SurfacePaintInput {
+                surrounding_color: Some(background),
+                body: OpaqueSurfaceInput {
+                    surface: &deepest_track_surface,
+                    size: request.layout.track_size,
+                    appearance: &request.track.appearance,
+                    foreground_role: request.track.foreground_role,
+                    post_treatment_backdrop: Some(background),
+                    adjacent_color: background,
+                    minimum_content_contrast: request.track.minimum_content_contrast,
+                    minimum_edge_contrast: request.track.minimum_edge_contrast,
+                },
+            },
+        },
+    )
+    .map_err(|error| error.to_string())?;
+    let deepest_track_pigment = deepest_track.paint().body().face().pigment().body();
+    let deepest_thumb = resolve_toggle_part_reservation_paint(
+        &content.theme,
+        &content.environment,
+        TogglePartPaintInput {
+            part: TogglePart::Thumb,
+            checked_color_role: request.thumb.checked_color_role,
+            interaction_appearance: &request.thumb.interaction_appearance,
+            light: &request.thumb.light,
+            relief: &request.thumb.relief,
+            surface: SurfacePaintInput {
+                surrounding_color: None,
+                body: OpaqueSurfaceInput {
+                    surface: &deepest_thumb_surface,
+                    size: request.layout.thumb_size,
+                    appearance: &request.thumb.appearance,
+                    foreground_role: request.thumb.foreground_role,
+                    post_treatment_backdrop: Some(deepest_track_pigment),
+                    adjacent_color: deepest_track_pigment,
+                    minimum_content_contrast: request.thumb.minimum_content_contrast,
+                    minimum_edge_contrast: request.thumb.minimum_edge_contrast,
+                },
+            },
+        },
+    )
+    .map_err(|error| error.to_string())?;
+    resolve_snapshot_ir(ToggleSnapshotInput {
+        label: &content.label,
+        label_origin: request.label_origin,
+        label_foreground,
+        label_background: background,
+        minimum_label_contrast: request.minimum_label_contrast,
+        layout,
+        track: &deepest_track,
+        thumb: &deepest_thumb,
+        hit_region: target,
+        activation: &neutral_focus,
+        hovered: false,
+        checked: request.checked,
+        description,
+        focusable: true,
+        minimum_thumb_contrast: request.minimum_thumb_contrast,
+        environment: &content.environment,
+        available_bounds: request.available_bounds.bounds(),
+        component_minimum: request.component_minimum,
+        occupied_regions: occupied,
+    })
+    .map_err(|error| {
+        format!(
+            "Qt Toggle layout or reservation does not cover the deepest part silhouettes: {error}"
+        )
+    })?;
+    Ok(())
+}
+
 fn prepare(
     source: &str,
     producer: &ffi::NativeLabelMeasure,
@@ -204,8 +381,7 @@ fn prepare(
     render: bool,
     motion: Option<&MotionRequest>,
 ) -> Result<Value, String> {
-    document(source)?;
-    let request: Request = serde_json::from_str(source).map_err(|error| error.to_string())?;
+    let request = parse_request(source)?;
     if options.len() > 64 * 1024 {
         return Err("Qt Toggle rendering options exceed 64 KiB".to_owned());
     }
@@ -215,7 +391,7 @@ fn prepare(
     }
     let options: RenderOptions =
         serde_json::from_value(options).map_err(|error| error.to_string())?;
-    let content = prepare_content(parse_label_request(request.content)?, producer)?;
+    let content = prepare_content(parse_label_request(request.content.clone())?, producer)?;
     let neutral = resolve_toggle_states(
         &ActivationState::try_new(true, false, None).expect("valid neutral activation"),
         false,
@@ -342,93 +518,29 @@ fn prepare(
         return Err("Qt Toggle requires an explicitly complete target reservation".to_owned());
     }
     let description: Option<String> =
-        serde_json::from_value(request.description).map_err(|error| error.to_string())?;
-    let neutral_focus =
-        ActivationState::try_new(true, true, None).expect("valid focused neutral activation");
-    let deepest_states = resolve_toggle_states(&neutral_focus, false, request.checked);
-    let deepest_track_surface = request
-        .track
-        .surface
-        .clone()
-        .with_states(deepest_states.clone());
-    let deepest_thumb_surface = request.thumb.surface.clone().with_states(deepest_states);
-    let deepest_track = resolve_toggle_part_reservation_paint(
-        &content.theme,
-        &content.environment,
-        TogglePartPaintInput {
-            part: TogglePart::Track,
-            checked_color_role: request.track.checked_color_role,
-            interaction_appearance: &request.track.interaction_appearance,
-            light: &request.track.light,
-            relief: &request.track.relief,
-            surface: SurfacePaintInput {
-                surrounding_color: Some(&background),
-                body: OpaqueSurfaceInput {
-                    surface: &deepest_track_surface,
-                    size: request.layout.track_size,
-                    appearance: &request.track.appearance,
-                    foreground_role: request.track.foreground_role,
-                    post_treatment_backdrop: Some(&background),
-                    adjacent_color: &background,
-                    minimum_content_contrast: request.track.minimum_content_contrast,
-                    minimum_edge_contrast: request.track.minimum_edge_contrast,
-                },
-            },
-        },
-    )
-    .map_err(|error| error.to_string())?;
-    let deepest_track_pigment = deepest_track.paint().body().face().pigment().body();
-    let deepest_thumb = resolve_toggle_part_reservation_paint(
-        &content.theme,
-        &content.environment,
-        TogglePartPaintInput {
-            part: TogglePart::Thumb,
-            checked_color_role: request.thumb.checked_color_role,
-            interaction_appearance: &request.thumb.interaction_appearance,
-            light: &request.thumb.light,
-            relief: &request.thumb.relief,
-            surface: SurfacePaintInput {
-                surrounding_color: None,
-                body: OpaqueSurfaceInput {
-                    surface: &deepest_thumb_surface,
-                    size: request.layout.thumb_size,
-                    appearance: &request.thumb.appearance,
-                    foreground_role: request.thumb.foreground_role,
-                    post_treatment_backdrop: Some(deepest_track_pigment),
-                    adjacent_color: deepest_track_pigment,
-                    minimum_content_contrast: request.thumb.minimum_content_contrast,
-                    minimum_edge_contrast: request.thumb.minimum_edge_contrast,
-                },
-            },
-        },
-    )
-    .map_err(|error| error.to_string())?;
-    resolve_snapshot_ir(ToggleSnapshotInput {
-        label: &content.label,
-        label_origin: request.label_origin,
-        label_foreground,
-        label_background: &background,
-        minimum_label_contrast: request.minimum_label_contrast,
-        layout: &layout,
-        track: &deepest_track,
-        thumb: &deepest_thumb,
-        hit_region: target,
-        activation: &neutral_focus,
-        hovered: false,
-        checked: request.checked,
-        description: description.as_deref(),
-        focusable: true,
-        minimum_thumb_contrast: request.minimum_thumb_contrast,
-        environment: &content.environment,
-        available_bounds: request.available_bounds.bounds(),
-        component_minimum: request.component_minimum,
-        occupied_regions: &occupied,
-    })
-    .map_err(|error| {
-        format!(
-            "Qt Toggle layout or reservation does not cover the deepest part silhouettes: {error}"
-        )
-    })?;
+        serde_json::from_value(request.description.clone()).map_err(|error| error.to_string())?;
+    let reserved = RESERVED
+        .try_with(|entry| {
+            entry
+                .borrow()
+                .as_ref()
+                .is_some_and(|(cached, label)| cached == source && label == &content.label)
+        })
+        .unwrap_or(false);
+    if !reserved {
+        validate_reservation(
+            &request,
+            &content,
+            label_foreground,
+            &background,
+            (&layout, target),
+            &occupied,
+            description.as_deref(),
+        )?;
+        let _ = RESERVED.try_with(|entry| {
+            *entry.borrow_mut() = Some((source.to_owned(), content.label.clone()))
+        });
+    }
     let snapshot = resolve_snapshot_ir(ToggleSnapshotInput {
         label: &content.label,
         label_origin: request.label_origin,
