@@ -653,7 +653,7 @@ jobs:
       - run: python tools/check_opaque_surface_backend.py -- target/debug/resina-opaque-surface${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_ir_backend.py -- target/debug/resina-focus-ir${{ matrix.executableSuffix }} -
       - run: python tools/check_surface_paint_backend.py -- target/debug/resina-surface-paint${{ matrix.executableSuffix }} -
-      - run: python tools/check_translucent_frost_backend.py -- target/debug/resina-translucent-frost${{ matrix.executableSuffix }} -
+      - run: python tools/check_translucent_frost_backend.py --surface-paint target/debug/resina-surface-paint${{ matrix.executableSuffix }} -- target/debug/resina-translucent-frost${{ matrix.executableSuffix }} -
       - run: python tools/check_hit_region_backend.py -- target/debug/resina-hit-region${{ matrix.executableSuffix }} -
       - run: python tools/check_focus_traversal_backend.py -- target/debug/resina-focus-traversal${{ matrix.executableSuffix }} -
       - run: python tools/check_activation_backend.py -- target/debug/resina-activation${{ matrix.executableSuffix }} -

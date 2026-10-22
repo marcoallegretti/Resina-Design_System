@@ -964,5 +964,269 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "invalid"
+  },
+  {
+    "name": "a light foreground is certified by the upper backdrop end",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.08053037317
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "a threshold between the two ends rejects a light foreground",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 4
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "insufficient"
+  },
+  {
+    "name": "a foreground inside the composited interval certifies at ratio one",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "a point backdrop is a valid interval",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9,
+              0.9,
+              0.9
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9,
+              0.9,
+              0.9
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "inverted adjacent range",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9,
+                0.5,
+                0.5
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8,
+                0.6,
+                0.6
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "lower exceeds upper"
+  },
+  {
+    "name": "inverted surrounding range",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      },
+      {
+        "path": "/surroundingRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9,
+                0.5,
+                0.5
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8,
+                0.6,
+                0.6
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "lower exceeds upper"
+  },
+  {
+    "name": "backdrop channel above one",
+    "requestChanges": [
+      {
+        "path": "/backdrop/upper/components/0",
+        "value": 1.2
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "channel"
+  },
+  {
+    "name": "backdrop channel below zero",
+    "requestChanges": [
+      {
+        "path": "/backdrop/lower/components/1",
+        "value": -0.1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "channel"
+  },
+  {
+    "name": "adjacent channel above one",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0/upper/components/2",
+        "value": 1.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "channel"
+  },
+  {
+    "name": "absurd diffusion radius",
+    "requestChanges": [
+      {
+        "path": "/diffusion/radius",
+        "value": 1e+308
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "at most"
   }
 ]

@@ -1,7 +1,7 @@
 import copy
 import unittest
 
-from check_schemas import ROOT, load_json
+from check_schemas import ROOT, load_json, validator_for
 from check_translucent_frost_backend import (
     baseline,
     case_request,
@@ -75,27 +75,76 @@ class TranslucentFrostOracleTests(unittest.TestCase):
             ("opaqueDimensional", "legibility"),
         })
 
-    def test_certified_bound_never_exceeds_any_backdrop_inside_the_interval(self):
-        result = named("a bright busy interval keeps translucency")
-        body = result["body"]
-        tint = body["pigment"]["body"]
-        foreground = body["foreground"]["components"]
-        lower = body["backdrop"]["range"]["lower"]["components"]
-        upper = body["backdrop"]["range"]["upper"]["components"]
-        steps = 40
-        least = min(
-            ratio(foreground, over(tint["components"], tint["alpha"], [
-                low + (high - low) * ((index >> shift) & 1)
-                for shift, (low, high) in enumerate(zip(lower, upper))
-            ]))
-            for index in range(8)
-        )
-        self.assertGreaterEqual(least + 1e-12, body["contentContrastRatio"])
-        samples = []
-        for step in range(steps + 1):
-            level = lower[0] + (upper[0] - lower[0]) * step / steps
-            samples.append(ratio(foreground, over(tint["components"], tint["alpha"], [level] * 3)))
-        self.assertGreaterEqual(min(samples) + 1e-12, body["contentContrastRatio"])
+    def test_certified_bound_never_exceeds_any_grid_backdrop_inside_the_box(self):
+        for name in (
+            "a bright busy interval keeps translucency",
+            "a light foreground is certified by the upper backdrop end",
+            "a foreground inside the composited interval certifies at ratio one",
+        ):
+            with self.subTest(name=name):
+                body = named(name)["body"]
+                tint = body["pigment"]["body"]
+                foreground = body["foreground"]["components"]
+                lower = body["backdrop"]["range"]["lower"]["components"]
+                upper = body["backdrop"]["range"]["upper"]["components"]
+                steps = 6
+                axes = [
+                    [low + (high - low) * step / steps for step in range(steps + 1)]
+                    for low, high in zip(lower, upper)
+                ]
+                least = min(
+                    ratio(foreground, over(tint["components"], tint["alpha"], [r, g, b]))
+                    for r in axes[0] for g in axes[1] for b in axes[2]
+                )
+                self.assertGreaterEqual(least + 1e-12, body["contentContrastRatio"])
+
+    def test_either_backdrop_end_can_bind_the_certificate(self):
+        dark = named("a dark interval forces the opaque body through legibility")
+        self.assertEqual(dark["fallbackReason"], "legibility")
+        light = named("a light foreground is certified by the upper backdrop end")["body"]
+        foreground = light["foreground"]["components"]
+        composited = light["backdrop"]["compositedBody"]
+        at_lower = ratio(foreground, composited["lower"]["components"])
+        at_upper = ratio(foreground, composited["upper"]["components"])
+        self.assertLess(at_upper, at_lower)
+        self.assertAlmostEqual(light["contentContrastRatio"], at_upper, places=12)
+        crossing = named("a foreground inside the composited interval certifies at ratio one")
+        self.assertEqual(crossing["body"]["contentContrastRatio"], 1.0)
+        case = next(case for case in cases()
+                    if case["name"] == "a threshold between the two ends rejects a light foreground")
+        threshold = next(change["value"] for change in case["requestChanges"]
+                         if change["path"] == "/minimumContentContrast")
+        self.assertLess(at_upper, threshold)
+        self.assertLess(threshold, at_lower)
+
+    def test_a_ring_retains_the_representation_the_body_resolved_to(self):
+        for name in (
+            "focused translucent surface keeps its navigation ring",
+            "focused opaque selection keeps its navigation ring",
+            "focused legibility fallback keeps its navigation ring",
+        ):
+            result = named(name)
+            focus = result["paint"]["focus"] if "paint" in result else result["focus"]
+            binding = focus["indicator"]["binding"]
+            self.assertEqual(binding["frostRepresentation"], result["frostRepresentation"], name)
+            if "paint" in result:
+                self.assertEqual(binding["frostPortableBody"], binding["opaqueColorFallback"])
+
+    def test_schema_rejects_a_ring_that_contradicts_its_body(self):
+        validator = validator_for("schemas/translucent-frost-ir.schema.json")
+        opaque = named("focused legibility fallback keeps its navigation ring")
+        self.assertEqual(list(validator.iter_errors(opaque)), [])
+        stale = copy.deepcopy(opaque)
+        stale["paint"]["focus"]["indicator"]["binding"]["frostRepresentation"] = "shapedBackdrop"
+        self.assertNotEqual(list(validator.iter_errors(stale)), [])
+        flagged = copy.deepcopy(opaque)
+        flagged["paint"]["body"]["contentFallbackApplied"] = False
+        self.assertNotEqual(list(validator.iter_errors(flagged)), [])
+        translucent = named("focused translucent surface keeps its navigation ring")
+        self.assertEqual(list(validator.iter_errors(translucent)), [])
+        wrong = copy.deepcopy(translucent)
+        wrong["focus"]["indicator"]["binding"]["frostRepresentation"] = "regularBackdrop"
+        self.assertNotEqual(list(validator.iter_errors(wrong)), [])
 
     def test_interior_luminance_crossing_is_certified_conservatively(self):
         foreground = [0.5, 0.5, 0.5]

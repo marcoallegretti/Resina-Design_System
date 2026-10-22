@@ -1,6 +1,6 @@
 use resina_resolver::{
     FrostAppearance, FrostFallbackReason, resolve_opaque_surface_source,
-    resolve_translucent_frost_source,
+    resolve_surface_paint_source, resolve_translucent_frost_source,
 };
 use serde_json::{Value, json};
 
@@ -405,4 +405,157 @@ fn request_members_are_strict() {
         1,
     );
     assert!(resolve_translucent_frost_source(&duplicate).is_err());
+}
+
+fn color_at(level: f64) -> Value {
+    json!({"colorSpace": "srgb", "components": [level, level, level], "alpha": 1})
+}
+
+fn point(level: f64) -> Value {
+    json!({"lower": color_at(level), "upper": color_at(level)})
+}
+
+fn surface_paint_equivalent(request: &Value) -> Value {
+    let mut body = json!({
+        "schemaVersion": "0.1.0",
+        "postTreatmentBackdrop": request["backdrop"]["lower"],
+        "adjacentColor": request["adjacentRanges"][0]["lower"],
+    });
+    for member in [
+        "theme",
+        "surface",
+        "size",
+        "appearance",
+        "foregroundRole",
+        "minimumContentContrast",
+        "minimumEdgeContrast",
+    ] {
+        body[member] = request[member].clone();
+    }
+    let mut paint = json!({"schemaVersion": "0.1.0", "body": body});
+    if let Some(surrounding) = request.get("surroundingRanges") {
+        paint["surroundingColor"] = surrounding[0]["lower"].clone();
+    }
+    serde_json::to_value(resolve_surface_paint_source(&paint.to_string()).unwrap()).unwrap()
+}
+
+fn drop_retained_representation(paint: &mut Value) {
+    if let Some(binding) = paint.pointer_mut("/focus/indicator/binding") {
+        let binding = binding.as_object_mut().unwrap();
+        binding.remove("frostRepresentation");
+        binding.remove("frostPortableBody");
+    }
+}
+
+#[test]
+fn the_opaque_branch_is_the_surface_paint_for_both_reasons() {
+    for (reason, level, high_contrast) in [("selection", 0.9, true), ("legibility", 0.1, false)] {
+        for states in [
+            json!(["rest"]),
+            json!(["focused"]),
+            json!(["rest", "focused"]),
+        ] {
+            let mut request = baseline();
+            set(
+                &mut request,
+                "/theme/environment/accessibilityPreferences/highContrast",
+                json!(high_contrast),
+            );
+            set(&mut request, "/surface/states/states", states.clone());
+            set(&mut request, "/backdrop", point(level));
+            set(&mut request, "/adjacentRanges", json!([point(0.95)]));
+            set(&mut request, "/surroundingRanges", json!([point(0.95)]));
+            if states == json!(["rest"]) {
+                remove(&mut request, "/surroundingRanges");
+            }
+            let result = resolve(&request).unwrap();
+            assert_eq!(result["fallbackReason"], reason, "{states}");
+            let mut paint = result["paint"].clone();
+            let mut reference = surface_paint_equivalent(&request);
+            assert_eq!(paint["body"], reference["body"], "{reason} {states}");
+            if paint.get("focus").is_some() {
+                let binding = &paint["focus"]["indicator"]["binding"];
+                assert_eq!(binding["frostRepresentation"], "opaqueDimensional");
+                assert_eq!(binding["frostPortableBody"], binding["opaqueColorFallback"]);
+                drop_retained_representation(&mut paint);
+                drop_retained_representation(&mut reference);
+            }
+            assert_eq!(paint, reference, "{reason} {states}");
+        }
+    }
+}
+
+#[test]
+fn a_ring_retains_the_representation_the_body_resolved_to() {
+    let mut request = baseline();
+    set(&mut request, "/surface/states/states", json!(["focused"]));
+    let kept = resolve(&request).unwrap();
+    assert_eq!(
+        kept["focus"]["indicator"]["binding"]["frostRepresentation"],
+        kept["frostRepresentation"]
+    );
+    set(&mut request, "/backdrop", point(0.1));
+    let fallen = resolve(&request).unwrap();
+    assert_eq!(fallen["fallbackReason"], "legibility");
+    assert_eq!(fallen["frostRepresentation"], "opaqueDimensional");
+    assert_eq!(
+        fallen["paint"]["focus"]["indicator"]["binding"]["frostRepresentation"],
+        "opaqueDimensional"
+    );
+    assert_eq!(
+        fallen["paint"]["body"]["frostRepresentation"],
+        fallen["paint"]["focus"]["indicator"]["binding"]["frostRepresentation"]
+    );
+}
+
+#[test]
+fn each_backdrop_end_can_bind_the_certificate() {
+    let mut request = baseline();
+    set(&mut request, "/foregroundRole", json!("surface.base"));
+    set(
+        &mut request,
+        "/backdrop",
+        json!({"lower": color_at(0.0), "upper": color_at(0.2)}),
+    );
+    set(&mut request, "/minimumContentContrast", json!(1.0));
+    let light = resolve(&request).unwrap();
+    let bound = number(&light["body"]["contentContrastRatio"]);
+    let channels = |value: &Value| -> [f64; 3] {
+        let list = value["components"].as_array().unwrap();
+        [number(&list[0]), number(&list[1]), number(&list[2])]
+    };
+    let luminance = |c: [f64; 3]| {
+        let [r, g, b] = c.map(|v| {
+            if v <= 0.04045 {
+                v / 12.92
+            } else {
+                ((v + 0.055) / 1.055).powf(2.4)
+            }
+        });
+        0.2126 * r + 0.7152 * g + 0.0722 * b
+    };
+    let foreground = luminance(channels(&light["body"]["foreground"]));
+    let against = |end: &str| {
+        let backdrop = luminance(channels(&light["body"]["backdrop"]["compositedBody"][end]));
+        (foreground.max(backdrop) + 0.05) / (foreground.min(backdrop) + 0.05)
+    };
+    assert!((against("upper") - bound).abs() < 1e-12);
+    assert!(bound < against("lower"));
+    set(
+        &mut request,
+        "/minimumContentContrast",
+        json!((bound + against("lower")) / 2.0),
+    );
+    assert!(resolve(&request).unwrap_err().contains("insufficient"));
+    set(&mut request, "/minimumContentContrast", json!(bound - 1e-9));
+    assert_eq!(resolve(&request).unwrap()["appearance"], "translucent");
+
+    set(
+        &mut request,
+        "/backdrop",
+        json!({"lower": color_at(0.0), "upper": color_at(1.0)}),
+    );
+    set(&mut request, "/minimumContentContrast", json!(1.0));
+    let crossing = resolve(&request).unwrap();
+    assert_eq!(crossing["body"]["contentContrastRatio"], 1.0);
 }

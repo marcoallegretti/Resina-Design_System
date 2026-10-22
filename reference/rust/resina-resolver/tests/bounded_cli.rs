@@ -378,10 +378,7 @@ fn valid_requests_preserve_file_stdin_and_pretty_json_publication() {
         let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
         assert_eq!(result["appearance"], "translucent");
         assert_eq!(result["frostRepresentation"], "shapedBackdrop");
-        assert!(output.stdout.ends_with(
-            b"
-"
-        ));
+        assert!(output.stdout.ends_with(b"\n"));
     }
 
     let position = env!("CARGO_BIN_EXE_resina-slider-position");

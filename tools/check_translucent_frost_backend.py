@@ -8,10 +8,10 @@ from backend_source import duplicate_member_source, nonfinite_member_source
 from check_color_guard_backend import check_failure, check_success
 from check_extruded_contour_backend import contour_mismatch
 from check_focus_ir_backend import focus_ir_mismatch
-from check_headless_backend import mismatch
+from check_headless_backend import mismatch, run_backend
 from check_key_light_backend import key_light_mismatch
 from check_opaque_surface_backend import opaque_surface_mismatch
-from check_schemas import ROOT, apply_changes, check_case, load_json, validator_for
+from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
 from opaque_request_source import pigment_coefficient_failures
 from translucent_frost_arithmetic import expected_result as oracle_result
 from translucent_frost_arithmetic import remove_members
@@ -78,6 +78,70 @@ def translucent_mismatch(actual, expected):
     return mismatch(rest(actual), rest(expected))
 
 
+RETAINED_FROM_ACTUAL = ("frostRepresentation", "frostPortableBody")
+
+
+def point(level):
+    color = {"colorSpace": "srgb", "components": [level] * 3, "alpha": 1}
+    return {"lower": color, "upper": dict(color)}
+
+
+def surface_paint_request(request):
+    body = {
+        key: copy.deepcopy(request[key])
+        for key in (
+            "theme", "surface", "size", "appearance", "foregroundRole",
+            "minimumContentContrast", "minimumEdgeContrast",
+        )
+    }
+    body["schemaVersion"] = "0.1.0"
+    body["postTreatmentBackdrop"] = request["backdrop"]["lower"]
+    body["adjacentColor"] = request["adjacentRanges"][0]["lower"]
+    paint = {"schemaVersion": "0.1.0", "body": body}
+    if "surroundingRanges" in request:
+        paint["surroundingColor"] = request["surroundingRanges"][0]["lower"]
+    return paint
+
+
+def check_opaque_branch_is_surface_paint(base, command, surface_paint, timeout):
+    for reason, level, high_contrast in (("selection", 0.9, True), ("legibility", 0.1, False)):
+        for states in (["rest"], ["focused"], ["rest", "focused"]):
+            name = f"opaque branch {reason} {'+'.join(states)}"
+            request = copy.deepcopy(base)
+            request["theme"]["environment"]["accessibilityPreferences"]["highContrast"] = high_contrast
+            request["surface"]["states"]["states"] = states
+            request["backdrop"] = point(level)
+            request["adjacentRanges"] = [point(0.95)]
+            request["surroundingRanges"] = [point(0.95)]
+            if states == ["rest"]:
+                del request["surroundingRanges"]
+            source = json.dumps(request, allow_nan=False)
+            results = []
+            for backend, payload in (
+                (command, source),
+                (surface_paint, json.dumps(surface_paint_request(request))),
+            ):
+                completed = run_backend(backend, payload, timeout)
+                if completed.returncode != 0 or completed.stderr:
+                    raise AssertionError(f"{name}: backend failed with exit {completed.returncode}")
+                results.append(parse_json(completed.stdout, name))
+            actual, reference = results
+            if actual["fallbackReason"] != reason or actual["appearance"] != "opaque":
+                raise AssertionError(f"{name}: expected the {reason} opaque branch")
+            paint = copy.deepcopy(actual["paint"])
+            if "focus" in paint:
+                binding = paint["focus"]["indicator"]["binding"]
+                if (binding["frostRepresentation"] != "opaqueDimensional"
+                        or binding["frostPortableBody"] != binding["opaqueColorFallback"]):
+                    raise AssertionError(f"{name}: the ring does not retain the opaque representation")
+                for result in (paint, reference):
+                    for member in RETAINED_FROM_ACTUAL:
+                        result["focus"]["indicator"]["binding"].pop(member)
+            difference = mismatch(paint, reference)
+            if difference:
+                raise AssertionError(f"{name}: paint differs from surface paint at {difference}")
+
+
 def source_failures(base):
     object_role = copy.deepcopy(base)
     object_role["foregroundRole"] = {base["foregroundRole"]: None}
@@ -102,6 +166,8 @@ def source_failures(base):
 def main():
     parser = argparse.ArgumentParser(description="Check Resina translucent Frost surface IR.")
     parser.add_argument("--timeout", type=float, default=30)
+    parser.add_argument("--surface-paint", required=True,
+                        help="the resina-surface-paint command the opaque branch is compared with")
     parser.add_argument("command", nargs=argparse.REMAINDER)
     arguments = parser.parse_args()
     command = arguments.command
@@ -155,6 +221,9 @@ def main():
                     command, source, expected, result_validator,
                     arguments.timeout, name, translucent_mismatch,
                 )
+        check_opaque_branch_is_surface_paint(
+            base, command, [arguments.surface_paint, "-"], arguments.timeout
+        )
         failures = source_failures(base)
         for name, source in failures:
             check_failure(command, source, arguments.timeout, name)
