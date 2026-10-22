@@ -39,9 +39,11 @@ Logical direction already belongs to the endpoint allocation, so RTL changes
 travel direction without mirroring lighting. Nonfinite placement or an interior
 progress swallowed into either endpoint by binary64 arithmetic MUST fail.
 
-Recheck the complete placed thumb silhouette against the actual uniform convex
-track content region, stable reserved target and complete external label slot.
-Use the same conservative full-footprint-box certificate as the static snapshot.
+Recheck the complete placed thumb silhouette against the track's exact uniform
+face, stable reserved target and complete external label slot. Use the same exact
+full-footprint vertex test as the static snapshot
+([spec/55](55-toggle-snapshot.md) step 3), not the track's published content
+rectangle.
 A failed guard returns no travel result. Contrast remains the snapshot's checked
 thumb/track and external-label contrast: placement remains within the same
 uniform backdrop, and this operation changes no paint. Endpoint certification

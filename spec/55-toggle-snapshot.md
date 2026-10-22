@@ -66,7 +66,9 @@ permission to substitute approximate font metrics in production.
    uniform track pigment under the whole thumb, including extrusion. Allocation
    fit alone cannot certify this: an inset may leave paint on a curved edge, the
    relief shoulder or outside the track. The track's published content rectangle
-   C is a conservative subset of U and is not the test. Fail explicitly when
+   C is a conservative subset of U and is not the test; a bound derived from C,
+   such as its corner diagonal, is stricter than this law and does not decide
+   containment. Fail explicitly when
    containment cannot be established. Do not silently sample a center pixel or
    clip the thumb to pass. A nonuniform-backdrop or more permissive contour proof
    requires a separately specified resolution law; this operation does not
