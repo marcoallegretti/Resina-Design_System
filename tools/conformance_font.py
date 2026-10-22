@@ -9,6 +9,7 @@ within one run, never across machines.
 
 import argparse
 import hashlib
+import http.client
 import io
 import json
 from pathlib import Path
@@ -17,6 +18,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.request
 import zipfile
 
@@ -183,16 +185,24 @@ def check_fontconfig(records, environment=None):
 
 
 def check_visible_script_faces(records, faces):
-    """Reject any visible face that supports a pinned script but is not one of its pinned masters.
+    """Require every pinned master of a script to be visible and reject any other visible face of it.
 
     Fallback for a script can select any face that supports it, whatever its
-    family, weight or style, so every such face must be byte-identical to a master.
+    family, weight or style, so every such face must be byte-identical to a master,
+    and an empty listing proves nothing about which face would draw the text.
     """
-    pinned = {record["sha256"] for record in records}
+    pinned = {record["sha256"]: record for record in records}
+    seen = set()
     for face in faces:
-        if face["index"] != 0 or sha256(Path(face["file"]).read_bytes()) not in pinned:
+        digest = sha256(Path(face["file"]).read_bytes())
+        if face["index"] != 0 or digest not in pinned:
             raise ValueError(f"{face['file']} face {face['index']} is visible for "
                              f"{records[0]['script']} text but is not a pinned {records[0]['family']} master")
+        seen.add(digest)
+    missing = sorted(record["file"] for digest, record in pinned.items() if digest not in seen)
+    if missing:
+        raise ValueError(f"pinned {records[0]['family']} masters are not visible for "
+                         f"{records[0]['script']} text: {', '.join(missing)}")
     return sorted(face["file"] for face in faces)
 
 
@@ -254,9 +264,19 @@ def extract(archive, output, source=None):
 ARCHIVE_LIMIT = 64 * 1024 * 1024
 
 
+DOWNLOAD_ATTEMPTS = 3
+
+
 def download(source):
-    with urllib.request.urlopen(source["archive"]["url"], timeout=120) as response:
-        archive = response.read(ARCHIVE_LIMIT + 1)
+    for attempt in range(DOWNLOAD_ATTEMPTS):
+        try:
+            with urllib.request.urlopen(source["archive"]["url"], timeout=120) as response:
+                archive = response.read(ARCHIVE_LIMIT + 1)
+            break
+        except (OSError, http.client.HTTPException) as error:
+            if attempt + 1 == DOWNLOAD_ATTEMPTS:
+                raise ValueError(f"{source['family']} archive could not be downloaded: {error}") from error
+            time.sleep(2 ** (attempt + 1))
     if len(archive) > ARCHIVE_LIMIT:
         raise ValueError(f"downloaded {source['family']} archive exceeds {ARCHIVE_LIMIT} bytes")
     return verified(archive, source)

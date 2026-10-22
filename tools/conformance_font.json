@@ -36,6 +36,7 @@
       "family": "Noto Sans Arabic",
       "version": "2.013",
       "license": "SIL Open Font License 1.1",
+      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/arabic)",
       "archive": {
         "url": "https://github.com/notofonts/arabic/releases/download/NotoSansArabic-v2.013/NotoSansArabic-v2.013.zip",
         "sha256": "1301aceaea84c501cf2e6dcfb3182e2328c8eae5725817fcb239672bda7154f1"
@@ -70,6 +71,7 @@
       "family": "Noto Sans Hebrew",
       "version": "3.001",
       "license": "SIL Open Font License 1.1",
+      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/hebrew)",
       "archive": {
         "url": "https://github.com/notofonts/hebrew/releases/download/NotoSansHebrew-v3.001/NotoSansHebrew-v3.001.zip",
         "sha256": "df0a71814b4e63644cf40fcc4529111b61266b7a2dafbe95068b29a7520cc3cb"

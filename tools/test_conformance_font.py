@@ -247,18 +247,50 @@ class ScriptFaceTests(unittest.TestCase):
                 return conformance_font.parse_fontconfig_faces(f"{file}\t{index}\t80\t0\t100\n")
 
             self.assertEqual(conformance_font.check_visible_script_faces(records, faces(pinned)), [str(pinned)])
+            with self.assertRaisesRegex(ValueError, "Noto Sans Arabic masters are not visible for Arabic text"):
+                conformance_font.check_visible_script_faces(
+                    [{**records[0], "file": "NotoSansArabic-Regular.ttf"}], [])
             for unpinned in (faces(other), faces(pinned, 1)):
                 with self.assertRaisesRegex(ValueError, "visible for Arabic text but is not a pinned Noto Sans Arabic"):
                     conformance_font.check_visible_script_faces(records, faces(pinned) + unpinned)
 
-    def test_every_script_is_listed_by_its_language(self):
-        records = [{"script": script["script"], "family": script["family"], "sha256": "0" * 64}
-                   for script in conformance_font.MANIFEST["scripts"]]
-        with mock.patch.object(conformance_font, "fontconfig_faces", return_value=[]) as listed:
-            self.assertEqual(conformance_font.check_script_fontconfig(records, {"FONTCONFIG_FILE": "x"}),
-                             {"Arabic": [], "Hebrew": []})
-        self.assertEqual([call.args for call in listed.call_args_list],
-                         [({"FONTCONFIG_FILE": "x"}, ":lang=ar"), ({"FONTCONFIG_FILE": "x"}, ":lang=he")])
+    def test_every_script_is_listed_by_its_language_and_must_show_its_masters(self):
+        with tempfile.TemporaryDirectory() as directory:
+            files = {}
+            records = []
+            for script in conformance_font.MANIFEST["scripts"]:
+                path = Path(directory) / f"{script['script']}.ttf"
+                path.write_bytes(script["script"].encode())
+                files[script["lang"]] = path
+                records.append({"script": script["script"], "family": script["family"], "file": path.name,
+                                "sha256": conformance_font.sha256(path.read_bytes())})
+
+            def listed(environment, pattern):
+                return conformance_font.parse_fontconfig_faces(f"{files[pattern[len(':lang='):]]}\t0\t80\t0\t100\n")
+
+            with mock.patch.object(conformance_font, "fontconfig_faces", side_effect=listed) as calls:
+                visible = conformance_font.check_script_fontconfig(records, {"FONTCONFIG_FILE": "x"})
+            self.assertEqual(visible, {"Arabic": [str(files["ar"])], "Hebrew": [str(files["he"])]})
+            self.assertEqual([call.args for call in calls.call_args_list],
+                             [({"FONTCONFIG_FILE": "x"}, ":lang=ar"), ({"FONTCONFIG_FILE": "x"}, ":lang=he")])
+            with mock.patch.object(conformance_font, "fontconfig_faces", return_value=[]):
+                with self.assertRaisesRegex(ValueError, "are not visible for Arabic text"):
+                    conformance_font.check_script_fontconfig(records, {"FONTCONFIG_FILE": "x"})
+
+    def test_download_retries_transient_failures_and_then_reports_them(self):
+        source = conformance_font.MANIFEST["scripts"][0]
+        good = mock.MagicMock()
+        good.__enter__.return_value.read.return_value = b"archive"
+        with mock.patch.object(conformance_font, "verified", side_effect=lambda archive, _: archive), \
+                mock.patch.object(conformance_font.time, "sleep") as slept:
+            with mock.patch.object(conformance_font.urllib.request, "urlopen",
+                                   side_effect=[OSError("reset"), OSError("reset"), good]) as opened:
+                self.assertEqual(conformance_font.download(source), b"archive")
+            self.assertEqual(opened.call_count, 3)
+            self.assertEqual([call.args for call in slept.call_args_list], [(2,), (4,)])
+            with mock.patch.object(conformance_font.urllib.request, "urlopen", side_effect=OSError("down")):
+                with self.assertRaisesRegex(ValueError, "Noto Sans Arabic archive could not be downloaded: down"):
+                    conformance_font.download(source)
 
     def test_isolated_fontconfig_lists_only_the_given_font_directory(self):
         with tempfile.TemporaryDirectory() as directory:
