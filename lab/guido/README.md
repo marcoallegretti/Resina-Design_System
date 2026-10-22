@@ -78,7 +78,7 @@ preserved. Run the checker under a live parent Wayland display with Sway and gri
 
 ```sh
 cargo build --release --locked --manifest-path lab/guido/Cargo.toml
-python tools/check_guido_relief_native.py --probe lab/guido/target/release/resina-lab --request target/material-scenes.json --content-font /usr/share/fonts/opentype/inter/Inter-Regular.otf --relief-board convex --board-state focused --output-dir target/relief-board-native
+python tools/check_guido_relief_native.py --probe lab/guido/target/release/resina-lab --request target/material-scenes.json --content-font $CONFORMANCE_FONTS/Inter-Regular.otf --relief-board convex --board-state focused --output-dir target/relief-board-native
 ```
 
 Supply the actual binary path when `CARGO_TARGET_DIR` is set. Preflight determines
@@ -134,7 +134,7 @@ Build the example after preparing the catalog above:
 cargo build --manifest-path lab/guido/Cargo.toml --locked --example command_input_probe
 cargo run --manifest-path lab/guido/Cargo.toml --locked --example command_input_probe -- \
   "$PWD" target/material-scenes.json \
-  /usr/share/fonts/opentype/inter/Inter-Regular.otf:/usr/share/fonts/opentype/inter/Inter-Medium.otf:/usr/share/fonts/opentype/inter/Inter-SemiBold.otf
+  $CONFORMANCE_FONTS/Inter-Regular.otf:$CONFORMANCE_FONTS/Inter-Medium.otf:$CONFORMANCE_FONTS/Inter-SemiBold.otf
 ```
 
 Run it in an isolated layer-shell session with a fixed unit-scale output. The
@@ -173,7 +173,7 @@ Run the complete checker:
 python tools/check_guido_command_input.py \
   --probe lab/guido/target/debug/examples/command_input_probe \
   --scenes target/material-scenes.json \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --sway-socket /path/to/sway-ipc.sock \
   --parent-display :92 --parent-window 0x200004
 ```
@@ -246,7 +246,7 @@ shortened-height render must expose a missing wrapped line while retaining ink.
 
 ```sh
 cargo build --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe
-python tools/check_guido_relief_native.py --probe lab/guido/target/debug/examples/relief_content_probe --content-font /usr/share/fonts/opentype/inter/Inter-Regular.otf --text-scale 2 --output-dir target/relief-content-native
+python tools/check_guido_relief_native.py --probe lab/guido/target/debug/examples/relief_content_probe --content-font $CONFORMANCE_FONTS/Inter-Regular.otf --text-scale 2 --output-dir target/relief-content-native
 ```
 
 If `CARGO_TARGET_DIR` is set, supply its example binary path. Run under a live
@@ -284,7 +284,7 @@ Use the optimized probe for the complete material-lit fractional-scale matrix:
 
 ```sh
 cargo build --release --locked --manifest-path lab/guido/Cargo.toml --example relief_content_probe
-python tools/check_guido_relief_native.py --probe lab/guido/target/release/examples/relief_content_probe --material-light --content-font /usr/share/fonts/opentype/inter/Inter-Regular.otf --content-focus --text-scale 2 --output-dir target/material-relief-content-native
+python tools/check_guido_relief_native.py --probe lab/guido/target/release/examples/relief_content_probe --material-light --content-font $CONFORMANCE_FONTS/Inter-Regular.otf --content-focus --text-scale 2 --output-dir target/material-relief-content-native
 ```
 
 Supply the actual font and `CARGO_TARGET_DIR` paths on the host. The same

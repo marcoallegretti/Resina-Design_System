@@ -89,7 +89,7 @@ focus, layout and preference policy belong to this shell, not to Resina.
 ```sh
 QML_IMPORT_PATH=target/qt-runtime-import \
 RESINA_ROOT="$PWD" \
-RESINA_CLOCK_FONTS=/usr/share/fonts/opentype/inter/Inter-Regular.otf:/usr/share/fonts/opentype/inter/Inter-Medium.otf:/usr/share/fonts/opentype/inter/Inter-SemiBold.otf \
+RESINA_CLOCK_FONTS=$CONFORMANCE_FONTS/Inter-Regular.otf:$CONFORMANCE_FONTS/Inter-Medium.otf:$CONFORMANCE_FONTS/Inter-SemiBold.otf \
 quickshell --path lab/quickshell/clock-shell/shell.qml
 ```
 
