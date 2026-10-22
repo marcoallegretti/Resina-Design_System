@@ -390,7 +390,9 @@ fn pixel_color(pixel: &[u8]) -> SrgbFallback {
 }
 /// A dimmed disabled label is published at its contrast bound, which 8-bit quantization can
 /// undercut; its solid glyph pixels must instead reproduce the published color as GUIdo
-/// quantizes it, by truncation, within one level of blending rounding.
+/// quantizes it, by truncation, within one level of blending rounding. Truncation
+/// differs from the nearest byte by up to one level; #291 owns correcting GUIdo's
+/// conversion, after which this check returns to rounding.
 fn assert_solid_glyph(
     name: &str,
     pixel: &[u8],
