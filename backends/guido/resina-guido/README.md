@@ -554,6 +554,17 @@ reserved label slot and checked backdrop. A device pixel split by a slot edge
 that is off the device grid may hold at most the coverage of its share inside
 the slot; a pixel wholly outside holds none. Ink moved one device pixel past
 any slot edge is reported. Labels use nonzero tracking.
+
+The slot is the line's layout box, not its ink ([label layout](../../../spec/46-command-label-layout.md)
+reports advances and line heights, not glyph bounds). A line centers the ascent and
+descent of the face that draws it, and Noto Sans Arabic leaves 0.382 em under the
+baseline of a 1.4 line while its deepest glyph in the tested labels reaches 0.394 em.
+The bottom edge therefore allows ink to cross it by the amount the shaped glyphs of
+the label reach below the room the pinned masters' own metrics leave, which the test
+derives from the glyph extents; it is zero for the English labels and for any label
+whose glyphs stay inside. Every other edge keeps the exact check. Bounding Arabic ink
+overhang below the slot is tracked in
+[#292](https://github.com/marcoallegretti/Resina-Design_System/issues/292).
 Unrepresentable spacing, approximate measurements and invalid raster inputs fail
 before command publication.
 `RESINA_SLIDER_CAPTURE_DIR` saves the tested PPM frames.
@@ -590,6 +601,8 @@ context cannot be created; it never skips rendering checks.
 python -m pip install -r tools/requirements-schema.txt
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
 RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=$CONFORMANCE_FONTS cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
 cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
