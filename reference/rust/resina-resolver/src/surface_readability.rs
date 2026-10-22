@@ -48,6 +48,10 @@ pub struct SurfaceReadabilityResult {
 }
 
 impl SurfaceReadabilityResult {
+    pub(crate) fn with_content_fallback_applied(mut self) -> Self {
+        self.content_fallback_applied = true;
+        self
+    }
     pub fn binding(&self) -> &BoundSurface {
         &self.binding
     }

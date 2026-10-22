@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:translucent-frost-case:0.1.0",
+  "title": "Resina Translucent Frost Conformance Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "requestChanges", "requestSchemaValid"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "requestChanges": {"$ref": "urn:resina:schema:opaque-surface-case:0.1.0#/$defs/changes"},
+    "omitMembers": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^/"}
+    },
+    "requestSchemaValid": {"type": "boolean"},
+    "expectedAppearance": {"enum": ["translucent", "opaque"]},
+    "expectedRepresentation": {
+      "enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented", "opaqueDimensional"]
+    },
+    "expectedFallbackReason": {"enum": ["selection", "legibility"]},
+    "expectedFocus": {"type": "boolean"},
+    "errorContains": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {
+      "required": ["expectedAppearance", "expectedRepresentation", "expectedFocus"],
+      "not": {"required": ["errorContains"]},
+      "properties": {"requestSchemaValid": {"const": true}}
+    },
+    {
+      "required": ["errorContains"],
+      "not": {"anyOf": [
+        {"required": ["expectedAppearance"]},
+        {"required": ["expectedRepresentation"]},
+        {"required": ["expectedFallbackReason"]},
+        {"required": ["expectedFocus"]}
+      ]}
+    }
+  ],
+  "allOf": [
+    {
+      "if": {"required": ["expectedAppearance"], "properties": {"expectedAppearance": {"const": "opaque"}}},
+      "then": {
+        "required": ["expectedFallbackReason"],
+        "properties": {"expectedRepresentation": {"const": "opaqueDimensional"}}
+      }
+    },
+    {
+      "if": {"required": ["expectedAppearance"], "properties": {"expectedAppearance": {"const": "translucent"}}},
+      "then": {
+        "not": {"required": ["expectedFallbackReason"]},
+        "properties": {"expectedRepresentation": {"not": {"const": "opaqueDimensional"}}}
+      }
+    }
+  ]
+}

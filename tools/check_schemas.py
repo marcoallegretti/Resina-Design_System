@@ -851,6 +851,9 @@ def check_no_active_reference_to_archived_schemas():
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/translucent-frost-request.schema.json",
+        "schemas/translucent-frost-ir.schema.json",
+        "schemas/translucent-frost-case.schema.json",
         "schemas/disclosure-request.schema.json",
         "schemas/disclosure-result.schema.json",
         "schemas/disclosure-accessibility-ir.schema.json",
@@ -2788,6 +2791,85 @@ def main():
                 raise ValueError(f"{case['name']}: expected focus disagrees with request")
             check_case(paint_result_schema, case["name"], result, True)
             checked += 1
+
+    from check_translucent_frost_backend import (
+        baseline as frost_baseline,
+        case_request as frost_case_request,
+        cases as frost_cases,
+        expected_result as frost_expected,
+    )
+    frost_case_schema = validator_for("schemas/translucent-frost-case.schema.json")
+    frost_request_schema = validator_for("schemas/translucent-frost-request.schema.json")
+    frost_result_schema = validator_for("schemas/translucent-frost-ir.schema.json")
+    frost_names = set()
+    frost_results = {}
+    for case in frost_cases():
+        name = case["name"]
+        check_case(frost_case_schema, name, case, True)
+        if name in frost_names:
+            raise ValueError(f"duplicate translucent Frost case: {name}")
+        frost_names.add(name)
+        request = frost_case_request(frost_baseline(), case)
+        check_case(frost_request_schema, name, request, case["requestSchemaValid"])
+        checked += 2
+        if "errorContains" not in case:
+            result = frost_expected(request)
+            check_case(frost_result_schema, name, result, True)
+            frost_results[name] = result
+            checked += 1
+    translucent = frost_results["shaped backdrop over a bright interval keeps its tinted body"]
+    pigmented = frost_results["transparency without blur keeps a pigmented body"]
+    focused = frost_results["focused translucent surface keeps its navigation ring"]
+    opaque = frost_results["a dark interval forces the opaque body through legibility"]
+
+    def frost_mutation(result, edit):
+        changed = copy.deepcopy(result)
+        edit(changed)
+        return changed
+
+    def drop(path):
+        def edit(document):
+            parent = document
+            for member in path[:-1]:
+                parent = parent[member]
+            del parent[path[-1]]
+        return edit
+
+    def put(path, value):
+        def edit(document):
+            parent = document
+            for member in path[:-1]:
+                parent = parent[member]
+            parent[path[-1]] = value
+        return edit
+
+    for name, result, edit in [
+        ("translucent frost opaque body pigment", translucent, put(["body", "pigment", "body", "alpha"], 1)),
+        ("translucent frost transparent body pigment", translucent, put(["body", "pigment", "side", "alpha"], 0)),
+        ("translucent frost pigmented body cannot publish diffusion", pigmented,
+         put(["body", "diffusion"], {"radius": 12})),
+        ("translucent frost diffused body requires diffusion", translucent, drop(["body", "diffusion"])),
+        ("translucent frost nonpositive diffusion", translucent, put(["body", "diffusion", "radius"], 0)),
+        ("translucent frost focused body requires focus", focused, drop(["focus"])),
+        ("translucent frost unfocused body cannot publish focus", translucent,
+         put(["focus"], focused["focus"])),
+        ("translucent frost opaque representation cannot carry a translucent body", translucent,
+         put(["frostRepresentation"], "opaqueDimensional")),
+        ("translucent frost translucent representation cannot carry opaque paint", opaque,
+         put(["frostRepresentation"], "regularBackdrop")),
+        ("translucent frost opaque appearance requires its reason", opaque, drop(["fallbackReason"])),
+        ("translucent frost unknown fallback reason", opaque, put(["fallbackReason"], "capability")),
+        ("translucent frost opaque appearance cannot carry a translucent body", opaque,
+         put(["body"], translucent["body"])),
+        ("translucent frost translucent composited bound", translucent,
+         put(["body", "backdrop", "compositedBody", "lower", "alpha"], 0.5)),
+        ("translucent frost sampled normals", translucent,
+         put(["body", "lighting", "normalHighlightWeights"], [0.5])),
+        ("translucent frost unknown member", translucent, put(["unexpected"], True)),
+        ("translucent frost non Frost family", translucent, put(["body", "materialFamily"], "cast")),
+    ]:
+        check_case(frost_result_schema, name, frost_mutation(result, edit), False)
+        checked += 1
 
     from check_hit_region_backend import cases, validate_membership_vectors
     checked += validate_membership_vectors()

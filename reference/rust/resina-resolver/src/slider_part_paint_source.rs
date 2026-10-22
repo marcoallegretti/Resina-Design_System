@@ -1,7 +1,7 @@
 use crate::{
     OpaqueSurfaceError, SliderPartPaintError, SliderPartPaintInput, SliderPartPaintIr,
     ThemeResolutionError, resolve_slider_part_paint,
-    srgb_input::{SrgbInput, SrgbInputError},
+    srgb_input::{RangeInput, SrgbInput, SrgbInputError},
     theme_request::compile_theme_request_document,
 };
 use resina_color::{ContrastRangeError, OpaqueSrgbRange};
@@ -9,13 +9,7 @@ use resina_model::{
     ColorRole, OpaqueSurfaceAppearance, SliderAppearance, SliderPart, SurfaceIntent, SurfaceSize,
 };
 use resina_tokens::parse_token_document;
-use serde::{
-    Deserialize, Deserializer,
-    de::{
-        MapAccess, Visitor,
-        value::{MapAccessDeserializer, StringDeserializer},
-    },
-};
+use serde::{Deserialize, Deserializer, de::value::StringDeserializer};
 use serde_json::Value;
 use std::fmt;
 
@@ -98,37 +92,6 @@ fn present_backdrop<'de, D: Deserializer<'de>>(d: D) -> Result<Option<SrgbInput>
 
 fn present_ranges<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Vec<RangeInput>>, D::Error> {
     Vec::deserialize(d).map(Some)
-}
-
-struct RangeInput {
-    lower: SrgbInput,
-    upper: SrgbInput,
-}
-
-impl<'de> Deserialize<'de> for RangeInput {
-    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        #[derive(Deserialize)]
-        #[serde(deny_unknown_fields)]
-        struct Members {
-            lower: SrgbInput,
-            upper: SrgbInput,
-        }
-        struct RangeVisitor;
-        impl<'de> Visitor<'de> for RangeVisitor {
-            type Value = RangeInput;
-            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.write_str("an opaque sRGB range object")
-            }
-            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
-                let members = Members::deserialize(MapAccessDeserializer::new(map))?;
-                Ok(RangeInput {
-                    lower: members.lower,
-                    upper: members.upper,
-                })
-            }
-        }
-        d.deserialize_map(RangeVisitor)
-    }
 }
 
 fn color(

@@ -90,7 +90,9 @@ impl<'de> Deserialize<'de> for OpaqueSurfaceRequest {
     }
 }
 
-fn foreground_role_name<'de, D: Deserializer<'de>>(deserializer: D) -> Result<ColorRole, D::Error> {
+pub(crate) fn foreground_role_name<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<ColorRole, D::Error> {
     ColorRole::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
         deserializer,
     )?))
@@ -362,7 +364,47 @@ pub(crate) fn resolve_opaque_body_geometry(
     }
     let binding = readable.binding();
     let family = binding.material_family();
-    let bands = appearance.bands_for(family);
+    let shape = resolve_surface_shape(theme, environment, size, appearance, binding, depth)?;
+    let pigment = resolve_opaque_pigment(family, readable.body(), appearance.pigment_profiles())
+        .expect("readability selected an opaque body");
+    Ok(OpaqueSurfaceIr {
+        schema_version: "0.1.0",
+        representation: "opaque",
+        material_role: binding.material_role(),
+        color_role: binding.color_role(),
+        material_family: family,
+        form: binding.form().clone(),
+        states: binding.states().clone(),
+        frost_representation: readable.frost_representation(),
+        geometry: shape.geometry,
+        pigment,
+        lighting: shape.lighting,
+        edge_width: shape.edge_width,
+        highlight_width: shape.highlight_width,
+        edge: readable.edge().clone(),
+        foreground_role: readable.foreground_role(),
+        foreground: readable.foreground().clone(),
+        content_contrast_ratio: readable.content_contrast_ratio(),
+        content_fallback_applied: readable.content_fallback_applied(),
+    })
+}
+
+pub(crate) struct SurfaceShape {
+    pub(crate) geometry: OpaqueSurfaceGeometry,
+    pub(crate) lighting: KeyLightResult,
+    pub(crate) edge_width: f64,
+    pub(crate) highlight_width: f64,
+}
+
+pub(crate) fn resolve_surface_shape(
+    theme: &crate::CompiledTheme,
+    environment: &EnvironmentSnapshot,
+    size: SurfaceSize,
+    appearance: &OpaqueSurfaceAppearance,
+    binding: &crate::BoundSurface,
+    depth: f64,
+) -> Result<SurfaceShape, OpaqueSurfaceError> {
+    let bands = appearance.bands_for(binding.material_family());
     let extent = bands.edge_width() + bands.highlight_width();
     if !extent.is_finite() {
         return Err(OpaqueSurfaceError::InvalidBandExtent);
@@ -413,27 +455,11 @@ pub(crate) fn resolve_opaque_body_geometry(
         highlight_outer: placed(&edge_inset, zero)?,
         content: placed(&content_inset, zero)?,
     };
-    let pigment = resolve_opaque_pigment(family, readable.body(), appearance.pigment_profiles())
-        .expect("readability selected an opaque body");
-    Ok(OpaqueSurfaceIr {
-        schema_version: "0.1.0",
-        representation: "opaque",
-        material_role: binding.material_role(),
-        color_role: binding.color_role(),
-        material_family: family,
-        form: binding.form().clone(),
-        states: binding.states().clone(),
-        frost_representation: readable.frost_representation(),
+    Ok(SurfaceShape {
         geometry,
-        pigment,
         lighting,
         edge_width: bands.edge_width(),
         highlight_width: bands.highlight_width(),
-        edge: readable.edge().clone(),
-        foreground_role: readable.foreground_role(),
-        foreground: readable.foreground().clone(),
-        content_contrast_ratio: readable.content_contrast_ratio(),
-        content_fallback_applied: readable.content_fallback_applied(),
     })
 }
 

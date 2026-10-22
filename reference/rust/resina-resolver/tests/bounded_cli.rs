@@ -29,6 +29,11 @@ const COMMANDS: &[(&str, &str, usize)] = &[
         MIB,
     ),
     (
+        "resina-translucent-frost",
+        env!("CARGO_BIN_EXE_resina-translucent-frost"),
+        MIB,
+    ),
+    (
         "resina-command-motion",
         env!("CARGO_BIN_EXE_resina-command-motion"),
         MIB,
@@ -358,6 +363,21 @@ fn valid_requests_preserve_file_stdin_and_pretty_json_publication() {
             serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
             disclosure_cases[0]["expected"]
         );
+        assert!(output.stdout.ends_with(b"\n"));
+    }
+
+    let frost = env!("CARGO_BIN_EXE_resina-translucent-frost");
+    let source = include_bytes!("../../../../conformance/ir/translucent-frost-request.json");
+    let file = RequestFile::new(source);
+    for output in [
+        stdin(frost, source),
+        Command::new(frost).arg(file.path()).output().unwrap(),
+    ] {
+        assert!(output.status.success(), "{output:?}");
+        assert!(output.stderr.is_empty());
+        let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(result["appearance"], "translucent");
+        assert_eq!(result["frostRepresentation"], "shapedBackdrop");
         assert!(output.stdout.ends_with(b"\n"));
     }
 

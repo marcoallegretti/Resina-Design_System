@@ -36,6 +36,11 @@ pub struct FocusIndicatorResult {
 }
 
 impl FocusIndicatorResult {
+    pub(crate) fn with_opaque_frost_fallback(mut self) -> Self {
+        self.binding = self.binding.with_opaque_frost_fallback();
+        self
+    }
+
     pub fn binding(&self) -> &BoundSurface {
         &self.binding
     }
