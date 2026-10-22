@@ -1,3 +1,4 @@
+import json
 import unittest
 from unittest import mock
 
@@ -311,6 +312,42 @@ class ClockShellAccessibilityTests(unittest.TestCase):
         nodes = open_tree()
         nodes[-1] = dict(nodes[-1], actions=["SetFocus"])
         self.assertRegex(tree_mismatch(nodes, ["Show clock", "Close"], DATE), "^Buttons without a Press action")
+
+
+class PlacementTests(unittest.TestCase):
+    def test_a_published_command_without_a_placement_is_named(self):
+        observed = {"showClock": {"snapshot": {}}, "close": None, "placements": {"showClock": None, "close": None}}
+        with self.assertRaisesRegex(ValueError, "showClock Command is published but has no window placement"):
+            check_quickshell_clock_shell.require_placements(observed)
+
+    def test_an_absent_command_needs_no_placement(self):
+        check_quickshell_clock_shell.require_placements(
+            {"showClock": None, "close": None, "placements": {"showClock": None, "close": None}})
+
+    def test_a_placed_command_is_accepted(self):
+        check_quickshell_clock_shell.require_placements(
+            {"showClock": {}, "close": {}, "placements": {"showClock": {"x": 1, "y": 2}, "close": {"x": 3, "y": 4}}})
+
+
+class ObserveTests(unittest.TestCase):
+    def shell(self, observed):
+        shell = object.__new__(Shell)
+        shell.check_log = lambda: None
+        shell.call = lambda function, *arguments: json.dumps(observed)
+        return shell
+
+    def observed(self, placement):
+        return {"errors": {}, "loadError": "", "open": False, "clock": None,
+                "showClock": {"snapshot": {}}, "close": None,
+                "placements": {"showClock": placement, "close": None}}
+
+    def test_observing_a_ready_command_without_a_placement_names_it(self):
+        with self.assertRaisesRegex(ValueError, "showClock Command is published but has no window placement"):
+            self.shell(self.observed(None)).observe()
+
+    def test_observing_a_placed_command_returns_the_observation(self):
+        observed = self.observed({"x": 1, "y": 2})
+        self.assertEqual(self.shell(observed).observe(), observed)
 
 
 if __name__ == "__main__":

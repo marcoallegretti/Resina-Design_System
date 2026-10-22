@@ -1564,9 +1564,9 @@ whose median meets the floor can still have nearly half of its intervals longer
 than 1/30 s. The target is a median
 `preparationDuration` of at most 8 ms and a median published interval of at most
 17 ms. The target is reported but not enforced. CI runs the check at output
-scales 1 and 2 with `--floor report --require-gap` and keeps each `report.json`
-with every measured frame. Shared runner timing varies between runs; at
-revision 4cb60fe the median interval was 67.9 ms at scale 1 and 84.8 ms at
+scales 1 and 2 with `--floor report`, at scale 6 with `--floor report --require-gap`,
+and keeps each `report.json` with every measured frame. Shared runner timing
+varies between runs; at revision 4cb60fe the median interval was 67.9 ms at scale 1 and 84.8 ms at
 scale 2, with median preparation of 13.0 ms and 28.6 ms.
 Most of each interval there is asynchronous decoding and software rendering, so
 runner timing does not qualify the floor. The floor is qualified by running the
@@ -1581,23 +1581,29 @@ rendered faces, so Commands in motion together do not displace each other,
 within a bound of about 16 MiB. A kept term is the one a new evaluation
 returns, so every frame is byte-identical to one rendered without them.
 
-The check also bounds the publication gap, on every host. The headless output
-refreshes at 60 Hz, so a predecessor whose `predecessorSpan` is at least 1/60 s
-saw an animation tick while it was prepared. For those frames the 75th
-percentile publication delay must be at most 4 ms. A predecessor published
-within one tick may correctly wait for the next tick and is not counted. How
-many frames qualify depends on how long preparation takes, so a faster host
-yields fewer per press. The check therefore runs at least `--presses` cycles
-(10) and then continues, up to `--max-presses` (40), until 20 frames
-qualify. If fewer than 20 still qualify, the gap is reported as not evaluated
-and `--require-gap` makes that a failure. The one exception is a host on which
-the observed predecessor spans prove that none of at least 20 predecessors
-spanned a tick: no frame could then wait for a tick it had not seen, so the
-gap is reported as not applicable, `--require-gap` accepts it, and `gap` in
-`report.json` records `observed` and `longestSpan`. A host with even one
-predecessor that spanned a tick and fewer than 20 of them still fails. CI
-requires the gap, so a runner that exercises the path too rarely to bound it
-fails rather than leaving the bound unchecked.
+The check also bounds the publication gap. The headless output refreshes at 60 Hz,
+so a predecessor whose `predecessorSpan` is at least 1/60 s saw an animation tick
+while it was prepared. For at least 20 such frames the 75th percentile publication
+delay must be at most 4 ms. A predecessor published within one tick may correctly
+wait for the next tick and is not counted.
+
+How many frames qualify depends on whether preparation outlasts a tick, so it
+varies with the host and the output scale. In the `report.json` files of CI runs
+39563133144, 39569240322, 39572140225, 39575497873, 39582279088, 39585621193 and
+39595045567, 0.74 % to 36 % of frames qualified at scale 1 and 84.8 % to 93.6 % at
+scale 2. In run 39648737548, on a faster runner, 14 of 9572 frames qualified at
+scale 1 after 600 press cycles and 21 of 379 at scale 2. CI therefore requires the
+gap only at output scale 6, on a 3072x1800 output, where preparation is longest:
+in run 39659556683, 100 of 119 frames qualified there, with a median preparation
+of 170.7 ms against 10.8 ms at scale 1 and 21.6 ms at scale 2. Scale 6 is the only
+enforcing run: `--require-gap` fails for any count below 20, including 0, and the
+runs at scales 1 and 2 may report NOT EVALUATED or NOT APPLICABLE and fail only if
+at least 20 frames qualify and the bound is exceeded.
+
+Local observation, not reproduced by CI: with the call that resumes a due frame
+after publication removed, the 75th percentile was 14.5 to 15.3 ms at scales 4 and
+6 over 300 frames per run, and 10.3 and 4.5 ms over 20 frames at scale 1, where
+only 13 of 40 qualifying frames exceeded 4 ms.
 
 Measured locally at revision 4cb60fe in headless Sway 1.12 with the pixman
 renderer on a 1024×600 output, Quickshell 0.3.2 and the Qt 6.11.2 software
