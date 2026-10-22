@@ -420,7 +420,7 @@ impl LitControlBodyIr {
             .contains(point)
             .map_err(fail)?
         {
-            if terms.edge_interior_contains(point) || swept_interior(point).map_err(fail)? {
+            if swept_interior(point).map_err(fail)? || terms.edge_interior_contains(point) {
                 return self
                     .face
                     .face_color_using(point, terms)
