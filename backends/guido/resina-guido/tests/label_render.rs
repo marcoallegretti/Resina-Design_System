@@ -600,3 +600,64 @@ fn visible_unpinned_inter_face_is_rejected() {
         );
     }
 }
+
+#[test]
+fn arabic_and_hebrew_resolve_pinned_script_masters() {
+    let fonts = label_evidence::database(&label_evidence::registered(), true).unwrap();
+    for (text, families) in [
+        ("Save", vec!["Inter"]),
+        ("إعادة الاتصال بالشبكة", vec!["Inter", "Noto Sans Arabic"]),
+        ("اتصل Reconnect", vec!["Inter", "Noto Sans Arabic"]),
+        ("\u{661}\u{662}\u{663}", vec!["Noto Sans Arabic"]),
+        ("\u{5e9}\u{5de}\u{5d5}\u{5e8}", vec!["Noto Sans Hebrew"]),
+    ] {
+        for (weight, style) in [(400, "Regular"), (500, "Medium"), (600, "SemiBold")] {
+            let faces = label_evidence::resolve_text(&fonts, text, weight)
+                .unwrap_or_else(|error| panic!("{text:?} at {weight}: {error}"));
+            let mut drawn: Vec<_> = faces
+                .iter()
+                .map(|face| {
+                    assert_eq!(face.weight, weight);
+                    let file = face.path.file_name().unwrap().to_str().unwrap();
+                    assert!(file.contains(&format!("-{style}.")), "{file}");
+                    face.family.as_str()
+                })
+                .collect();
+            drawn.sort_unstable();
+            assert_eq!(drawn, families, "{text:?} at weight {weight}");
+        }
+    }
+}
+
+#[test]
+fn script_text_without_the_pinned_script_masters_is_rejected() {
+    let inter = conformance_font::masters();
+    let isolated = label_evidence::database(&inter, false).unwrap();
+    let error = label_evidence::resolve_text(&isolated, "إعادة الاتصال", 500)
+        .err()
+        .unwrap();
+    assert!(
+        error.contains("has no glyph in any face at weight 500"),
+        "{error}"
+    );
+    let with_system = label_evidence::database(&inter, true).unwrap();
+    assert!(label_evidence::resolve_text(&with_system, "إعادة الاتصال", 500).is_err());
+}
+
+#[test]
+fn visible_unpinned_script_face_is_rejected() {
+    let mut fonts = label_evidence::database(&label_evidence::registered(), false).unwrap();
+    let mut medium = std::fs::read(&conformance_font::script_masters()[1]).unwrap();
+    medium.push(0);
+    fonts.load_font_data(medium);
+    for text in ["Save", "إعادة الاتصال"] {
+        let error = label_evidence::resolve_text(&fonts, text, 500)
+            .err()
+            .unwrap();
+        assert!(
+            error.contains("NotoSansArabic-Medium (500, registered data face 0) is visible as Noto Sans Arabic weight 500")
+                && error.contains("not the pinned master"),
+            "{error}"
+        );
+    }
+}

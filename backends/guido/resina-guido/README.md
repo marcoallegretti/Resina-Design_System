@@ -225,22 +225,30 @@ these constraints: its layout can shrink the text box to the longest line before
 drawing.
 
 The native label tests require `RESINA_LABEL_FONT_DIR` to name a directory that
-holds the Inter 4.0 static Regular, Medium and SemiBold masters pinned in
+holds the Inter 4.0 static Regular, Medium and SemiBold masters and the Noto Sans
+Arabic and Noto Sans Hebrew static masters pinned in
 [`tools/conformance_font.json`](../../../tools/conformance_font.json), and register
-all three before measurement and rendering. On Ubuntu 24.04 with `fonts-inter`,
-this is `/usr/share/fonts/opentype/inter`; elsewhere
+all nine before measurement and rendering;
 `python tools/conformance_font.py fetch --output DIR` provides them. Inter has no
-Arabic or Hebrew glyphs, so those labels shape with the system fallback face
-(DejaVu Sans in CI). The tests build the face database that GUIdo's text
-system builds: the system fonts, then the registered files. Every upright,
+Arabic or Hebrew glyphs. The pinned cosmic-text takes them from the families it
+names for those scripts, so Arabic and Hebrew labels shape with the pinned Noto
+masters at the authored weight, not with a system fallback face. The tests build
+the face database that GUIdo's text system builds: the system fonts, then the
+registered files. Every upright,
 normal-width Inter face in it at weight 400, 500 or 600, including system faces,
 must be byte-identical to that weight's pinned master at face index 0. Fontdb's
 CSS matching, which the pinned cosmic-text tries first for GUIdo text, must then
 resolve weights 400, 500 and 600 to faces identical to the three distinct
 masters. A visible Inter face that is not a pinned master fails; with only the
 Regular master and no system fonts, weight 500 resolves to Regular and the test
-reports the substitution. A saved capture records the resolved master's
-PostScript name, weight, file and Git blob.
+reports the substitution. The tests also shape each label as GUIdo shapes it and
+fail unless every drawing face is a pinned master at the requested weight with a
+glyph for each character, and unless every visible upright, normal-width Noto
+Sans Arabic or Noto Sans Hebrew face at an authored weight is byte-identical to
+its pinned master; without the pinned script masters the same Arabic text
+resolves to a system face. A saved capture records the resolved Inter master's
+PostScript name, weight, file and Git blob and, in `scriptFonts`, those of the
+Arabic or Hebrew master that drew the text.
 Actual GPU readback checks Latin, expanded German and Arabic labels plus the
 public 100/150/200% string-length matrix at three text scales and four device
 scales: 72 frames, each with 0.15 px tracking before text scaling and no ink a
@@ -582,7 +590,7 @@ context cannot be created; it never skips rendering checks.
 python -m pip install -r tools/requirements-schema.txt
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
+RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=$CONFORMANCE_FONTS cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
 cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
 
