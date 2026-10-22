@@ -4,7 +4,7 @@ import json
 import math
 import sys
 
-from backend_source import duplicate_member_source, nonfinite_member_source
+from backend_source import duplicate_member_source, negative_underflow_member_source, nonfinite_member_source
 from opaque_request_source import opaque_request_failures
 from surface_paint_source import positional_paint_request
 from control_paint_source import positional_control_request
@@ -29,7 +29,7 @@ def toggle_motion_mismatch(actual, request):
     target = {"bodyMix": 0, "depthScale": 1} if phase == "rest" else request["interactionAppearance"]["profiles"][family][phase]
     if actual.get("target") != target:
         return "/target"
-    for field, expected in (("schemaVersion", "0.1.0"), ("policy", policy), ("target", target)):
+    for field, expected in (("schemaVersion", "0.2.0"), ("policy", policy), ("target", target)):
         if mismatch(actual.get(field), expected):
             return "/" + field
     response = {}
@@ -103,9 +103,11 @@ def main():
             ("duplicate channel position", duplicate_member_source(base, "/channels/bodyMix/initial/position")),
             ("duplicate root version", duplicate_member_source(base, "/schemaVersion")),
             ("nonfinite time", nonfinite_member_source(base, "/time")),
+            ("negative zero ambient source", negative_underflow_member_source(base, "/light/ambient")),
+            ("negative zero interaction source", negative_underflow_member_source(base, "/light/interaction/strength")),
         ) + opaque_request_failures(base, "/surface/body") + (
             ("positional surface paint request", positional_paint_request(base, "/surface")),
-            ("positional toggle-part-motion request", positional_control_request(base, ("schemaVersion", "surface", "interactionAppearance", "part", "checkedColorRole", "channels", "time"))),
+            ("positional toggle-part-motion request", positional_control_request(base, ("schemaVersion", "surface", "interactionAppearance", "light", "relief", "part", "checkedColorRole", "channels", "time"))),
         )
         for name, source in failures:
             check_failure(command, source, args.timeout, name)

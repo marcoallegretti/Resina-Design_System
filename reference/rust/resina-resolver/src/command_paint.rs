@@ -254,6 +254,7 @@ pub(crate) fn resolve_command_paint_with_response<T>(
         response,
         input.light,
         ("commandBody", input.relief.command_body()),
+        true,
     )?;
     if phase == CommandPhase::Disabled {
         paint

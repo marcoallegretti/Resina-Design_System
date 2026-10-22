@@ -79,8 +79,10 @@ plane of a Command or Toggle part body, projected by the existing side plane and
 swept edge, and admits interaction light only in the hover or pressed phase. The
 Rust `LitControlBodyIr::sample_paint` API evaluates its region law;
 `python -m unittest discover -s tools -p test_lit_body_arithmetic.py` checks the
-authored point vectors against independent arithmetic. Component paint versions,
-raster and native realization remain separate work.
+authored point vectors against independent arithmetic. [Command](spec/43-command-paint.md)
+and [Toggle part](spec/54-toggle-part-paint.md) paint adopt it in their 0.2.0 versions,
+with CPU raster evidence against the same arithmetic. A native lit-body realization
+and accepted Light/Dark scenes remain separate work.
 
 Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for an [extruded contour request](schemas/extruded-contour-request.schema.json). It resolves the swept silhouette as portable lines and elliptical arcs, including physical corner mapping and split curves. `python tools/check_extruded_contour_backend.py -- <backend-command> -` checks the public geometry protocol.
 
@@ -175,12 +177,14 @@ stable track ownership. Shape, checked paint and full component target coverage
 remain separate requirements.
 
 [Opaque Toggle part paint](spec/54-toggle-part-paint.md) composes checked color
-roles with independent interaction response and track-owned focus. Cast, Frost
-and Elastomer use existing contrast, geometry and actual-capability fallback
-laws. Part paint does not certify an assembled native Toggle.
+roles with independent interaction response and track-owned focus on a
+[lit control body](spec/88-lit-control-body.md) with bounded ambient and
+interaction light. Cast, Frost and Elastomer use existing contrast, geometry and
+actual-capability fallback laws. Part paint does not certify an assembled native
+Toggle.
 
 [Coherent Toggle snapshots](spec/55-toggle-snapshot.md) validate full current
-part states, selection, uniform track adjacency, label placement, reserved target
+part states, selection, thumb containment in the track's uniform face, label placement, reserved target
 coverage, external-label contrast and binary semantics together before publication.
 
 The GUIdo backend can prepare a checked Toggle snapshot's track, placed thumb

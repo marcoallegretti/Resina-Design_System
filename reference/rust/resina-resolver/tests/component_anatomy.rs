@@ -155,8 +155,11 @@ fn toggle(
     environment: &EnvironmentSnapshot,
     anatomy: &ToggleAnatomy,
     names: &[&str],
+    light: &MaterialLightChannels,
 ) -> [TogglePartPaintIr; 2] {
     let surface = surface_appearance();
+    let relief: ControlRelief =
+        serde_json::from_str(include_str!("../../../../definitions/control-relief.json")).unwrap();
     let responses = appearance(theme.name);
     let part = |part: TogglePart, adjacent: &SrgbFallback| {
         let (anatomy_part, width, height) = match part {
@@ -184,12 +187,17 @@ fn toggle(
                 },
                 checked_color_role: anatomy_part.checked_color_role(),
                 interaction_appearance: &responses,
+                light,
+                relief: &relief,
             },
         )
         .unwrap_or_else(|error| panic!("{} {part:?} {names:?}: {error}", theme.name))
     };
     let track = part(TogglePart::Track, &theme.canvas);
-    let thumb = part(TogglePart::Thumb, track.paint().body().pigment().body());
+    let thumb = part(
+        TogglePart::Thumb,
+        track.paint().body().face().pigment().body(),
+    );
     [track, thumb]
 }
 
@@ -243,6 +251,13 @@ fn toggle_anatomy_resolves_every_state_with_an_identifiable_thumb_edge() {
     let anatomy = toggle_anatomy();
     let environment = environment();
     let mut resolved = 0;
+    let lights = [
+        light(Value::Null, Value::Null),
+        light(
+            json!(0.25),
+            json!({"direction": {"x": 1, "y": 0.5}, "strength": 0.5}),
+        ),
+    ];
     for theme in themes(&environment) {
         assert!(
             opaque_contrast_ratio(&theme.colors[&anatomy.label_color()], &theme.canvas).unwrap()
@@ -256,22 +271,19 @@ fn toggle_anatomy_resolves_every_state_with_an_identifiable_thumb_edge() {
                         .chain(focused.then_some("focused"))
                         .chain(checked.then_some("checked"))
                         .collect();
-                    toggle(&theme, &environment, &anatomy, &names);
-                    resolved += 1;
+                    for light in &lights {
+                        toggle(&theme, &environment, &anatomy, &names, light);
+                        resolved += 1;
+                    }
                 }
             }
         }
     }
-    assert_eq!(resolved, 2 * 28 * 2 * 4 * 2);
+    assert_eq!(resolved, 2 * 28 * 2 * 4 * 2 * 2);
 }
 
-/// Body colour and final extrusion depth, the two channels through which a state may differ.
-fn channels(body: &resina_resolver::OpaqueSurfaceIr) -> (SrgbFallback, f64) {
-    let offset = body.lighting().side_offset();
-    (body.pigment().body().clone(), offset.x.hypot(offset.y))
-}
-
-/// The same two channels of a lit Command body, measured on its unlit body colour.
+/// Body colour and final extrusion depth, the two channels through which a state may differ,
+/// measured on the unlit body colour of a lit control body.
 fn lit_channels(body: &resina_resolver::LitControlBodyIr) -> (SrgbFallback, f64) {
     (body.face().pigment().body().clone(), body.depth())
 }
@@ -324,7 +336,13 @@ fn authored_state_responses_differ_perceivably_from_rest() {
                     .into_iter()
                     .chain(checked.then_some("checked"))
                     .collect();
-                toggle(&theme, &environment, &toggles, &names)
+                toggle(
+                    &theme,
+                    &environment,
+                    &toggles,
+                    &names,
+                    &light(Value::Null, Value::Null),
+                )
             });
             for (index, part) in [TogglePart::Track, TogglePart::Thumb]
                 .into_iter()
@@ -339,7 +357,7 @@ fn authored_state_responses_differ_perceivably_from_rest() {
                     ),
                     parts
                         .iter()
-                        .map(|phases| channels(phases[index].paint().body()))
+                        .map(|phases| lit_channels(phases[index].paint().body()))
                         .collect::<Vec<_>>(),
                 ));
             }

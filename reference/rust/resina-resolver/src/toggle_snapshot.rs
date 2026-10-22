@@ -1,9 +1,8 @@
 use crate::{
     CommandLabelIr, ContrastError, HitRegionError, HitRegionInput, HitRegionIr, SrgbFallback,
     SurfacePaintError, ToggleAccessibilityError, ToggleAccessibilityInput, ToggleAccessibilityIr,
-    ToggleLayoutIr, TogglePart, TogglePartPaintIr, opaque_contrast_ratio,
-    opaque_paint::placed_contains, resolve_hit_region, resolve_toggle_accessibility,
-    resolve_toggle_states,
+    ToggleLayoutIr, TogglePart, TogglePartPaintIr, opaque_contrast_ratio, resolve_hit_region,
+    resolve_toggle_accessibility, resolve_toggle_states,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{ActivationState, PhysicalBounds, PhysicalVector, StateSet, SurfaceSize};
@@ -103,18 +102,15 @@ impl ToggleSnapshot<'_> {
                 y: placement.y,
             },
         )?;
-        let (right, bottom) = endpoints(bounds)?;
-        for x in [bounds.x, right] {
-            for y in [bounds.y, bottom] {
-                if !placed_contains(
-                    self.track.paint().body().geometry().content(),
-                    PhysicalVector { x, y },
-                )
-                .map_err(ToggleSnapshotError::Geometry)?
-                {
-                    return Err(ToggleSnapshotError::ThumbOutsideContent("sampled"));
-                }
-            }
+        endpoints(bounds)?;
+        if !self
+            .track
+            .paint()
+            .body()
+            .face()
+            .uniform_contains_box(bounds)
+        {
+            return Err(ToggleSnapshotError::ThumbOutsideContent("sampled"));
         }
         if !self
             .hit_region
@@ -318,13 +314,9 @@ pub fn resolve_toggle_snapshot<'a>(
         (input.track, input.layout.track_bounds()),
         (input.thumb, input.layout.thumb_bounds()),
     ] {
-        let front = part.paint().body().geometry().front().bounds().ok_or(
-            ToggleSnapshotError::Geometry(SurfacePaintError::UnsupportedContour),
-        )?;
+        let front = part.paint().body().face().surface().outline().size();
         if front
-            != (PhysicalBounds {
-                x: 0.0,
-                y: 0.0,
+            != (SurfaceSize {
                 width: bounds.width,
                 height: bounds.height,
             })
@@ -362,16 +354,10 @@ pub fn resolve_toggle_snapshot<'a>(
                 y: endpoint.y,
             },
         )?;
-        let (right, bottom) = endpoints(bounds)?;
-        // Convex content containing the whole footprint box contains every painted thumb point.
-        for x in [bounds.x, right] {
-            for y in [bounds.y, bottom] {
-                if !placed_contains(track.geometry().content(), PhysicalVector { x, y })
-                    .map_err(ToggleSnapshotError::Geometry)?
-                {
-                    return Err(ToggleSnapshotError::ThumbOutsideContent(name));
-                }
-            }
+        endpoints(bounds)?;
+        // The edge interior and the uniform plateau are convex, so their vertices decide the box.
+        if !track.face().uniform_contains_box(bounds) {
+            return Err(ToggleSnapshotError::ThumbOutsideContent(name));
         }
         footprints.push((name, bounds));
     }
@@ -394,7 +380,7 @@ pub fn resolve_toggle_snapshot<'a>(
     if !minimum.is_finite() || !(1.0..=21.0).contains(&minimum) {
         return Err(ToggleSnapshotError::InvalidContrast);
     }
-    let ratio = opaque_contrast_ratio(thumb.edge().color(), track.pigment().body())
+    let ratio = opaque_contrast_ratio(thumb.face().edge().color(), track.face().pigment().body())
         .map_err(|_| ToggleSnapshotError::InvalidContrast)?;
     if ratio < minimum {
         return Err(ToggleSnapshotError::ThumbContrast {
@@ -402,9 +388,9 @@ pub fn resolve_toggle_snapshot<'a>(
             minimum,
         });
     }
-    if (ratio - thumb.edge().contrast_ratio()).abs() > CONTRAST_TOLERANCE {
+    if (ratio - thumb.face().edge().contrast_ratio()).abs() > CONTRAST_TOLERANCE {
         return Err(ToggleSnapshotError::ThumbAdjacencyMismatch {
-            reported: thumb.edge().contrast_ratio(),
+            reported: thumb.face().edge().contrast_ratio(),
             actual: ratio,
         });
     }

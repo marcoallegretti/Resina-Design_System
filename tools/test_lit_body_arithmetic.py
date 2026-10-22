@@ -7,12 +7,14 @@ from check_schemas import ROOT, apply_changes, load_json
 from lit_body_arithmetic import (
     LOGICAL, PHYSICAL, Body, body_invariants, contour_difference, filled_label_bounds, layout_lit_outcomes,
     lit_body_source, lit_containment_outcomes, physical_radii, pixels, samples, swept_contour,
+    toggle_lit_containment_outcomes, toggle_thumb_footprints,
 )
 from material_relief_arithmetic import rectangular_samples
 
 SOURCE = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
 CASES = load_json(ROOT / "conformance/ir/lit-control-body-vectors.json")
 CONTAINMENT = load_json(ROOT / "conformance/content/command-lit-containment.json")
+TOGGLE_CONTAINMENT = load_json(ROOT / "conformance/content/toggle-lit-containment.json")
 
 
 def case_source(name):
@@ -394,6 +396,78 @@ class LitContainmentTests(unittest.TestCase):
                         self.assertEqual(flat, inside)
                     checked[inside] += 1
         self.assertGreater(min(checked.values()), 300, checked)
+
+
+class ToggleLitContainmentTests(unittest.TestCase):
+    def body(self, case):
+        track, shape = case["trackSize"], case["trackShape"]
+        radius = min(track["width"], track["height"]) / 2 if shape["kind"] == "capsule" else shape["radius"]
+        return Body(lit_body_source(SOURCE, track, radius, case["trackRelief"], TOGGLE_CONTAINMENT["edgeWidth"], "ltr"))
+
+    def case(self, name):
+        return next(case for case in TOGGLE_CONTAINMENT["cases"] if case["name"] == name)
+
+    def test_matrix_outcomes_follow_the_exact_vertex_law(self):
+        expected = {case["name"]: case["contained"] for case in TOGGLE_CONTAINMENT["cases"]}
+        outcomes = list(toggle_lit_containment_outcomes(TOGGLE_CONTAINMENT, SOURCE))
+        self.assertEqual(len(outcomes), len(expected))
+        for name, contained in outcomes:
+            with self.subTest(case=name):
+                self.assertEqual(contained, expected[name])
+
+    def test_contained_footprints_beyond_the_published_rectangle_are_the_named_exact_cases(self):
+        beyond_c = set()
+        for case in TOGGLE_CONTAINMENT["cases"]:
+            body = self.body(case)
+            c = body.content_bounds
+            inside_c = []
+            for box in toggle_thumb_footprints(case):
+                inside_c.append(box["x"] >= c["x"] and box["y"] >= c["y"]
+                                and Fraction(box["x"]) + Fraction(box["width"]) <= Fraction(c["x"]) + Fraction(c["width"])
+                                and Fraction(box["y"]) + Fraction(box["height"]) <= Fraction(c["y"]) + Fraction(c["height"]))
+                if inside_c[-1]:
+                    self.assertTrue(body.uniform_contains_box(box), case["name"])
+            if case["contained"] and not all(inside_c):
+                beyond_c.add(case["name"])
+        self.assertEqual(beyond_c, {"illustrative-track-shoulder-2-near-vertical-key",
+                                    "lowered-thumb-shoulder-1.5-near-vertical-key",
+                                    "lowered-thumb-shoulder-1.5-diagonal-key"})
+
+    def test_square_track_boundaries_are_exact_sums(self):
+        case = self.case("square-track-swept-bottom-vertex-on-the-shoulder-boundary")
+        body = self.body(case)
+        self.assertEqual(body.content_bounds["y"] + body.content_bounds["height"], 38.5)
+        box = toggle_thumb_footprints(case)[0]
+        self.assertEqual(Fraction(box["y"]) + Fraction(box["height"]), Fraction(77, 2))
+        self.assertTrue(body.uniform_contains_box(box))
+        lowered = dict(box, y=box["y"] + 2.0 ** -20)
+        self.assertFalse(body.uniform_contains_box(lowered))
+        start = self.case("square-track-start-vertex-on-the-shoulder-boundary")
+        box = toggle_thumb_footprints(start)[0]
+        self.assertEqual(box["x"], 1.5)
+        self.assertTrue(self.body(start).uniform_contains_box(box))
+        self.assertFalse(self.body(start).uniform_contains_box(dict(box, x=1.5 - 2.0 ** -20)))
+
+    def test_footprints_sweep_the_thumb_along_the_key_side_offset_at_both_endpoints(self):
+        case = self.case("illustrative-track-shoulder-1.5-diagonal-key")
+        near, far = toggle_thumb_footprints(case)
+        offset = 4 / math.sqrt(2)
+        self.assertAlmostEqual(near["width"], 16 + offset)
+        self.assertAlmostEqual(near["height"], 16 + offset)
+        self.assertEqual((near["x"], near["y"]), (12.25, 12.25))
+        self.assertEqual(far["x"], 64.5 - 12.25 - 16)
+        reversed_key = dict(case, keyDirection={"x": 1, "y": 1})
+        near, _ = toggle_thumb_footprints(reversed_key)
+        self.assertAlmostEqual(near["x"], 12.25 - offset)
+        self.assertAlmostEqual(near["width"], 16 + offset)
+
+    def test_the_vertex_law_reads_the_certified_plateau_not_the_extent_rectangle(self):
+        wide = self.case("illustrative-track-shoulder-2-near-vertical-key")
+        body = self.body(wide)
+        c = body.content_bounds
+        box = toggle_thumb_footprints(wide)[0]
+        self.assertGreater(box["y"] + box["height"], c["y"] + c["height"])
+        self.assertTrue(body.uniform_contains_box(box))
 
 
 class LayoutLitMatrixTests(unittest.TestCase):

@@ -92,7 +92,12 @@ fn every_sample_rechecks_contrast_and_navigation_matches_sample_geometry() {
             paint["body"]["geometry"]["silhouette"],
             paint["focus"]["geometry"]["silhouette"]
         );
-        assert!(paint["body"]["contentContrastRatio"].as_f64().unwrap() >= 4.5);
+        assert!(
+            paint["body"]["face"]["contentContrastRatio"]
+                .as_f64()
+                .unwrap()
+                >= 4.5
+        );
     }
     input["time"] = json!(0);
     input["channels"]["bodyMix"]["initial"] = json!({"position":-0.9,"velocity":0});
@@ -224,6 +229,8 @@ fn typed_motion_matches_source_with_actual_environment() {
     let adjacent = resolve_srgb_fallback(&body["adjacentColor"]).unwrap();
     let surrounding = resolve_srgb_fallback(&request["surface"]["surroundingColor"]).unwrap();
     let channels = serde_json::from_value(request["channels"].clone()).unwrap();
+    let light = serde_json::from_value(request["light"].clone()).unwrap();
+    let relief = serde_json::from_value(request["relief"].clone()).unwrap();
     let backdrop = resolve_srgb_fallback(&body["postTreatmentBackdrop"]).unwrap();
     let typed = resolve_toggle_part_motion(
         &theme,
@@ -245,6 +252,8 @@ fn typed_motion_matches_source_with_actual_environment() {
                     surrounding_color: Some(&surrounding),
                 },
                 interaction_appearance: &interaction_appearance,
+                light: &light,
+                relief: &relief,
                 part: serde_json::from_value(request["part"].clone()).unwrap(),
                 checked_color_role: serde_json::from_value(request["checkedColorRole"].clone())
                     .unwrap(),
@@ -363,7 +372,14 @@ fn sampled_frost_keeps_actual_capabilities_and_rechecks_legibility_fallback() {
     r["surface"]["body"]["minimumContentContrast"] = json!(4.5);
     let ir = resolve_toggle_part_motion_source(&r.to_string()).unwrap();
     assert!(ir.part_paint().paint().body().content_fallback_applied());
-    assert!(ir.part_paint().paint().body().content_contrast_ratio() >= 4.5);
+    assert!(
+        ir.part_paint()
+            .paint()
+            .body()
+            .face()
+            .content_contrast_ratio()
+            >= 4.5
+    );
     assert!(ir.part_paint().checked());
     assert!(ir.part_paint().paint().focus().is_some());
     assert_eq!(
@@ -374,4 +390,63 @@ fn sampled_frost_keeps_actual_capabilities_and_rechecks_legibility_fallback() {
         r["surface"]["body"]["theme"]["environment"]["accessibilityPreferences"]["reducedTransparency"],
         false
     );
+}
+
+fn admitting(mut input: Value) -> Value {
+    let environment = &mut input["surface"]["body"]["theme"]["environment"];
+    environment["accessibilityPreferences"]["highContrast"] = json!(false);
+    environment["accessibilityPreferences"]["reducedMotion"] = json!(false);
+    environment["rendererCapabilities"]["dynamicLighting"] = json!(true);
+    environment["qualityPolicy"] = json!("balanced");
+    input
+}
+
+#[test]
+fn interaction_light_follows_the_target_phase_while_depth_springs() {
+    for part in ["track", "thumb"] {
+        let mut input = admitting(request());
+        input["part"] = json!(part);
+        input["channels"]["bodyMix"]["initial"] = json!({"position": 0, "velocity": 0});
+        input["channels"]["depthScale"]["initial"] = json!({"position": 1, "velocity": 0});
+        input["time"] = json!(0);
+        for (states, interaction) in [
+            (json!(["pressed", "focused", "checked"]), true),
+            (json!(["hover"]), true),
+            (json!(["rest", "checked"]), false),
+            (json!(["disabled", "hover"]), false),
+        ] {
+            input["surface"]["body"]["surface"]["states"]["states"] = states.clone();
+            let motion = resolve(&input);
+            assert_eq!(motion.part_paint().response().depth_scale(), 1.0);
+            let encoded = serde_json::to_value(motion.part_paint().paint().body()).unwrap();
+            assert_eq!(
+                encoded["face"]["light"]["interaction"].is_object(),
+                interaction,
+                "{part} {states}"
+            );
+        }
+    }
+}
+
+#[test]
+fn settled_lit_frames_equal_static_paint_including_light() {
+    for part in ["track", "thumb"] {
+        for states in [json!(["hover", "checked"]), json!(["pressed", "focused"])] {
+            let mut input = admitting(request());
+            input["part"] = json!(part);
+            input["surface"]["body"]["surface"]["states"]["states"] = states;
+            input["time"] = json!(100);
+            let motion = resolve(&input);
+            let mut endpoint = input;
+            endpoint.as_object_mut().unwrap().remove("channels");
+            endpoint.as_object_mut().unwrap().remove("time");
+            let endpoint = resolve_toggle_part_paint_source(&endpoint.to_string()).unwrap();
+            assert_eq!(motion.part_paint(), &endpoint);
+            assert!(
+                serde_json::to_value(endpoint.paint().body()).unwrap()["face"]["light"]
+                    ["interaction"]
+                    .is_object()
+            );
+        }
+    }
 }
