@@ -297,7 +297,7 @@ jobs:
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font-dir /usr/share/fonts/opentype/inter \
             --output-dir target/quickshell-toggle-lifecycle
-      - name: Check compositor-delivered Command motion and the clock shell at output scales 1.25 and 2 with a live scale change
+      - name: Check compositor-delivered Command motion and the clock shell at the shard output scales with a live scale change
         if: matrix.output_scales != ''
         env:
           OUTPUT_SCALES: ${{ matrix.output_scales }}
