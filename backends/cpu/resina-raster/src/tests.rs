@@ -610,3 +610,50 @@ fn lit_reuse_across_motion_frames_matches_point_sampling() {
     // Every shortcut, including the focus ring fill, decided some pixels.
     assert!(regions.iter().all(|count| *count > 1_000), "{regions:?}");
 }
+
+#[test]
+fn a_flat_relief_paints_the_side_plane_outside_the_face_like_point_sampling() {
+    let mut request: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/ir/command-paint-request.json"
+    ))
+    .unwrap();
+    request["relief"]["commandBody"] =
+        json!({"kind": "flat", "bodyThickness": 2, "amplitude": 0, "shoulderWidth": 0});
+    let body = &mut request["surface"]["body"];
+    body["size"] = json!({"width": 30, "height": 18});
+    body["surface"]["form"]["shape"] = json!("rounded");
+    body["appearance"]["shapeAssignments"]["profiles"]["rounded"]["radius"] = json!("radius.4");
+    body["surface"]["states"]["states"] = json!(["hover"]);
+    let paint = resolve_command_paint_source(&request.to_string()).unwrap();
+    let paint = paint.paint();
+    assert!(
+        paint.body().lighting().side_offset().x != 0.0
+            || paint.body().lighting().side_offset().y != 0.0
+    );
+    let mut sides = 0;
+    for scale in [1.0_f64, 1.25, 2.0] {
+        for samples in [3, 4] {
+            let viewport = Viewport {
+                origin: PhysicalVector { x: -3.0, y: -3.0 },
+                width: (36.0 * scale).ceil() as u32,
+                height: (24.0 * scale).ceil() as u32,
+                pixels_per_unit: scale,
+            };
+            let expected = render(
+                viewport,
+                samples,
+                paint.body().face().pigment().body(),
+                |_| UniformRegion::Sample,
+                |point| paint.sample_paint(point).map_err(RasterError::LitPaint),
+            )
+            .unwrap();
+            let actual = render_lit_control_paint(paint, viewport, samples).unwrap();
+            assert!(
+                actual.rgba() == expected.rgba(),
+                "scale {scale} with {samples} samples"
+            );
+            sides += 1;
+        }
+    }
+    assert_eq!(sides, 6);
+}
