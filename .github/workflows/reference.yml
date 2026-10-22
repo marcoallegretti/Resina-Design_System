@@ -348,11 +348,12 @@ jobs:
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           status=0
-          for scale in 1 2; do
+          for run in 1:1024x600: 2:1024x600: 6:3072x1800:--require-gap; do
+            IFS=: read -r scale resolution gap <<< "$run"
             XDG_RUNTIME_DIR="$(mktemp -d)"
             export XDG_RUNTIME_DIR
             chmod 700 "$XDG_RUNTIME_DIR"
-            echo "output HEADLESS-1 resolution 1024x600 scale $scale" > "target/budget-sway-$scale.conf"
+            echo "output HEADLESS-1 resolution $resolution scale $scale" > "target/budget-sway-$scale.conf"
             WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER=pixman sway -c "target/budget-sway-$scale.conf" > "target/budget-sway-$scale.log" 2>&1 &
             sway_pid=$!
             WAYLAND_DISPLAY=
@@ -367,7 +368,7 @@ jobs:
             python tools/check_quickshell_command_motion_budget.py \
               --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-release-import \
               --font-dir /usr/share/fonts/opentype/inter \
-              --output-dir "target/quickshell-command-motion-budget-$scale" --scale "$scale" --floor report --require-gap || status=1
+              --output-dir "target/quickshell-command-motion-budget-$scale" --scale "$scale" --floor report $gap || status=1
             kill "$sway_pid" || true
             wait "$sway_pid" || true
           done
