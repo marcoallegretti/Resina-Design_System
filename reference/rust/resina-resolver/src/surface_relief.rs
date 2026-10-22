@@ -307,11 +307,16 @@ impl SurfaceRelief {
         Ok((rx, ry, tau))
     }
 
-    /// Whether every point of the closed box from `min` to `max` is certified to have the exactly
-    /// flat normal, by evaluating every gate over the box with outward-rounded intervals.
+    /// Whether every point of the closed box from `min` to `max` is certified to lie on the face and
+    /// have the exactly flat normal: for a flat profile, inside the content rectangle of the
+    /// outline; otherwise by evaluating every gate over the box with outward-rounded intervals.
     pub(crate) fn flat_over(&self, min: PhysicalVector, max: PhysicalVector) -> bool {
         if self.profile.kind == ReliefKind::Flat {
-            return true;
+            let content = self.content_bounds;
+            return min.x >= content.x
+                && min.y >= content.y
+                && max.x <= content.x + content.width
+                && max.y <= content.y + content.height;
         }
         if ![min.x, min.y, max.x, max.y].iter().all(|v| v.is_finite())
             || min.x > max.x
@@ -716,9 +721,6 @@ impl SurfaceRelief {
 
 impl FlatnessSampler<'_> {
     pub(crate) fn flat_over(&mut self, min: PhysicalVector, max: PhysicalVector) -> bool {
-        if self.relief.profile.kind == ReliefKind::Flat {
-            return true;
-        }
         let Some(shared) = self.shared else {
             return self.relief.flat_over(min, max);
         };
