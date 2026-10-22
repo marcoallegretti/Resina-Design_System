@@ -24,6 +24,11 @@ const COMMANDS: &[(&str, &str, usize)] = &[
         MIB,
     ),
     (
+        "resina-disclosure",
+        env!("CARGO_BIN_EXE_resina-disclosure"),
+        MIB,
+    ),
+    (
         "resina-command-motion",
         env!("CARGO_BIN_EXE_resina-command-motion"),
         MIB,
@@ -336,6 +341,26 @@ fn every_bounded_command_preserves_its_exact_byte_limit() {
 
 #[test]
 fn valid_requests_preserve_file_stdin_and_pretty_json_publication() {
+    let disclosure = env!("CARGO_BIN_EXE_resina-disclosure");
+    let disclosure_cases: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../conformance/interaction/disclosure-cases.json"
+    ))
+    .unwrap();
+    let source = serde_json::to_vec(&disclosure_cases[0]["request"]).unwrap();
+    let file = RequestFile::new(&source);
+    for output in [
+        stdin(disclosure, &source),
+        Command::new(disclosure).arg(file.path()).output().unwrap(),
+    ] {
+        assert!(output.status.success(), "{output:?}");
+        assert!(output.stderr.is_empty());
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
+            disclosure_cases[0]["expected"]
+        );
+        assert!(output.stdout.ends_with(b"\n"));
+    }
+
     let position = env!("CARGO_BIN_EXE_resina-slider-position");
     let cases: serde_json::Value = serde_json::from_str(include_str!(
         "../../../../conformance/interaction/slider-position-protocol-cases.json"
