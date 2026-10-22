@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-lit-containment:0.1.0",
+  "title": "Thumb footprint containment in a lit Toggle track",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "edgeWidth", "cases"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "edgeWidth": {"type": "number", "exclusiveMinimum": 0},
+    "cases": {"type": "array", "minItems": 1, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "trackSize", "trackShape", "trackRelief", "thumbSize", "insets", "keyDirection", "depth", "contained"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+        "trackSize": {"$ref": "#/$defs/size"},
+        "trackShape": {"oneOf": [
+          {"type": "object", "additionalProperties": false, "required": ["kind"],
+           "properties": {"kind": {"const": "capsule"}}},
+          {"type": "object", "additionalProperties": false, "required": ["kind", "radius"],
+           "properties": {"kind": {"const": "uniform"}, "radius": {"type": "number", "minimum": 0}}}
+        ]},
+        "trackRelief": {"$ref": "urn:resina:schema:surface-relief-request:0.1.0#/$defs/profile"},
+        "thumbSize": {"$ref": "#/$defs/size"},
+        "insets": {
+          "type": "object", "additionalProperties": false,
+          "required": ["start", "end", "top", "bottom"],
+          "properties": {
+            "start": {"type": "number", "minimum": 0},
+            "end": {"type": "number", "minimum": 0},
+            "top": {"type": "number", "minimum": 0},
+            "bottom": {"type": "number", "minimum": 0}
+          }
+        },
+        "keyDirection": {
+          "type": "object", "additionalProperties": false, "required": ["x", "y"],
+          "properties": {"x": {"type": "number"}, "y": {"type": "number"}},
+          "not": {"properties": {"x": {"const": 0}, "y": {"const": 0}}}
+        },
+        "depth": {"type": "number", "minimum": 0},
+        "contained": {"type": "boolean"}
+      }
+    }}
+  },
+  "$defs": {
+    "size": {"allOf": [
+      {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+      {"properties": {"width": {"exclusiveMinimum": 0}, "height": {"exclusiveMinimum": 0}}}
+    ]}
+  }
+}

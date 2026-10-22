@@ -91,7 +91,7 @@ fn thumb_request(track_request: &Value, track: &TogglePartPaintIr, states: Value
     t["surface"]["body"]["surface"]["colorRole"] = json!("surface.high");
     t["checkedColorRole"] = json!("surface.high");
     t["surface"]["body"]["adjacentColor"] =
-        serde_json::to_value(track.paint().body().pigment().body()).unwrap();
+        serde_json::to_value(track.paint().body().face().pigment().body()).unwrap();
     t["surface"]["body"]["postTreatmentBackdrop"] = t["surface"]["body"]["adjacentColor"].clone();
     t
 }
@@ -260,7 +260,7 @@ fn public_current_and_stale_signals_compose_across_families_and_directions() {
                     );
                     assert_eq!(
                         snapshot.thumb_contrast_ratio(),
-                        f.thumb.paint().body().edge().contrast_ratio()
+                        f.thumb.paint().body().face().edge().contrast_ratio()
                     );
                     let footprint = f
                         .thumb
@@ -279,7 +279,7 @@ fn public_current_and_stale_signals_compose_across_families_and_directions() {
                                 };
                                 assert_eq!(
                                     f.track.paint().body().sample_paint(point).unwrap().as_ref(),
-                                    Some(f.track.paint().body().pigment().body())
+                                    Some(f.track.paint().body().face().pigment().body())
                                 );
                             }
                         }
@@ -531,7 +531,7 @@ fn contrast_metadata_tolerance_never_relaxes_the_minimum() {
         t["part"] = json!("thumb");
         t["surface"]["body"]["size"] = json!({"width":16,"height":16});
         t["surface"]["body"]["surface"]["colorRole"] = json!("surface.high");
-        let color = f.track.paint().body().pigment().body();
+        let color = f.track.paint().body().face().pigment().body();
         let adjacent = color.components().map(|c| c + delta);
         t["surface"]["body"]["adjacentColor"] =
             json!({"colorSpace":"srgb","components":adjacent,"alpha":1});
@@ -547,7 +547,7 @@ fn contrast_metadata_tolerance_never_relaxes_the_minimum() {
     }
     let f = fixture();
     let mut i = f.input();
-    i.minimum_thumb_contrast = f.thumb.paint().body().edge().contrast_ratio() + 1e-13;
+    i.minimum_thumb_contrast = f.thumb.paint().body().face().edge().contrast_ratio() + 1e-13;
     assert!(matches!(
         resolve_toggle_snapshot(i),
         Err(ToggleSnapshotError::ThumbContrast { .. })
@@ -588,7 +588,7 @@ fn external_label_contrast_uses_existing_independent_color_vectors() {
 #[test]
 fn track_readability_cannot_certify_an_external_label() {
     let f = fixture();
-    assert!(f.track.paint().body().content_contrast_ratio() >= 4.5);
+    assert!(f.track.paint().body().face().content_contrast_ratio() >= 4.5);
     let black = resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":[0,0,0]})).unwrap();
     let white = resolve_srgb_fallback(&json!({"colorSpace":"srgb","components":[1,1,1]})).unwrap();
     let mut i = f.input();
@@ -607,7 +607,7 @@ fn track_readability_cannot_certify_an_external_label() {
     let snapshot = resolve_toggle_snapshot(i).unwrap();
     assert_eq!(snapshot.label_contrast_ratio(), 21.0);
     assert_eq!(snapshot.label_foreground(), &white);
-    assert_eq!(snapshot.track().paint().body().foreground(), &black);
+    assert_eq!(snapshot.track().paint().body().face().foreground(), &black);
 }
 
 #[test]
@@ -891,13 +891,13 @@ fn deepest_part_paint_certifies_a_layout_that_the_rest_body_cannot() {
         f.hovered = hovered;
         resolve_toggle_snapshot(f.input()).map(|_| ())
     };
-    assert!(certify(18.0, &rest_track, &rest_thumb, false).is_ok());
+    assert!(certify(16.0, &rest_track, &rest_thumb, false).is_ok());
     for (track, thumb, hovered) in [
         (&deepest_track, &deepest_thumb, false),
         (&hover_track, &hover_thumb, true),
     ] {
         assert!(matches!(
-            certify(18.0, track, thumb, hovered),
+            certify(16.0, track, thumb, hovered),
             Err(ToggleSnapshotError::ThumbOutsideContent("off"))
         ));
     }
@@ -987,4 +987,113 @@ fn disabled_labels_between_bounds_dim_only_without_high_contrast() {
             assert_eq!(snapshot.label_contrast_ratio(), undimmed);
         }
     }
+}
+
+#[test]
+fn lit_containment_matrix_resolves_through_the_toggle_snapshot() {
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct LitMatrix {
+        schema_version: String,
+        edge_width: f64,
+        cases: Vec<LitCase>,
+    }
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct LitCase {
+        name: String,
+        track_size: SurfaceSize,
+        track_shape: Value,
+        track_relief: Value,
+        thumb_size: SurfaceSize,
+        insets: SafeArea,
+        key_direction: Value,
+        depth: f64,
+        contained: bool,
+    }
+    let matrix: LitMatrix = serde_json::from_str(include_str!(
+        "../../../../conformance/content/toggle-lit-containment.json"
+    ))
+    .unwrap();
+    assert_eq!(matrix.schema_version, "0.1.0");
+    assert_eq!(matrix.cases.len(), 19);
+    let mut outcomes = [0; 2];
+    for case in matrix.cases {
+        let mut f = fixture();
+        let mut track_request = f.request.clone();
+        let body = &mut track_request["surface"]["body"];
+        body["size"] = serde_json::to_value(case.track_size).unwrap();
+        body["surface"]["states"]["states"] = json!(["rest"]);
+        body["appearance"]["keyLight"]["direction"] = case.key_direction.clone();
+        for bands in body["appearance"]["bands"]
+            .as_object_mut()
+            .unwrap()
+            .values_mut()
+        {
+            bands["edgeWidth"] = json!(matrix.edge_width);
+        }
+        if case.track_shape["kind"] == "capsule" {
+            body["surface"]["form"]["shape"] = json!("capsule");
+        } else {
+            body["surface"]["form"]["shape"] = json!("rounded");
+            let mut theme: Value =
+                serde_json::from_str(body["theme"]["themeSource"].as_str().unwrap()).unwrap();
+            theme["tokens"]["radius"]["5"]["$value"]["value"] = case.track_shape["radius"].clone();
+            body["theme"]["themeSource"] = json!(theme.to_string());
+            body["appearance"]["shapeAssignments"]["profiles"]["rounded"] =
+                json!({"kind": "uniform", "radius": "radius.5"});
+        }
+        track_request["relief"]["toggleTrack"] = case.track_relief.clone();
+        let track = resolve_toggle_part_reservation_paint_source(&track_request.to_string())
+            .unwrap_or_else(|error| panic!("{}: {error}", case.name));
+        let mut thumb_request = thumb_request(&track_request, &track, json!(["rest"]));
+        thumb_request["surface"]["body"]["size"] = serde_json::to_value(case.thumb_size).unwrap();
+        let thumb = resolve_toggle_part_reservation_paint_source(&thumb_request.to_string())
+            .unwrap_or_else(|error| panic!("{}: {error}", case.name));
+        assert_eq!(thumb.paint().body().depth(), case.depth, "{}", case.name);
+        f.layout = resolve_toggle_layout(ToggleLayoutInput {
+            track_size: case.track_size,
+            thumb_size: case.thumb_size,
+            insets: &case.insets,
+            layout_direction: LayoutDirection::Ltr,
+            checked: false,
+        })
+        .unwrap();
+        f.track = track;
+        f.thumb = thumb;
+        let reserved = bounds(-20.0, -20.0, case.track_size.width + 200.0, 120.0);
+        let wide = bounds(-300.0, -100.0, 1200.0, 400.0);
+        let target = resolve_hit_region(HitRegionInput {
+            environment: &f.environment,
+            visual_bounds: reserved,
+            available_bounds: wide,
+            component_minimum: size(48.0, 48.0),
+            occupied_regions: &[],
+        })
+        .unwrap();
+        let mut input = f.input();
+        input.hit_region = target;
+        input.available_bounds = wide;
+        input.label_origin = PhysicalVector {
+            x: case.track_size.width + 40.0,
+            y: 0.0,
+        };
+        let result = resolve_toggle_snapshot(input);
+        assert_eq!(
+            result.is_ok(),
+            case.contained,
+            "{}: {:?}",
+            case.name,
+            result.as_ref().err()
+        );
+        if let Err(error) = result {
+            assert!(
+                matches!(error, ToggleSnapshotError::ThumbOutsideContent(_)),
+                "{}: {error:?}",
+                case.name
+            );
+        }
+        outcomes[usize::from(case.contained)] += 1;
+    }
+    assert_eq!(outcomes, [8, 11]);
 }

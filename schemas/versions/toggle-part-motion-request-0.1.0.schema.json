@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-part-motion-request:0.1.0",
+  "title": "Resina Toggle Part Motion Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "part",
+    "surface",
+    "checkedColorRole",
+    "interactionAppearance",
+    "channels",
+    "time"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "surface": {
+      "$ref": "urn:resina:schema:surface-paint-request:0.1.0"
+    },
+    "interactionAppearance": {
+      "$ref": "urn:resina:schema:command-appearance:0.1.0"
+    },
+    "part": {
+      "enum": [
+        "track",
+        "thumb"
+      ]
+    },
+    "checkedColorRole": {
+      "$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"
+    },
+    "channels": {
+      "$ref": "urn:resina:schema:command-motion-request:0.1.0#/properties/channels"
+    },
+    "time": {
+      "type": "number",
+      "minimum": 0
+    }
+  }
+}

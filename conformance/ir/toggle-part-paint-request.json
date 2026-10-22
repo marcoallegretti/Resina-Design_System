@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "surface": {
     "schemaVersion": "0.1.0",
     "body": {
@@ -243,6 +243,37 @@
           "depthScale": 0
         }
       }
+    }
+  },
+  "light": {
+    "ambient": 0.25,
+    "interaction": {
+      "direction": {
+        "x": 1,
+        "y": 0.5
+      },
+      "strength": 0.5
+    }
+  },
+  "relief": {
+    "schemaVersion": "0.1.0",
+    "commandBody": {
+      "kind": "convex",
+      "bodyThickness": 2,
+      "amplitude": 1,
+      "shoulderWidth": 2
+    },
+    "toggleTrack": {
+      "kind": "recessed",
+      "bodyThickness": 2,
+      "amplitude": 0.75,
+      "shoulderWidth": 1.5
+    },
+    "toggleThumb": {
+      "kind": "convex",
+      "bodyThickness": 2,
+      "amplitude": 0.5,
+      "shoulderWidth": 1
     }
   },
   "part": "track",

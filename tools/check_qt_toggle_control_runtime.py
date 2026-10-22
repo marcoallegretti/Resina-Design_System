@@ -29,6 +29,7 @@ def request_for(theme="light", text="Automatic updates", direction="ltr"):
         surface["form"].update(shape=item["shape"],elevation=item["elevation"])
         return {"surface":surface,"appearance":request["body"]["appearance"],
                 "checkedColorRole":item["checkedColorRole"],"interactionAppearance":request["body"]["commandAppearance"],
+                "light":request["body"]["light"],"relief":request["body"]["relief"],
                 "foregroundRole":item["contentRole"],"minimumContentContrast":4.5,"minimumEdgeContrast":3}
     result = {key:request[key] for key in ("content","activation","hovered","description","focusable","availableBounds","componentMinimum","occupiedRegions")}
     result.update(availableBounds={"x":-300,"y":-100,"width":1000,"height":1000},track=part("track"),thumb=part("thumb"),
@@ -58,7 +59,7 @@ def verify_paint(window, control, source, snapshot, path, raster, motion=None):
         boundary(origin.x()+bounds["x"]+bounds["width"])-1,boundary(origin.y()+bounds["y"]+bounds["height"])-1),fill=background)
     for part in ("track","thumb"):
         config=source[part]
-        backdrop=source["background"] if part=="track" else snapshot["track"]["paint"]["body"]["pigment"]["body"]
+        backdrop=source["background"] if part=="track" else snapshot["track"]["paint"]["body"]["face"]["pigment"]["body"]
         body={"schemaVersion":"0.1.0","theme":{"schemaVersion":"0.1.0",**{key:source["content"][key]
             for key in ("themeSource","externalSources","environment")}},
             "surface":copy.deepcopy(config["surface"]),"size":source["layout"][part+"Size"],
@@ -66,8 +67,9 @@ def verify_paint(window, control, source, snapshot, path, raster, motion=None):
             "postTreatmentBackdrop":backdrop,"adjacentColor":backdrop,
             "minimumContentContrast":config["minimumContentContrast"],"minimumEdgeContrast":config["minimumEdgeContrast"]}
         body["surface"]["states"]=snapshot[part]["paint"]["body"]["states"]
-        request={"schemaVersion":"0.1.0","surface":{"schemaVersion":"0.1.0","body":body,"surroundingColor":source["background"] if part=="track" else None},
-            "part":part,"checkedColorRole":config["checkedColorRole"],"interactionAppearance":config["interactionAppearance"]}
+        request={"schemaVersion":"0.2.0","surface":{"schemaVersion":"0.1.0","body":body,"surroundingColor":source["background"] if part=="track" else None},
+            "part":part,"checkedColorRole":config["checkedColorRole"],"interactionAppearance":config["interactionAppearance"],
+            "light":config["light"],"relief":config["relief"]}
         if part=="thumb":request["surface"].pop("surroundingColor")
         if motion is not None:request.update(channels=motion["channels"][part],time=motion["time"])
         placement={"x":0,"y":0} if part=="track" else (snapshot["layout"]["thumbBounds"] if motion is None else motion["motion"]["travel"]["thumbBounds"])

@@ -4,7 +4,8 @@ Blueprint sections 59–62, 84–85, 98 and 106–108 require one component's
 appearance, content, selection, interaction and semantics to agree. This
 operation publishes the existing horizontal layout, opaque track/thumb paint,
 complete measured label with checked foreground/backdrop colors, stable target
-and binary accessible semantics together.
+and binary accessible semantics together. Track and thumb paint are
+[lit control bodies](88-lit-control-body.md).
 It defines a portable composition law, not a native widget or transaction.
 
 ## Inputs and ownership
@@ -26,7 +27,9 @@ overshooting thumb. Certify them with each part's deepest silhouette, at the
 projected depth bound `depthScale` 2, as for a
 [command](49-command-snapshot.md#stable-interaction-geometry): resolve both parts
 at that bound for the neutral focused state and require the complete snapshot
-checks below to pass, including both thumb footprints inside the track content.
+checks below to pass, including both thumb footprints inside the track's uniform
+face. The silhouette of each lit body is its outline swept by the key-light
+offset, so neither the relief nor the light changes the reservation.
 The Rust reference exposes the part body as
 `resolve_toggle_part_reservation_paint`; it certifies layout and is never a
 published state frame. The snapshot checks only the paints it is given and
@@ -49,18 +52,27 @@ permission to substitute approximate font metrics in production.
    Matching phase alone does not establish current focus, hover, availability or
    selection. Report expected/supplied states and the offending part.
 2. Require layout and both parts' checked signals to match current checked.
-   Require label/layout direction to match the current environment. Require local
-   front dimensions and origin to match the authored part allocation.
+   Require label/layout direction to match the current environment. Require each
+   part's outline size to match the authored part allocation at the local origin.
 3. Translate the thumb's complete current painted silhouette bounds to **both**
-   logical endpoints. Require every corner of each footprint rectangle inside
-   the track's convex uniform content contour. This certifies uniform track
-   pigment under the whole thumb, including extrusion. Allocation fit alone
-   cannot certify this: an inset may leave paint on a curved edge, highlight band
-   or outside the track. The rectangle certificate is intentionally conservative;
-   fail explicitly when it cannot be established, even if some curved outlines
-   could fit. Do not silently sample a center pixel or clip the thumb to pass.
-   A nonuniform-backdrop or more permissive contour proof requires a separately
-   specified resolution law; this operation does not claim it.
+   logical endpoints. Require all four vertices of each footprint rectangle to lie
+   in the track's certified content region U, decided as for a
+   [lit command label](46-command-label-layout.md#lit-command-body-content): the
+   intersection of the body's closed edge interior and its closed uniform relief
+   plateau, where the lit face paints exactly the track pigment under every
+   admitted light. Both sets are convex, so the vertices decide the rectangle.
+   Membership is exact over the rationals the binary64 inputs represent, with the
+   right and bottom vertices as exact sums of origin and extent. This certifies
+   uniform track pigment under the whole thumb, including extrusion. Allocation
+   fit alone cannot certify this: an inset may leave paint on a curved edge, the
+   relief shoulder or outside the track. The track's published content rectangle
+   C is a conservative subset of U and is not the test; a bound derived from C,
+   such as its corner diagonal, is stricter than this law and does not decide
+   containment. Fail explicitly when
+   containment cannot be established. Do not silently sample a center pixel or
+   clip the thumb to pass. A nonuniform-backdrop or more permissive contour proof
+   requires a separately specified resolution law; this operation does not
+   claim it.
 4. Recompute the current thumb edge's opaque contrast against the track's actual
    resolved body pigment. Require an explicit finite threshold in `[1,21]`,
    and require the reported thumb edge ratio to match within the existing
@@ -113,10 +125,24 @@ checked label foreground/backdrop colors and verified thumb/label contrast
 ratios. Live activation, palette color inputs and layout context are not retained.
 No new wire format is introduced: the members retain their existing portable IR schemas and the label origin is ordinary physical geometry.
 
+The [supplied thumb containment matrix](../conformance/content/toggle-lit-containment.json)
+gives each case a track size, shape and recessed relief profile, thumb size,
+layout insets, key direction and final depth, with the expected outcome for both
+endpoints. It covers an illustrative 64.5 × 40.5 px capsule track with a 16 px
+thumb and 12.25 px insets at shoulder widths 1.5 and 2 under the diagonal key and
+a near-vertical key; a 128 × 80 px track with a 24 px thumb and insets of 40 px
+along the axis and 28 px across it; insets that cross a capsule cap; a lowered
+thumb that crosses the plateau; and square tracks whose thumb vertices lie on a
+shoulder boundary and `2^-20` px either side. Several contained cases lie
+beyond C, which is why C is not the test. The
+[independent arithmetic](../tools/lit_body_arithmetic.py) decides every outcome
+over exact rationals, and Rust decides the same outcomes through
+`resolve_toggle_snapshot`.
+
 [Public state cases](../conformance/interaction/toggle-snapshot-cases.json) cover
 off/on live and stale channels, held keys, pointer membership and independent
 selection disagreements. Rust runs them across three persistent families and
-both directions. Geometry tests distinguish allocation fit from uniform pigment
+both directions. Geometry tests distinguish allocation fit from uniform face
 coverage at both endpoints, stale adjacent-color evidence, insufficient contrast,
 part size/slot mismatches, label occlusion, navigation coverage, clipping,
 overlap, minimum changes and semantic failures. Label extents are explicit

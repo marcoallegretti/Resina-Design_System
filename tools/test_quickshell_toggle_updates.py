@@ -190,11 +190,11 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
         return {"hitRegion": {"bounds": {"x": -20, "y": -20, "width": 380, "height": 300}},
                 "layout": {"checked": False, "thumbBounds": thumb, "offThumbBounds": thumb,
                            "onThumbBounds": {**thumb, "x": 64}},
-                "track": {"paint": {"body": {"pigment": {"body": color(0.2, 0.4, 0.6)},
+                "track": {"paint": {"body": {"face": {"pigment": {"body": color(0.2, 0.4, 0.6)}},
                                              "geometry": {"silhouette": {"bounds": {
                                                  "x": 0, "y": 0, "width": 128, "height": 80}}}},
                                     "focus": {"indicator": {"color": color(0, 0, 1), "gap": 2, "strokeWidth": 2}}}},
-                "thumb": {"paint": {"body": {"pigment": {"body": color(0.8, 0.2, 0.2)}}}},
+                "thumb": {"paint": {"body": {"face": {"pigment": {"body": color(0.8, 0.2, 0.2)}}}}},
                 "labelOrigin": {"x": 160, "y": 0}, "labelForeground": color(0, 0, 0),
                 "label": {"labelBounds": {"x": 8, "y": 8, "width": 100, "height": 14 * 1.34},
                           "typography": {"fontSize": {"value": 14}, "lineHeight": 1.34}}}
@@ -206,9 +206,9 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
         thumb = snapshot["layout"]["thumbBounds"]
         uncovered = snapshot["layout"]["onThumbBounds"]
         if omit != "thumb":
-            image.putpixel((origin + 52, origin + 40), to_pixel(snapshot["thumb"]["paint"]["body"]["pigment"]["body"]))
+            image.putpixel((origin + 52, origin + 40), to_pixel(snapshot["thumb"]["paint"]["body"]["face"]["pigment"]["body"]))
         if omit != "track":
-            image.putpixel((origin + 76, origin + 40), to_pixel(snapshot["track"]["paint"]["body"]["pigment"]["body"]))
+            image.putpixel((origin + 76, origin + 40), to_pixel(snapshot["track"]["paint"]["body"]["face"]["pigment"]["body"]))
         if omit != "label":
             image.putpixel((origin + 160 + 20, origin + 16), to_pixel(snapshot["labelForeground"]))
         if omit != "focus":
@@ -283,8 +283,9 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
         body = {"states": states, "materialFamily": theme["materialAssignments"][group][role],
                 "colorRole": config["checkedColorRole"], "materialRole": surface["materialRole"],
                 "form": surface["form"], "foregroundRole": config["foregroundRole"],
-                "pigment": {"body": inline_color(theme, config["checkedColorRole"])},
-                "geometry": {"front": {"bounds": {"x": 0, "y": 0, **request["layout"][name + "Size"]}}}}
+                "face": {"pigment": {"body": inline_color(theme, config["checkedColorRole"])},
+                         "surface": {"outline": {"size": request["layout"][name + "Size"]},
+                                     "profile": config["relief"]["toggleTrack" if name == "track" else "toggleThumb"]}}}
         paint = {"body": body}
         if name == "track" and request["activation"]["focused"]:
             paint["focus"] = {"indicator": {}}
@@ -293,6 +294,7 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
 
     def test_part_paint_requires_the_selected_pigment_and_track_only_focus(self):
         with patch("check_quickshell_toggle_updates.surface_paint_channel_mismatch", return_value=None), \
+                patch("check_quickshell_toggle_updates.body_invariants", return_value=None), \
                 patch("check_quickshell_toggle_updates.verify_authored_focus") as focus:
             for focused in (False, True):
                 request = self.part_request(focused)
@@ -303,7 +305,7 @@ class ToggleUpdateEvidenceTests(unittest.TestCase):
                         part = self.part(request, name, states)
                         verify_part_paint(request, name, part, states)
                         stale = copy.deepcopy(part)
-                        stale["paint"]["body"]["pigment"]["body"] = inline_color(
+                        stale["paint"]["body"]["face"]["pigment"]["body"] = inline_color(
                             theme, request[name]["surface"]["colorRole"])
                         with self.assertRaisesRegex(ValueError, "paint differs"):
                             verify_part_paint(request, name, stale, states)

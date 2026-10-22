@@ -13,6 +13,7 @@ ShellRoot {
     property bool shown: true
     property bool mounted: true
     property bool parented: false
+    property string motionChannels: ""
     property bool focusTaken: false
     property string reaction: ""
     property int effects: 0
@@ -59,13 +60,17 @@ ShellRoot {
             screen:toggle && toggle.Screen.width > 0 ? {width:toggle.Screen.width, height:toggle.Screen.height} : null};
     }
 
+    function moving(control) {
+        return control.motion.indexOf('"settled":false') >= 0;
+    }
+
     function published(control) {
         if (!control.snapshot.length) return;
         const snapshot = JSON.parse(control.snapshot);
         log("publication", {snapshotFocused:snapshot.accessibility.state.focused,
             nativeFocused:control.activeFocus && Boolean(control.Window.window && control.Window.window.active),
             snapshotChecked:snapshot.accessibility.state.checked, layoutChecked:snapshot.layout.checked,
-            checked:control.checked});
+            checked:control.checked, moving:moving(control), frame:frames.elapsedTime});
     }
 
     function activated(control, checked) {
@@ -94,6 +99,11 @@ ShellRoot {
     Connections {
         target: root.toggle
         function onSnapshotChanged() { if (!root.toggle.snapshot.length) ++root.retractions; }
+    }
+
+    FrameAnimation {
+        id: frames
+        running: true
     }
 
     Instantiator {
@@ -164,6 +174,7 @@ ShellRoot {
                             configuration: root.configuration
                             disabledFocusable: false
                             samplesPerAxis: 4
+                            motionChannels: root.motionChannels
                             activeFocusOnTab: true
                             onActivated: checked => root.activated(toggle, checked)
                             onSnapshotChanged: root.published(toggle)
@@ -233,6 +244,9 @@ ShellRoot {
         function setMounted(value: bool): void { root.mounted = value; }
         function setWindowed(value: bool): void { root.windowed = value; }
         function setParented(value: bool): void { root.parented = value; }
+        function setMotion(enabled: bool): void {
+            root.motionChannels = enabled ? JSON.stringify(root.requests.channels) : "";
+        }
         function setReaction(mode: string): void { root.reaction = mode; root.reactionResult = null; }
         function reloadShell(hard: bool): void { root.log("reload", {hard:hard}); Quickshell.reload(hard); }
         function changePending(change: string, then: string): bool {
