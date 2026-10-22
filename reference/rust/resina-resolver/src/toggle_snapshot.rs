@@ -199,7 +199,7 @@ impl fmt::Display for ToggleSnapshotError {
             Self::NumericRange => f.write_str("toggle placement exceeds representable arithmetic"),
             Self::ThumbOutsideContent(endpoint) => write!(
                 f,
-                "toggle {endpoint} thumb footprint exceeds the uniform track content region"
+                "toggle {endpoint} thumb footprint leaves the track's exact uniform face"
             ),
             Self::InvalidLabelContrast => {
                 f.write_str("minimumLabelContrast must be finite and in [1, 21]")
