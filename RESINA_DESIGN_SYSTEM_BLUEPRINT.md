@@ -4239,6 +4239,49 @@ explicit environment bridge
 consumer documentation
 ```
 
+0.0.8 — Adoption and developer experience. Lowers the cost of adopting Resina:
+
+```text
+public API and consumer ergonomics refined from recorded integration friction
+packaging and installation of the Quickshell module and the conformance tooling,
+refined from friction recorded after the 0.0.7 module and documentation exist
+error messages, examples and a quick start
+a compatibility policy stating stable, experimental and deprecated surfaces
+and the deprecation window
+```
+
+0.0.9 — Stabilization and external validation. Proves Resina works for people outside the project:
+
+```text
+the consumer API and the Quickshell module surface stabilized under the compatibility policy;
+breaking it needs a recorded decision;
+the component, IR and model freezes belong to 0.2 and 0.3 (§193, §194)
+backend compatibility matrix evidence for Quickshell and GUIdo;
+the matrix itself remains a 0.1.0 requirement
+documentation verified against independent integrations
+external validation by independent consumers integrating from the documentation,
+with recorded time to first component
+```
+
+Rules for 0.0.8 and 0.0.9:
+
+```text
+an item enters only with evidence of an adoption barrier:
+a recorded integration friction, a measured barrier or a defect;
+an integration recorded by the maintainer, such as a product adopting Resina, counts
+neither release adds normative concepts or IR contracts;
+changes to public contracts follow the architectural-decision process
+and are not scheduled here
+each release has a timebox and an item cap, set by the maintainer
+and recorded on its acceptance issue before intake starts;
+items beyond them move to later releases
+the purpose is lower barriers to adoption,
+not further perfection of the architecture
+0.1.0 remains the gate (§192)
+```
+
+Like every release before 0.1.0, 0.0.1 to 0.0.9 are accepted, not tagged (§190).
+
 ---
 
 # 192. Resina 0.1.0
