@@ -12,9 +12,13 @@ from check_theme_derivation_backend import (
     derivation_mismatch, foundation_text, omit_at_pointer, template_texts,
 )
 from environmental_pigment import (
+    TEMPLATE_HUE_CHROMA_FLOOR,
     ADAPTABLE_ROLES, FROST_ROLE, PigmentError, adapt, adapted_source, half_turn, template_roles,
 )
-from theme_derivation import THEMES, composed_tokens, guard_pairs, oklch_from_srgb
+from theme_derivation import (
+    EPSILON, JND, THEMES, composed_tokens, gamut_map, guard_pairs,
+    oklch_from_srgb,
+)
 
 FOUNDATION_URI = "foundation.json"
 DEFAULT_PREFERENCES = {"reducedMotion": False, "reducedTransparency": False, "highContrast": False}
@@ -87,7 +91,9 @@ def check_independent_result(result, request):
                    or not 0 <= value <= 1 for value in components):
                 raise AssertionError(f"{name} {role} has an sRGB component outside [0, 1]")
             lightness, chroma, hue = adapted["targetOklch"]
-            template_lightness, _, template_hue = oklch_from_srgb(colors[role])
+            template_lightness, template_chroma, template_hue = oklch_from_srgb(colors[role])
+            if template_chroma < TEMPLATE_HUE_CHROMA_FLOOR:
+                template_hue = 0.0
             if abs(lightness - template_lightness) > 1e-9:
                 raise AssertionError(f"{name} {role} changed lightness")
             if not ranges[role]["chroma"]["min"] <= chroma <= ranges[role]["chroma"]["max"]:
@@ -95,6 +101,11 @@ def check_independent_result(result, request):
             offset = half_turn(hue - template_hue)
             if chroma > 0 and not ranges[role]["hue"]["min"] - 1e-9 <= offset <= ranges[role]["hue"]["max"] + 1e-9:
                 raise AssertionError(f"{name} {role} hue left its authored range")
+            mapped = gamut_map(adapted["targetOklch"])
+            if any(abs(left - right) > 1e-9 for left, right in zip(components, mapped)):
+                raise AssertionError(f"{name} {role} is not the gamut mapping of its target")
+            if abs(oklch_from_srgb(components)[0] - lightness) > JND + EPSILON:
+                raise AssertionError(f"{name} {role} lightness moved more than the gamut mapping allows")
             if (role == FROST_ROLE) != ("alpha" in adapted["color"]) or (
                     role == FROST_ROLE and adapted["color"]["alpha"] != alphas[role]):
                 raise AssertionError(f"{name} {role} must keep exactly its authored alpha")

@@ -9,11 +9,11 @@ Resina's Light and Dark themes are authored with complete, environment-independe
 ## Decision
 
 - **Theme resolution owns adaptation.** A consumer supplies an optional, finite observation: a representative opaque colour and, for Frost, a proved range of backdrop colours. It is supplied again when the environment changes, not streamed, so one observation gives one reproducible result.
-- **Selection inside authored ranges.** The observation's Oklch chroma and hue are clamped into per-role ranges the theme author supplies. Lightness is never selected and roles are never rebound.
+- **Selection inside authored ranges.** The observation's Oklch chroma and hue are clamped into per-role ranges the theme author supplies, before gamut mapping. Lightness is never selected and roles are never rebound. A grey template role has no hue, so it takes the zero hue basis seed derivation uses for an achromatic hue.
 - **Eligible roles.** Frost chrome tint and the three Cast surfaces. Accents belong to seed derivation, status roles are never adapted, and the light channels belong to [material light](../../spec/85-bounded-material-light.md).
-- **No observation, high contrast or reduced transparency give the authored theme exactly.** An invalid observation is a diagnostic, including when adaptation is suppressed.
+- **No observation, high contrast or reduced transparency give the authored theme exactly.** An invalid observation is a diagnostic, including when adaptation is suppressed. A consumer that wants the authored theme omits the observation, and validating a sample before passing it is the consumer's duty. Silently ignoring a malformed sample under high contrast would hide a defect in the consumer that surfaces the next time the preference is off.
 - **Same guard, plus a Frost bound.** The output is a derived theme source that compiles under [theme compilation](../../spec/22-theme-compilation.md) and passes the same 40-pair guard. Adapted Frost chrome is also certified over the observed range with the bounded contrast calculation, and the authored chrome stays when it is not certified.
-- **Range instead of luminance interval.** The certification needs a box of sRGB channels because encoded-sRGB source-over mixes channels. A luminance interval alone cannot bound the composite, and it carries no pigment to select, so the observation's interval is that channel box.
+- **Range instead of luminance interval.** The certification needs a box of sRGB channels because encoded-sRGB source-over mixes channels. A luminance interval alone cannot bound the composite, and it carries no pigment to select, so the observation's range is that channel box. It is the same bounded-backdrop input [translucent Frost](../../spec/94-translucent-frost.md) takes, and both certify with [bounded contrast](../../spec/72-bounded-background-contrast.md).
 
 ## Alternatives
 
@@ -23,7 +23,7 @@ Resina's Light and Dark themes are authored with complete, environment-independe
 - **Lightness adaptation.** It would move the tone pairs the guard was authored for, so most observations would fail or be repaired.
 - **Repairing an adapted tint until it passes.** It hides authored contrast decisions inside the algorithm. Retaining the authored tint and reporting the bounds keeps the decision with the author.
 
-Prior art: Windows Mica samples the wallpaper once and becomes solid when transparency is off, and Windows High Contrast shows the user's colours.
+Prior art: system acrylic and mica-style materials sample the surroundings once and fall back to a solid colour when transparency is off, and high-contrast modes show the user's colours.
 
 ## Consequences
 

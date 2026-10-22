@@ -521,6 +521,8 @@ fn parse_observation(value: &Value) -> Result<Observation, PigmentAdaptationErro
     Ok(Observation { color, range })
 }
 
+const TEMPLATE_HUE_CHROMA_FLOOR: f64 = 1e-4;
+
 fn wrap_half_turn(degrees: f64) -> f64 {
     let wrapped = degrees.rem_euclid(360.0);
     if wrapped > 180.0 {
@@ -535,7 +537,12 @@ fn select_target(
     ranges: RoleRanges,
     observed: ObservedColor,
 ) -> Result<([f64; 3], [f64; 3]), AdaptedThemeError> {
-    let [lightness, _, hue] = template;
+    let [lightness, template_chroma, template_hue] = template;
+    let hue = if template_chroma < TEMPLATE_HUE_CHROMA_FLOOR {
+        0.0
+    } else {
+        template_hue
+    };
     let offset = if observed.achromatic {
         0.0
     } else {

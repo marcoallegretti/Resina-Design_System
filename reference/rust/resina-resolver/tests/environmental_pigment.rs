@@ -220,7 +220,7 @@ fn adaptation_vectors_match_the_reference() {
         close(&actual, &case["expected"], name);
         valid += 1;
     }
-    assert_eq!(valid, 28);
+    assert_eq!(valid, 29);
 }
 
 #[test]
@@ -306,9 +306,14 @@ fn every_observation_selects_inside_the_authored_ranges() {
                 let adapted = adaptation.theme(theme).unwrap();
                 assert!(adapted.legibility_guard().iter().all(|pair| pair.passed()));
                 for role in ADAPTABLE_ROLES {
-                    let Some((target, _)) = adapted.role(role) else {
+                    let Some((target, components)) = adapted.role(role) else {
                         continue;
                     };
+                    let mapped = resina_color::srgb_to_oklch(components).unwrap();
+                    assert!(
+                        (mapped[0] - target[0]).abs() <= 0.0201,
+                        "{theme} {role:?} lightness left the gamut mapping bound"
+                    );
                     let ranges = &profile["themes"][theme][role_key(role)];
                     let (low, high) = (
                         ranges["chroma"]["min"].as_f64().unwrap(),

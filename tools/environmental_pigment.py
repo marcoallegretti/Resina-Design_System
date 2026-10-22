@@ -94,6 +94,9 @@ def half_turn(degrees):
     return wrapped - 360.0 if wrapped > 180.0 else wrapped
 
 
+TEMPLATE_HUE_CHROMA_FLOOR = 1e-4
+
+
 def clamp(value, lower, upper):
     return max(lower, min(upper, value))
 
@@ -105,7 +108,9 @@ def observed(color):
 
 
 def select_target(template, ranges, observation, achromatic):
-    lightness, _, hue = template
+    lightness, template_chroma, hue = template
+    if template_chroma < TEMPLATE_HUE_CHROMA_FLOOR:
+        hue = 0.0
     offset = 0.0 if achromatic else clamp(
         half_turn(observation[2] - hue), ranges["hue"]["min"], ranges["hue"]["max"])
     chroma = clamp(observation[1], ranges["chroma"]["min"], ranges["chroma"]["max"])

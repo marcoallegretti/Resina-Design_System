@@ -32,7 +32,9 @@ An observation has a `color` and an optional `range`.
 - `color` is exactly `colorSpace` `srgb` and three finite `components` in `[0, 1]`: one representative opaque colour. It has no `alpha`.
 - `range` is exactly `lower` and `upper`, two such colours that satisfy the [opaque range](72-bounded-background-contrast.md) rules: every channel of `lower` is at most the same channel of `upper`. The consumer MUST prove that every backdrop colour that can occur behind the Frost chrome lies inside the box. Resina does not infer coverage.
 
-`color` MUST lie inside `range` in every channel when both are present. An observation that breaks any rule is invalid and MUST fail with a diagnostic. It is never repaired, clamped or ignored, whatever the accessibility preferences are. An observation without a `color` carries no pigment to select, so a luminance interval alone is not an observation.
+`color` MUST lie inside `range` in every channel when both are present. An observation that breaks any rule is invalid and MUST fail with a diagnostic. It is never repaired, clamped or ignored, whatever the accessibility preferences are. An observation without a `color` carries no pigment to select, so a luminance interval alone is not an observation. A consumer that wants the authored theme omits the observation, and that is the only override: an invalid observation is not a way to ask for it, and a consumer MUST NOT pass a sample it has not validated.
+
+The `range` is the same bounded-backdrop input that [translucent Frost](94-translucent-frost.md) takes, and certification below uses the same [bounded contrast](72-bounded-background-contrast.md) calculation.
 
 The colour's Oklch coordinates come from the encoded sRGB to Oklab conversion in [color conversion](04-color-conversion.md), with chroma `C = √(a² + b²)` and the hue normalization of [theme derivation](91-theme-derivation.md#seed). A colour with `C < 0.02` is achromatic and its hue is reported as 0.
 
@@ -48,12 +50,14 @@ Adaptation applies only when the request carries an observation and neither `hig
 
 ## Selection
 
-For each theme and eligible role, let `[Lₜ, Cₜ, hₜ]` be the Oklch coordinates of the template's sRGB fallback for that role, and `[_, Cₒ, hₒ]` those of the observed colour. The target is `[Lₜ, C, h]`:
+For each theme and eligible role, let `[Lₜ, Cₜ, hₜ]` be the Oklch coordinates of the template's sRGB fallback for that role, and `[_, Cₒ, hₒ]` those of the observed colour. When `Cₜ < 0.0001` the template role is grey: its hue is floating-point noise, so `hₜ` is taken as 0 for the whole selection. The target is `[Lₜ, C, h]`:
 
 - `C` is `Cₒ` clamped to the role's chroma range;
 - for a chromatic observation, `h = norm(hₜ + δ)`, where `δ` is `hₒ − hₜ` taken modulo 360 into `(-180, 180]` and then clamped to the role's hue range. For an achromatic observation, `h = hₜ`.
 
-`norm` is the hue normalization of seed derivation. Lightness always comes from the template, so an observation can change hue and chroma but never tone. A range bound is the most any observation can move a role. The target is mapped into sRGB by the [gamut mapping](91-theme-derivation.md#gamut-mapping) of seed derivation.
+`norm` is the hue normalization of seed derivation. Lightness always comes from the template, so an observation selects hue and chroma and never lightness. A range bound is the most any observation can move the target before mapping. The target is mapped into sRGB by the [gamut mapping](91-theme-derivation.md#gamut-mapping) of seed derivation, which can move the published colour off the target. What is guaranteed is that the published colour is exactly that mapping of the target and that its Oklch lightness differs from the target's by at most the mapping's `JND` of 0.02; hue and chroma of the published colour are not bounded by the ranges.
+
+The zero hue basis for a grey template role follows seed derivation, which also reports an achromatic hue as 0. The threshold is far below the `0.02` used for seeds because the authored Cast surfaces are deliberately tinted at low chroma and their hue is meaningful: noise in a grey is about `1e-15`, and the smallest chroma that one 8-bit channel step produces is about `1e-3`. Like the achromatic threshold of seed derivation, it makes the selected hue discontinuous at the threshold. At an exact antipode, where `hₒ − hₜ` is 180° up to rounding, the sign of `δ` can differ between implementations; the clamp makes this inherent.
 
 The three Cast roles adapt as soon as adaptation applies. They MUST be opaque and MUST NOT appear in the template's [opaque color assignments](13-opaque-color-fallback.md), because their Tier 0 colour is their own fallback. The Frost chrome role MUST be translucent and MUST have an opaque assignment, which stays authored. A template that breaks these rules, or that already defines a token at or below `adaptedColor`, fails for that theme.
 
@@ -102,6 +106,7 @@ The [adaptation vectors](../conformance/themes/environmental-pigment-vectors.jso
 Valid cases record the expected adaptation, roles, certification and guard results for both themes. `failingThemes` names the themes whose diagnostic lines must appear. Numbers MUST match within `1e-9` absolute. The corpus covers:
 
 - no observation, and an observation under each accessibility preference, with the precedence of the reasons;
+- grey template roles in both themes;
 - bright, dark, warm, grey, black, white, high-chroma and low-contrast backdrops, achromatic observations on both sides of the chroma threshold, and hues around the circle;
 - observations with and without a range, and ranges that certify Frost in one theme and not the other;
 - embedded-token templates;
@@ -110,6 +115,6 @@ Valid cases record the expected adaptation, roles, certification and guard resul
 - template opacity, opaque-assignment and reserved-group failures;
 - an adaptation that breaks the guard in one theme, authored themes that fail the guard, and failures in both themes.
 
-[`tools/environmental_pigment.py`](../tools/environmental_pigment.py) is an independent implementation of this contract for the same template subset as [seed derivation](91-theme-derivation.md#conformance). The [external checker](../tools/check_environmental_pigment_backend.py) recomputes every case with it and compares the result with the vectors. It then runs the backend twice per case and checks the result schema, the eligible roles, the authored lightness, chroma and hue limits, the template alpha, the certification, the derived source against its template, every guard pair, determinism, diagnostics and the absence of partial output. The unit tests also sweep observation hue and chroma against the authored profile. Passing establishes conformance only for the covered cases.
+[`tools/environmental_pigment.py`](../tools/environmental_pigment.py) is an independent implementation of this contract for the same template subset as [seed derivation](91-theme-derivation.md#conformance). The [external checker](../tools/check_environmental_pigment_backend.py) recomputes every case with it and compares the result with the vectors. It then runs the backend twice per case and checks the result schema, the eligible roles, the authored chroma and hue limits of each target, that each published colour is the gamut mapping of its target with lightness inside the `JND` allowance, the template alpha, the certification, the derived source against its template, every guard pair, determinism, diagnostics and the absence of partial output. The unit tests also sweep observation hue and chroma against the authored profile. Passing establishes conformance only for the covered cases.
 
 This contract does not acquire an observation, extract a wallpaper colour, animate between palettes, change a role's binding, adapt an accent or a status colour, or modulate the [light channels](85-bounded-material-light.md). The guard names the pairs it checks, and rendered readability still requires the [contrast contract](12-contrast.md).
