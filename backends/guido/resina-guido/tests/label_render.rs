@@ -647,7 +647,7 @@ fn script_text_without_the_pinned_script_masters_is_rejected() {
 #[test]
 fn visible_unpinned_script_face_is_rejected() {
     let mut fonts = label_evidence::database(&label_evidence::registered(), false).unwrap();
-    let mut medium = std::fs::read(&conformance_font::script_masters()[1]).unwrap();
+    let mut medium = std::fs::read(conformance_font::face("Noto Sans Arabic", 500)).unwrap();
     medium.push(0);
     fonts.load_font_data(medium);
     for text in ["Save", "إعادة الاتصال"] {

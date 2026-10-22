@@ -10,7 +10,7 @@ use std::{
     sync::Arc,
 };
 
-use super::conformance_font::FAMILY;
+use super::conformance_font::{self, FAMILY};
 
 fn git_output(args: &[&str]) -> String {
     let output = Command::new("git").args(args).output().unwrap();
@@ -32,16 +32,13 @@ pub struct Master {
 const AUTHORED_WEIGHTS: [u16; 3] = [400, 500, 600];
 
 /// The script fallback families that cosmic-text names for Arabic and Hebrew text.
-const SCRIPT_FAMILIES: [(&str, &str); 2] = [
-    ("Arabic", "Noto Sans Arabic"),
-    ("Hebrew", "Noto Sans Hebrew"),
-];
+const SCRIPT_FAMILIES: [&str; 2] = ["Noto Sans Arabic", "Noto Sans Hebrew"];
 
 /// Every file the label evidence registers: the Inter masters, then the script masters.
 pub fn registered() -> Vec<PathBuf> {
-    super::conformance_font::masters()
+    conformance_font::faces()
         .into_iter()
-        .chain(super::conformance_font::script_masters())
+        .map(|face| face.2)
         .collect()
 }
 
@@ -53,16 +50,9 @@ struct Pinned {
 }
 
 fn pinned() -> Result<Vec<Pinned>, String> {
-    let families = std::iter::repeat_n(FAMILY, 3).chain(
-        SCRIPT_FAMILIES
-            .iter()
-            .flat_map(|(_, family)| std::iter::repeat_n(*family, 3)),
-    );
-    registered()
+    conformance_font::faces()
         .into_iter()
-        .zip(families)
-        .zip(AUTHORED_WEIGHTS.into_iter().cycle())
-        .map(|((path, family), weight)| {
+        .map(|(family, weight, path)| {
             fs::read(&path)
                 .map(|data| Pinned {
                     family,
@@ -188,6 +178,10 @@ pub fn resolve(fonts: &fontdb::Database, weight: u16) -> Result<Master, String> 
 
 /// Identifies every face that draws a label text when it is shaped as GUIdo shapes it.
 ///
+/// The text is shaped in an `en-US` standalone `FontSystem` over the given database,
+/// as the pinned GUIdo does on the system locale with its own `FontSystem`; a
+/// different locale or font database can select other fallback faces.
+///
 /// Arabic and Hebrew have no glyphs in Inter, so cosmic-text takes them from the
 /// script fallback families it names. Each drawing face must be a pinned master at
 /// the requested weight, and no glyph may be missing.
@@ -197,7 +191,7 @@ pub fn resolve_text(
     weight: u16,
 ) -> Result<Vec<Master>, String> {
     let pinned = pinned()?;
-    for family in std::iter::once(FAMILY).chain(SCRIPT_FAMILIES.iter().map(|(_, family)| *family)) {
+    for family in std::iter::once(FAMILY).chain(SCRIPT_FAMILIES) {
         check_visible(fonts, family, &pinned)?;
     }
     let mut system = FontSystem::new_with_locale_and_db("en-US".into(), fonts.clone());
