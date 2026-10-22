@@ -131,7 +131,7 @@
       "contained": true
     },
     {
-      "name": "native-control-track-diagonal-key",
+      "name": "wide-track-24px-thumb-diagonal-key",
       "trackSize": {
         "width": 128,
         "height": 80
@@ -163,7 +163,7 @@
       "contained": true
     },
     {
-      "name": "native-control-track-near-vertical-key",
+      "name": "wide-track-24px-thumb-near-vertical-key",
       "trackSize": {
         "width": 128,
         "height": 80
