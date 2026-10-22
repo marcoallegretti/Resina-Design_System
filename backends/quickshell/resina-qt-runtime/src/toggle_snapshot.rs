@@ -8,10 +8,10 @@ use resina_model::{
 };
 use resina_resolver::{
     CommandLabelIr, CommandMotionChannel, CommandMotionChannels, ControlRelief, HitRegionInput,
-    HitRegionIr, OpaqueSurfaceInput, SrgbFallback, SurfacePaintInput, ToggleLayoutInput,
-    ToggleLayoutIr, TogglePart, TogglePartMotionInput, TogglePartPaintInput, ToggleSnapshotInput,
-    resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout, resolve_toggle_part_motion,
-    resolve_toggle_part_paint, resolve_toggle_part_reservation_paint,
+    HitRegionIr, OpaqueSurfaceInput, ReliefReuse, SrgbFallback, SurfacePaintInput,
+    ToggleLayoutInput, ToggleLayoutIr, TogglePart, TogglePartMotionInput, TogglePartPaintInput,
+    ToggleSnapshotInput, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
+    resolve_toggle_part_motion, resolve_toggle_part_paint, resolve_toggle_part_reservation_paint,
     resolve_toggle_snapshot as resolve_snapshot_ir, resolve_toggle_states, resolve_toggle_travel,
 };
 use resina_tokens::parse_token_document;
@@ -246,6 +246,8 @@ mod request_cache_tests {
 }
 
 thread_local! {
+    static THUMB_RELIEF: RefCell<(ReliefReuse, Option<[u64; 3]>)> =
+        RefCell::new((ReliefReuse::default(), None));
     // Frames of one motion repeat one request source, so its parse and its validated reservation
     // are kept. Only successes are kept: a failure is diagnosed again exactly as before.
     static PARSED: RefCell<Option<(String, Rc<Request>)>> = const { RefCell::new(None) };
@@ -609,23 +611,34 @@ fn prepare(
                 "trajectory":travel.trajectory(),"projection":travel.projection(),"thumbBounds":travel.thumb_bounds()}});
     }
     if render {
-        for (name, paint, origin) in [
-            ("trackSource", snapshot.track().paint(), track_origin),
-            ("thumbSource", snapshot.thumb().paint(), thumb_origin),
-        ] {
-            let source = RELIEF
-                .with(|reuse| {
-                    resina_qml::render_lit_control_paint(
-                        paint,
-                        origin,
-                        options.device_scale,
-                        options.samples_per_axis,
-                        reuse,
-                    )
-                })
-                .map_err(|error| error.to_string())?;
-            result[name] = Value::String(source);
-        }
+        let render_part = |paint, origin, reuse: &ReliefReuse| {
+            resina_qml::render_lit_control_paint(
+                paint,
+                origin,
+                options.device_scale,
+                options.samples_per_axis,
+                reuse,
+            )
+            .map_err(|error| error.to_string())
+        };
+        result["trackSource"] = Value::String(
+            RELIEF.with(|reuse| render_part(snapshot.track().paint(), track_origin, reuse))?,
+        );
+        // The thumb's sampling grid moves with its placement, so terms kept for one placement are
+        // never found at the next; keeping them only grows the kept maps. They are kept while the
+        // placement repeats and dropped when it changes.
+        let placement = [
+            thumb_origin.x.to_bits(),
+            thumb_origin.y.to_bits(),
+            options.device_scale.to_bits(),
+        ];
+        result["thumbSource"] = Value::String(THUMB_RELIEF.with(|entry| {
+            let mut entry = entry.borrow_mut();
+            if entry.1 != Some(placement) {
+                *entry = (ReliefReuse::default(), Some(placement));
+            }
+            render_part(snapshot.thumb().paint(), thumb_origin, &entry.0)
+        })?);
     }
     Ok(result)
 }
