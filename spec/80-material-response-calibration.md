@@ -135,14 +135,15 @@ and action availability, target bounds, label ink and containment are checked.
 The original arithmetic Toggle test remains independently executable.
 
 For example, in a Linux checkout with the native backend's documented build
-dependencies and the pinned Inter static masters installed (`fonts-inter` on
-Ubuntu 24.04, or `python tools/conformance_font.py fetch --output DIR`):
+dependencies and the pinned static masters:
 
 ```bash
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
 export RESINA_SCENES="$PWD/target/material-scenes.json"
-export RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter
+export RESINA_LABEL_FONT_DIR=$CONFORMANCE_FONTS
 RESINA_COMMAND_CAPTURE_DIR="$PWD/target/calibrated-command" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing --test command_content calibrated_command_profiles_preserve_complete_native_content_on_retarget
 RESINA_TOGGLE_CAPTURE_DIR="$PWD/target/calibrated-toggle" cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing --test toggle_content frames_keep_current_adjacency_semantics_and_raw_retarget_state -- --test-threads=1
 ```

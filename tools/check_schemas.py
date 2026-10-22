@@ -372,6 +372,8 @@ def check_visual_record_schemas():
             "size": {"width": 64, "height": 44}, "labelBounds": {"x": 16, "y": 8, "width": 36, "height": 28}
         },
         "font": {"family": "Inter", "postScriptName": "Inter-Regular", "weight": 400, "file": "Inter-Regular.otf", "gitBlob": "b" * 40},
+        "scriptFonts": [{"family": "Noto Sans Arabic", "postScriptName": "NotoSansArabic-Regular", "weight": 400,
+                         "file": "NotoSansArabic-Regular.ttf", "gitBlob": "e" * 40}],
         "renderer": {"name": "guido-native-label-test", "gitBlob": "c" * 40,
                      "gpu": {"name": "schema-fixture", "vendor": 0, "device": 0, "backend": "Vulkan", "deviceType": "Cpu", "driver": "test", "driverInfo": "test"}},
         "runtime": {"system": "test", "machine": "test"}, "colorEncoding": "rgba8-srgb-straight",
@@ -390,6 +392,14 @@ def check_visual_record_schemas():
         ("native font must be a pinned Inter master", "/font/family", "DejaVu Sans"),
         ("native font cannot record a substituted weight", "/font/weight", 500),
         ("native font cannot record an unpinned master", "/font/file", "Inter-Bold.otf"),
+        ("native script font must be a pinned Noto master", "/scriptFonts/0/family", "DejaVu Sans"),
+        ("native script font cannot record a substituted weight", "/scriptFonts/0/weight", 500),
+        ("native script font cannot record an unpinned master", "/scriptFonts/0/file", "NotoSansArabic-Bold.ttf"),
+        ("native script font must identify its file", "/scriptFonts/0/gitBlob", "unknown"),
+        ("native script font cannot take another family's master", "/scriptFonts/0/file", "NotoSansHebrew-Regular.ttf"),
+        ("native script fonts cannot repeat a face", "/scriptFonts", [
+            {"family": "Noto Sans Arabic", "postScriptName": "NotoSansArabic-Regular", "weight": 400,
+             "file": "NotoSansArabic-Regular.ttf", "gitBlob": "e" * 40}] * 2),
         ("native readback needs actual GPU metadata", "/renderer/gpu", None),
         ("native image cannot escape directory", "/image/file", "../image.png"),
         ("native text cannot lose semantic result", "/semanticResult", {}),

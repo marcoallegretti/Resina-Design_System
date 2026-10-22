@@ -283,7 +283,7 @@ def validate_native_label(record, source):
 def compare_native_labels(before, after, images):
     for record, source in zip((before, after), images, strict=True):
         validate_native_label(record, source)
-    for field in ("kind", "purpose", "scenario", "width", "height", "deviceScale", "textScale", "sampling", "font", "semanticResult", "colorEncoding"):
+    for field in ("kind", "purpose", "scenario", "width", "height", "deviceScale", "textScale", "sampling", "font", "scriptFonts", "semanticResult", "colorEncoding"):
         difference = mismatch(after[field], before[field])
         if difference:
             raise ValueError(f"native label context/semantics differ at /{field}{difference}")

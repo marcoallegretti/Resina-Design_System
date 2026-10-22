@@ -208,6 +208,9 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                         "--output-dir", str(root / "output")]
                 timeout = subprocess.TimeoutExpired(["host"], 350, output=stdout, stderr=stderr)
                 with patch("sys.argv", argv), redirect_stderr(io.StringIO()), \
+                        patch("conformance_font.isolate_process"), \
+                        patch("conformance_font.script_masters", return_value=[]), \
+                        patch("conformance_font.check_script_fontconfig"), \
                         patch("conformance_font.qml_sources", return_value='["file:///fonts/Inter-Regular.otf"]'), \
                         patch("check_quickshell_command_updates.subprocess.run", side_effect=[
                             SimpleNamespace(returncode=0, stdout="Quickshell 0.3.2 / Qt Quick 6.11.2\n", stderr=""),
@@ -512,12 +515,36 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
                     "--alternate-font", str(root / "font"),
                     "--module-path", str(root / "module"), "--output-dir", str(root / "output")]
             with patch("sys.argv", argv), patch.dict("os.environ", {"QT_QPA_PLATFORM": "wayland"}), \
+                    patch("conformance_font.isolate_process"), \
+                    patch("conformance_font.script_masters", return_value=[]), \
+                    patch("conformance_font.check_script_fontconfig"), \
                     patch("conformance_font.qml_sources", return_value='["file:///fonts/Inter-Regular.otf"]'), \
                     patch("check_quickshell_command_updates.subprocess.run", return_value=SimpleNamespace(
                         returncode=1, stdout="", stderr="unavailable host")) as run, redirect_stderr(io.StringIO()):
                 self.assertEqual(main(), 1)
             self.assertEqual(run.call_args.kwargs["env"]["QT_QPA_PLATFORM"], "offscreen")
             self.assertFalse((root / "output").exists())
+
+    def test_unpinned_script_face_stops_the_run_before_the_host_starts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("host", "font"):
+                (root / name).touch()
+            (root / "module").mkdir()
+            argv = ["check", "--host", str(root / "host"), "--font-dir", str(root / "fonts"),
+                    "--alternate-font", str(root / "font"),
+                    "--module-path", str(root / "module"), "--output-dir", str(root / "output")]
+            visible = ValueError("DejaVuSans.ttf face 0 is visible for Arabic text but is not a pinned master")
+            with patch("sys.argv", argv), redirect_stderr(io.StringIO()) as stderr, \
+                    patch("conformance_font.isolate_process") as isolate, \
+                    patch("conformance_font.script_masters", return_value=[]), \
+                    patch("conformance_font.check_script_fontconfig", side_effect=visible), \
+                    patch("conformance_font.qml_sources", return_value="[]"), \
+                    patch("check_quickshell_command_updates.subprocess.run") as run:
+                self.assertEqual(main(), 1)
+            isolate.assert_called_once_with(root / "fonts")
+            run.assert_not_called()
+            self.assertIn("is visible for Arabic text", stderr.getvalue())
 
     def test_availability_and_recovery_cannot_move_the_same_authored_target(self):
         cases = [{"request": {"content": "same"}}, {"request": {"content": "same"}, "enabled": False}]

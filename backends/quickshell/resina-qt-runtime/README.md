@@ -624,13 +624,19 @@ separate code path in the element. A desktop backend providing
 Install the tested Qt 6.11.2 development SDK with its Core/Qml tools and a C++17
 compiler. Keep the host's Qt ABI aligned. Native label checks take
 `--font-dir`, a directory holding the Inter 4.0 static Regular, Medium and
-SemiBold masters pinned by SHA-256 in
-[`tools/conformance_font.json`](../../../tools/conformance_font.json). Ubuntu
-24.04's `fonts-inter` installs these files, with the other Inter 4.0 static
-faces, in `/usr/share/fonts/opentype/inter`; elsewhere,
+SemiBold masters and the Noto Sans Arabic and Noto Sans Hebrew static Regular,
+Medium and SemiBold masters, all pinned by SHA-256 in
+[`tools/conformance_font.json`](../../../tools/conformance_font.json).
 `python tools/conformance_font.py fetch --output DIR` downloads the pinned
-release archive and extracts them. Each check registers all three, so authored
-weights 400, 500 and 600 resolve to real masters, and
+release archives and extracts them; set `CONFORMANCE_FONTS` to that directory
+(`export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"`, then
+`python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"`) and the
+commands below use it. Each check registers the Inter masters, so authored
+weights 400, 500 and 600 resolve to real masters, and those that draw Arabic or
+Hebrew labels run Qt with a fontconfig file that lists only that directory, so the
+script text can fall back only to the pinned Noto masters, and fail when another
+face that supports either language is visible. The Quickshell label checks record the Noto
+master that drew each script at each weight, and
 `check_qt_command_label_runtime.py` prints the master that resolved every
 Command label measurement. That check first lists the Inter faces fontconfig
 makes visible to the process and fails unless every upright, normal-width one at
@@ -655,15 +661,15 @@ LD_LIBRARY_PATH="$(dirname "$QMAKE")/../lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 cargo clippy --manifest-path backends/quickshell/resina-qt-runtime/Cargo.toml --all-targets --locked -- -D warnings
 python -m pip install -r tools/requirements-qt-native.txt -r tools/requirements-schema.txt -r tools/requirements-render.txt
 python tools/check_qt_command_runtime.py --module-path target/qt-runtime-import
-python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
-python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
-python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
-python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter
+python tools/check_qt_command_label_runtime.py --module-path target/qt-runtime-import --font-dir $CONFORMANCE_FONTS
+python tools/check_qt_command_snapshot_runtime.py --module-path target/qt-runtime-import --font-dir $CONFORMANCE_FONTS
+python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import --font-dir $CONFORMANCE_FONTS
+python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import --font-dir $CONFORMANCE_FONTS
 QT_SCALE_FACTOR=1.25 python tools/check_qt_command_paint_runtime.py \
-  --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter \
+  --module-path target/qt-runtime-import --font-dir $CONFORMANCE_FONTS \
   --raster target/debug/resina-command-raster --output-dir target/qt-command-paint-1.25
 QT_SCALE_FACTOR=1.25 python tools/check_qt_command_view_runtime.py \
-  --module-path target/qt-runtime-import --font-dir /usr/share/fonts/opentype/inter \
+  --module-path target/qt-runtime-import --font-dir $CONFORMANCE_FONTS \
   --output-dir target/qt-command-view-1.25
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py --report-only
 RESINA_QT_RUNTIME_MODULE="$PWD/target/qt-runtime-import" python tools/check_qt_native_availability.py
@@ -683,7 +689,7 @@ export XDG_RUNTIME_DIR="$PWD/target/wayland-runtime"
 export WAYLAND_DISPLAY=resina-wayland
 export QT_QPA_PLATFORM=wayland
 python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter
+  --font-dir $CONFORMANCE_FONTS
 ```
 
 For compositor-delivered input, set `resina_weston_window` to the actual X11 output
@@ -692,10 +698,10 @@ X11/XTest runtime libraries:
 
 ```sh
 python tools/check_qt_command_keyboard_runtime.py --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --parent-x11-display :0 --parent-x11-window "$resina_weston_window"
 python tools/check_qt_command_pointer_runtime.py --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --parent-x11-display :0 --parent-x11-window "$resina_weston_window"
 ```
 
@@ -986,11 +992,11 @@ and stale actions producing none. Run:
 ```sh
 python tools/check_qt_command_control_runtime.py \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/qt-control-captures
 python tools/check_qt_command_control_accessibility.py \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter
+  --font-dir $CONFORMANCE_FONTS
 ```
 
 The input checker verifies rapid delivery, captured outside/reentry, Space/Enter,
@@ -1041,7 +1047,7 @@ against Qt 6.11.2:
 python tools/check_quickshell_command_updates.py \
   --host target/quickshell-build/src/quickshell \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --alternate-font /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
   --output-dir target/quickshell-command-updates --scales 1 1.25 2
 ```
@@ -1113,7 +1119,7 @@ and module pair:
 python tools/check_quickshell_toggle_updates.py \
   --host target/quickshell-build/src/quickshell \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/quickshell-toggle-updates --scales 1 1.25 2
 ```
 
@@ -1171,7 +1177,7 @@ compositor's repeat delay, and no retraction.
 ```sh
 python tools/check_quickshell_command_lifecycle.py \
   --host /path/to/quickshell --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/quickshell-command-lifecycle
 ```
 
@@ -1226,7 +1232,7 @@ checker. It takes the same arguments and compositor session:
 ```sh
 python tools/check_quickshell_toggle_lifecycle.py \
   --host /path/to/quickshell --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/quickshell-toggle-lifecycle
 ```
 
@@ -1706,15 +1712,15 @@ motion. Run after preparing the compiled module:
 python tools/check_qt_command_motion_runtime.py \
   --raster target/qt-runtime-build/debug/resina-command-motion-raster \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/qt-motion-captures
 python tools/check_qt_command_control_runtime.py --motion \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/qt-moving-control-captures
 python tools/check_qt_command_control_accessibility.py --motion \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter
+  --font-dir $CONFORMANCE_FONTS
 ```
 
 The equation checker compares one frozen actual sampled frame against the
@@ -1818,11 +1824,11 @@ python tools/check_qt_toggle_runtime.py --module-path target/qt-runtime-import
 python tools/check_qt_toggle_control_runtime.py \
   --raster target/debug/resina-toggle-part-raster \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/qt-toggle-captures
 python tools/check_qt_toggle_control_accessibility.py \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter --action Toggle
+  --font-dir $CONFORMANCE_FONTS --action Toggle
 # Repeat the strict native action check with --action Press.
 ```
 
@@ -1951,16 +1957,16 @@ cargo build -p resina-raster --bin resina-toggle-part-motion-raster --locked
 python tools/check_qt_toggle_motion_runtime.py \
   --raster target/debug/resina-toggle-part-motion-raster \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/qt-toggle-motion-captures
 python tools/check_qt_toggle_control_runtime.py --motion \
   --raster target/debug/resina-toggle-part-motion-raster \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter \
+  --font-dir $CONFORMANCE_FONTS \
   --output-dir target/qt-toggle-moving-input
 python tools/check_qt_toggle_control_accessibility.py --motion \
   --module-path target/qt-runtime-import \
-  --font-dir /usr/share/fonts/opentype/inter --action Toggle
+  --font-dir $CONFORMANCE_FONTS --action Toggle
 # Repeat --action Press in a host with the qualified native Switch mapping.
 ```
 

@@ -8,6 +8,10 @@ import conformance_font
 
 MASTERS = [{"family": "Inter", "style": master["style"], "weight": master["weight"], "file": master["file"],
             "sha256": master["sha256"]} for master in conformance_font.MANIFEST["masters"]]
+SCRIPTS = [{"script": script["script"], "family": script["family"], "style": master["style"],
+            "weight": master["weight"], "file": master["file"], "sha256": master["sha256"]}
+           for script in conformance_font.MANIFEST["scripts"] for master in script["masters"]]
+STYLES = {400: "Regular", 500: "Medium", 600: "SemiBold"}
 TABULAR = [12.953125] * 10
 PROPORTIONAL = [12.90625, 8.296875, 12.3125, 12.53125, 13.125, 12.359375, 12.59375, 11.421875, 12.578125, 12.59375]
 
@@ -15,6 +19,14 @@ PROPORTIONAL = [12.90625, 8.296875, 12.3125, 12.53125, 13.125, 12.359375, 12.593
 def faces(styles):
     return "".join(f"RESINA_LABEL_FACE {json.dumps({'weight': weight, 'face': {'family': 'Inter', 'style': style}})}\n"
                    for weight, style in zip((400, 500, 600), styles))
+
+
+def script_faces(skip=(), styles=STYLES, families=None):
+    return "".join(
+        "RESINA_LABEL_SCRIPT_FACE " + json.dumps({"script": script["script"], "weight": weight, "face": {
+            "family": (families or {}).get(script["script"], script["family"]), "style": styles[weight]}}) + "\n"
+        for script in conformance_font.MANIFEST["scripts"] for weight in (400, 500, 600)
+        if (script["script"], weight) not in skip)
 
 
 def digits(tabular=TABULAR, default=PROPORTIONAL):
@@ -25,16 +37,24 @@ def digits(tabular=TABULAR, default=PROPORTIONAL):
         for flag, advances in ((True, tabular), (False, default)))
 
 
-GOOD_FACES = faces(("Regular", "Medium", "SemiBold")) + digits()
+GOOD_FACES = faces(("Regular", "Medium", "SemiBold")) + script_faces() + digits()
 
 
 class QuickshellLabelEvidenceTests(unittest.TestCase):
     def test_complete_runtime_evidence_records_resolved_masters_and_digits(self):
         evidence = check_log(subprocess.CompletedProcess(
-            [], 0, "DEBUG qml: " + GOOD_FACES + "DEBUG qml: RESINA_LABEL_PASS 432 13 1.25\n", ""), 1.25, MASTERS)
+            [], 0, "DEBUG qml: " + GOOD_FACES + "DEBUG qml: RESINA_LABEL_PASS 432 13 1.25\n", ""), 1.25, MASTERS, SCRIPTS)
         self.assertEqual([(master["style"], master["weight"], master["file"]) for master in evidence["masters"]],
                          [("Regular", 400, "Inter-Regular.otf"), ("Medium", 500, "Inter-Medium.otf"),
                           ("SemiBold", 600, "Inter-SemiBold.otf")])
+        self.assertEqual([(face["script"], face["family"], face["weight"], face["file"])
+                          for face in evidence["scriptFaces"]],
+                         [("Arabic", "Noto Sans Arabic", 400, "NotoSansArabic-Regular.ttf"),
+                          ("Arabic", "Noto Sans Arabic", 500, "NotoSansArabic-Medium.ttf"),
+                          ("Arabic", "Noto Sans Arabic", 600, "NotoSansArabic-SemiBold.ttf"),
+                          ("Hebrew", "Noto Sans Hebrew", 400, "NotoSansHebrew-Regular.ttf"),
+                          ("Hebrew", "Noto Sans Hebrew", 500, "NotoSansHebrew-Medium.ttf"),
+                          ("Hebrew", "Noto Sans Hebrew", 600, "NotoSansHebrew-SemiBold.ttf")])
         self.assertEqual(evidence["digits"]["tabular"]["outcome"], {"advance": 12.953125})
         self.assertEqual(evidence["digits"]["default"]["outcome"],
                          {"error": {"kind": "unequalAdvances", "narrowest": 1, "widest": 4}})
@@ -56,13 +76,22 @@ class QuickshellLabelEvidenceTests(unittest.TestCase):
             (faces(("Regular", "Regular", "SemiBold")) + digits() + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
             (faces(("Regular", "Medium", "Bold")) + digits() + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
             (regular + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
+            (regular + digits() + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
+            (regular + script_faces(skip=(("Hebrew", 600),)) + digits() + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
+            (regular + script_faces() + script_faces() + digits() + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
+            (regular + script_faces(styles={**STYLES, 500: "Regular"}) + digits()
+             + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
+            (regular + script_faces(styles={**STYLES, 600: "Bold"}) + digits()
+             + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
+            (regular + script_faces(families={"Arabic": "DejaVu Sans"}) + digits()
+             + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
             (regular + digits(tabular=PROPORTIONAL) + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
             (regular + digits(default=TABULAR) + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
             (regular + digits(tabular=TABULAR[:9]) + "RESINA_LABEL_PASS 432 13 1.25\n", "", 0),
         ):
             with self.subTest(output=output, error=error, code=code):
                 with self.assertRaises(ValueError):
-                    check_log(subprocess.CompletedProcess([], code, output, error), 1.25, MASTERS)
+                    check_log(subprocess.CompletedProcess([], code, output, error), 1.25, MASTERS, SCRIPTS)
 
     def test_regular_only_registration_must_be_reported_as_substitution(self):
         regular = faces(("Regular", "Regular", "Regular")) + "RESINA_LABEL_FACES_PASS 1\n"

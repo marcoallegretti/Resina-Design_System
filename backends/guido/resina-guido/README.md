@@ -225,22 +225,30 @@ these constraints: its layout can shrink the text box to the longest line before
 drawing.
 
 The native label tests require `RESINA_LABEL_FONT_DIR` to name a directory that
-holds the Inter 4.0 static Regular, Medium and SemiBold masters pinned in
+holds the Inter 4.0 static Regular, Medium and SemiBold masters and the Noto Sans
+Arabic and Noto Sans Hebrew static masters pinned in
 [`tools/conformance_font.json`](../../../tools/conformance_font.json), and register
-all three before measurement and rendering. On Ubuntu 24.04 with `fonts-inter`,
-this is `/usr/share/fonts/opentype/inter`; elsewhere
+all nine before measurement and rendering;
 `python tools/conformance_font.py fetch --output DIR` provides them. Inter has no
-Arabic or Hebrew glyphs, so those labels shape with the system fallback face
-(DejaVu Sans in CI). The tests build the face database that GUIdo's text
-system builds: the system fonts, then the registered files. Every upright,
+Arabic or Hebrew glyphs. The pinned cosmic-text takes them from the families it
+names for those scripts, so Arabic and Hebrew labels shape with the pinned Noto
+masters at the authored weight, not with a system fallback face. The tests build
+the face database that GUIdo's text system builds: the system fonts, then the
+registered files. Every upright,
 normal-width Inter face in it at weight 400, 500 or 600, including system faces,
 must be byte-identical to that weight's pinned master at face index 0. Fontdb's
 CSS matching, which the pinned cosmic-text tries first for GUIdo text, must then
 resolve weights 400, 500 and 600 to faces identical to the three distinct
 masters. A visible Inter face that is not a pinned master fails; with only the
 Regular master and no system fonts, weight 500 resolves to Regular and the test
-reports the substitution. A saved capture records the resolved master's
-PostScript name, weight, file and Git blob.
+reports the substitution. The tests also shape each label as GUIdo shapes it and
+fail unless every drawing face is a pinned master at the requested weight with a
+glyph for each character, and unless every visible upright, normal-width Noto
+Sans Arabic or Noto Sans Hebrew face at an authored weight is byte-identical to
+its pinned master; without the pinned script masters the same Arabic text
+resolves to a system face. A saved capture records the resolved Inter master's
+PostScript name, weight, file and Git blob and, in `scriptFonts`, those of the
+Arabic or Hebrew master that drew the text.
 Actual GPU readback checks Latin, expanded German and Arabic labels plus the
 public 100/150/200% string-length matrix at three text scales and four device
 scales: 72 frames, each with 0.15 px tracking before text scaling and no ink a
@@ -546,6 +554,17 @@ reserved label slot and checked backdrop. A device pixel split by a slot edge
 that is off the device grid may hold at most the coverage of its share inside
 the slot; a pixel wholly outside holds none. Ink moved one device pixel past
 any slot edge is reported. Labels use nonzero tracking.
+
+The slot is the line's layout box, not its ink ([label layout](../../../spec/46-command-label-layout.md)
+reports advances and line heights, not glyph bounds). A line centers the ascent and
+descent of the face that draws it, and Noto Sans Arabic leaves 0.382 em under the
+baseline of a 1.4 line while its deepest glyph in the tested labels reaches 0.394 em.
+The bottom edge therefore allows ink to cross it by the amount the shaped glyphs of
+the label reach below the room the pinned masters' own metrics leave, which the test
+derives from the glyph extents; it is zero for the English labels and for any label
+whose glyphs stay inside. Every other edge keeps the exact check. Bounding Arabic ink
+overhang below the slot is tracked in
+[#292](https://github.com/marcoallegretti/Resina-Design_System/issues/292).
 Unrepresentable spacing, approximate measurements and invalid raster inputs fail
 before command publication.
 `RESINA_SLIDER_CAPTURE_DIR` saves the tested PPM frames.
@@ -582,7 +601,9 @@ context cannot be created; it never skips rendering checks.
 python -m pip install -r tools/requirements-schema.txt
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
-RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=/usr/share/fonts/opentype/inter cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
+RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=$CONFORMANCE_FONTS cargo test --manifest-path backends/guido/resina-guido/Cargo.toml --locked --features testing
 cargo clippy --manifest-path backends/guido/resina-guido/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
 

@@ -3,7 +3,7 @@
   "$id": "urn:resina:tool-schema:native-label-capture:0.1.0",
   "title": "Diagnostic native label readback evidence",
   "type": "object", "additionalProperties": false,
-  "required": ["schemaVersion", "kind", "purpose", "commit", "scenario", "semanticResult", "width", "height", "deviceScale", "textScale", "sampling", "font", "renderer", "runtime", "colorEncoding", "image"],
+  "required": ["schemaVersion", "kind", "purpose", "commit", "scenario", "semanticResult", "width", "height", "deviceScale", "textScale", "sampling", "font", "scriptFonts", "renderer", "runtime", "colorEncoding", "image"],
   "properties": {
     "schemaVersion": {"const": "0.1.0"}, "kind": {"const": "nativeLabel"}, "purpose": {"const": "diagnostic"},
     "commit": {"$ref": "#/$defs/blob"}, "scenario": {"$ref": "#/$defs/name"},
@@ -29,6 +29,27 @@
         {"properties": {"postScriptName": {"const": "Inter-Medium"}, "weight": {"const": 500}, "file": {"const": "Inter-Medium.otf"}}},
         {"properties": {"postScriptName": {"const": "Inter-SemiBold"}, "weight": {"const": 600}, "file": {"const": "Inter-SemiBold.otf"}}}
       ]
+    },
+    "scriptFonts": {
+      "type": "array", "maxItems": 2, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["family", "postScriptName", "weight", "file", "gitBlob"],
+        "properties": {
+          "family": {"enum": ["Noto Sans Arabic", "Noto Sans Hebrew"]},
+          "postScriptName": {"enum": ["NotoSansArabic-Regular", "NotoSansArabic-Medium", "NotoSansArabic-SemiBold", "NotoSansHebrew-Regular", "NotoSansHebrew-Medium", "NotoSansHebrew-SemiBold"]},
+          "weight": {"enum": [400, 500, 600]},
+          "file": {"enum": ["NotoSansArabic-Regular.ttf", "NotoSansArabic-Medium.ttf", "NotoSansArabic-SemiBold.ttf", "NotoSansHebrew-Regular.ttf", "NotoSansHebrew-Medium.ttf", "NotoSansHebrew-SemiBold.ttf"]},
+          "gitBlob": {"$ref": "#/$defs/blob"}
+        },
+        "oneOf": [
+          {"properties": {"family": {"const": "Noto Sans Arabic"}, "postScriptName": {"const": "NotoSansArabic-Regular"}, "weight": {"const": 400}, "file": {"const": "NotoSansArabic-Regular.ttf"}}},
+          {"properties": {"family": {"const": "Noto Sans Arabic"}, "postScriptName": {"const": "NotoSansArabic-Medium"}, "weight": {"const": 500}, "file": {"const": "NotoSansArabic-Medium.ttf"}}},
+          {"properties": {"family": {"const": "Noto Sans Arabic"}, "postScriptName": {"const": "NotoSansArabic-SemiBold"}, "weight": {"const": 600}, "file": {"const": "NotoSansArabic-SemiBold.ttf"}}},
+          {"properties": {"family": {"const": "Noto Sans Hebrew"}, "postScriptName": {"const": "NotoSansHebrew-Regular"}, "weight": {"const": 400}, "file": {"const": "NotoSansHebrew-Regular.ttf"}}},
+          {"properties": {"family": {"const": "Noto Sans Hebrew"}, "postScriptName": {"const": "NotoSansHebrew-Medium"}, "weight": {"const": 500}, "file": {"const": "NotoSansHebrew-Medium.ttf"}}},
+          {"properties": {"family": {"const": "Noto Sans Hebrew"}, "postScriptName": {"const": "NotoSansHebrew-SemiBold"}, "weight": {"const": 600}, "file": {"const": "NotoSansHebrew-SemiBold.ttf"}}}
+        ]
+      }
     },
     "renderer": {
       "type": "object", "additionalProperties": false, "required": ["name", "gitBlob", "gpu"],
