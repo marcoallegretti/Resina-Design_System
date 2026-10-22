@@ -313,7 +313,9 @@ pub(crate) fn resolve_bound_frost_body_readability(
     })
 }
 
-fn validate_surface_scope(binding: &BoundSurface) -> Result<(), FrostSurfaceReadabilityError> {
+pub(crate) fn validate_surface_scope(
+    binding: &BoundSurface,
+) -> Result<(), FrostSurfaceReadabilityError> {
     if binding.material_family() != MaterialFamily::Frost {
         return Err(FrostSurfaceReadabilityError::NonFrostSurface);
     }

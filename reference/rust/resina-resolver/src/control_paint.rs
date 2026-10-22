@@ -203,7 +203,7 @@ fn control_paint_input(input: SurfacePaintInput<'_>) -> ControlPaintInput<'_> {
     }
 }
 
-fn resolve_control_focus(
+pub(crate) fn resolve_control_focus(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
     snapshot: &HeadlessResolution,

@@ -27,6 +27,12 @@ pub struct BoundSurface {
 }
 
 impl BoundSurface {
+    pub(crate) fn with_opaque_frost_fallback(mut self) -> Self {
+        self.frost_representation = Some(FrostRepresentation::OpaqueDimensional);
+        self.frost_portable_body = Some(self.opaque_color_fallback.clone());
+        self
+    }
+
     pub(crate) fn apply_command_response(&mut self, response: resina_model::CommandResponse) {
         self.opaque_color_fallback = mix_body_color(&self.opaque_color_fallback, response);
         self.frost_portable_body = self

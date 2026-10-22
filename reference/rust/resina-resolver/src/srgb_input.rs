@@ -64,3 +64,34 @@ impl SrgbInput {
         resolve_srgb_fallback(&value).map_err(SrgbInputError::Color)
     }
 }
+
+pub(crate) struct RangeInput {
+    pub(crate) lower: SrgbInput,
+    pub(crate) upper: SrgbInput,
+}
+
+impl<'de> Deserialize<'de> for RangeInput {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Members {
+            lower: SrgbInput,
+            upper: SrgbInput,
+        }
+        struct RangeVisitor;
+        impl<'de> Visitor<'de> for RangeVisitor {
+            type Value = RangeInput;
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("an opaque sRGB range object")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+                let members = Members::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(RangeInput {
+                    lower: members.lower,
+                    upper: members.upper,
+                })
+            }
+        }
+        d.deserialize_map(RangeVisitor)
+    }
+}
