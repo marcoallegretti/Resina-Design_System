@@ -10,6 +10,45 @@ PAINT_SCALES = ["1", "1.25", "2", "1.3"]
 OUTPUT_SCALES = ["1.25:2", "2:1.25"]
 PAINT_CONDITION = "matrix.paint_scales != ''"
 OUTPUT_CONDITION = "matrix.output_scales != ''"
+EXPECTED_CHECKS = [
+    "check_qt_command_control_accessibility.py",
+    "check_qt_command_control_runtime.py",
+    "check_qt_command_keyboard_runtime.py",
+    "check_qt_command_label_runtime.py",
+    "check_qt_command_motion_runtime.py",
+    "check_qt_command_paint_runtime.py",
+    "check_qt_command_pointer_runtime.py",
+    "check_qt_command_runtime.py",
+    "check_qt_command_snapshot_runtime.py",
+    "check_qt_command_view_runtime.py",
+    "check_qt_controller_lifetime.py",
+    "check_qt_native_availability.py",
+    "check_qt_platform_appearance.py",
+    "check_qt_slider_accessibility_adapter.py",
+    "check_qt_surface_view_runtime.py",
+    "check_qt_toggle_control_runtime.py",
+    "check_qt_toggle_motion_runtime.py",
+    "check_qt_toggle_runtime.py",
+    "check_quickshell_clock_shell.py",
+    "check_quickshell_command_accessibility.py",
+    "check_quickshell_command_lifecycle.py",
+    "check_quickshell_command_motion.py",
+    "check_quickshell_command_motion_budget.py",
+    "check_quickshell_command_updates.py",
+    "check_quickshell_label_render_runtime.py",
+    "check_quickshell_label_runtime.py",
+    "check_quickshell_toggle_lifecycle.py",
+    "check_quickshell_toggle_updates.py",
+]
+STEP_TIMEOUTS = {
+    "command-lifecycle": 35,
+    "toggle-lifecycle": 15,
+    "frame-timing": 20,
+}
+OUTPUT_SCALES_TIMEOUT = 30
+FRAME_TIMING_RUNS = "for run in 1:1024x600: 2:1024x600: 6:3072x1800:--require-gap; do"
+LINT_COMMANDS = ["cargo fmt", "cargo test", "cargo clippy"]
+CHECK_INVOCATION = re.compile(r"tools/(check_\w+\.py)")
 GROUP_CONDITION = re.compile(r"^contains\(matrix\.groups, '([a-z-]+)'\)$")
 
 
@@ -93,6 +132,30 @@ class QtRuntimeShardTests(unittest.TestCase):
             'test "$SHARDS_RESULT" = success', result["steps"][0]["run"]
         )
         self.assertEqual("${{ needs.qt-runtime.result }}", result["steps"][0]["env"]["SHARDS_RESULT"])
+
+    def step_for_group(self, group):
+        return next(step for step in self.job["steps"] if step.get("if") == f"contains(matrix.groups, '{group}')")
+
+    def test_the_set_of_check_invocations_is_pinned(self):
+        invoked = {name for step in self.job["steps"] for name in CHECK_INVOCATION.findall(step.get("run", ""))}
+        self.assertEqual(sorted(EXPECTED_CHECKS), sorted(invoked))
+
+    def test_lint_step_runs_format_test_and_clippy(self):
+        run = self.step_for_group("lint")["run"]
+        for command in LINT_COMMANDS:
+            self.assertIn(command, run)
+        self.assertIn("-D warnings", run)
+
+    def test_frame_timing_keeps_its_runs_and_lives_in_one_shard(self):
+        self.assertIn(FRAME_TIMING_RUNS, self.step_for_group("frame-timing")["run"])
+        owners = [shard["shard"] for shard in self.shards if "frame-timing" in shard["groups"]]
+        self.assertEqual(["output-scales-up"], owners)
+
+    def test_long_steps_keep_their_timeouts(self):
+        for group, minutes in STEP_TIMEOUTS.items():
+            self.assertEqual(minutes, self.step_for_group(group)["timeout-minutes"], group)
+        step = next(step for step in self.job["steps"] if step.get("if") == OUTPUT_CONDITION)
+        self.assertEqual(OUTPUT_SCALES_TIMEOUT, step["timeout-minutes"])
 
 
 if __name__ == "__main__":
