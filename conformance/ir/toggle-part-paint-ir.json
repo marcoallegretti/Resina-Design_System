@@ -1,0 +1,1284 @@
+{
+  "track": {
+    "schemaVersion": "0.2.0",
+    "part": "track",
+    "checked": true,
+    "phase": "hover",
+    "response": {
+      "bodyMix": -0.08,
+      "depthScale": 1.75
+    },
+    "paint": {
+      "schemaVersion": "0.1.0",
+      "body": {
+        "schemaVersion": "0.1.0",
+        "representation": "opaque",
+        "materialRole": "control.interactive",
+        "colorRole": "selection",
+        "materialFamily": "elastomer",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "hover",
+            "focused",
+            "checked"
+          ]
+        },
+        "face": {
+          "surface": {
+            "outline": {
+              "schemaVersion": "0.1.0",
+              "curvature": "circular",
+              "size": {
+                "width": 20.0,
+                "height": 12.0
+              },
+              "corners": {
+                "topLeft": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "topRight": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "bottomRight": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "bottomLeft": {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              },
+              "contentBounds": {
+                "x": 1.0,
+                "y": 1.0,
+                "width": 18.0,
+                "height": 10.0
+              }
+            },
+            "profile": {
+              "kind": "recessed",
+              "bodyThickness": 2.0,
+              "amplitude": 0.75,
+              "shoulderWidth": 1.5
+            },
+            "contentBounds": {
+              "x": 1.5,
+              "y": 1.5,
+              "width": 17.0,
+              "height": 9.0
+            }
+          },
+          "pigment": {
+            "schemaVersion": "0.1.0",
+            "materialFamily": "elastomer",
+            "profile": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "body": {
+              "colorSpace": "srgb",
+              "components": [
+                0.322,
+                0.5980000000000001,
+                0.782
+              ],
+              "alpha": 1.0
+            },
+            "side": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2415,
+                0.44850000000000007,
+                0.5865
+              ],
+              "alpha": 1.0
+            },
+            "highlight": {
+              "colorSpace": "srgb",
+              "components": [
+                0.41692,
+                0.6542800000000001,
+                0.81252
+              ],
+              "alpha": 1.0
+            }
+          },
+          "light": {
+            "keyDirection": {
+              "x": 0.0,
+              "y": -1.0
+            },
+            "ambient": 0.25,
+            "interaction": {
+              "direction": {
+                "x": 0.8944271909999159,
+                "y": 0.4472135954999579
+              },
+              "strength": 0.5
+            }
+          },
+          "edge": {
+            "schemaVersion": "0.1.0",
+            "colorRole": "outline",
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "alpha": 1.0
+            },
+            "contrastRatio": 21.0,
+            "fallbackApplied": false
+          },
+          "edgeWidth": 1.0,
+          "foreground": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "alpha": 1.0
+          },
+          "contentContrastRatio": 6.711446999259461,
+          "contentBounds": {
+            "x": 1.5,
+            "y": 1.5,
+            "width": 17.0,
+            "height": 9.0
+          },
+          "colorRanges": [
+            {
+              "lower": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.32199999999999906,
+                  0.5979999999999991,
+                  0.781999999999999
+                ],
+                "alpha": 1.0
+              },
+              "upper": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.41692000000000096,
+                  0.6542800000000011,
+                  0.812520000000001
+                ],
+                "alpha": 1.0
+              }
+            },
+            {
+              "lower": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.24149999999999908,
+                  0.4484999999999991,
+                  0.586499999999999
+                ],
+                "alpha": 1.0
+              },
+              "upper": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.32200000000000095,
+                  0.5980000000000011,
+                  0.782000000000001
+                ],
+                "alpha": 1.0
+              }
+            },
+            {
+              "lower": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "alpha": 1.0
+              },
+              "upper": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "alpha": 1.0
+              }
+            }
+          ]
+        },
+        "lighting": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 0.0,
+            "y": -1.0
+          },
+          "sideOffset": {
+            "x": -0.0,
+            "y": 3.5
+          },
+          "edgeHighlightWeights": {
+            "top": 1.0,
+            "right": 0.0,
+            "bottom": 0.0,
+            "left": -0.0
+          },
+          "normalHighlightWeights": []
+        },
+        "depth": 3.5,
+        "geometry": {
+          "silhouette": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": -0.0,
+              "y": 0.0,
+              "width": 20.0,
+              "height": 15.5
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "to": {
+                  "x": 20.0,
+                  "y": 0.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 20.0,
+                  "y": 0.0
+                },
+                "to": {
+                  "x": 20.0,
+                  "y": 12.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 20.0,
+                  "y": 12.0
+                },
+                "to": {
+                  "x": 20.0,
+                  "y": 15.5
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 20.0,
+                  "y": 15.5
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 15.5
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 15.5
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 12.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 12.0
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              }
+            ]
+          },
+          "edgeInterior": {
+            "offset": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "contour": {
+              "schemaVersion": "0.1.0",
+              "bounds": {
+                "x": -0.0,
+                "y": 0.0,
+                "width": 18.0,
+                "height": 13.5
+              },
+              "segments": [
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "to": {
+                    "x": 18.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 18.0,
+                    "y": 0.0
+                  },
+                  "to": {
+                    "x": 18.0,
+                    "y": 10.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 18.0,
+                    "y": 10.0
+                  },
+                  "to": {
+                    "x": 18.0,
+                    "y": 13.5
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 18.0,
+                    "y": 13.5
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 13.5
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 13.5
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 10.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 10.0
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 0.0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "foregroundRole": "content.primary",
+        "contentFallbackApplied": false
+      },
+      "focus": {
+        "schemaVersion": "0.1.0",
+        "indicator": {
+          "schemaVersion": "0.1.0",
+          "binding": {
+            "schemaVersion": "0.4.0",
+            "materialRole": "control.interactive",
+            "colorRole": "selection",
+            "materialFamily": "elastomer",
+            "sourceColor": {
+              "alpha": 1,
+              "colorSpace": "srgb",
+              "components": [
+                0.35,
+                0.65,
+                0.85
+              ]
+            },
+            "colorFallback": {
+              "colorSpace": "srgb",
+              "components": [
+                0.35,
+                0.65,
+                0.85
+              ],
+              "alpha": 1.0
+            },
+            "opaqueColorFallback": {
+              "colorSpace": "srgb",
+              "components": [
+                0.35,
+                0.65,
+                0.85
+              ],
+              "alpha": 1.0
+            },
+            "form": {
+              "schemaVersion": "0.1.0",
+              "shape": "structural",
+              "elevation": "raised"
+            },
+            "states": {
+              "schemaVersion": "0.1.0",
+              "states": [
+                "hover",
+                "focused",
+                "checked"
+              ]
+            },
+            "treatmentStack": {
+              "schemaVersion": "0.1.0",
+              "treatments": [
+                "none"
+              ]
+            }
+          },
+          "colorRole": "focus",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "alpha": 1.0
+          },
+          "contrastRatio": 21.0,
+          "fallbackApplied": false,
+          "strokeWidth": 2.0,
+          "gap": 2.0
+        },
+        "geometry": {
+          "silhouette": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": -0.0,
+              "y": 0.0,
+              "width": 20.0,
+              "height": 15.5
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "to": {
+                  "x": 20.0,
+                  "y": 0.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 20.0,
+                  "y": 0.0
+                },
+                "to": {
+                  "x": 20.0,
+                  "y": 12.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 20.0,
+                  "y": 12.0
+                },
+                "to": {
+                  "x": 20.0,
+                  "y": 15.5
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 20.0,
+                  "y": 15.5
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 15.5
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 15.5
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 12.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 12.0
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              }
+            ]
+          },
+          "inner": {
+            "offset": {
+              "x": -2.0,
+              "y": -2.0
+            },
+            "contour": {
+              "schemaVersion": "0.1.0",
+              "bounds": {
+                "x": -0.0,
+                "y": 0.0,
+                "width": 24.0,
+                "height": 19.5
+              },
+              "segments": [
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 2.0,
+                    "y": 2.0
+                  },
+                  "radii": {
+                    "x": 2.0,
+                    "y": 2.0
+                  },
+                  "start": {
+                    "x": -1.0,
+                    "y": 0.0
+                  },
+                  "end": {
+                    "x": 0.0,
+                    "y": -1.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 2.0,
+                    "y": 0.0
+                  },
+                  "to": {
+                    "x": 22.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 22.0,
+                    "y": 2.0
+                  },
+                  "radii": {
+                    "x": 2.0,
+                    "y": 2.0
+                  },
+                  "start": {
+                    "x": 0.0,
+                    "y": -1.0
+                  },
+                  "end": {
+                    "x": 1.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 24.0,
+                    "y": 2.0
+                  },
+                  "to": {
+                    "x": 24.0,
+                    "y": 14.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 24.0,
+                    "y": 14.0
+                  },
+                  "to": {
+                    "x": 24.0,
+                    "y": 17.5
+                  }
+                },
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 22.0,
+                    "y": 17.5
+                  },
+                  "radii": {
+                    "x": 2.0,
+                    "y": 2.0
+                  },
+                  "start": {
+                    "x": 1.0,
+                    "y": 0.0
+                  },
+                  "end": {
+                    "x": 0.0,
+                    "y": 1.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 22.0,
+                    "y": 19.5
+                  },
+                  "to": {
+                    "x": 2.0,
+                    "y": 19.5
+                  }
+                },
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 2.0,
+                    "y": 17.5
+                  },
+                  "radii": {
+                    "x": 2.0,
+                    "y": 2.0
+                  },
+                  "start": {
+                    "x": 0.0,
+                    "y": 1.0
+                  },
+                  "end": {
+                    "x": -1.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 17.5
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 14.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 14.0
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 2.0
+                  }
+                }
+              ]
+            }
+          },
+          "outer": {
+            "offset": {
+              "x": -4.0,
+              "y": -4.0
+            },
+            "contour": {
+              "schemaVersion": "0.1.0",
+              "bounds": {
+                "x": -0.0,
+                "y": 0.0,
+                "width": 28.0,
+                "height": 23.5
+              },
+              "segments": [
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 4.0,
+                    "y": 4.0
+                  },
+                  "radii": {
+                    "x": 4.0,
+                    "y": 4.0
+                  },
+                  "start": {
+                    "x": -1.0,
+                    "y": 0.0
+                  },
+                  "end": {
+                    "x": 0.0,
+                    "y": -1.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 4.0,
+                    "y": 0.0
+                  },
+                  "to": {
+                    "x": 24.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 24.0,
+                    "y": 4.0
+                  },
+                  "radii": {
+                    "x": 4.0,
+                    "y": 4.0
+                  },
+                  "start": {
+                    "x": 0.0,
+                    "y": -1.0
+                  },
+                  "end": {
+                    "x": 1.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 28.0,
+                    "y": 4.0
+                  },
+                  "to": {
+                    "x": 28.0,
+                    "y": 16.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 28.0,
+                    "y": 16.0
+                  },
+                  "to": {
+                    "x": 28.0,
+                    "y": 19.5
+                  }
+                },
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 24.0,
+                    "y": 19.5
+                  },
+                  "radii": {
+                    "x": 4.0,
+                    "y": 4.0
+                  },
+                  "start": {
+                    "x": 1.0,
+                    "y": 0.0
+                  },
+                  "end": {
+                    "x": 0.0,
+                    "y": 1.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 24.0,
+                    "y": 23.5
+                  },
+                  "to": {
+                    "x": 4.0,
+                    "y": 23.5
+                  }
+                },
+                {
+                  "kind": "arc",
+                  "center": {
+                    "x": 4.0,
+                    "y": 19.5
+                  },
+                  "radii": {
+                    "x": 4.0,
+                    "y": 4.0
+                  },
+                  "start": {
+                    "x": 0.0,
+                    "y": 1.0
+                  },
+                  "end": {
+                    "x": -1.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 19.5
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 16.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 16.0
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 4.0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "thumb": {
+    "schemaVersion": "0.2.0",
+    "part": "thumb",
+    "checked": true,
+    "phase": "pressed",
+    "response": {
+      "bodyMix": -0.08,
+      "depthScale": 0.5
+    },
+    "paint": {
+      "schemaVersion": "0.1.0",
+      "body": {
+        "schemaVersion": "0.1.0",
+        "representation": "opaque",
+        "materialRole": "control.interactive",
+        "colorRole": "selection",
+        "materialFamily": "elastomer",
+        "form": {
+          "schemaVersion": "0.1.0",
+          "shape": "structural",
+          "elevation": "raised"
+        },
+        "states": {
+          "schemaVersion": "0.1.0",
+          "states": [
+            "pressed",
+            "checked"
+          ]
+        },
+        "face": {
+          "surface": {
+            "outline": {
+              "schemaVersion": "0.1.0",
+              "curvature": "circular",
+              "size": {
+                "width": 16.0,
+                "height": 16.0
+              },
+              "corners": {
+                "topLeft": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "topRight": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "bottomRight": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "bottomLeft": {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              },
+              "contentBounds": {
+                "x": 1.0,
+                "y": 1.0,
+                "width": 14.0,
+                "height": 14.0
+              }
+            },
+            "profile": {
+              "kind": "convex",
+              "bodyThickness": 2.0,
+              "amplitude": 0.5,
+              "shoulderWidth": 1.0
+            },
+            "contentBounds": {
+              "x": 1.0,
+              "y": 1.0,
+              "width": 14.0,
+              "height": 14.0
+            }
+          },
+          "pigment": {
+            "schemaVersion": "0.1.0",
+            "materialFamily": "elastomer",
+            "profile": {
+              "sideShade": 0.25,
+              "highlightLift": 0.14
+            },
+            "body": {
+              "colorSpace": "srgb",
+              "components": [
+                0.322,
+                0.5980000000000001,
+                0.782
+              ],
+              "alpha": 1.0
+            },
+            "side": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2415,
+                0.44850000000000007,
+                0.5865
+              ],
+              "alpha": 1.0
+            },
+            "highlight": {
+              "colorSpace": "srgb",
+              "components": [
+                0.41692,
+                0.6542800000000001,
+                0.81252
+              ],
+              "alpha": 1.0
+            }
+          },
+          "light": {
+            "keyDirection": {
+              "x": 0.0,
+              "y": -1.0
+            },
+            "ambient": 0.25,
+            "interaction": {
+              "direction": {
+                "x": 0.8944271909999159,
+                "y": 0.4472135954999579
+              },
+              "strength": 0.5
+            }
+          },
+          "edge": {
+            "schemaVersion": "0.1.0",
+            "colorRole": "outline",
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "alpha": 1.0
+            },
+            "contrastRatio": 21.0,
+            "fallbackApplied": false
+          },
+          "edgeWidth": 1.0,
+          "foreground": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "alpha": 1.0
+          },
+          "contentContrastRatio": 6.711446999259461,
+          "contentBounds": {
+            "x": 1.0,
+            "y": 1.0,
+            "width": 14.0,
+            "height": 14.0
+          },
+          "colorRanges": [
+            {
+              "lower": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.32199999999999906,
+                  0.5979999999999991,
+                  0.781999999999999
+                ],
+                "alpha": 1.0
+              },
+              "upper": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.41692000000000096,
+                  0.6542800000000011,
+                  0.812520000000001
+                ],
+                "alpha": 1.0
+              }
+            },
+            {
+              "lower": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.24149999999999908,
+                  0.4484999999999991,
+                  0.586499999999999
+                ],
+                "alpha": 1.0
+              },
+              "upper": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.32200000000000095,
+                  0.5980000000000011,
+                  0.782000000000001
+                ],
+                "alpha": 1.0
+              }
+            },
+            {
+              "lower": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "alpha": 1.0
+              },
+              "upper": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "alpha": 1.0
+              }
+            }
+          ]
+        },
+        "lighting": {
+          "schemaVersion": "0.1.0",
+          "direction": {
+            "x": 0.0,
+            "y": -1.0
+          },
+          "sideOffset": {
+            "x": -0.0,
+            "y": 1.0
+          },
+          "edgeHighlightWeights": {
+            "top": 1.0,
+            "right": 0.0,
+            "bottom": 0.0,
+            "left": -0.0
+          },
+          "normalHighlightWeights": []
+        },
+        "depth": 1.0,
+        "geometry": {
+          "silhouette": {
+            "schemaVersion": "0.1.0",
+            "bounds": {
+              "x": -0.0,
+              "y": 0.0,
+              "width": 16.0,
+              "height": 17.0
+            },
+            "segments": [
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 0.0
+                },
+                "to": {
+                  "x": 16.0,
+                  "y": 0.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 16.0,
+                  "y": 0.0
+                },
+                "to": {
+                  "x": 16.0,
+                  "y": 16.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 16.0,
+                  "y": 16.0
+                },
+                "to": {
+                  "x": 16.0,
+                  "y": 17.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 16.0,
+                  "y": 17.0
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 17.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 17.0
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 16.0
+                }
+              },
+              {
+                "kind": "line",
+                "from": {
+                  "x": 0.0,
+                  "y": 16.0
+                },
+                "to": {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              }
+            ]
+          },
+          "edgeInterior": {
+            "offset": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "contour": {
+              "schemaVersion": "0.1.0",
+              "bounds": {
+                "x": -0.0,
+                "y": 0.0,
+                "width": 14.0,
+                "height": 15.0
+              },
+              "segments": [
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "to": {
+                    "x": 14.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 14.0,
+                    "y": 0.0
+                  },
+                  "to": {
+                    "x": 14.0,
+                    "y": 14.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 14.0,
+                    "y": 14.0
+                  },
+                  "to": {
+                    "x": 14.0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 14.0,
+                    "y": 15.0
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 15.0
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 14.0
+                  }
+                },
+                {
+                  "kind": "line",
+                  "from": {
+                    "x": 0.0,
+                    "y": 14.0
+                  },
+                  "to": {
+                    "x": 0.0,
+                    "y": 0.0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "foregroundRole": "content.primary",
+        "contentFallbackApplied": false
+      }
+    }
+  }
+}

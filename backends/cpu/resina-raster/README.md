@@ -80,10 +80,15 @@ Current point sampling can be expensive even for a small surface. Prepare reusab
 
 With at least three samples per axis, `render_lit_control_paint` paints a pixel without sampling only where its sample box is proven uniform: inside the content bounds or the certified flat relief plateau it takes the body color; separated from the silhouette by more than the arithmetic tolerance, beyond its bounds, a supporting line or a corner arc's circle within that arc's sector, it is clear outside the focus ring and its hole and takes the ring color between the ring's contours. Every other pixel evaluates the lit body sampler, so the image is byte-identical to point sampling. `render_lit_control_paint_reusing` also takes a `ReliefReuse`, which keeps the face's relief and edge-interior terms, relief samples and flat-box certifications between renders of the same face, such as motion frames, keyed by their exact bits; a kept term is the one a new evaluation returns.
 
-`resina-toggle-part-motion-raster` accepts the existing sampled Toggle part request
-from specification 57 and the same explicit viewport/sampling arguments as the
-other paint binaries. It resolves the guarded sample through the reference, then
-renders its complete body/navigation paint with the shared sampler. Success emits
+`resina-toggle-part-raster` consumes a [Toggle part paint request](../../../schemas/toggle-part-paint-request.schema.json)
+and `resina-toggle-part-motion-raster` the existing sampled Toggle part request
+from specification 57, with the same explicit viewport/sampling arguments as the
+other paint binaries. Both resolve the guarded result through the reference, then
+render its complete [lit control body](../../../spec/88-lit-control-body.md) and
+track-owned navigation paint with `render_lit_control_paint`.
+`python tools/check_lit_body_raster_backend.py --component toggle -- <raster-command>`
+compares every pixel of the track and thumb scenes at the same scales and sampling
+counts against independent arithmetic. Success emits
 one RGBA8 sRGB PNG; invalid source, placement or resource limits emit no image.
 It requires the `png` feature. This supplies the native Toggle frame oracle;
 it does not schedule frames, place a component label, choose motion defaults or

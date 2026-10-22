@@ -70,7 +70,7 @@ perceptual convention, not calibrated reflectance or a three-dimensional light.
 [Bounded material light](../spec/85-bounded-material-light.md) adds optional
 ambient and interaction response to that key light, and
 [material-lit relief paint](../spec/86-material-relief-paint.md) applies it to a
-relief face. Command bodies are [lit control bodies](../spec/88-lit-control-body.md):
+relief face. Command bodies and Toggle parts are [lit control bodies](../spec/88-lit-control-body.md):
 the lit relief face projected with the side plane and guarded edge, with
 interaction light admitted only while hovered or pressed. Light never replaces a
 state cue, and the reserved content stays the exact body colour.

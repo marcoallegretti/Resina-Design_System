@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:translucent-frost-ir:0.1.0",
+  "title": "Resina Translucent Frost Surface IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "frostRepresentation", "appearance"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "frostRepresentation": {
+      "enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented", "opaqueDimensional"]
+    },
+    "appearance": {"enum": ["translucent", "opaque"]},
+    "body": {"$ref": "#/$defs/body"},
+    "focus": {"$ref": "urn:resina:schema:focus-indicator-ir:0.1.0"},
+    "fallbackReason": {"enum": ["selection", "legibility"]},
+    "paint": {"$ref": "urn:resina:schema:surface-paint-ir:0.1.0"}
+  },
+  "oneOf": [
+    {
+      "required": ["body"],
+      "not": {"anyOf": [{"required": ["fallbackReason"]}, {"required": ["paint"]}]},
+      "properties": {
+        "appearance": {"const": "translucent"},
+        "frostRepresentation": {"enum": ["shapedBackdrop", "regularBackdrop", "translucentPigmented"]}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "body": {"properties": {"states": {"properties": {"states": {"contains": {"const": "focused"}}}}}}
+            }
+          },
+          "then": {"required": ["focus"]},
+          "else": {"not": {"required": ["focus"]}}
+        },
+        {
+          "if": {"properties": {"frostRepresentation": {"const": "shapedBackdrop"}}},
+          "then": {"properties": {"focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "shapedBackdrop"}
+          }}}}}}}}
+        },
+        {
+          "if": {"properties": {"frostRepresentation": {"const": "regularBackdrop"}}},
+          "then": {"properties": {"focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "regularBackdrop"}
+          }}}}}}}}
+        },
+        {
+          "if": {"properties": {"frostRepresentation": {"const": "translucentPigmented"}}},
+          "then": {"properties": {"focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "translucentPigmented"}
+          }}}}}}}}
+        },
+        {
+          "if": {"properties": {"frostRepresentation": {"const": "translucentPigmented"}}},
+          "then": {"properties": {"body": {"not": {"required": ["diffusion"]}}}},
+          "else": {"properties": {"body": {"required": ["diffusion"]}}}
+        }
+      ]
+    },
+    {
+      "required": ["fallbackReason", "paint"],
+      "not": {"anyOf": [{"required": ["body"]}, {"required": ["focus"]}]},
+      "properties": {
+        "appearance": {"const": "opaque"},
+        "frostRepresentation": {"const": "opaqueDimensional"},
+        "paint": {"properties": {
+          "body": {"properties": {
+            "materialFamily": {"const": "frost"},
+            "frostRepresentation": {"const": "opaqueDimensional"}
+          }},
+          "focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "opaqueDimensional"}
+          }}}}}}
+        }}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"fallbackReason": {"const": "legibility"}}},
+          "then": {"properties": {"paint": {"properties": {"body": {"properties": {
+            "contentFallbackApplied": {"const": true}
+          }}}}}},
+          "else": {"properties": {"paint": {"properties": {"body": {"properties": {
+            "contentFallbackApplied": {"const": false}
+          }}}}}}
+        }
+      ]
+    }
+  ],
+  "$defs": {
+    "translucentColor": {
+      "allOf": [
+        {"$ref": "urn:resina:schema:srgb-fallback:0.1.0"},
+        {"properties": {"alpha": {"exclusiveMinimum": 0, "exclusiveMaximum": 1}}}
+      ]
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "materialRole", "colorRole", "materialFamily", "form", "states", "geometry",
+        "pigment", "lighting", "edgeWidth", "highlightWidth", "edge", "foregroundRole",
+        "foreground", "backdrop", "contentContrastRatio"
+      ],
+      "properties": {
+        "materialRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/materialRole"},
+        "colorRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+        "materialFamily": {"const": "frost"},
+        "form": {"$ref": "urn:resina:schema:surface-form:0.1.0"},
+        "states": {"enum": [
+          {"schemaVersion": "0.1.0", "states": ["rest"]},
+          {"schemaVersion": "0.1.0", "states": ["focused"]},
+          {"schemaVersion": "0.1.0", "states": ["rest", "focused"]}
+        ]},
+        "diffusion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["radius"],
+          "properties": {"radius": {"type": "number", "exclusiveMinimum": 0, "maximum": 65536}}
+        },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["front", "silhouette", "edgeInterior", "highlightOuter", "content"],
+          "properties": {
+            "front": {"$ref": "urn:resina:schema:filled-contour:0.1.0"},
+            "silhouette": {"$ref": "urn:resina:schema:filled-contour:0.1.0"},
+            "edgeInterior": {"$ref": "urn:resina:schema:placed-contour:0.1.0"},
+            "highlightOuter": {"$ref": "urn:resina:schema:placed-contour:0.1.0"},
+            "content": {"$ref": "urn:resina:schema:placed-contour:0.1.0"}
+          }
+        },
+        "pigment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schemaVersion", "materialFamily", "profile", "body", "side", "highlight"],
+          "properties": {
+            "schemaVersion": {"const": "0.1.0"},
+            "materialFamily": {"const": "frost"},
+            "profile": {"$ref": "urn:resina:schema:opaque-pigment-profiles:0.1.0#/$defs/profile"},
+            "body": {"$ref": "#/$defs/translucentColor"},
+            "side": {"$ref": "#/$defs/translucentColor"},
+            "highlight": {"$ref": "#/$defs/translucentColor"}
+          }
+        },
+        "lighting": {
+          "allOf": [
+            {"$ref": "urn:resina:schema:key-light-result:0.1.0"},
+            {"properties": {"normalHighlightWeights": {"maxItems": 0}}}
+          ]
+        },
+        "edgeWidth": {"type": "number", "exclusiveMinimum": 0},
+        "highlightWidth": {"type": "number", "minimum": 0},
+        "edge": {"$ref": "urn:resina:schema:edge-contrast-result:0.1.0"},
+        "foregroundRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+        "foreground": {"$ref": "urn:resina:schema:opaque-srgb-fallback:0.1.0"},
+        "backdrop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["range", "compositedBody"],
+          "properties": {
+            "range": {"$ref": "urn:resina:schema:opaque-srgb-range:0.1.0"},
+            "compositedBody": {"$ref": "urn:resina:schema:opaque-srgb-range:0.1.0"}
+          }
+        },
+        "contentContrastRatio": {"type": "number", "minimum": 1, "maximum": 21}
+      }
+    }
+  }
+}

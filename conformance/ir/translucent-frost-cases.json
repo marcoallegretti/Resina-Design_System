@@ -1,0 +1,1232 @@
+[
+  {
+    "name": "shaped backdrop over a bright interval keeps its tinted body",
+    "requestChanges": [],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "regular backdrop without the shaped capability",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "regularBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "regular backdrop below full quality",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "balanced"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "regularBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "transparency without blur keeps a pigmented body",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "translucentPigmented",
+    "expectedFocus": false
+  },
+  {
+    "name": "transparency without a backdrop effect keeps a pigmented body",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "translucentPigmented",
+    "expectedFocus": false
+  },
+  {
+    "name": "translucent surfaces alone keep a pigmented body",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "translucentPigmented",
+    "expectedFocus": false
+  },
+  {
+    "name": "economy quality keeps a pigmented body despite blur",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/qualityPolicy",
+        "value": "economy"
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "translucentPigmented",
+    "expectedFocus": false
+  },
+  {
+    "name": "reduced transparency selects the opaque body",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "selection",
+    "expectedFocus": false
+  },
+  {
+    "name": "high contrast selects the opaque body",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/accessibilityPreferences/highContrast",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "selection",
+    "expectedFocus": false
+  },
+  {
+    "name": "unavailable translucent surfaces select the opaque body",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "selection",
+    "expectedFocus": false
+  },
+  {
+    "name": "a zero capability renderer selects the opaque body",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/rendererCapabilities/translucentSurfaces",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropEffect",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/backdropBlur",
+        "value": false
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "selection",
+    "expectedFocus": false
+  },
+  {
+    "name": "reduced transparency over a dark interval reports the selection",
+    "requestChanges": [
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": true
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "selection",
+    "expectedFocus": false
+  },
+  {
+    "name": "a dark interval forces the opaque body through legibility",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "legibility",
+    "expectedFocus": false
+  },
+  {
+    "name": "a black to white interval cannot certify content",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "legibility",
+    "expectedFocus": false
+  },
+  {
+    "name": "a bright busy interval keeps translucency",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.7,
+              0.7,
+              0.7
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "a threshold just below the certified bound keeps translucency",
+    "requestChanges": [
+      {
+        "path": "/minimumContentContrast",
+        "value": 15.41419346163
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "a threshold just above the certified bound falls back",
+    "requestChanges": [
+      {
+        "path": "/minimumContentContrast",
+        "value": 15.4141934617
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "legibility",
+    "expectedFocus": false
+  },
+  {
+    "name": "diffusion radius is authored intent",
+    "requestChanges": [
+      {
+        "path": "/diffusion/radius",
+        "value": 24
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "several adjacent regions select one edge color",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.85,
+                0.85,
+                0.85
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            }
+          },
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.45,
+                0.45,
+                0.45
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.55,
+                0.55,
+                0.55
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "focused translucent surface keeps its navigation ring",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": true
+  },
+  {
+    "name": "rest and focused keep canonical order",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "rest",
+          "focused"
+        ]
+      },
+      {
+        "path": "/theme/environment/rendererCapabilities/shapedBackdrop",
+        "value": false
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "regularBackdrop",
+    "expectedFocus": true
+  },
+  {
+    "name": "focus falls back to the strong outline over a mid-tone surround",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      },
+      {
+        "path": "/surroundingRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.58,
+                0.58,
+                0.58
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.62,
+                0.62,
+                0.62
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": true
+  },
+  {
+    "name": "focused opaque selection keeps its navigation ring",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      },
+      {
+        "path": "/theme/environment/accessibilityPreferences/reducedTransparency",
+        "value": true
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "selection",
+    "expectedFocus": true
+  },
+  {
+    "name": "focused legibility fallback keeps its navigation ring",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "opaque",
+    "expectedRepresentation": "opaqueDimensional",
+    "expectedFallbackReason": "legibility",
+    "expectedFocus": true
+  },
+  {
+    "name": "inverted backdrop channel",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9,
+              0.5,
+              0.5
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8,
+              0.6,
+              0.6
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "lower exceeds upper"
+  },
+  {
+    "name": "missing backdrop",
+    "requestChanges": [],
+    "omitMembers": [
+      "/backdrop"
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "null backdrop",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": null
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "translucent backdrop bound",
+    "requestChanges": [
+      {
+        "path": "/backdrop/lower/alpha",
+        "value": 0.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "opaque"
+  },
+  {
+    "name": "positional backdrop range",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": [
+          {
+            "colorSpace": "srgb",
+            "components": [
+              0.85,
+              0.85,
+              0.85
+            ],
+            "alpha": 1
+          },
+          {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "unknown backdrop member",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.85,
+              0.85,
+              0.85
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          },
+          "blur": 4
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "wide gamut backdrop bound",
+    "requestChanges": [
+      {
+        "path": "/backdrop/lower",
+        "value": {
+          "colorSpace": "display-p3",
+          "components": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "alpha": 1
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "sRGB"
+  },
+  {
+    "name": "empty adjacent ranges",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must not be empty"
+  },
+  {
+    "name": "empty surrounding ranges",
+    "requestChanges": [
+      {
+        "path": "/surroundingRanges",
+        "value": []
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "must not be empty"
+  },
+  {
+    "name": "focused surface without surrounding ranges",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      }
+    ],
+    "omitMembers": [
+      "/surroundingRanges"
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "requires surrounding ranges"
+  },
+  {
+    "name": "zero diffusion radius",
+    "requestChanges": [
+      {
+        "path": "/diffusion/radius",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "positive"
+  },
+  {
+    "name": "negative diffusion radius",
+    "requestChanges": [
+      {
+        "path": "/diffusion/radius",
+        "value": -4
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "positive"
+  },
+  {
+    "name": "textual diffusion radius",
+    "requestChanges": [
+      {
+        "path": "/diffusion/radius",
+        "value": "12"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "missing diffusion",
+    "requestChanges": [],
+    "omitMembers": [
+      "/diffusion"
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "missing field"
+  },
+  {
+    "name": "unknown shaping member",
+    "requestChanges": [
+      {
+        "path": "/diffusion",
+        "value": {
+          "radius": 12,
+          "shaped": true
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "unknown field"
+  },
+  {
+    "name": "positional diffusion",
+    "requestChanges": [
+      {
+        "path": "/diffusion",
+        "value": [
+          12
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid type"
+  },
+  {
+    "name": "active treatment",
+    "requestChanges": [
+      {
+        "path": "/surface/treatmentStack/treatments",
+        "value": [
+          "lens"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "treatment must be none"
+  },
+  {
+    "name": "hover state",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "hover"
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "supports only rest and focused"
+  },
+  {
+    "name": "non Frost material",
+    "requestChanges": [
+      {
+        "path": "/surface/materialRole",
+        "value": "surface.base"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "must be Frost"
+  },
+  {
+    "name": "translucent foreground role",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "surface.chrome"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "opaque color"
+  },
+  {
+    "name": "content threshold below one",
+    "requestChanges": [
+      {
+        "path": "/minimumContentContrast",
+        "value": 0.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "[1, 21]"
+  },
+  {
+    "name": "edge threshold above twenty one",
+    "requestChanges": [
+      {
+        "path": "/minimumEdgeContrast",
+        "value": 30
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "[1, 21]"
+  },
+  {
+    "name": "unreachable content threshold",
+    "requestChanges": [
+      {
+        "path": "/minimumContentContrast",
+        "value": 21
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "insufficient"
+  },
+  {
+    "name": "indistinct edge over a dark region",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.85,
+                0.85,
+                0.85
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1
+            }
+          },
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "insufficient"
+  },
+  {
+    "name": "indistinct focus over a dark surround",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      },
+      {
+        "path": "/surroundingRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "insufficient"
+  },
+  {
+    "name": "unsupported version",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "9.9.9"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "0.1.0"
+  },
+  {
+    "name": "unknown foreground role",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "content.unknown"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "invalid"
+  },
+  {
+    "name": "a light foreground is certified by the upper backdrop end",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 3.08053037317
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "a threshold between the two ends rejects a light foreground",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 4
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "insufficient"
+  },
+  {
+    "name": "a foreground inside the composited interval certifies at ratio one",
+    "requestChanges": [
+      {
+        "path": "/foregroundRole",
+        "value": "surface.base"
+      },
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1
+          }
+        }
+      },
+      {
+        "path": "/minimumContentContrast",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "a point backdrop is a valid interval",
+    "requestChanges": [
+      {
+        "path": "/backdrop",
+        "value": {
+          "lower": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9,
+              0.9,
+              0.9
+            ],
+            "alpha": 1
+          },
+          "upper": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9,
+              0.9,
+              0.9
+            ],
+            "alpha": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedAppearance": "translucent",
+    "expectedRepresentation": "shapedBackdrop",
+    "expectedFocus": false
+  },
+  {
+    "name": "inverted adjacent range",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9,
+                0.5,
+                0.5
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8,
+                0.6,
+                0.6
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "lower exceeds upper"
+  },
+  {
+    "name": "inverted surrounding range",
+    "requestChanges": [
+      {
+        "path": "/surface/states/states",
+        "value": [
+          "focused"
+        ]
+      },
+      {
+        "path": "/surroundingRanges",
+        "value": [
+          {
+            "lower": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9,
+                0.5,
+                0.5
+              ],
+              "alpha": 1
+            },
+            "upper": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8,
+                0.6,
+                0.6
+              ],
+              "alpha": 1
+            }
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "lower exceeds upper"
+  },
+  {
+    "name": "backdrop channel above one",
+    "requestChanges": [
+      {
+        "path": "/backdrop/upper/components/0",
+        "value": 1.2
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "channel"
+  },
+  {
+    "name": "backdrop channel below zero",
+    "requestChanges": [
+      {
+        "path": "/backdrop/lower/components/1",
+        "value": -0.1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "channel"
+  },
+  {
+    "name": "adjacent channel above one",
+    "requestChanges": [
+      {
+        "path": "/adjacentRanges/0/upper/components/2",
+        "value": 1.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "channel"
+  },
+  {
+    "name": "absurd diffusion radius",
+    "requestChanges": [
+      {
+        "path": "/diffusion/radius",
+        "value": 1e+308
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "at most"
+  }
+]

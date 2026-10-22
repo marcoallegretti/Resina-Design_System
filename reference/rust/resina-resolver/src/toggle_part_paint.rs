@@ -1,11 +1,12 @@
 use crate::{
-    CompiledTheme, ImperceptibleResponse, OpaqueSurfaceError, OpaqueSurfaceInput,
-    SurfacePaintInput, SurfacePaintIr, SurfacePaintResolutionError, bind_surface,
+    CompiledTheme, ControlRelief, ImperceptibleResponse, LitControlBodyError, LitControlPaintIr,
+    OpaqueSurfaceError, OpaqueSurfaceInput, SurfacePaintInput, SurfacePaintResolutionError,
+    bind_surface, control_paint::LitControlPaintError,
 };
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
     ColorRole, CommandAppearance, CommandPhase, CommandResponse, InteractionState, MaterialFamily,
-    MaterialRole,
+    MaterialLightChannels, MaterialRole,
 };
 use serde::{
     Deserialize, Deserializer, Serialize,
@@ -25,6 +26,8 @@ pub struct TogglePartPaintInput<'a> {
     pub surface: SurfacePaintInput<'a>,
     pub checked_color_role: ColorRole,
     pub interaction_appearance: &'a CommandAppearance,
+    pub light: &'a MaterialLightChannels,
+    pub relief: &'a ControlRelief,
 }
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -34,7 +37,7 @@ pub struct TogglePartPaintIr {
     checked: bool,
     phase: CommandPhase,
     response: CommandResponse,
-    paint: SurfacePaintIr,
+    paint: LitControlPaintIr,
 }
 impl TogglePartPaintIr {
     pub fn part(&self) -> TogglePart {
@@ -49,7 +52,7 @@ impl TogglePartPaintIr {
     pub fn response(&self) -> CommandResponse {
         self.response
     }
-    pub fn paint(&self) -> &SurfacePaintIr {
+    pub fn paint(&self) -> &LitControlPaintIr {
         &self.paint
     }
 }
@@ -60,6 +63,7 @@ pub enum TogglePartPaintError {
     UnsupportedVersion,
     Scope(&'static str),
     Paint(SurfacePaintResolutionError),
+    Body(LitControlBodyError),
     Imperceptible(ImperceptibleResponse),
     Motion(resina_motion::SpringError),
 }
@@ -68,9 +72,10 @@ impl fmt::Display for TogglePartPaintError {
         match self {
             Self::Parse(e) => write!(f, "toggle part paint parse failed: {e}"),
             Self::Request(e) => write!(f, "invalid toggle part paint request: {e}"),
-            Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
+            Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.2.0"),
             Self::Scope(e) => f.write_str(e),
             Self::Paint(e) => write!(f, "toggle part {e}"),
+            Self::Body(e) => write!(f, "toggle part {e}"),
             Self::Imperceptible(e) => write!(f, "toggle part {e}"),
             Self::Motion(e) => write!(f, "toggle part motion: {e}"),
         }
@@ -81,6 +86,7 @@ impl std::error::Error for TogglePartPaintError {
         match self {
             Self::Parse(e) | Self::Request(e) => Some(e),
             Self::Paint(e) => Some(e),
+            Self::Body(e) => Some(e),
             Self::Motion(e) => Some(e),
             _ => None,
         }
@@ -89,6 +95,14 @@ impl std::error::Error for TogglePartPaintError {
 impl From<SurfacePaintResolutionError> for TogglePartPaintError {
     fn from(e: SurfacePaintResolutionError) -> Self {
         Self::Paint(e)
+    }
+}
+impl From<LitControlPaintError> for TogglePartPaintError {
+    fn from(error: LitControlPaintError) -> Self {
+        match error {
+            LitControlPaintError::Paint(error) => Self::Paint(error),
+            LitControlPaintError::Body(error) => Self::Body(error),
+        }
     }
 }
 
@@ -205,7 +219,11 @@ pub(crate) fn resolve_toggle_part_paint_with_response<T>(
     }
     let (response, sampled) = sample(binding.material_family(), response)?;
     let b = input.surface.body;
-    let paint = crate::control_paint::resolve_control_paint(
+    let (name, relief) = match input.part {
+        TogglePart::Track => ("toggleTrack", input.relief.toggle_track()),
+        TogglePart::Thumb => ("toggleThumb", input.relief.toggle_thumb()),
+    };
+    let paint = crate::control_paint::resolve_lit_control_paint(
         theme,
         environment,
         &snapshot,
@@ -224,11 +242,13 @@ pub(crate) fn resolve_toggle_part_paint_with_response<T>(
         },
         binding,
         response,
+        input.light,
+        (name, relief),
         input.part == TogglePart::Track,
     )?;
     Ok((
         TogglePartPaintIr {
-            schema_version: "0.1.0",
+            schema_version: "0.2.0",
             part: input.part,
             checked,
             phase,
@@ -245,6 +265,8 @@ struct Request {
     surface: crate::surface_paint::SurfacePaintRequest,
     checked_color_role: ColorRole,
     interaction_appearance: CommandAppearance,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
 }
 
 #[derive(Deserialize)]
@@ -257,6 +279,8 @@ struct RequestMembers {
     #[serde(deserialize_with = "checked_color_role_name")]
     checked_color_role: ColorRole,
     interaction_appearance: CommandAppearance,
+    light: MaterialLightChannels,
+    relief: ControlRelief,
 }
 
 impl<'de> Deserialize<'de> for Request {
@@ -275,6 +299,8 @@ impl<'de> Deserialize<'de> for Request {
                     surface: input.surface,
                     checked_color_role: input.checked_color_role,
                     interaction_appearance: input.interaction_appearance,
+                    light: input.light,
+                    relief: input.relief,
                 })
             }
         }
@@ -296,6 +322,17 @@ pub(crate) fn checked_color_role_name<'de, D: Deserializer<'de>>(
     ColorRole::deserialize(StringDeserializer::<D::Error>::new(String::deserialize(
         deserializer,
     )?))
+}
+
+/// Validates the original pigment and light channel coefficient sources of a toggle part request.
+pub(crate) fn validate_toggle_part_sources(source: &str) -> Result<(), TogglePartPaintError> {
+    crate::pigment_source::validate_pigment_source(
+        source,
+        &["surface", "body", "appearance", "pigmentProfiles"],
+    )
+    .map_err(TogglePartPaintError::Request)?;
+    crate::pigment_source::validate_light_channel_source(source, &["light"])
+        .map_err(TogglePartPaintError::Request)
 }
 
 pub fn resolve_toggle_part_paint_source(
@@ -323,12 +360,8 @@ fn resolve_source(
         resina_tokens::parse_token_document(source).map_err(TogglePartPaintError::Parse)?;
     let request: Request =
         serde_json::from_value(document).map_err(TogglePartPaintError::Request)?;
-    crate::pigment_source::validate_pigment_source(
-        source,
-        &["surface", "body", "appearance", "pigmentProfiles"],
-    )
-    .map_err(TogglePartPaintError::Request)?;
-    if request.schema_version != "0.1.0" {
+    validate_toggle_part_sources(source)?;
+    if request.schema_version != "0.2.0" {
         return Err(TogglePartPaintError::UnsupportedVersion);
     }
     let (theme, environment, owned) =
@@ -341,6 +374,8 @@ fn resolve_source(
             surface: owned.input(),
             checked_color_role: request.checked_color_role,
             interaction_appearance: &request.interaction_appearance,
+            light: &request.light,
+            relief: &request.relief,
         },
     )
 }

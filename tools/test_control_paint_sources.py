@@ -10,8 +10,8 @@ class ControlPaintSourceTests(unittest.TestCase):
         consumers = (
             ("command-paint", ("schemaVersion", "surface", "commandAppearance", "light", "relief")),
             ("command-motion", ("schemaVersion", "surface", "commandAppearance", "light", "relief", "channels", "time")),
-            ("toggle-part-paint", ("schemaVersion", "part", "surface", "checkedColorRole", "interactionAppearance")),
-            ("toggle-part-motion", ("schemaVersion", "surface", "interactionAppearance", "part", "checkedColorRole", "channels", "time")),
+            ("toggle-part-paint", ("schemaVersion", "part", "surface", "checkedColorRole", "interactionAppearance", "light", "relief")),
+            ("toggle-part-motion", ("schemaVersion", "surface", "interactionAppearance", "light", "relief", "part", "checkedColorRole", "channels", "time")),
         )
         for consumer, members in consumers:
             with self.subTest(consumer=consumer):

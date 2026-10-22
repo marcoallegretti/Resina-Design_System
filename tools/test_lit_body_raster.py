@@ -5,7 +5,7 @@ import unittest
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 
-from check_command_paint_backend import command_body_source
+from check_command_paint_backend import control_body_source
 from check_lit_body_raster_backend import SCENES, check_bounded_png, focus_ring, response_for, scene_request
 from check_schemas import ROOT, load_json
 from lit_body_arithmetic import pixels
@@ -59,7 +59,7 @@ class LitBodyRasterProofTests(unittest.TestCase):
         request = scene_request(base, family, changes)
         ring = focus_ring(request)
         self.assertEqual(ring[1:], (2, 2))
-        source = command_body_source(request, response_for(request))
+        source = control_body_source(request, response_for(request))
         middle = source["size"]["height"] / 2
         row = pixels(source, 7, 1, (-7, middle - 0.5), 1, 1, ring=ring)
         expected = tuple(round(255 * c) for c in ring[0]) + (255,)

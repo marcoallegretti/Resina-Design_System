@@ -288,6 +288,11 @@ pub use spatial::{
 };
 mod surface;
 pub use surface::{BoundSurface, SurfaceBindingError, bind_surface};
+mod translucent_frost;
+pub use translucent_frost::{
+    FrostAppearance, FrostFallbackReason, TranslucentFrostError, TranslucentFrostInput,
+    TranslucentFrostIr, resolve_translucent_frost, resolve_translucent_frost_source,
+};
 mod surface_readability;
 pub use surface_readability::{
     SurfaceReadabilityError, SurfaceReadabilityResult, resolve_surface_readability,

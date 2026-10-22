@@ -50,6 +50,8 @@ Run `cargo run -p resina-resolver --bin resina-edge-contrast -- <path>` for a [k
 
 Run `cargo run -p resina-resolver --bin resina-frost-surface-readability -- <path>` for a [Frost surface color readability request](schemas/frost-surface-readability-request.schema.json), or use `-` for stdin. The Rust `resolve_frost_surface_readability` API accepts a compiled theme resolution and surface intent directly. `python tools/check_frost_surface_readability_backend.py -- <backend-command> -` checks composition of the bound Frost body, semantic foreground, and authored edge colors against known local surroundings.
 
+Run `cargo run -p resina-resolver --bin resina-translucent-frost -- <path>` for a [translucent Frost surface request](spec/94-translucent-frost.md), or use `-` for stdin. It certifies the tinted body, exterior edge and navigation ring over declared backdrop intervals, resolves the three translucent representations of the Frost fallback chain, and otherwise returns the existing opaque surface with the reason. `python tools/check_translucent_frost_backend.py --surface-paint <surface-paint-command> -- <backend-command> -` checks the protocol against an independent oracle. The contract does not acquire or blur a backdrop, and no native capture evidence for it exists yet.
+
 Run `cargo run -p resina-resolver --bin resina-surface-readability -- <path>` for the [base-state surface readability request](schemas/surface-readability-request.schema.json) across all four material families. `python tools/check_surface_readability_backend.py -- <backend-command> -` checks content and local edge color decisions through the public command protocol.
 
 Run `cargo run -p resina-resolver --bin resina-opaque-pigment -- <path>` for an [opaque material pigment request](schemas/opaque-pigment-request.schema.json). The operation derives opaque side and highlight colors from the selected body and explicit family profiles. `python tools/check_opaque_pigment_backend.py -- <backend-command> -` checks its numerical output and diagnostic failures.
@@ -81,8 +83,10 @@ plane of a Command or Toggle part body, projected by the existing side plane and
 swept edge, and admits interaction light only in the hover or pressed phase. The
 Rust `LitControlBodyIr::sample_paint` API evaluates its region law;
 `python -m unittest discover -s tools -p test_lit_body_arithmetic.py` checks the
-authored point vectors against independent arithmetic. Component paint versions,
-raster and native realization remain separate work.
+authored point vectors against independent arithmetic. [Command](spec/43-command-paint.md)
+and [Toggle part](spec/54-toggle-part-paint.md) paint adopt it in their 0.2.0 versions,
+with CPU raster evidence against the same arithmetic. A native lit-body realization
+and accepted Light/Dark scenes remain separate work.
 
 Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for an [extruded contour request](schemas/extruded-contour-request.schema.json). It resolves the swept silhouette as portable lines and elliptical arcs, including physical corner mapping and split curves. `python tools/check_extruded_contour_backend.py -- <backend-command> -` checks the public geometry protocol.
 
@@ -177,12 +181,14 @@ stable track ownership. Shape, checked paint and full component target coverage
 remain separate requirements.
 
 [Opaque Toggle part paint](spec/54-toggle-part-paint.md) composes checked color
-roles with independent interaction response and track-owned focus. Cast, Frost
-and Elastomer use existing contrast, geometry and actual-capability fallback
-laws. Part paint does not certify an assembled native Toggle.
+roles with independent interaction response and track-owned focus on a
+[lit control body](spec/88-lit-control-body.md) with bounded ambient and
+interaction light. Cast, Frost and Elastomer use existing contrast, geometry and
+actual-capability fallback laws. Part paint does not certify an assembled native
+Toggle.
 
 [Coherent Toggle snapshots](spec/55-toggle-snapshot.md) validate full current
-part states, selection, uniform track adjacency, label placement, reserved target
+part states, selection, thumb containment in the track's uniform face, label placement, reserved target
 coverage, external-label contrast and binary semantics together before publication.
 
 The GUIdo backend can prepare a checked Toggle snapshot's track, placed thumb

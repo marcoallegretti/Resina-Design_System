@@ -9,7 +9,9 @@ from pathlib import Path
 from command_label_arithmetic import check_cases as check_label_arithmetic
 from command_layout_arithmetic import resolve as resolve_command_layout
 from command_layout_arithmetic import resolve_extents
-from lit_body_arithmetic import body_invariants, lit_containment_outcomes, relief_profile_violation
+from lit_body_arithmetic import (
+    body_invariants, lit_containment_outcomes, relief_profile_violation, toggle_lit_containment_outcomes,
+)
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -792,9 +794,168 @@ def check_environmental_pigment_schemas():
     return checked
 
 
+def check_toggle_lit_envelopes():
+    """Check the Toggle part 0.2.0 envelopes around the lit body and their 0.1.0 archives."""
+    checked = 0
+    published = load_json(ROOT / "conformance/ir/toggle-part-paint-ir.json")
+    ir_schema = validator_for("schemas/toggle-part-paint-ir.schema.json")
+    focus = load_json(ROOT / "conformance/ir/focus-ir-expected.json")
+    spec36 = load_json(ROOT / "conformance/ir/opaque-surface-expected.json")
+    track, thumb = published["track"], published["thumb"]
+    for part, document in published.items():
+        check_case(ir_schema, f"published toggle {part} paint IR", document, True)
+        if body_invariants(document["paint"]["body"]):
+            raise ValueError(f"published toggle {part} paint IR: {body_invariants(document['paint']['body'])}")
+        checked += 1
+    if "focus" not in track["paint"] or "focus" in thumb["paint"]:
+        raise ValueError("the published Toggle IR must show track-only navigation")
+    states = lambda document: document["paint"]["body"]["states"]["states"]
+    def thumb_focused_with(navigation):
+        focused = apply_changes(thumb, [
+            {"path": "/paint/body/states/states", "value": ["pressed", "focused", "checked"]}])
+        return {**focused, "paint": {**focused["paint"], "focus": navigation}}
+
+    unchecked = apply_changes(track, [{"path": "/paint/body/states/states", "value": [
+        state for state in states(track) if state != "checked"]}])
+    for name, document, valid in (
+        ("toggle thumb focused with navigation", thumb_focused_with(focus), False),
+        ("toggle thumb focused without navigation", apply_changes(thumb, [
+            {"path": "/paint/body/states/states", "value": ["pressed", "focused", "checked"]}]), True),
+        ("toggle track focused without navigation", {**track, "paint": {
+            key: value for key, value in track["paint"].items() if key != "focus"}}, False),
+        ("toggle track navigation without focused state", apply_changes(track, [
+            {"path": "/paint/body/states/states", "value": ["hover", "checked"]}]), False),
+        ("toggle checked disagrees with states", apply_changes(track, [{"path": "/checked", "value": False}]), False),
+        ("toggle unchecked states with checked", unchecked, False),
+        ("toggle phase disagrees with states", apply_changes(track, [{"path": "/phase", "value": "pressed"}]), False),
+        ("toggle rest without identity response", apply_changes(track, [
+            {"path": "/phase", "value": "rest"},
+            {"path": "/paint/body/states/states", "value": ["focused", "checked"]}]), False),
+        ("toggle version 0.1.0", apply_changes(track, [{"path": "/schemaVersion", "value": "0.1.0"}]), False),
+        ("toggle spec/36 body", apply_changes(track, [{"path": "/paint/body", "value": spec36}]), False),
+        ("toggle highlight width", apply_changes(track, [
+            {"path": "/paint/body", "value": dict(track["paint"]["body"], highlightWidth=1)}]), False),
+        ("toggle two color ranges", apply_changes(track, [
+            {"path": "/paint/body/face/colorRanges", "value": track["paint"]["body"]["face"]["colorRanges"][:2]}]), False),
+        ("toggle translucent representation", apply_changes(track, [
+            {"path": "/paint/body/representation", "value": "translucent"}]), False),
+        ("toggle unknown part", apply_changes(track, [{"path": "/part", "value": "label"}]), False),
+        ("toggle unsupported state", apply_changes(track, [
+            {"path": "/paint/body/states/states", "value": ["hover", "selected", "focused"]}]), False),
+    ):
+        check_case(ir_schema, name, document, valid)
+        checked += 1
+    second_key = apply_changes(thumb, [{"path": "/paint/body/face/light/keyDirection", "value": {"x": 1, "y": 0}}])
+    check_case(ir_schema, "toggle second key direction is structurally valid", second_key, True)
+    if body_invariants(second_key["paint"]["body"]) is None:
+        raise ValueError("toggle second key direction: invariant violation was not detected")
+    checked += 1
+    motion = load_json(ROOT / "conformance/ir/toggle-part-motion-request.json")
+    sample = {"schemaVersion": "0.1.0", "representation": "spring", "target": 1.5,
+              "state": {"position": 1.2, "velocity": 0.5}, "settled": False}
+    motion_ir = {"schemaVersion": "0.2.0", "policy": "spring", "target": track["response"],
+                 "bodyMix": dict(sample, target=0.06, state={"position": 0.03, "velocity": 0.1}),
+                 "depthScale": sample, "bodyMixProjection": "none", "depthScaleProjection": "none",
+                 "partPaint": track}
+    motion_schema = validator_for("schemas/toggle-part-motion-ir.schema.json")
+    for name, document, valid in (
+        ("toggle motion sample", motion_ir, True),
+        ("toggle motion version 0.1.0", dict(motion_ir, schemaVersion="0.1.0"), False),
+        ("toggle motion part paint version 0.1.0", apply_changes(motion_ir, [
+            {"path": "/partPaint/schemaVersion", "value": "0.1.0"}]), False),
+        ("toggle motion spec/36 body", apply_changes(motion_ir, [
+            {"path": "/partPaint/paint/body", "value": spec36}]), False),
+    ):
+        check_case(motion_schema, name, document, valid)
+        checked += 1
+    channels = load_json(ROOT / "schemas/toggle-part-motion-request.schema.json")["properties"]["channels"]
+    if channels != {"$ref": "urn:resina:schema:command-motion-request:0.2.0#/properties/channels"}:
+        raise ValueError("toggle part motion channels must reference the current motion channels definition")
+    checked += 1
+    paint = load_json(ROOT / "conformance/ir/toggle-part-paint-request.json")
+    for current, archived, base in (
+        ("toggle-part-paint-request", "toggle-part-paint-request-0.1.0", paint),
+        ("toggle-part-motion-request", "toggle-part-motion-request-0.1.0", motion),
+    ):
+        for member in ("light", "relief"):
+            missing = {key: value for key, value in base.items() if key != member}
+            check_case(validator_for(f"schemas/{current}.schema.json"), f"{current} without {member}", missing, False)
+            checked += 1
+        legacy = {key: value for key, value in base.items() if key not in ("light", "relief")}
+        legacy["schemaVersion"] = "0.1.0"
+        check_case(validator_for(f"schemas/versions/{archived}.schema.json"), f"{archived} archive", legacy, True)
+        check_case(validator_for(f"schemas/{current}.schema.json"), f"{current} rejects the 0.1.0 archive", legacy, False)
+        check_case(validator_for(f"schemas/versions/{archived}.schema.json"), f"{archived} rejects light",
+                   dict(legacy, light=base["light"]), False)
+        checked += 3
+    archived_ir = validator_for("schemas/versions/toggle-part-paint-ir-0.1.0.schema.json")
+    check_case(archived_ir, "toggle part paint IR 0.1.0 archive rejects the lit body", dict(track, schemaVersion="0.1.0"), False)
+    checked += 1
+    return checked
+
+
+def check_toggle_lit_containment():
+    """Validate the lit Toggle containment matrix and decide every outcome with independent arithmetic."""
+    matrix = load_json(ROOT / "conformance/content/toggle-lit-containment.json")
+    validator = validator_for("schemas/toggle-lit-containment.schema.json")
+    check_case(validator, "toggle lit containment cases", matrix, True)
+    checked = 1
+    uniform = next(index for index, case in enumerate(matrix["cases"]) if case["trackShape"]["kind"] == "uniform")
+    for path, value in [("/schemaVersion", "0.2.0"),
+                        ("/edgeWidth", 0),
+                        ("/cases/0/trackSize/width", 0),
+                        ("/cases/0/thumbSize/height", 0),
+                        ("/cases/0/trackShape/kind", "organic"),
+                        (f"/cases/{uniform}/trackShape/radius", -1),
+                        ("/cases/0/trackRelief/kind", "negative-extrusion"),
+                        ("/cases/0/insets/start", -1),
+                        ("/cases/0/insets", [12, 12, 12, 12]),
+                        ("/cases/0/keyDirection", {"x": 0, "y": 0}),
+                        ("/cases/0/depth", -1),
+                        ("/cases/0/contained", "yes")]:
+        check_case(validator, f"toggle lit containment invalid {path}",
+                   apply_changes(matrix, [{"path": path, "value": value}]), False)
+        checked += 1
+    check_case(validator, "toggle lit containment renderer leakage", dict(matrix, renderer="native"), False)
+    checked += 1
+    names = [case["name"] for case in matrix["cases"]]
+    if len(set(names)) != len(names):
+        raise ValueError("duplicate toggle lit containment case")
+    expected = {case["name"]: case["contained"] for case in matrix["cases"]}
+    source = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
+    for name, contained in toggle_lit_containment_outcomes(matrix, source):
+        if contained != expected[name]:
+            raise ValueError(f"toggle lit containment {name}: independent outcome is {contained}")
+        checked += 1
+    return checked
+
+
+def check_no_active_reference_to_archived_schemas():
+    """An active schema may not $ref a superseded version that only the archive still defines."""
+    active, archived = set(), set()
+    texts = {}
+    for path in (ROOT / "schemas").rglob("*.schema.json"):
+        text = path.read_text(encoding="utf-8")
+        identifier = json.loads(text)["$id"]
+        (archived if "versions" in path.relative_to(ROOT / "schemas").parts else active).add(identifier)
+        texts[path] = (identifier, text)
+    checked = 0
+    for path, (identifier, text) in texts.items():
+        if identifier in archived:
+            continue
+        for reference in sorted(set(re.findall(r'"\$ref":\s*"(urn:resina:schema:[^"#]+)', text))):
+            if reference in archived and reference not in active:
+                raise ValueError(f"{path.name} references the superseded schema {reference}")
+            checked += 1
+    return checked
+
+
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/translucent-frost-request.schema.json",
+        "schemas/translucent-frost-ir.schema.json",
+        "schemas/translucent-frost-case.schema.json",
         "schemas/disclosure-request.schema.json",
         "schemas/disclosure-result.schema.json",
         "schemas/disclosure-accessibility-ir.schema.json",
@@ -815,7 +976,7 @@ def main():
         "schemas/command-accessibility-ir.schema.json",
         "schemas/toggle-snapshot-cases.schema.json",
         "schemas/toggle-travel-cases.schema.json",
-        "schemas/toggle-part-body-ir.schema.json",
+        "schemas/toggle-lit-containment.schema.json",
         "schemas/toggle-part-paint-ir.schema.json",
         "schemas/toggle-part-paint-request.schema.json",
         "schemas/toggle-part-paint-case.schema.json",
@@ -1057,6 +1218,11 @@ def main():
         "schemas/versions/command-body-ir-0.1.0.schema.json",
         "schemas/versions/command-motion-request-0.1.0.schema.json",
         "schemas/versions/command-motion-ir-0.1.0.schema.json",
+        "schemas/versions/toggle-part-body-ir-0.1.0.schema.json",
+        "schemas/versions/toggle-part-paint-request-0.1.0.schema.json",
+        "schemas/versions/toggle-part-paint-ir-0.1.0.schema.json",
+        "schemas/versions/toggle-part-motion-request-0.1.0.schema.json",
+        "schemas/versions/toggle-part-motion-ir-0.1.0.schema.json",
         "schemas/command-lit-containment.schema.json",
     }
     actual_paths = {path.relative_to(ROOT).as_posix() for path in schema_paths}
@@ -2732,6 +2898,85 @@ def main():
             check_case(paint_result_schema, case["name"], result, True)
             checked += 1
 
+    from check_translucent_frost_backend import (
+        baseline as frost_baseline,
+        case_request as frost_case_request,
+        cases as frost_cases,
+        expected_result as frost_expected,
+    )
+    frost_case_schema = validator_for("schemas/translucent-frost-case.schema.json")
+    frost_request_schema = validator_for("schemas/translucent-frost-request.schema.json")
+    frost_result_schema = validator_for("schemas/translucent-frost-ir.schema.json")
+    frost_names = set()
+    frost_results = {}
+    for case in frost_cases():
+        name = case["name"]
+        check_case(frost_case_schema, name, case, True)
+        if name in frost_names:
+            raise ValueError(f"duplicate translucent Frost case: {name}")
+        frost_names.add(name)
+        request = frost_case_request(frost_baseline(), case)
+        check_case(frost_request_schema, name, request, case["requestSchemaValid"])
+        checked += 2
+        if "errorContains" not in case:
+            result = frost_expected(request)
+            check_case(frost_result_schema, name, result, True)
+            frost_results[name] = result
+            checked += 1
+    translucent = frost_results["shaped backdrop over a bright interval keeps its tinted body"]
+    pigmented = frost_results["transparency without blur keeps a pigmented body"]
+    focused = frost_results["focused translucent surface keeps its navigation ring"]
+    opaque = frost_results["a dark interval forces the opaque body through legibility"]
+
+    def frost_mutation(result, edit):
+        changed = copy.deepcopy(result)
+        edit(changed)
+        return changed
+
+    def drop(path):
+        def edit(document):
+            parent = document
+            for member in path[:-1]:
+                parent = parent[member]
+            del parent[path[-1]]
+        return edit
+
+    def put(path, value):
+        def edit(document):
+            parent = document
+            for member in path[:-1]:
+                parent = parent[member]
+            parent[path[-1]] = value
+        return edit
+
+    for name, result, edit in [
+        ("translucent frost opaque body pigment", translucent, put(["body", "pigment", "body", "alpha"], 1)),
+        ("translucent frost transparent body pigment", translucent, put(["body", "pigment", "side", "alpha"], 0)),
+        ("translucent frost pigmented body cannot publish diffusion", pigmented,
+         put(["body", "diffusion"], {"radius": 12})),
+        ("translucent frost diffused body requires diffusion", translucent, drop(["body", "diffusion"])),
+        ("translucent frost nonpositive diffusion", translucent, put(["body", "diffusion", "radius"], 0)),
+        ("translucent frost focused body requires focus", focused, drop(["focus"])),
+        ("translucent frost unfocused body cannot publish focus", translucent,
+         put(["focus"], focused["focus"])),
+        ("translucent frost opaque representation cannot carry a translucent body", translucent,
+         put(["frostRepresentation"], "opaqueDimensional")),
+        ("translucent frost translucent representation cannot carry opaque paint", opaque,
+         put(["frostRepresentation"], "regularBackdrop")),
+        ("translucent frost opaque appearance requires its reason", opaque, drop(["fallbackReason"])),
+        ("translucent frost unknown fallback reason", opaque, put(["fallbackReason"], "capability")),
+        ("translucent frost opaque appearance cannot carry a translucent body", opaque,
+         put(["body"], translucent["body"])),
+        ("translucent frost translucent composited bound", translucent,
+         put(["body", "backdrop", "compositedBody", "lower", "alpha"], 0.5)),
+        ("translucent frost sampled normals", translucent,
+         put(["body", "lighting", "normalHighlightWeights"], [0.5])),
+        ("translucent frost unknown member", translucent, put(["unexpected"], True)),
+        ("translucent frost non Frost family", translucent, put(["body", "materialFamily"], "cast")),
+    ]:
+        check_case(frost_result_schema, name, frost_mutation(result, edit), False)
+        checked += 1
+
     from check_hit_region_backend import cases, validate_membership_vectors
     checked += validate_membership_vectors()
     hit_names = set()
@@ -3708,6 +3953,9 @@ def main():
         check_case(validator_for("schemas/toggle-part-paint-case.schema.json"), name, case, True)
         check_case(validator_for("schemas/toggle-part-paint-request.schema.json"), name, apply_changes(toggle_part_request, case["requestChanges"]), case["requestSchemaValid"])
         checked += 1
+    checked += check_toggle_lit_envelopes()
+    checked += check_toggle_lit_containment()
+    checked += check_no_active_reference_to_archived_schemas()
     slider_part_request = load_json(ROOT / "conformance/ir/slider-part-paint-request.json")
     slider_request_validator = validator_for("schemas/slider-part-paint-request.schema.json")
     slider_case_validator = validator_for("schemas/slider-part-paint-case.schema.json")

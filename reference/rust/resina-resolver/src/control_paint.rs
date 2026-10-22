@@ -53,26 +53,6 @@ pub(crate) struct ControlPaintInput<'a> {
     pub minimum_edge_contrast: f64,
 }
 
-pub(crate) fn resolve_control_paint(
-    theme: &CompiledTheme,
-    environment: &EnvironmentSnapshot,
-    snapshot: &HeadlessResolution,
-    input: SurfacePaintInput<'_>,
-    binding: BoundSurface,
-    response: CommandResponse,
-    focus_owner: bool,
-) -> Result<SurfacePaintIr, SurfacePaintResolutionError> {
-    resolve_control_paint_inputs(
-        theme,
-        environment,
-        snapshot,
-        control_paint_input(input),
-        binding,
-        response,
-        focus_owner,
-    )
-}
-
 pub(crate) fn resolve_control_paint_inputs(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
@@ -120,7 +100,7 @@ impl From<SurfacePaintResolutionError> for LitControlPaintError {
 }
 
 /// Resolves one control part as a lit control body, with the relief profile selected by its part
-/// name, and its independent focus ring.
+/// name, and its independent focus ring when the part owns it.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn resolve_lit_control_paint(
     theme: &CompiledTheme,
@@ -131,6 +111,7 @@ pub(crate) fn resolve_lit_control_paint(
     response: CommandResponse,
     light: &MaterialLightChannels,
     part: (&str, SurfaceReliefProfile),
+    focus_owner: bool,
 ) -> Result<LitControlPaintIr, LitControlPaintError> {
     let input = control_paint_input(input);
     let surface = input.surface;
@@ -185,7 +166,7 @@ pub(crate) fn resolve_lit_control_paint(
         depth,
     })
     .map_err(|error| LitControlPaintError::Body(error.for_part(name)))?;
-    let focus = resolve_control_focus(theme, environment, snapshot, &input, depth, true)?;
+    let focus = resolve_control_focus(theme, environment, snapshot, &input, depth, focus_owner)?;
     Ok(LitControlPaintIr::new(body, focus))
 }
 
@@ -203,7 +184,7 @@ fn control_paint_input(input: SurfacePaintInput<'_>) -> ControlPaintInput<'_> {
     }
 }
 
-fn resolve_control_focus(
+pub(crate) fn resolve_control_focus(
     theme: &CompiledTheme,
     environment: &EnvironmentSnapshot,
     snapshot: &HeadlessResolution,

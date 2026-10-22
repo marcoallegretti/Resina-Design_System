@@ -1,11 +1,12 @@
-"""Verify the public lit Command raster against independent lit control body arithmetic."""
+"""Verify the public lit Command and Toggle part rasters against independent lit control body arithmetic."""
 import argparse
 import copy
 import json
 import math
 import subprocess
 
-from check_command_paint_backend import admitting, command_body_source, fixture_color, fixture_theme, phase_of
+from check_command_paint_backend import admitting, control_body_source, fixture_color, fixture_theme, phase_of
+from check_toggle_part_paint_backend import RELIEF_PARTS, selected_role
 from check_material_relief_raster_backend import decoded_png
 from check_schemas import ROOT, apply_changes, load_json
 from lit_body_arithmetic import contrast, pixels as lit_pixels
@@ -66,6 +67,50 @@ SCENES = (
 )
 
 
+CAPSULE_TRACK = [
+    {"path": "/part", "value": "track"},
+    {"path": "/surface/body/size", "value": {"width": 30, "height": 18}},
+    {"path": "/surface/body/surface/form/shape", "value": "capsule"},
+]
+CAPSULE_THUMB = [
+    {"path": "/part", "value": "thumb"},
+    {"path": "/surface/body/size", "value": {"width": 14, "height": 14}},
+    {"path": "/surface/body/surface/form/shape", "value": "capsule"},
+]
+
+TOGGLE_SCENES = (
+    ("elastomer capsule track hover with ambient and interaction light", "elastomer",
+     CAPSULE_TRACK + [{"path": STATES, "value": ["hover"]}]),
+    ("elastomer checked capsule track pressed in right-to-left layout", "elastomer",
+     CAPSULE_TRACK + [{"path": STATES, "value": ["pressed", "checked"]}]),
+    ("cast capsule thumb hover with ambient light", "cast",
+     CAPSULE_THUMB + [{"path": STATES, "value": ["hover"]},
+                      {"path": "/light/interaction", "value": None},
+                      {"path": "/surface/body/appearance/keyLight/direction", "value": {"x": -1, "y": -1}}]),
+    ("frost checked capsule thumb at rest without light", "frost",
+     CAPSULE_THUMB + [{"path": STATES, "value": ["rest", "checked"]},
+                      {"path": "/light", "value": {"ambient": None, "interaction": None}},
+                      {"path": "/surface/body/postTreatmentBackdrop", "value": {"colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1}}]),
+    ("elastomer disabled capsule thumb with suppressed interaction", "elastomer",
+     CAPSULE_THUMB + [{"path": STATES, "value": ["disabled", "hover", "checked"]}]),
+    ("cast capsule track hover under high contrast", "cast",
+     CAPSULE_TRACK + [{"path": STATES, "value": ["hover"]},
+                      {"path": ENVIRONMENT + "/accessibilityPreferences/highContrast", "value": True}]),
+    ("elastomer focused hover capsule track with a ring around a diagonal sweep", "elastomer",
+     CAPSULE_TRACK + [{"path": STATES, "value": ["hover", "focused", "checked"]},
+                      {"path": "/surface/body/appearance/keyLight/direction", "value": {"x": 1, "y": -0.5}}]),
+    ("elastomer focused capsule thumb draws no ring", "elastomer",
+     CAPSULE_THUMB + [{"path": STATES, "value": ["pressed", "focused"]}]),
+    ("cast focused rest ring around a square track", "cast",
+     [{"path": "/part", "value": "track"}, {"path": "/surface/body/size", "value": {"width": 20, "height": 12}},
+      {"path": STATES, "value": ["rest", "focused"]}]),
+    ("elastomer convex thumb pressed with a steep interaction", "elastomer",
+     CAPSULE_THUMB + [{"path": STATES, "value": ["pressed"]},
+                      {"path": "/light/interaction", "value": {"direction": {"x": -0.34, "y": -0.94}, "strength": 0.999}},
+                      {"path": "/surface/body/appearance/keyLight/direction", "value": {"x": 1, "y": -0.5}}]),
+)
+
+
 def scene_request(base, family, changes):
     request = admitting(copy.deepcopy(base))
     theme = fixture_theme(request)
@@ -79,7 +124,7 @@ def scene_request(base, family, changes):
 
 def focus_ring(request):
     """The spec/27 ring color, gap and stroke: focus, else outline.strong, at 3:1 against the surround."""
-    if "focused" not in request["surface"]["body"]["surface"]["states"]["states"]:
+    if "focused" not in request["surface"]["body"]["surface"]["states"]["states"] or request.get("part") == "thumb":
         return None
     surround = request["surface"]["surroundingColor"]["components"]
     for role in ("focus", "outline.strong"):
@@ -94,7 +139,15 @@ def response_for(request):
     if phase == "rest":
         return {"bodyMix": 0, "depthScale": 1}
     family = fixture_theme(request)["materialAssignments"]["control"]["interactive"]
-    return request["commandAppearance"]["profiles"][family][phase]
+    return request["interactionAppearance" if "part" in request else "commandAppearance"]["profiles"][family][phase]
+
+
+def body_source(request):
+    """The independent lit control body source of a fixture Command or Toggle part request."""
+    response = response_for(request)
+    if "part" not in request:
+        return control_body_source(request, response)
+    return control_body_source(request, response, RELIEF_PARTS[request["part"]], selected_role(request))
 
 
 def invoke(command, source, options):
@@ -126,16 +179,19 @@ def check_bounded_png(result, width, height, bounds):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--component", choices=("command", "toggle"), default="command",
+                        help="the paint request the backend consumes")
     parser.add_argument("backend", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.backend[1:] if args.backend[:1] == ["--"] else args.backend
     if not command:
         parser.error("supply a backend command after --")
-    base = load_json(ROOT / "conformance/ir/command-paint-request.json")
+    toggle = args.component == "toggle"
+    base = load_json(ROOT / f"conformance/ir/{args.component}{'-part' if toggle else ''}-paint-request.json")
     checked, pixel_count, worst = 0, 0, 0
-    for name, family, changes in SCENES:
+    for name, family, changes in TOGGLE_SCENES if toggle else SCENES:
         request = scene_request(base, family, changes)
-        source = command_body_source(request, response_for(request))
+        source = body_source(request)
         size = request["surface"]["body"]["size"]
         source_bytes = json.dumps(request).encode("utf-8")
         ring = focus_ring(request)
@@ -160,7 +216,8 @@ def main():
                 worst = max(worst, difference)
                 checked += 1
                 pixel_count += width * height
-    failing = apply_changes(base, [{"path": "/relief/commandBody/amplitude", "value": 1.5}])
+    failing = apply_changes(base, [{"path": "/relief/toggleTrack/amplitude" if toggle else "/relief/commandBody/amplitude",
+                                    "value": 0.8 if toggle else 1.5}])
     for name, source in (("invalid relief", json.dumps(failing).encode("utf-8")),
                          ("oversized", b" " * 1_048_577), ("invalid UTF-8", b"\xff"), ("malformed", b"{")):
         result = invoke(command, source, ["-", "1", "1", "0", "0", "1", "1"])

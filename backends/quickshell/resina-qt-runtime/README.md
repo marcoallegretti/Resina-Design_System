@@ -1773,8 +1773,10 @@ request has these required fields (all names are case-sensitive):
 - `content`: the existing native complete-label request with theme sources,
   environment, explicit font mapping, text, minimum/maximum size and padding.
 - `track` and `thumb`: neutral-rest `surface` intent, opaque `appearance`,
-  `checkedColorRole`, `interactionAppearance`, `foregroundRole`,
-  `minimumContentContrast` and `minimumEdgeContrast`.
+  `checkedColorRole`, `interactionAppearance`, the `light` channels, the control
+  `relief`, `foregroundRole`, `minimumContentContrast` and `minimumEdgeContrast`.
+  The product sets `light` to explicit null channels when it has no ambient or
+  pointer observation.
 - `layout`: authored `trackSize`, `thumbSize` and logical `insets`.
 - `labelOrigin`: explicit physical placement of the complete label slot relative
   to the track; `labelForegroundRole`, `background` and `minimumLabelContrast`.
