@@ -628,8 +628,10 @@ SemiBold masters and the Noto Sans Arabic and Noto Sans Hebrew static Regular,
 Medium and SemiBold masters, all pinned by SHA-256 in
 [`tools/conformance_font.json`](../../../tools/conformance_font.json).
 `python tools/conformance_font.py fetch --output DIR` downloads the pinned
-release archives and extracts them; the commands below take `$CONFORMANCE_FONTS`
-for that directory. Each check registers the Inter masters, so authored
+release archives and extracts them; set `CONFORMANCE_FONTS` to that directory
+(`export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"`, then
+`python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"`) and the
+commands below use it. Each check registers the Inter masters, so authored
 weights 400, 500 and 600 resolve to real masters, and those that draw Arabic or
 Hebrew labels run Qt with a fontconfig file that lists only that directory, so the
 script text can fall back only to the pinned Noto masters, and fail when another

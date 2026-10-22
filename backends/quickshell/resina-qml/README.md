@@ -175,6 +175,8 @@ plain-text U+2029 break by using independent native layouts, consistent with
 Native limits do not narrow IR.
 
 ```sh
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
 python tools/check_quickshell_label_runtime.py --font-dir $CONFORMANCE_FONTS
 python tools/check_quickshell_label_runtime.py --font-dir $CONFORMANCE_FONTS --platform wayland
 ```

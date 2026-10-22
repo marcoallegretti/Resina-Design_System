@@ -135,10 +135,11 @@ and action availability, target bounds, label ink and containment are checked.
 The original arithmetic Toggle test remains independently executable.
 
 For example, in a Linux checkout with the native backend's documented build
-dependencies and the pinned static masters fetched
-(`python tools/conformance_font.py fetch --output DIR`):
+dependencies and the pinned static masters:
 
 ```bash
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
 export RESINA_SCENES="$PWD/target/material-scenes.json"

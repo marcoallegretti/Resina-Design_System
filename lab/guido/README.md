@@ -77,6 +77,8 @@ multiples of four for the common fractional scales. Existing output files are
 preserved. Run the checker under a live parent Wayland display with Sway and grim:
 
 ```sh
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
 cargo build --release --locked --manifest-path lab/guido/Cargo.toml
 python tools/check_guido_relief_native.py --probe lab/guido/target/release/resina-lab --request target/material-scenes.json --content-font $CONFORMANCE_FONTS/Inter-Regular.otf --relief-board convex --board-state focused --output-dir target/relief-board-native
 ```

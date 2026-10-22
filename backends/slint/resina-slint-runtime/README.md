@@ -51,6 +51,8 @@ through `pkg-config`; runtime libraries or a font file alone are insufficient.
 ```sh
 cargo build -p resina-resolver --bin resina-theme-resolve --locked
 python tools/material_scenarios.py -- target/debug/resina-theme-resolve - > target/material-scenes.json
+export CONFORMANCE_FONTS="$PWD/target/conformance-fonts"
+python tools/conformance_font.py fetch --output "$CONFORMANCE_FONTS"
 RESINA_SCENES="$PWD/target/material-scenes.json" RESINA_LABEL_FONT_DIR=$CONFORMANCE_FONTS cargo test --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --features testing --locked
 cargo clippy --manifest-path backends/slint/resina-slint-runtime/Cargo.toml --all-targets --features testing --locked -- -D warnings
 ```
@@ -141,13 +143,13 @@ and must hold the Inter 4.0 static Regular, Medium and SemiBold masters and the 
 Sans Arabic and Noto Sans Hebrew static masters pinned in
 [`tools/conformance_font.json`](../../../tools/conformance_font.json). The test
 registers them, makes the Noto families Slint's sans-serif families, which it appends
-after the requested family, and fails when another face of those families is visible, so
-weights 400, 500
-and 600 measure real masters and Arabic and Hebrew letters measure as their pinned
-Noto master does, while 100, 300, 700 and 900 fail as substituted weights. CI fetches
-the masters by pinned URL and SHA-256 in every matrix job. This proves layout
-measurement at those tested contexts, not visual shaping fidelity or full script
-coverage.
+after the requested family, and fails when another face of those families is visible.
+Weights 400, 500 and 600 therefore measure real masters, and Arabic and Hebrew letters
+measure as their pinned Noto master does, while 100, 300, 700 and 900 fail as
+substituted weights. The script proof is advance equality with the pinned master, not
+a reading of the glyph runs. CI fetches the masters by pinned URL and SHA-256 in every
+matrix job. This proves layout measurement at those tested contexts, not visual
+shaping fidelity or full script coverage.
 
 **Drawing limitation:** the pinned SDK's
 [shared text renderer](https://github.com/slint-ui/slint/blob/372cf0ee5577c3dfec309a45e7b778ba4e81b734/internal/core/textlayout/sharedparley.rs#L195-L230)
