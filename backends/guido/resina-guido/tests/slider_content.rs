@@ -233,7 +233,7 @@ fn glyph_ink_moved_past_any_slot_edge_is_reported() {
         (0.0, -((top - above).ceil() + 1.0)),
         (
             0.0,
-            (below + (allowance * f64::from(scale) + PLACEMENT_ROUNDING) - bottom).ceil() + 1.0,
+            (below + allowance * f64::from(scale) - bottom).ceil() + 1.0,
         ),
     ] {
         let mut moved = commands[2].clone();
@@ -248,6 +248,60 @@ fn glyph_ink_moved_past_any_slot_edge_is_reported() {
             "ink moved by ({dx}, {dy}) device pixels must leave the slot"
         );
     }
+}
+/// Ink one device pixel past the derived extent must be reported, whatever the grid
+/// fitting tolerance, and the tolerance must stay below a pixel row.
+#[test]
+fn ink_past_the_derived_descent_extent_is_reported() {
+    let font = load_font();
+    let mut frames = Frames::new();
+    let mut options = config();
+    options.direction = LayoutDirection::Rtl;
+    options.focused = false;
+    options.text_scale = 2.0;
+    options.text = "مستوى الصوت الخارج";
+    let f = Fixture::resolve(options, |input| measure_command_label(font, input));
+    let snapshot = resolve_slider_snapshot(f.input()).unwrap();
+    let scale = 1.25;
+    let commands = prepare_slider_content(&snapshot, font, scale, 4).unwrap();
+    let (origin, slot) = (f.input().label_origin, f.label.size());
+    let output_width = (640.0 * scale) as u32;
+    let allowance = descent_allowance(&f.label);
+    assert!(allowance > 0.0);
+    let mask = frames.render(&commands[2..], scale, Color::TRANSPARENT);
+    assert_eq!(
+        escaped_ink(&mask, output_width, scale, origin, slot, allowance),
+        None
+    );
+    let bottom = f64::from(
+        mask.as_chunks::<4>()
+            .0
+            .iter()
+            .enumerate()
+            .filter(|(_, p)| p[3] > 0)
+            .map(|(i, _)| i as u32 / output_width)
+            .max()
+            .unwrap()
+            + 1,
+    );
+    let derived =
+        (origin.y + slot.height + 200.0) * f64::from(scale) + allowance * f64::from(scale);
+    assert!(
+        bottom - derived <= PLACEMENT_ROUNDING,
+        "ink ends {} device pixels below the derived extent",
+        bottom - derived
+    );
+    let shift = (derived - bottom).ceil() + 1.0;
+    let mut moved = commands[2].clone();
+    let DrawCommand::Text { rect, .. } = &mut moved else {
+        panic!("complete measured label required")
+    };
+    rect.y += (shift / f64::from(scale)) as f32;
+    let mask = frames.render(&[moved], scale, Color::TRANSPARENT);
+    assert!(
+        escaped_ink(&mask, output_width, scale, origin, slot, allowance).is_some(),
+        "ink {shift} device pixels lower must leave the allowed extent"
+    );
 }
 /// Noto Sans Arabic leaves 0.382 em under the baseline of a 1.4 line and its deepest
 /// glyph of these labels reaches 0.394 em; Inter stays inside its room.
@@ -317,8 +371,11 @@ fn descent_allowance(label: &CommandLabelIr) -> f64 {
     ) * typography.font_size()
 }
 
-/// Half a device pixel, the most that snapping a glyph to the device grid moves its
-/// ink from the extent derived from the font; a nonzero descent allowance tolerates it.
+/// Half a device pixel, the most that fitting a glyph to the device grid moves its ink
+/// from the extent derived from the font. The wrapped Arabic Slider label ends exactly
+/// on a pixel boundary (row 460 holds ink up to alpha 252, row 461 none) 0.4 device
+/// pixel (98 coverage levels) below the derived extent, so a nonzero descent allowance
+/// tolerates up to half a pixel. A whole extra pixel row is not tolerated.
 const PLACEMENT_ROUNDING: f64 = 0.5;
 
 /// The first device pixel whose coverage exceeds the share of its footprint inside

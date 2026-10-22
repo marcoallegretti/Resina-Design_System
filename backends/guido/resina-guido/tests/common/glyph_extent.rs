@@ -11,6 +11,9 @@ use super::conformance_font::{self, FAMILY};
 /// plus its descent. The text is shaped unwrapped in an `en-US` standalone
 /// `FontSystem` over the pinned masters only, as `label_evidence::resolve_text` does.
 /// Glyphs on any line count, because the line a glyph lands on depends on wrapping.
+/// Each glyph is measured against its own face's metrics, while cosmic-text centers a
+/// line on the largest ascent and descent over all of its glyphs, so a line that mixes
+/// scripts is not covered; the Slider labels are single-script (#292).
 pub fn descent_beyond_line_em(text: &str, weight: u16, line_height: f64) -> f64 {
     let mut fonts = fontdb::Database::new();
     for (_, _, path) in conformance_font::faces() {
@@ -40,7 +43,8 @@ pub fn descent_beyond_line_em(text: &str, weight: u16, line_height: f64) -> f64 
                     );
                     let reach = face
                         .glyph_bounding_box(ttf_parser::GlyphId(glyph.glyph_id))
-                        .map_or(0.0, |bounds| -f64::from(bounds.y_min) / em);
+                        .map_or(0.0, |bounds| -f64::from(bounds.y_min) / em)
+                        - f64::from(glyph.y_offset);
                     (reach, (line_height - ascent - descent) / 2.0 + descent)
                 })
                 .expect("a shaped glyph names a registered face");
