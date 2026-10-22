@@ -630,7 +630,13 @@ fn a_flat_relief_paints_the_side_plane_outside_the_face_like_point_sampling() {
         paint.body().lighting().side_offset().x != 0.0
             || paint.body().lighting().side_offset().y != 0.0
     );
-    let mut sides = 0;
+    let body_rgb = paint
+        .body()
+        .face()
+        .pigment()
+        .body()
+        .components()
+        .map(|c| (c * 255.0).round() as u8);
     for scale in [1.0_f64, 1.25, 2.0] {
         for samples in [3, 4] {
             let viewport = Viewport {
@@ -652,8 +658,13 @@ fn a_flat_relief_paints_the_side_plane_outside_the_face_like_point_sampling() {
                 actual.rgba() == expected.rgba(),
                 "scale {scale} with {samples} samples"
             );
-            sides += 1;
+            assert!(
+                expected
+                    .rgba()
+                    .chunks_exact(4)
+                    .any(|pixel| pixel[3] == 255 && pixel[..3] != body_rgb),
+                "no side-plane pixel at scale {scale} with {samples} samples"
+            );
         }
     }
-    assert_eq!(sides, 6);
 }
