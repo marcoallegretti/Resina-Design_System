@@ -1,5 +1,5 @@
 use crate::{
-    LabelPrepareError, PrepareError, PreparedPaint, prepare_surface_paint_at,
+    LabelPrepareError, PrepareError, PreparedPaint, prepare_lit_control_paint_at,
     text::prepare_command_label_at,
 };
 use guido::{
@@ -86,14 +86,14 @@ fn prepare_content_at(
 ) -> Result<[DrawCommand; 3], ToggleContentPrepareError> {
     let foreground = snapshot.label_foreground();
     let [r, g, b] = foreground.components().map(|value| value as f32);
-    let track = prepare_surface_paint_at(
+    let track = prepare_lit_control_paint_at(
         snapshot.track().paint(),
         PhysicalVector { x: 0.0, y: 0.0 },
         device_scale,
         samples_per_axis,
     )
     .map_err(ToggleContentPrepareError::Track)?;
-    let thumb = prepare_surface_paint_at(
+    let thumb = prepare_lit_control_paint_at(
         snapshot.thumb().paint(),
         PhysicalVector {
             x: thumb.x,

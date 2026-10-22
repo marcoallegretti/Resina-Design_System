@@ -22,7 +22,7 @@ use resina_model::{
     ActivationState, ColorRole, PhysicalBounds, PhysicalVector, PressHold, SpringDynamics,
     SpringState, SurfaceSize, ToggleAnatomy, TypographyRole,
 };
-use resina_raster::{Viewport, render_surface_paint};
+use resina_raster::{Viewport, render_lit_control_paint};
 use resina_resolver::{
     CommandLabelInput, CommandLabelIr, HitRegionInput, HitRegionIr, SrgbFallback,
     ToggleLayoutInput, ToggleLayoutIr, TogglePartMotionIr, TogglePartPaintError, TogglePartPaintIr,
@@ -128,8 +128,13 @@ impl Fixture {
                 include_str!("../../../../definitions/command-appearance-light.json")
             })
             .unwrap();
-        let mut request = json!({"schemaVersion":"0.1.0","part":"track","surface":surface,
-            "checkedColorRole":"surface.high","interactionAppearance":appearance});
+        let template: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/toggle-part-paint-request.json"
+        ))
+        .unwrap();
+        let mut request = json!({"schemaVersion":"0.2.0","part":"track","surface":surface,
+            "checkedColorRole":"surface.high","interactionAppearance":appearance,
+            "light":template["light"],"relief":template["relief"]});
         let track_request = request.clone();
         let track = resolve_toggle_part_paint_source(&request.to_string()).unwrap();
         assert_eq!(track.paint().focus().is_some(), focused);
@@ -139,7 +144,7 @@ impl Fixture {
         request["checkedColorRole"] = json!("content.primary");
         request["surface"]["body"]["foregroundRole"] = json!("content.inverse");
         request["surface"]["body"]["adjacentColor"] =
-            serde_json::to_value(track.paint().body().pigment().body()).unwrap();
+            serde_json::to_value(track.paint().body().face().pigment().body()).unwrap();
         request["surface"]["body"]["postTreatmentBackdrop"] =
             request["surface"]["body"]["adjacentColor"].clone();
         let thumb_request = request.clone();
@@ -217,7 +222,7 @@ impl Fixture {
         .unwrap();
         assert_ne!(
             resolved.color_fallbacks()[&ColorRole::ContentSecondary].components(),
-            track.paint().body().foreground().components()
+            track.paint().body().face().foreground().components()
         );
         Self {
             environment,
@@ -258,7 +263,8 @@ impl Fixture {
             request["checkedColorRole"] = serde_json::to_value(part.checked_color_role()).unwrap();
         }
         self.track = resolve_toggle_part_paint_source(&self.track_request.to_string()).unwrap();
-        let track_color = serde_json::to_value(self.track.paint().body().pigment().body()).unwrap();
+        let track_color =
+            serde_json::to_value(self.track.paint().body().face().pigment().body()).unwrap();
         self.thumb_request["surface"]["body"]["adjacentColor"] = track_color.clone();
         self.thumb_request["surface"]["body"]["postTreatmentBackdrop"] = track_color;
         self.thumb = resolve_toggle_part_paint_source(&self.thumb_request.to_string()).unwrap();
@@ -306,7 +312,8 @@ impl Fixture {
         thumb_request["channels"] = channels[1].clone();
         thumb_request["time"] = json!(time);
         thumb_request["surface"]["body"]["adjacentColor"] =
-            serde_json::to_value(track.part_paint().paint().body().pigment().body()).unwrap();
+            serde_json::to_value(track.part_paint().paint().body().face().pigment().body())
+                .unwrap();
         thumb_request["surface"]["body"]["postTreatmentBackdrop"] =
             thumb_request["surface"]["body"]["adjacentColor"].clone();
         let thumb = resolve_toggle_part_motion_source(&thumb_request.to_string())?;
@@ -477,7 +484,7 @@ fn check_commands(
         };
         assert!((f64::from(rect.x) - placed.x).abs() <= 1.0 / 1024.0);
         assert!((f64::from(rect.y) - placed.y).abs() <= 1.0 / 1024.0);
-        let expected = render_surface_paint(
+        let expected = render_lit_control_paint(
             paint,
             Viewport {
                 origin: PhysicalVector {

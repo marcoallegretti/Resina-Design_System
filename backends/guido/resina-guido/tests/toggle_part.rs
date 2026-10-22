@@ -10,7 +10,7 @@ use guido::{
     },
     widgets::{Color, Rect},
 };
-use resina_guido::prepare_surface_paint;
+use resina_guido::prepare_lit_control_paint;
 use resina_resolver::{resolve_toggle_part_motion_source, resolve_toggle_part_paint_source};
 use serde_json::{Value, json};
 use std::rc::Rc;
@@ -113,7 +113,7 @@ fn checked_part_paint_reaches_native_pixels_with_track_owned_focus() {
                             ir.paint().clone()
                         };
                         for scale in [1.0_f32, 1.25, 2.0] {
-                            let prepared = prepare_surface_paint(&paint, scale, 4).unwrap();
+                            let prepared = prepare_lit_control_paint(&paint, scale, 4).unwrap();
                             let ImageSource::Rgba {
                                 width: iw,
                                 height: _,

@@ -1,13 +1,13 @@
 use crate::label::{parse_label_request, prepare_content};
-use crate::snapshot::{Rectangle, RenderOptions};
+use crate::snapshot::{RELIEF, Rectangle, RenderOptions, light_source};
 use cxx_qt_lib::QString;
 use resina_environment::SafeArea;
 use resina_model::{
-    ActivationState, ColorRole, CommandAppearance, OpaqueSurfaceAppearance, PhysicalVector,
-    SurfaceIntent, SurfaceSize,
+    ActivationState, ColorRole, CommandAppearance, MaterialLightChannels, OpaqueSurfaceAppearance,
+    PhysicalVector, SurfaceIntent, SurfaceSize,
 };
 use resina_resolver::{
-    CommandMotionChannel, CommandMotionChannels, HitRegionInput, OpaqueSurfaceInput,
+    CommandMotionChannel, CommandMotionChannels, ControlRelief, HitRegionInput, OpaqueSurfaceInput,
     SurfacePaintInput, ToggleLayoutInput, TogglePart, TogglePartMotionInput, TogglePartPaintInput,
     ToggleSnapshotInput, resolve_hit_region, resolve_srgb_fallback, resolve_toggle_layout,
     resolve_toggle_part_motion, resolve_toggle_part_paint, resolve_toggle_part_reservation_paint,
@@ -60,6 +60,9 @@ struct Part {
     appearance: OpaqueSurfaceAppearance,
     checked_color_role: ColorRole,
     interaction_appearance: CommandAppearance,
+    #[serde(deserialize_with = "light_source")]
+    light: MaterialLightChannels,
+    relief: ControlRelief,
     foreground_role: ColorRole,
     minimum_content_contrast: f64,
     minimum_edge_contrast: f64,
@@ -79,6 +82,7 @@ mod pigment_source_tests {
         let mut input = json!({
             "surface": body["surface"], "appearance": body["appearance"],
             "checkedColorRole": request["checkedColorRole"], "interactionAppearance": request["interactionAppearance"],
+            "light": request["light"], "relief": request["relief"],
             "foregroundRole": body["foregroundRole"],
             "minimumContentContrast": body["minimumContentContrast"], "minimumEdgeContrast": body["minimumEdgeContrast"],
         });
@@ -89,6 +93,40 @@ mod pigment_source_tests {
             .to_string()
             .replace("\"coefficient-source\"", "-1e-400");
         assert!(serde_json::from_str::<Part>(&source).is_err());
+    }
+
+    #[test]
+    fn toggle_part_rejects_negative_light_sources_even_when_suppressed() {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../../conformance/ir/toggle-part-paint-request.json"
+        ))
+        .unwrap();
+        let body = &request["surface"]["body"];
+        let input = json!({
+            "surface": body["surface"], "appearance": body["appearance"],
+            "checkedColorRole": request["checkedColorRole"], "interactionAppearance": request["interactionAppearance"],
+            "light": request["light"], "relief": request["relief"],
+            "foregroundRole": body["foregroundRole"],
+            "minimumContentContrast": body["minimumContentContrast"], "minimumEdgeContrast": body["minimumEdgeContrast"],
+        });
+        for pointer in ["/light/ambient", "/light/interaction/strength"] {
+            let mut changed = input.clone();
+            *changed.pointer_mut(pointer).unwrap() = json!("coefficient-source");
+            let source = changed.to_string();
+            for (literal, valid) in [("-1e-400", false), ("-0e-400", true), ("1e-400", true)] {
+                let text = source.replace("\"coefficient-source\"", literal);
+                assert_eq!(
+                    serde_json::from_str::<Part>(&text).is_ok(),
+                    valid,
+                    "{pointer} {literal}"
+                );
+            }
+        }
+        for member in ["light", "relief"] {
+            let mut missing = input.clone();
+            missing.as_object_mut().unwrap().remove(member);
+            assert!(serde_json::from_str::<Part>(&missing.to_string()).is_err());
+        }
     }
 }
 #[derive(Deserialize)]
@@ -211,6 +249,8 @@ fn prepare(
         part: TogglePart::Track,
         checked_color_role: request.track.checked_color_role,
         interaction_appearance: &request.track.interaction_appearance,
+        light: &request.track.light,
+        relief: &request.track.relief,
         surface: SurfacePaintInput {
             surrounding_color: Some(&background),
             body: OpaqueSurfaceInput {
@@ -244,11 +284,13 @@ fn prepare(
             None,
         )
     };
-    let track_pigment = track.paint().body().pigment().body();
+    let track_pigment = track.paint().body().face().pigment().body();
     let thumb_input = TogglePartPaintInput {
         part: TogglePart::Thumb,
         checked_color_role: request.thumb.checked_color_role,
         interaction_appearance: &request.thumb.interaction_appearance,
+        light: &request.thumb.light,
+        relief: &request.thumb.relief,
         surface: SurfacePaintInput {
             surrounding_color: None,
             body: OpaqueSurfaceInput {
@@ -317,6 +359,8 @@ fn prepare(
             part: TogglePart::Track,
             checked_color_role: request.track.checked_color_role,
             interaction_appearance: &request.track.interaction_appearance,
+            light: &request.track.light,
+            relief: &request.track.relief,
             surface: SurfacePaintInput {
                 surrounding_color: Some(&background),
                 body: OpaqueSurfaceInput {
@@ -333,7 +377,7 @@ fn prepare(
         },
     )
     .map_err(|error| error.to_string())?;
-    let deepest_track_pigment = deepest_track.paint().body().pigment().body();
+    let deepest_track_pigment = deepest_track.paint().body().face().pigment().body();
     let deepest_thumb = resolve_toggle_part_reservation_paint(
         &content.theme,
         &content.environment,
@@ -341,6 +385,8 @@ fn prepare(
             part: TogglePart::Thumb,
             checked_color_role: request.thumb.checked_color_role,
             interaction_appearance: &request.thumb.interaction_appearance,
+            light: &request.thumb.light,
+            relief: &request.thumb.relief,
             surface: SurfacePaintInput {
                 surrounding_color: None,
                 body: OpaqueSurfaceInput {
@@ -433,7 +479,7 @@ fn prepare(
         (snapshot.track().paint(), track_origin),
         (snapshot.thumb().paint(), thumb_origin),
     ] {
-        resina_qml::prepare_surface_paint(
+        resina_qml::prepare_lit_control_paint(
             paint,
             origin,
             options.device_scale,
@@ -451,24 +497,23 @@ fn prepare(
                 "trajectory":travel.trajectory(),"projection":travel.projection(),"thumbBounds":travel.thumb_bounds()}});
     }
     if render {
-        result["trackSource"] = Value::String(
-            resina_qml::render_surface_paint(
-                snapshot.track().paint(),
-                track_origin,
-                options.device_scale,
-                options.samples_per_axis,
-            )
-            .map_err(|error| error.to_string())?,
-        );
-        result["thumbSource"] = Value::String(
-            resina_qml::render_surface_paint(
-                snapshot.thumb().paint(),
-                thumb_origin,
-                options.device_scale,
-                options.samples_per_axis,
-            )
-            .map_err(|error| error.to_string())?,
-        );
+        for (name, paint, origin) in [
+            ("trackSource", snapshot.track().paint(), track_origin),
+            ("thumbSource", snapshot.thumb().paint(), thumb_origin),
+        ] {
+            let source = RELIEF
+                .with(|reuse| {
+                    resina_qml::render_lit_control_paint(
+                        paint,
+                        origin,
+                        options.device_scale,
+                        options.samples_per_axis,
+                        reuse,
+                    )
+                })
+                .map_err(|error| error.to_string())?;
+            result[name] = Value::String(source);
+        }
     }
     Ok(result)
 }
