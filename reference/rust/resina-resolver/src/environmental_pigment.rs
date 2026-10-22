@@ -126,17 +126,23 @@ pub struct PigmentAdaptation {
     themes: BTreeMap<&'static str, AdaptedTheme>,
 }
 
-#[derive(Debug, Clone, Copy, Serialize)]
-#[serde(untagged)]
+#[derive(Debug, Clone, Copy)]
 pub enum Adaptation {
-    Applied {
-        applied: bool,
-        observation: ObservedColor,
-    },
-    Authored {
-        applied: bool,
-        reason: &'static str,
-    },
+    Applied { observation: ObservedColor },
+    Authored { reason: &'static str },
+}
+
+impl Serialize for Adaptation {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeMap;
+        let mut map = serializer.serialize_map(Some(2))?;
+        map.serialize_entry("applied", &self.applied())?;
+        match self {
+            Self::Applied { observation } => map.serialize_entry("observation", observation)?,
+            Self::Authored { reason } => map.serialize_entry("reason", reason)?,
+        }
+        map.end()
+    }
 }
 
 #[derive(Debug, Clone, Copy, Serialize)]
@@ -355,12 +361,8 @@ pub fn adapt_pigment_request_source(
     Ok(PigmentAdaptation {
         schema_version: "0.1.0",
         adaptation: match (applied, skipped) {
-            (Some((_, observed)), _) => Adaptation::Applied {
-                applied: true,
-                observation: observed,
-            },
+            (Some((_, observation)), _) => Adaptation::Applied { observation },
             (None, reason) => Adaptation::Authored {
-                applied: false,
                 reason: reason.unwrap_or("noObservation"),
             },
         },
