@@ -357,6 +357,11 @@ pub use theme_derivation::{
     DerivedThemeError, ThemeDerivation, ThemeDerivationError, derive_seed,
     derive_theme_request_source,
 };
+mod environmental_pigment;
+pub use environmental_pigment::{
+    ADAPTABLE_ROLES, ADAPTED_COLOR_GROUP, Adaptation, AdaptedTheme, AdaptedThemeError, FrostBound,
+    ObservedColor, PigmentAdaptation, PigmentAdaptationError, adapt_pigment_request_source,
+};
 mod theme_legibility;
 pub use theme_legibility::{
     LEGIBILITY_NON_TEXT_CONTRAST, LEGIBILITY_TEXT_CONTRAST, LegibilityGuardError,
