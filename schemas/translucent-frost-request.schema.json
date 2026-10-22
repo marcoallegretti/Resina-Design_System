@@ -28,7 +28,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["radius"],
-      "properties": {"radius": {"type": "number", "exclusiveMinimum": 0}}
+      "properties": {"radius": {"type": "number", "exclusiveMinimum": 0, "maximum": 65536}}
     },
     "backdrop": {"$ref": "urn:resina:schema:opaque-srgb-range:0.1.0"},
     "adjacentRanges": {

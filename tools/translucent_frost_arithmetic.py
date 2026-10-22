@@ -7,6 +7,7 @@ from check_schemas import ROOT, load_json
 OPAQUE_SURFACE_EXPECTED = "conformance/ir/opaque-surface-expected.json"
 FOCUS_EXPECTED = "conformance/ir/focus-ir-expected.json"
 FOCUS_MINIMUM = 3.0
+MAXIMUM_DIFFUSION_RADIUS = 65536
 TRANSLUCENT = ("shapedBackdrop", "regularBackdrop", "translucentPigmented")
 
 
@@ -84,6 +85,9 @@ def _range(document):
     for bound_color in (lower, upper):
         if bound_color["alpha"] != 1:
             raise ValueError("range bound must be opaque")
+        if not all(math.isfinite(channel) and 0 <= channel <= 1
+                   for channel in bound_color["components"]):
+            raise ValueError("range bound channel must lie in [0, 1]")
     if any(low > high for low, high in zip(lower["components"], upper["components"])):
         raise ValueError("lower exceeds upper")
     return lower["components"], upper["components"]
@@ -141,8 +145,8 @@ def _check_request(request):
     if surface["treatmentStack"]["treatments"][-1] != "none":
         raise ValueError("treatment must be none")
     radius = request["diffusion"]["radius"]
-    if not math.isfinite(radius) or radius <= 0:
-        raise ValueError("diffusion radius must be finite and positive")
+    if not math.isfinite(radius) or not 0 < radius <= MAXIMUM_DIFFUSION_RADIUS:
+        raise ValueError("diffusion radius must be positive and at most 65536")
     for name in ("minimumContentContrast", "minimumEdgeContrast"):
         if not 1 <= request[name] <= 21:
             raise ValueError(f"{name} must be finite and in [1, 21]")
@@ -246,13 +250,13 @@ def expected_result(request):
     focus_ir = None
     if focus is not None:
         focus_ir = load_json(ROOT / FOCUS_EXPECTED)
-        preliminary = _binding(
-            request, theme, select_representation(environment),
-            color(portable, alpha) if select_representation(environment) != "opaqueDimensional"
-            else color(opaque_body), opaque_body,
+        actual = _binding(
+            request, theme, representation,
+            color(opaque_body) if representation == "opaqueDimensional" else color(portable, alpha),
+            opaque_body,
         )
         focus_ir["indicator"].update({
-            "binding": preliminary,
+            "binding": actual,
             "colorRole": focus[0],
             "color": color(focus[1]),
             "contrastRatio": focus[2],

@@ -35,6 +35,24 @@
           "else": {"not": {"required": ["focus"]}}
         },
         {
+          "if": {"properties": {"frostRepresentation": {"const": "shapedBackdrop"}}},
+          "then": {"properties": {"focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "shapedBackdrop"}
+          }}}}}}}}
+        },
+        {
+          "if": {"properties": {"frostRepresentation": {"const": "regularBackdrop"}}},
+          "then": {"properties": {"focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "regularBackdrop"}
+          }}}}}}}}
+        },
+        {
+          "if": {"properties": {"frostRepresentation": {"const": "translucentPigmented"}}},
+          "then": {"properties": {"focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "translucentPigmented"}
+          }}}}}}}}
+        },
+        {
           "if": {"properties": {"frostRepresentation": {"const": "translucentPigmented"}}},
           "then": {"properties": {"body": {"not": {"required": ["diffusion"]}}}},
           "else": {"properties": {"body": {"required": ["diffusion"]}}}
@@ -47,8 +65,27 @@
       "properties": {
         "appearance": {"const": "opaque"},
         "frostRepresentation": {"const": "opaqueDimensional"},
-        "paint": {"properties": {"body": {"properties": {"materialFamily": {"const": "frost"}}}}}
-      }
+        "paint": {"properties": {
+          "body": {"properties": {
+            "materialFamily": {"const": "frost"},
+            "frostRepresentation": {"const": "opaqueDimensional"}
+          }},
+          "focus": {"properties": {"indicator": {"properties": {"binding": {"properties": {
+            "frostRepresentation": {"const": "opaqueDimensional"}
+          }}}}}}
+        }}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"fallbackReason": {"const": "legibility"}}},
+          "then": {"properties": {"paint": {"properties": {"body": {"properties": {
+            "contentFallbackApplied": {"const": true}
+          }}}}}},
+          "else": {"properties": {"paint": {"properties": {"body": {"properties": {
+            "contentFallbackApplied": {"const": false}
+          }}}}}}
+        }
+      ]
     }
   ],
   "$defs": {
@@ -80,7 +117,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": ["radius"],
-          "properties": {"radius": {"type": "number", "exclusiveMinimum": 0}}
+          "properties": {"radius": {"type": "number", "exclusiveMinimum": 0, "maximum": 65536}}
         },
         "geometry": {
           "type": "object",

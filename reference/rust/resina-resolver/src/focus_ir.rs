@@ -65,6 +65,11 @@ pub struct FocusIndicatorIr {
     geometry: FocusRingGeometry,
 }
 impl FocusIndicatorIr {
+    pub(crate) fn with_opaque_frost_fallback(mut self) -> Self {
+        self.indicator = self.indicator.with_opaque_frost_fallback();
+        self
+    }
+
     pub fn indicator(&self) -> &FocusIndicatorResult {
         &self.indicator
     }

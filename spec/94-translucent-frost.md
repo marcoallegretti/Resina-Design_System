@@ -30,15 +30,17 @@ records and unsupported versions fail.
   [common edge and focus contrast](73-common-background-contrast.md). Separate
   regions keep separate ranges. `surroundingRanges` is required exactly when the
   state set contains `focused`.
-- `diffusion.radius` is the authored blur radius, a finite positive number of
-  logical `px`.
+- `diffusion.radius` is the authored blur radius, a finite number of logical
+  `px` greater than 0 and at most 65536.
 
 The surface MUST be Frost, its states MUST be `rest`, `focused` or both and its
 final treatment MUST be `none`, as in
 [Frost surface readability](26-frost-surface-readability.md). The foreground
-role MUST resolve to an opaque color. A range that is inverted, translucent or
-not sRGB, an empty or absent required range set, a missing or nonpositive
-radius and a content threshold outside `[1, 21]` are errors. None is repaired,
+role MUST resolve to an opaque color. A range that is inverted, translucent,
+not sRGB or has a channel outside `[0, 1]`, an empty or absent required range set,
+a missing, nonpositive or larger-than-maximum radius and a content threshold
+outside `[1, 21]` are errors. A range whose ends are equal is a valid interval
+and declares one known backdrop color. None is repaired,
 defaulted or replaced by a sampled color.
 
 ## Legibility does not depend on the radius
@@ -46,10 +48,12 @@ defaulted or replaced by a sampled color.
 A blur is a positively weighted average of backdrop colors, so every color it
 produces lies inside the channel box of the colors it averages. The tinted body
 is therefore certified once, against the declared interval, and the result holds
-for every radius and kernel. Saturation or noise added by a realization is
-admissible only where its result also stays inside `backdrop`; a saturation
-change that preserves relative luminance but leaves the box is not covered by the
-certificate. The radius is authored intent. It is not checked by this headless
+for every radius and kernel. A producer MUST widen the declared
+`backdrop` by any saturation or noise excursion its realization adds, so that
+every color the body can lie over stays inside the box. The decision that
+introduced this contract allowed a luminance-preserving saturation change; the
+certificate is stricter because it bounds channels, and a change that preserves
+relative luminance can still leave the box and with it the guarantee. The radius is authored intent. It is not checked by this headless
 contract and is checked by a backend only where it controls the backdrop it
 diffuses, that is, for an in-scene backdrop.
 
@@ -98,9 +102,10 @@ The result carries one spec/39 `paint` object: the spec/36 body of the same
 surface with the opaque pigment of the authored opaque fallback and, when
 focused, the ring. Its edge and ring use the range-set selections above. Its
 `contentFallbackApplied` is true exactly for reason `legibility`, as for a point
-backdrop in spec/24. The ring's retained binding is the preliminary binding of
-the selection, as in spec/39; consumers use the result's final representation.
-Nothing is blurred or sampled in this branch and the `backdrop` interval does not
+backdrop in spec/24. The ring's retained binding carries the actual
+representation, `opaqueDimensional`, with the opaque body as its portable body,
+as [spec/37](37-focus-indicator-ir.md) requires, so the body and the ring of one result
+never disagree, including after a legibility fallback. Nothing is blurred or sampled in this branch and the `backdrop` interval does not
 affect it.
 
 ## Translucent paint
@@ -157,8 +162,10 @@ contrast, unavailable translucent surfaces and a zero-capability renderer), the
 legibility fallback for a dark and a black to white interval, a bright busy
 interval, thresholds just below and just above the certified bound, selection
 over legibility, several adjacent regions, ring fallback to `outline.strong`,
-focused results in every branch, and rejection of inverted, translucent,
-missing, positional and wide-gamut ranges, empty range sets, a focused surface
+focused results in every branch, a point interval, a light foreground bound by the upper end, a foreground
+inside the composited interval, and rejection of inverted (backdrop, adjacent and
+surrounding), translucent, missing, positional, wide-gamut and out-of-gamut
+ranges, an absurd radius, empty range sets, a focused surface
 without surrounding ranges, nonpositive or malformed radii, unknown shaping
 members, active treatments, non-base states, non-Frost surfaces, translucent
 foregrounds, unreachable thresholds and indistinct edges or rings.
@@ -170,10 +177,15 @@ the committed [spec/36 vectors](../conformance/ir/opaque-surface-expected.json)
 and [focus vectors](../conformance/ir/focus-ir-expected.json). Its
 [tests](../tools/test_translucent_frost_backend.py) check selection against the
 [spec/31 vectors](../conformance/materials/frost-fallback-vectors.json), the
-bound against dense sampling of the interval, and that the comparison detects a
+bound against a grid of 343 backdrop colors spanning the interval box, with both
+bounding ends and the interior crossing in separate vectors, and that the comparison detects a
 changed decision member. The Rust reference additionally checks that geometry and
-light equal the opaque surface at three sizes and three scales, that an opaque
-selection equals the spec/36 result, and the strict request shape.
+light equal the opaque surface at three sizes and three scales, and the strict
+request shape. The external checker and the Rust tests also run the equivalent
+[surface paint](39-surface-paint-ir.md) request, with point ranges, for both
+reasons and for rest, focused and combined states, and require the opaque
+`paint` to match it, apart from the ring's retained representation, which is the
+actual one here.
 
 `resina-translucent-frost <path|->` reads one UTF-8 request of at most 1 MiB.
 Success exits 0 with one JSON result and no diagnostic; resolution or input

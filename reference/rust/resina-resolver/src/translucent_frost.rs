@@ -28,6 +28,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
 
+const MAXIMUM_DIFFUSION_RADIUS: f64 = 65536.0;
+
 pub struct TranslucentFrostInput<'a> {
     pub surface: &'a SurfaceIntent,
     pub size: SurfaceSize,
@@ -167,18 +169,6 @@ pub struct TranslucentFrostBody {
     content_contrast_ratio: f64,
 }
 
-impl TranslucentFrostBody {
-    pub fn pigment(&self) -> &TranslucentPigment {
-        &self.pigment
-    }
-    pub fn edge(&self) -> &EdgeContrastResult {
-        &self.edge
-    }
-    pub fn content_contrast_ratio(&self) -> f64 {
-        self.content_contrast_ratio
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(
     tag = "appearance",
@@ -207,9 +197,6 @@ pub struct TranslucentFrostIr {
 }
 
 impl TranslucentFrostIr {
-    pub fn frost_representation(&self) -> FrostRepresentation {
-        self.frost_representation
-    }
     pub fn appearance(&self) -> &FrostAppearance {
         &self.appearance
     }
@@ -222,7 +209,6 @@ pub enum TranslucentFrostError {
     InvalidRequestShape,
     UnsupportedVersion,
     Theme(ThemeResolutionError),
-    Color(OpaqueSurfaceError),
     Range(ContrastRangeError),
     Binding(SurfaceBindingError),
     Scope(FrostSurfaceReadabilityError),
@@ -250,12 +236,14 @@ impl fmt::Display for TranslucentFrostError {
             }
             Self::UnsupportedVersion => f.write_str("schemaVersion must be 0.1.0"),
             Self::Theme(e) => write!(f, "translucent Frost theme: {e}"),
-            Self::Color(e) => write!(f, "translucent Frost range: {e}"),
             Self::Range(e) => write!(f, "translucent Frost range: {e}"),
             Self::Binding(e) => write!(f, "translucent Frost binding: {e}"),
             Self::Scope(e) => write!(f, "translucent Frost scope: {e}"),
             Self::InvalidDiffusionRadius => {
-                f.write_str("diffusion radius must be finite and positive")
+                write!(
+                    f,
+                    "diffusion radius must be positive and at most {MAXIMUM_DIFFUSION_RADIUS}"
+                )
             }
             Self::InvalidContentThreshold => {
                 f.write_str("minimumContentContrast must be finite and in [1, 21]")
@@ -289,7 +277,7 @@ impl std::error::Error for TranslucentFrostError {}
 fn range(input: RangeInput) -> Result<OpaqueSrgbRange, TranslucentFrostError> {
     let color = |input: crate::srgb_input::SrgbInput| {
         input.into_fallback().map_err(|error| {
-            TranslucentFrostError::Color(match error {
+            TranslucentFrostError::Surface(match error {
                 SrgbInputError::InvalidColorSpace => {
                     OpaqueSurfaceError::InvalidColorSpace("range bound")
                 }
@@ -350,7 +338,10 @@ pub fn resolve_translucent_frost(
     environment: &EnvironmentSnapshot,
     input: TranslucentFrostInput<'_>,
 ) -> Result<TranslucentFrostIr, TranslucentFrostError> {
-    if !input.diffusion_radius.is_finite() || input.diffusion_radius <= 0.0 {
+    if !input.diffusion_radius.is_finite()
+        || input.diffusion_radius <= 0.0
+        || input.diffusion_radius > MAXIMUM_DIFFUSION_RADIUS
+    {
         return Err(TranslucentFrostError::InvalidDiffusionRadius);
     }
     if !input.minimum_content_contrast.is_finite()
@@ -435,6 +426,11 @@ pub fn resolve_translucent_frost(
     let focus = resolve_control_focus(theme, environment, &snapshot, &paint_input, depth, true)
         .map_err(TranslucentFrostError::Paint)?;
     let Some((composited, bound)) = certificate else {
+        let focus = if translucent {
+            focus.map(FocusIndicatorIr::with_opaque_frost_fallback)
+        } else {
+            focus
+        };
         let binding = if translucent {
             binding.with_opaque_frost_fallback()
         } else {
