@@ -65,9 +65,9 @@ ResinaToggleInput {
 
     function motionSource(request, options) {
         // Resolve policy/target through Rust; no material policy is implemented in QML.
-        const retained = state.motionTarget ? captureMotion() : state.channels;
         // Targets and policies follow the request alone, so frames of one request resolve them once.
         if (state.probeRequest !== request) {
+            const retained = state.motionTarget ? captureMotion() : state.channels;
             state.probe = clockValue(resolver.resolveMotionSnapshot(request,measurement,options,
                 JSON.stringify({channels:retained,time:0}),false)).motion;
             state.probeRequest = request;
