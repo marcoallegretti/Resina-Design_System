@@ -28,5 +28,75 @@
       "archivePath": "extras/otf/Inter-SemiBold.otf",
       "sha256": "bd68706b7bf8b3c580ae57685a2116bb1704b3a9998309ccfec7cd486f8a593e"
     }
+  ],
+  "scripts": [
+    {
+      "script": "Arabic",
+      "lang": "ar",
+      "family": "Noto Sans Arabic",
+      "version": "2.013",
+      "license": "SIL Open Font License 1.1",
+      "archive": {
+        "url": "https://github.com/notofonts/arabic/releases/download/NotoSansArabic-v2.013/NotoSansArabic-v2.013.zip",
+        "sha256": "1301aceaea84c501cf2e6dcfb3182e2328c8eae5725817fcb239672bda7154f1"
+      },
+      "masters": [
+        {
+          "style": "Regular",
+          "weight": 400,
+          "file": "NotoSansArabic-Regular.ttf",
+          "archivePath": "NotoSansArabic/unhinted/ttf/NotoSansArabic-Regular.ttf",
+          "sha256": "bd86ca02f087d7f3c3788ba458fb6b73744c7639ed276b8d870dba6def6c40d0"
+        },
+        {
+          "style": "Medium",
+          "weight": 500,
+          "file": "NotoSansArabic-Medium.ttf",
+          "archivePath": "NotoSansArabic/unhinted/ttf/NotoSansArabic-Medium.ttf",
+          "sha256": "a66dfdfd2fd345d500a8f169d07297eb29fc683938c61d6bdd5717cafca86d51"
+        },
+        {
+          "style": "SemiBold",
+          "weight": 600,
+          "file": "NotoSansArabic-SemiBold.ttf",
+          "archivePath": "NotoSansArabic/unhinted/ttf/NotoSansArabic-SemiBold.ttf",
+          "sha256": "36482b7e28267a3ea73eb6b86cf697747b5fbe272a9692df739ded695773642a"
+        }
+      ]
+    },
+    {
+      "script": "Hebrew",
+      "lang": "he",
+      "family": "Noto Sans Hebrew",
+      "version": "3.001",
+      "license": "SIL Open Font License 1.1",
+      "archive": {
+        "url": "https://github.com/notofonts/hebrew/releases/download/NotoSansHebrew-v3.001/NotoSansHebrew-v3.001.zip",
+        "sha256": "df0a71814b4e63644cf40fcc4529111b61266b7a2dafbe95068b29a7520cc3cb"
+      },
+      "masters": [
+        {
+          "style": "Regular",
+          "weight": 400,
+          "file": "NotoSansHebrew-Regular.ttf",
+          "archivePath": "NotoSansHebrew/unhinted/ttf/NotoSansHebrew-Regular.ttf",
+          "sha256": "04272f5600d0ec816d31d0df73b23aa8d3501ea359ebe820da31c11ffcf00853"
+        },
+        {
+          "style": "Medium",
+          "weight": 500,
+          "file": "NotoSansHebrew-Medium.ttf",
+          "archivePath": "NotoSansHebrew/unhinted/ttf/NotoSansHebrew-Medium.ttf",
+          "sha256": "fe7bcc05fd42905e824d07092c059d380dcd89b6fd733cca2688749a05f635a7"
+        },
+        {
+          "style": "SemiBold",
+          "weight": 600,
+          "file": "NotoSansHebrew-SemiBold.ttf",
+          "archivePath": "NotoSansHebrew/unhinted/ttf/NotoSansHebrew-SemiBold.ttf",
+          "sha256": "e6d0059bef465781da0258d9b7631cf63c18963a016be0987e50611a1db4aa90"
+        }
+      ]
+    }
   ]
 }
