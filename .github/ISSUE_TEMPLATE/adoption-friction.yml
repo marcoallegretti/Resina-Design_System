@@ -8,7 +8,7 @@ body:
       value: |
         Search existing issues for the same friction before filing.
         Report what slowed you down, even if you found a way through. Recorded friction is the evidence that admits work into the adoption releases.
-        Use the defect form for incorrect behavior and the architectural proposal form for changes to public contracts.
+        Use the Defect or contribution form for incorrect behavior and the architectural proposal form for changes to public contracts.
   - type: textarea
     id: goal
     attributes:
