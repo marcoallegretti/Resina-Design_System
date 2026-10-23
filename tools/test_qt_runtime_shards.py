@@ -40,6 +40,7 @@ EXPECTED_CHECKS = [
     "check_quickshell_label_render_runtime.py",
     "check_quickshell_lit_body.py",
     "check_quickshell_label_runtime.py",
+    "check_quickshell_toggle_accessibility.py",
     "check_quickshell_toggle_lifecycle.py",
     "check_quickshell_toggle_updates.py",
 ]

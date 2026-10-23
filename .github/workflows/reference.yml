@@ -298,7 +298,7 @@ jobs:
             --command-resolver target/qt-runtime-build/debug/resina-command-paint \
             --output-dir target/quickshell-clock-shell --scale 1 \
             --test-settings --require reduced-motion contrast color-scheme
-      - name: Check compositor-delivered Toggle lifecycle in released Quickshell
+      - name: Check compositor-delivered Toggle lifecycle and accessibility in released Quickshell
         if: contains(matrix.groups, 'toggle-lifecycle')
         timeout-minutes: 15
         run: |
@@ -317,6 +317,10 @@ jobs:
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font-dir "$CONFORMANCE_FONTS" \
             --output-dir target/quickshell-toggle-lifecycle
+          python tools/check_quickshell_toggle_accessibility.py \
+            --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+            --font-dir "$CONFORMANCE_FONTS" \
+            --output-dir target/quickshell-toggle-accessibility
       - name: Check compositor-delivered Command motion and the clock shell at the shard output scales with a live scale change
         if: matrix.output_scales != ''
         env:
@@ -428,6 +432,7 @@ jobs:
             target/quickshell-clock-shell-*/
             target/lifecycle-sway.log
             target/quickshell-toggle-lifecycle/
+            target/quickshell-toggle-accessibility/
             target/toggle-lifecycle-sway.log
           if-no-files-found: warn
   qt-runtime-result:
