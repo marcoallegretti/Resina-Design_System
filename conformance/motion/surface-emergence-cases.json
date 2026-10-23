@@ -709,5 +709,721 @@
     ],
     "requestSchemaValid": false,
     "errorContains": "size"
+  },
+  {
+    "name": "both ends validate but a corner that opens from zero extent rejects the early frames",
+    "requestChanges": [
+      {
+        "path": "/from/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 0,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomStart": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/to/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/from/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/to/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/from/content",
+        "value": {
+          "x": 2,
+          "y": 2,
+          "width": 96,
+          "height": 36
+        }
+      },
+      {
+        "path": "/to/content",
+        "value": {
+          "x": 10,
+          "y": 10,
+          "width": 80,
+          "height": 20
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0.0001
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "content"
+  },
+  {
+    "name": "a corner that opens from zero extent rejects the visible source content in flight",
+    "requestChanges": [
+      {
+        "path": "/from/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 0,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomStart": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/to/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/from/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/to/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/from/content",
+        "value": {
+          "x": 2,
+          "y": 2,
+          "width": 96,
+          "height": 36
+        }
+      },
+      {
+        "path": "/to/content",
+        "value": {
+          "x": 10,
+          "y": 10,
+          "width": 80,
+          "height": 20
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0.02
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "visible content leaves the uniform face"
+  },
+  {
+    "name": "the endpoints of that sequence are still accepted",
+    "requestChanges": [
+      {
+        "path": "/from/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 0,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomStart": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/to/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/from/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/to/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/from/content",
+        "value": {
+          "x": 2,
+          "y": 2,
+          "width": 96,
+          "height": 36
+        }
+      },
+      {
+        "path": "/to/content",
+        "value": {
+          "x": 10,
+          "y": 10,
+          "width": 80,
+          "height": 20
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "the settled end of that sequence is still accepted",
+    "requestChanges": [
+      {
+        "path": "/from/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 0,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomStart": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/to/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/from/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/to/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/from/content",
+        "value": {
+          "x": 2,
+          "y": 2,
+          "width": 96,
+          "height": 36
+        }
+      },
+      {
+        "path": "/to/content",
+        "value": {
+          "x": 10,
+          "y": 10,
+          "width": 80,
+          "height": 20
+        }
+      },
+      {
+        "path": "/time",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "source content that stops fitting before its opacity reaches zero is rejected",
+    "requestChanges": [
+      {
+        "path": "/from/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/to/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 14
+        }
+      },
+      {
+        "path": "/from/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/to/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/from/content",
+        "value": {
+          "x": 10,
+          "y": 8,
+          "width": 80,
+          "height": 24
+        }
+      },
+      {
+        "path": "/to/content",
+        "value": {
+          "x": 30,
+          "y": 16,
+          "width": 40,
+          "height": 8
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0.1
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "visible content leaves the uniform face"
+  },
+  {
+    "name": "frames before the source content stops fitting are accepted",
+    "requestChanges": [
+      {
+        "path": "/from/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 2
+        }
+      },
+      {
+        "path": "/to/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 100,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 20,
+              "y": 20
+            },
+            "topEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 20
+            },
+            "bottomStart": {
+              "x": 20,
+              "y": 20
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 14
+        }
+      },
+      {
+        "path": "/from/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/to/origin",
+        "value": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "path": "/from/content",
+        "value": {
+          "x": 10,
+          "y": 8,
+          "width": 80,
+          "height": 24
+        }
+      },
+      {
+        "path": "/to/content",
+        "value": {
+          "x": 30,
+          "y": 16,
+          "width": 40,
+          "height": 8
+        }
+      },
+      {
+        "path": "/time",
+        "value": 0.02
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "opacity dynamics exactly critical in binary64 are accepted",
+    "requestChanges": [
+      {
+        "path": "/channels/opacity/dynamics",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "mass": 0.1,
+          "stiffness": 1690,
+          "damping": 26,
+          "positionThreshold": 0.0001,
+          "velocityThreshold": 0.01
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "opacity dynamics one ulp below critical are rejected",
+    "requestChanges": [
+      {
+        "path": "/channels/opacity/dynamics",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "mass": 0.1,
+          "stiffness": 1690,
+          "damping": 25.999999999999996,
+          "positionThreshold": 0.0001,
+          "velocityThreshold": 0.01
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "overshoot"
+  },
+  {
+    "name": "an elapsed time near the representable limit still settles",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+305
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an elapsed time whose normalized time overflows is rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+307
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an initial progress displacement that overflows the energy bound is rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/progress",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 0
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
   }
 ]

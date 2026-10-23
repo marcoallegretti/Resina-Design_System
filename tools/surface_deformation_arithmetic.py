@@ -1,12 +1,14 @@
+import math
 import sys
 from decimal import Decimal, getcontext
 from fractions import Fraction
 
 from check_command_motion_backend import equation_sample
+from check_schemas import ROOT, load_json
 
 getcontext().prec = 60
 
-LIMITS = {"cast": 0.0, "frost": 0.02, "elastomer": 0.06}
+LIMITS = load_json(ROOT / "definitions/motion/surface-deformation-limits.json")["limits"]
 PADDING = {
     "circular": Fraction(1 - Decimal("0.5").sqrt()),
     "quartic": Fraction(1 - Decimal("0.5").sqrt().sqrt()),
@@ -15,7 +17,6 @@ PHYSICAL = {
     "ltr": ("topStart", "topEnd", "bottomEnd", "bottomStart"),
     "rtl": ("topEnd", "topStart", "bottomStart", "bottomEnd"),
 }
-MAXIMUM_TIME = Fraction(10) ** 300
 MAXIMUM_FLOAT = Fraction(sys.float_info.max)
 
 
@@ -41,7 +42,7 @@ def valid_dynamics(dynamics):
 
 
 def valid_time(time):
-    if exact(time) < 0 or exact(time) > MAXIMUM_TIME:
+    if exact(time) < 0:
         raise Reject("time must be finite and nonnegative")
 
 
@@ -61,11 +62,29 @@ def project(value, lower, upper):
     return value, "none"
 
 
+def representable(value):
+    return abs(value) <= MAXIMUM_FLOAT
+
+
 def sample(channel, target, time, policy):
-    valid_dynamics(channel["dynamics"])
-    exact(channel["initial"]["position"])
-    exact(channel["initial"]["velocity"])
-    return equation_sample(channel, target, time, policy != "spring")
+    dynamics = channel["dynamics"]
+    valid_dynamics(dynamics)
+    position, velocity = exact(channel["initial"]["position"]), exact(channel["initial"]["velocity"])
+    if policy == "spring":
+        omega = Fraction(math.sqrt(dynamics["stiffness"] / dynamics["mass"]))
+        displacement = position - exact(target)
+        energy_bound_squared = omega**2 * displacement**2 + velocity**2
+        if (
+            not representable(displacement)
+            or not representable(velocity / omega)
+            or not representable(omega * exact(time))
+            or energy_bound_squared > MAXIMUM_FLOAT**2
+        ):
+            raise Reject("spring arithmetic exceeds the representable range")
+    result = equation_sample(channel, target, time, policy != "spring")
+    if not all(math.isfinite(result["state"][name]) for name in ("position", "velocity")):
+        raise Reject("spring result exceeds the representable range")
+    return result
 
 
 def outline(curvature, direction, radii, inset, width, height):
@@ -247,6 +266,32 @@ def emergence_ends(request):
     return ends
 
 
+def emergence_outline(request, weight):
+    first, second = (request[name]["outline"] for name in ("from", "to"))
+    origins = [(exact(request[name]["origin"]["x"]), exact(request[name]["origin"]["y"])) for name in ("from", "to")]
+    radii = {
+        name: tuple(lerp(exact(first["radii"][name][axis]), exact(second["radii"][name][axis]), weight) for axis in "xy")
+        for name in first["radii"]
+    }
+    origin = tuple(lerp(origins[0][axis], origins[1][axis], weight) for axis in (0, 1))
+    size = tuple(lerp(exact(first["size"][axis]), exact(second["size"][axis]), weight) for axis in ("width", "height"))
+    inset = lerp(exact(first["minimumInset"]), exact(second["minimumInset"]), weight)
+    return origin, outline(first["curvature"], first["layoutDirection"], radii, inset, size[0], size[1])
+
+
+def first_unfitted_weight(request, end, steps):
+    box = rectangle(request[end]["content"])
+    for step in range(steps + 1):
+        weight = Fraction(step, steps)
+        try:
+            origin, resolved = emergence_outline(request, weight)
+        except Reject:
+            return weight
+        if not contained(box, resolved, origin):
+            return weight
+    return None
+
+
 def emergence(request, accepted=None):
     policy = policy_of(request)
     if request["schemaVersion"] != "0.1.0":
@@ -264,7 +309,7 @@ def emergence(request, accepted=None):
     for name in ("progress", "opacity"):
         valid_dynamics(request["channels"][name]["dynamics"])
     fade = request["channels"]["opacity"]["dynamics"]
-    if exact(fade["damping"]) ** 2 < 4 * exact(fade["mass"]) * exact(fade["stiffness"]):
+    if float(fade["damping"]) * float(fade["damping"]) < 4.0 * float(fade["mass"]) * float(fade["stiffness"]):
         raise Reject("opacity dynamics must not overshoot")
     target = 1 if request["emerged"] else 0
     samples, positions, projection = {}, {}, {}
@@ -272,18 +317,9 @@ def emergence(request, accepted=None):
         oracle = sample(request["channels"][name], target, request["time"], policy)
         samples[name] = oracle if accepted is None else accepted[name]
         positions[name], projection[name] = project(exact(samples[name]["state"]["position"]), Fraction(0), Fraction(1))
-    weight = positions["progress"]
-    first, second = (end["outline"] for end in ends)
-    sizes = [(exact(o["size"]["width"]), exact(o["size"]["height"])) for o in (first, second)]
+    origin, resolved = emergence_outline(request, positions["progress"])
+    sizes = [(exact(end["outline"]["size"]["width"]), exact(end["outline"]["size"]["height"])) for end in ends]
     origins = [(exact(end["origin"]["x"]), exact(end["origin"]["y"])) for end in ends]
-    radii = {
-        name: tuple(lerp(exact(first["radii"][name][axis]), exact(second["radii"][name][axis]), weight) for axis in "xy")
-        for name in first["radii"]
-    }
-    origin = tuple(lerp(origins[0][axis], origins[1][axis], weight) for axis in (0, 1))
-    size = tuple(lerp(sizes[0][axis], sizes[1][axis], weight) for axis in (0, 1))
-    inset = lerp(exact(first["minimumInset"]), exact(second["minimumInset"]), weight)
-    resolved = outline(first["curvature"], first["layoutDirection"], radii, inset, size[0], size[1])
     opacity = positions["opacity"]
     contents = {}
     for name, end, visible in (("fromContent", ends[0], 1 - opacity), ("toContent", ends[1], opacity)):

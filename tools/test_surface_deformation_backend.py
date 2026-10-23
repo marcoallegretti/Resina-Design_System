@@ -168,6 +168,26 @@ class EmergenceEndpoints(unittest.TestCase):
             self.assertEqual(result["origin"], {"x": float(changed[end]["origin"]["x"]), "y": float(changed[end]["origin"]["y"])})
 
 
+class ProducerContainmentCheck(unittest.TestCase):
+    def named(self, name):
+        return request_of("emergence", name)
+
+    def test_a_corner_opening_from_zero_extent_fails_at_the_first_weight(self):
+        request = self.named("the endpoints of that sequence are still accepted")
+        self.assertEqual(arithmetic.first_unfitted_weight(request, "from", 64), Fraction(1, 64))
+
+    def test_the_source_content_stops_fitting_part_way_and_the_destination_always_fits(self):
+        request = self.named("frames before the source content stops fitting are accepted")
+        weight = arithmetic.first_unfitted_weight(request, "from", 64)
+        self.assertTrue(Fraction(1, 4) < weight < 1)
+        self.assertIsNone(arithmetic.first_unfitted_weight(request, "to", 64))
+
+    def test_matching_nonzero_corners_keep_the_early_frames_valid(self):
+        request = baseline("emergence")
+        request["to"]["content"] = request["from"]["content"]
+        self.assertIsNone(arithmetic.first_unfitted_weight(request, "from", 64))
+
+
 class ComparisonDetectsChanges(unittest.TestCase):
     def mismatch(self, kind, edit):
         request = case_request(baseline(kind), cases(kind)[0])

@@ -905,6 +905,184 @@
     "errorContains": "time"
   },
   {
+    "name": "a very large elapsed time settles at the target",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+300
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an elapsed time near the representable limit still settles",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+305
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an elapsed time whose normalized time overflows is rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+307
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an initial displacement that overflows the energy bound is rejected at time zero",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 0
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an initial displacement that overflows the energy bound is rejected after elapsed time",
+    "requestChanges": [
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 0
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an initial velocity whose energy stays representable is accepted",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1,
+            "velocity": 1e+308
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an initial displacement and velocity that overflow together are rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 1e+308
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an overflowing initial state is accepted when the policy is immediate",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/reducedMotion",
+        "value": true
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 1e+308
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "reducedMotion"
+  },
+  {
     "name": "a collapsed outline is rejected",
     "requestChanges": [
       {
