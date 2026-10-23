@@ -1,0 +1,488 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:environmental-pigment-result:0.1.0",
+  "title": "Resina Environmental Pigment Adaptation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "adaptation",
+    "themes"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "adaptation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applied",
+            "observation"
+          ],
+          "properties": {
+            "applied": {
+              "const": true
+            },
+            "observation": {
+              "$ref": "urn:resina:schema:theme-derivation-result:0.1.0#/$defs/seed"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applied",
+            "reason"
+          ],
+          "properties": {
+            "applied": {
+              "const": false
+            },
+            "reason": {
+              "enum": [
+                "noObservation",
+                "highContrast",
+                "reducedTransparency"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "themes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "light",
+        "dark"
+      ],
+      "properties": {
+        "light": {
+          "$ref": "#/$defs/theme"
+        },
+        "dark": {
+          "$ref": "#/$defs/theme"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "adaptation": {
+            "properties": {
+              "applied": {
+                "const": false
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "themes": {
+            "properties": {
+              "light": {
+                "properties": {
+                  "roles": {
+                    "maxProperties": 0
+                  }
+                },
+                "not": {
+                  "required": [
+                    "frostCertification"
+                  ]
+                }
+              },
+              "dark": {
+                "properties": {
+                  "roles": {
+                    "maxProperties": 0
+                  }
+                },
+                "not": {
+                  "required": [
+                    "frostCertification"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "adaptation": {
+            "properties": {
+              "applied": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "themes": {
+            "properties": {
+              "light": {
+                "properties": {
+                  "roles": {
+                    "required": [
+                      "surface.base",
+                      "surface.low",
+                      "surface.high"
+                    ]
+                  }
+                }
+              },
+              "dark": {
+                "properties": {
+                  "roles": {
+                    "required": [
+                      "surface.base",
+                      "surface.low",
+                      "surface.high"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetOklch",
+        "color"
+      ],
+      "properties": {
+        "targetOklch": {
+          "$ref": "urn:resina:schema:theme-derivation-result:0.1.0#/$defs/oklch"
+        },
+        "color": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "colorSpace",
+            "components"
+          ],
+          "properties": {
+            "colorSpace": {
+              "const": "srgb"
+            },
+            "components": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "alpha": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            }
+          }
+        }
+      }
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "surface.base": {
+          "$ref": "#/$defs/castRole"
+        },
+        "surface.low": {
+          "$ref": "#/$defs/castRole"
+        },
+        "surface.high": {
+          "$ref": "#/$defs/castRole"
+        },
+        "surface.chrome": {
+          "$ref": "#/$defs/frostRole"
+        }
+      }
+    },
+    "bound": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "foreground",
+        "minimumContrast",
+        "contrastBound",
+        "passed"
+      ],
+      "properties": {
+        "foreground": {
+          "type": "string"
+        },
+        "minimumContrast": {
+          "type": "number"
+        },
+        "contrastBound": {
+          "type": "number",
+          "minimum": 1
+        },
+        "passed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "frostCertification": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": false,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "content.primary"
+            },
+            "minimumContrast": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "content.secondary"
+            },
+            "minimumContrast": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "content.muted"
+            },
+            "minimumContrast": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "status.error"
+            },
+            "minimumContrast": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "status.warning"
+            },
+            "minimumContrast": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "status.success"
+            },
+            "minimumContrast": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "status.info"
+            },
+            "minimumContrast": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "outline"
+            },
+            "minimumContrast": {
+              "const": 3
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/bound",
+          "properties": {
+            "foreground": {
+              "const": "focus"
+            },
+            "minimumContrast": {
+              "const": 3
+            }
+          }
+        }
+      ]
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "roles",
+        "legibilityGuard"
+      ],
+      "properties": {
+        "source": {
+          "$ref": "urn:resina:schema:theme-source:0.1.0"
+        },
+        "roles": {
+          "$ref": "#/$defs/roles"
+        },
+        "frostCertification": {
+          "$ref": "#/$defs/frostCertification"
+        },
+        "legibilityGuard": {
+          "$ref": "urn:resina:schema:theme-legibility-guard:0.1.0"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "frostCertification"
+            ],
+            "properties": {
+              "frostCertification": {
+                "not": {
+                  "contains": {
+                    "type": "object",
+                    "required": [
+                      "passed"
+                    ],
+                    "properties": {
+                      "passed": {
+                        "const": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "roles": {
+                "required": [
+                  "surface.chrome"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "frostCertification"
+            ],
+            "properties": {
+              "frostCertification": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "passed"
+                  ],
+                  "properties": {
+                    "passed": {
+                      "const": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "roles": {
+                "not": {
+                  "required": [
+                    "surface.chrome"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "roles": {
+                "required": [
+                  "surface.chrome"
+                ]
+              }
+            },
+            "required": [
+              "roles"
+            ]
+          },
+          "then": {
+            "required": [
+              "frostCertification"
+            ]
+          }
+        }
+      ]
+    },
+    "castRole": {
+      "$ref": "#/$defs/role",
+      "properties": {
+        "color": {
+          "not": {
+            "required": [
+              "alpha"
+            ]
+          }
+        }
+      }
+    },
+    "frostRole": {
+      "$ref": "#/$defs/role",
+      "properties": {
+        "color": {
+          "required": [
+            "alpha"
+          ]
+        }
+      }
+    }
+  }
+}

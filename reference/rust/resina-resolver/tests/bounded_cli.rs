@@ -159,6 +159,11 @@ const COMMANDS: &[(&str, &str, usize)] = &[
         MIB,
     ),
     (
+        "resina-pigment-adapt",
+        env!("CARGO_BIN_EXE_resina-pigment-adapt"),
+        64 * MIB,
+    ),
+    (
         "resina-theme-resolve",
         env!("CARGO_BIN_EXE_resina-theme-resolve"),
         64 * MIB,
