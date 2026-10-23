@@ -510,8 +510,11 @@ fn light_never_changes_cues_content_or_the_disabled_bound() {
     let unlit = light(Value::Null, Value::Null);
     let lit = full_light();
     let mut compared = 0;
-    for (admits, environment) in [(false, environment()), (true, admitting_environment())] {
-        let bound = if admits { 3.0 } else { 4.5 };
+    for (admits, high_contrast, environment) in [
+        (false, true, environment()),
+        (true, false, admitting_environment()),
+    ] {
+        let bound = if high_contrast { 4.5 } else { 3.0 };
         for theme in themes(&environment) {
             for emphasis in [CommandEmphasis::Standard, CommandEmphasis::Primary] {
                 let body = commands.variant(emphasis).body();

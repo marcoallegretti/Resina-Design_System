@@ -119,7 +119,9 @@ def refine(geometry, point, sign):
 def peaks(geometry):
     """The greatest positive and most negative signed key response of one body.
 
-    The sample grid locates the extremum and a pattern search converges on it.
+    The sample grid locates the extremum and a pattern search converges on it. The extremum of the key
+    response is the peak of the painted difference because the face color moves monotonically away from the
+    body with the magnitude of the signed response; the tests check this by brute force over painted colors.
     """
     best, worst = (0.0, None), (0.0, None)
     for column in range(int(geometry.width / STEP) + 1):

@@ -2,7 +2,8 @@ import copy
 import unittest
 
 from check_schemas import load_json
-from lit_control_visibility import SIZES, STEP, TABLE, check, geometries, inputs, response_at
+from lit_body_arithmetic import Body
+from lit_control_visibility import SIZES, STEP, TABLE, bodies, check, delta, geometries, inputs, response_at, source
 
 
 class LitControlVisibilityTests(unittest.TestCase):
@@ -49,6 +50,29 @@ class LitControlVisibilityTests(unittest.TestCase):
                             best = max(best, sign * response_at(geometry, point))
                 with self.subTest(part=part, witness=name):
                     self.assertLess(best - sign * witness["response"], 1e-9)
+
+    def test_peak_difference_is_the_brute_force_maximum_of_painted_colors(self):
+        """The larger of a row's two deltas is the greatest difference painted anywhere on the face."""
+        table = self.table()
+        appearance, foundation, relief, environment = inputs()
+        shapes = {(part, variant): shape for part, variant, _, _, _, _, shape in bodies()}
+        chosen = [(0, "light", "elastomer", "commandBody", "standard"), (1, "dark", "frost", "toggleTrack", "track"),
+                  (2, "dark", "cast", "toggleThumb", "thumb"), (3, "light", "cast", "commandBody", "primary"),
+                  (4, "light", "frost", "toggleThumb", "thumb")]
+        for _, theme, family, part, variant in chosen:
+            rows = [row for row in table["rows"] if (row["theme"], row["materialFamily"], row["part"], row["variant"]) == (theme, family, part, variant)]
+            for row in rows:
+                body = Body(source(part, shapes[(part, variant)], family, row["body"], appearance, foundation, relief, environment))
+                brute = 0.0
+                for column in range(int(SIZES[part]["width"] / 0.5) + 1):
+                    for line in range(int(SIZES[part]["height"] / 0.5) + 1):
+                        point = (column * 0.5, line * 0.5)
+                        if body.contains(point, body.edge_width):
+                            brute = max(brute, delta(row["body"], body.face_color(point)["components"]))
+                published = max(row["highlightDeltaE"], row["shadingDeltaE"])
+                with self.subTest(row=row):
+                    self.assertLessEqual(brute, published + 1e-9)
+                    self.assertGreater(brute, published * 0.99)
 
 
 if __name__ == "__main__":
