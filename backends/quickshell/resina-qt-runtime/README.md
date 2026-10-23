@@ -441,8 +441,8 @@ fallback ratio 2 and received its scale only afterwards, so a Command or Toggle
 in such a window can publish once at the fallback density; the change of the
 window's ratio then withdraws readiness, as a live output-scale change does, and
 the control prepares again at the new density. The compositor-delivered
-checks (Command and Toggle lifecycle, Command accessibility, motion and motion
-frame budget, and the clock shell) host their controls only in layer-shell
+checks (Command and Toggle lifecycle, Command and Toggle accessibility, motion and
+motion frame budget, and the clock shell) host their controls only in layer-shell
 `PanelWindow`s. The authored-update, focus, label, label-render, paint and
 native-availability probes use a `FloatingWindow`. CI runs the update checks on
 Qt's offscreen platform and the native-availability check on xcb under Xvfb;
@@ -1357,9 +1357,37 @@ The checker observes that a hold is cleared, not which native owner clears it:
 the keyboard owner, the control and the native pointer owner each cancel on
 parent and window changes. A Space released after window deactivation reaches
 the other surface, so the cleared hold, not the effect count, proves that case.
-Configuration replacement during a gesture, AT-SPI delivery, motion, physical
-devices, multiple seats and outputs, fractional scale and screen-reader
-operation are not covered.
+Configuration replacement during a gesture, motion, physical devices, multiple
+seats and outputs, fractional scale and screen-reader operation are not covered;
+[Toggle accessibility](#released-quickshell-toggle-accessibility) covers one
+AT-SPI delivery case.
+
+### Released Quickshell Toggle accessibility
+
+[`check_quickshell_toggle_accessibility.py`](../../../tools/check_quickshell_toggle_accessibility.py)
+runs the Toggle lifecycle probe in a private D-Bus session with the AT-SPI bus
+and Qt accessibility enabled, with the arguments and compositor session of the
+lifecycle checker and the event listener of the Command accessibility checker:
+
+```sh
+python tools/check_quickshell_toggle_accessibility.py \
+  --host /path/to/quickshell --module-path target/qt-runtime-import \
+  --font-dir $CONFORMANCE_FONTS \
+  --output-dir target/quickshell-toggle-accessibility
+```
+
+- After the Toggle is unmounted and its native node has left the tree, the
+  probe mounts it again with its consumer requesting focus synchronously from
+  `onReadyChanged`. The consumer must request focus exactly once, with
+  `Accessible.ignored` false at that moment, and the checker requires a native
+  AT-SPI `Focus` event on the one node that carries the Toggle's complete name
+  and description, with that node reporting the focused state.
+
+Only this case is covered. The checker identifies the node by its name and does
+not assert its role, which released Qt publishes as CheckBox (see
+[Qt Switch qualification boundary](#qt-switch-qualification-boundary)).
+Feedback, availability, activation, withdrawal and screen-reader presentation
+of the Toggle are not covered.
 
 ### Released Quickshell Command accessibility
 

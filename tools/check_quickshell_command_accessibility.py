@@ -658,12 +658,17 @@ def screen_reader(session, output):
         reader.close()
 
 
-def run(args):
+def enable_accessibility():
     address = string_value(call("org.a11y.Bus", "/org/a11y/bus", "org.a11y.Bus.GetAddress"))
     for name in ("IsEnabled", "ScreenReaderEnabled"):
         call("org.a11y.Bus", "/org/a11y/bus", PROPERTIES + ".Set", "string:org.a11y.Status",
              "string:" + name, "variant:boolean:true")
     os.environ["QT_LINUX_ACCESSIBILITY_ALWAYS_ON"] = "1"
+    return address
+
+
+def run(args):
+    address = enable_accessibility()
     session = events = None
     try:
         session = Session(args.host, args.module_path, conformance_font.qml_sources(args.font_dir), args.output_dir)
@@ -680,6 +685,28 @@ def run(args):
             events.close()
         if session:
             session.close()
+
+
+def isolated_results(script, args, *flags):
+    """Run a checker's --session half on a private session bus and return its report."""
+    process = subprocess.Popen(["dbus-run-session", "--", sys.executable, str(script),
+                                "--host", str(args.host), "--module-path", str(args.module_path),
+                                "--font-dir", str(args.font_dir), "--output-dir", str(args.output_dir), "--session",
+                                *flags],
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
+    try:
+        output, diagnostics = process.communicate(timeout=300)
+    finally:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        if process.poll() is None:
+            process.communicate(timeout=5)
+    reports = [line[len(REPORT):] for line in output.splitlines() if line.startswith(REPORT)]
+    if process.returncode or len(reports) != 1:
+        raise ValueError("accessibility session failed: " + diagnostics.strip()[-2000:])
+    return json.loads(reports[0])
 
 
 def main():
@@ -705,24 +732,8 @@ def main():
         verify_version(subprocess.run([sys.executable, str(ROOT / "tools/run_qt_availability_probe.py"), "--version"],
                                       env=environment, capture_output=True, text=True, timeout=15))
         args.output_dir.mkdir(parents=True, exist_ok=False)
-        process = subprocess.Popen(["dbus-run-session", "--", sys.executable, str(Path(__file__).resolve()),
-                                    "--host", str(args.host), "--module-path", str(args.module_path),
-                                    "--font-dir", str(args.font_dir), "--output-dir", str(args.output_dir), "--session",
-                                    *(["--screen-reader"] if args.screen_reader else [])],
-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
-        try:
-            output, diagnostics = process.communicate(timeout=300)
-        finally:
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            if process.poll() is None:
-                process.communicate(timeout=5)
-        reports = [line[len(REPORT):] for line in output.splitlines() if line.startswith(REPORT)]
-        if process.returncode or len(reports) != 1:
-            raise ValueError("accessibility session failed: " + diagnostics.strip()[-2000:])
-        results = json.loads(reports[0])
+        results = isolated_results(Path(__file__).resolve(), args,
+                                   *(["--screen-reader"] if args.screen_reader else []))
         (args.output_dir / "report.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
         for result in results:
             print("PASS " + result)

@@ -15,6 +15,7 @@ ShellRoot {
     property bool parented: false
     property string motionChannels: ""
     property bool focusTaken: false
+    property bool focusOnReady: false
     property string reaction: ""
     property int effects: 0
     property int publications: 0
@@ -178,6 +179,11 @@ ShellRoot {
                             activeFocusOnTab: true
                             onActivated: checked => root.activated(toggle, checked)
                             onSnapshotChanged: root.published(toggle)
+                            onReadyChanged: if (ready && root.focusOnReady) {
+                                root.focusOnReady = false;
+                                root.log("readyFocus", {ignored:Accessible.ignored});
+                                forceActiveFocus();
+                            }
                             onPreparationErrorChanged: if (preparationError.length && root.configuration.length)
                                 root.log("rejected", {error:preparationError, shown:root.shown, windowed:root.windowed,
                                     mounted:root.mounted, attached:Boolean(toggle.Window.window && toggle.Window.window.visible)})
@@ -240,6 +246,7 @@ ShellRoot {
         function focusToggle(): void { if (root.toggle) root.toggle.forceActiveFocus(); }
         function focusOther(): void { if (root.mountItem) root.mountItem.other.forceActiveFocus(); }
         function setFocusTaken(value: bool): void { root.focusTaken = value; }
+        function focusOnReady(): void { root.focusOnReady = true; }
         function setShown(value: bool): void { root.shown = value; }
         function setMounted(value: bool): void { root.mounted = value; }
         function setWindowed(value: bool): void { root.windowed = value; }
