@@ -106,17 +106,11 @@ exists. Cast is rigid, so its interval is exactly `[1, 1]`; Frost is small and
 Elastomer tactile; Gel has no entry and is rejected. The limits bound what a
 family may declare; the author's own interval may be narrower.
 
-The magnitudes are reference authoring choices, not measured material
-properties, and remain uncalibrated: calibration as authored data is owned by
+The magnitudes are uncalibrated authored data in that profile, reference
+authoring choices and not measured material properties. Their rationale and
+calibration are owned by
 [#300](https://github.com/marcoallegretti/Resina-Design_System/issues/300), and
-they remain subject to visual acceptance. Informal prior art for their order of
-magnitude: a pressed-button scale of `0.95` in the
-[Piccalil squishy button](https://piccalil.li/blog/squishy-button) (the largest
-Elastomer reduction here, 6%, is of that order), and the Material Components
-[icon button](https://github.com/material-components/material-components-android/blob/master/docs/components/IconButton.md)
-documentation of shapes that morph when pressed, a response of the outline
-rather than of content. Neither source defines a bound or a family, and neither
-is an acceptance reference.
+they remain subject to visual acceptance.
 
 **Content stays in the uniform face.** At every sample the label box must lie
 inside the spec/81 `contentBounds` of the sampled outline, translated by its
@@ -209,7 +203,7 @@ endpoint validity does not prove intermediate validity. Two causes make frames
 between valid ends fail. spec/81 squares a corner whose either extent is zero,
 so a corner whose extent leaves zero between the ends changes its padding from
 `minimumInset` to `g·extent` at the first positive weight; content that fills the
-face of the squared end cannot fit any later frame. Separately, at tiny
+face of the squared end cannot fit any frame in which it still has positive opacity. Separately, at tiny
 extents rounding can make the spec/81 containment of its own content bounds
 unrepresentable, which the reference reports as a rejection. A frame also fails
 when content with positive opacity is outside the sampled face, including a

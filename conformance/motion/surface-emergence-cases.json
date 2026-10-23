@@ -711,7 +711,7 @@
     "errorContains": "size"
   },
   {
-    "name": "both ends validate but a corner that opens from zero extent rejects the early frames",
+    "name": "both ends validate but a corner that opens from zero extent rejects the first frames by rounding or by containment",
     "requestChanges": [
       {
         "path": "/from/outline",

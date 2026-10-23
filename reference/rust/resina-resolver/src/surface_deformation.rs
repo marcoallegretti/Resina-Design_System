@@ -112,8 +112,7 @@ struct FamilyLimits {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct LimitsProfile {
-    #[serde(rename = "schemaVersion")]
-    _schema_version: String,
+    schema_version: String,
     limits: FamilyLimits,
 }
 
@@ -125,6 +124,7 @@ fn deformation_limit(family: MaterialFamily) -> f64 {
         ))
         .expect("the committed deformation limits profile is valid")
     });
+    assert_eq!(profile.schema_version, "0.1.0");
     match family {
         MaterialFamily::Cast | MaterialFamily::Gel => profile.limits.cast,
         MaterialFamily::Frost => profile.limits.frost,
