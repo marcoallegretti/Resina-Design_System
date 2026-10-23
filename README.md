@@ -359,9 +359,12 @@ Slider parts to semantic material and color roles in authored
 control-family assignment and the minimal-capability environment, tests resolve
 each Command phase and focus through Command paint with 4.5:1 content and 3:1
 edge contrast, and each Toggle phase, focus and selection through part paint
-with 3:1 edges and a 4.5:1 label color. The Slider track and thumb, each with and without focus at rest,
-resolve through Slider part paint with 3:1 edges against the canvas and the track body and a 4.5:1 label
-color. They also show that light changes
+with 3:1 edges and a 4.5:1 label color. The Slider track and thumb at rest, the
+thumb with and without focus, resolve through Slider part paint with 3:1 edges
+against the canvas and the track body and a 4.5:1 label color. The authored
+thumb currently fails the Slider snapshot's whole-track check
+([#301](https://github.com/marcoallegretti/Resina-Design_System/issues/301)),
+so the anatomy alone does not yield an accepted snapshot. Tests also show that light changes
 nothing but `face.light` and measure the [peak visibility](conformance/materials/lit-control-visibility.json)
 of the static key on every bound body.
 

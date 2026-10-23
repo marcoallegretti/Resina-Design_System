@@ -442,41 +442,34 @@ fn slider_anatomy_resolves_at_rest_with_identifiable_edges() {
             opaque_contrast_ratio(&theme.colors[&anatomy.label_color()], &theme.canvas).unwrap()
                 >= 4.5
         );
-        for track_states in [&["rest"][..], &["rest", "focused"]] {
-            for thumb_states in [&["rest"][..], &["rest", "focused"]] {
-                let [track, thumb] = slider(
-                    &theme,
-                    &environment,
-                    &anatomy,
-                    track_states,
-                    thumb_states,
-                    false,
-                )
-                .unwrap();
-                assert!(track.paint().focus().is_none());
-                assert_eq!(
-                    thumb.paint().focus().is_some(),
-                    thumb_states.contains(&"focused")
-                );
-                for (part, paint) in [("track", &track), ("thumb", &thumb)] {
-                    let ratio = paint.paint().body().edge().contrast_ratio();
-                    assert!(
-                        ratio >= 3.0,
-                        "{} {:?} {part} edge {ratio}",
-                        theme.name,
-                        theme.assignment
-                    );
+        for thumb_states in [&["rest"][..], &["rest", "focused"]] {
+            let [track, thumb] = slider(
+                &theme,
+                &environment,
+                &anatomy,
+                &["rest"],
+                thumb_states,
+                false,
+            )
+            .unwrap();
+            assert!(track.paint().focus().is_none());
+            match thumb.paint().focus() {
+                Some(focus) => {
+                    assert!(thumb_states.contains(&"focused"));
+                    assert!(focus.indicator().contrast_ratio() >= 3.0);
                 }
-                resolved += 1;
+                None => assert!(!thumb_states.contains(&"focused")),
             }
+            resolved += 1;
         }
     }
-    assert_eq!(resolved, 2 * 28 * 4);
+    assert_eq!(resolved, 2 * 28 * 2);
 }
 
 /// The conservative whole-track check of the Slider snapshot admits no thumb under the authored
 /// themes. The track's own exterior edge is among the colours around the thumb, and the thumb's
-/// edge is chosen from the same outline roles, so no outline reaches 3:1 against it.
+/// edge is chosen from the same outline roles: one outline is the track's edge colour and the
+/// other stays below 1.61:1 against it.
 #[test]
 fn whole_track_cover_leaves_the_thumb_edge_below_the_guard() {
     let anatomy = slider_anatomy();
@@ -485,7 +478,23 @@ fn whole_track_cover_leaves_the_thumb_edge_below_the_guard() {
     for theme in themes(&environment) {
         let error = slider(&theme, &environment, &anatomy, &["rest"], &["rest"], true)
             .expect_err("the whole track cover cannot clear the thumb edge");
-        assert!(error.contains("edge contrast is insufficient"), "{error}");
+        assert!(
+            error.contains(" thumb: ") && error.contains("edge contrast is insufficient"),
+            "{error}"
+        );
+        let [track, _] =
+            slider(&theme, &environment, &anatomy, &["rest"], &["rest"], false).unwrap();
+        let mut ratios = [ColorRole::Outline, ColorRole::OutlineStrong].map(|role| {
+            opaque_contrast_ratio(&theme.colors[&role], track.paint().body().edge().color())
+                .unwrap()
+        });
+        ratios.sort_by(f64::total_cmp);
+        assert!(
+            (ratios[0] - 1.0).abs() <= 1e-9 && ratios[1] > 1.0 && ratios[1] <= 1.61,
+            "{} {:?}: {ratios:?}",
+            theme.name,
+            theme.assignment
+        );
         rejected += 1;
     }
     assert_eq!(rejected, 2 * 28);

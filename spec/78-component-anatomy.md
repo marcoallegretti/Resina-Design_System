@@ -72,8 +72,13 @@ thumb on such a track could not keep a [contrast-guarded edge](25-edge-contrast.
 The selection role names the same state and keeps that edge. The Slider track is
 an embedded `control.passive` well on `surface.low` and its thumb a raised
 `control.interactive` capsule on `content.secondary`, the binding of an unchecked
-Toggle thumb. A Slider shows its value by position, so its parts bind no accent
-and no selection role. The thumb's content
+Toggle thumb. This version binds no segment role: the active and inactive
+segment roles are the subject of
+[#301](https://github.com/marcoallegretti/Resina-Design_System/issues/301), where
+the single `track` part is replaced by the segment parts. Binding no accent or
+selection role here does not rule one out. The thumb color role is
+evidence-neutral, as [below](#slider-segments); it follows the Toggle precedent.
+The thumb's content
 color roles are an authoring choice: the requirements below identify the thumb
 by its edge, not by its body color.
 
@@ -166,10 +171,11 @@ and checked with `python tools/lit_control_visibility.py`.
 
 Slider parts are
 [spec/36 bodies](76-slider-part-paint.md), not lit control bodies, at an
-illustrative 160 by 8 px track and 20 by 20 px thumb. A Rust test resolves the track and the thumb,
-each with and without focus, in both themes under each of the 28 family
-assignments (224 resolutions) against the canvas and the track body, with 3:1
-edges and the 4.5:1 label color. Those resolutions use the identity rest
+illustrative 160 by 8 px track and 20 by 20 px thumb. A Rust test resolves the
+track and the thumb, the thumb with and without focus, in both themes under each
+of the 28 family assignments (112 thumb configurations) against the canvas and
+the track body. Resolution enforces the 3:1 edges, the label color is checked at
+4.5:1, and a focused thumb's ring is checked at 3:1. Those resolutions use the identity rest
 response. The state responses of the [public Slider fixture](71-slider-appearance.md)
 are arithmetic test coefficients, not an authored profile, so the Slider's
 hover, pressed, dragging, disabled and read-only responses are not evidenced
@@ -180,14 +186,17 @@ The [Slider snapshot](77-slider-snapshot.md) checks the thumb edge against every
 color the track paints, including the track's own exterior edge. The thumb edge
 is chosen from the same outline roles. A test shows that in both themes and all
 28 assignments the rest thumb is rejected against the whole track cover, with
-one outline at 1:1 and the other at most 1.61:1 against the track's edge, and
-that it resolves against the canvas and the track body. The cause lies in the check, not in the thumb's color
-role: the test passes against the track body whichever of `content.primary`,
-`content.secondary`, `surface.high`, `accent.primary` or `selection` the thumb binds.
+one outline at 1:1 and the other at most 1.61:1 against the track's edge (the
+test computes both ratios), and that it resolves against the canvas and the
+track body. The cause lies in the check, not in the thumb's color role: when
+each of `content.primary`, `content.secondary`, `surface.high`, `accent.primary`
+and `selection` was substituted for the thumb, it passed against the track body
+and failed against the whole cover. That substitution was a one-off check, not a
+committed test.
 Narrower adjacency needs the clearance geometry of
 [track segments](79-slider-track-segments.md), whose roles belong here. They are
 not bound in this version because no contract composes segment paint with the
-track yet.
+track yet; the single `track` part is replaced by the segment parts in #301.
 
 Schema cases reject missing parts, unknown members,
 non-control material roles and members of the other components. The reference
