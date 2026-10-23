@@ -64,4 +64,4 @@ The [result](../schemas/spring-trajectory-result.schema.json) contains schemaVer
 
 The Rust reference exposes `sample_spring_trajectory` with validated dynamics/state and explicit target/time/preference, and `resolve_spring_trajectory_source` for strict JSON. `resina-spring-trajectory <path|->` uses the existing UTF-8, 1 MiB and atomic output protocol: success 0, diagnostic failure with no result 1, invalid usage 2; `--help` succeeds. [The backend checker](../tools/check_spring_trajectory_backend.py) verifies public cases for independent implementations. The original normalized contract retains its semantics and shares this reference solver.
 
-Material response trajectories, capability-based motion policy, deformation, bounded paint channels and native scheduling remain separate contracts. This scalar sampler alone does not constitute a complete animated component.
+Material response trajectories, capability-based motion policy, bounded paint channels and native scheduling remain separate contracts; [bounded size deformation](96-surface-deformation.md) is one of them. This scalar sampler alone does not constitute a complete animated component.

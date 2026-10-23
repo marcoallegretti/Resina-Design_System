@@ -1058,6 +1058,12 @@ def check_no_active_reference_to_archived_schemas():
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/surface-deformation-request.schema.json",
+        "schemas/surface-deformation-result.schema.json",
+        "schemas/surface-deformation-case.schema.json",
+        "schemas/surface-emergence-request.schema.json",
+        "schemas/surface-emergence-result.schema.json",
+        "schemas/surface-emergence-case.schema.json",
         "schemas/translucent-frost-request.schema.json",
         "schemas/translucent-frost-ir.schema.json",
         "schemas/translucent-frost-case.schema.json",
@@ -3082,6 +3088,85 @@ def main():
         ("translucent frost non Frost family", translucent, put(["body", "materialFamily"], "cast")),
     ]:
         check_case(frost_result_schema, name, frost_mutation(result, edit), False)
+        checked += 1
+
+    from check_surface_deformation_backend import (
+        KINDS as motion_kinds,
+        baseline as motion_baseline,
+        case_request as motion_case_request,
+        cases as motion_cases,
+        expected_result as motion_expected,
+    )
+    motion_results = {}
+    for kind in motion_kinds:
+        motion_case_schema = validator_for(f"schemas/surface-{kind}-case.schema.json")
+        motion_request_schema = validator_for(f"schemas/surface-{kind}-request.schema.json")
+        motion_result_schema = validator_for(f"schemas/surface-{kind}-result.schema.json")
+        motion_names = set()
+        for case in motion_cases(kind):
+            name = case["name"]
+            check_case(motion_case_schema, name, case, True)
+            if name in motion_names:
+                raise ValueError(f"duplicate {kind} case: {name}")
+            motion_names.add(name)
+            request = motion_case_request(motion_baseline(kind), case)
+            check_case(motion_request_schema, name, request, case["requestSchemaValid"])
+            checked += 2
+            if "errorContains" not in case:
+                result = motion_expected(kind, request)
+                check_case(motion_result_schema, name, result, True)
+                motion_results[(kind, name)] = result
+                checked += 1
+    deformed = motion_results[("deformation", "elastomer press in flight")]
+    emerged = motion_results[("emergence", "elastomer emergence in flight")]
+    settled = motion_results[("emergence", "settled emergence shows only the destination content")]
+
+    def motion_mutation(result, edit):
+        changed = copy.deepcopy(result)
+        edit(changed)
+        return changed
+
+    def motion_drop(*path):
+        def edit(document):
+            parent = document
+            for member in path[:-1]:
+                parent = parent[member]
+            del parent[path[-1]]
+        return edit
+
+    def motion_put(*path, value):
+        def edit(document):
+            parent = document
+            for member in path[:-1]:
+                parent = parent[member]
+            parent[path[-1]] = value
+        return edit
+
+    for kind, name, result, edit in [
+        ("deformation", "deformation result unknown member", deformed, motion_put("unexpected", value=True)),
+        ("deformation", "deformation result missing reservation", deformed, motion_drop("reservation")),
+        ("deformation", "deformation result missing origin", deformed, motion_drop("origin")),
+        ("deformation", "deformation result unknown policy", deformed, motion_put("policy", value="immediate")),
+        ("deformation", "deformation result unknown projection marker",
+         deformed, motion_put("projection", "widthScale", value="clamped")),
+        ("deformation", "deformation result missing projection", deformed, motion_drop("projection", "heightScale")),
+        ("deformation", "deformation result unprojected sample is required", deformed, motion_drop("widthScale", "state")),
+        ("deformation", "deformation result nonpositive reservation", deformed, motion_put("reservation", "width", value=0)),
+        ("deformation", "deformation result collapsed outline", deformed,
+         motion_put("outline", "size", "width", value=0)),
+        ("emergence", "emergence result unknown member", emerged, motion_put("unexpected", value=True)),
+        ("emergence", "emergence result empty identity", emerged, motion_put("identity", value="")),
+        ("emergence", "emergence result absent source content is null", emerged, motion_drop("fromContent")),
+        ("emergence", "emergence result fully transparent content is absent", emerged,
+         motion_put("toContent", "opacity", value=0)),
+        ("emergence", "emergence result opacity beyond one", emerged,
+         motion_put("fromContent", "opacity", value=1.5)),
+        ("emergence", "emergence result content without bounds", settled, motion_drop("toContent", "bounds")),
+        ("emergence", "emergence result unknown projection marker", emerged,
+         motion_put("projection", "opacity", value="clamped")),
+        ("emergence", "emergence result missing reservation", emerged, motion_drop("reservation")),
+    ]:
+        check_case(validator_for(f"schemas/surface-{kind}-result.schema.json"), name, motion_mutation(result, edit), False)
         checked += 1
 
     from check_hit_region_backend import cases, validate_membership_vectors
