@@ -103,17 +103,33 @@ arithmetic, not their appearance.
 
 Released Quickshell draws the same scenes through the Qt runtime views, which show the
 shared CPU raster as Qt Quick images. `tools/check_quickshell_lit_body.py` prepares every
-scene from the same catalog, mounts the Command or the Toggle (its track and, where the
-catalog has one, its thumb) in the released host at the device scales 1, 1.25 and 2, captures the
-window and compares every pixel of the body, its side plane, its edge and any focus ring with the
-bounds of the independent arithmetic, composed over the scene's canvas, within one RGB step.
-The label is not part of a scene, so the pixels of the native label are skipped, as are those
-of a Toggle thumb that no scene covers. The capture is opaque, so coverage is checked through
-the blend with the canvas and not as a separate alpha. Over the 68 native captures at each scale
-the largest distance of a pixel from its bounds is 0.859 at scale 1 and 1.000 at scales 1.25 and 2.
+scene of this catalog, mounts the Command, or the Toggle with its track and thumb, in the
+released host at the device scales 1, 1.25 and 2 under the offscreen platform and the software
+scene graph, grabs the window image and compares every pixel of the scene area with the bounds
+of the independent arithmetic, composed over the scene's canvas, within one RGB step. The Command
+is drawn with a label that has no ink, so no pixel is skipped: 400,690, 638,010 and 1,593,410
+pixels are compared at the three scales, over 68 captures each (34 Commands, 34 Toggle frames).
+The catalog has no thumb scene for the focused, right-to-left and light and environment variants
+of the track, so the checker adds one for each from the same authored thumb, without the focus
+ring that a thumb never draws. The capture is opaque, so coverage is checked through the blend
+with the canvas and not as a separate alpha. The largest distance of a pixel from its bounds is
+0.859 at scale 1 and 1.000 at scales 1.25 and 2, and a capture shifted by two levels in one channel
+must fail.
+
+What this shows: the Qt Quick scene graph and the host add no change within one RGB step to the
+raster's pixels, which match the arithmetic. It does not show the compositor output, glyph
+rendering, the label position, the capability set that the Shell reports (only the catalog's
+environments, including all capabilities off, are drawn), or differences smaller than the
+tolerance: a uniform shift of one level passes, and the Light `surface.high` highlight (at most
+0.0009 in ΔE_OK) is below one 8-bit step.
 
 ```sh
-python tools/check_quickshell_lit_body.py   --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import   --font-dir $CONFORMANCE_FONTS   --theme-backend target/qt-runtime-build/debug/resina-theme-resolve   --output-dir target/quickshell-lit-bodies --scales 1 1.25 2
+python tools/check_quickshell_lit_body.py \
+  --host target/quickshell-build/src/quickshell \
+  --module-path target/qt-runtime-import \
+  --font-dir $CONFORMANCE_FONTS \
+  --theme-backend target/qt-runtime-build/debug/resina-theme-resolve \
+  --output-dir target/quickshell-lit-bodies --scales 1 1.25 2
 ```
 
 The [visibility table](../materials/lit-control-visibility.json) states how
