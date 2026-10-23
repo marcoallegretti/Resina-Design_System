@@ -6,8 +6,9 @@ edge ring, the silhouette and the side band. The contour ratio is the largest di
 by the largest step to an eight-connected neighbour, so it measures the ring against its own contrast. The edge offset
 is the coverage difference of partly covered pixels in device pixels (a straight edge shifted by d pixels changes its
 coverage by d). The interior is fully covered pixels at least two pixels from any contour; it cannot see a missing
-ring. The criteria are candidates under evaluation, not an established tolerance class, and the exit status is
-non-zero when a capture violates them.
+ring. The criteria are candidates under evaluation, not an established tolerance class. They were chosen just above the
+values observed for this shader, so they are not independent of it. The exit status is non-zero when a capture
+violates them.
 """
 import argparse
 import json

@@ -75,15 +75,16 @@ compositing costs are not bounded by them. The frame-time tables were taken befo
 
 | Configuration | Result |
 | --- | --- |
-| `QT_QUICK_BACKEND=software` (the configuration of the existing checks) | `ShaderEffect` draws nothing: every scene capture is empty. `GraphicsInfo.api` reads Software. `ShaderEffect.status` read Compiled at the end of the run. |
+| `QT_QUICK_BACKEND=software` (the configuration of the existing checks) | `ShaderEffect` draws nothing: every scene capture is empty. `GraphicsInfo.api` reads Software. `ShaderEffect.status` read Uncompiled at the end of the run. |
 | `QT_QPA_PLATFORM=offscreen`, any `QSG_RHI_BACKEND` | Qt falls back to the software scene graph ("Loading backend software"). |
 | `QT_QPA_PLATFORM=eglfs`, `linuxfb`, `minimalegl` | Fail to start without a DRM device or X display. |
 | headless sway (pixman), Qt RHI OpenGL on llvmpipe | Draws; this is the Qt default there. |
 | headless sway (pixman), Qt RHI Vulkan on lavapipe | Draws. |
 
-`ShaderEffect.status` is not a usable probe: it read Compiled under the software scene graph, and under OpenGL and
-Vulkan it read Uncompiled at the end of the 1-object runs and Compiled at 10 objects and more, although every object
-was drawn. `GraphicsInfo.api` separates the software scene graph from the others.
+`ShaderEffect.status` is not a usable probe (Qt declares the values in the order Compiled, Uncompiled, Error). The
+logs show it reading Uncompiled under the software scene graph, where nothing is drawn, but also Uncompiled at the end
+of every run with 10 objects or more under OpenGL and Vulkan, where every object is drawn; it read Compiled only in
+the 1-object runs. `GraphicsInfo.api` separates the software scene graph from the others.
 
 ### Fidelity against the CPU raster
 
@@ -110,7 +111,8 @@ because its coverage is analytic and the raster's is 16 point samples. The 4 by 
 sixteen times the shading work (cost not measured); the remaining 9 to 20 steps in a few scenes are not explained.
 
 The candidate criteria in `tools/compare.py` (interior at most 3 steps, edge offset at most 0.15 px, contour ratio at
-most 0.35) are a proposal for evaluation, not an established tolerance class. The analytic shader and the 4 by 4
+most 0.35) are a proposal for evaluation, not an established tolerance class; they were chosen just above the values
+observed for this shader, so passing them is not independent evidence. The analytic shader and the 4 by 4
 variant pass them and the negative control fails them. An absolute bound on the ring error tighter than about 35 steps
 would need the 4 by 4 variant or an equivalent filter; none has been defined.
 
@@ -153,7 +155,8 @@ Motion publications in the measurement window: with OpenGL at scale 1, 447 in 15
 for 30 and 1409 in 30.7 s for 100; with the software scene graph at scale 1, 711 in 30.1 s for 10 controls (2.4 per
 control per second), and at scale 2, 90 in 30.2 s (0.3 per control per second).
 
-Like for like, OpenGL on llvmpipe, frames per second at N of 1, 10, 30 and 100. At scale 1 the shader reaches
+Like for like, OpenGL on llvmpipe, frames per second (local figures from a run before the master merge; a
+bench run reproduces the shader figures in the `fps` column of its table) at N of 1, 10, 30 and 100. At scale 1 the shader reaches
 59.2 / 60.6 / 60.8 / 19.8 and the production control 60.8 / 20.2 / 7.6 / 2.3. At scale 2 the shader reaches
 55.9 / 46.8 / 18.7 / 5.9 and the production control 57.9 / 11.3 / 4.1 / 1.2. The software scene graph rows apply only
 to the production control, because the shader draws nothing there.
@@ -184,8 +187,10 @@ below 300. A later run of the workflow (run 40007616712) measured 25 / 30 / 48 m
 - Shown: the comparison can fail. A shader without the edge ring passes the interior and edge-offset criteria and fails
   the ring-based one.
 - Shown: on a CPU rasterizer the shader path holds 60 Hz to 30 objects at scale 1, while the production control path
-  runs at 20 fps for 10 moving controls with OpenGL and 9.5 fps in the software scene graph.
-- Shown: the Qt software scene graph draws no `ShaderEffect`, and `ShaderEffect.status` does not report that. Any GPU
+  runs at 20 fps for 10 moving controls with OpenGL and 9.5 fps in the software scene graph. The two scenes do not
+  move identically: the control animates body mix and depth through its resolver, the shader scene a closed-form
+  spring on size and position.
+- Shown: the Qt software scene graph draws no `ShaderEffect`, and `ShaderEffect.status` is not a reliable indicator of it. Any GPU
   path needs its own capability test and a CPU raster fallback.
 - Not shown: timings on a GPU. Run `bench --host session` on real hardware to fill that in.
 - Not shown: focus ring, Frost, Gel, Lens, emergence and deformation realizations, text and icon content, input and

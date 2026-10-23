@@ -11,7 +11,6 @@ import argparse
 import json
 import os
 import re
-
 import shutil
 import statistics
 import subprocess
@@ -21,11 +20,13 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE / "tools"))
 from stats import percentile  # noqa: E402
-ROOT = HERE.parents[2]
+
 API = {0: "unknown", 1: "software", 2: "openvg", 3: "opengl", 4: "direct3d11", 5: "vulkan", 6: "metal", 7: "null"}
-STATUS = {0: "Uncompiled", 1: "Compiled", 2: "Error"}
+STATUS = {0: "Compiled", 1: "Uncompiled", 2: "Error"}
+CAPTURE_ONLY = ("opengl-shadow", "opengl-no-ring", "opengl-supersampled")
 CONFIGS = {
     "opengl": {"QSG_RHI_BACKEND": "opengl"},
     "vulkan": {"QSG_RHI_BACKEND": "vulkan"},
@@ -173,13 +174,21 @@ def request_script():
         json.dumps(json.dumps(request)), json.dumps(json.dumps(channels)))
 
 
+def reject_capture_only(arguments):
+    for name in arguments.configs:
+        if name in CAPTURE_ONLY:
+            raise SystemExit(f"{name} applies to the conformance captures only")
+
+
 def bench(arguments):
+    reject_capture_only(arguments)
     rows = measure(arguments, "bench.qml", {}, "shader")
     table(rows)
     return rows
 
 
 def baseline(arguments):
+    reject_capture_only(arguments)
     sys.path.insert(0, str(ROOT / "tools"))
     import conformance_font
     fonts = conformance_font.qml_sources(Path(arguments.font_dir))
@@ -208,7 +217,9 @@ def difference(first, second, path="scene"):
 def check_bench_scene(scenes):
     source = (HERE / "qml" / "bench-scene.js").read_text()
     committed = json.loads(source.split("var scene = ", 1)[1].rsplit(";", 1)[0])
-    current = next(dict(scene) for scene in scenes if scene["name"] == committed["name"])
+    current = next((dict(scene) for scene in scenes if scene["name"] == committed["name"]), None)
+    if current is None:
+        raise SystemExit(f"qml/bench-scene.js names {committed['name']}, which the manifest does not define")
     current.pop("views")
     found = difference(committed, current)
     if found:
@@ -288,8 +299,9 @@ def main():
     rows = stages[arguments.stage](arguments)
     if arguments.stage == "conformance":
         return rows
-    if arguments.output and rows is not None:
+    if arguments.output:
         arguments.output.write_text(json.dumps(rows, indent=1) + "\n")
+    return 1 if any("failed" in r for r in rows) else 0
 
 
 if __name__ == "__main__":
