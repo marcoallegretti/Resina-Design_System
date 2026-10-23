@@ -12,6 +12,7 @@ fn main() {
         "src/toggle.rs",
         "src/toggle_snapshot.rs",
         "src/label.rs",
+        "src/layout.rs",
         "src/snapshot.rs",
         "src/pointer.rs",
         "src/slider_accessibility.rs",
@@ -26,6 +27,8 @@ fn main() {
     .cpp_file("src/toggle.cpp")
     .cpp_file("src/label.h")
     .cpp_file("src/label.cpp")
+    .cpp_file("src/layout.h")
+    .cpp_file("src/layout.cpp")
     .cpp_file("src/pointer.h")
     .cpp_file("src/pointer.cpp")
     .cpp_file("src/slider_accessibility.h")

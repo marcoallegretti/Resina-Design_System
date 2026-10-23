@@ -218,6 +218,32 @@ qualification. The native Wayland run additionally verifies hover on captured
 outside/re-entry movement. Motion and complete accessibility publication remain
 separate integration requirements.
 
+## CommandLayoutResolver
+
+`CommandLayoutResolver.resolveCommandLayout(requestJson)` synchronously resolves
+the [Command layout profile](../../../spec/89-component-layout-profile.md) with
+the Rust reference `resolve_command_layout`, so a host never derives sizes or
+padding itself. Its request has exactly these fields:
+
+- `themeSource` and `externalSources`: authored theme JSON and explicit source
+  strings, using the existing theme compiler. The theme's spatial binding
+  supplies the control insets; no file access or ambient theme.
+- `profile` and `tokens`: the authored Command profile and its DTCG extent
+  token document.
+- `environment`: the existing validated environment snapshot. Its density
+  preference selects the extents and insets; its text scale, input
+  capabilities and layout direction are applied by the profile rules.
+- `availableSize`: the size the Command may occupy.
+
+The request source is bounded to 1 MiB and rejects duplicate members, unknown
+fields and positional record representations. Success returns the
+[`CommandLayoutIr`](../../../schemas/command-layout-ir.schema.json) members
+(`minimumSize`, `maximumSize`, `padding`, `targetMinimum`, `densityPreference`,
+`layoutDirection`); failure returns `{error}` and no layout. Pass `minimumSize`,
+`maximumSize` and `padding` as the `content` layout inputs below, and
+`targetMinimum` as `componentMinimum`. A host that keeps its own sizes or
+padding bypasses the profile.
+
 ## CommandLabelResolver and native content
 
 `CommandLabelResolver.resolveLabel(requestJson, producer)` synchronously runs

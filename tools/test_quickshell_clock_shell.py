@@ -1,13 +1,18 @@
 import json
+import tempfile
 import unittest
+from pathlib import Path
 from unittest import mock
 
 import check_quickshell_clock_shell
-from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, PLATFORM_CASES, DesktopBackend, PortalTestBackend, Shell,
-                                          closed, command_paint_request, label_foreground, opened, paint_bounds, parked,
-                                          platform_expectations, require_keys,
-                                          tree_mismatch, verify_capture_size, verify_command_scale,
-                                          verify_device_scale, verify_platform_preferences, verify_publication_scales)
+from check_quickshell_clock_shell import (COLOR_SCHEME_CASE, MUTATED_MINIMUM_HEIGHT, PLATFORM_CASES, ROOT,
+                                          DesktopBackend, PortalTestBackend, Shell, closed, command_layout,
+                                          command_paint_request, label_foreground, mutated_root, opened,
+                                          paint_bounds, parked, platform_expectations, require_keys,
+                                          tree_mismatch, verify_capture_size, verify_command_layout,
+                                          verify_command_scale, verify_device_scale, verify_platform_preferences,
+                                          verify_publication_scales)
+from command_layout_arithmetic import spatial_binding
 
 AUTHORED = {"reducedMotion": False, "reducedTransparency": False, "highContrast": False}
 FULL = {"reducedMotion": True, "highContrast": False, "colorScheme": "light"}
@@ -65,6 +70,70 @@ class ClockShellScaleTests(unittest.TestCase):
         for runs, final, message in cases:
             with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
                 verify_publication_scales(runs, 1.25, final)
+
+
+def layout_request(root=ROOT):
+    cases = json.loads((ROOT / "conformance/layout/command-layout-cases.json").read_text(encoding="utf-8"))
+    environment = next(case for case in cases if case["name"] == "standard text 1 fine ltr")["request"]["environment"]
+    request = {"content": {
+        "themeSource": (root / "tokens/themes/light.json").read_text(encoding="utf-8"),
+        "externalSources": {"foundation.json": (root / "tokens/foundation.json").read_text(encoding="utf-8")},
+        "environment": environment},
+        "availableBounds": {"x": 0, "y": 0, "width": 400, "height": 72}}
+    layout = command_layout(request, root)
+    request["content"].update(minimumSize=layout["minimumSize"], maximumSize=layout["maximumSize"],
+                              padding=layout["padding"])
+    request["componentMinimum"] = layout["targetMinimum"]
+    return request
+
+
+class CommandLayoutTests(unittest.TestCase):
+    def test_the_authored_theme_binding_is_the_binding_of_the_shared_layout_cases(self):
+        cases = json.loads((ROOT / "conformance/layout/command-layout-cases.json").read_text(encoding="utf-8"))
+        theme = json.loads((ROOT / "tokens/themes/light.json").read_text(encoding="utf-8"))
+        foundation = json.loads((ROOT / "tokens/foundation.json").read_text(encoding="utf-8"))
+        binding = spatial_binding(theme, foundation)
+        self.assertEqual({role: binding[role] for role in cases[0]["request"]["spatialBinding"]},
+                         cases[0]["request"]["spatialBinding"])
+
+    def test_the_profile_policy_reaches_the_request_members(self):
+        request = layout_request()
+        content = request["content"]
+        self.assertEqual(verify_command_layout("showClock", request)["minimumSize"], content["minimumSize"])
+        self.assertEqual(content["padding"], {"start": 16, "end": 16, "top": 12, "bottom": 12})
+        self.assertEqual(request["componentMinimum"], {"width": 24, "height": 24})
+
+    def test_any_member_other_than_the_profile_policy_is_named(self):
+        for member, change in (("minimumSize", lambda request: request["content"]["minimumSize"].update(height=48)),
+                               ("maximumSize", lambda request: request["content"]["maximumSize"].update(width=300)),
+                               ("padding", lambda request: request["content"]["padding"].update(start=20)),
+                               ("targetMinimum", lambda request: request.update(componentMinimum={"width": 48,
+                                                                                                   "height": 48}))):
+            request = layout_request()
+            change(request)
+            with self.subTest(member=member), self.assertRaisesRegex(ValueError, f"{member} .* is not the layout"):
+                verify_command_layout("showClock", request)
+
+    def test_the_policy_follows_the_density_text_scale_input_and_direction_of_the_environment(self):
+        request = layout_request()
+        request["content"]["environment"].update(densityPreference="immersive", textScale=2, layoutDirection="rtl",
+                                                 inputCapabilities=["coarsePointer", "keyboard"])
+        with self.assertRaisesRegex(ValueError, "is not the layout"):
+            verify_command_layout("showClock", request)
+        expected = command_layout(request)
+        self.assertEqual((expected["minimumSize"], expected["targetMinimum"]),
+                         ({"width": 144, "height": 64}, {"width": 48, "height": 48}))
+
+    def test_a_mutated_root_changes_the_policy_and_is_checked_against_its_own_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = mutated_root(Path(directory) / "root")
+            mutated = layout_request(root)
+            self.assertEqual(mutated["content"]["minimumSize"]["height"], MUTATED_MINIMUM_HEIGHT)
+            self.assertEqual(mutated["content"]["padding"]["start"], 24)
+            verify_command_layout("showClock", mutated, root)
+            with self.assertRaisesRegex(ValueError, "minimumSize .* is not the layout"):
+                verify_command_layout("showClock", mutated)
+            self.assertNotEqual(layout_request()["content"]["minimumSize"], mutated["content"]["minimumSize"])
 
 
 class CommandPaintRequestTests(unittest.TestCase):
