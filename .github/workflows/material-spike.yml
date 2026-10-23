@@ -1,0 +1,99 @@
+name: Material renderer spike
+
+"on":
+  pull_request:
+    paths:
+      - lab/quickshell/material-spike/**
+      - .github/workflows/material-spike.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  spike:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Identify the runner image
+        id: runner-image
+        shell: bash
+        run: |
+          test -n "$ImageOS"
+          test -n "$ImageVersion"
+          echo "name=$ImageOS" >> "$GITHUB_OUTPUT"
+          echo "version=$ImageVersion" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Restore the Qt 6.11.2 SDK
+        id: qt-sdk
+        uses: actions/cache/restore@v6
+        with:
+          path: target/qt-sdk
+          key: qt-sdk-linux-${{ hashFiles('tools/ci/install_qt_sdk.sh') }}
+      - name: Install the host libraries, a headless compositor and the Mesa software drivers
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --no-upgrade -y \
+            g++ pkg-config lld cmake ninja-build libgl-dev libegl-dev libfontconfig1 fontconfig libfreetype6 \
+            libdrm-dev libwayland-dev wayland-protocols libcli11-dev spirv-tools libjemalloc-dev \
+            meson libffi-dev libexpat1-dev curl libxkbcommon-dev libxkbcommon-x11-0 libx11-xcb1 \
+            libgl1-mesa-dri libegl1 libegl-mesa0 libglx-mesa0 libgbm1 mesa-vulkan-drivers vulkan-tools sway
+          python -m pip install -r tools/requirements-schema.txt -r tools/requirements-render.txt
+      - name: Install the Qt 6.11.2 SDK
+        if: steps.qt-sdk.outputs.cache-hit != 'true'
+        run: tools/ci/install_qt_sdk.sh
+      - name: Restore matching Wayland headers and libraries
+        id: wayland-sdk
+        uses: actions/cache/restore@v6
+        with:
+          path: target/wayland-sdk
+          key: wayland-sdk-${{ steps.runner-image.outputs.name }}-${{ steps.runner-image.outputs.version }}-${{ hashFiles('tools/ci/build_wayland_sdk.sh') }}
+      - name: Build matching Wayland headers and libraries for Qt 6.11.2
+        if: steps.wayland-sdk.outputs.cache-hit != 'true'
+        run: tools/ci/build_wayland_sdk.sh
+      - name: Restore the released Quickshell host
+        id: quickshell-build
+        uses: actions/cache/restore@v6
+        with:
+          path: target/quickshell-build
+          key: quickshell-${{ steps.runner-image.outputs.name }}-${{ steps.runner-image.outputs.version }}-${{ hashFiles('tools/ci/build_quickshell.sh') }}-${{ steps.qt-sdk.outputs.cache-primary-key }}-${{ steps.wayland-sdk.outputs.cache-primary-key }}
+      - name: Build the released Quickshell host with the matching Qt SDK
+        if: steps.quickshell-build.outputs.cache-hit != 'true'
+        run: tools/ci/build_quickshell.sh
+      - name: Report the graphics stack
+        run: |
+          vulkaninfo --summary | grep -E 'deviceName|driverName' || true
+          dpkg -l | grep -E 'libgl1-mesa-dri|mesa-vulkan-drivers' | awk '{print $2, $3}'
+      - name: Compare the shader renderer with the CPU raster and across renderers
+        shell: bash
+        env:
+          QT_SDK: ${{ github.workspace }}/target/qt-sdk/6.11.2/gcc_64
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$QT_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          { echo '```'; python lab/quickshell/material-spike/run_spike.py conformance \
+            --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
+            --configs opengl vulkan; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Measure frame times
+        shell: bash
+        env:
+          QT_SDK: ${{ github.workspace }}/target/qt-sdk/6.11.2/gcc_64
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$QT_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          { echo '```'
+            python lab/quickshell/material-spike/run_spike.py bench \
+              --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
+              --configs opengl vulkan --counts 1 10 30 100 --scales 1 2
+            python lab/quickshell/material-spike/run_spike.py bench \
+              --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
+              --configs software --counts 10 --scales 1
+            echo '```'; } 2>/dev/null | tee -a "$GITHUB_STEP_SUMMARY"
