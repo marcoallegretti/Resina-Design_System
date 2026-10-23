@@ -190,14 +190,19 @@ def baseline(arguments):
     return rows
 
 
-def close(first, second):
+def difference(first, second, path="scene"):
     if isinstance(first, dict) and isinstance(second, dict):
-        return first.keys() == second.keys() and all(close(first[key], second[key]) for key in first)
+        if first.keys() != second.keys():
+            return path + " keys"
+        return next((found for key in first if (found := difference(first[key], second[key], f"{path}.{key}"))), None)
     if isinstance(first, list) and isinstance(second, list):
-        return len(first) == len(second) and all(close(a, b) for a, b in zip(first, second))
+        if len(first) != len(second):
+            return path + " length"
+        return next((found for index, (a, b) in enumerate(zip(first, second))
+                     if (found := difference(a, b, f"{path}[{index}]"))), None)
     if isinstance(first, (int, float)) and isinstance(second, (int, float)) and not isinstance(first, bool):
-        return abs(first - second) <= 1e-9 * max(1.0, abs(first))
-    return first == second
+        return None if abs(first - second) <= 1e-9 * max(1.0, abs(first)) else f"{path}: {first} against {second}"
+    return None if first == second else f"{path}: {first!r} against {second!r}"
 
 
 def check_bench_scene(scenes):
@@ -205,8 +210,9 @@ def check_bench_scene(scenes):
     committed = json.loads(source.split("var scene = ", 1)[1].rsplit(";", 1)[0])
     current = next(dict(scene) for scene in scenes if scene["name"] == committed["name"])
     current.pop("views")
-    if not close(committed, current):
-        raise SystemExit("qml/bench-scene.js differs from the scene dumped from the manifest; regenerate it")
+    found = difference(committed, current)
+    if found:
+        raise SystemExit(f"qml/bench-scene.js differs from the scene dumped from the manifest at {found}; regenerate it")
 
 
 def conformance(arguments):
