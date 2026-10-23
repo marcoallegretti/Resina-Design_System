@@ -27,6 +27,8 @@ KINDS = {
     "focusRing": ("focus-ir-request", "focus-indicator-ir"),
     "surfacePaint": ("surface-paint-request", "surface-paint-ir"),
     "commandMotion": ("command-motion-request", "command-motion-ir"),
+    "commandPaint": ("command-paint-request", "command-paint-ir"),
+    "togglePartPaint": ("toggle-part-paint-request", "toggle-part-paint-ir"),
 }
 MAX_PIXELS = 4_194_304
 MAX_PNG_BYTES = 64 * 1024 * 1024
@@ -139,14 +141,16 @@ def validate_capture(scene, result, viewport):
         difference = motion_mismatch(result, scene["request"])
         if difference:
             raise ValueError(f"{scene['name']}: sampled command differs at {difference}")
-        check_lit_command_scene(scene, result["command"]["paint"], viewport)
+        check_lit_control_scene(scene, result["command"]["paint"], viewport)
+    elif kind in ("commandPaint", "togglePartPaint"):
+        check_lit_control_scene(scene, result["paint"], viewport)
     else:
         check_scene(scene, result, viewport)
         validate_paint_evidence(kind, scene["request"], result)
 
 
-def check_lit_command_scene(scene, paint, viewport):
-    """Bindings, edge guard and complete capture bounds of a lit Command paint sample."""
+def check_lit_control_scene(scene, paint, viewport):
+    """Bindings, edge guard and complete capture bounds of a lit Command or Toggle part paint."""
     body, request = paint["body"], scene["request"]["surface"]["body"]
     if body["materialFamily"] != scene["expectedMaterialFamily"]:
         raise ValueError(f"{scene['name']}: resolved material family differs from scene")
@@ -154,8 +158,10 @@ def check_lit_command_scene(scene, paint, viewport):
     validate_ratio(edge["color"], request["adjacentColor"], edge["contrastRatio"],
                    request["minimumEdgeContrast"], "edge")
     if "focus" in paint:
-        check_scene(scene | {"kind": "focusRing", "request": {"surface": request["surface"]}},
-                    paint["focus"], viewport)
+        surface = request["surface"]
+        if "checked" in surface["states"]["states"] and "checkedColorRole" in scene["request"]:
+            surface = surface | {"colorRole": scene["request"]["checkedColorRole"]}
+        check_scene(scene | {"kind": "focusRing", "request": {"surface": surface}}, paint["focus"], viewport)
     bounds = body["geometry"]["silhouette"]["bounds"]
     left, top = viewport["origin"]["x"], viewport["origin"]["y"]
     right = left + viewport["width"] / viewport["pixelsPerUnit"]
@@ -204,7 +210,7 @@ def validate_paint_evidence(kind, request, result):
 
 def source_environment(scene):
     request = scene["request"]
-    if scene["kind"] == "commandMotion":
+    if scene["kind"] in ("commandMotion", "commandPaint", "togglePartPaint"):
         request = request["surface"]["body"]
     elif scene["kind"] == "surfacePaint":
         request = request["body"]

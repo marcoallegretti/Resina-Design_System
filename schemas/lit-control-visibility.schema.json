@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:lit-control-visibility:0.1.0",
+  "title": "Peak visibility of the static key light on lit control part bodies",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "keyLight", "sampleStep", "parts", "rows"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "keyLight": {
+      "type": "object", "additionalProperties": false, "required": ["x", "y"],
+      "properties": {"x": {"type": "number"}, "y": {"type": "number"}},
+      "not": {"properties": {"x": {"const": 0}, "y": {"const": 0}}}
+    },
+    "sampleStep": {"type": "number", "exclusiveMinimum": 0},
+    "parts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commandBody", "toggleTrack", "toggleThumb"],
+      "properties": {
+        "commandBody": {"$ref": "#/$defs/part"},
+        "toggleTrack": {"$ref": "#/$defs/part"},
+        "toggleThumb": {"$ref": "#/$defs/part"}
+      }
+    },
+    "rows": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/row"}}
+  },
+  "$defs": {
+    "part": {
+      "type": "object", "additionalProperties": false, "required": ["size", "highlight", "shading"],
+      "properties": {
+        "size": {"allOf": [
+          {"$ref": "urn:resina:schema:surface-size:0.1.0"},
+          {"properties": {"width": {"exclusiveMinimum": 0}, "height": {"exclusiveMinimum": 0}}}
+        ]},
+        "highlight": {"$ref": "#/$defs/witness", "properties": {"response": {"exclusiveMinimum": 0, "maximum": 1}}},
+        "shading": {"$ref": "#/$defs/witness", "properties": {"response": {"minimum": -1, "exclusiveMaximum": 0}}}
+      }
+    },
+    "witness": {
+      "type": "object", "additionalProperties": false, "required": ["point", "response"],
+      "properties": {
+        "point": {"$ref": "urn:resina:schema:physical-vector:0.1.0"},
+        "response": {"type": "number"}
+      }
+    },
+    "row": {
+      "type": "object", "additionalProperties": false,
+      "required": ["theme", "materialFamily", "part", "variant", "colorRole", "body", "highlightDeltaE", "shadingDeltaE"],
+      "properties": {
+        "theme": {"enum": ["light", "dark"]},
+        "materialFamily": {"enum": ["cast", "frost", "elastomer"]},
+        "part": {"enum": ["commandBody", "toggleTrack", "toggleThumb"]},
+        "variant": {"enum": ["standard", "primary", "track", "thumb"]},
+        "checked": {"type": "boolean"},
+        "colorRole": {"$ref": "urn:resina:schema:surface-binding:0.2.0#/properties/colorRole"},
+        "body": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number", "minimum": 0, "maximum": 1}},
+        "highlightDeltaE": {"type": "number", "minimum": 0},
+        "shadingDeltaE": {"type": "number", "minimum": 0}
+      },
+      "allOf": [
+        {"if": {"properties": {"part": {"const": "commandBody"}}},
+         "then": {"properties": {"variant": {"enum": ["standard", "primary"]}}, "not": {"required": ["checked"]}},
+         "else": {"required": ["checked"], "properties": {"variant": {"enum": ["track", "thumb"]}}}},
+        {"if": {"properties": {"part": {"const": "toggleTrack"}}}, "then": {"properties": {"variant": {"const": "track"}}}},
+        {"if": {"properties": {"part": {"const": "toggleThumb"}}}, "then": {"properties": {"variant": {"const": "thumb"}}}}
+      ]
+    }
+  }
+}

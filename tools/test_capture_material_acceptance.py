@@ -2,9 +2,11 @@ import copy
 import itertools
 import unittest
 
-from capture_material_acceptance import ENVIRONMENTS, environments, motion_scenes
+from capture_material_acceptance import ENVIRONMENTS, LIT_CONTROL_TOOLS, environments, motion_scenes
 from check_command_motion_backend import equation_sample
 from check_schemas import ROOT, load_json
+from lit_control_scenes import KINDS
+from material_scenarios import validate
 from visual_acceptance import source_environment
 
 
@@ -44,6 +46,19 @@ class MaterialAcceptanceCaptureTests(unittest.TestCase):
             self.assertEqual(release["channels"][name]["initial"], expected)
         self.assertNotEqual(press["channels"], release["channels"])
         self.assertTrue(any(channel["initial"]["velocity"] != 0 for channel in release["channels"].values()))
+
+    def test_lit_control_scene_kinds_are_captured_with_their_own_resolver_and_raster(self):
+        self.assertEqual(set(LIT_CONTROL_TOOLS), set(KINDS.values()))
+        requests = {"commandPaint": "command-paint-request", "togglePartPaint": "toggle-part-paint-request"}
+        for kind, (resolver, raster) in LIT_CONTROL_TOOLS.items():
+            request = load_json(ROOT / f"conformance/ir/{requests[kind]}.json")
+            scene = {"name": "lit", "kind": kind, "expectedMaterialFamily": "elastomer", "request": request}
+            validate("tools/schemas/visual-scene.schema.json", scene, kind)
+            self.assertEqual(source_environment(scene), request["surface"]["body"]["theme"]["environment"])
+            self.assertTrue((ROOT / f"reference/rust/resina-resolver/src/bin/{resolver}.rs").is_file())
+            self.assertIn(f'name = "{raster}"', (ROOT / "backends/cpu/resina-raster/Cargo.toml").read_text(encoding="utf-8"))
+            with self.assertRaises(ValueError):
+                validate("tools/schemas/visual-scene.schema.json", scene | {"request": {"schemaVersion": "0.1.0"}}, kind)
 
 
 if __name__ == "__main__":

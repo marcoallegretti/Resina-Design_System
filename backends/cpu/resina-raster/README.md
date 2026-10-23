@@ -93,3 +93,9 @@ one RGBA8 sRGB PNG; invalid source, placement or resource limits emit no image.
 It requires the `png` feature. This supplies the native Toggle frame oracle;
 it does not schedule frames, place a component label, choose motion defaults or
 publish accessibility.
+
+The [lit control scenes](../../../conformance/scenes/lit-control-scenes.json) draw
+the authored Command bodies and Toggle parts in the Light and Dark themes through
+`resina-command-raster` and `resina-toggle-part-raster`, and
+`python tools/check_lit_control_scenes.py` compares every pixel with the same
+independent arithmetic (see [visual acceptance](../../../conformance/scenes/visual-acceptance.md)).

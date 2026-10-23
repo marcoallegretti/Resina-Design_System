@@ -1,0 +1,1097 @@
+{
+  "schemaVersion": "0.1.0",
+  "themes": {
+    "light": {
+      "source": "tokens/themes/light.json",
+      "externalSources": {
+        "foundation.json": "tokens/foundation.json"
+      },
+      "responseSource": "definitions/command-appearance-light.json"
+    },
+    "dark": {
+      "source": "tokens/themes/dark.json",
+      "externalSources": {
+        "foundation.json": "tokens/foundation.json"
+      },
+      "responseSource": "definitions/command-appearance-dark.json"
+    }
+  },
+  "environmentSource": "conformance/environment/valid-minimal-capabilities.json",
+  "appearanceSource": "definitions/tier0-surface-appearance.json",
+  "reliefSource": "definitions/control-relief.json",
+  "anatomy": {
+    "command": "definitions/components/command.json",
+    "toggle": "definitions/components/toggle.json"
+  },
+  "surroundingColorRole": "surface.base",
+  "sizes": {
+    "command": {
+      "width": 96,
+      "height": 48
+    },
+    "toggleTrack": {
+      "width": 64.5,
+      "height": 40.5
+    },
+    "toggleThumb": {
+      "width": 16,
+      "height": 16
+    }
+  },
+  "lights": {
+    "none": {
+      "ambient": null,
+      "interaction": null
+    },
+    "ambient": {
+      "ambient": 0.25,
+      "interaction": null
+    },
+    "interaction": {
+      "ambient": null,
+      "interaction": {
+        "direction": {
+          "x": 1,
+          "y": 0.5
+        },
+        "strength": 0.5
+      }
+    },
+    "both": {
+      "ambient": 0.25,
+      "interaction": {
+        "direction": {
+          "x": 1,
+          "y": 0.5
+        },
+        "strength": 0.5
+      }
+    }
+  },
+  "environments": {
+    "admitting": {
+      "highContrast": false,
+      "reducedMotion": false,
+      "dynamicLighting": true,
+      "qualityPolicy": "balanced",
+      "layoutDirection": "ltr"
+    },
+    "high-contrast": {
+      "highContrast": true,
+      "reducedMotion": false,
+      "dynamicLighting": true,
+      "qualityPolicy": "balanced",
+      "layoutDirection": "ltr"
+    },
+    "reduced-motion": {
+      "highContrast": false,
+      "reducedMotion": true,
+      "dynamicLighting": true,
+      "qualityPolicy": "balanced",
+      "layoutDirection": "ltr"
+    },
+    "all-capabilities-off": {
+      "highContrast": false,
+      "reducedMotion": false,
+      "dynamicLighting": false,
+      "qualityPolicy": "balanced",
+      "layoutDirection": "ltr"
+    },
+    "rtl": {
+      "highContrast": false,
+      "reducedMotion": false,
+      "dynamicLighting": true,
+      "qualityPolicy": "balanced",
+      "layoutDirection": "rtl"
+    }
+  },
+  "capture": {
+    "margin": 8,
+    "pixelsPerUnit": 2,
+    "samplesPerAxis": 4
+  },
+  "scenarios": [
+    {
+      "name": "light-command-standard-rest",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-hover",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-pressed",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-disabled",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-focused",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-primary-rest",
+      "theme": "light",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-primary-hover",
+      "theme": "light",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-primary-pressed",
+      "theme": "light",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-primary-disabled",
+      "theme": "light",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-primary-focused",
+      "theme": "light",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-hover-none-light",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "none",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-hover-ambient-light",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "ambient",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-hover-interaction-light",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "interaction",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-command-standard-hover-high-contrast",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "high-contrast"
+    },
+    {
+      "name": "light-command-standard-hover-reduced-motion",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "reduced-motion"
+    },
+    {
+      "name": "light-command-standard-hover-all-capabilities-off",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "all-capabilities-off"
+    },
+    {
+      "name": "light-command-standard-hover-rtl",
+      "theme": "light",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "rtl"
+    },
+    {
+      "name": "light-toggle-track-off-rest",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-hover",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-pressed",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-disabled",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-focused",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-on-rest",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-on-hover",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-on-pressed",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-on-disabled",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-on-focused",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-off-rest",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-off-hover",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-off-pressed",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-off-disabled",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-on-rest",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-on-hover",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-on-pressed",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-thumb-on-disabled",
+      "theme": "light",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-hover-none-light",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "none",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-hover-ambient-light",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "ambient",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-hover-interaction-light",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "interaction",
+      "environment": "admitting"
+    },
+    {
+      "name": "light-toggle-track-off-hover-high-contrast",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "high-contrast"
+    },
+    {
+      "name": "light-toggle-track-off-hover-reduced-motion",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "reduced-motion"
+    },
+    {
+      "name": "light-toggle-track-off-hover-all-capabilities-off",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "all-capabilities-off"
+    },
+    {
+      "name": "light-toggle-track-off-hover-rtl",
+      "theme": "light",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "rtl"
+    },
+    {
+      "name": "dark-command-standard-rest",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-hover",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-pressed",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-disabled",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-focused",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-primary-rest",
+      "theme": "dark",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-primary-hover",
+      "theme": "dark",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-primary-pressed",
+      "theme": "dark",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-primary-disabled",
+      "theme": "dark",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-primary-focused",
+      "theme": "dark",
+      "component": "command",
+      "variant": "primary",
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-hover-none-light",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "none",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-hover-ambient-light",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "ambient",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-hover-interaction-light",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "interaction",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-command-standard-hover-high-contrast",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "high-contrast"
+    },
+    {
+      "name": "dark-command-standard-hover-reduced-motion",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "reduced-motion"
+    },
+    {
+      "name": "dark-command-standard-hover-all-capabilities-off",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "all-capabilities-off"
+    },
+    {
+      "name": "dark-command-standard-hover-rtl",
+      "theme": "dark",
+      "component": "command",
+      "variant": "standard",
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "rtl"
+    },
+    {
+      "name": "dark-toggle-track-off-rest",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-hover",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-pressed",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-disabled",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-focused",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-on-rest",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-on-hover",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-on-pressed",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-on-disabled",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-on-focused",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": true,
+      "states": [
+        "rest",
+        "focused"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-off-rest",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-off-hover",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-off-pressed",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-off-disabled",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": false,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-on-rest",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "rest"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-on-hover",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-on-pressed",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "pressed"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-thumb-on-disabled",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "thumb",
+      "checked": true,
+      "states": [
+        "disabled"
+      ],
+      "light": "both",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-hover-none-light",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "none",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-hover-ambient-light",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "ambient",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-hover-interaction-light",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "interaction",
+      "environment": "admitting"
+    },
+    {
+      "name": "dark-toggle-track-off-hover-high-contrast",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "high-contrast"
+    },
+    {
+      "name": "dark-toggle-track-off-hover-reduced-motion",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "reduced-motion"
+    },
+    {
+      "name": "dark-toggle-track-off-hover-all-capabilities-off",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "all-capabilities-off"
+    },
+    {
+      "name": "dark-toggle-track-off-hover-rtl",
+      "theme": "dark",
+      "component": "toggle",
+      "part": "track",
+      "checked": false,
+      "states": [
+        "hover"
+      ],
+      "light": "both",
+      "environment": "rtl"
+    }
+  ]
+}

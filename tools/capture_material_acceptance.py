@@ -8,6 +8,9 @@ from pathlib import Path
 
 from check_command_motion_backend import equation_sample
 from check_schemas import ROOT, load_json, parse_json
+from lit_control_scenes import MANIFEST as LIT_CONTROL_MANIFEST
+from lit_control_scenes import prepare as prepare_lit_control_scenes
+from lit_control_scenes import viewport as lit_control_viewport
 from material_scenarios import MANIFEST, asset_source, backend_document, prepare, validate
 from visual_acceptance import capture_scene
 
@@ -51,8 +54,12 @@ def motion_scenes():
         yield {"name": f"diagnostic-command-retarget-{index}", "kind": "commandMotion", "expectedMaterialFamily": "elastomer", "request": frame}
 
 
+LIT_CONTROL_TOOLS = {"commandPaint": ("resina-command-paint", "resina-command-raster"),
+                     "togglePartPaint": ("resina-toggle-part-paint", "resina-toggle-part-raster")}
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Capture the authored opaque catalog and diagnostic interrupted motion; this does not accept styling or certify complete coverage.")
+    parser = argparse.ArgumentParser(description="Capture the authored opaque catalog, the lit Command and Toggle scenes and diagnostic interrupted motion; this does not accept styling or certify complete coverage.")
     parser.add_argument("--bin-dir", type=Path, required=True)
     parser.add_argument("--executable-suffix", default="")
     parser.add_argument("--output", type=Path, required=True)
@@ -85,6 +92,17 @@ def main():
                 capture_scene(scene, viewport, executable("resina-surface-paint"), executable("resina-paint-raster"), output, "candidate", arguments.timeout)
                 captured += 1
             print(f"Captured {name}: 16 complete material candidates", flush=True)
+        lit_scenes, _ = prepare_lit_control_scenes(load_json(LIT_CONTROL_MANIFEST), lambda request: backend_document(
+            [str(executable("resina-theme-resolve")), "-"], request, "schemas/headless-result.schema.json", "lit control theme", arguments.timeout,
+        ))
+        for scene in lit_scenes["scenarios"]:
+            resolver, raster = LIT_CONTROL_TOOLS[scene["kind"]]
+            capture = lit_scenes["capture"]
+            viewport = lit_control_viewport(scene["request"], capture, capture["pixelsPerUnit"], capture["samplesPerAxis"])
+            capture_scene(scene, viewport, executable(resolver), executable(raster),
+                          arguments.output / "lit-control" / scene["name"], "candidate", arguments.timeout)
+            captured += 1
+        print(f"Captured {len(lit_scenes['scenarios'])} lit Command and Toggle part candidates", flush=True)
         viewport = {"origin": {"x": -6, "y": -6}, "width": 32, "height": 26, "pixelsPerUnit": 1, "samplesPerAxis": 4}
         for scene in motion_scenes():
             output = arguments.output / "motion" / scene["name"]
