@@ -75,7 +75,7 @@ compositing costs are not bounded by them. The frame-time tables were taken befo
 
 | Configuration | Result |
 | --- | --- |
-| `QT_QUICK_BACKEND=software` (the configuration of the existing checks) | `ShaderEffect` draws nothing: every scene capture is empty. `GraphicsInfo.api` reads Software. `ShaderEffect.status` read Uncompiled at the end of the run. |
+| `QT_QUICK_BACKEND=software` (the configuration of the existing checks) | `ShaderEffect` draws nothing: every scene capture is empty. `GraphicsInfo.api` reads Software. `ShaderEffect.status` read Uncompiled at the end of the run (observed locally; the CI summary shows the draws-nothing note instead). |
 | `QT_QPA_PLATFORM=offscreen`, any `QSG_RHI_BACKEND` | Qt falls back to the software scene graph ("Loading backend software"). |
 | `QT_QPA_PLATFORM=eglfs`, `linuxfb`, `minimalegl` | Fail to start without a DRM device or X display. |
 | headless sway (pixman), Qt RHI OpenGL on llvmpipe | Draws; this is the Qt default there. |
@@ -156,7 +156,7 @@ for 30 and 1409 in 30.7 s for 100; with the software scene graph at scale 1, 711
 control per second), and at scale 2, 90 in 30.2 s (0.3 per control per second).
 
 Like for like, OpenGL on llvmpipe, frames per second (local figures from a run before the master merge; a
-bench run reproduces the shader figures in the `fps` column of its table) at N of 1, 10, 30 and 100. At scale 1 the shader reaches
+the `fps` column of a bench run measures the same quantity; absolute values depend on the machine, and the runner values are lower, for example 39.6 fps against 60.8 at 30 objects and 12.4 against 19.8 at 100 objects at scale 1) at N of 1, 10, 30 and 100. At scale 1 the shader reaches
 59.2 / 60.6 / 60.8 / 19.8 and the production control 60.8 / 20.2 / 7.6 / 2.3. At scale 2 the shader reaches
 55.9 / 46.8 / 18.7 / 5.9 and the production control 57.9 / 11.3 / 4.1 / 1.2. The software scene graph rows apply only
 to the production control, because the shader draws nothing there.
