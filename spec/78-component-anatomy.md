@@ -155,13 +155,14 @@ gives the body colour and the largest ΔE_OK between that body and the colours
 painted where the signed key response toward the highlight and toward the side
 peaks. Light is not a state cue, so the table is evidence of how much the light
 contributes to identity, not a threshold. One half of the light is faint on most bodies, and which half depends on the
-body. The Light `surface.high` Command body has a highlight half of at most 0.0009
-ΔE_OK, far below any visible difference, so only its shading half shows (0.030
-Cast, 0.042 Frost, 0.074 Elastomer). The Dark `surface.high` body shows its
-highlight half (0.024 to 0.054) and its shading half is faint (0.0085 Cast, 0.012
-Frost, 0.021 Elastomer). The Light unchecked and checked track has a highlight
-half of 0.0025 to 0.0095, the Light thumb a shading half of 0.006 to 0.027, and the
-Dark thumb a highlight half of 0.0009 to 0.0086. The table is evidence about the
+body. The Light `surface.high` Command body has a highlight half of at most 0.0011
+ΔE_OK, far below any visible difference, so only its shading half shows (0.034
+Cast, 0.048 Frost, 0.086 Elastomer). The Dark `surface.high` body shows its
+highlight half (0.028 to 0.062) and its shading half is faint (0.0098 Cast, 0.014
+Frost, 0.025 Elastomer). The Light unchecked and checked track has a highlight
+half of 0.0028 to 0.011, the Light thumb a shading half of 0.0068 to 0.031, and the
+Dark thumb a highlight half of 0.0011 to 0.0098. The values are those of the
+[reference key light](34-key-light.md), `(−0.34, −0.94)`. The table is evidence about the
 lit body as authored; it does not accept its appearance. The
 [independent arithmetic](../tools/lit_control_visibility.py) locates each peak
 with the lit body normals and reproduces every row; the Rust test paints the same

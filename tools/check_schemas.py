@@ -1758,7 +1758,12 @@ def main():
         key_light_names.add(case["name"])
         check_case(key_light_request_schema, case["name"], case["request"], case["requestSchemaValid"])
     light_cases = load_json(ROOT / "conformance/lighting/material-light-vectors.json")
-    check_case(validator_for("schemas/material-light.schema.json"), "reference material light", load_json(ROOT / "definitions/material-light.json"), True)
+    reference_light = load_json(ROOT / "definitions/material-light.json")
+    check_case(validator_for("schemas/material-light.schema.json"), "reference material light", reference_light, True)
+    for name, light in (("reference material light", reference_light["keyLight"]),
+                       ("Tier 0 appearance profile", load_json(ROOT / "definitions/tier0-surface-appearance.json")["keyLight"])):
+        if light != load_json(ROOT / "definitions/key-light.json"):
+            raise ValueError(f"{name}: key light differs from definitions/key-light.json")
     light_case_schema = validator_for("schemas/material-light-case.schema.json")
     light_request_schema = validator_for("schemas/material-light-request.schema.json")
     light_result_schema = validator_for("schemas/material-light-result.schema.json")
