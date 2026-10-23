@@ -9,6 +9,7 @@ FloatingWindow {
     property var queue: []
     property int next: 0
     property var shadowed: Quickshell.env("MATERIAL_SPIKE_SHADOW") === "1"
+    readonly property bool omitRing: Quickshell.env("MATERIAL_SPIKE_NO_RING") === "1"
 
     implicitWidth: 400
     implicitHeight: 300
@@ -21,6 +22,7 @@ FloatingWindow {
             x: 0
             y: 0
             shadow: Qt.vector4d(window.shadowed ? 0.35 : 0, 6, 0, 1.5)
+            shaderFile: Quickshell.env("MATERIAL_SPIKE_SHADER") || "material.frag.qsb"
         }
     }
 
@@ -34,6 +36,7 @@ FloatingWindow {
         const scene = job.scene;
         const view = scene.views[String(job.scale)];
         body.apply(scene);
+        if (omitRing) body.edgeColor = body.bodyColor;
         stage.width = view.width / job.scale;
         stage.height = view.height / job.scale;
         body.x = 0;

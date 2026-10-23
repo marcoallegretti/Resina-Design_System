@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import re
+
 import shutil
 import statistics
 import subprocess
@@ -20,21 +21,20 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE / "tools"))
+from stats import percentile  # noqa: E402
 ROOT = HERE.parents[2]
-FRAME_LOG = re.compile(r"frame rendered in (\d+)ms, sync=(\d+), render=(\d+), swap=(\d+)")
 API = {0: "unknown", 1: "software", 2: "openvg", 3: "opengl", 4: "direct3d11", 5: "vulkan", 6: "metal", 7: "null"}
+STATUS = {0: "Uncompiled", 1: "Compiled", 2: "Error"}
 CONFIGS = {
     "opengl": {"QSG_RHI_BACKEND": "opengl"},
     "vulkan": {"QSG_RHI_BACKEND": "vulkan"},
     "software": {"QT_QUICK_BACKEND": "software"},
     "default": {},
     "opengl-shadow": {"QSG_RHI_BACKEND": "opengl", "MATERIAL_SPIKE_SHADOW": "1"},
+    "opengl-supersampled": {"QSG_RHI_BACKEND": "opengl", "MATERIAL_SPIKE_SHADER": "material-supersampled.frag.qsb"},
+    "opengl-no-ring": {"QSG_RHI_BACKEND": "opengl", "MATERIAL_SPIKE_NO_RING": "1"},
 }
-
-
-def percentile(values, fraction):
-    ordered = sorted(values)
-    return ordered[min(len(ordered) - 1, int(fraction * len(ordered)))]
 
 
 class Session:
@@ -80,15 +80,20 @@ def prepare(work, qsb):
     work.mkdir(parents=True, exist_ok=True)
     for name in ("MaterialBody.qml", "Recorder.qml", "bench.qml", "baseline.qml", "capture.qml", "bench-scene.js"):
         shutil.copyfile(HERE / "qml" / name, work / name)
-    subprocess.run([qsb, "--qt6", "-o", str(work / "material.frag.qsb"), str(HERE / "shaders" / "material.frag")], check=True)
+    source = str(HERE / "shaders" / "material.frag")
+    subprocess.run([qsb, "--qt6", "-o", str(work / "material.frag.qsb"), source], check=True)
+    subprocess.run([qsb, "--qt6", "-D", "SUPERSAMPLE", "-o", str(work / "material-supersampled.frag.qsb"), source], check=True)
 
 
 def launch(quickshell, work, qml, session, environment, timeout):
     env = dict(session.environment)
-    env.update(QT_QPA_PLATFORM="wayland", QT_LOGGING_RULES="qt.scenegraph.time.renderloop=true", **environment)
+    env.update(QT_QPA_PLATFORM="wayland", **environment)
     env.pop("QT_SCALE_FACTOR", None)
-    done = subprocess.run([quickshell, "--no-color", "--no-duplicate", "--path", str(work / qml)], env=env,
-                          capture_output=True, text=True, timeout=timeout)
+    try:
+        done = subprocess.run([quickshell, "--no-color", "--no-duplicate", "--path", str(work / qml)], env=env,
+                              capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return f"timed out after {timeout:.0f} s"
     return done.stdout + done.stderr
 
 
@@ -108,13 +113,10 @@ def row(configuration, scale, count, text):
         return {"config": configuration, "scale": scale, "n": count, "failed": result.get("failed", "no frames") + " " + " ".join(errors[:3]),
                 "kind": result["kind"]}
     intervals = result["intervals"]
-    renders = [int(m.group(3)) for m in FRAME_LOG.finditer(text)]
-    renders = renders[len(renders) - len(intervals):] if len(renders) > len(intervals) else renders
     return {"config": configuration, "scale": scale, "n": count, "kind": result["kind"],
             "api": API.get(result["api"], result["api"]), "dpr": result["dpr"], "frames": len(intervals),
             "intervalMedian": statistics.median(intervals), "intervalP95": percentile(intervals, 0.95),
             "intervalP99": percentile(intervals, 0.99), "fps": 1000 * len(intervals) / sum(intervals),
-            "renderMedian": statistics.median(renders) if renders else None,
             "publications": result.get("publications"), "seconds": result["seconds"], "setup": result.get("setup"),
             "status": result.get("status"), "shaderLog": result.get("log")}
 
@@ -127,8 +129,10 @@ def table(rows):
             continue
         if r.get("publications") is not None:
             note = f"ready after {r['setup']:.1f} s, {r['publications']} publications in {r['seconds']:.1f} s"
+        elif r["api"] == "software":
+            note = "ShaderEffect draws nothing on this scene graph; the interval is not a shader measurement"
         else:
-            note = f"ShaderEffect.status {r['status']}, render thread median {r['renderMedian']} ms"
+            note = f"ShaderEffect.status {STATUS.get(r['status'], r['status'])} when the run ended"
         print(" | ".join(map(str, (r["config"], r["scale"], r["n"], r["api"], r["frames"],
                                     f"{r['intervalMedian']:.0f}/{r['intervalP95']:.0f}/{r['intervalP99']:.0f}",
                                     f"{r['fps']:.1f}", note))))
@@ -186,6 +190,15 @@ def baseline(arguments):
     return rows
 
 
+def check_bench_scene(scenes):
+    source = (HERE / "qml" / "bench-scene.js").read_text()
+    committed = json.loads(source.split("var scene = ", 1)[1].rsplit(";", 1)[0])
+    current = next(dict(scene) for scene in scenes if scene["name"] == committed["name"])
+    current.pop("views")
+    if committed != current:
+        raise SystemExit("qml/bench-scene.js differs from the scene dumped from the manifest; regenerate it")
+
+
 def conformance(arguments):
     sys.path.insert(0, str(HERE / "tools"))
     import compare
@@ -201,6 +214,7 @@ def conformance(arguments):
                     "--toggle-raster", str(target / "release" / "resina-toggle-part-raster"),
                     "--output-dir", str(references)], check=True)
     scenes = json.loads((references / "scenes.json").read_text())["scenes"]
+    check_bench_scene(scenes)
     work = Path(tempfile.mkdtemp(prefix="material-spike-run-"))
     try:
         prepare(work, arguments.qsb)
@@ -218,16 +232,23 @@ def conformance(arguments):
             session.close()
     finally:
         shutil.rmtree(work, ignore_errors=True)
+    controls = {name for name in arguments.configs if name.endswith("no-ring")}
+    renderers = [name for name in arguments.configs if name not in controls]
+    status = 0
     for name in arguments.configs:
-        print(f"\nshader on {name} against the CPU raster")
-        compare.summary([compare.compare(scene, scale, references / f"{scene['name']}@{scale}.png",
+        rows = [compare.compare(scene, scale, references / f"{scene['name']}@{scale}.png",
+                                output / name / f"{scene['name']}@{scale}.png")
+                for scene in scenes for scale in (1, 2)]
+        print(f"\nshader on {name} against the CPU raster" + (" (negative control: no edge ring, must fail)" if name in controls else ""))
+        compare.summary(rows)
+        if bool(compare.verdict(rows)) != (name in controls):
+            status = 1
+    for name in renderers[1:]:
+        print(f"\nshader on {name} against shader on {renderers[0]}")
+        compare.summary([compare.compare(scene, scale, output / renderers[0] / f"{scene['name']}@{scale}.png",
                                          output / name / f"{scene['name']}@{scale}.png")
                          for scene in scenes for scale in (1, 2)])
-    for name in arguments.configs[1:]:
-        print(f"\nshader on {name} against shader on {arguments.configs[0]}")
-        compare.summary([compare.compare(scene, scale, output / arguments.configs[0] / f"{scene['name']}@{scale}.png",
-                                         output / name / f"{scene['name']}@{scale}.png")
-                         for scene in scenes for scale in (1, 2)])
+    return status
 
 
 def main():
@@ -249,6 +270,8 @@ def main():
     arguments = parser.parse_args()
     stages = {"bench": bench, "baseline": baseline, "conformance": conformance}
     rows = stages[arguments.stage](arguments)
+    if arguments.stage == "conformance":
+        return rows
     if arguments.output and rows is not None:
         arguments.output.write_text(json.dumps(rows, indent=1) + "\n")
 

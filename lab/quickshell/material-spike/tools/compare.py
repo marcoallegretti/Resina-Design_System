@@ -1,10 +1,13 @@
 """Compare shader captures with the CPU raster references.
 
-Per scene and scale it reports, in 8-bit steps of the image composited over the surrounding color, the RGB
-difference of every pixel, of the fully covered pixels, and of the interior (fully covered pixels at least two
-pixels from any contour). Where either image is partly covered it reports the coverage difference as an edge
-offset in device pixels (a straight edge shifted by d pixels changes its coverage by d). The contour ratio is the
-largest RGB difference above a few steps, divided by the largest step to an eight-connected neighbour.
+Differences are 8-bit steps of the image composited over the surrounding color. Ring pixels are the pixels on a
+contour: partly covered in either image, or within one pixel of a step above 20 in the CPU raster, which covers the
+edge ring, the silhouette and the side band. The contour ratio is the largest difference above a few steps divided
+by the largest step to an eight-connected neighbour, so it measures the ring against its own contrast. The edge offset
+is the coverage difference of partly covered pixels in device pixels (a straight edge shifted by d pixels changes its
+coverage by d). The interior is fully covered pixels at least two pixels from any contour; it cannot see a missing
+ring. The criteria are candidates under evaluation, not an established tolerance class, and the exit status is
+non-zero when a capture violates them.
 """
 import argparse
 import json
@@ -14,14 +17,12 @@ from pathlib import Path
 
 from PIL import Image
 
+from stats import percentile
+
 STEP = 20
 NOISE = 3
+CRITERIA = {"interior": 3, "edge": 0.15, "ratio": 0.35}
 NEIGHBOURS = ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1))
-
-
-def percentile(values, fraction):
-    ordered = sorted(values)
-    return ordered[min(len(ordered) - 1, int(fraction * len(ordered)))]
 
 
 def spread(values):
@@ -83,10 +84,12 @@ def compare(scene, scale, cpu_path, gpu_path):
         if contrast[index] > STEP:
             contour[index] = True
     distance = distance_from(contour, cpu.size)
-    composited, shading, interior, edge, ratio = [], [], [], [], 0.0
+    composited, shading, interior, edge, ring, ratio = [], [], [], [], [], 0.0
     for index, (a, b, over_a, over_b) in enumerate(zip(cpu_pixels, gpu_pixels, cpu_over, gpu_over)):
         composited += [abs(x - y) for x, y in zip(over_a[:3], over_b[:3])]
         difference = largest_step(over_a, over_b)
+        if contour[index] and (a[3] or b[3]):
+            ring.append(difference)
         if difference > NOISE:
             ratio = max(ratio, difference / max(contrast[index], 1))
         if a[3] == 255 and b[3] == 255:
@@ -98,31 +101,43 @@ def compare(scene, scale, cpu_path, gpu_path):
             edge.append(abs(a[3] - b[3]) / 255)
     return {"name": scene["name"], "scale": scale, "component": scene["component"], "family": scene["family"],
             "pixels": len(cpu_pixels), "composited": spread(composited), "shading": spread(shading),
-            "interior": spread(interior), "edgePixels": len(edge), "edge": spread(edge), "contourRatio": ratio}
+            "interior": spread(interior), "edgePixels": len(edge), "edge": spread(edge), "ring": spread(ring), "contourRatio": ratio}
+
+
+def verdict(rows):
+    """The candidate criteria that the rows violate, as readable strings."""
+    failures = []
+    interior = max((r["interior"]["max"] for r in rows if r["interior"]), default=0)
+    edge = max((r["edge"]["max"] for r in rows if r["edge"]), default=0)
+    ratio = max(r["contourRatio"] for r in rows)
+    if interior > CRITERIA["interior"]:
+        failures.append(f"interior {interior} > {CRITERIA['interior']} steps")
+    if edge > CRITERIA["edge"]:
+        failures.append(f"edge offset {edge:.3f} > {CRITERIA['edge']} px")
+    if ratio > CRITERIA["ratio"]:
+        failures.append(f"contour ratio {ratio:.3f} > {CRITERIA['ratio']}")
+    return failures
 
 
 def summary(rows):
-    print(f"{'group':<14}{'n':>4} | {'composited RGB':^21} | {'fully covered RGB':^21} | {'interior RGB':^21} | "
-          f"{'edge offset, device px':^25} | contour")
-    print(f"{'':<18} | {'max':>6}{'p99':>7}{'mean':>8} | {'max':>6}{'p99':>7}{'mean':>8} | {'max':>6}{'p99':>7}{'mean':>8} | "
-          f"{'max':>7}{'p99':>8}{'mean':>8} | ratio")
+    print(f"{'group':<14}{'n':>4} | {'contour ratio':>13} | {'ring pixels RGB':^15} | {'edge offset, device px':^19} | "
+          f"{'interior RGB (excludes the ring band)':^22} | {'all pixels RGB':^14}")
+    print(f"{'':<18} | {'max':>13} | {'max':>7}{'p99':>8} | {'max':>9}{'mean':>10} | {'max':>10}{'mean':>12} | {'max':>7}{'p99':>7}")
     groups = {}
     for row in rows:
         for key in ((row["component"], row["scale"]), ("all", row["scale"])):
             groups.setdefault(key, []).append(row)
     for (component, scale), items in sorted(groups.items()):
-        cells = []
-        for kind in ("composited", "shading", "interior", "edge"):
-            present = [r[kind] for r in items if r[kind]]
-            if not present:
-                cells.append(f"{'-':>6}{'-':>7}{'-':>8}")
-                continue
-            values = (max(p["max"] for p in present), max(p["p99"] for p in present),
-                      statistics.fmean(p["mean"] for p in present))
-            cells.append(f"{values[0]:>7.3f}{values[1]:>8.3f}{values[2]:>8.3f}" if kind == "edge"
-                         else f"{values[0]:>6}{values[1]:>7}{values[2]:>8.3f}")
-        print(f"{component + ' @' + str(scale):<14}{len(items):>4} | " + " | ".join(cells)
-              + f" | {max(r['contourRatio'] for r in items):.3f}")
+        def pick(kind, member, reducer=max):
+            present = [r[kind][member] for r in items if r[kind]]
+            return reducer(present) if present else float("nan")
+        print(f"{component + ' @' + str(scale):<14}{len(items):>4} | {max(r['contourRatio'] for r in items):>13.3f} | "
+              f"{pick('ring', 'max'):>7.0f}{pick('ring', 'p99'):>8.0f} | {pick('edge', 'max'):>9.3f}"
+              f"{pick('edge', 'mean', statistics.fmean):>10.3f} | {pick('interior', 'max'):>10.0f}"
+              f"{pick('interior', 'mean', statistics.fmean):>12.3f} | {pick('composited', 'max'):>7.0f}{pick('composited', 'p99'):>7.0f}")
+    failures = verdict(rows)
+    print("candidate criteria (interior <= %d steps, edge offset <= %.2f px, contour ratio <= %.2f): %s" % (
+        CRITERIA["interior"], CRITERIA["edge"], CRITERIA["ratio"], "FAIL: " + "; ".join(failures) if failures else "pass"))
 
 
 def main():
@@ -138,6 +153,7 @@ def main():
     if arguments.output:
         arguments.output.write_text(json.dumps(rows, indent=1) + "\n")
     summary(rows)
+    return 1 if verdict(rows) else 0
 
 
 if __name__ == "__main__":

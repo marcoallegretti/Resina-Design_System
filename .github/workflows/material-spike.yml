@@ -80,20 +80,22 @@ jobs:
           QT_SDK: ${{ github.workspace }}/target/qt-sdk/6.11.2/gcc_64
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$QT_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          { echo '```'; python lab/quickshell/material-spike/run_spike.py conformance \
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python lab/quickshell/material-spike/run_spike.py conformance \
             --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
-            --configs opengl vulkan; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+            --configs opengl vulkan opengl-supersampled opengl-no-ring | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
       - name: Measure frame times
         shell: bash
         env:
           QT_SDK: ${{ github.workspace }}/target/qt-sdk/6.11.2/gcc_64
         run: |
           export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$QT_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          { echo '```'
-            python lab/quickshell/material-spike/run_spike.py bench \
-              --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
-              --configs opengl vulkan --counts 1 10 30 100 --scales 1 2
-            python lab/quickshell/material-spike/run_spike.py bench \
-              --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
-              --configs software --counts 10 --scales 1
-            echo '```'; } 2>/dev/null | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python lab/quickshell/material-spike/run_spike.py bench \
+            --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
+            --configs opengl vulkan --counts 1 10 30 100 --scales 1 2 | tee -a "$GITHUB_STEP_SUMMARY"
+          python lab/quickshell/material-spike/run_spike.py bench \
+            --quickshell target/quickshell-build/src/quickshell --qsb "$QT_SDK/bin/qsb" \
+            --configs software --counts 10 --scales 1 | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

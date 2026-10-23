@@ -57,7 +57,7 @@ vec3 reliefNormal(vec2 p)
 {
     float amplitude = relief.x;
     float w = relief.y;
-    if (amplitude == 0.0)
+    if (amplitude == 0.0 || w <= 0.0)
         return vec3(0.0, 0.0, 1.0);
     float g[8];
     vec2 d[8];
@@ -122,18 +122,20 @@ vec3 toSrgb(vec3 c)
 
 float coverage(float distance, float pixel)
 {
+#ifdef SUPERSAMPLE
+    return distance <= 0.0 ? 1.0 : 0.0;
+#else
     return clamp(0.5 - distance / pixel, 0.0, 1.0);
+#endif
 }
 
-void main()
+vec4 body(vec2 p, float pixel)
 {
-    vec2 p = qt_TexCoord0 * itemSize - vec2(bodyMargin);
     vec2 halfSize = 0.5 * bodySize;
     vec2 c = p - halfSize;
     float edge = relief.w;
     vec2 offset = -lighting.xy * relief.z;
     vec4 innerRadii = max(radii - vec4(edge), vec4(0.0));
-    float pixel = sqrt(abs(dFdx(p.x) * dFdy(p.y) - dFdy(p.x) * dFdx(p.y)));
 
     float front = roundedBox(c, halfSize, radii);
     float silhouette = swept(c, offset, halfSize, radii);
@@ -146,16 +148,41 @@ void main()
     float fSide = max(aInterior - aFace, 0.0);
     float fEdge = max(aSilhouette - aInterior, 0.0);
     float alpha = fFace + fSide + fEdge;
+    if (alpha <= 0.0)
+        return vec4(0.0);
+    vec3 mixed = fFace * toLinear(faceColor(p)) + fSide * toLinear(sideColor.rgb) + fEdge * toLinear(edgeColor.rgb);
+    return vec4(mixed, alpha);
+}
 
-    vec3 linear = vec3(0.0);
-    if (alpha > 0.0) {
-        vec3 mixed = fFace * toLinear(faceColor(p)) + fSide * toLinear(sideColor.rgb) + fEdge * toLinear(edgeColor.rgb);
-        linear = mixed / alpha;
+void main()
+{
+    vec2 p = qt_TexCoord0 * itemSize - vec2(bodyMargin);
+    vec2 dx = dFdx(p);
+    vec2 dy = dFdy(p);
+    float pixel = sqrt(abs(dx.x * dy.y - dy.x * dx.y));
+#ifdef SUPERSAMPLE
+    vec3 sum = vec3(0.0);
+    float covered = 0.0;
+    for (int j = 0; j < 4; ++j) {
+        for (int i = 0; i < 4; ++i) {
+            vec4 s = body(p + dx * ((float(i) + 0.5) / 4.0 - 0.5) + dy * ((float(j) + 0.5) / 4.0 - 0.5), pixel);
+            sum += s.rgb;
+            covered += s.a;
+        }
     }
+    float alpha = covered / 16.0;
+    vec3 linear = covered > 0.0 ? sum / covered : vec3(0.0);
+#else
+    vec4 s = body(p, pixel);
+    float alpha = s.a;
+    vec3 linear = alpha > 0.0 ? s.rgb / alpha : vec3(0.0);
+#endif
     vec4 result = vec4(toSrgb(linear) * alpha, alpha);
 
     if (shadow.x > 0.0) {
-        float spread = swept(c - shadow.zw, offset, halfSize, radii);
+        vec2 halfSize = 0.5 * bodySize;
+        vec2 offset = -lighting.xy * relief.z;
+        float spread = swept(p - halfSize - shadow.zw, offset, halfSize, radii);
         float umbra = shadow.x * (1.0 - smoothstep(0.0, shadow.y, spread));
         result += vec4(0.0, 0.0, 0.0, umbra) * (1.0 - result.a);
     }

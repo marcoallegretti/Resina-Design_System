@@ -19,7 +19,8 @@ ShaderEffect {
 
     width: bodyWidth + 2 * bodyMargin
     height: bodyHeight + 2 * bodyMargin
-    fragmentShader: "material.frag.qsb"
+    property string shaderFile: "material.frag.qsb"
+    fragmentShader: shaderFile
 
     function applyGeometry(scene) {
         bodyWidth = scene.size[0];
@@ -31,7 +32,9 @@ ShaderEffect {
     function applyAppearance(scene) {
         const rgb = value => Qt.rgba(value[0], value[1], value[2], 1);
         const sign = scene.relief.kind === "recessed" ? -1 : scene.relief.kind === "convex" ? 1 : 0;
-        relief = Qt.vector4d(sign * scene.relief.amplitude, scene.relief.shoulder || 1, scene.depth, scene.edgeWidth);
+        if (sign !== 0 && !(scene.relief.shoulder > 0))
+            throw new Error("a relieved body needs a positive shoulder width: " + scene.name);
+        relief = Qt.vector4d(sign * scene.relief.amplitude, (scene.relief.shoulder || 0), scene.depth, scene.edgeWidth);
         const strength = scene.interaction ? scene.interaction.strength : 0;
         lighting = Qt.vector4d(scene.key[0], scene.key[1], scene.ambient, strength);
         interaction = scene.interaction ? Qt.vector2d(scene.interaction.direction[0], scene.interaction.direction[1])

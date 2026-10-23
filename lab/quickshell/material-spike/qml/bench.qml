@@ -26,12 +26,10 @@ FloatingWindow {
         }
     }
 
-
     FrameAnimation {
         running: true
         onTriggered: {
             window.time = elapsedTime;
-            recorder.tick();
         }
     }
 

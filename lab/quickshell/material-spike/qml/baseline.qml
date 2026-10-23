@@ -91,7 +91,7 @@ FloatingWindow {
         onTriggered: {
             if (!window.measuring && (Date.now() - window.startedAt) / 1000 > window.timeout) {
                 console.log("BENCH_RESULT " + JSON.stringify({kind: "raster", n: window.count, ready: window.ready,
-                    failed: "not ready within " + window.timeout + " s", intervals: [], latencies: []}));
+                    failed: "not ready within " + window.timeout + " s", intervals: []}));
                 Qt.quit();
             }
         }
