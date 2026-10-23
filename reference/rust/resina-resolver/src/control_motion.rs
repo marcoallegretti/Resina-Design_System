@@ -10,7 +10,7 @@ pub(crate) struct ControlMotionSample {
     pub depth_scale_projection: CommandProjection,
     pub response: CommandResponse,
 }
-fn project(value: f64, lower: f64, upper: f64) -> (f64, CommandProjection) {
+pub(crate) fn project(value: f64, lower: f64, upper: f64) -> (f64, CommandProjection) {
     if value < lower {
         (lower, CommandProjection::LowerBound)
     } else if value > upper {

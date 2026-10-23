@@ -643,6 +643,7 @@ jobs:
       - run: python tools/check_focus_svg_backend.py -- target/debug/resina-focus-svg${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_backend.py -- target/debug/resina-spring${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_trajectory_backend.py -- target/debug/resina-spring-trajectory${{ matrix.executableSuffix }} -
+      - run: python tools/check_spring_range_backend.py -- target/debug/resina-spring-trajectory${{ matrix.executableSuffix }} -
       - run: python tools/check_material_response_backend.py -- target/debug/resina-spring-trajectory${{ matrix.executableSuffix }} -
       - run: python tools/check_token_backend.py -- target/debug/resina-token-resolve${{ matrix.executableSuffix }} -
       - run: python tools/check_resolver_backend.py -- target/debug/resina-token-compose${{ matrix.executableSuffix }} -
@@ -660,6 +661,7 @@ jobs:
       - run: python tools/check_opaque_pigment_backend.py -- target/debug/resina-opaque-pigment${{ matrix.executableSuffix }} -
       - run: python tools/check_inset_contour_backend.py -- target/debug/resina-inset-contour${{ matrix.executableSuffix }} -
       - run: python tools/check_surface_outline_backend.py -- target/debug/resina-surface-outline${{ matrix.executableSuffix }} -
+      - run: python tools/check_surface_deformation_backend.py --emergence target/debug/resina-surface-emergence${{ matrix.executableSuffix }} -- target/debug/resina-surface-deformation${{ matrix.executableSuffix }} -
       - run: python tools/check_outline_focus_backend.py -- target/debug/resina-outline-focus${{ matrix.executableSuffix }} -
       - run: python tools/check_surface_relief_backend.py -- target/debug/resina-surface-relief${{ matrix.executableSuffix }} -
       - run: python tools/check_relief_paint_backend.py -- target/debug/resina-relief-paint${{ matrix.executableSuffix }} -

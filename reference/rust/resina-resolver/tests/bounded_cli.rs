@@ -34,6 +34,16 @@ const COMMANDS: &[(&str, &str, usize)] = &[
         MIB,
     ),
     (
+        "resina-surface-deformation",
+        env!("CARGO_BIN_EXE_resina-surface-deformation"),
+        MIB,
+    ),
+    (
+        "resina-surface-emergence",
+        env!("CARGO_BIN_EXE_resina-surface-emergence"),
+        MIB,
+    ),
+    (
         "resina-command-motion",
         env!("CARGO_BIN_EXE_resina-command-motion"),
         MIB,
@@ -384,6 +394,31 @@ fn valid_requests_preserve_file_stdin_and_pretty_json_publication() {
         assert_eq!(result["appearance"], "translucent");
         assert_eq!(result["frostRepresentation"], "shapedBackdrop");
         assert!(output.stdout.ends_with(b"\n"));
+    }
+
+    for (command, source, policy) in [
+        (
+            env!("CARGO_BIN_EXE_resina-surface-deformation"),
+            &include_bytes!("../../../../conformance/motion/surface-deformation-request.json")[..],
+            "spring",
+        ),
+        (
+            env!("CARGO_BIN_EXE_resina-surface-emergence"),
+            &include_bytes!("../../../../conformance/motion/surface-emergence-request.json")[..],
+            "spring",
+        ),
+    ] {
+        let file = RequestFile::new(source);
+        for output in [
+            stdin(command, source),
+            Command::new(command).arg(file.path()).output().unwrap(),
+        ] {
+            assert!(output.status.success(), "{output:?}");
+            assert!(output.stderr.is_empty());
+            let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+            assert_eq!(result["policy"], policy);
+            assert!(output.stdout.ends_with(b"\n"));
+        }
     }
 
     let position = env!("CARGO_BIN_EXE_resina-slider-position");

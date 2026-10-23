@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "0.1.0",
+  "family": "elastomer",
+  "reducedMotion": false,
+  "time": 0.03,
+  "emerged": true,
+  "from": {
+    "identity": "chip",
+    "outline": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 64,
+        "height": 40
+      },
+      "radii": {
+        "topStart": {
+          "x": 20,
+          "y": 20
+        },
+        "topEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomEnd": {
+          "x": 20,
+          "y": 20
+        },
+        "bottomStart": {
+          "x": 20,
+          "y": 20
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "circular",
+      "minimumInset": 2
+    },
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "content": {
+      "x": 14,
+      "y": 10,
+      "width": 36,
+      "height": 20
+    }
+  },
+  "to": {
+    "identity": "chip",
+    "outline": {
+      "schemaVersion": "0.1.0",
+      "size": {
+        "width": 96,
+        "height": 56
+      },
+      "radii": {
+        "topStart": {
+          "x": 28,
+          "y": 28
+        },
+        "topEnd": {
+          "x": 28,
+          "y": 28
+        },
+        "bottomEnd": {
+          "x": 28,
+          "y": 28
+        },
+        "bottomStart": {
+          "x": 28,
+          "y": 28
+        }
+      },
+      "layoutDirection": "ltr",
+      "curvature": "circular",
+      "minimumInset": 2
+    },
+    "origin": {
+      "x": -16,
+      "y": -8
+    },
+    "content": {
+      "x": 8,
+      "y": 10,
+      "width": 48,
+      "height": 20
+    }
+  },
+  "sweepOffset": {
+    "x": 2.4,
+    "y": 3.1
+  },
+  "channels": {
+    "progress": {
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 56,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      }
+    },
+    "opacity": {
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1,
+        "stiffness": 1600,
+        "damping": 80,
+        "positionThreshold": 0.0001,
+        "velocityThreshold": 0.01
+      },
+      "initial": {
+        "position": 0,
+        "velocity": 0
+      }
+    }
+  }
+}

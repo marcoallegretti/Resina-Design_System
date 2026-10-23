@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-deformation-request:0.1.0",
+  "title": "Resina Surface Deformation Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "family",
+    "reducedMotion",
+    "time",
+    "outline",
+    "content",
+    "sweepOffset",
+    "bounds",
+    "channels"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "family": {
+      "enum": [
+        "cast",
+        "frost",
+        "elastomer",
+        "gel"
+      ]
+    },
+    "reducedMotion": {
+      "type": "boolean"
+    },
+    "time": {
+      "type": "number",
+      "minimum": 0
+    },
+    "outline": {
+      "$ref": "urn:resina:schema:surface-outline-request:0.1.0"
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "sweepOffset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "widthScale",
+        "heightScale"
+      ],
+      "properties": {
+        "widthScale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper"
+          ],
+          "properties": {
+            "lower": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "upper": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        },
+        "heightScale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper"
+          ],
+          "properties": {
+            "lower": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "upper": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      }
+    },
+    "channels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "widthScale",
+        "heightScale"
+      ],
+      "properties": {
+        "widthScale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dynamics",
+            "initial",
+            "target"
+          ],
+          "properties": {
+            "dynamics": {
+              "$ref": "urn:resina:schema:spring-dynamics:0.1.0"
+            },
+            "initial": {
+              "$ref": "urn:resina:schema:spring-state:0.1.0"
+            },
+            "target": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        },
+        "heightScale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dynamics",
+            "initial",
+            "target"
+          ],
+          "properties": {
+            "dynamics": {
+              "$ref": "urn:resina:schema:spring-dynamics:0.1.0"
+            },
+            "initial": {
+              "$ref": "urn:resina:schema:spring-state:0.1.0"
+            },
+            "target": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}
