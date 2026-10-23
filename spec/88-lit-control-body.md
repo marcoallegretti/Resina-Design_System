@@ -221,5 +221,9 @@ spec/36 inset contour for E at depth zero and matches the
 [published IR fixture](../conformance/ir/lit-control-body-ir.json).
 
 This version publishes no command boundary of its own: component requests
-carry the body in their own versions. Raster, native realization and accepted
-Light/Dark scenes remain separate evidence before the appearance is accepted.
+carry the body in their own versions. The [component anatomy](78-component-anatomy.md)
+evidence measures the authored bodies in both themes under every family
+assignment, and the [lit control scenes](../conformance/scenes/lit-control-scenes.json)
+render them in the Light and Dark themes with the CPU raster against this
+independent arithmetic. Native realization and the acceptance of those scenes
+remain separate evidence before the appearance is accepted.

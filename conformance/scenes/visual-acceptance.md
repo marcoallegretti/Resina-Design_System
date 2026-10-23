@@ -54,6 +54,61 @@ Their numerical response profile comes from the existing arithmetic fixture.
 They exercise frame identification and continuity, not accepted production
 calibration, native scheduling or complete component content.
 
+The [lit control scenes](lit-control-scenes.json), described by their
+[manifest schema](../../schemas/lit-control-scene-manifest.schema.json), add the
+Command bodies (standard and primary) and the Toggle track and thumb (unchecked
+and checked) as lit control bodies in the Light and Dark themes. Each part is
+captured at rest, hovered, pressed, disabled and, where it draws a ring, focused,
+with both light channels. The standard Command body and the unchecked track are
+also captured hovered with no light, ambient light only and interaction light
+only, under high contrast, under reduced motion, with every renderer capability
+off and in right-to-left layout. Colors, material families and the response
+profiles come from the authored themes and definitions through the theme
+backend, with no scene-local palette. The capture adds these as `commandPaint`
+and `togglePartPaint` candidate records through the same resolved-paint and
+containment gates as the other kinds; they are candidates, not accepted styling,
+and the images draw no text.
+
+```sh
+python tools/check_lit_control_scenes.py \
+  --theme-backend target/debug/resina-theme-resolve \
+  --command-backend target/debug/resina-command-paint \
+  --toggle-backend target/debug/resina-toggle-part-paint \
+  --command-raster target/debug/resina-command-raster \
+  --toggle-raster target/debug/resina-toggle-part-raster
+```
+
+The checker resolves every scene, compares the resolved paint with the independent
+semantics of the same request (phase, response, body colour, light, depth, label
+and edge contrast) and compares every raster pixel with bounds from the
+[independent lit control body arithmetic](../../tools/lit_body_arithmetic.py): RGB
+within one step, exact alpha, at the capture scale and sampling and at scale 1 with
+two samples per axis, with repeated output identical. It also requires that
+the thumb edge was measured against the resolved track body. For the standard
+Command body in each theme it also requires that the pixels of the no-light,
+ambient-only, high-contrast, reduced-motion and all-capabilities-off scenes leave
+the bounds of the hovered scene with both light channels, and those of the
+ambient-only and interaction-only scenes the bounds of the no-light scene, so that the evidence
+would notice a light that was not applied or not suppressed; the right-to-left
+scene stays within the bounds of the left-to-right scene, because light never
+mirrors. That control only shows light does not mirror: the Command body is a
+uniform rounded shape and the Toggle parts are capsules, so asymmetric per-corner
+shapes are not exercised. Adding ambient light on top of interaction light changes
+the pixels by about one RGB step or less, so the interaction-only scene is compared
+with the no-light scene, and the margin of the ambient-only control is as small as
+1.7 steps against the one-step tolerance (Dark Cast). Scene colours come from
+`resina-theme-resolve`, so the checker proves paint and raster given that theme
+resolution, which `tools/check_theme_backend.py` covers. Passing it certifies the CPU realization of these scenes against the
+arithmetic, not their appearance.
+
+The [visibility table](../materials/lit-control-visibility.json) states how
+visible the static key is on each of these bodies, and it is faint on one half of
+most of them: the Light `surface.high` highlight is at most 0.0009 ΔE_OK and only
+its shading half (0.030 to 0.074) shows; the Dark `surface.high` shading half is
+0.0085 to 0.021; the Light track highlight is 0.0025 to 0.0095, the Light thumb
+shading 0.006 to 0.027 and the Dark thumb highlight 0.0009 to 0.0086. The table is
+evidence about the lit body as authored, not an acceptance of its appearance.
+
 After capture, run the executed negative evidence against the same raster:
 
 ```sh
@@ -157,7 +212,7 @@ rest/focus baseline, its immutable revision, exact set and reproduction gates.
 | --- | --- | --- |
 | Four families, Light/Dark, opaque rest/focus, scale/direction/preferences | Accepted bounded static seed; explicit semantic/containment and exact pixel gates | #127: accepted opaque seed; new contracts append separately accepted cases |
 | Long translated labels, shaped RTL script and actual text scaling | 90 repeated and inspected GUIdo diagnostic readback records with font/runtime/GPU identity; text-free CPU records do not cover these | #127: diagnostic measurement/readback evidence; authored component styling remains #134/#139/#140 |
-| Neutral/primary controls and hover/press/disabled/selected styling | Existing contracts and diagnostic component fixtures; shared production profiles remain unaccepted | #134: authored profiles, followed by #139/#140 realization |
+| Neutral/primary controls and hover/press/disabled/selected styling | Existing contracts, diagnostic component fixtures and the CPU lit control scenes in both themes; shared production profiles and the scenes' appearance remain unaccepted | #134: authored profiles, followed by #139/#140 realization; #129: native realization and acceptance of the lit scenes |
 | Interrupted motion | Diagnostic sampled Command paint with retained state; no accepted calibration | #133: accepted response profiles and criteria |
 | Bright/dark/busy backdrops with enhanced material response | Current static catalog uses known uniform surroundings; diffusion/optics not implemented | #130/#131: shared contracts and new scenarios |
 | Deformation, emergence and environmental pigment | No corresponding shared rendering contract | #132/#138: decisions, contracts and appended scenarios |

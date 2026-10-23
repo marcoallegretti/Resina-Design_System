@@ -1,0 +1,600 @@
+{
+  "schemaVersion": "0.1.0",
+  "keyLight": {
+    "x": -1,
+    "y": -1
+  },
+  "sampleStep": 0.25,
+  "parts": {
+    "commandBody": {
+      "size": {
+        "width": 96,
+        "height": 48
+      },
+      "highlight": {
+        "point": {
+          "x": 8.469599843025208,
+          "y": 8.469600081443787
+        },
+        "response": 0.39381773790330354
+      },
+      "shading": {
+        "point": {
+          "x": 87.53039991855621,
+          "y": 39.53040015697479
+        },
+        "response": -0.39381773790330354
+      }
+    },
+    "toggleTrack": {
+      "size": {
+        "width": 64.5,
+        "height": 40.5
+      },
+      "highlight": {
+        "point": {
+          "x": 57.49061119183898,
+          "y": 33.49061166867614
+        },
+        "response": 0.39738400044821026
+      },
+      "shading": {
+        "point": {
+          "x": 7.009388379752636,
+          "y": 7.009388737380505
+        },
+        "response": -0.3973840004482103
+      }
+    },
+    "toggleThumb": {
+      "size": {
+        "width": 16,
+        "height": 16
+      },
+      "highlight": {
+        "point": {
+          "x": 1.847244270145893,
+          "y": 4.77321813069284
+        },
+        "response": 0.3790411139343704
+      },
+      "shading": {
+        "point": {
+          "x": 11.22678186930716,
+          "y": 14.152755729854107
+        },
+        "response": -0.3790411139343704
+      }
+    }
+  },
+  "rows": [
+    {
+      "theme": "light",
+      "materialFamily": "cast",
+      "part": "commandBody",
+      "variant": "standard",
+      "colorRole": "surface.high",
+      "body": [
+        0.9882352941176471,
+        0.984313725490196,
+        0.9725490196078431
+      ],
+      "highlightDeltaE": 0.0003993381738792783,
+      "shadingDeltaE": 0.02959246143136876
+    },
+    {
+      "theme": "light",
+      "materialFamily": "cast",
+      "part": "commandBody",
+      "variant": "primary",
+      "colorRole": "accent.primary",
+      "body": [
+        0.07450980392156863,
+        0.3568627450980392,
+        0.38823529411764707
+      ],
+      "highlightDeltaE": 0.018106934099808174,
+      "shadingDeltaE": 0.01196869058475525
+    },
+    {
+      "theme": "light",
+      "materialFamily": "cast",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "surface.low",
+      "body": [
+        0.8901960784313725,
+        0.9058823529411765,
+        0.8901960784313725
+      ],
+      "highlightDeltaE": 0.002455714190227406,
+      "shadingDeltaE": 0.027783349012107248,
+      "checked": false
+    },
+    {
+      "theme": "light",
+      "materialFamily": "cast",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "selection",
+      "body": [
+        0.7490196078431373,
+        0.8627450980392157,
+        0.8470588235294118
+      ],
+      "highlightDeltaE": 0.004202534927606476,
+      "shadingDeltaE": 0.0261313224563165,
+      "checked": true
+    },
+    {
+      "theme": "light",
+      "materialFamily": "cast",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.secondary",
+      "body": [
+        0.23529411764705882,
+        0.3176470588235294,
+        0.3333333333333333
+      ],
+      "highlightDeltaE": 0.019696504013358578,
+      "shadingDeltaE": 0.01082336249637018,
+      "checked": false
+    },
+    {
+      "theme": "light",
+      "materialFamily": "cast",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.primary",
+      "body": [
+        0.09411764705882353,
+        0.1607843137254902,
+        0.17647058823529413
+      ],
+      "highlightDeltaE": 0.026500072176116322,
+      "shadingDeltaE": 0.006017662936702621,
+      "checked": true
+    },
+    {
+      "theme": "light",
+      "materialFamily": "frost",
+      "part": "commandBody",
+      "variant": "standard",
+      "colorRole": "surface.high",
+      "body": [
+        0.9882352941176471,
+        0.984313725490196,
+        0.9725490196078431
+      ],
+      "highlightDeltaE": 0.0008984803562053183,
+      "shadingDeltaE": 0.04149331182309318
+    },
+    {
+      "theme": "light",
+      "materialFamily": "frost",
+      "part": "commandBody",
+      "variant": "primary",
+      "colorRole": "accent.primary",
+      "body": [
+        0.07450980392156863,
+        0.3568627450980392,
+        0.38823529411764707
+      ],
+      "highlightDeltaE": 0.04087906554945905,
+      "shadingDeltaE": 0.016779374550756728
+    },
+    {
+      "theme": "light",
+      "materialFamily": "frost",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "surface.low",
+      "body": [
+        0.8901960784313725,
+        0.9058823529411765,
+        0.8901960784313725
+      ],
+      "highlightDeltaE": 0.005523166808223726,
+      "shadingDeltaE": 0.038956905154192006,
+      "checked": false
+    },
+    {
+      "theme": "light",
+      "materialFamily": "frost",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "selection",
+      "body": [
+        0.7490196078431373,
+        0.8627450980392157,
+        0.8470588235294118
+      ],
+      "highlightDeltaE": 0.009454767750666837,
+      "shadingDeltaE": 0.03664022947762083,
+      "checked": true
+    },
+    {
+      "theme": "light",
+      "materialFamily": "frost",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.secondary",
+      "body": [
+        0.23529411764705882,
+        0.3176470588235294,
+        0.3333333333333333
+      ],
+      "highlightDeltaE": 0.0440554382902943,
+      "shadingDeltaE": 0.015172684107569796,
+      "checked": false
+    },
+    {
+      "theme": "light",
+      "materialFamily": "frost",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.primary",
+      "body": [
+        0.09411764705882353,
+        0.1607843137254902,
+        0.17647058823529413
+      ],
+      "highlightDeltaE": 0.058952641413529905,
+      "shadingDeltaE": 0.00843420550888021,
+      "checked": true
+    },
+    {
+      "theme": "light",
+      "materialFamily": "elastomer",
+      "part": "commandBody",
+      "variant": "standard",
+      "colorRole": "surface.high",
+      "body": [
+        0.9882352941176471,
+        0.984313725490196,
+        0.9725490196078431
+      ],
+      "highlightDeltaE": 0.0006988275563449887,
+      "shadingDeltaE": 0.07441633306811984
+    },
+    {
+      "theme": "light",
+      "materialFamily": "elastomer",
+      "part": "commandBody",
+      "variant": "primary",
+      "colorRole": "accent.primary",
+      "body": [
+        0.07450980392156863,
+        0.3568627450980392,
+        0.38823529411764707
+      ],
+      "highlightDeltaE": 0.031753737168199916,
+      "shadingDeltaE": 0.030079541901920408
+    },
+    {
+      "theme": "light",
+      "materialFamily": "elastomer",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "surface.low",
+      "body": [
+        0.8901960784313725,
+        0.9058823529411765,
+        0.8901960784313725
+      ],
+      "highlightDeltaE": 0.004296477162968049,
+      "shadingDeltaE": 0.06986871710808519,
+      "checked": false
+    },
+    {
+      "theme": "light",
+      "materialFamily": "elastomer",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "selection",
+      "body": [
+        0.7490196078431373,
+        0.8627450980392157,
+        0.8470588235294118
+      ],
+      "highlightDeltaE": 0.007354006036684702,
+      "shadingDeltaE": 0.06571246133397277,
+      "checked": true
+    },
+    {
+      "theme": "light",
+      "materialFamily": "elastomer",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.secondary",
+      "body": [
+        0.23529411764705882,
+        0.3176470588235294,
+        0.3333333333333333
+      ],
+      "highlightDeltaE": 0.034345864132891625,
+      "shadingDeltaE": 0.02719417123251356,
+      "checked": false
+    },
+    {
+      "theme": "light",
+      "materialFamily": "elastomer",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.primary",
+      "body": [
+        0.09411764705882353,
+        0.1607843137254902,
+        0.17647058823529413
+      ],
+      "highlightDeltaE": 0.04605723641667007,
+      "shadingDeltaE": 0.015108412126382963,
+      "checked": true
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "cast",
+      "part": "commandBody",
+      "variant": "standard",
+      "colorRole": "surface.high",
+      "body": [
+        0.15294117647058825,
+        0.22745098039215686,
+        0.2549019607843137
+      ],
+      "highlightDeltaE": 0.024163186093809092,
+      "shadingDeltaE": 0.008498205818980965
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "cast",
+      "part": "commandBody",
+      "variant": "primary",
+      "colorRole": "accent.primary",
+      "body": [
+        0.4823529411764706,
+        0.8274509803921568,
+        0.8509803921568627
+      ],
+      "highlightDeltaE": 0.005875527271145187,
+      "shadingDeltaE": 0.0241899563600655
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "cast",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "surface.low",
+      "body": [
+        0.050980392156862744,
+        0.09411764705882353,
+        0.11764705882352941
+      ],
+      "highlightDeltaE": 0.031801596405743704,
+      "shadingDeltaE": 0.004034641465287,
+      "checked": false
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "cast",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "selection",
+      "body": [
+        0.17647058823529413,
+        0.34901960784313724,
+        0.3764705882352941
+      ],
+      "highlightDeltaE": 0.019384511168349022,
+      "shadingDeltaE": 0.012004864796996667,
+      "checked": true
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "cast",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.secondary",
+      "body": [
+        0.796078431372549,
+        0.8549019607843137,
+        0.8431372549019608
+      ],
+      "highlightDeltaE": 0.0038387761885946684,
+      "shadingDeltaE": 0.025030436768144527,
+      "checked": false
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "cast",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.primary",
+      "body": [
+        0.9411764705882353,
+        0.9686274509803922,
+        0.9568627450980393
+      ],
+      "highlightDeltaE": 0.0009450130205583514,
+      "shadingDeltaE": 0.027924287053463642,
+      "checked": true
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "frost",
+      "part": "commandBody",
+      "variant": "standard",
+      "colorRole": "surface.high",
+      "body": [
+        0.15294117647058825,
+        0.22745098039215686,
+        0.2549019607843137
+      ],
+      "highlightDeltaE": 0.05390156597542026,
+      "shadingDeltaE": 0.01191279408991769
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "frost",
+      "part": "commandBody",
+      "variant": "primary",
+      "colorRole": "accent.primary",
+      "body": [
+        0.4823529411764706,
+        0.8274509803921568,
+        0.8509803921568627
+      ],
+      "highlightDeltaE": 0.013293490647043585,
+      "shadingDeltaE": 0.03391739698331262
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "frost",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "surface.low",
+      "body": [
+        0.050980392156862744,
+        0.09411764705882353,
+        0.11764705882352941
+      ],
+      "highlightDeltaE": 0.07028746040794667,
+      "shadingDeltaE": 0.005653972471674598,
+      "checked": false
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "frost",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "selection",
+      "body": [
+        0.17647058823529413,
+        0.34901960784313724,
+        0.3764705882352941
+      ],
+      "highlightDeltaE": 0.04350917145005768,
+      "shadingDeltaE": 0.016830296077462403,
+      "checked": true
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "frost",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.secondary",
+      "body": [
+        0.796078431372549,
+        0.8549019607843137,
+        0.8431372549019608
+      ],
+      "highlightDeltaE": 0.00863272515313209,
+      "shadingDeltaE": 0.03509405661992682,
+      "checked": false
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "frost",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.primary",
+      "body": [
+        0.9411764705882353,
+        0.9686274509803922,
+        0.9568627450980393
+      ],
+      "highlightDeltaE": 0.002126158134004985,
+      "shadingDeltaE": 0.03915185635099674,
+      "checked": true
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "elastomer",
+      "part": "commandBody",
+      "variant": "standard",
+      "colorRole": "surface.high",
+      "body": [
+        0.15294117647058825,
+        0.22745098039215686,
+        0.2549019607843137
+      ],
+      "highlightDeltaE": 0.042066127475668756,
+      "shadingDeltaE": 0.021349491641928228
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "elastomer",
+      "part": "commandBody",
+      "variant": "primary",
+      "colorRole": "accent.primary",
+      "body": [
+        0.4823529411764706,
+        0.8274509803921568,
+        0.8509803921568627
+      ],
+      "highlightDeltaE": 0.010316683185215104,
+      "shadingDeltaE": 0.06082542852169916
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "elastomer",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "surface.low",
+      "body": [
+        0.050980392156862744,
+        0.09411764705882353,
+        0.11764705882352941
+      ],
+      "highlightDeltaE": 0.05504865176603501,
+      "shadingDeltaE": 0.010123638684622141,
+      "checked": false
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "elastomer",
+      "part": "toggleTrack",
+      "variant": "track",
+      "colorRole": "selection",
+      "body": [
+        0.17647058823529413,
+        0.34901960784313724,
+        0.3764705882352941
+      ],
+      "highlightDeltaE": 0.03387445112655449,
+      "shadingDeltaE": 0.03017190633350169,
+      "checked": true
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "elastomer",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.secondary",
+      "body": [
+        0.796078431372549,
+        0.8549019607843137,
+        0.8431372549019608
+      ],
+      "highlightDeltaE": 0.006715747520236334,
+      "shadingDeltaE": 0.06292633931935072,
+      "checked": false
+    },
+    {
+      "theme": "dark",
+      "materialFamily": "elastomer",
+      "part": "toggleThumb",
+      "variant": "thumb",
+      "colorRole": "content.primary",
+      "body": [
+        0.9411764705882353,
+        0.9686274509803922,
+        0.9568627450980393
+      ],
+      "highlightDeltaE": 0.0016537162790662507,
+      "shadingDeltaE": 0.0702046547608638,
+      "checked": true
+    }
+  ]
+}

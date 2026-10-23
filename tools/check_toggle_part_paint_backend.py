@@ -13,8 +13,8 @@ from check_headless_backend import mismatch, run_backend
 from check_schemas import ROOT, apply_changes, check_case, load_json, parse_json, validator_for
 from check_surface_paint_backend import surface_paint_channel_mismatch
 from check_command_paint_backend import (
-    admitting, contrast_ratio, fixture_color, fixture_depth, imperceptible_phase, lit_face_mismatch, mix_body,
-    phase_of, without_light,
+    FixtureResolution, admitting, contrast_ratio, imperceptible_phase, lit_face_mismatch, mix_body, phase_of,
+    without_light,
 )
 
 RELIEF_PARTS = {"track": "toggleTrack", "thumb": "toggleThumb"}
@@ -25,7 +25,7 @@ def selected_role(request):
     return request["checkedColorRole"] if "checked" in states else request["surface"]["body"]["surface"]["colorRole"]
 
 
-def toggle_part_mismatch(actual, request, sampled_response=None):
+def toggle_part_mismatch(actual, request, sampled_response=None, resolution=FixtureResolution):
     states = request["surface"]["body"]["surface"]["states"]["states"]
     ordered = [state for state in ("rest", "hover", "focused", "pressed", "checked", "disabled") if state in states]
     phase = phase_of(states)
@@ -57,19 +57,19 @@ def toggle_part_mismatch(actual, request, sampled_response=None):
             return "/paint/body/" + field
     face = body["face"]
     mix = response["bodyMix"]
-    role_colors = [fixture_color(request, role) for role in
+    role_colors = [resolution.color(request, role) for role in
                    (request["surface"]["body"]["surface"]["colorRole"], request["checkedColorRole"])]
     rest_color = role_colors[1] if checked else role_colors[0]
     color = mix_body(rest_color, mix)
     if mismatch(face["pigment"]["body"], {"colorSpace": "srgb", "components": color, "alpha": 1}):
         return "/paint/body/face/pigment/body"
-    guarded = fixture_color(request, request["surface"]["body"]["foregroundRole"])
+    guarded = resolution.color(request, request["surface"]["body"]["foregroundRole"])
     if face["foreground"] != {"colorSpace": "srgb", "components": guarded, "alpha": 1}:
         return "/paint/body/face/foreground"
     if not math.isclose(face["contentContrastRatio"], contrast_ratio(guarded, color), rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/face/contentContrastRatio"
     offset = body["lighting"]["sideOffset"]
-    semantic_depth = fixture_depth(request)
+    semantic_depth = resolution.depth(request)
     depth = semantic_depth * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
@@ -79,7 +79,7 @@ def toggle_part_mismatch(actual, request, sampled_response=None):
         return "/interactionAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != (request["part"] == "track" and "focused" in states):
         return "/paint/focus"
-    difference = lit_face_mismatch(body, request, response, phase, RELIEF_PARTS[request["part"]], expected_role)
+    difference = lit_face_mismatch(body, request, response, phase, RELIEF_PARTS[request["part"]], expected_role, resolution)
     if difference:
         return difference
     return surface_paint_channel_mismatch(actual["paint"])
