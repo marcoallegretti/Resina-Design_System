@@ -14,8 +14,8 @@ ShellRoot {
     readonly property var screen: Quickshell.screens.length ? Quickshell.screens[0] : null
     readonly property real margin: 8
     readonly property real gap: 16
-    property real showHeight: 48
-    property real closeHeight: 48
+    property real showHeight: 0
+    property real closeHeight: 0
     property real clockInset: 4
     readonly property real barHeight: Math.max(96, showHeight + 48)
     readonly property var sourceFiles: [
@@ -24,6 +24,8 @@ ShellRoot {
         ["appearance", "definitions/tier0-surface-appearance.json", ""],
         ["commandAppearance", "definitions/command-appearance-" + theme + ".json", theme],
         ["command", "definitions/components/command.json", ""],
+        ["layoutProfile", "definitions/layout/command.json", ""],
+        ["layoutTokens", "tokens/components/command.json", ""],
         ["controlRelief", "definitions/control-relief.json", ""],
         ["motionBody", "definitions/motion/elastomer-body.json", ""],
         ["motionDepth", "definitions/motion/elastomer-depth.json", ""],
@@ -182,8 +184,29 @@ ShellRoot {
         });
     }
 
+    function commandLayout(environment, bounds) {
+        const layout = JSON.parse(layouts.resolveCommandLayout(JSON.stringify({
+            themeSource: text("themeSource"), externalSources: {"foundation.json": text("foundation")},
+            profile: JSON.parse(text("layoutProfile")), tokens: JSON.parse(text("layoutTokens")),
+            environment: environment.theme.environment,
+            availableSize: {width: bounds.width, height: screen.height}
+        })));
+        if (layout.error)
+            fail("Command layout: " + layout.error);
+        return layout.error ? null : layout;
+    }
+
+    function commandMinimumHeight(environment) {
+        const layout = environment.theme
+            ? commandLayout(environment, {width: screen.width, height: screen.height}) : null;
+        return layout ? layout.minimumSize.height : 0;
+    }
+
     function command(environment, label, description, surroundingView, bounds) {
         if (!environment.theme || !surroundingView.paintReady)
+            return "";
+        const layout = commandLayout(environment, bounds);
+        if (!layout)
             return "";
         const body = JSON.parse(surroundingView.publication).body.pigment.body;
         const definition = JSON.parse(text("command")).variants.standard.body;
@@ -191,8 +214,7 @@ ShellRoot {
             content: {themeSource: text("themeSource"), externalSources: {"foundation.json": text("foundation")},
                 environment: environment.theme.environment, text: label,
                 fontFamily: {role: "sans", name: typeface.name},
-                minimumSize: {width: 96, height: 48}, maximumSize: {width: 320, height: 200},
-                padding: {start: 20, end: 20, top: 12, bottom: 12}},
+                minimumSize: layout.minimumSize, maximumSize: layout.maximumSize, padding: layout.padding},
             body: {surface: {schemaVersion: "0.2.0", materialRole: definition.materialRole,
                     colorRole: definition.colorRole,
                     form: {schemaVersion: "0.1.0", shape: definition.shape, elevation: definition.elevation},
@@ -207,7 +229,7 @@ ShellRoot {
                 minimumContentContrast: 4.5, minimumEdgeContrast: 3},
             activation: {schemaVersion: "0.1.0", enabled: true, focused: false, hold: null},
             hovered: false, description: description, focusable: true,
-            availableBounds: bounds, componentMinimum: {width: 48, height: 48}, occupiedRegions: []
+            availableBounds: bounds, componentMinimum: layout.targetMinimum, occupiedRegions: []
         });
     }
 
@@ -265,6 +287,7 @@ ShellRoot {
     }
 
     SurfacePaintResolver { id: colors }
+    CommandLayoutResolver { id: layouts }
     PlatformAppearance { id: platform }
 
     PanelWindow {
@@ -344,7 +367,8 @@ ShellRoot {
         anchors { top: true; left: true }
         margins.top: root.barHeight
         implicitWidth: 360 * root.textScale
-        implicitHeight: 3 * root.margin + root.clockInset + 3 * root.gap + reading.implicitHeight + root.closeHeight
+        implicitHeight: 3 * root.margin + root.clockInset + 3 * root.gap + reading.implicitHeight
+            + Math.max(root.closeHeight, root.commandMinimumHeight(clockEnvironment))
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "resina-clock-surface"

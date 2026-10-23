@@ -15,6 +15,7 @@ import time
 
 from PIL import Image
 from check_qt_command_motion_runtime import motion_mismatch
+from command_layout_arithmetic import resolve as resolve_command_layout, spatial_binding
 from check_qt_command_snapshot_runtime import ROOT, verify_snapshot
 from check_schemas import validator_for
 from check_qt_native_availability import ACTION, action_names
@@ -37,6 +38,12 @@ QUERIES = {"frame", "publications", "request", "observe"}
 RELOADS = {"reload"}
 SHELL = ROOT / "lab/quickshell/clock-shell"
 QML_ERRORS = ("TypeError:", "ReferenceError:", "invalid context", "RESINA_CLOCK_ERROR")
+LAYOUT_PROFILE = "definitions/layout/command.json"
+LAYOUT_TOKENS = "tokens/components/command.json"
+MUTATED_MINIMUM_HEIGHT = 56
+MUTATED_INLINE_INSET = "space.5"
+LAYOUT_PREFERENCES = {"densityPreference": "comfortable", "textScale": 1.5, "layoutDirection": "rtl",
+                      "inputCapabilities": ["coarsePointer", "directTouch", "keyboard"]}
 
 
 def run(command, source):
@@ -60,6 +67,30 @@ def expected_states(control):
     if not state["enabled"]:
         signals = [signal for signal in signals if signal != "rest"] + ["disabled"]
     return {"schemaVersion": "0.1.0", "states": signals or ["rest"]}
+
+
+def command_layout(request, output_height, root=ROOT):
+    """The layout policy that the profile, tokens and theme of a root give a shell Command request."""
+    content = request["content"]
+    return resolve_command_layout({
+        "profile": json.loads((root / LAYOUT_PROFILE).read_text(encoding="utf-8")),
+        "tokens": json.loads((root / LAYOUT_TOKENS).read_text(encoding="utf-8")),
+        "spatialBinding": spatial_binding(json.loads(content["themeSource"]),
+                                          json.loads(content["externalSources"]["foundation.json"])),
+        "environment": content["environment"],
+        "availableSize": {"width": request["availableBounds"]["width"], "height": output_height}})
+
+
+def verify_command_layout(part, request, output_height, root=ROOT):
+    expected = command_layout(request, output_height, root)
+    content = request["content"]
+    observed = {"minimumSize": content["minimumSize"], "maximumSize": content["maximumSize"],
+                "padding": content["padding"], "targetMinimum": request["componentMinimum"]}
+    for member, value in observed.items():
+        if value != expected[member]:
+            raise ValueError(f"the {part} Command's {member} {value!r} is not the layout profile's "
+                             f"{expected[member]!r}")
+    return expected
 
 
 def verify_device_scale(observed, expected, description):
@@ -94,16 +125,17 @@ def require_placements(observed):
 
 
 class Shell:
-    def __init__(self, host, module, fonts, theme, output, platform, scale):
+    def __init__(self, host, module, fonts, theme, output, platform, scale, root=ROOT, preferences=None):
         self.host, self.output, self.scale, self.initial_scale = host, output, scale, scale
         config = output / "clock-shell"
         config.mkdir(parents=True)
-        for name in ("shell.qml", "preferences.json"):
-            shutil.copyfile(SHELL / name, config / name)
+        shutil.copyfile(SHELL / "shell.qml", config / "shell.qml")
+        authored = json.loads((SHELL / "preferences.json").read_text(encoding="utf-8"))
+        (config / "preferences.json").write_text(json.dumps({**authored, **(preferences or {})}), encoding="utf-8")
         (config / "controls").symlink_to(ROOT / "backends/quickshell/resina-qml/qml", target_is_directory=True)
         self.path = config / "shell.qml"
         self.environment = dict(os.environ, QT_QPA_PLATFORM="wayland", QT_QUICK_BACKEND="software",
-                                QML_IMPORT_PATH=str(module), RESINA_ROOT=str(ROOT), RESINA_CLOCK_FONTS=fonts,
+                                QML_IMPORT_PATH=str(module), RESINA_ROOT=str(root), RESINA_CLOCK_FONTS=fonts,
                                 QS_NO_RELOAD_POPUP="1", QT_LINUX_ACCESSIBILITY_ALWAYS_ON="1")
         for name in ("DBUS_SESSION_BUS_ADDRESS", "XDG_CONFIG_HOME", "XDG_CURRENT_DESKTOP", "GSETTINGS_BACKEND"):
             self.environment[name] = platform[name]
@@ -314,6 +346,7 @@ def verify_surfaces(shell, observed, resolvers):
                                                             "surroundingColor")):
             raise ValueError(f"{part} declares surroundings other than its surface body")
         verify_command_scale(observed, part, request, shell.scale)
+        verify_command_layout(part, request, observed["outputHeight"])
         control = observed[part]
         source = copy.deepcopy(request)
         source.update(activation=control["state"], hovered=control["hovered"], focusable=control["state"]["enabled"])
@@ -544,6 +577,49 @@ def verify_theme_files(shell, theme):
     relief = json.loads((ROOT / "definitions/control-relief.json").read_text(encoding="utf-8"))
     if command["body"]["relief"] != relief or command["body"]["light"] != {"ambient": None, "interaction": None}:
         raise ValueError("Command requests must carry the reference control relief and explicit absent light")
+
+
+def mutated_root(path):
+    for directory in ("tokens", "definitions"):
+        shutil.copytree(ROOT / directory, path / directory)
+    tokens = path / LAYOUT_TOKENS
+    document = json.loads(tokens.read_text(encoding="utf-8"))
+    document["command"]["extent"]["standard"]["minimum"]["height"]["$value"]["value"] = MUTATED_MINIMUM_HEIGHT
+    tokens.write_text(json.dumps(document), encoding="utf-8")
+    theme = path / "tokens/themes/light.json"
+    document = json.loads(theme.read_text(encoding="utf-8"))
+    document["spatialAssignments"]["roles"]["space.control.inset.inline"]["standard"] = MUTATED_INLINE_INSET
+    theme.write_text(json.dumps(document), encoding="utf-8")
+    return path
+
+
+def layout_variant(args, host, module, fonts, platform, name, baseline, root=ROOT, preferences=None):
+    output = args.output_dir / f"layout-{name}"
+    shell = Shell(host, module, fonts, "light", output, platform, args.scale, root, preferences)
+    try:
+        observed = shell.until(closed, f"{name}: published bar with a ready Show clock Command")
+        request = json.loads(shell.call("request", "showClock"))
+        layout = verify_command_layout("showClock", request, observed["outputHeight"], root)
+    finally:
+        shell.close()
+    if layout == baseline:
+        raise ValueError(f"{name} did not change the layout of the Show clock Command")
+    return request, layout
+
+
+def layout_cases(args, host, module, fonts, platform, baseline):
+    request, layout = layout_variant(args, host, module, fonts, platform, "authored-preferences", baseline,
+                                     preferences=LAYOUT_PREFERENCES)
+    environment = request["content"]["environment"]
+    if (environment["densityPreference"], environment["textScale"], environment["layoutDirection"]) != (
+            "comfortable", 1.5, "rtl") or layout["targetMinimum"] != {"width": 48, "height": 48}:
+        raise ValueError("the authored density, text scale, direction and input did not reach the layout")
+    request, layout = layout_variant(args, host, module, fonts, platform, "mutated-profile", baseline,
+                                     root=mutated_root(args.output_dir / "mutated-root"))
+    if layout["minimumSize"]["height"] != MUTATED_MINIMUM_HEIGHT             or layout["padding"]["start"] != 24:
+        raise ValueError("the mutated profile token and spatial binding did not reach the Show clock layout")
+    return ["the Command layout follows the profile, its tokens and the theme's spatial binding for the "
+            "authored density, text scale, direction and input, and for mutated profile tokens"]
 
 
 class Accessibility:
@@ -1035,6 +1111,12 @@ def main():
         shell.publication_scales(live)
         report["cases"].append("every bar, clock surface and Command publication from startup uses its window's "
                                "device scale" + (f", moving once from {args.scale:g} to {live:g}" if live else ""))
+
+        baseline = verify_command_layout("showClock", json.loads(shell.call("request", "showClock")),
+                                         shell.observe()["outputHeight"])
+        shell.close()
+        shell = None
+        report["cases"].extend(layout_cases(args, host, module, fonts, platform, baseline))
 
         (args.output_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
         print(f"INFO portal Settings: the real xdg-desktop-portal frontend with the {settings.name}")

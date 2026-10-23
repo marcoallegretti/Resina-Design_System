@@ -66,6 +66,19 @@ def extent_token(document, path):
     return value["value"]
 
 
+def spatial_binding(theme, foundation):
+    """The theme's spatial roles resolved to dimensions against its foundation tokens."""
+    def dimension(path):
+        token = resolve_token(foundation, path)
+        if token is None:
+            raise ValueError(f"spatial token {path} is missing")
+        return token[1]
+
+    return {role: {mode: dimension(path) for mode, path in assigned.items()}
+            if isinstance(assigned, dict) else dimension(assigned)
+            for role, assigned in theme["spatialAssignments"]["roles"].items()}
+
+
 def resolve_extents(profile, document):
     extents = {}
     for mode in MODES:

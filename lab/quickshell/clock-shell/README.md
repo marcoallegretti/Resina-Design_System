@@ -32,6 +32,16 @@ focus, layout and preference policy belong to this shell, not to Resina.
   never combines files from both themes.
 - Without `RESINA_CLOCK_THEME`, the platform colour scheme selects the dark theme
   for a dark preference and the light theme otherwise.
+- Both Commands take their minimum and maximum size, padding and target
+  minimum from the
+  [Command layout profile](../../../spec/89-component-layout-profile.md)
+  (`definitions/layout/command.json` and `tokens/components/command.json`),
+  resolved by `CommandLayoutResolver` for the density, text scale, input
+  capabilities and direction of the environment. The available width is the
+  width of the content region of the Command's surface and the available height
+  is the output height, because the shell sizes its bar and surface around the
+  Command. The shell defines no Command size or padding of its own; its bar
+  height, margins and gaps are shell layout.
 - Both Commands sample motion with the calibrated Elastomer profiles of
   [material response calibration](../../../spec/80-material-response-calibration.md)
   (`elastomer-body`, `elastomer-depth`). Under reduced motion they publish
