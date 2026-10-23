@@ -41,7 +41,9 @@
     {"if": {"properties": {"scene": {"properties": {"kind": {"const": "opaqueSurface"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:opaque-surface-ir:0.1.0"}}}},
     {"if": {"properties": {"scene": {"properties": {"kind": {"const": "focusRing"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:focus-indicator-ir:0.1.0"}}}},
     {"if": {"properties": {"scene": {"properties": {"kind": {"const": "surfacePaint"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:surface-paint-ir:0.1.0"}}}},
-    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "commandMotion"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:command-motion-ir:0.2.0"}}}}
+    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "commandMotion"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:command-motion-ir:0.2.0"}}}},
+    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "commandPaint"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:command-paint-ir:0.2.0"}}}},
+    {"if": {"properties": {"scene": {"properties": {"kind": {"const": "togglePartPaint"}}}}}, "then": {"properties": {"result": {"$ref": "urn:resina:schema:toggle-part-paint-ir:0.2.0"}}}}
   ],
   "$defs": {
     "identity": {"type": "string", "minLength": 1, "maxLength": 512},

@@ -882,6 +882,57 @@ def check_lit_control_visibility():
     return checked
 
 
+def check_lit_control_scene_manifest():
+    """Validate the lit control scene catalog and reject malformed variants of it."""
+    manifest = load_json(ROOT / "conformance/scenes/lit-control-scenes.json")
+    validator = validator_for("schemas/lit-control-scene-manifest.schema.json")
+    check_case(validator, "lit control scene manifest", manifest, True)
+    checked = 1
+    command = next(index for index, scene in enumerate(manifest["scenarios"]) if scene["component"] == "command")
+    toggle = next(index for index, scene in enumerate(manifest["scenarios"]) if scene["component"] == "toggle")
+    for path, value in [("/schemaVersion", "0.2.0"),
+                        ("/themes", {}),
+                        ("/themes/light/source", "tokens/themes/light.txt"),
+                        ("/themes/light/source", "../light.json"),
+                        ("/themes/light/responseSource", 1),
+                        ("/anatomy/command", "definitions/components/command"),
+                        ("/surroundingColorRole", "background"),
+                        ("/sizes/command/width", 0),
+                        ("/lights/both/ambient", 1),
+                        ("/lights/both/ambient", -0.1),
+                        ("/lights/both/interaction/strength", 1),
+                        ("/lights/both/interaction", {"direction": {"x": 0, "y": 0}, "strength": 0.5}),
+                        ("/environments/admitting/qualityPolicy", "ultra"),
+                        ("/environments/admitting/layoutDirection", "auto"),
+                        ("/environments/admitting/highContrast", "yes"),
+                        ("/capture/margin", 7),
+                        ("/capture/samplesPerAxis", 9),
+                        ("/scenarios", []),
+                        (f"/scenarios/{command}/name", "Light Command"),
+                        (f"/scenarios/{command}/component", "slider"),
+                        (f"/scenarios/{command}/variant", "quiet"),
+                        (f"/scenarios/{command}/states", []),
+                        (f"/scenarios/{command}/states", ["hover", "hover"]),
+                        (f"/scenarios/{command}/states", ["checked"]),
+                        (f"/scenarios/{toggle}/part", "label"),
+                        (f"/scenarios/{toggle}/checked", "on")]:
+        check_case(validator, f"lit control scene manifest invalid {path}",
+                   apply_changes(manifest, [{"path": path, "value": value}]), False)
+        checked += 1
+    for index, member, value in ((command, "part", "track"), (command, "checked", False), (toggle, "variant", "standard"),
+                                 (command, "renderer", "native")):
+        invalid = copy.deepcopy(manifest)
+        invalid["scenarios"][index][member] = value
+        check_case(validator, f"lit control scene manifest with {member}", invalid, False)
+        checked += 1
+    for index, member in ((command, "variant"), (toggle, "part"), (toggle, "checked"), (command, "light"), (command, "environment")):
+        invalid = copy.deepcopy(manifest)
+        del invalid["scenarios"][index][member]
+        check_case(validator, f"lit control scene manifest without {member}", invalid, False)
+        checked += 1
+    return checked
+
+
 def check_no_active_reference_to_archived_schemas():
     """An active schema may not $ref a superseded version that only the archive still defines."""
     active, archived = set(), set()
@@ -930,6 +981,7 @@ def main():
         "schemas/toggle-travel-cases.schema.json",
         "schemas/toggle-lit-containment.schema.json",
         "schemas/lit-control-visibility.schema.json",
+        "schemas/lit-control-scene-manifest.schema.json",
         "schemas/toggle-part-paint-ir.schema.json",
         "schemas/toggle-part-paint-request.schema.json",
         "schemas/toggle-part-paint-case.schema.json",
@@ -3905,6 +3957,7 @@ def main():
     checked += check_toggle_lit_envelopes()
     checked += check_toggle_lit_containment()
     checked += check_lit_control_visibility()
+    checked += check_lit_control_scene_manifest()
     checked += check_no_active_reference_to_archived_schemas()
     slider_part_request = load_json(ROOT / "conformance/ir/slider-part-paint-request.json")
     slider_request_validator = validator_for("schemas/slider-part-paint-request.schema.json")

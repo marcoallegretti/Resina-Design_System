@@ -6,7 +6,7 @@
   "required": ["name", "kind", "expectedMaterialFamily", "request"],
   "properties": {
     "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "not": {"pattern": "[\\r\\n]"}, "maxLength": 160},
-    "kind": {"enum": ["opaqueSurface", "focusRing", "surfacePaint", "commandMotion"]},
+    "kind": {"enum": ["opaqueSurface", "focusRing", "surfacePaint", "commandMotion", "commandPaint", "togglePartPaint"]},
     "expectedMaterialFamily": {"enum": ["cast", "frost", "elastomer", "gel"]},
     "request": {"type": "object"}
   },
@@ -14,6 +14,8 @@
     {"if": {"properties": {"kind": {"const": "opaqueSurface"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:opaque-surface-request:0.1.0"}}}},
     {"if": {"properties": {"kind": {"const": "focusRing"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:focus-ir-request:0.1.0"}}}},
     {"if": {"properties": {"kind": {"const": "surfacePaint"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:surface-paint-request:0.1.0"}}}},
-    {"if": {"properties": {"kind": {"const": "commandMotion"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:command-motion-request:0.2.0"}}}}
+    {"if": {"properties": {"kind": {"const": "commandMotion"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:command-motion-request:0.2.0"}}}},
+    {"if": {"properties": {"kind": {"const": "commandPaint"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:command-paint-request:0.2.0"}}}},
+    {"if": {"properties": {"kind": {"const": "togglePartPaint"}}}, "then": {"properties": {"request": {"$ref": "urn:resina:schema:toggle-part-paint-request:0.2.0"}}}}
   ]
 }

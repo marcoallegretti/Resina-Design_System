@@ -83,8 +83,12 @@ Rust `LitControlBodyIr::sample_paint` API evaluates its region law;
 `python -m unittest discover -s tools -p test_lit_body_arithmetic.py` checks the
 authored point vectors against independent arithmetic. [Command](spec/43-command-paint.md)
 and [Toggle part](spec/54-toggle-part-paint.md) paint adopt it in their 0.2.0 versions,
-with CPU raster evidence against the same arithmetic. A native lit-body realization
-and accepted Light/Dark scenes remain separate work.
+with CPU raster evidence against the same arithmetic. The
+[lit control scenes](conformance/scenes/lit-control-scenes.json) render both
+components in the Light and Dark themes for every phase, focus, light channel and
+environment preference, and `python tools/check_lit_control_scenes.py` compares
+their pixels with the same arithmetic. A native lit-body realization and accepted
+Light/Dark scenes remain separate work.
 
 Run `cargo run -p resina-resolver --bin resina-extruded-contour -- <path>` for an [extruded contour request](schemas/extruded-contour-request.schema.json). It resolves the swept silhouette as portable lines and elliptical arcs, including physical corner mapping and split curves. `python tools/check_extruded_contour_backend.py -- <backend-command> -` checks the public geometry protocol.
 

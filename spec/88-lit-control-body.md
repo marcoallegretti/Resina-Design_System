@@ -223,5 +223,7 @@ spec/36 inset contour for E at depth zero and matches the
 This version publishes no command boundary of its own: component requests
 carry the body in their own versions. The [component anatomy](78-component-anatomy.md)
 evidence measures the authored bodies in both themes under every family
-assignment. Raster, native realization and accepted Light/Dark scenes remain
-separate evidence before the appearance is accepted.
+assignment, and the [lit control scenes](../conformance/scenes/lit-control-scenes.json)
+render them in the Light and Dark themes with the CPU raster against this
+independent arithmetic. Native realization and the acceptance of those scenes
+remain separate evidence before the appearance is accepted.
