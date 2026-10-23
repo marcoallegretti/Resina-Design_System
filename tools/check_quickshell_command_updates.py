@@ -465,7 +465,7 @@ def updates_parser(description):
     return parser
 
 
-def run_updates(component, args, fonts, authored, verify):
+def run_updates(component, args, fonts, authored, verify, probe=None, stable_targets=True):
     prefix = "RESINA_" + component.upper()
     try:
         if not args.scales or any(scale not in (1, 1.25, 2) for scale in args.scales):
@@ -484,7 +484,7 @@ def run_updates(component, args, fonts, authored, verify):
         for index, scale in enumerate(args.scales):
             output = args.output_dir / str(index)
             output.mkdir()
-            shutil.copyfile(ROOT / f"conformance/quickshell/{component}-updates-probe.qml", output / "config.qml")
+            shutil.copyfile(ROOT / "conformance/quickshell" / (probe or f"{component}-updates-probe.qml"), output / "config.qml")
             shutil.copytree(ROOT / "backends/quickshell/resina-qml/qml", output / "controls")
             case_file = output / "cases.json"
             case_file.write_text(json.dumps(cases), encoding="utf-8")
@@ -507,7 +507,8 @@ def run_updates(component, args, fonts, authored, verify):
             (output / "observations.json").write_text(json.dumps(reports, indent=2), encoding="utf-8")
             for case, report in zip(cases, reports):
                 verify(output, case, report, scale)
-            verify_stable_targets(cases, reports)
+            if stable_targets:
+                verify_stable_targets(cases, reports)
             print(f"PASS {len(cases)} authored {component.capitalize()} cases at device scale {scale}", flush=True)
     except (OSError, ValueError, KeyError, TypeError, ValidationError, subprocess.TimeoutExpired) as error:
         print(f"FAIL Quickshell {component.capitalize()} updates: " + str(error), file=sys.stderr)

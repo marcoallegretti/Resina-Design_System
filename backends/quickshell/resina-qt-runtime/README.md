@@ -1156,6 +1156,39 @@ rounded corners, the complete perimeter, glyph shapes or product styling. These
 tests do not deliver pointer or keyboard input, inspect AT-SPI, test reload or
 closure, or sample motion.
 
+### Released Quickshell lit bodies
+
+The [lit body probe](../../../conformance/quickshell/lit-body-probe.qml) mounts
+`ResinaCommandView` and `ResinaToggleView` in the released host, prepares one lit control
+scene at a time and captures the window. Run it against the same host and module pair:
+
+```sh
+python tools/check_quickshell_lit_body.py   --host target/quickshell-build/src/quickshell   --module-path target/qt-runtime-import   --font-dir $CONFORMANCE_FONTS   --theme-backend target/qt-runtime-build/debug/resina-theme-resolve   --output-dir target/quickshell-lit-bodies --scales 1 1.25 2
+```
+
+The scenes are those of the [lit control scene catalog](../../../conformance/scenes/lit-control-scenes.json).
+Each is turned into the Command or Toggle snapshot request that draws the same part,
+theme, light and environment at the scene's size, with the native state
+(activation, hover and hold) that produces the scene's states. The Command is
+sized to the scene by equal minimum and maximum sizes; the Toggle track and thumb
+use the 64.5 x 40.5 and 16 x 16 sizes with 12.25 insets. A text scale of 1 replaces
+the scene environment's text scale, because the scenes draw no text and a scaled
+label would not fit the scene's body size. Every native
+state, size, device scale and renderer is checked against the scene before the capture is
+compared. The comparison skips the pixels of the native label (and of a Toggle thumb that has no scene)
+and takes the bounds of the independent
+[lit control body arithmetic](../../../tools/lit_body_arithmetic.py) at the native sample
+count of four per axis on the window's device pixel grid, composed over the scene's canvas. Parts
+are drawn in order, the track and then the thumb. A pixel passes within one RGB step of its bounds,
+the tolerance of the raster oracle; the largest distance measured over the 68 native captures is
+0.859 at scale 1 and 1.000 at scales 1.25 and 2. The bounds are computed in a process pool, so
+`--jobs` limits the processes (default: one fewer than the processor count).
+
+The Shell backend realizes the lit body with the shared CPU raster, so this evidence shows
+that the pixels reach the screen unchanged through the Qt runtime, the Quick scene graph and
+the released host. It does not certify glyph rendering, the position of the label, input or
+accessibility, which the sections above and below cover.
+
 ### Compositor-delivered Command lifecycle
 
 [`check_quickshell_command_lifecycle.py`](../../../tools/check_quickshell_command_lifecycle.py)

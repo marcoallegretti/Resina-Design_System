@@ -101,6 +101,21 @@ with the no-light scene, and the margin of the ambient-only control is as small 
 resolution, which `tools/check_theme_backend.py` covers. Passing it certifies the CPU realization of these scenes against the
 arithmetic, not their appearance.
 
+Released Quickshell draws the same scenes through the Qt runtime views, which show the
+shared CPU raster as Qt Quick images. `tools/check_quickshell_lit_body.py` prepares every
+scene from the same catalog, mounts the Command or the Toggle (its track and, where the
+catalog has one, its thumb) in the released host at the device scales 1, 1.25 and 2, captures the
+window and compares every pixel of the body, its side plane, its edge and any focus ring with the
+bounds of the independent arithmetic, composed over the scene's canvas, within one RGB step.
+The label is not part of a scene, so the pixels of the native label are skipped, as are those
+of a Toggle thumb that no scene covers. The capture is opaque, so coverage is checked through
+the blend with the canvas and not as a separate alpha. Over the 68 native captures at each scale
+the largest distance of a pixel from its bounds is 0.859 at scale 1 and 1.000 at scales 1.25 and 2.
+
+```sh
+python tools/check_quickshell_lit_body.py   --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import   --font-dir $CONFORMANCE_FONTS   --theme-backend target/qt-runtime-build/debug/resina-theme-resolve   --output-dir target/quickshell-lit-bodies --scales 1 1.25 2
+```
+
 The [visibility table](../materials/lit-control-visibility.json) states how
 visible the static key is on each of these bodies, and it is faint on one half of
 most of them: the Light `surface.high` highlight is at most 0.0009 ΔE_OK and only
@@ -212,7 +227,7 @@ rest/focus baseline, its immutable revision, exact set and reproduction gates.
 | --- | --- | --- |
 | Four families, Light/Dark, opaque rest/focus, scale/direction/preferences | Accepted bounded static seed; explicit semantic/containment and exact pixel gates | #127: accepted opaque seed; new contracts append separately accepted cases |
 | Long translated labels, shaped RTL script and actual text scaling | 90 repeated and inspected GUIdo diagnostic readback records with font/runtime/GPU identity; text-free CPU records do not cover these | #127: diagnostic measurement/readback evidence; authored component styling remains #134/#139/#140 |
-| Neutral/primary controls and hover/press/disabled/selected styling | Existing contracts, diagnostic component fixtures and the CPU lit control scenes in both themes; shared production profiles and the scenes' appearance remain unaccepted | #134: authored profiles, followed by #139/#140 realization; #129: native realization and acceptance of the lit scenes |
+| Neutral/primary controls and hover/press/disabled/selected styling | Existing contracts, diagnostic component fixtures and the CPU and released Quickshell lit control scenes in both themes; shared production profiles and the scenes' appearance remain unaccepted | #134: authored profiles, followed by #139/#140 realization; #129: acceptance of the lit scenes |
 | Interrupted motion | Diagnostic sampled Command paint with retained state; no accepted calibration | #133: accepted response profiles and criteria |
 | Bright/dark/busy backdrops with enhanced material response | Current static catalog uses known uniform surroundings; diffusion/optics not implemented | #130/#131: shared contracts and new scenarios |
 | Deformation, emergence and environmental pigment | No corresponding shared rendering contract | #132/#138: decisions, contracts and appended scenarios |
