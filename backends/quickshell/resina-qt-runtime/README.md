@@ -1918,7 +1918,11 @@ thread. Publication waits for both decoded parts and complete glyph preparation.
 Configuration, transform, placement, density, window, visibility or lifetime
 loss withdraws stale paint/semantics/input. Ordinary feedback keeps the stable
 qualified capture owner while preparing a replacement frame. Read-only
-`snapshot` and `currentFrame` identify the same selected complete view.
+`snapshot` and `currentFrame` identify the same selected complete view. The
+accessible node, with its complete name and description, is exposed before
+`ready` becomes true, so focus requested from `onReadyChanged` reaches assistive
+technology: Qt sends no focus event for an ignored item and none when it stops
+being ignored.
 
 Acceptance for this static increment is joint checked/activation coherence,
 complete native drawing matching the public CPU rasterizer outside verified
