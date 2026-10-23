@@ -25,30 +25,35 @@ jobs:
             save_rust_cache: false
             paint_scales: '1 2'
             output_scales: ''
+            lit_scales: '2'
             groups: [snapshots, atspi, publication, label]
           - shard: updates
             rust_cache_suffix: '-lint'
             save_rust_cache: true
             paint_scales: '1.25 1.3'
             output_scales: ''
+            lit_scales: '1 1.25'
             groups: [lint, command-updates, toggle-updates]
           - shard: lifecycle
             rust_cache_suffix: ''
             save_rust_cache: false
             paint_scales: ''
             output_scales: ''
+            lit_scales: ''
             groups: [command-lifecycle]
           - shard: output-scales-up
             rust_cache_suffix: ''
             save_rust_cache: true
             paint_scales: ''
             output_scales: '1.25:2'
+            lit_scales: ''
             groups: [release-module, frame-timing]
           - shard: output-scales-down
             rust_cache_suffix: ''
             save_rust_cache: false
             paint_scales: ''
             output_scales: '2:1.25'
+            lit_scales: ''
             groups: [toggle-lifecycle]
     env:
       QMAKE: ${{ github.workspace }}/target/qt-sdk/6.11.2/gcc_64/bin/qmake
@@ -241,6 +246,18 @@ jobs:
             --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
             --font-dir "$CONFORMANCE_FONTS" \
             --output-dir target/quickshell-toggle-updates --scales 1 1.25 2
+      - name: Check lit Command and Toggle bodies drawn by released Quickshell against independent arithmetic
+        if: matrix.lit_scales != ''
+        env:
+          LIT_SCALES: ${{ matrix.lit_scales }}
+        timeout-minutes: 25
+        run: |
+          export LD_LIBRARY_PATH="$PWD/target/wayland-sdk/lib:$PWD/target/qt-sdk/6.11.2/gcc_64/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          python tools/check_quickshell_lit_body.py \
+            --host target/quickshell-build/src/quickshell --module-path target/qt-runtime-import \
+            --font-dir "$CONFORMANCE_FONTS" \
+            --theme-backend target/qt-runtime-build/debug/resina-theme-resolve \
+            --output-dir target/quickshell-lit-bodies --scales $LIT_SCALES
       - name: Check compositor-delivered Command lifecycle, accessibility and motion and platform appearance
         if: contains(matrix.groups, 'command-lifecycle')
         timeout-minutes: 35
@@ -395,6 +412,7 @@ jobs:
             target/quickshell-native-availability.json
             target/quickshell-command-updates/
             target/quickshell-toggle-updates/
+            target/quickshell-lit-bodies/
             target/quickshell-label-render/
             target/quickshell-command-lifecycle/
             target/quickshell-command-accessibility/
