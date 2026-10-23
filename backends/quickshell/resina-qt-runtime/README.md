@@ -1359,8 +1359,8 @@ parent and window changes. A Space released after window deactivation reaches
 the other surface, so the cleared hold, not the effect count, proves that case.
 Configuration replacement during a gesture, motion, physical devices, multiple
 seats and outputs, fractional scale and screen-reader operation are not covered;
-[Toggle accessibility](#released-quickshell-toggle-accessibility) covers one
-AT-SPI delivery case.
+[Toggle accessibility](#released-quickshell-toggle-accessibility) covers its
+AT-SPI focus delivery and in-place update cases.
 
 ### Released Quickshell Toggle accessibility
 
@@ -1382,12 +1382,27 @@ python tools/check_quickshell_toggle_accessibility.py \
   `Accessible.ignored` false at that moment, and the checker requires a native
   AT-SPI `Focus` event on the one node that carries the Toggle's complete name
   and description, with that node reporting the focused state.
+- Starting from a focused Toggle, hover and press feedback, a checked
+  replacement and its reversal, availability withdrawal and restoration, a
+  label and description replacement and a live output scale change each
+  withdraw the published frame while the replacement is prepared. For each
+  update the checker requires the same node path, a node still carrying the
+  complete name and description, no `ChildrenChanged` removal or addition of
+  that node and no empty name or description in a property-change event. The
+  checked replacement must arrive as `checked` `StateChanged` events and each
+  availability change as `enabled` and `sensitive` events on that node; the
+  other updates must emit none for `checked`, `pressed`, `selected` or
+  `checkable`. The probe additionally fails if an unavailable Toggle is
+  exposed as focusable.
 
-Only this case is covered, at scale 1. The checker identifies the node by its name and does
-not assert its role, which released Qt publishes as CheckBox (see
-[Qt Switch qualification boundary](#qt-switch-qualification-boundary)).
-Feedback, availability, activation, withdrawal and screen-reader presentation
-of the Toggle are not covered.
+The checker runs at output scale 1 and, for the last update, changes the live
+output scale to 2 and back through Sway. The checker identifies the node by its
+name and does not assert its role, which released Qt publishes as CheckBox (see
+[Qt Switch qualification boundary](#qt-switch-qualification-boundary)). Qt 6.11.2
+emits no `focusable` state change, so focusability after availability changes is
+checked through the final native state. Activation through the native node,
+withdrawal other than the unmounted Toggle, and screen-reader presentation of the
+Toggle are not covered.
 
 ### Released Quickshell Command accessibility
 
@@ -1916,14 +1931,21 @@ unknown-field rejection with an 8 MiB source limit; rendering options have a
 64 KiB limit. Measurement, context validation and publication stay on the Qt UI
 thread. Publication waits for both decoded parts and complete glyph preparation.
 Configuration, transform, placement, density, window, visibility or lifetime
-loss withdraws stale paint/semantics/input. Ordinary feedback keeps the stable
+loss withdraws stale paint/input. Ordinary feedback keeps the stable
 qualified capture owner while preparing a replacement frame. Read-only
 `snapshot` and `currentFrame` identify the same selected complete view. The
 accessible node, with its complete name and description, is exposed before
 `ready` becomes true, so focus requested from `onReadyChanged` reaches assistive
 technology: Qt sends no focus event for an ignored item and none when it stops
-being ignored. A consumer that forces `Accessible.ignored` to true keeps `ready`
-false.
+being ignored. While the control stays visible in a visible native window,
+feedback, checked, availability, authored-property, placement and density
+updates keep that node exposed with its previous complete semantics until the
+next complete semantics replace them in place. An unavailable control is never
+exposed as focusable, even before its retained semantics are replaced. After
+a configuration, placement or density change, the retained node refuses `Press`
+and `Toggle` until a requalified publication arms input again. Hiding the control or its window and failure make the node ignored;
+unmounting the control or destroying its surface deletes the object and its
+node. A consumer that forces `Accessible.ignored` to true keeps `ready` false.
 
 Acceptance for this static increment is joint checked/activation coherence,
 complete native drawing matching the public CPU rasterizer outside verified

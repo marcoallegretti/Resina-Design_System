@@ -48,6 +48,7 @@ class ToggleMotionBudgetTests(unittest.TestCase):
         source = requests["standard"]
         self.assertIs(source["content"]["environment"]["accessibilityPreferences"]["reducedMotion"], False)
         self.assertEqual(set(requests["channels"]), {"track", "thumb", "travel"})
+        self.assertIn("replacement", requests)
 
     def test_the_probe_reports_each_publication_with_the_frame_clock_and_motion_state(self):
         probe = (ROOT / "conformance/quickshell/toggle-lifecycle-probe.qml").read_text(encoding="utf-8")

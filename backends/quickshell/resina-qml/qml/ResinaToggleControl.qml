@@ -27,17 +27,23 @@ ResinaToggleInput {
     activeFocusOnTab: activeFocus || (acceptsNewGestures && enabled)
     implicitWidth: state.reservation ? state.reservation.width : 0
     implicitHeight: state.reservation ? state.reservation.height : 0
-    Accessible.ignored: !state.published
+    // Refreshes keep the previous complete semantics exposed until the next
+    // complete semantics replace them; withdrawal clears them.
+    Accessible.ignored: !state.semantics || !presented()
     Accessible.role: Accessible.Switch
     Accessible.name: state.semantics ? state.semantics.name : ""
     Accessible.description: state.semantics && state.semantics.description !== null ? state.semantics.description : ""
-    Accessible.focusable: state.semantics ? state.semantics.focusable : false
+    // Retained semantics must not keep an unavailable Toggle focusable before its next publication.
+    Accessible.focusable: state.semantics ? state.semantics.focusable && enabled : false
     Accessible.pressed: false
     Accessible.checkable: true
     Accessible.checked: state.semantics ? state.semantics.state.checked : false
     Accessible.checkStateMixed: false
     function accessiblePressAction() { invoke(); }
     function accessibleToggleAction() { invoke(); }
+
+    function presented() { return visible && Boolean(nativeWindow) && nativeWindow.visible; }
+
     function setChecked(value) { return controller.setChecked(JSON.stringify({checked:value})); }
 
     function invoke() {
@@ -187,7 +193,6 @@ ResinaToggleInput {
         try {
             if (frameOnly !== true || !motionChannels.length) {
                 resolver.publishSnapshot("");
-                state.semantics = null;
                 retireViews();
             }
             if (disabledFocusable)
@@ -303,7 +308,8 @@ ResinaToggleInput {
             state.armed = false;
             resolver.publishSnapshot("");
             state.pending = "";
-            state.semantics = null;
+            // Read live values: a binding on the same change signal may not have updated yet.
+            if (!presented()) state.semantics = null;
             state.error = "";
             invalidateTarget();
             retireViews();

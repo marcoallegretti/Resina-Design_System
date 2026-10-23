@@ -13,6 +13,8 @@ from wayland_virtual_input import KEY_ENTER, KEY_SPACE, KEY_TAB
 import conformance_font
 
 OUTSIDE = (760, 360)
+REPLACEMENT = "Aggiorna già"
+REPLACEMENT_DESCRIPTION = "Aggiornamenti già configurati."
 KEYS = {"space": KEY_SPACE, "enter": KEY_ENTER}
 
 
@@ -56,7 +58,9 @@ class ToggleSession(Session):
     outside = OUTSIDE
 
     def requests(self):
-        return {"standard": request_for("light")}
+        replacement = request_for("light", REPLACEMENT)
+        replacement["description"] = REPLACEMENT_DESCRIPTION
+        return {"standard": request_for("light"), "replacement": replacement}
 
     def reset(self, checked=False):
         self.call("setReaction", "")

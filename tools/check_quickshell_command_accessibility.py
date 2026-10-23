@@ -193,13 +193,13 @@ class NativeEvents:
         self.wait(lambda: all(item in [found[:4] for found in signals(self.read())[start:]] for item in expected),
                   description, timeout=10)
 
-    def retained(self, start, node, description):
+    def retained(self, start, node, description, subject="Command"):
         for path, event, kind, _, value in signals(self.read())[start:]:
             if event == "Object.ChildrenChanged" and value == node[1]:
-                raise ValueError(f"{description} withdrew the native Command from the tree ({kind})")
+                raise ValueError(f"{description} withdrew the native {subject} from the tree ({kind})")
             if path == node[1] and event == "Object.PropertyChange" \
                     and kind in ("accessible-name", "accessible-description") and not value:
-                raise ValueError(f"{description} cleared the native Command {kind.split('-')[1]}")
+                raise ValueError(f"{description} cleared the native {subject} {kind.split('-')[1]}")
 
     def unexposed(self, start, node, description):
         changed = sorted({kind for path, event, kind, _, _ in signals(self.read())[start:]
