@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "0.1.0",
+  "component": "toggle",
+  "parts": {
+    "compact": {
+      "trackSize": {
+        "width": "toggle.track.compact.width",
+        "height": "toggle.track.compact.height"
+      },
+      "thumbSize": {
+        "width": "toggle.thumb.compact.width",
+        "height": "toggle.thumb.compact.height"
+      },
+      "thumbInset": "toggle.thumb.compact.inset"
+    },
+    "standard": {
+      "trackSize": {
+        "width": "toggle.track.standard.width",
+        "height": "toggle.track.standard.height"
+      },
+      "thumbSize": {
+        "width": "toggle.thumb.standard.width",
+        "height": "toggle.thumb.standard.height"
+      },
+      "thumbInset": "toggle.thumb.standard.inset"
+    },
+    "comfortable": {
+      "trackSize": {
+        "width": "toggle.track.comfortable.width",
+        "height": "toggle.track.comfortable.height"
+      },
+      "thumbSize": {
+        "width": "toggle.thumb.comfortable.width",
+        "height": "toggle.thumb.comfortable.height"
+      },
+      "thumbInset": "toggle.thumb.comfortable.inset"
+    },
+    "immersive": {
+      "trackSize": {
+        "width": "toggle.track.immersive.width",
+        "height": "toggle.track.immersive.height"
+      },
+      "thumbSize": {
+        "width": "toggle.thumb.immersive.width",
+        "height": "toggle.thumb.immersive.height"
+      },
+      "thumbInset": "toggle.thumb.immersive.inset"
+    }
+  }
+}

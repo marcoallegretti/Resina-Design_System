@@ -1,9 +1,12 @@
-use crate::{SpatialBinding, command_label::extent_sum, resolve_minimum_hit_target};
+use crate::{
+    SpatialBinding,
+    command_label::extent_sum,
+    profile_dimension::{Bound, DimensionFault, px_dimension},
+    resolve_minimum_hit_target,
+};
 use resina_environment::{DensityPreference, EnvironmentSnapshot, LayoutDirection, SafeArea};
 use resina_model::{ComponentLayoutProfile, SizeTokenPaths, SpatialRole, SurfaceSize};
-use resina_tokens::{
-    DocumentError, ResolvedToken, resolve_token_document, validate_resolved_value,
-};
+use resina_tokens::{DocumentError, ResolvedToken, resolve_token_document};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{collections::BTreeMap, fmt};
@@ -126,28 +129,18 @@ fn extent_token(
     path: &str,
     tokens: &BTreeMap<String, ResolvedToken>,
 ) -> Result<f64, CommandLayoutError> {
-    let token = tokens
-        .get(path)
-        .ok_or_else(|| CommandLayoutError::MissingExtentToken(path.to_owned()))?;
-    if token.token_type != "dimension" {
-        return Err(CommandLayoutError::ExtentTokenType {
-            path: path.to_owned(),
-            found: token.token_type.clone(),
-        });
-    }
-    validate_resolved_value("dimension", &token.value).map_err(|error| {
-        CommandLayoutError::InvalidExtentToken {
-            path: path.to_owned(),
-            detail: error.to_string(),
+    px_dimension(path, tokens, Bound::Positive).map_err(|fault| {
+        let path = path.to_owned();
+        match fault {
+            DimensionFault::Missing => CommandLayoutError::MissingExtentToken(path),
+            DimensionFault::Type(found) => CommandLayoutError::ExtentTokenType { path, found },
+            DimensionFault::Invalid(detail) => {
+                CommandLayoutError::InvalidExtentToken { path, detail }
+            }
+            DimensionFault::Unit => CommandLayoutError::ExtentTokenUnit(path),
+            DimensionFault::Range => CommandLayoutError::NonpositiveExtent(path),
         }
-    })?;
-    if token.value["unit"] != "px" {
-        return Err(CommandLayoutError::ExtentTokenUnit(path.to_owned()));
-    }
-    match token.value["value"].as_f64() {
-        Some(value) if value.is_finite() && value > 0.0 => Ok(value),
-        _ => Err(CommandLayoutError::NonpositiveExtent(path.to_owned())),
-    }
+    })
 }
 
 fn extent_size(

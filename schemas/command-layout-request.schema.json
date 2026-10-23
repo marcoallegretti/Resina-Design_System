@@ -7,7 +7,7 @@
   "required": ["schemaVersion", "profile", "tokens", "spatialBinding", "environment", "availableSize"],
   "properties": {
     "schemaVersion": { "const": "0.1.0" },
-    "profile": { "$ref": "urn:resina:schema:component-layout-profile:0.1.0" },
+    "profile": { "$ref": "urn:resina:schema:component-layout-profile:0.1.0#/$defs/commandProfile" },
     "tokens": { "type": "object" },
     "spatialBinding": { "$ref": "urn:resina:schema:spatial-binding:0.1.0" },
     "environment": { "$ref": "urn:resina:schema:environment:0.2.0" },

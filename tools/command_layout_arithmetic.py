@@ -32,7 +32,7 @@ def find_token(document, path):
     return node, node.get("$type", group_type)
 
 
-def resolve_token(document, path, seen=()):
+def resolve_token(document, path, seen=(), label="command layout"):
     node, token_type = find_token(document, path)
     if node is None:
         return None
@@ -40,10 +40,10 @@ def resolve_token(document, path, seen=()):
     alias = ALIAS.match(value) if isinstance(value, str) else None
     if alias:
         if path in seen or alias.group(1) in seen:
-            raise ValueError("command layout token resolution failed: alias cycle")
-        target = resolve_token(document, alias.group(1), seen + (path,))
+            raise ValueError(f"{label} token resolution failed: alias cycle")
+        target = resolve_token(document, alias.group(1), seen + (path,), label)
         if target is None:
-            raise ValueError("command layout token resolution failed: unresolved alias")
+            raise ValueError(f"{label} token resolution failed: unresolved alias")
         return token_type or target[0], target[1]
     return token_type, value
 

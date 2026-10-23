@@ -189,6 +189,11 @@ const COMMANDS: &[(&str, &str, usize)] = &[
         MIB,
     ),
     (
+        "resina-toggle-profile",
+        env!("CARGO_BIN_EXE_resina-toggle-profile"),
+        MIB,
+    ),
+    (
         "resina-toggle-part-motion",
         env!("CARGO_BIN_EXE_resina-toggle-part-motion"),
         MIB,

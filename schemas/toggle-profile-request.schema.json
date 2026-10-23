@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:toggle-profile-request:0.1.0",
+  "title": "Resina Toggle Layout Profile Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profile", "tokens", "environment", "availableSize"],
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "profile": { "$ref": "urn:resina:schema:component-layout-profile:0.1.0#/$defs/toggleProfile" },
+    "tokens": { "type": "object" },
+    "environment": { "$ref": "urn:resina:schema:environment:0.2.0" },
+    "availableSize": { "$ref": "urn:resina:schema:toggle-profile-ir:0.1.0#/$defs/size" }
+  }
+}

@@ -375,6 +375,13 @@ one per density mode. `resina-command-layout` resolves a profile, its tokens, a
 theme's spatial binding and an environment into the size, padding and direction inputs of Command label
 layout and the hit-region minimum, with public cases over every density, 100%
 and 200% text, fine and coarse input and both directions.
+`resina-toggle-profile` resolves the [Toggle profile](definitions/layout/toggle.json)
+and its [part tokens](tokens/components/toggle.json) into the track size, thumb
+size, insets and direction of the Toggle part layout, with public cases over
+every density, 100% and 200% text, fine and coarse input and both directions;
+text scale and input never change the parts, and an available size
+below the track is rejected rather than shrunk. The token values are authored
+and uncalibrated.
 
 [Slider track segments](spec/79-slider-track-segments.md) divide the track into
 an active and an inactive segment that stop at an explicit clearance around the

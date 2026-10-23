@@ -2,36 +2,53 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:resina:schema:component-layout-profile:0.1.0",
   "title": "Resina Component Layout Profile",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schemaVersion", "component", "padding", "extents"],
-  "properties": {
-    "schemaVersion": { "const": "0.1.0" },
-    "component": { "enum": ["command"] },
-    "padding": {
+  "oneOf": [
+    { "$ref": "#/$defs/commandProfile" },
+    { "$ref": "#/$defs/toggleProfile" }
+  ],
+  "$defs": {
+    "commandProfile": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["start", "end", "top", "bottom"],
+      "required": ["schemaVersion", "component", "padding", "extents"],
       "properties": {
-        "start": { "$ref": "#/$defs/inlineInset" },
-        "end": { "$ref": "#/$defs/inlineInset" },
-        "top": { "$ref": "#/$defs/blockInset" },
-        "bottom": { "$ref": "#/$defs/blockInset" }
+        "schemaVersion": { "const": "0.1.0" },
+        "component": { "const": "command" },
+        "padding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end", "top", "bottom"],
+          "properties": {
+            "start": { "$ref": "#/$defs/inlineInset" },
+            "end": { "$ref": "#/$defs/inlineInset" },
+            "top": { "$ref": "#/$defs/blockInset" },
+            "bottom": { "$ref": "#/$defs/blockInset" }
+          }
+        },
+        "extents": {
+          "allOf": [{ "$ref": "#/$defs/densityModes" }],
+          "additionalProperties": { "$ref": "#/$defs/extent" }
+        }
       }
     },
-    "extents": {
+    "toggleProfile": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["compact", "standard", "comfortable", "immersive"],
+      "required": ["schemaVersion", "component", "parts"],
       "properties": {
-        "compact": { "$ref": "#/$defs/extent" },
-        "standard": { "$ref": "#/$defs/extent" },
-        "comfortable": { "$ref": "#/$defs/extent" },
-        "immersive": { "$ref": "#/$defs/extent" }
+        "schemaVersion": { "const": "0.1.0" },
+        "component": { "const": "toggle" },
+        "parts": {
+          "allOf": [{ "$ref": "#/$defs/densityModes" }],
+          "additionalProperties": { "$ref": "#/$defs/toggleParts" }
+        }
       }
-    }
-  },
-  "$defs": {
+    },
+    "densityModes": {
+      "type": "object",
+      "required": ["compact", "standard", "comfortable", "immersive"],
+      "propertyNames": { "enum": ["compact", "standard", "comfortable", "immersive"] }
+    },
     "inlineInset": { "enum": ["space.control.inset.inline"] },
     "blockInset": { "enum": ["space.control.inset.block"] },
     "tokenPath": { "type": "string", "minLength": 1 },
@@ -51,6 +68,16 @@
       "properties": {
         "minimumSize": { "$ref": "#/$defs/sizeTokens" },
         "maximumSize": { "$ref": "#/$defs/sizeTokens" }
+      }
+    },
+    "toggleParts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trackSize", "thumbSize", "thumbInset"],
+      "properties": {
+        "trackSize": { "$ref": "#/$defs/sizeTokens" },
+        "thumbSize": { "$ref": "#/$defs/sizeTokens" },
+        "thumbInset": { "$ref": "#/$defs/tokenPath" }
       }
     }
   }

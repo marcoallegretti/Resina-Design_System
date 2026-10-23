@@ -56,6 +56,7 @@ pub use density::{DENSITY_MODES, DensityModes};
 mod layout_profile;
 pub use layout_profile::{
     ComponentLayoutProfile, LayoutComponent, ProfileExtent, ProfilePadding, SizeTokenPaths,
+    ToggleLayoutProfile, ToggleParts,
 };
 mod spatial;
 pub use spatial::{SpatialAssignments, SpatialRole};
