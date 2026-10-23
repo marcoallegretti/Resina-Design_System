@@ -1,3 +1,4 @@
+"""Spring range verdicts: decimal arithmetic for magnitudes, binary64 cos/sin of the phase, so phases beyond about 1e16 rad carry no meaning and well_conditioned() skips their values, never their verdicts."""
 import json
 import math
 import random
