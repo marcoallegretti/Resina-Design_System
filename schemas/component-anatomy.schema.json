@@ -8,6 +8,9 @@
     },
     {
       "$ref": "#/$defs/toggle"
+    },
+    {
+      "$ref": "#/$defs/slider"
     }
   ],
   "$defs": {
@@ -41,7 +44,7 @@
         "code"
       ]
     },
-    "commandBody": {
+    "surfacePart": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -138,7 +141,7 @@
       ],
       "properties": {
         "body": {
-          "$ref": "#/$defs/commandBody"
+          "$ref": "#/$defs/surfacePart"
         },
         "label": {
           "$ref": "#/$defs/embeddedLabel"
@@ -200,6 +203,34 @@
         },
         "thumb": {
           "$ref": "#/$defs/selectablePart"
+        },
+        "label": {
+          "$ref": "#/$defs/externalLabel"
+        }
+      }
+    },
+    "slider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "component",
+        "track",
+        "thumb",
+        "label"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "0.1.0"
+        },
+        "component": {
+          "const": "slider"
+        },
+        "track": {
+          "$ref": "#/$defs/surfacePart"
+        },
+        "thumb": {
+          "$ref": "#/$defs/surfacePart"
         },
         "label": {
           "$ref": "#/$defs/externalLabel"

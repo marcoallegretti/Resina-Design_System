@@ -39,7 +39,9 @@ its threshold against every combined range; focused thumb navigation must pass
 
 These are conservative whole-track checks. They may reject an arrangement in
 which a represented color never actually borders the thumb. This profile does
-not guess spatial exclusions or discard colors to make contrast pass. A future
+not guess spatial exclusions or discard colors to make contrast pass. Under the
+authored themes the [anatomy evidence](78-component-anatomy.md#slider-segments)
+shows the authored rest thumb rejected against the whole track cover. A future
 profile using narrower spatial evidence must prove that evidence explicitly.
 Canvas coverage, filtering, quantization and antialiasing remain producer and
 renderer obligations; this operation does not certify pixels it has not seen.

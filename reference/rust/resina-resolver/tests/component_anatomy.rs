@@ -1,14 +1,16 @@
+use resina_color::OpaqueSrgbRange;
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
     ColorRole, CommandAnatomy, CommandAppearance, CommandBody, CommandEmphasis,
-    MaterialLightChannels, OpaqueSurfaceAppearance, PhysicalVector, StateSet, SurfaceIntent,
-    SurfaceSize, ToggleAnatomy,
+    MaterialLightChannels, OpaqueSurfaceAppearance, PhysicalVector, SliderAnatomy,
+    SliderAppearance, SliderPart, StateSet, SurfaceIntent, SurfaceSize, ToggleAnatomy,
 };
 use resina_resolver::{
     CommandPaintError, CommandPaintInput, CommandPaintIr, CompiledTheme, ControlRelief,
-    LitControlBodyIr, OpaqueSurfaceInput, SrgbFallback, SurfacePaintInput, TogglePart,
-    TogglePartPaintInput, TogglePartPaintIr, compile_theme_source_with_sources,
-    opaque_contrast_ratio, resolve_command_paint, resolve_toggle_part_paint,
+    LitControlBodyIr, OpaqueSurfaceInput, SliderPartPaintInput, SliderPartPaintIr, SrgbFallback,
+    SurfacePaintInput, TogglePart, TogglePartPaintInput, TogglePartPaintIr,
+    compile_theme_source_with_sources, opaque_contrast_ratio, resolve_command_paint,
+    resolve_slider_part_paint, resolve_toggle_part_paint,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -26,6 +28,14 @@ const TRACK_SIZE: SurfaceSize = SurfaceSize {
 const THUMB_SIZE: SurfaceSize = SurfaceSize {
     width: 16.0,
     height: 16.0,
+};
+const SLIDER_TRACK_SIZE: SurfaceSize = SurfaceSize {
+    width: 160.0,
+    height: 8.0,
+};
+const SLIDER_THUMB_SIZE: SurfaceSize = SurfaceSize {
+    width: 20.0,
+    height: 20.0,
 };
 
 struct Theme {
@@ -145,6 +155,88 @@ fn toggle_anatomy() -> ToggleAnatomy {
         "../../../../definitions/components/toggle.json"
     ))
     .unwrap()
+}
+
+fn slider_anatomy() -> SliderAnatomy {
+    serde_json::from_str(include_str!(
+        "../../../../definitions/components/slider.json"
+    ))
+    .unwrap()
+}
+
+fn slider_responses() -> SliderAppearance {
+    serde_json::from_str(include_str!(
+        "../../../../conformance/appearance/slider-appearance.json"
+    ))
+    .unwrap()
+}
+
+fn exact_range(color: &SrgbFallback) -> OpaqueSrgbRange {
+    OpaqueSrgbRange::try_new(color.clone(), color.clone()).unwrap()
+}
+
+/// Resolves the track over the canvas, then the thumb over the canvas and the track. A thumb is
+/// wider than the track, so it borders both. `whole_cover` takes every colour the track paints,
+/// its exterior edge included, as the snapshot's conservative check does; otherwise the thumb
+/// borders the track's resolved body, as the Toggle thumb does.
+fn slider(
+    theme: &Theme,
+    environment: &EnvironmentSnapshot,
+    anatomy: &SliderAnatomy,
+    track_states: &[&str],
+    thumb_states: &[&str],
+    whole_cover: bool,
+) -> Result<[SliderPartPaintIr; 2], String> {
+    let surface = surface_appearance();
+    let responses = slider_responses();
+    let canvas = [exact_range(&theme.canvas)];
+    let track_intent = anatomy.track().intent(states(track_states));
+    let track = resolve_slider_part_paint(
+        &theme.theme,
+        environment,
+        SliderPartPaintInput {
+            part: SliderPart::Track,
+            read_only: false,
+            surface: &track_intent,
+            size: SLIDER_TRACK_SIZE,
+            appearance: &surface,
+            interaction_appearance: &responses,
+            foreground_role: anatomy.track().content_role(),
+            post_treatment_backdrop: Some(&theme.canvas),
+            adjacent_ranges: &canvas,
+            surrounding_ranges: Some(&canvas),
+            minimum_content_contrast: 1.0,
+            minimum_edge_contrast: 3.0,
+        },
+    )
+    .map_err(|error| format!("{} {:?} track: {error}", theme.name, theme.assignment))?;
+    let mut around = if whole_cover {
+        track.paint().body().paint_color_ranges()
+    } else {
+        vec![exact_range(track.paint().body().pigment().body())]
+    };
+    around.extend(canvas);
+    let thumb_intent = anatomy.thumb().intent(states(thumb_states));
+    let thumb = resolve_slider_part_paint(
+        &theme.theme,
+        environment,
+        SliderPartPaintInput {
+            part: SliderPart::Thumb,
+            read_only: false,
+            surface: &thumb_intent,
+            size: SLIDER_THUMB_SIZE,
+            appearance: &surface,
+            interaction_appearance: &responses,
+            foreground_role: anatomy.thumb().content_role(),
+            post_treatment_backdrop: Some(track.paint().body().pigment().body()),
+            adjacent_ranges: &around,
+            surrounding_ranges: Some(&around),
+            minimum_content_contrast: 1.0,
+            minimum_edge_contrast: 3.0,
+        },
+    )
+    .map_err(|error| format!("{} {:?} thumb: {error}", theme.name, theme.assignment))?;
+    Ok([track, thumb])
 }
 
 fn light(ambient: Value, interaction: Value) -> MaterialLightChannels {
@@ -338,6 +430,74 @@ fn toggle_anatomy_resolves_every_state_with_an_identifiable_thumb_edge() {
         }
     }
     assert_eq!(resolved, 2 * 28 * 2 * 4 * 2 * 2);
+}
+
+#[test]
+fn slider_anatomy_resolves_at_rest_with_identifiable_edges() {
+    let anatomy = slider_anatomy();
+    let environment = environment();
+    let mut resolved = 0;
+    for theme in themes(&environment) {
+        assert!(
+            opaque_contrast_ratio(&theme.colors[&anatomy.label_color()], &theme.canvas).unwrap()
+                >= 4.5
+        );
+        for thumb_states in [&["rest"][..], &["rest", "focused"]] {
+            let [track, thumb] = slider(
+                &theme,
+                &environment,
+                &anatomy,
+                &["rest"],
+                thumb_states,
+                false,
+            )
+            .unwrap();
+            assert!(track.paint().focus().is_none());
+            match thumb.paint().focus() {
+                Some(focus) => {
+                    assert!(thumb_states.contains(&"focused"));
+                    assert!(focus.indicator().contrast_ratio() >= 3.0);
+                }
+                None => assert!(!thumb_states.contains(&"focused")),
+            }
+            resolved += 1;
+        }
+    }
+    assert_eq!(resolved, 2 * 28 * 2);
+}
+
+/// The conservative whole-track check of the Slider snapshot admits no thumb under the authored
+/// themes. The track's own exterior edge is among the colours around the thumb, and the thumb's
+/// edge is chosen from the same outline roles: one outline is the track's edge colour and the
+/// other stays below 1.61:1 against it.
+#[test]
+fn whole_track_cover_leaves_the_thumb_edge_below_the_guard() {
+    let anatomy = slider_anatomy();
+    let environment = environment();
+    let mut rejected = 0;
+    for theme in themes(&environment) {
+        let error = slider(&theme, &environment, &anatomy, &["rest"], &["rest"], true)
+            .expect_err("the whole track cover cannot clear the thumb edge");
+        assert!(
+            error.contains(" thumb: ") && error.contains("edge contrast is insufficient"),
+            "{error}"
+        );
+        let [track, _] =
+            slider(&theme, &environment, &anatomy, &["rest"], &["rest"], false).unwrap();
+        let mut ratios = [ColorRole::Outline, ColorRole::OutlineStrong].map(|role| {
+            opaque_contrast_ratio(&theme.colors[&role], track.paint().body().edge().color())
+                .unwrap()
+        });
+        ratios.sort_by(f64::total_cmp);
+        assert!(
+            (ratios[0] - 1.0).abs() <= 1e-9 && ratios[1] > 1.0 && ratios[1] <= 1.61,
+            "{} {:?}: {ratios:?}",
+            theme.name,
+            theme.assignment
+        );
+        rejected += 1;
+    }
+    assert_eq!(rejected, 2 * 28);
 }
 
 /// Body colour and final extrusion depth, the two channels through which a state may differ,

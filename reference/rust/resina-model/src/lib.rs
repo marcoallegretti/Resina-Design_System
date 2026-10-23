@@ -9,7 +9,8 @@ pub use slider_appearance::{SliderAppearance, SliderPart, SliderPhase, resolve_s
 
 mod component_anatomy;
 pub use component_anatomy::{
-    CommandAnatomy, CommandBody, CommandEmphasis, CommandVariant, SelectablePart, ToggleAnatomy,
+    CommandAnatomy, CommandBody, CommandEmphasis, CommandVariant, SelectablePart, SliderAnatomy,
+    SliderPartBinding, ToggleAnatomy,
 };
 
 mod command_appearance;

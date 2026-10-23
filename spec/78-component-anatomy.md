@@ -2,7 +2,7 @@
 
 Blueprint sections 25 and 98 make a component a contract over named parts that
 request semantic material roles and semantic color roles, which themes resolve. This contract
-binds the parts of the Command and Toggle components to those roles. Anatomy
+binds the parts of the Command, Toggle and Slider components to those roles. Anatomy
 never names a material family, a pigment, a token value, a renderer or a size.
 
 ## Ownership
@@ -50,15 +50,35 @@ treatment stack.
   [accessible semantics](52-toggle-accessibility.md), not a dimmed label,
   convey unavailability.
 
-The authored [Command](../definitions/components/command.json) and
-[Toggle](../definitions/components/toggle.json) definitions use a neutral
+- **Slider** defines `track` and `thumb` surface parts and a `label` with
+  `typographyRole` and `colorRole`. A Slider has no checked state, so its parts
+  bind no `checkedColorRole`. Each part names `materialRole`, `colorRole`,
+  `shape`, `elevation` and a `contentRole`, the color part paint records for
+  content that neither part draws. The thumb owns navigation paint
+  ([part paint](76-slider-part-paint.md)). The label is drawn beside the parts
+  and is the component's intrinsic accessible name. It keeps one color in
+  every state. This version binds no active or inactive track segment: see
+  [segments](#slider-segments).
+
+The authored [Command](../definitions/components/command.json),
+[Toggle](../definitions/components/toggle.json) and
+[Slider](../definitions/components/slider.json) definitions use a neutral
 standard command and an accent primary command. The Toggle track turns from
 `surface.low` to `selection` when checked. Material binds a
 [selected switch track](https://github.com/material-components/material-web/blob/main/docs/components/switch.md)
 to its primary accent instead. In both authored themes, neither outline
 role reaches 3:1 against `accent.primary` (1.89:1 and 1.19:1 in Light), so a
 thumb on such a track could not keep a [contrast-guarded edge](25-edge-contrast.md).
-The selection role names the same state and keeps that edge. The thumb's content
+The selection role names the same state and keeps that edge. The Slider track is
+an embedded `control.passive` well on `surface.low` and its thumb a raised
+`control.interactive` capsule on `content.secondary`, the binding of an unchecked
+Toggle thumb. This version binds no segment role: the active and inactive
+segment roles are the subject of
+[#301](https://github.com/marcoallegretti/Resina-Design_System/issues/301), where
+the single `track` part is replaced by the segment parts. Binding no accent or
+selection role here does not rule one out. The thumb color role is
+evidence-neutral, as [below](#slider-segments); it follows the Toggle precedent.
+The thumb's content
 color roles are an authoring choice: the requirements below identify the thumb
 by its edge, not by its body color.
 
@@ -77,6 +97,11 @@ a disabled control stays identifiable.
   [outline selection](25-edge-contrast.md) against the part's actual adjacent
   color: the canvas for a Command body and a Toggle track, the track's resolved
   body for a Toggle thumb.
+- A Slider thumb is wider than its track, so its edge borders both the canvas
+  and the track's resolved body, and must reach 3:1 against each. The track
+  edge is checked against the canvas. A Slider label has 4.5:1 against the
+  canvas. The thumb's focus ring has the 3:1 of
+  [part paint](76-slider-part-paint.md) against the same surroundings.
 - A Toggle snapshot: minimum thumb-edge contrast 3:1 and minimum label contrast
   4.5:1 against the label's canvas, in the [snapshot](55-toggle-snapshot.md)
   operation.
@@ -93,7 +118,7 @@ Rust tests resolve both authored definitions through Command paint and Toggle
 part paint, in the Light and Dark themes and in each of the 27 Cast, Frost and
 Elastomer assignments of the three control roles. They cover each Command and
 Toggle phase with and without focus, and each Toggle phase with and without
-selection. Parts are resolved as [lit control bodies](88-lit-control-body.md) at
+selection. Command and Toggle parts are resolved as [lit control bodies](88-lit-control-body.md) at
 the sizes of the illustrative layouts: a 96 by 48 px Command body, a 64.5 by
 40.5 px Toggle track and a 16 by 16 px Toggle thumb. The environment is the public
 [minimal-capability snapshot](../conformance/environment/valid-minimal-capabilities.json),
@@ -144,7 +169,36 @@ witness points with the resolver and compares their ΔE_OK. The table is
 regenerated with `python tools/lit_control_visibility.py --generate -- <theme-resolve-command> -`
 and checked with `python tools/lit_control_visibility.py`.
 
+Slider parts are
+[spec/36 bodies](76-slider-part-paint.md), not lit control bodies, at an
+illustrative 160 by 8 px track and 20 by 20 px thumb. A Rust test resolves the
+track and the thumb, the thumb with and without focus, in both themes under each
+of the 28 family assignments (112 thumb configurations) against the canvas and
+the track body. Resolution enforces the 3:1 edges, the label color is checked at
+4.5:1, and a focused thumb's ring is checked at 3:1. Those resolutions use the identity rest
+response. The state responses of the [public Slider fixture](71-slider-appearance.md)
+are arithmetic test coefficients, not an authored profile, so the Slider's
+hover, pressed, dragging, disabled and read-only responses are not evidenced
+here.
+
+<a id="slider-segments"></a>
+The [Slider snapshot](77-slider-snapshot.md) checks the thumb edge against every
+color the track paints, including the track's own exterior edge. The thumb edge
+is chosen from the same outline roles. A test shows that in both themes and all
+28 assignments the rest thumb is rejected against the whole track cover, with
+one outline at 1:1 and the other at most 1.61:1 against the track's edge (the
+test computes both ratios), and that it resolves against the canvas and the
+track body. The cause lies in the check, not in the thumb's color role: when
+each of `content.primary`, `content.secondary`, `surface.high`, `accent.primary`
+and `selection` was substituted for the thumb, it passed against the track body
+and failed against the whole cover. That substitution was a one-off check, not a
+committed test.
+Narrower adjacency needs the clearance geometry of
+[track segments](79-slider-track-segments.md), whose roles belong here. They are
+not bound in this version because no contract composes segment paint with the
+track yet; the single `track` part is replaced by the segment parts in #301.
+
 Schema cases reject missing parts, unknown members,
-non-control material roles and members of the other component. The reference
+non-control material roles and members of the other components. The reference
 model exposes typed anatomy and builds part surface intents; it introduces no
 rendering dependency.
