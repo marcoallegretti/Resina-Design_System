@@ -26,6 +26,7 @@ TIMEOUT = 120
 CONTROLS = (
     ("hover-none-light", "hover", True),
     ("hover-ambient-light", "hover", True),
+    ("hover-ambient-light", "hover-none-light", True),
     ("hover-interaction-light", "hover-none-light", True),
     ("hover-high-contrast", "hover", True),
     ("hover-reduced-motion", "hover", True),

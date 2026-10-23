@@ -122,7 +122,7 @@ def prepare(manifest, resolve_theme):
             resolved_themes[key] = request, resolved
         theme_request, resolved = resolved_themes[key]
         resolution = Resolution(resolved["opaqueColorFallbacks"], foundation, appearance)
-        size_key, definition, relief_part, content_role = part_definition(manifest, scene, anatomy)
+        size_key, definition, _, content_role = part_definition(manifest, scene, anatomy)
         material_role = definition["materialRole"]
         family = resolved["materials"][material_role]
         responses = parse_json(asset_source(theme["responseSource"]), "lit control responses")

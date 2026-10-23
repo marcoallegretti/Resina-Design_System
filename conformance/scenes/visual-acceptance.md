@@ -88,11 +88,26 @@ the thumb edge was measured against the resolved track body. For the standard
 Command body in each theme it also requires that the pixels of the no-light,
 ambient-only, high-contrast, reduced-motion and all-capabilities-off scenes leave
 the bounds of the hovered scene with both light channels, and those of the
-interaction-only scene the bounds of the no-light scene, so that the evidence
+ambient-only and interaction-only scenes the bounds of the no-light scene, so that the evidence
 would notice a light that was not applied or not suppressed; the right-to-left
 scene stays within the bounds of the left-to-right scene, because light never
-mirrors. Passing it certifies the CPU realization of these scenes against the
+mirrors. That control only shows light does not mirror: the Command body is a
+uniform rounded shape and the Toggle parts are capsules, so asymmetric per-corner
+shapes are not exercised. Adding ambient light on top of interaction light changes
+the pixels by about one RGB step or less, so the interaction-only scene is compared
+with the no-light scene, and the margin of the ambient-only control is as small as
+1.7 steps against the one-step tolerance (Dark Cast). Scene colours come from
+`resina-theme-resolve`, so the checker proves paint and raster given that theme
+resolution, which `tools/check_theme_backend.py` covers. Passing it certifies the CPU realization of these scenes against the
 arithmetic, not their appearance.
+
+The [visibility table](../materials/lit-control-visibility.json) states how
+visible the static key is on each of these bodies, and it is faint on one half of
+most of them: the Light `surface.high` highlight is at most 0.0009 ΔE_OK and only
+its shading half (0.030 to 0.074) shows; the Dark `surface.high` shading half is
+0.0085 to 0.021; the Light track highlight is 0.0025 to 0.0095, the Light thumb
+shading 0.006 to 0.027 and the Dark thumb highlight 0.0009 to 0.0086. The table is
+evidence about the lit body as authored, not an acceptance of its appearance.
 
 After capture, run the executed negative evidence against the same raster:
 
