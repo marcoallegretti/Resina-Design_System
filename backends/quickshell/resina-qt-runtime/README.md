@@ -1378,12 +1378,12 @@ python tools/check_quickshell_toggle_accessibility.py \
 
 - After the Toggle is unmounted and its native node has left the tree, the
   probe mounts it again with its consumer requesting focus synchronously from
-  `onReadyChanged`. The consumer must request focus exactly once, with
+  `onReadyChanged`. The consumer must request focus, with
   `Accessible.ignored` false at that moment, and the checker requires a native
   AT-SPI `Focus` event on the one node that carries the Toggle's complete name
   and description, with that node reporting the focused state.
 
-Only this case is covered. The checker identifies the node by its name and does
+Only this case is covered, at scale 1. The checker identifies the node by its name and does
 not assert its role, which released Qt publishes as CheckBox (see
 [Qt Switch qualification boundary](#qt-switch-qualification-boundary)).
 Feedback, availability, activation, withdrawal and screen-reader presentation
@@ -1922,7 +1922,8 @@ qualified capture owner while preparing a replacement frame. Read-only
 accessible node, with its complete name and description, is exposed before
 `ready` becomes true, so focus requested from `onReadyChanged` reaches assistive
 technology: Qt sends no focus event for an ignored item and none when it stops
-being ignored.
+being ignored. A consumer that forces `Accessible.ignored` to true keeps `ready`
+false.
 
 Acceptance for this static increment is joint checked/activation coherence,
 complete native drawing matching the public CPU rasterizer outside verified

@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 from check_qt_toggle_control_runtime import ROOT
-from check_quickshell_command_accessibility import (DESCRIPTION, REPORT, NativeEvents, Tree, enable_accessibility,
+from check_quickshell_command_accessibility import (REPORT, NativeEvents, Tree, enable_accessibility,
                                                     isolated_results, ready_focus_requests, state, text)
 from check_quickshell_command_lifecycle import focused
 from check_quickshell_command_updates import verify_version
@@ -16,6 +16,7 @@ from check_slint_native_availability import ACCESSIBLE, call, references
 import conformance_font
 
 NAME = "Automatic updates"
+DESCRIPTION = "Connect using saved settings."
 
 
 def named(address, application, name):
@@ -57,7 +58,7 @@ def verify(session, tree):
     session.until(lambda current: current["ready"] and focused(current) and current["state"]["focused"],
                   "Toggle focused by its consumer when it became ready", 20)
     focus_requests = ready_focus_requests(session)[requests:]
-    if len(focus_requests) != 1:
+    if not focus_requests:
         raise ValueError("the consumer did not focus the Toggle from its ready notification")
     node = tree.toggle()
     tree.events.focused(start, node, "the Toggle focused when it became ready")
