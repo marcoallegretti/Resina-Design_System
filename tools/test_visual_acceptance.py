@@ -13,7 +13,7 @@ from PIL.PngImagePlugin import PngInfo
 
 from check_schemas import ROOT, load_json, schema_registry, tool_schema_registry
 from check_surface_paint_backend import baseline, expected_result
-from visual_acceptance import compare_native_labels, compare_records, git_blob, image_metrics, record_image, sha256, srgb_to_oklab, validate_capture, validate_native_label, validate_record, validate_viewport
+from visual_acceptance import compare_native_labels, compare_records, git_blob, image_metrics, record_image, sha256, source_environment, srgb_to_oklab, validate_capture, validate_native_label, validate_record, validate_viewport
 
 
 def png(pixels, size):
@@ -241,6 +241,30 @@ class VisualAcceptanceTests(unittest.TestCase):
         altered.pop("focus")
         with self.assertRaises(ValueError):
             validate_capture(scene, altered, viewport)
+
+    def test_lit_control_scenes_keep_bindings_edge_guard_and_complete_bounds(self):
+        command_ir = load_json(ROOT / "conformance/ir/command-paint-ir.json")
+        toggle_ir = load_json(ROOT / "conformance/ir/toggle-part-paint-ir.json")
+        viewport = {"origin": {"x": -6, "y": -6}, "width": 40, "height": 36, "pixelsPerUnit": 1, "samplesPerAxis": 4}
+        toggle_request = load_json(ROOT / "conformance/ir/toggle-part-paint-request.json")
+        toggle_request["surface"]["body"]["surface"]["states"]["states"] = toggle_ir["track"]["paint"]["body"]["states"]["states"]
+        for kind, request, result in (
+                ("commandPaint", load_json(ROOT / "conformance/ir/command-paint-request.json"), command_ir),
+                ("togglePartPaint", toggle_request, toggle_ir["track"])):
+            family = result["paint"]["body"]["materialFamily"]
+            scene = {"name": "lit", "kind": kind, "expectedMaterialFamily": family, "request": request}
+            with self.subTest(kind=kind):
+                validate_capture(scene, result, viewport)
+                with self.assertRaisesRegex(ValueError, "family"):
+                    validate_capture(scene | {"expectedMaterialFamily": "cast" if family != "cast" else "frost"}, result, viewport)
+                with self.assertRaisesRegex(ValueError, "clips"):
+                    validate_capture(scene, result, viewport | {"width": 1})
+                altered = copy.deepcopy(result)
+                altered["paint"]["body"]["face"]["edge"]["color"] = copy.deepcopy(request["surface"]["body"]["adjacentColor"])
+                with self.assertRaises(ValueError):
+                    validate_capture(scene, altered, viewport)
+        self.assertEqual(source_environment({"kind": "togglePartPaint", "request": load_json(ROOT / "conformance/ir/toggle-part-paint-request.json")}),
+                         load_json(ROOT / "conformance/ir/toggle-part-paint-request.json")["surface"]["body"]["theme"]["environment"])
 
 
 if __name__ == "__main__":

@@ -8,8 +8,10 @@ import yaml
 WORKFLOW = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "reference.yml"
 PAINT_SCALES = ["1", "1.25", "2", "1.3"]
 OUTPUT_SCALES = ["1.25:2", "2:1.25"]
+LIT_SCALES = ["1", "1.25", "2"]
 PAINT_CONDITION = "matrix.paint_scales != ''"
 OUTPUT_CONDITION = "matrix.output_scales != ''"
+LIT_CONDITION = "matrix.lit_scales != ''"
 EXPECTED_CHECKS = [
     "check_qt_command_control_accessibility.py",
     "check_qt_command_control_runtime.py",
@@ -36,6 +38,7 @@ EXPECTED_CHECKS = [
     "check_quickshell_command_motion_budget.py",
     "check_quickshell_command_updates.py",
     "check_quickshell_label_render_runtime.py",
+    "check_quickshell_lit_body.py",
     "check_quickshell_label_runtime.py",
     "check_quickshell_toggle_lifecycle.py",
     "check_quickshell_toggle_updates.py",
@@ -46,6 +49,7 @@ STEP_TIMEOUTS = {
     "frame-timing": 20,
 }
 OUTPUT_SCALES_TIMEOUT = 30
+LIT_BODIES_TIMEOUT = 25
 FRAME_TIMING_RUNS = "for run in 1:1024x600: 2:1024x600: 6:3072x1800:--require-gap; do"
 LINT_COMMANDS = ["cargo fmt", "cargo test", "cargo clippy"]
 CHECK_INVOCATION = re.compile(r"tools/(check_\w+\.py)")
@@ -86,7 +90,7 @@ class QtRuntimeShardTests(unittest.TestCase):
                 continue
             condition = step.get("if", "")
             self.assertTrue(
-                GROUP_CONDITION.match(condition) or condition in (PAINT_CONDITION, OUTPUT_CONDITION),
+                GROUP_CONDITION.match(condition) or condition in (PAINT_CONDITION, OUTPUT_CONDITION, LIT_CONDITION),
                 step["name"],
             )
 
@@ -104,6 +108,15 @@ class QtRuntimeShardTests(unittest.TestCase):
         step = next(step for step in self.job["steps"] if step.get("if") == OUTPUT_CONDITION)
         self.assertIn("for scales in $OUTPUT_SCALES;", step["run"])
         self.assertEqual("${{ matrix.output_scales }}", step["env"]["OUTPUT_SCALES"])
+
+    def test_lit_body_scales_are_partitioned_across_shards(self):
+        scales = [scale for shard in self.shards for scale in shard["lit_scales"].split()]
+        self.assertEqual(sorted(LIT_SCALES), sorted(scales))
+        step = next(step for step in self.job["steps"] if step.get("if") == LIT_CONDITION)
+        self.assertIn("--scales $LIT_SCALES", step["run"])
+        self.assertEqual("${{ matrix.lit_scales }}", step["env"]["LIT_SCALES"])
+        self.assertEqual(LIT_BODIES_TIMEOUT, step["timeout-minutes"])
+        self.assertEqual(["core", "updates"], [shard["shard"] for shard in self.shards if shard["lit_scales"]])
 
     def test_evidence_is_saved_per_shard(self):
         upload = next(step for step in self.job["steps"] if step.get("uses", "").startswith("actions/upload-artifact"))

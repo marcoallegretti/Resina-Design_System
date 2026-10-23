@@ -120,11 +120,28 @@ def phase_of(states):
     return next((state for state in ("disabled", "pressed", "hover") if state in states), "rest")
 
 
-def control_body_source(request, response, relief_part="commandBody", color_role=None):
-    """The lit control body source of one fixture control part request, derived without the reference.
+class FixtureResolution:
+    """Colors, radii and depth of the public arithmetic fixture, whose palette is literal sRGB."""
+
+    @staticmethod
+    def color(request, role):
+        return fixture_color(request, role)
+
+    @staticmethod
+    def radii(request):
+        return fixture_radii(request)
+
+    @staticmethod
+    def depth(request):
+        return fixture_depth(request)
+
+
+def control_body_source(request, response, relief_part="commandBody", color_role=None, resolution=FixtureResolution):
+    """The lit control body source of one control part request, derived without the reference.
 
     `relief_part` names the part's profile in the request relief, and `color_role` the selected color
-    role when it is not the surface's own.
+    role when it is not the surface's own. `resolution` supplies the colors, logical radii and semantic
+    depth of the request's theme; the default reads the literal palette of the public arithmetic fixture.
     """
     body = request["surface"]["body"]
     color_role = color_role or body["surface"]["colorRole"]
@@ -145,24 +162,24 @@ def control_body_source(request, response, relief_part="commandBody", color_role
     return {
         "identity": identity,
         "size": body["size"],
-        "radii": fixture_radii(request),
+        "radii": resolution.radii(request),
         "relief": request["relief"][relief_part],
-        "body": color(mix_body(fixture_color(request, color_role), response["bodyMix"])),
+        "body": color(mix_body(resolution.color(request, color_role), response["bodyMix"])),
         "pigmentProfiles": body["appearance"]["pigmentProfiles"],
         "keyLight": body["appearance"]["keyLight"],
         "light": request["light"],
         "environment": body["theme"]["environment"],
         "edge": {
             "schemaVersion": "0.1.0",
-            "outline": color(fixture_color(request, "outline")),
-            "outlineStrong": color(fixture_color(request, "outline.strong")),
+            "outline": color(resolution.color(request, "outline")),
+            "outlineStrong": color(resolution.color(request, "outline.strong")),
             "adjacentColor": body["adjacentColor"],
             "minimumContrast": body["minimumEdgeContrast"],
         },
         "edgeWidth": body["appearance"]["bands"][family]["edgeWidth"],
-        "foreground": color(fixture_color(request, body["foregroundRole"])),
+        "foreground": color(resolution.color(request, body["foregroundRole"])),
         "minimumContentContrast": body["minimumContentContrast"],
-        "depth": fixture_depth(request) * response["depthScale"],
+        "depth": resolution.depth(request) * response["depthScale"],
         "points": [],
     }
 
@@ -191,9 +208,9 @@ def imperceptible_phase(rest_color, rest_depth, profile):
     return None
 
 
-def lit_face_mismatch(body, request, response, phase, relief_part="commandBody", color_role=None):
+def lit_face_mismatch(body, request, response, phase, relief_part="commandBody", color_role=None, resolution=FixtureResolution):
     """Compares the published lit body with independent spec/88 arithmetic for this request."""
-    source = control_body_source(request, response, relief_part, color_role)
+    source = control_body_source(request, response, relief_part, color_role, resolution)
     oracle = Body(source)
     face = body["face"]
     if mismatch(face["light"], expected_light(source, phase)):
@@ -218,7 +235,7 @@ def lit_face_mismatch(body, request, response, phase, relief_part="commandBody",
     return None
 
 
-def command_mismatch(actual, request, response=None):
+def command_mismatch(actual, request, response=None, resolution=FixtureResolution):
     states = request["surface"]["body"]["surface"]["states"]["states"]
     ordered = [state for state in ("rest", "hover", "focused", "pressed", "disabled") if state in states]
     phase = phase_of(states)
@@ -242,8 +259,8 @@ def command_mismatch(actual, request, response=None):
     for field in ("materialRole", "colorRole", "form"):
         if mismatch(body[field], request["surface"]["body"]["surface"][field]):
             return "/paint/body/" + field
-    rest_color = fixture_color(request, request["surface"]["body"]["surface"]["colorRole"])
-    guarded = fixture_color(request, request["surface"]["body"]["foregroundRole"])
+    rest_color = resolution.color(request, request["surface"]["body"]["surface"]["colorRole"])
+    guarded = resolution.color(request, request["surface"]["body"]["foregroundRole"])
     color = mix_body(rest_color, response["bodyMix"])
     face = body["face"]
     if mismatch(face["pigment"]["body"], {"colorSpace": "srgb", "components": color, "alpha": 1}):
@@ -261,7 +278,7 @@ def command_mismatch(actual, request, response=None):
     if not math.isclose(face["contentContrastRatio"], ratio, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/face/contentContrastRatio"
     offset = body["lighting"]["sideOffset"]
-    rest_depth = fixture_depth(request)
+    rest_depth = resolution.depth(request)
     depth = rest_depth * response["depthScale"]
     if not math.isclose(math.hypot(offset["x"], offset["y"]), depth, rel_tol=1e-12, abs_tol=1e-12):
         return "/paint/body/lighting/sideOffset"
@@ -269,7 +286,7 @@ def command_mismatch(actual, request, response=None):
         return "/commandAppearance (imperceptible authored response)"
     if ("focus" in actual["paint"]) != ("focused" in states):
         return "/paint/focus"
-    difference = lit_face_mismatch(body, request, response, phase)
+    difference = lit_face_mismatch(body, request, response, phase, resolution=resolution)
     if difference:
         return difference
     return surface_paint_channel_mismatch(actual["paint"])
