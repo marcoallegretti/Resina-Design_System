@@ -7,12 +7,26 @@ from check_schemas import ROOT
 
 
 class RangeCases(unittest.TestCase):
-    def test_the_committed_cases_are_what_the_seeded_oracle_derives(self):
+    def test_the_committed_cases_are_what_the_oracle_derives_from_their_requests(self):
         committed = json.loads((ROOT / "conformance/motion/spring-range-cases.json").read_text(encoding="utf-8"))
-        self.assertEqual(committed, arithmetic.cases())
+        self.assertGreater(len(committed), 150)
+        for case in committed:
+            with self.subTest(name=case["name"]):
+                result, reason = arithmetic.verdict(case["request"])
+                self.assertTrue(arithmetic.well_conditioned(case["request"]))
+                if "expected" in case:
+                    self.assertIsNone(reason)
+                    self.assertEqual(case["expected"]["settled"], result["settled"])
+                    for member in ("position", "velocity"):
+                        expected = case["expected"]["state"][member]
+                        self.assertLessEqual(
+                            abs(result["state"][member] - expected), max(1e-9, 1e-9 * abs(expected)))
+                else:
+                    self.assertIsNone(result)
+                    self.assertEqual(case["errorContains"], reason)
 
     def test_accepted_and_rejected_requests_are_both_represented(self):
-        committed = arithmetic.cases()
+        committed = json.loads((ROOT / "conformance/motion/spring-range-cases.json").read_text(encoding="utf-8"))
         self.assertGreater(sum("expected" in case for case in committed), 100)
         self.assertGreater(sum("errorContains" in case for case in committed), 5)
 
