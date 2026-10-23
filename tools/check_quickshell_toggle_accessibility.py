@@ -54,7 +54,7 @@ def stable_updates(session, tree):
     session.reset()
     node = tree.toggle()
 
-    def update(description, perform, settled, name=NAME, text=DESCRIPTION, events=(), unchanged=True):
+    def update(description, perform, settled, name=NAME, text=DESCRIPTION, events=()):
         start, retractions = tree.events.mark(), session.current()["retractions"]
         perform()
         # The frame is withdrawn while the replacement is prepared: the native node must survive that.
@@ -66,8 +66,7 @@ def stable_updates(session, tree):
                            f"native state-change events on the Toggle for {description}")
         session.quiet()
         tree.events.retained(start, node, description, "Toggle")
-        if unchanged:
-            tree.events.unexposed(start, node, description)
+        tree.events.unexposed(start, node, description, {flag for flag, _ in events})
 
     def feedback():
         # A pointer already resting on the target delivers no motion, hence no hover.
@@ -82,9 +81,9 @@ def stable_updates(session, tree):
     update("hover and press feedback", feedback,
            lambda current: not current["hovered"] and current["state"]["hold"] is None and not current["checked"])
     update("checked replacement", lambda: session.call("setChecked", "true"), lambda current: current["checked"],
-           events=(("checked", 1),), unchanged=False)
+           events=(("checked", 1),))
     update("unchecked replacement", lambda: session.call("setChecked", "false"),
-           lambda current: not current["checked"], events=(("checked", 0),), unchanged=False)
+           lambda current: not current["checked"], events=(("checked", 0),))
     update("availability withdrawal", lambda: session.call("availability", "false"),
            lambda current: not current["state"]["enabled"], events=(("enabled", 0), ("sensitive", 0)))
     tree.expect_state(node, False, False)

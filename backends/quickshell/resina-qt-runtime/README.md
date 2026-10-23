@@ -1391,17 +1391,18 @@ python tools/check_quickshell_toggle_accessibility.py \
   that node and no empty name or description in a property-change event. The
   checked replacement must arrive as `checked` `StateChanged` events and each
   availability change as `enabled` and `sensitive` events on that node; the
-  other updates must emit none for `checked`, `pressed`, `selected` or
-  `checkable`. The probe additionally fails if an unavailable Toggle is
-  exposed as focusable.
+  checked updates must emit none for `pressed`, `selected` or `checkable`, and
+  the other updates none for `checked`, `pressed`, `selected` or `checkable`.
+  The probe additionally fails if an unavailable Toggle is exposed as
+  focusable.
 
 The checker runs at output scale 1 and, for the last update, changes the live
 output scale to 2 and back through Sway. The checker identifies the node by its
 name and does not assert its role, which released Qt publishes as CheckBox (see
 [Qt Switch qualification boundary](#qt-switch-qualification-boundary)). Qt 6.11.2
 emits no `focusable` state change, so focusability after availability changes is
-checked through the final native state. Activation through the native node,
-withdrawal other than the unmounted Toggle, and screen-reader presentation of the
+checked through the final native state. Keyboard press feedback, activation
+through the native node, withdrawal other than the unmounted Toggle, and screen-reader presentation of the
 Toggle are not covered.
 
 ### Released Quickshell Command accessibility
@@ -1943,9 +1944,9 @@ updates keep that node exposed with its previous complete semantics until the
 next complete semantics replace them in place. An unavailable control is never
 exposed as focusable, even before its retained semantics are replaced. After
 a configuration, placement or density change, the retained node refuses `Press`
-and `Toggle` until a requalified publication arms input again. Hiding the control or its window and failure make the node ignored;
-unmounting the control or destroying its surface deletes the object and its
-node. A consumer that forces `Accessible.ignored` to true keeps `ready` false.
+and `Toggle` until a requalified publication arms input again. Hiding the
+control or its window and failure make the node ignored; unmounting the control
+or destroying its surface deletes the object and its node. A consumer that forces `Accessible.ignored` to true keeps `ready` false.
 
 Acceptance for this static increment is joint checked/activation coherence,
 complete native drawing matching the public CPU rasterizer outside verified

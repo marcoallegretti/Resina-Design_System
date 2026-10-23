@@ -201,9 +201,10 @@ class NativeEvents:
                     and kind in ("accessible-name", "accessible-description") and not value:
                 raise ValueError(f"{description} cleared the native {subject} {kind.split('-')[1]}")
 
-    def unexposed(self, start, node, description):
+    def unexposed(self, start, node, description, allowed=()):
         changed = sorted({kind for path, event, kind, _, _ in signals(self.read())[start:]
-                          if path == node[1] and event == "Object.StateChanged" and kind in FEEDBACK_STATES})
+                          if path == node[1] and event == "Object.StateChanged" and kind in FEEDBACK_STATES
+                          and kind not in allowed})
         if changed:
             raise ValueError(f"{description} emitted native StateChanged events for {', '.join(changed)}")
 
