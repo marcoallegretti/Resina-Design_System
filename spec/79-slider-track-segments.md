@@ -77,5 +77,5 @@ This operation chooses no clearance value and makes no adjacency claim. The
 owner chooses one that covers the thumb's complete painted footprint, including
 extrusion and the navigation ring, and remains responsible for the colors that
 actually border the thumb. Segment roles belong
-to component anatomy; segment paint uses [Slider part paint](76-slider-part-paint.md)
+to [component anatomy](78-component-anatomy.md#slider-segments), which does not bind them yet; segment paint uses [Slider part paint](76-slider-part-paint.md)
 with the track response.

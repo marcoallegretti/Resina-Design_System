@@ -1434,6 +1434,8 @@ def main():
     toggle_anatomy = load_json(ROOT / "definitions/components/toggle.json")
     check_case(anatomy_schema, "authored command anatomy", command_anatomy, True)
     check_case(anatomy_schema, "authored toggle anatomy", toggle_anatomy, True)
+    slider_anatomy = load_json(ROOT / "definitions/components/slider.json")
+    check_case(anatomy_schema, "authored slider anatomy", slider_anatomy, True)
     for document, pointer, value in (
             (command_anatomy, "/schemaVersion", "0.2.0"),
             (command_anatomy, "/component", "toggle"),
@@ -1442,7 +1444,13 @@ def main():
             (command_anatomy, "/variants/primary/label/typographyRole", "small"),
             (toggle_anatomy, "/component", "command"),
             (toggle_anatomy, "/thumb/materialRole", "feedback.drag"),
-            (toggle_anatomy, "/track/elevation", "sunken")):
+            (toggle_anatomy, "/track/elevation", "sunken"),
+            (slider_anatomy, "/schemaVersion", "0.2.0"),
+            (slider_anatomy, "/component", "toggle"),
+            (slider_anatomy, "/track/materialRole", "surface.base"),
+            (slider_anatomy, "/thumb/shape", "pill"),
+            (slider_anatomy, "/thumb/elevation", "sunken"),
+            (slider_anatomy, "/label/typographyRole", "small")):
         invalid = copy.deepcopy(document)
         replace_at_pointer(invalid, pointer, value)
         check_case(anatomy_schema, "invalid anatomy " + pointer, invalid, False)
@@ -1451,7 +1459,11 @@ def main():
             (command_anatomy, ("variants", "standard", "body"), "contentRole"),
             (toggle_anatomy, (), "label"),
             (toggle_anatomy, ("thumb",), "checkedColorRole"),
-            (toggle_anatomy, ("track",), "contentRole")):
+            (toggle_anatomy, ("track",), "contentRole"),
+            (slider_anatomy, (), "thumb"),
+            (slider_anatomy, ("track",), "contentRole"),
+            (slider_anatomy, ("thumb",), "colorRole"),
+            (slider_anatomy, ("label",), "colorRole")):
         invalid = copy.deepcopy(document)
         container = invalid
         for key in path:
@@ -1461,7 +1473,10 @@ def main():
     for document, path, member in (
             (command_anatomy, ("variants", "standard", "body"), "checkedColorRole"),
             (toggle_anatomy, ("track",), "foregroundRole"),
-            (toggle_anatomy, (), "variants")):
+            (toggle_anatomy, (), "variants"),
+            (slider_anatomy, ("thumb",), "checkedColorRole"),
+            (slider_anatomy, ("track",), "foregroundRole"),
+            (slider_anatomy, (), "variants")):
         invalid = copy.deepcopy(document)
         container = invalid
         for key in path:

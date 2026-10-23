@@ -71,6 +71,12 @@ enum ToggleComponent {
     Toggle,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+enum SliderComponent {
+    Slider,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CommandAnatomy {
     schema_version: String,
@@ -203,6 +209,70 @@ impl CommandBody {
             SurfaceForm::new(self.shape, self.elevation),
             states,
         )
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SliderAnatomy {
+    schema_version: String,
+    component: SliderComponent,
+    track: SliderPartBinding,
+    thumb: SliderPartBinding,
+    label: ExternalLabel,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct SliderAnatomyInput {
+    #[serde(deserialize_with = "crate::deserialize_version")]
+    schema_version: String,
+    #[serde(deserialize_with = "deserialize_anatomy_string")]
+    component: SliderComponent,
+    track: SliderPartBinding,
+    thumb: SliderPartBinding,
+    #[serde(deserialize_with = "deserialize_anatomy_object")]
+    label: ExternalLabel,
+}
+
+impl<'de> Deserialize<'de> for SliderAnatomy {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = deserialize_anatomy_object::<D, SliderAnatomyInput>(deserializer)?;
+        Ok(Self {
+            schema_version: input.schema_version,
+            component: input.component,
+            track: input.track,
+            thumb: input.thumb,
+            label: input.label,
+        })
+    }
+}
+
+impl SliderAnatomy {
+    pub fn track(&self) -> &SliderPartBinding {
+        &self.track
+    }
+    pub fn thumb(&self) -> &SliderPartBinding {
+        &self.thumb
+    }
+    pub fn label_typography(&self) -> TypographyRole {
+        self.label.typography_role
+    }
+    pub fn label_color(&self) -> ColorRole {
+        self.label.color_role
+    }
+}
+
+/// A Slider part binds the same five members as a Command body: it has no checked role.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(transparent)]
+pub struct SliderPartBinding(CommandBody);
+
+impl SliderPartBinding {
+    pub fn content_role(&self) -> ColorRole {
+        self.0.content_role()
+    }
+    pub fn intent(&self, states: StateSet) -> SurfaceIntent {
+        self.0.intent(states)
     }
 }
 
@@ -339,6 +409,7 @@ mod tests {
 
     const COMMAND: &str = include_str!("../../../../definitions/components/command.json");
     const TOGGLE: &str = include_str!("../../../../definitions/components/toggle.json");
+    const SLIDER: &str = include_str!("../../../../definitions/components/slider.json");
 
     fn states(names: &[&str]) -> StateSet {
         serde_json::from_value(json!({"schemaVersion": "0.1.0", "states": names})).unwrap()
@@ -374,6 +445,19 @@ mod tests {
         assert_eq!(toggle.thumb().content_role(), ColorRole::ContentInverse);
         assert_eq!(toggle.label_typography(), TypographyRole::Label);
         assert_eq!(toggle.label_color(), ColorRole::ContentPrimary);
+
+        let slider: SliderAnatomy = serde_json::from_str(SLIDER).unwrap();
+        let track = slider.track().intent(states(&["rest"]));
+        assert_eq!(track.material_role(), MaterialRole::ControlPassive);
+        assert_eq!(track.color_role(), ColorRole::SurfaceLow);
+        assert_eq!(track.form().elevation(), ElevationRole::Embedded);
+        let thumb = slider.thumb().intent(states(&["hover"]));
+        assert_eq!(thumb.material_role(), MaterialRole::ControlInteractive);
+        assert_eq!(thumb.color_role(), ColorRole::ContentSecondary);
+        assert_eq!(thumb.form().shape(), ShapeIntent::Capsule);
+        assert_eq!(slider.thumb().content_role(), ColorRole::ContentInverse);
+        assert_eq!(slider.label_typography(), TypographyRole::Label);
+        assert_eq!(slider.label_color(), ColorRole::ContentPrimary);
     }
 
     #[test]
@@ -424,5 +508,38 @@ mod tests {
         assert!(serde_json::from_value::<ToggleAnatomy>(extra).is_err());
         assert!(serde_json::from_str::<ToggleAnatomy>(COMMAND).is_err());
         assert!(serde_json::from_str::<CommandAnatomy>(TOGGLE).is_err());
+
+        let slider: Value = serde_json::from_str(SLIDER).unwrap();
+        for (pointer, value) in [
+            ("/schemaVersion", json!("0.2.0")),
+            ("/component", json!("toggle")),
+            ("/track/materialRole", json!("surface.base")),
+            ("/thumb/shape", json!("pill")),
+            ("/thumb/elevation", json!("sunken")),
+            ("/label/typographyRole", json!("small")),
+        ] {
+            let mut invalid = slider.clone();
+            *invalid.pointer_mut(pointer).unwrap() = value;
+            assert!(serde_json::from_value::<SliderAnatomy>(invalid).is_err());
+        }
+        for (part, member) in [
+            ("track", "contentRole"),
+            ("thumb", "colorRole"),
+            ("label", "colorRole"),
+        ] {
+            let mut missing = slider.clone();
+            missing[part].as_object_mut().unwrap().remove(member);
+            assert!(serde_json::from_value::<SliderAnatomy>(missing).is_err());
+        }
+        let mut missing = slider.clone();
+        missing.as_object_mut().unwrap().remove("thumb");
+        assert!(serde_json::from_value::<SliderAnatomy>(missing).is_err());
+        for (part, member) in [("thumb", "checkedColorRole"), ("track", "foregroundRole")] {
+            let mut extra = slider.clone();
+            extra[part][member] = json!("selection");
+            assert!(serde_json::from_value::<SliderAnatomy>(extra).is_err());
+        }
+        assert!(serde_json::from_str::<SliderAnatomy>(TOGGLE).is_err());
+        assert!(serde_json::from_str::<ToggleAnatomy>(SLIDER).is_err());
     }
 }

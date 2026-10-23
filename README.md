@@ -351,13 +351,15 @@ and component boards remain required.
 hover, keyboard press and pointer manipulation without treating read-only as
 disabled or release-only clicks as continuous dragging.
 
-[Component anatomy](spec/78-component-anatomy.md) binds the Command and Toggle
-parts to semantic material and color roles in authored
+[Component anatomy](spec/78-component-anatomy.md) binds the Command, Toggle and
+Slider parts to semantic material and color roles in authored
 [definitions](definitions/components/). In the Light and Dark themes, under each
 control-family assignment and the minimal-capability environment, tests resolve
 each Command phase and focus through Command paint with 4.5:1 content and 3:1
 edge contrast, and each Toggle phase, focus and selection through part paint
-with 3:1 edges and a 4.5:1 label color. They also show that light changes
+with 3:1 edges and a 4.5:1 label color. The Slider track and thumb, each with and without focus at rest,
+resolve through Slider part paint with 3:1 edges against the canvas and the track body and a 4.5:1 label
+color. They also show that light changes
 nothing but `face.light` and measure the [peak visibility](conformance/materials/lit-control-visibility.json)
 of the static key on every bound body.
 

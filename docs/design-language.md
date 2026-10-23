@@ -144,16 +144,16 @@ their interaction contracts, not a decorative trajectory.
 
 ## Components, density and adaptation
 
-[Component anatomy](../spec/78-component-anatomy.md) binds Command and Toggle
-parts to semantic roles; themes change role values rather than rebinding parts.
+[Component anatomy](../spec/78-component-anatomy.md) binds Command, Toggle and
+Slider parts to semantic roles; themes change role values rather than rebinding parts.
 Command has explicit standard and primary emphasis. Toggle uses the selection
 role for its checked track: forcing the authored primary accent would fail its
 thumb-edge contrast guard. That is a readability refinement, not missing accent
 styling. Disabled labels and component identification remain guarded.
 
 Slider has value, interaction, layout, paint and snapshot contracts, plus
-[track-segment allocation](../spec/79-slider-track-segments.md). Shared production
-proportions and authored Slider anatomy belong to the
+[track-segment allocation](../spec/79-slider-track-segments.md). Slider track and thumb are bound to neutral roles and carry no accent. Shared production
+proportions belong to the
 [component-profile proposal](https://github.com/marcoallegretti/Resina-Design_System/issues/134).
 Diagnostic component dimensions are not accepted defaults. Tri-state
 [Checkbox](https://github.com/marcoallegretti/Resina-Design_System/issues/136) and
