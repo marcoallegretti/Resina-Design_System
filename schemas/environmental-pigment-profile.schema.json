@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:environmental-pigment-profile:0.1.0",
+  "title": "Resina Environmental Pigment Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "themes"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "themes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["light", "dark"],
+      "properties": {
+        "light": {"$ref": "#/$defs/roles"},
+        "dark": {"$ref": "#/$defs/roles"}
+      }
+    }
+  },
+  "$defs": {
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface.base", "surface.low", "surface.high", "surface.chrome"],
+      "properties": {
+        "surface.base": {"$ref": "#/$defs/ranges"},
+        "surface.low": {"$ref": "#/$defs/ranges"},
+        "surface.high": {"$ref": "#/$defs/ranges"},
+        "surface.chrome": {"$ref": "#/$defs/ranges"}
+      }
+    },
+    "ranges": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hue", "chroma"],
+      "properties": {
+        "hue": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": {"type": "number", "minimum": -180, "maximum": 0},
+            "max": {"type": "number", "minimum": 0, "maximum": 180}
+          }
+        },
+        "chroma": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": {"type": "number", "minimum": 0, "maximum": 0.4},
+            "max": {"type": "number", "minimum": 0, "maximum": 0.4}
+          }
+        }
+      }
+    }
+  }
+}

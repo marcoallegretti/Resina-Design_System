@@ -702,6 +702,108 @@ def check_lit_containment():
     return checked
 
 
+def check_environmental_pigment_schemas():
+    from check_environmental_pigment_backend import build_request
+    from environmental_pigment import adapt
+
+    checked = 0
+
+    def check(validator, name, document, expected_valid):
+        nonlocal checked
+        check_case(validator, name, document, expected_valid)
+        checked += 1
+
+    profile_validator = validator_for("schemas/environmental-pigment-profile.schema.json")
+    case_validator = validator_for("schemas/environmental-pigment-case.schema.json")
+    request_validator = validator_for("schemas/environmental-pigment-request.schema.json")
+    result_validator = validator_for("schemas/environmental-pigment-result.schema.json")
+    profile = load_json(ROOT / "definitions/environmental-pigment-profile.json")
+    check(profile_validator, "authored environmental pigment profile", profile, True)
+    for name, pointer, value in [
+        ("profile hue range above a half turn", "/themes/light/surface.base/hue/max", 180.5),
+        ("profile hue range excluding zero", "/themes/dark/surface.low/hue/min", 1),
+        ("profile chroma above the maximum", "/themes/dark/surface.high/chroma/max", 0.41),
+        ("profile negative chroma", "/themes/light/surface.chrome/chroma/min", -0.001),
+        ("profile unsupported version", "/schemaVersion", "0.2.0"),
+    ]:
+        invalid = copy.deepcopy(profile)
+        replace_at_pointer(invalid, pointer, value)
+        check(profile_validator, name, invalid, False)
+    invalid = copy.deepcopy(profile)
+    invalid["themes"]["light"]["accent.primary"] = invalid["themes"]["light"]["surface.base"]
+    check(profile_validator, "profile with an ineligible role", invalid, False)
+    invalid = copy.deepcopy(profile)
+    del invalid["themes"]["dark"]["surface.chrome"]
+    check(profile_validator, "profile missing Frost chrome", invalid, False)
+
+    names = set()
+    adapted = None
+    for case in load_json(ROOT / "conformance/themes/environmental-pigment-vectors.json"):
+        check(case_validator, f"environmental pigment case: {case.get('name')}", case, True)
+        if case["name"] in names:
+            raise ValueError(f"duplicate environmental pigment case name: {case['name']}")
+        names.add(case["name"])
+        source, request = build_request(case)
+        document = parse_json(source, case["name"]) if request is None else request
+        check(request_validator, f"environmental pigment request: {case['name']}", document,
+              case["requestSchemaValid"])
+        if case["name"] == "bright backdrop":
+            adapted = (case, request)
+    for name, change in [
+        ("valid case with failing themes", ("failingThemes", ["dark"])),
+        ("valid case with request document", ("requestDocument", {})),
+        ("unknown case member", ("extra", True)),
+        ("unknown failing theme", ("failingThemes", ["contrast"])),
+    ]:
+        invalid = copy.deepcopy(adapted[0])
+        invalid[change[0]] = change[1]
+        check(case_validator, name, invalid, False)
+    invalid = copy.deepcopy(adapted[0])
+    invalid["outcome"] = "invalid"
+    check(case_validator, "invalid case with expected result", invalid, False)
+    invalid = {"name": "document and observation", "outcome": "invalid", "requestSchemaValid": False,
+               "requestDocument": [], "observation": {}}
+    check(case_validator, invalid["name"], invalid, False)
+
+    result = adapt(adapted[1])
+    check(result_validator, "environmental pigment result", result, True)
+    unadapted = adapt(build_request({"name": "authored"})[1])
+    check(result_validator, "authored environmental pigment result", unadapted, True)
+    for name, pointer, value in [
+        ("guard ratio below minimum", "/themes/light/legibilityGuard/0/contrastRatio", 4.4),
+        ("component above one", "/themes/light/roles/surface.base/color/components/0", 1.0000001),
+        ("hue of 360 degrees", "/themes/dark/roles/surface.low/targetOklch/2", 360),
+        ("unsupported result version", "/schemaVersion", "0.2.0"),
+        ("Frost bound with the wrong minimum", "/themes/light/frostCertification/7/minimumContrast", 4.5),
+        ("unknown skip reason", "/adaptation/reason", "dark"),
+    ]:
+        invalid = copy.deepcopy(unadapted if pointer == "/adaptation/reason" else result)
+        replace_at_pointer(invalid, pointer, value)
+        check(result_validator, name, invalid, False)
+    invalid = copy.deepcopy(result)
+    invalid["themes"]["light"]["roles"]["surface.high"]["color"]["alpha"] = 0.5
+    check(result_validator, "opaque role carrying alpha", invalid, False)
+    invalid = copy.deepcopy(result)
+    del invalid["themes"]["dark"]["roles"]["surface.low"]
+    check(result_validator, "adapted result missing a Cast role", invalid, False)
+    invalid = copy.deepcopy(unadapted)
+    invalid["themes"]["light"]["roles"] = result["themes"]["light"]["roles"]
+    check(result_validator, "roles published without adaptation", invalid, False)
+    invalid = copy.deepcopy(result)
+    invalid["adaptation"]["reason"] = "highContrast"
+    check(result_validator, "adaptation both applied and skipped", invalid, False)
+    invalid = copy.deepcopy(result)
+    invalid["themes"]["light"]["frostCertification"].pop()
+    check(result_validator, "dropped Frost bound", invalid, False)
+    invalid = copy.deepcopy(result)
+    invalid["themes"]["dark"]["roles"]["surface.chrome"] = result["themes"]["light"]["roles"]["surface.chrome"]
+    check(result_validator, "uncertified Frost chrome adapted", invalid, False)
+    invalid = copy.deepcopy(result)
+    del invalid["themes"]["light"]["roles"]["surface.chrome"]
+    check(result_validator, "certified Frost chrome retained as authored", invalid, False)
+    return checked
+
+
 def check_toggle_lit_envelopes():
     """Check the Toggle part 0.2.0 envelopes around the lit body and their 0.1.0 archives."""
     checked = 0
@@ -1196,6 +1298,10 @@ def main():
         "schemas/theme-derivation-request.schema.json",
         "schemas/theme-derivation-result.schema.json",
         "schemas/theme-derivation-case.schema.json",
+        "schemas/environmental-pigment-profile.schema.json",
+        "schemas/environmental-pigment-request.schema.json",
+        "schemas/environmental-pigment-result.schema.json",
+        "schemas/environmental-pigment-case.schema.json",
         "schemas/theme-legibility-guard.schema.json",
         "schemas/theme-legibility-guard-case.schema.json",
         "schemas/versions/material-assignments-0.1.0.schema.json",
@@ -3975,6 +4081,7 @@ def main():
         checked += 2
     checked += check_legibility_guard_vectors()
     checked += check_theme_derivation_schemas()
+    checked += check_environmental_pigment_schemas()
     print(f"Validated {len(schema_paths)} normative schemas, 4 visual tool schemas and {checked} conformance cases")
 
 

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "0.1.0",
+  "themes": {
+    "light": {
+      "surface.base": {
+        "hue": {
+          "min": -60,
+          "max": 60
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.016
+        }
+      },
+      "surface.low": {
+        "hue": {
+          "min": -60,
+          "max": 60
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.016
+        }
+      },
+      "surface.high": {
+        "hue": {
+          "min": -60,
+          "max": 60
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.012
+        }
+      },
+      "surface.chrome": {
+        "hue": {
+          "min": -45,
+          "max": 45
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.016
+        }
+      }
+    },
+    "dark": {
+      "surface.base": {
+        "hue": {
+          "min": -60,
+          "max": 60
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.04
+        }
+      },
+      "surface.low": {
+        "hue": {
+          "min": -60,
+          "max": 60
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.04
+        }
+      },
+      "surface.high": {
+        "hue": {
+          "min": -60,
+          "max": 60
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.04
+        }
+      },
+      "surface.chrome": {
+        "hue": {
+          "min": -45,
+          "max": 45
+        },
+        "chroma": {
+          "min": 0,
+          "max": 0.04
+        }
+      }
+    }
+  }
+}

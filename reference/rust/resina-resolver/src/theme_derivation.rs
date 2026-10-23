@@ -376,7 +376,7 @@ fn derive_theme(
     })
 }
 
-fn insert_token(group: &mut Map<String, Value>, path: &str, value: Value) {
+pub(crate) fn insert_token(group: &mut Map<String, Value>, path: &str, value: Value) {
     let mut node = group;
     let mut segments = path.split('.').peekable();
     while let Some(segment) = segments.next() {

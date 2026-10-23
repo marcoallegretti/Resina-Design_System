@@ -7,3 +7,4 @@ Numbers follow the initial ADR list in the [blueprint](../../RESINA_DESIGN_SYSTE
 | Record | Status | Decision |
 | --- | --- | --- |
 | [0007](0007-dynamic-colour-model.md) | Accepted | Dynamic colour from explicit seeds in Oklch, with explicit legibility guards |
+| [0008](0008-environmental-pigment-adaptation.md) | Accepted | Environmental pigment adaptation selected by theme resolution inside authored ranges |
