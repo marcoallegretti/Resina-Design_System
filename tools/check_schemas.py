@@ -1130,6 +1130,27 @@ def check_no_active_reference_to_archived_schemas():
     return checked
 
 
+def check_key_light_authority(authority, copies, shadow_lights):
+    """Every authored copy equals the key light definition, which is the direction most shadow vectors calibrate."""
+    for name, light in copies.items():
+        if light != authority:
+            raise ValueError(f"{name}: key light differs from definitions/key-light.json")
+
+    def unit(light):
+        direction = light.get("direction") if isinstance(light, dict) else None
+        if not isinstance(direction, dict) or any(type(direction.get(axis)) not in (int, float) for axis in ("x", "y")):
+            return None
+        length = math.hypot(direction["x"], direction["y"])
+        return None if length == 0 else (round(direction["x"] / length, 12), round(direction["y"] / length, 12))
+
+    counts = {}
+    for light in shadow_lights:
+        if unit(light) is not None:
+            counts[unit(light)] = counts.get(unit(light), 0) + 1
+    if not counts or max(counts, key=counts.get) != unit(authority):
+        raise ValueError("definitions/key-light.json is not the key direction of most elevation shadow vectors")
+
+
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
@@ -1760,10 +1781,11 @@ def main():
     light_cases = load_json(ROOT / "conformance/lighting/material-light-vectors.json")
     reference_light = load_json(ROOT / "definitions/material-light.json")
     check_case(validator_for("schemas/material-light.schema.json"), "reference material light", reference_light, True)
-    for name, light in (("reference material light", reference_light["keyLight"]),
-                       ("Tier 0 appearance profile", load_json(ROOT / "definitions/tier0-surface-appearance.json")["keyLight"])):
-        if light != load_json(ROOT / "definitions/key-light.json"):
-            raise ValueError(f"{name}: key light differs from definitions/key-light.json")
+    check_key_light_authority(
+        load_json(ROOT / "definitions/key-light.json"),
+        {"reference material light": reference_light["keyLight"],
+         "Tier 0 appearance profile": load_json(ROOT / "definitions/tier0-surface-appearance.json")["keyLight"]},
+        [case["request"]["keyLight"] for case in load_json(ROOT / "conformance/elevation/shadow-vectors.json")])
     light_case_schema = validator_for("schemas/material-light-case.schema.json")
     light_request_schema = validator_for("schemas/material-light-request.schema.json")
     light_result_schema = validator_for("schemas/material-light-result.schema.json")
