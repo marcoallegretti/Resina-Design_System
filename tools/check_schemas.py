@@ -3453,6 +3453,7 @@ def main():
     trajectory_names = set()
     trajectory_cases = load_json(ROOT / "conformance/motion/spring-trajectory-cases.json")
     trajectory_cases += load_json(ROOT / "conformance/motion/material-response-cases.json")
+    trajectory_cases += load_json(ROOT / "conformance/motion/spring-range-cases.json")
     for case in trajectory_cases:
         name = case["name"]
         if name in trajectory_names:

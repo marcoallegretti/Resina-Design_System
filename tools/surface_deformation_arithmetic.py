@@ -1,8 +1,8 @@
-import math
 import sys
 from decimal import Decimal, getcontext
 from fractions import Fraction
 
+import spring_range_arithmetic
 from check_command_motion_backend import equation_sample
 from check_schemas import ROOT, load_json
 
@@ -62,29 +62,22 @@ def project(value, lower, upper):
     return value, "none"
 
 
-def representable(value):
-    return abs(value) <= MAXIMUM_FLOAT
-
-
 def sample(channel, target, time, policy):
     dynamics = channel["dynamics"]
     valid_dynamics(dynamics)
-    position, velocity = exact(channel["initial"]["position"]), exact(channel["initial"]["velocity"])
-    if policy == "spring":
-        omega = Fraction(math.sqrt(dynamics["stiffness"] / dynamics["mass"]))
-        displacement = position - exact(target)
-        energy_bound_squared = omega**2 * displacement**2 + velocity**2
-        if (
-            not representable(displacement)
-            or not representable(velocity / omega)
-            or not representable(omega * exact(time))
-            or energy_bound_squared > MAXIMUM_FLOAT**2
-        ):
-            raise Reject("spring arithmetic exceeds the representable range")
-    result = equation_sample(channel, target, time, policy != "spring")
-    if not all(math.isfinite(result["state"][name]) for name in ("position", "velocity")):
-        raise Reject("spring result exceeds the representable range")
-    return result
+    exact(channel["initial"]["position"])
+    exact(channel["initial"]["velocity"])
+    if policy != "spring":
+        return equation_sample(channel, target, time, True)
+    try:
+        position, velocity, settled = spring_range_arithmetic.trajectory(
+            dynamics, channel["initial"], target, time)
+    except spring_range_arithmetic.RangeError as error:
+        raise Reject(f"spring {error} exceeds the representable range")
+    return {
+        "schemaVersion": "0.1.0", "representation": "spring", "target": target,
+        "state": {"position": float(position), "velocity": float(velocity)}, "settled": settled,
+    }
 
 
 def outline(curvature, direction, radii, inset, width, height):

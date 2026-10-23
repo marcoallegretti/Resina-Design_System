@@ -643,6 +643,7 @@ jobs:
       - run: python tools/check_focus_svg_backend.py -- target/debug/resina-focus-svg${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_backend.py -- target/debug/resina-spring${{ matrix.executableSuffix }} -
       - run: python tools/check_spring_trajectory_backend.py -- target/debug/resina-spring-trajectory${{ matrix.executableSuffix }} -
+      - run: python tools/check_spring_range_backend.py -- target/debug/resina-spring-trajectory${{ matrix.executableSuffix }} -
       - run: python tools/check_material_response_backend.py -- target/debug/resina-spring-trajectory${{ matrix.executableSuffix }} -
       - run: python tools/check_token_backend.py -- target/debug/resina-token-resolve${{ matrix.executableSuffix }} -
       - run: python tools/check_resolver_backend.py -- target/debug/resina-token-compose${{ matrix.executableSuffix }} -
