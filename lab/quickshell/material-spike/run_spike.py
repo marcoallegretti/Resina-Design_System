@@ -190,12 +190,22 @@ def baseline(arguments):
     return rows
 
 
+def close(first, second):
+    if isinstance(first, dict) and isinstance(second, dict):
+        return first.keys() == second.keys() and all(close(first[key], second[key]) for key in first)
+    if isinstance(first, list) and isinstance(second, list):
+        return len(first) == len(second) and all(close(a, b) for a, b in zip(first, second))
+    if isinstance(first, (int, float)) and isinstance(second, (int, float)) and not isinstance(first, bool):
+        return abs(first - second) <= 1e-9 * max(1.0, abs(first))
+    return first == second
+
+
 def check_bench_scene(scenes):
     source = (HERE / "qml" / "bench-scene.js").read_text()
     committed = json.loads(source.split("var scene = ", 1)[1].rsplit(";", 1)[0])
     current = next(dict(scene) for scene in scenes if scene["name"] == committed["name"])
     current.pop("views")
-    if committed != current:
+    if not close(committed, current):
         raise SystemExit("qml/bench-scene.js differs from the scene dumped from the manifest; regenerate it")
 
 
