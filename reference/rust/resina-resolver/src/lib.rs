@@ -168,6 +168,12 @@ pub use toggle_layout::{
     ToggleLayoutError, ToggleLayoutInput, ToggleLayoutIr, resolve_toggle_layout,
     resolve_toggle_layout_source,
 };
+mod profile_dimension;
+mod toggle_profile;
+pub use toggle_profile::{
+    ToggleProfileError, ToggleProfileInput, ToggleProfileIr, resolve_toggle_profile,
+    resolve_toggle_profile_source,
+};
 mod toggle_accessibility;
 pub use toggle_accessibility::{
     ToggleAccessibilityAction, ToggleAccessibilityError, ToggleAccessibilityInput,

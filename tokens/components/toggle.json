@@ -1,0 +1,45 @@
+{
+  "toggle": {
+    "$type": "dimension",
+    "track": {
+      "compact": {
+        "width": { "$value": { "value": 52, "unit": "px" } },
+        "height": { "$value": { "value": 32, "unit": "px" } }
+      },
+      "standard": {
+        "width": { "$value": { "value": 64, "unit": "px" } },
+        "height": { "$value": { "value": 40, "unit": "px" } }
+      },
+      "comfortable": {
+        "width": { "$value": { "value": 76, "unit": "px" } },
+        "height": { "$value": { "value": 48, "unit": "px" } }
+      },
+      "immersive": {
+        "width": { "$value": { "value": 104, "unit": "px" } },
+        "height": { "$value": { "value": 64, "unit": "px" } }
+      }
+    },
+    "thumb": {
+      "compact": {
+        "width": { "$value": { "value": 12, "unit": "px" } },
+        "height": { "$value": { "value": 12, "unit": "px" } },
+        "inset": { "$value": { "value": 10, "unit": "px" } }
+      },
+      "standard": {
+        "width": { "$value": { "value": 16, "unit": "px" } },
+        "height": { "$value": { "value": 16, "unit": "px" } },
+        "inset": { "$value": { "value": 12, "unit": "px" } }
+      },
+      "comfortable": {
+        "width": { "$value": { "value": 20, "unit": "px" } },
+        "height": { "$value": { "value": 20, "unit": "px" } },
+        "inset": { "$value": { "value": 14, "unit": "px" } }
+      },
+      "immersive": {
+        "width": { "$value": { "value": 24, "unit": "px" } },
+        "height": { "$value": { "value": 24, "unit": "px" } },
+        "inset": { "$value": { "value": 20, "unit": "px" } }
+      }
+    }
+  }
+}

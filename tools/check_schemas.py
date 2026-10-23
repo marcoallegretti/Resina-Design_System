@@ -12,6 +12,8 @@ from command_layout_arithmetic import resolve_extents
 from lit_body_arithmetic import (
     body_invariants, lit_containment_outcomes, relief_profile_violation, toggle_lit_containment_outcomes,
 )
+from toggle_profile_arithmetic import resolve as resolve_toggle_profile
+from toggle_profile_arithmetic import resolve_parts as resolve_toggle_parts
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -191,6 +193,79 @@ def check_command_layout():
             continue
         try:
             actual = resolve_command_layout(case["request"])
+        except ValueError as error:
+            if "errorContains" not in case or case["errorContains"] not in str(error):
+                raise ValueError(f"{name}: independent resolution failed with {error}") from None
+            continue
+        if "expected" not in case:
+            raise ValueError(f"{name}: independent resolution succeeded for a rejected case")
+        check_case(result_schema, name, case["expected"], True)
+        if not same_numbers(actual, case["expected"]):
+            raise ValueError(f"{name}: expected result differs from independent resolution {actual}")
+        checked += 1
+    return checked
+
+
+def check_toggle_layout_profile():
+    checked = 0
+    profile_schema = validator_for("schemas/component-layout-profile.schema.json")
+    profile_case_schema = validator_for("schemas/component-layout-profile-case.schema.json")
+    authored = load_json(ROOT / "definitions/layout/toggle.json")
+    check_case(profile_schema, "authored Toggle layout profile", authored, True)
+    part_tokens = load_json(ROOT / "tokens/components/toggle.json")
+    parts = resolve_toggle_parts(authored, part_tokens)
+    for smaller, larger in zip(parts.values(), list(parts.values())[1:]):
+        if not all(smaller[size][axis] < larger[size][axis] for size in (0, 1) for axis in ("width", "height")):
+            raise ValueError("authored Toggle parts must grow with density on every axis")
+    profile_cases = load_json(ROOT / "conformance/layout/toggle-profile-cases.json")
+    if profile_cases[0]["document"] != authored or "error" in profile_cases[0]:
+        raise ValueError("first Toggle profile case must be the authored profile")
+    names = set()
+    for case in profile_cases:
+        name = f"toggle profile case: {case['name']}"
+        if case["name"] in names:
+            raise ValueError(f"duplicate {name}")
+        names.add(case["name"])
+        check_case(profile_case_schema, name, case, True)
+        check_case(profile_schema, name, case["document"], case["schemaValid"])
+        checked += 2
+    relief = load_json(ROOT / "definitions/control-relief.json")["toggleTrack"]
+    containment = load_json(ROOT / "conformance/content/toggle-lit-containment.json")
+    keys = [case["keyDirection"] for case in containment["cases"] if case["name"].startswith("illustrative-track-shoulder-1.5-")]
+    probes = []
+    for mode, (track, thumb, inset) in parts.items():
+        for index, key in enumerate(keys):
+            probes.append({"name": f"{mode} {index}", "trackSize": track, "trackShape": {"kind": "capsule"},
+                           "trackRelief": relief, "thumbSize": thumb,
+                           "insets": {edge: inset for edge in ("start", "end", "top", "bottom")},
+                           "keyDirection": key, "depth": 4, "contained": True})
+    lit_source = load_json(ROOT / "conformance/ir/lit-control-body-source.json")
+    for name, contained in toggle_lit_containment_outcomes(dict(containment, cases=probes), lit_source):
+        if not contained:
+            raise ValueError(f"authored Toggle parts {name}: the thumb leaves the lit track plateau")
+        checked += 1
+    case_schema = validator_for("schemas/toggle-profile-case.schema.json")
+    request_schema = validator_for("schemas/toggle-profile-request.schema.json")
+    result_schema = validator_for("schemas/toggle-profile-ir.schema.json")
+    layout_cases = load_json(ROOT / "conformance/layout/toggle-profile-resolution-cases.json")
+    for case in layout_cases[:32]:
+        if case["request"]["tokens"] != part_tokens or case["request"]["profile"] != authored:
+            raise ValueError(f"toggle profile case {case['name']}: matrix must use the authored profile and tokens")
+    names = set()
+    for case in layout_cases:
+        name = f"toggle profile resolution case: {case['name']}"
+        if case["name"] in names:
+            raise ValueError(f"duplicate {name}")
+        names.add(case["name"])
+        check_case(case_schema, name, case, True)
+        check_case(request_schema, name, case["request"], case["requestSchemaValid"])
+        checked += 2
+        if not case["requestSchemaValid"]:
+            if "expected" in case:
+                raise ValueError(f"{name}: schema-invalid request has an expected result")
+            continue
+        try:
+            actual = resolve_toggle_profile(case["request"])
         except ValueError as error:
             if "errorContains" not in case or case["errorContains"] not in str(error):
                 raise ValueError(f"{name}: independent resolution failed with {error}") from None
@@ -1106,6 +1181,9 @@ def main():
         "schemas/command-layout-request.schema.json",
         "schemas/command-layout-ir.schema.json",
         "schemas/command-layout-case.schema.json",
+        "schemas/toggle-profile-request.schema.json",
+        "schemas/toggle-profile-ir.schema.json",
+        "schemas/toggle-profile-case.schema.json",
         "schemas/toggle-accessibility-ir.schema.json",
         "schemas/toggle-accessibility-case.schema.json",
         "schemas/command-accessibility-case.schema.json",
@@ -3716,6 +3794,7 @@ def main():
             check_case(validator_for("schemas/toggle-layout-ir.schema.json"), name, case["expected"], True)
             checked += 1
     checked += check_command_layout()
+    checked += check_toggle_layout_profile()
     segment_cases = load_json(ROOT / "conformance/geometry/slider-track-segments-cases.json")
     check_case(validator_for("schemas/slider-track-segments-cases.schema.json"),
                "slider track segment matrix", segment_cases, True)

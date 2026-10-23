@@ -9,7 +9,8 @@ use resina_resolver::{
     ToggleSnapshotError, ToggleSnapshotInput, compile_theme_source, opaque_contrast_ratio,
     resolve_activation, resolve_command_label, resolve_hit_region, resolve_srgb_fallback,
     resolve_toggle_layout, resolve_toggle_part_paint_source,
-    resolve_toggle_part_reservation_paint_source, resolve_toggle_snapshot,
+    resolve_toggle_part_reservation_paint_source, resolve_toggle_profile_source,
+    resolve_toggle_snapshot,
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -989,6 +990,56 @@ fn disabled_labels_between_bounds_dim_only_without_high_contrast() {
     }
 }
 
+fn snapshot_outcome(
+    mut f: Fixture,
+    track_request: &Value,
+    track_size: SurfaceSize,
+    thumb_size: SurfaceSize,
+    insets: &SafeArea,
+    name: &str,
+) -> (f64, Result<(), ToggleSnapshotError>) {
+    let direction = f.environment.layout_direction();
+    let track = resolve_toggle_part_reservation_paint_source(&track_request.to_string())
+        .unwrap_or_else(|error| panic!("{name}: {error}"));
+    let mut thumb_request = thumb_request(track_request, &track, json!(["rest"]));
+    thumb_request["surface"]["body"]["size"] = serde_json::to_value(thumb_size).unwrap();
+    let thumb = resolve_toggle_part_reservation_paint_source(&thumb_request.to_string())
+        .unwrap_or_else(|error| panic!("{name}: {error}"));
+    let depth = thumb.paint().body().depth();
+    f.layout = resolve_toggle_layout(ToggleLayoutInput {
+        track_size,
+        thumb_size,
+        insets,
+        layout_direction: direction,
+        checked: false,
+    })
+    .unwrap();
+    f.track = track;
+    f.thumb = thumb;
+    let reserved = match direction {
+        LayoutDirection::Ltr => bounds(-20.0, -20.0, track_size.width + 200.0, 120.0),
+        LayoutDirection::Rtl => bounds(-140.0, -20.0, track_size.width + 160.0, 120.0),
+    };
+    let wide = bounds(-300.0, -100.0, 1200.0, 400.0);
+    let target = resolve_hit_region(HitRegionInput {
+        environment: &f.environment,
+        visual_bounds: reserved,
+        available_bounds: wide,
+        component_minimum: size(48.0, 48.0),
+        occupied_regions: &[],
+    })
+    .unwrap();
+    let label_x = match direction {
+        LayoutDirection::Ltr => track_size.width + 40.0,
+        LayoutDirection::Rtl => -40.0 - f.label.size().width,
+    };
+    let mut input = f.input();
+    input.hit_region = target;
+    input.available_bounds = wide;
+    input.label_origin = PhysicalVector { x: label_x, y: 0.0 };
+    (depth, resolve_toggle_snapshot(input).map(|_| ()))
+}
+
 #[test]
 fn lit_containment_matrix_resolves_through_the_toggle_snapshot() {
     #[derive(Deserialize)]
@@ -1019,7 +1070,7 @@ fn lit_containment_matrix_resolves_through_the_toggle_snapshot() {
     assert_eq!(matrix.cases.len(), 19);
     let mut outcomes = [0; 2];
     for case in matrix.cases {
-        let mut f = fixture();
+        let f = fixture();
         let mut track_request = f.request.clone();
         let body = &mut track_request["surface"]["body"];
         body["size"] = serde_json::to_value(case.track_size).unwrap();
@@ -1044,41 +1095,15 @@ fn lit_containment_matrix_resolves_through_the_toggle_snapshot() {
                 json!({"kind": "uniform", "radius": "radius.5"});
         }
         track_request["relief"]["toggleTrack"] = case.track_relief.clone();
-        let track = resolve_toggle_part_reservation_paint_source(&track_request.to_string())
-            .unwrap_or_else(|error| panic!("{}: {error}", case.name));
-        let mut thumb_request = thumb_request(&track_request, &track, json!(["rest"]));
-        thumb_request["surface"]["body"]["size"] = serde_json::to_value(case.thumb_size).unwrap();
-        let thumb = resolve_toggle_part_reservation_paint_source(&thumb_request.to_string())
-            .unwrap_or_else(|error| panic!("{}: {error}", case.name));
-        assert_eq!(thumb.paint().body().depth(), case.depth, "{}", case.name);
-        f.layout = resolve_toggle_layout(ToggleLayoutInput {
-            track_size: case.track_size,
-            thumb_size: case.thumb_size,
-            insets: &case.insets,
-            layout_direction: LayoutDirection::Ltr,
-            checked: false,
-        })
-        .unwrap();
-        f.track = track;
-        f.thumb = thumb;
-        let reserved = bounds(-20.0, -20.0, case.track_size.width + 200.0, 120.0);
-        let wide = bounds(-300.0, -100.0, 1200.0, 400.0);
-        let target = resolve_hit_region(HitRegionInput {
-            environment: &f.environment,
-            visual_bounds: reserved,
-            available_bounds: wide,
-            component_minimum: size(48.0, 48.0),
-            occupied_regions: &[],
-        })
-        .unwrap();
-        let mut input = f.input();
-        input.hit_region = target;
-        input.available_bounds = wide;
-        input.label_origin = PhysicalVector {
-            x: case.track_size.width + 40.0,
-            y: 0.0,
-        };
-        let result = resolve_toggle_snapshot(input);
+        let (depth, result) = snapshot_outcome(
+            f,
+            &track_request,
+            case.track_size,
+            case.thumb_size,
+            &case.insets,
+            &case.name,
+        );
+        assert_eq!(depth, case.depth, "{}", case.name);
         assert_eq!(
             result.is_ok(),
             case.contained,
@@ -1096,4 +1121,44 @@ fn lit_containment_matrix_resolves_through_the_toggle_snapshot() {
         outcomes[usize::from(case.contained)] += 1;
     }
     assert_eq!(outcomes, [8, 11]);
+}
+
+#[test]
+fn toggle_profile_output_resolves_through_the_toggle_snapshot_in_every_density() {
+    let profile_cases: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../../conformance/layout/toggle-profile-resolution-cases.json"
+    ))
+    .unwrap();
+    let mut resolved = 0;
+    for density in ["compact", "standard", "comfortable", "immersive"] {
+        for (direction, suffix) in [(LayoutDirection::Ltr, "ltr"), (LayoutDirection::Rtl, "rtl")] {
+            let name = format!("{density} text 1 fine {suffix}");
+            let case = profile_cases
+                .iter()
+                .find(|case| case["name"] == name.as_str())
+                .unwrap();
+            let profile = resolve_toggle_profile_source(&case["request"].to_string()).unwrap();
+            for key in [json!({"x": -1, "y": -1}), json!({"x": -0.34, "y": -0.94})] {
+                let f = Fixture::new("cast", direction, &cases()[0]);
+                let mut track_request = f.request.clone();
+                let body = &mut track_request["surface"]["body"];
+                body["size"] = serde_json::to_value(profile.track_size()).unwrap();
+                body["surface"]["states"]["states"] = json!(["rest"]);
+                body["surface"]["form"]["shape"] = json!("capsule");
+                body["appearance"]["keyLight"]["direction"] = key;
+                let (depth, result) = snapshot_outcome(
+                    f,
+                    &track_request,
+                    profile.track_size(),
+                    profile.thumb_size(),
+                    profile.insets(),
+                    &name,
+                );
+                assert_eq!(depth, 4.0, "{name}");
+                assert!(result.is_ok(), "{name}: {result:?}");
+                resolved += 1;
+            }
+        }
+    }
+    assert_eq!(resolved, 16);
 }

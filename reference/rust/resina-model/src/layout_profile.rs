@@ -114,15 +114,19 @@ impl<'de> Deserialize<'de> for ProfilePadding {
     }
 }
 
+fn token_path<E: serde::de::Error>(path: String) -> Result<String, E> {
+    if path.is_empty() {
+        return Err(E::custom("token path must not be empty"));
+    }
+    Ok(path)
+}
+
 impl<'de> Deserialize<'de> for SizeTokenPaths {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let input = crate::deserialize_assignment_object::<D, SizeTokenPathsInput>(deserializer)?;
-        if input.width.is_empty() || input.height.is_empty() {
-            return Err(D::Error::custom("extent token path must not be empty"));
-        }
         Ok(Self {
-            width: input.width,
-            height: input.height,
+            width: token_path(input.width)?,
+            height: token_path(input.height)?,
         })
     }
 }
@@ -152,33 +156,106 @@ impl<'de> Deserialize<'de> for ComponentLayoutProfile {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+enum ToggleComponent {
+    Toggle,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ToggleParts {
+    pub track_size: SizeTokenPaths,
+    pub thumb_size: SizeTokenPaths,
+    pub thumb_inset: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ToggleLayoutProfile {
+    schema_version: String,
+    component: ToggleComponent,
+    parts: DensityModes<ToggleParts>,
+}
+
+impl ToggleLayoutProfile {
+    pub fn parts(&self) -> &DensityModes<ToggleParts> {
+        &self.parts
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct TogglePartsInput {
+    track_size: SizeTokenPaths,
+    thumb_size: SizeTokenPaths,
+    thumb_inset: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ToggleProfileInput {
+    schema_version: String,
+    component: ToggleComponent,
+    parts: DensityModes<ToggleParts>,
+}
+
+impl<'de> Deserialize<'de> for ToggleParts {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = crate::deserialize_assignment_object::<D, TogglePartsInput>(deserializer)?;
+        Ok(Self {
+            track_size: input.track_size,
+            thumb_size: input.thumb_size,
+            thumb_inset: token_path(input.thumb_inset)?,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for ToggleLayoutProfile {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let input = crate::deserialize_assignment_object::<D, ToggleProfileInput>(deserializer)?;
+        if input.schema_version != "0.1.0" {
+            return Err(D::Error::custom("schemaVersion must be 0.1.0"));
+        }
+        Ok(Self {
+            schema_version: input.schema_version,
+            component: input.component,
+            parts: input.parts,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::DENSITY_MODES;
+    use serde::de::DeserializeOwned;
     use serde_json::Value;
+    use std::{collections::BTreeSet, fmt::Debug};
 
     const PROFILE: &str = include_str!("../../../../definitions/layout/command.json");
     const CASES: &str = include_str!("../../../../conformance/layout/command-profile-cases.json");
+    const TOGGLE_PROFILE: &str = include_str!("../../../../definitions/layout/toggle.json");
+    const TOGGLE_CASES: &str =
+        include_str!("../../../../conformance/layout/toggle-profile-cases.json");
 
-    #[test]
-    fn profile_cases_accept_and_reject_for_their_stated_reason() {
-        let cases: Vec<Value> = serde_json::from_str(CASES).unwrap();
+    fn assert_cases_accept_and_reject_for_their_stated_reason<T>(cases: &str)
+    where
+        T: DeserializeOwned + Serialize + PartialEq + Debug,
+    {
+        let cases: Vec<Value> = serde_json::from_str(cases).unwrap();
         for case in cases {
             let source = case["document"].to_string();
             let results = [
-                serde_json::from_str::<ComponentLayoutProfile>(&source),
-                serde_json::from_value::<ComponentLayoutProfile>(case["document"].clone()),
+                serde_json::from_str::<T>(&source),
+                serde_json::from_value::<T>(case["document"].clone()),
             ];
             for result in results {
                 match case.get("error") {
                     None => {
                         let profile = result.unwrap();
                         let published = serde_json::to_value(&profile).unwrap();
-                        assert_eq!(
-                            serde_json::from_value::<ComponentLayoutProfile>(published).unwrap(),
-                            profile
-                        );
+                        assert_eq!(serde_json::from_value::<T>(published).unwrap(), profile);
                     }
                     Some(error) => {
                         let message = result.unwrap_err().to_string();
@@ -194,10 +271,20 @@ mod tests {
     }
 
     #[test]
+    fn profile_cases_accept_and_reject_for_their_stated_reason() {
+        assert_cases_accept_and_reject_for_their_stated_reason::<ComponentLayoutProfile>(CASES);
+    }
+
+    #[test]
+    fn toggle_profile_cases_accept_and_reject_for_their_stated_reason() {
+        assert_cases_accept_and_reject_for_their_stated_reason::<ToggleLayoutProfile>(TOGGLE_CASES);
+    }
+
+    #[test]
     fn authored_command_profile_names_one_token_per_density_and_extent() {
         let profile: ComponentLayoutProfile = serde_json::from_str(PROFILE).unwrap();
         assert_eq!(profile.component(), LayoutComponent::Command);
-        let mut paths = std::collections::BTreeSet::new();
+        let mut paths = BTreeSet::new();
         for density in DENSITY_MODES {
             let extent = profile.extent(density);
             for size in [&extent.minimum_size, &extent.maximum_size] {
@@ -206,6 +293,25 @@ mod tests {
             }
         }
         assert_eq!(paths.len(), 16);
+    }
+
+    #[test]
+    fn authored_toggle_profile_names_one_token_per_density_and_part_dimension() {
+        let profile: ToggleLayoutProfile = serde_json::from_str(TOGGLE_PROFILE).unwrap();
+        let mut paths = BTreeSet::new();
+        for density in DENSITY_MODES {
+            let parts = profile.parts().get(density);
+            for path in [
+                &parts.track_size.width,
+                &parts.track_size.height,
+                &parts.thumb_size.width,
+                &parts.thumb_size.height,
+                &parts.thumb_inset,
+            ] {
+                assert!(paths.insert(path.clone()), "{path}");
+            }
+        }
+        assert_eq!(paths.len(), 20);
     }
 
     #[test]
@@ -232,6 +338,34 @@ mod tests {
             assert_eq!(source.matches(member).count(), 1, "{member}");
             let changed = source.replacen(member, duplicate, 1);
             let error = serde_json::from_str::<ComponentLayoutProfile>(&changed).unwrap_err();
+            assert!(error.to_string().contains("duplicate"), "{member}: {error}");
+        }
+    }
+
+    #[test]
+    fn duplicate_toggle_profile_members_are_rejected() {
+        let source = TOGGLE_PROFILE.replace("\r\n", "\n");
+        for (member, duplicate) in [
+            (
+                "\"component\": \"toggle\"",
+                "\"component\": \"toggle\", \"component\": \"toggle\"",
+            ),
+            (
+                "\"compact\": {",
+                "\"compact\": {\"trackSize\": {\"width\": \"a\", \"height\": \"b\"}, \"thumbSize\": {\"width\": \"c\", \"height\": \"d\"}, \"thumbInset\": \"e\"}, \"compact\": {",
+            ),
+            (
+                "\"thumbInset\": \"toggle.thumb.standard.inset\"",
+                "\"thumbInset\": \"toggle.thumb.standard.inset\", \"thumb\\u0049nset\": \"toggle.thumb.standard.inset\"",
+            ),
+            (
+                "\"height\": \"toggle.track.compact.height\"",
+                "\"height\": \"toggle.track.compact.height\", \"height\": \"toggle.track.compact.height\"",
+            ),
+        ] {
+            assert_eq!(source.matches(member).count(), 1, "{member}");
+            let changed = source.replacen(member, duplicate, 1);
+            let error = serde_json::from_str::<ToggleLayoutProfile>(&changed).unwrap_err();
             assert!(error.to_string().contains("duplicate"), "{member}: {error}");
         }
     }

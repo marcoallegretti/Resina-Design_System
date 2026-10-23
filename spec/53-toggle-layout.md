@@ -12,6 +12,8 @@ The [request](../schemas/toggle-layout-request.schema.json) requires version
 insets (start/end/top/bottom), actual layoutDirection and boolean checked.
 Sizes MUST be finite and positive. Dimensions are authored/resolved inputs;
 this operation neither invents token defaults nor shrinks an oversized thumb.
+The [Toggle layout profile](89-component-layout-profile.md#toggle-profile)
+resolves them from authored tokens.
 Missing, duplicate, unknown and unsupported fields fail.
 
 The request root, sizes and insets MUST be JSON objects. Positional arrays are
