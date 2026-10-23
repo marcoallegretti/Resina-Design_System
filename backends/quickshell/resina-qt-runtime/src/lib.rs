@@ -4,6 +4,7 @@ use resina_resolver::{ActivationResult, resolve_activation, resolve_activation_s
 
 mod appearance_source;
 mod label;
+mod layout;
 mod pointer;
 mod slider_accessibility;
 mod snapshot;
