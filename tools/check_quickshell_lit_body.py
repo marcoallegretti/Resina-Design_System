@@ -149,31 +149,6 @@ def part_bounds(layer, rect, scale):
     return expected_pixels(scene["request"], resolution, response, view)
 
 
-def over(lower, upper, low, high):
-    """Bounds of a pixel after drawing a bound pair over bounds; the extremes lie at the corners."""
-    results = []
-    for under, color, alpha in itertools.product((lower, upper), (low, high), (low, high)):
-        weight = alpha[3] / 255
-        results.append(tuple(color[channel] * weight + under[channel] * (1 - weight) for channel in range(3)))
-    return (tuple(min(result[channel] for result in results) for channel in range(3)),
-            tuple(max(result[channel] for result in results) for channel in range(3)))
-
-
-def device_rect(left, top, width, height, scale):
-    """The whole device pixels that cover a logical rectangle: column, row, width, height."""
-    column, row = math.floor(left * scale), math.floor(top * scale)
-    return column, row, math.ceil((left + width) * scale) - column, math.ceil((top + height) * scale) - row
-
-
-def part_bounds(layer, rect, scale):
-    """Independent bounds of one part over a device rectangle, with the part's body origin at its logical placement."""
-    scene, resolution, response, placement = layer
-    column, row, width, height = rect
-    view = {"origin": {"x": column / scale - placement[0], "y": row / scale - placement[1]},
-            "width": width, "height": height, "pixelsPerUnit": scale, "samplesPerAxis": SAMPLES}
-    return expected_pixels(scene["request"], resolution, response, view)
-
-
 def measure(task, shift=0):
     """Worst RGB distance of a window capture from the bounds of its parts drawn in order over an opaque background.
 

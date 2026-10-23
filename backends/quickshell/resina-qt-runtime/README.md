@@ -1190,18 +1190,19 @@ scene area including the margin that holds the focus ring and the side plane. No
 A pixel passes within one RGB step of its bounds. The captures are opaque, so coverage appears
 through the blend with the canvas and not as a separate alpha. At scales 1, 1.25 and 2 the check
 compares 400,690, 638,010 and 1,593,410 pixels over 68 captures each, and the largest distance
-from the bounds is 0.859, 1.000 and 1.000. A capture shifted by two levels in one channel must
-fail, which the check verifies on one capture. The bounds are computed in worker processes that
-start after all captures, and `--jobs` limits them (default: one fewer than the processor count).
+from the bounds is 0.859, 1.000 and 1.000. The thumb is placed at the `thumbBounds` of the native
+snapshot, which this check does not verify independently (the layout checks cover it). A capture
+shifted by two levels in one channel must fail; this control shows that the comparison logic would
+notice a small defect, not that the native path was altered. The bounds are computed in worker
+processes that start after all captures, and `--jobs` limits them (default: one fewer than the
+processor count).
 
-The tolerance of one step is that of the raster oracle, not derived from this measurement. In a
-measurement of four Command scenes at scale 2, the native pixels equal the CPU raster blended over the
-canvas exactly wherever the body covers the pixel completely, and by at most one level at partially
-covered edge pixels, where Qt blends 8-bit premultiplied values. The fully covered pixels that
-are one level from the arithmetic (45 of 67,830) are where the raster and the arithmetic round
-differently, so the step belongs to the raster oracle and not to Qt. A uniform shift of one level
-passes, and differences below one 8-bit step, such as the Light `surface.high` highlight, cannot be
-detected here.
+The tolerance of one step is that of the raster oracle (`check_lit_body_raster_backend.py`), not
+derived from this measurement. At scales 1.25 and 2 some fully covered pixels are exactly one level
+from the arithmetic; a one-off comparison of four Command scenes at scale 2 with the CPU raster
+found those pixels equal to the raster blended over the canvas, but that comparison is not
+committed here. A uniform shift of one level passes, and differences below one 8-bit step, such as
+the Light `surface.high` highlight, cannot be detected here.
 
 The Shell backend realizes the lit body with the shared CPU raster. This evidence shows that the
 Qt runtime, the Qt Quick scene graph and the released host add no change beyond the tolerance to

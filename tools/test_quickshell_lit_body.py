@@ -1,5 +1,7 @@
 import copy
 import json
+from concurrent.futures import Future
+from concurrent.futures.process import BrokenProcessPool
 import tempfile
 import unittest
 from pathlib import Path
@@ -9,7 +11,8 @@ from PIL import Image
 
 import check_quickshell_lit_body as lit
 from check_quickshell_lit_body import (
-    device_rect, discriminate, measure, native_command, native_toggle, over, phase_state, plan_case, with_thumbs)
+    device_rect, discriminate, measure, native_command, native_toggle, over, phase_state, plan_case,
+    run_measurements, with_thumbs)
 
 
 def pair(color, alpha=255):
@@ -166,6 +169,52 @@ class MeasureTests(unittest.TestCase):
                 self.assertEqual(("frame", 1, 0, 0), discriminate(task))
                 with patch.object(lit, "TOLERANCE", 2), self.assertRaisesRegex(ValueError, "was not detected"):
                     discriminate(task)
+
+
+class FakePool:
+    """An executor that runs each submission at once, so that a failure has a defined order."""
+
+    def __init__(self, outcomes):
+        self.outcomes = outcomes
+        self.futures = []
+
+    def __call__(self, jobs):
+        return self
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exception):
+        return False
+
+    def submit(self, function, plan):
+        future = Future()
+        outcome = self.outcomes[len(self.futures)]
+        if isinstance(outcome, BaseException):
+            future.set_exception(outcome)
+        elif outcome is not None:
+            future.set_result(outcome)
+        self.futures.append(future)
+        return future
+
+
+class MeasurementRunTests(unittest.TestCase):
+    def test_every_comparison_and_the_control_are_collected(self):
+        pool = FakePool([("a", 1, 4, 0), ("b", 1, 6, 1), ("a", 1, 0, 0)])
+        with patch.object(lit, "ProcessPoolExecutor", pool):
+            results = run_measurements(["a", "b"], 2)
+        self.assertEqual([("a", 1, 4, 0), ("b", 1, 6, 1)], sorted(results))
+
+    def test_a_failing_comparison_surfaces_and_cancels_the_rest(self):
+        pool = FakePool([ValueError("pixel"), None, None])
+        with patch.object(lit, "ProcessPoolExecutor", pool), self.assertRaisesRegex(ValueError, "pixel"):
+            run_measurements(["a", "b"], 2)
+        self.assertTrue(all(future.cancelled() for future in pool.futures[1:]))
+
+    def test_a_dead_worker_becomes_a_diagnostic(self):
+        pool = FakePool([BrokenProcessPool("terminated"), None, None])
+        with patch.object(lit, "ProcessPoolExecutor", pool), self.assertRaisesRegex(ValueError, "worker died: terminated"):
+            run_measurements(["a", "b"], 2)
 
 
 class PlanTests(unittest.TestCase):
