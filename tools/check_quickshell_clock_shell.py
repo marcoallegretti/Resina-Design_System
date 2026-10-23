@@ -42,6 +42,8 @@ LAYOUT_PROFILE = "definitions/layout/command.json"
 LAYOUT_TOKENS = "tokens/components/command.json"
 MUTATED_MINIMUM_HEIGHT = 56
 MUTATED_INLINE_INSET = "space.5"
+OVERSIZED_MINIMUM_WIDTH = 2000
+OVERFLOW_PREFERENCES = {"densityPreference": "immersive", "textScale": 4}
 LAYOUT_PREFERENCES = {"densityPreference": "comfortable", "textScale": 1.5, "layoutDirection": "rtl",
                       "inputCapabilities": ["coarsePointer", "directTouch", "keyboard"]}
 
@@ -69,7 +71,7 @@ def expected_states(control):
     return {"schemaVersion": "0.1.0", "states": signals or ["rest"]}
 
 
-def command_layout(request, output_height, root=ROOT):
+def command_layout(request, root=ROOT):
     """The layout policy that the profile, tokens and theme of a root give a shell Command request."""
     content = request["content"]
     return resolve_command_layout({
@@ -78,11 +80,11 @@ def command_layout(request, output_height, root=ROOT):
         "spatialBinding": spatial_binding(json.loads(content["themeSource"]),
                                           json.loads(content["externalSources"]["foundation.json"])),
         "environment": content["environment"],
-        "availableSize": {"width": request["availableBounds"]["width"], "height": output_height}})
+        "availableSize": {"width": request["availableBounds"]["width"], "height": request["availableBounds"]["height"]}})
 
 
-def verify_command_layout(part, request, output_height, root=ROOT):
-    expected = command_layout(request, output_height, root)
+def verify_command_layout(part, request, root=ROOT):
+    expected = command_layout(request, root)
     content = request["content"]
     observed = {"minimumSize": content["minimumSize"], "maximumSize": content["maximumSize"],
                 "padding": content["padding"], "targetMinimum": request["componentMinimum"]}
@@ -346,7 +348,7 @@ def verify_surfaces(shell, observed, resolvers):
                                                             "surroundingColor")):
             raise ValueError(f"{part} declares surroundings other than its surface body")
         verify_command_scale(observed, part, request, shell.scale)
-        verify_command_layout(part, request, observed["outputHeight"])
+        verify_command_layout(part, request)
         control = observed[part]
         source = copy.deepcopy(request)
         source.update(activation=control["state"], hovered=control["hovered"], focusable=control["state"]["enabled"])
@@ -579,13 +581,18 @@ def verify_theme_files(shell, theme):
         raise ValueError("Command requests must carry the reference control relief and explicit absent light")
 
 
-def mutated_root(path):
+def edited_root(path, extent):
     for directory in ("tokens", "definitions"):
         shutil.copytree(ROOT / directory, path / directory)
     tokens = path / LAYOUT_TOKENS
     document = json.loads(tokens.read_text(encoding="utf-8"))
-    document["command"]["extent"]["standard"]["minimum"]["height"]["$value"]["value"] = MUTATED_MINIMUM_HEIGHT
+    extent(document["command"]["extent"]["standard"])
     tokens.write_text(json.dumps(document), encoding="utf-8")
+    return path
+
+
+def mutated_root(path):
+    edited_root(path, lambda extent: extent["minimum"]["height"]["$value"].update(value=MUTATED_MINIMUM_HEIGHT))
     theme = path / "tokens/themes/light.json"
     document = json.loads(theme.read_text(encoding="utf-8"))
     document["spatialAssignments"]["roles"]["space.control.inset.inline"]["standard"] = MUTATED_INLINE_INSET
@@ -597,14 +604,31 @@ def layout_variant(args, host, module, fonts, platform, name, baseline, root=ROO
     output = args.output_dir / f"layout-{name}"
     shell = Shell(host, module, fonts, "light", output, platform, args.scale, root, preferences)
     try:
-        observed = shell.until(closed, f"{name}: published bar with a ready Show clock Command")
+        shell.until(closed, f"{name}: published bar with a ready Show clock Command")
         request = json.loads(shell.call("request", "showClock"))
-        layout = verify_command_layout("showClock", request, observed["outputHeight"], root)
+        layout = verify_command_layout("showClock", request, root)
     finally:
         shell.close()
     if layout == baseline:
         raise ValueError(f"{name} did not change the layout of the Show clock Command")
     return request, layout
+
+
+def widen_extent(extent):
+    extent["minimum"]["width"]["$value"].update(value=OVERSIZED_MINIMUM_WIDTH)
+    extent["maximum"]["width"]["$value"].update(value=2 * OVERSIZED_MINIMUM_WIDTH)
+
+
+def layout_rejection(args, host, module, fonts, platform, name, marker, root=ROOT, preferences=None):
+    shell = Shell(host, module, fonts, "light", args.output_dir / f"layout-{name}", platform, args.scale, root,
+                  preferences)
+    try:
+        shell.wait_for(lambda: marker in shell.log.read_text(encoding="utf-8", errors="replace"),
+                       f"{name}: the logged diagnostic {marker!r}")
+        if json.loads(shell.call("observe"))["showClock"]:
+            raise ValueError(f"{name}: a Show clock Command was published after its layout was rejected")
+    finally:
+        shell.close()
 
 
 def layout_cases(args, host, module, fonts, platform, baseline):
@@ -616,10 +640,18 @@ def layout_cases(args, host, module, fonts, platform, baseline):
         raise ValueError("the authored density, text scale, direction and input did not reach the layout")
     request, layout = layout_variant(args, host, module, fonts, platform, "mutated-profile", baseline,
                                      root=mutated_root(args.output_dir / "mutated-root"))
-    if layout["minimumSize"]["height"] != MUTATED_MINIMUM_HEIGHT             or layout["padding"]["start"] != 24:
+    if layout["minimumSize"]["height"] != MUTATED_MINIMUM_HEIGHT or layout["padding"]["start"] != 24:
         raise ValueError("the mutated profile token and spatial binding did not reach the Show clock layout")
+    layout_rejection(args, host, module, fonts, platform, "container-below-minimum",
+                     "RESINA_CLOCK_ERROR Show clock layout: availableSize is smaller than the profile minimum",
+                     root=edited_root(args.output_dir / "oversized-root", widen_extent))
+    layout_rejection(args, host, module, fonts, platform, "label-exceeds-container",
+                     "RESINA_CLOCK_PREPARATION Show clock: complete label exceeds available command height",
+                     preferences=OVERFLOW_PREFERENCES)
     return ["the Command layout follows the profile, its tokens and the theme's spatial binding for the "
-            "authored density, text scale, direction and input, and for mutated profile tokens"]
+            "authored density, text scale, direction and input, and for mutated profile tokens",
+            "a container narrower than the profile minimum, and a label taller than its container at the "
+            "container's true size, log their diagnostic and publish no Command"]
 
 
 class Accessibility:
@@ -1112,8 +1144,7 @@ def main():
         report["cases"].append("every bar, clock surface and Command publication from startup uses its window's "
                                "device scale" + (f", moving once from {args.scale:g} to {live:g}" if live else ""))
 
-        baseline = verify_command_layout("showClock", json.loads(shell.call("request", "showClock")),
-                                         shell.observe()["outputHeight"])
+        baseline = verify_command_layout("showClock", json.loads(shell.call("request", "showClock")))
         shell.close()
         shell = None
         report["cases"].extend(layout_cases(args, host, module, fonts, platform, baseline))

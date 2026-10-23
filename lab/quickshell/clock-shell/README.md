@@ -37,11 +37,18 @@ focus, layout and preference policy belong to this shell, not to Resina.
   [Command layout profile](../../../spec/89-component-layout-profile.md)
   (`definitions/layout/command.json` and `tokens/components/command.json`),
   resolved by `CommandLayoutResolver` for the density, text scale, input
-  capabilities and direction of the environment. The available width is the
-  width of the content region of the Command's surface and the available height
-  is the output height, because the shell sizes its bar and surface around the
-  Command. The shell defines no Command size or padding of its own; its bar
-  height, margins and gaps are shell layout.
+  capabilities and direction of the environment and for the size of the
+  content region of the Command's surface. The bar and the clock surface are
+  sized from the larger of their published Command and the profile's minimum
+  height, which is read against the output size because the container does not
+  exist yet. A container too small for the profile minimum, or a label that
+  does not fit its container, is logged (`RESINA_CLOCK_ERROR` or
+  `RESINA_CLOCK_PREPARATION`) once per distinct diagnostic, and no Command is
+  published. The shell defines no Command size or padding of its own; its bar
+  height, margins and gaps are shell layout. The checker compares each Command
+  request with an independent oracle over the profile, tokens and theme, which
+  proves adoption; the profile values themselves are pinned by the shared
+  conformance cases.
 - Both Commands sample motion with the calibrated Elastomer profiles of
   [material response calibration](../../../spec/80-material-response-calibration.md)
   (`elastomer-body`, `elastomer-depth`). Under reduced motion they publish

@@ -17,7 +17,8 @@ ShellRoot {
     property real showHeight: 0
     property real closeHeight: 0
     property real clockInset: 4
-    readonly property real barHeight: Math.max(96, showHeight + 48)
+    readonly property real barHeight: Math.max(96,
+        Math.max(showHeight, commandMinimumHeight("Show clock", barEnvironment)) + 48)
     readonly property var sourceFiles: [
         ["themeSource", "tokens/themes/" + theme + ".json", theme],
         ["foundation", "tokens/foundation.json", ""],
@@ -56,6 +57,7 @@ ShellRoot {
     }) : ""
     readonly property bool ready: loaded && screen !== null && preferences !== null
     readonly property var publications: ({})
+    readonly property var layoutFailures: ({})
 
     component WindowEnvironment: Item {
         readonly property real deviceScale: Window.window ? Window.window.devicePixelRatio : 0
@@ -184,28 +186,33 @@ ShellRoot {
         });
     }
 
-    function commandLayout(environment, bounds) {
+    function commandLayout(part, environment, available) {
         const layout = JSON.parse(layouts.resolveCommandLayout(JSON.stringify({
             themeSource: text("themeSource"), externalSources: {"foundation.json": text("foundation")},
             profile: JSON.parse(text("layoutProfile")), tokens: JSON.parse(text("layoutTokens")),
             environment: environment.theme.environment,
-            availableSize: {width: bounds.width, height: screen.height}
+            availableSize: {width: available.width, height: available.height}
         })));
-        if (layout.error)
-            fail("Command layout: " + layout.error);
+        const message = layout.error || "";
+        if (layoutFailures[part] !== message) {
+            layoutFailures[part] = message;
+            if (message.length)
+                fail(part + " layout: " + message);
+        }
         return layout.error ? null : layout;
     }
 
-    function commandMinimumHeight(environment) {
-        const layout = environment.theme
-            ? commandLayout(environment, {width: screen.width, height: screen.height}) : null;
+    // Sizing a container around its Command reads the minimum against the largest space the output could offer.
+    function commandMinimumHeight(part, environment) {
+        const layout = environment.theme && screen
+            ? commandLayout(part + " minimum", environment, {width: screen.width, height: screen.height}) : null;
         return layout ? layout.minimumSize.height : 0;
     }
 
     function command(environment, label, description, surroundingView, bounds) {
         if (!environment.theme || !surroundingView.paintReady)
             return "";
-        const layout = commandLayout(environment, bounds);
+        const layout = commandLayout(label, environment, bounds);
         if (!layout)
             return "";
         const body = JSON.parse(surroundingView.publication).body.pigment.body;
@@ -368,7 +375,7 @@ ShellRoot {
         margins.top: root.barHeight
         implicitWidth: 360 * root.textScale
         implicitHeight: 3 * root.margin + root.clockInset + 3 * root.gap + reading.implicitHeight
-            + Math.max(root.closeHeight, root.commandMinimumHeight(clockEnvironment))
+            + Math.max(root.closeHeight, clockWindow.visible ? root.commandMinimumHeight("Close", clockEnvironment) : 0)
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "resina-clock-surface"

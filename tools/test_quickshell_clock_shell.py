@@ -72,9 +72,6 @@ class ClockShellScaleTests(unittest.TestCase):
                 verify_publication_scales(runs, 1.25, final)
 
 
-OUTPUT_HEIGHT = 600
-
-
 def layout_request(root=ROOT):
     cases = json.loads((ROOT / "conformance/layout/command-layout-cases.json").read_text(encoding="utf-8"))
     environment = next(case for case in cases if case["name"] == "standard text 1 fine ltr")["request"]["environment"]
@@ -83,7 +80,7 @@ def layout_request(root=ROOT):
         "externalSources": {"foundation.json": (root / "tokens/foundation.json").read_text(encoding="utf-8")},
         "environment": environment},
         "availableBounds": {"x": 0, "y": 0, "width": 400, "height": 72}}
-    layout = command_layout(request, OUTPUT_HEIGHT, root)
+    layout = command_layout(request, root)
     request["content"].update(minimumSize=layout["minimumSize"], maximumSize=layout["maximumSize"],
                               padding=layout["padding"])
     request["componentMinimum"] = layout["targetMinimum"]
@@ -102,7 +99,7 @@ class CommandLayoutTests(unittest.TestCase):
     def test_the_profile_policy_reaches_the_request_members(self):
         request = layout_request()
         content = request["content"]
-        self.assertEqual(verify_command_layout("showClock", request, OUTPUT_HEIGHT)["minimumSize"], content["minimumSize"])
+        self.assertEqual(verify_command_layout("showClock", request)["minimumSize"], content["minimumSize"])
         self.assertEqual(content["padding"], {"start": 16, "end": 16, "top": 12, "bottom": 12})
         self.assertEqual(request["componentMinimum"], {"width": 24, "height": 24})
 
@@ -115,15 +112,15 @@ class CommandLayoutTests(unittest.TestCase):
             request = layout_request()
             change(request)
             with self.subTest(member=member), self.assertRaisesRegex(ValueError, f"{member} .* is not the layout"):
-                verify_command_layout("showClock", request, OUTPUT_HEIGHT)
+                verify_command_layout("showClock", request)
 
     def test_the_policy_follows_the_density_text_scale_input_and_direction_of_the_environment(self):
         request = layout_request()
         request["content"]["environment"].update(densityPreference="immersive", textScale=2, layoutDirection="rtl",
                                                  inputCapabilities=["coarsePointer", "keyboard"])
         with self.assertRaisesRegex(ValueError, "is not the layout"):
-            verify_command_layout("showClock", request, OUTPUT_HEIGHT)
-        expected = command_layout(request, OUTPUT_HEIGHT)
+            verify_command_layout("showClock", request)
+        expected = command_layout(request)
         self.assertEqual((expected["minimumSize"], expected["targetMinimum"]),
                          ({"width": 144, "height": 64}, {"width": 48, "height": 48}))
 
@@ -133,9 +130,9 @@ class CommandLayoutTests(unittest.TestCase):
             mutated = layout_request(root)
             self.assertEqual(mutated["content"]["minimumSize"]["height"], MUTATED_MINIMUM_HEIGHT)
             self.assertEqual(mutated["content"]["padding"]["start"], 24)
-            verify_command_layout("showClock", mutated, OUTPUT_HEIGHT, root)
+            verify_command_layout("showClock", mutated, root)
             with self.assertRaisesRegex(ValueError, "minimumSize .* is not the layout"):
-                verify_command_layout("showClock", mutated, OUTPUT_HEIGHT)
+                verify_command_layout("showClock", mutated)
             self.assertNotEqual(layout_request()["content"]["minimumSize"], mutated["content"]["minimumSize"])
 
 
