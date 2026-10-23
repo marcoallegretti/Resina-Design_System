@@ -132,6 +132,21 @@ brackets. The OpenGL rows for 100 controls alternate between bursts and stalls o
 Publications in about 30 s for 10 controls: 711 (software, scale 1) and 90 (software, scale 2), that is 2.4 and 0.3
 per control per second. For 100 controls: 106 and 100 in 30 s, about one per control per 30 s.
 
+### On a GitHub-hosted runner
+
+The workflow runs `conformance` and `bench` on `ubuntu-24.04` (no GPU; Mesa 25.2 with LLVM 20, llvmpipe and lavapipe)
+and writes the tables to its job summary; the job takes about five minutes with the Qt SDK, Wayland and Quickshell
+caches of the other jobs. In run 39997452201 the shader path drew in headless sway on both renderers, and against the
+CPU raster the interior differed by at most 2 steps, the edge by at most 0.129 device px and the contour ratio was at
+most 0.284. The two renderers differed by at most 1 step. Frame intervals in milliseconds, median / p95 / p99:
+
+| N | OpenGL scale 1 | Vulkan scale 1 | OpenGL scale 2 | Vulkan scale 2 |
+| --- | --- | --- | --- | --- |
+| 1 | 16 / 17 / 17 | 16 / 17 / 17 | 17 / 17 / 20 | 17 / 18 / 18 |
+| 10 | 16 / 17 / 17 | 16 / 17 / 17 | 25 / 28 / 31 | 26 / 28 / 52 |
+| 30 | 18 / 29 / 45 | 18 / 22 / 37 | 69 / 74 / 138 | 74 / 78 / 82 |
+| 100 | 57 / 61 / 120 | 60 / 65 / 117 | 229 / 448 / 453 | 248 / 489 / 492 |
+
 ## What the spike shows, and what it does not
 
 - Shown: a single shader of about 170 lines reproduces the lit Command body, track and thumb within the figures
