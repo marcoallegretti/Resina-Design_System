@@ -155,8 +155,8 @@ members do not change it either. Ambient (omnidirectional) shadow, inner shadow
 for wells and `innerShadow`, shadow transmission through translucent bodies,
 and specular, wrap and subsurface terms are outside this version. Integrating
 the band into the [opaque surface IR](36-opaque-surface-ir.md) and the
-[lit control body](88-lit-control-body.md), and re-authoring the reference key
-light, are subsequent changes.
+[lit control body](88-lit-control-body.md) is a subsequent change. The reference
+key light is the calibrated direction of [spec/34](34-key-light.md).
 
 ## Reference profiles
 

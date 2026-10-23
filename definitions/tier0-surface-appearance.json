@@ -82,8 +82,8 @@
   "keyLight": {
     "schemaVersion": "0.1.0",
     "direction": {
-      "x": -1,
-      "y": -1
+      "x": -0.34,
+      "y": -0.94
     }
   }
 }

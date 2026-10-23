@@ -161,18 +161,23 @@ class CommandUpdateEvidenceTests(unittest.TestCase):
     def test_authored_depth_reaches_light_and_extrusion_bounds(self):
         from check_quickshell_command_updates import verify_authored_geometry
         request = authored_cases()[0]["request"]
+        light = request["body"]["appearance"]["keyLight"]["direction"]
+        magnitude = math.hypot(light["x"], light["y"])
+        unit = {axis: light[axis] / magnitude for axis in ("x", "y")}
 
         def snapshot(scale):
-            offset = math.sqrt(2) * scale
+            offset = {axis: -unit[axis] * 2 * scale for axis in ("x", "y")}
+            reach = {axis: abs(value) for axis, value in offset.items()}
             return {"paint": {"response": {"depthScale": scale}, "paint": {"body": {
-                "materialFamily": "elastomer", "lighting": {
-                    "direction": {"x": -math.sqrt(0.5), "y": -math.sqrt(0.5)},
-                    "sideOffset": {"x": offset, "y": offset}},
+                "materialFamily": "elastomer", "lighting": {"direction": unit, "sideOffset": offset},
                 "face": {"surface": {"outline": {"size": {"width": 160, "height": 80}}}},
                 "geometry": {
-                    "silhouette": {"bounds": {"x": 0, "y": 0, "width": 160 + offset, "height": 80 + offset}},
+                    "silhouette": {"bounds": {
+                        "x": min(0, offset["x"]), "y": min(0, offset["y"]),
+                        "width": 160 + reach["x"], "height": 80 + reach["y"]}},
                     "edgeInterior": {"offset": {"x": 1, "y": 1}, "contour": {"bounds": {
-                        "x": 0, "y": 0, "width": 158 + offset, "height": 78 + offset}}}}}}}}
+                        "x": min(0, offset["x"]), "y": min(0, offset["y"]),
+                        "width": 158 + reach["x"], "height": 78 + reach["y"]}}}}}}}}
 
         rest, disabled = snapshot(1), snapshot(0.7)
         for direction in ("ltr", "rtl"):

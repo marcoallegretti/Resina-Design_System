@@ -121,7 +121,7 @@ raster's pixels, which match the arithmetic. It does not show the compositor out
 rendering, the label position, the capability set that the Shell reports (only the catalog's
 environments, including all capabilities off, are drawn), or differences smaller than the
 tolerance: a uniform shift of one level passes, and the Light `surface.high` highlight (at most
-0.0009 in ΔE_OK) is below one 8-bit step.
+0.0011 in ΔE_OK) is below one 8-bit step.
 
 ```sh
 python tools/check_quickshell_lit_body.py \
@@ -134,10 +134,10 @@ python tools/check_quickshell_lit_body.py \
 
 The [visibility table](../materials/lit-control-visibility.json) states how
 visible the static key is on each of these bodies, and it is faint on one half of
-most of them: the Light `surface.high` highlight is at most 0.0009 ΔE_OK and only
-its shading half (0.030 to 0.074) shows; the Dark `surface.high` shading half is
-0.0085 to 0.021; the Light track highlight is 0.0025 to 0.0095, the Light thumb
-shading 0.006 to 0.027 and the Dark thumb highlight 0.0009 to 0.0086. The table is
+most of them: the Light `surface.high` highlight is at most 0.0011 ΔE_OK and only
+its shading half (0.034 to 0.086) shows; the Dark `surface.high` shading half is
+0.0098 to 0.025; the Light track highlight is 0.0028 to 0.011, the Light thumb
+shading 0.0068 to 0.031 and the Dark thumb highlight 0.0011 to 0.0098. The table is
 evidence about the lit body as authored, not an acceptance of its appearance.
 
 After capture, run the executed negative evidence against the same raster:
