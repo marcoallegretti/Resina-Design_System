@@ -1058,6 +1058,7 @@ def check_no_active_reference_to_archived_schemas():
 def main():
     schema_paths = sorted((ROOT / "schemas").rglob("*.schema.json"))
     expected_paths = {
+        "schemas/surface-deformation-limits.schema.json",
         "schemas/surface-deformation-request.schema.json",
         "schemas/surface-deformation-result.schema.json",
         "schemas/surface-deformation-case.schema.json",
@@ -3097,6 +3098,21 @@ def main():
         cases as motion_cases,
         expected_result as motion_expected,
     )
+    limits_schema = validator_for("schemas/surface-deformation-limits.schema.json")
+    authored_limits = load_json(ROOT / "definitions/motion/surface-deformation-limits.json")
+    check_case(limits_schema, "deformation limits", authored_limits, True)
+    checked += 1
+    for name, edit in [
+        ("deformation limits non-rigid Cast", lambda d: d["limits"].__setitem__("cast", 0.01)),
+        ("deformation limits Gel", lambda d: d["limits"].__setitem__("gel", 0.1)),
+        ("deformation limits missing Frost", lambda d: d["limits"].pop("frost")),
+        ("deformation limits limit of one", lambda d: d["limits"].__setitem__("elastomer", 1)),
+        ("deformation limits unknown member", lambda d: d.__setitem__("unexpected", True)),
+    ]:
+        changed_limits = copy.deepcopy(authored_limits)
+        edit(changed_limits)
+        check_case(limits_schema, name, changed_limits, False)
+        checked += 1
     motion_results = {}
     for kind in motion_kinds:
         motion_case_schema = validator_for(f"schemas/surface-{kind}-case.schema.json")

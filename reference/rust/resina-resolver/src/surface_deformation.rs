@@ -13,6 +13,7 @@ use resina_model::{
 };
 use resina_motion::{SpringTrajectorySample, sample_spring_trajectory};
 use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
 
 const OBJECTS: [&str; 13] = [
     "",
@@ -100,11 +101,34 @@ pub struct SurfaceDeformationIr {
     reservation: PhysicalBounds,
 }
 
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FamilyLimits {
+    cast: f64,
+    frost: f64,
+    elastomer: f64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct LimitsProfile {
+    #[serde(rename = "schemaVersion")]
+    _schema_version: String,
+    limits: FamilyLimits,
+}
+
 fn deformation_limit(family: MaterialFamily) -> f64 {
+    static PROFILE: OnceLock<LimitsProfile> = OnceLock::new();
+    let profile = PROFILE.get_or_init(|| {
+        serde_json::from_str(include_str!(
+            "../../../../definitions/motion/surface-deformation-limits.json"
+        ))
+        .expect("the committed deformation limits profile is valid")
+    });
     match family {
-        MaterialFamily::Cast | MaterialFamily::Gel => 0.0,
-        MaterialFamily::Frost => 0.02,
-        MaterialFamily::Elastomer => 0.06,
+        MaterialFamily::Cast | MaterialFamily::Gel => profile.limits.cast,
+        MaterialFamily::Frost => profile.limits.frost,
+        MaterialFamily::Elastomer => profile.limits.elastomer,
     }
 }
 
