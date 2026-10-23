@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resina:schema:surface-deformation-limits:0.1.0",
+  "title": "Resina Surface Deformation Limits",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "limits"],
+  "properties": {
+    "schemaVersion": {"const": "0.1.0"},
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cast", "frost", "elastomer"],
+      "properties": {
+        "cast": {"const": 0},
+        "frost": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "elastomer": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}
+      }
+    }
+  }
+}

@@ -120,6 +120,16 @@ pub use slider_value::{
 };
 
 mod control_motion;
+mod surface_deformation;
+mod surface_emergence;
+mod surface_motion;
+pub use surface_deformation::{
+    DeformationProjection, SurfaceDeformationIr, resolve_surface_deformation_source,
+};
+pub use surface_emergence::{
+    EmergenceProjection, ShownContent, SurfaceEmergenceIr, resolve_surface_emergence_source,
+};
+pub use surface_motion::SurfaceMotionError;
 mod toggle_part_motion;
 pub use toggle_part_motion::{
     TogglePartMotionInput, TogglePartMotionIr, resolve_toggle_part_motion,

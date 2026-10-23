@@ -1,0 +1,1154 @@
+[
+  {
+    "name": "elastomer press in flight",
+    "requestChanges": [],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "time zero keeps the initial state",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "settled press reaches its authored target",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "both channels at the lower bound normalize the corners",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1
+      },
+      {
+        "path": "/channels/widthScale/target",
+        "value": 0.94
+      },
+      {
+        "path": "/channels/heightScale/target",
+        "value": 0.94
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "undershoot below the lower bound is projected with its velocity retained",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0.08
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 24,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1,
+            "velocity": 0
+          },
+          "target": 0.94
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "overshoot above the upper bound is projected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0.08
+      },
+      {
+        "path": "/channels/heightScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 24,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1,
+            "velocity": 0
+          },
+          "target": 1.06
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "retargeting continues from the unprojected velocity",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 0.97,
+            "velocity": -1.2
+          },
+          "target": 1
+        }
+      },
+      {
+        "path": "/channels/heightScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1.03,
+            "velocity": 0.8
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an initial state below the lower bound is accepted and projected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 0.9,
+            "velocity": 0
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "a far initial state is projected without changing the stored state",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/heightScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+300,
+            "velocity": -300000.0
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "frost keeps the small bound",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "frost"
+      },
+      {
+        "path": "/time",
+        "value": 0.05
+      },
+      {
+        "path": "/bounds",
+        "value": {
+          "widthScale": {
+            "lower": 0.98,
+            "upper": 1.02
+          },
+          "heightScale": {
+            "lower": 0.98,
+            "upper": 1.02
+          }
+        }
+      },
+      {
+        "path": "/channels",
+        "value": {
+          "widthScale": {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 1600,
+              "damping": 80,
+              "positionThreshold": 0.0001,
+              "velocityThreshold": 0.01
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            },
+            "target": 1.02
+          },
+          "heightScale": {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 1600,
+              "damping": 80,
+              "positionThreshold": 0.0001,
+              "velocityThreshold": 0.01
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            },
+            "target": 0.98
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "cast stays rigid and immediate",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "cast"
+      },
+      {
+        "path": "/bounds",
+        "value": {
+          "widthScale": {
+            "lower": 1,
+            "upper": 1
+          },
+          "heightScale": {
+            "lower": 1,
+            "upper": 1
+          }
+        }
+      },
+      {
+        "path": "/channels/widthScale/target",
+        "value": 1
+      },
+      {
+        "path": "/channels/heightScale/target",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "castImmediate"
+  },
+  {
+    "name": "reduced motion gives the endpoint at time zero",
+    "requestChanges": [
+      {
+        "path": "/reducedMotion",
+        "value": true
+      },
+      {
+        "path": "/time",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "reducedMotion"
+  },
+  {
+    "name": "reduced motion gives the endpoint after elapsed time",
+    "requestChanges": [
+      {
+        "path": "/reducedMotion",
+        "value": true
+      },
+      {
+        "path": "/time",
+        "value": 0.01
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "reducedMotion"
+  },
+  {
+    "name": "reduced motion keeps a rigid endpoint",
+    "requestChanges": [
+      {
+        "path": "/reducedMotion",
+        "value": true
+      },
+      {
+        "path": "/channels/widthScale/target",
+        "value": 1
+      },
+      {
+        "path": "/channels/heightScale/target",
+        "value": 1
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "reducedMotion"
+  },
+  {
+    "name": "right to left quartic asymmetric corners",
+    "requestChanges": [
+      {
+        "path": "/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 64,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 18,
+              "y": 10
+            },
+            "topEnd": {
+              "x": 10,
+              "y": 10
+            },
+            "bottomEnd": {
+              "x": 20,
+              "y": 14
+            },
+            "bottomStart": {
+              "x": 8,
+              "y": 12
+            }
+          },
+          "layoutDirection": "rtl",
+          "curvature": "quartic",
+          "minimumInset": 2
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "a negative sweep offset moves the reservation the other way",
+    "requestChanges": [
+      {
+        "path": "/sweepOffset",
+        "value": {
+          "x": -2,
+          "y": -3
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "a very large part keeps relative precision",
+    "requestChanges": [
+      {
+        "path": "/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 10000000.0,
+            "height": 5000000.0
+          },
+          "radii": {
+            "topStart": {
+              "x": 1000000.0,
+              "y": 1000000.0
+            },
+            "topEnd": {
+              "x": 1000000.0,
+              "y": 1000000.0
+            },
+            "bottomEnd": {
+              "x": 1000000.0,
+              "y": 1000000.0
+            },
+            "bottomStart": {
+              "x": 1000000.0,
+              "y": 1000000.0
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 100
+        }
+      },
+      {
+        "path": "/content",
+        "value": {
+          "x": 2000000.0,
+          "y": 1000000.0,
+          "width": 3000000.0,
+          "height": 3000000.0
+        }
+      },
+      {
+        "path": "/sweepOffset",
+        "value": {
+          "x": 10000.0,
+          "y": 10000.0
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "gel is rejected",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "gel"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "Gel"
+  },
+  {
+    "name": "cast bounds must stay rigid",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "cast"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "deformation limit"
+  },
+  {
+    "name": "frost bounds beyond the small limit are rejected",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "frost"
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "deformation limit"
+  },
+  {
+    "name": "frost lower bound just beyond the small limit is rejected",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "frost"
+      },
+      {
+        "path": "/bounds",
+        "value": {
+          "widthScale": {
+            "lower": 0.97,
+            "upper": 1.02
+          },
+          "heightScale": {
+            "lower": 0.98,
+            "upper": 1.02
+          }
+        }
+      },
+      {
+        "path": "/channels/widthScale/target",
+        "value": 1.02
+      },
+      {
+        "path": "/channels/heightScale/target",
+        "value": 0.98
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "deformation limit"
+  },
+  {
+    "name": "frost upper bound just beyond the small limit is rejected",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "frost"
+      },
+      {
+        "path": "/bounds",
+        "value": {
+          "widthScale": {
+            "lower": 0.98,
+            "upper": 1.02
+          },
+          "heightScale": {
+            "lower": 0.98,
+            "upper": 1.03
+          }
+        }
+      },
+      {
+        "path": "/channels/widthScale/target",
+        "value": 1.02
+      },
+      {
+        "path": "/channels/heightScale/target",
+        "value": 0.98
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "deformation limit"
+  },
+  {
+    "name": "elastomer lower bound beyond the tactile limit is rejected",
+    "requestChanges": [
+      {
+        "path": "/bounds/widthScale/lower",
+        "value": 0.93
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "deformation limit"
+  },
+  {
+    "name": "elastomer upper bound beyond the tactile limit is rejected",
+    "requestChanges": [
+      {
+        "path": "/bounds/heightScale/upper",
+        "value": 1.07
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "deformation limit"
+  },
+  {
+    "name": "a domain that excludes rest from above is rejected",
+    "requestChanges": [
+      {
+        "path": "/bounds/widthScale",
+        "value": {
+          "lower": 1.01,
+          "upper": 1.06
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "rest"
+  },
+  {
+    "name": "a domain that excludes rest from below is rejected",
+    "requestChanges": [
+      {
+        "path": "/bounds/heightScale",
+        "value": {
+          "lower": 0.94,
+          "upper": 0.99
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "rest"
+  },
+  {
+    "name": "a target outside its bounds is rejected",
+    "requestChanges": [
+      {
+        "path": "/channels/widthScale/target",
+        "value": 1.0601
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "target"
+  },
+  {
+    "name": "content that fits the deepest silhouette but not another domain corner is rejected",
+    "requestChanges": [
+      {
+        "path": "/content",
+        "value": {
+          "x": 7.6,
+          "y": 10,
+          "width": 36,
+          "height": 20
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "content"
+  },
+  {
+    "name": "content larger than the uniform face is rejected",
+    "requestChanges": [
+      {
+        "path": "/content",
+        "value": {
+          "x": 4,
+          "y": 4,
+          "width": 56,
+          "height": 32
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "content"
+  },
+  {
+    "name": "an outline whose reservation collapses is rejected",
+    "requestChanges": [
+      {
+        "path": "/outline/minimumInset",
+        "value": 25
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "content"
+  },
+  {
+    "name": "reduced motion still validates the dynamics",
+    "requestChanges": [
+      {
+        "path": "/reducedMotion",
+        "value": true
+      },
+      {
+        "path": "/channels/widthScale/dynamics/damping",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "damping"
+  },
+  {
+    "name": "an unsupported version is rejected",
+    "requestChanges": [
+      {
+        "path": "/schemaVersion",
+        "value": "0.2.0"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "version"
+  },
+  {
+    "name": "an unknown family is rejected",
+    "requestChanges": [
+      {
+        "path": "/family",
+        "value": "silicone"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "family"
+  },
+  {
+    "name": "negative time is rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": -0.001
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "time"
+  },
+  {
+    "name": "a zero lower bound is rejected",
+    "requestChanges": [
+      {
+        "path": "/bounds/widthScale/lower",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "bound"
+  },
+  {
+    "name": "a negative target is rejected",
+    "requestChanges": [
+      {
+        "path": "/channels/heightScale/target",
+        "value": -0.5
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "target"
+  },
+  {
+    "name": "a zero threshold is rejected",
+    "requestChanges": [
+      {
+        "path": "/channels/heightScale/dynamics/positionThreshold",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "threshold"
+  },
+  {
+    "name": "a position channel cannot be authored",
+    "requestChanges": [
+      {
+        "path": "/channels",
+        "value": {
+          "widthScale": {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 1600,
+              "damping": 56,
+              "positionThreshold": 0.0001,
+              "velocityThreshold": 0.01
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            },
+            "target": 1.04
+          },
+          "heightScale": {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 1600,
+              "damping": 56,
+              "positionThreshold": 0.0001,
+              "velocityThreshold": 0.01
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            },
+            "target": 0.94
+          },
+          "position": {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 1600,
+              "damping": 56,
+              "positionThreshold": 0.0001,
+              "velocityThreshold": 0.01
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            },
+            "target": 1
+          }
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "position"
+  },
+  {
+    "name": "a content scale cannot be authored",
+    "requestChanges": [
+      {
+        "path": "/content",
+        "value": {
+          "x": 14,
+          "y": 10,
+          "width": 36,
+          "height": 20,
+          "scale": 1.2
+        }
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "scale"
+  },
+  {
+    "name": "a positional content record is rejected",
+    "requestChanges": [
+      {
+        "path": "/content",
+        "value": [
+          14,
+          10,
+          36,
+          20
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "content"
+  },
+  {
+    "name": "positional channels are rejected",
+    "requestChanges": [
+      {
+        "path": "/channels",
+        "value": [
+          {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 1600,
+              "damping": 56,
+              "positionThreshold": 0.0001,
+              "velocityThreshold": 0.01
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            },
+            "target": 1.04
+          },
+          {
+            "dynamics": {
+              "schemaVersion": "0.1.0",
+              "mass": 1,
+              "stiffness": 1600,
+              "damping": 56,
+              "positionThreshold": 0.0001,
+              "velocityThreshold": 0.01
+            },
+            "initial": {
+              "position": 1,
+              "velocity": 0
+            },
+            "target": 0.94
+          }
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "channels"
+  },
+  {
+    "name": "positional bounds are rejected",
+    "requestChanges": [
+      {
+        "path": "/bounds",
+        "value": [
+          [
+            0.94,
+            1.06
+          ],
+          [
+            0.94,
+            1.06
+          ]
+        ]
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "bounds"
+  },
+  {
+    "name": "a string number is rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": "0.03"
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "time"
+  },
+  {
+    "name": "a very large elapsed time settles at the target",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+300
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an elapsed time near the representable limit still settles",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+305
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an elapsed time whose normalized time overflows is rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 1e+307
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an initial displacement that overflows the energy bound is rejected at time zero",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 0
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an initial displacement that overflows the energy bound is rejected after elapsed time",
+    "requestChanges": [
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 0
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an initial velocity whose energy stays representable is accepted",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1,
+            "velocity": 1e+308
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "spring"
+  },
+  {
+    "name": "an initial displacement and velocity that overflow together are rejected",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 1e+308
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "representable"
+  },
+  {
+    "name": "an overflowing initial state is accepted when the policy is immediate",
+    "requestChanges": [
+      {
+        "path": "/time",
+        "value": 0
+      },
+      {
+        "path": "/reducedMotion",
+        "value": true
+      },
+      {
+        "path": "/channels/widthScale",
+        "value": {
+          "dynamics": {
+            "schemaVersion": "0.1.0",
+            "mass": 1,
+            "stiffness": 1600,
+            "damping": 56,
+            "positionThreshold": 0.0001,
+            "velocityThreshold": 0.01
+          },
+          "initial": {
+            "position": 1e+308,
+            "velocity": 1e+308
+          },
+          "target": 1
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "expectedPolicy": "reducedMotion"
+  },
+  {
+    "name": "a collapsed outline is rejected",
+    "requestChanges": [
+      {
+        "path": "/outline/size/width",
+        "value": 0
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "size"
+  },
+  {
+    "name": "a negative corner extent is rejected",
+    "requestChanges": [
+      {
+        "path": "/outline/radii/topEnd/y",
+        "value": -1
+      }
+    ],
+    "requestSchemaValid": false,
+    "errorContains": "radii"
+  },
+  {
+    "name": "an outline that overflows at the upper scale is rejected",
+    "requestChanges": [
+      {
+        "path": "/outline",
+        "value": {
+          "schemaVersion": "0.1.0",
+          "size": {
+            "width": 1.7e+308,
+            "height": 40
+          },
+          "radii": {
+            "topStart": {
+              "x": 0,
+              "y": 0
+            },
+            "topEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomEnd": {
+              "x": 0,
+              "y": 0
+            },
+            "bottomStart": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "layoutDirection": "ltr",
+          "curvature": "circular",
+          "minimumInset": 0
+        }
+      },
+      {
+        "path": "/content",
+        "value": {
+          "x": 8e+307,
+          "y": 10,
+          "width": 1e+300,
+          "height": 20
+        }
+      }
+    ],
+    "requestSchemaValid": true,
+    "errorContains": "finite"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "0.1.0",
+  "limits": {
+    "cast": 0,
+    "frost": 0.02,
+    "elastomer": 0.06
+  }
+}

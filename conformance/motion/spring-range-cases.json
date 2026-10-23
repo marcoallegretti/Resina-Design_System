@@ -1,0 +1,5211 @@
+[
+  {
+    "name": "a 1e308 displacement decays to the target before its energy is bounded",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.0,
+        "stiffness": 1600.0,
+        "damping": 80.0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1e+308,
+        "velocity": 0.0
+      },
+      "target": 0.0,
+      "time": 100.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "a 1e308 displacement far in time settles",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.0,
+        "stiffness": 1600.0,
+        "damping": 80.0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1e+308,
+        "velocity": 0.0
+      },
+      "target": 0.0,
+      "time": 100000.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "a damped 1e307 displacement with 1e153 velocity at 1e200 seconds settles",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.5,
+        "stiffness": 10000.0,
+        "damping": 50.0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1e+307,
+        "velocity": 1e+153
+      },
+      "target": 0.0,
+      "time": 1e+200,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "an undamped 1e307 displacement with 1e153 velocity has no representable solution",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.5,
+        "stiffness": 10000.0,
+        "damping": 0.0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1e+307,
+        "velocity": 1e+153
+      },
+      "target": 0.0,
+      "time": 1e+200,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "solution"
+  },
+  {
+    "name": "a 1e308 displacement at time zero has no representable scaled displacement",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.0,
+        "stiffness": 1600.0,
+        "damping": 80.0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1e+308,
+        "velocity": 0.0
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "solution"
+  },
+  {
+    "name": "a normalized time beyond binary64 is rejected",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.0,
+        "stiffness": 1600.0,
+        "damping": 80.0,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1.0,
+        "velocity": 0.0
+      },
+      "target": 0.0,
+      "time": 1e+307,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "normalized time"
+  },
+  {
+    "name": "extreme mass and stiffness with a representable ratio stay well defined",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1e-300,
+        "stiffness": 1e-300,
+        "damping": 1e-300,
+        "positionThreshold": 1e-06,
+        "velocityThreshold": 1e-06
+      },
+      "initial": {
+        "position": 1.0,
+        "velocity": 0.0
+      },
+      "target": 0.0,
+      "time": 1e+300,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 0",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.3205501219107083,
+        "stiffness": 1304.492351131289,
+        "damping": 0.0,
+        "positionThreshold": 2.7504255869166078e-05,
+        "velocityThreshold": 1.3720241422188624e-08
+      },
+      "initial": {
+        "position": -176.35575250003154,
+        "velocity": -0.07446023727616852
+      },
+      "target": 858.1907659839645,
+      "time": 0.0014891061867386007,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 858.1907659839645,
+      "state": {
+        "position": -171.69152168879725,
+        "velocity": 6259.8332886943945
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 1",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.5782122591761428e-300,
+        "stiffness": 3.649697312061858e-296,
+        "damping": 6.222061917899699e+232,
+        "positionThreshold": 7.710618056688935e-08,
+        "velocityThreshold": 0.0002666633284034006
+      },
+      "initial": {
+        "position": -7.510198128140268e+81,
+        "velocity": 2.8421195684006887e+74
+      },
+      "target": -2.071529482538049e+168,
+      "time": 1.00349137070647e+258,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 2",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.0321629722304163,
+        "stiffness": 12557.540837524884,
+        "damping": 0.0,
+        "positionThreshold": 0.0002146159708690902,
+        "velocityThreshold": 5.679776706539113e-05
+      },
+      "initial": {
+        "position": -5.443900590757999e+234,
+        "velocity": 5.004725595418473e+162
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -5.443900590757999e+234,
+        "velocity": 5.004725595418473e+162
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 3",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1419.1203440988886,
+        "stiffness": 0.014418107151728627,
+        "damping": 0.0,
+        "positionThreshold": 7.609159464653496e-05,
+        "velocityThreshold": 3.9636294770063784e-05
+      },
+      "initial": {
+        "position": -3.824264750184023e-295,
+        "velocity": -1.7591604920284907e+88
+      },
+      "target": 4.871121655966508e-136,
+      "time": 4.413745377565165e-130,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 4.871121655966508e-136,
+      "state": {
+        "position": -7.764486490086012e-42,
+        "velocity": -1.7591604920284907e+88
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 4",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.6459692277123521,
+        "stiffness": 37.70839820110322,
+        "damping": 0.0,
+        "positionThreshold": 7.185965003444049e-05,
+        "velocityThreshold": 7.37964531113037e-08
+      },
+      "initial": {
+        "position": 0.03430559764016954,
+        "velocity": 0.0013339817796595985
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.03430559764016954,
+        "velocity": 0.0013339817796595985
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 5",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.0209817333464796e-292,
+        "stiffness": 3.9417124059594004e-299,
+        "damping": 8.186698747830753e+175,
+        "positionThreshold": 0.0038349557718759053,
+        "velocityThreshold": 9.38699777768267e-08
+      },
+      "initial": {
+        "position": 4.5054474950461245e+18,
+        "velocity": -2.2953119923180812e+106
+      },
+      "target": -8.781932667296577e+190,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 7",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.00016692382028072358,
+        "stiffness": 6219.156764976286,
+        "damping": 0.0,
+        "positionThreshold": 4.720425750384229e-07,
+        "velocityThreshold": 2.4429817150983864e-05
+      },
+      "initial": {
+        "position": -6.484626408185349e+188,
+        "velocity": -3.478052678522385e+175
+      },
+      "target": 0.0,
+      "time": 4.75395117292843e-64,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -6.484626408185349e+188,
+        "velocity": -3.478052678522385e+175
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 8",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 4.238983633383022,
+        "stiffness": 1.284337075169148,
+        "damping": 0.0,
+        "positionThreshold": 1.527307472523285e-05,
+        "velocityThreshold": 1.5644607991263853e-07
+      },
+      "initial": {
+        "position": -1.1825161103026585,
+        "velocity": -0.12123829212950957
+      },
+      "target": 1.3142511187353636,
+      "time": 0.015916418271322515,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1.3142511187353636,
+      "state": {
+        "position": -1.1843499456290336,
+        "velocity": -0.10919339990010836
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 9",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 7.68797753802017e-294,
+        "stiffness": 3.351713393906294e-300,
+        "damping": 3.0880566047641153e-288,
+        "positionThreshold": 2.4061141808825246e-07,
+        "velocityThreshold": 0.0018254731395830096
+      },
+      "initial": {
+        "position": 1.289512386640132e+138,
+        "velocity": 4.995763544572105e+263
+      },
+      "target": -37.399372683520156,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -37.399372683520156,
+      "state": {
+        "position": 1.289512386640132e+138,
+        "velocity": 4.995763544572105e+263
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 11",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 24.035080786083558,
+        "stiffness": 63005.70351634161,
+        "damping": 303.25805995286464,
+        "positionThreshold": 6.28948691761395e-07,
+        "velocityThreshold": 0.0004197777781086001
+      },
+      "initial": {
+        "position": 2.2078508028823447e-17,
+        "velocity": 1.5038745364401483e-43
+      },
+      "target": 1.473489010383064e-237,
+      "time": 2.2578367330198102e-272,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1.473489010383064e-237,
+      "state": {
+        "position": 1.473489010383064e-237,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 12",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.7466670413382577,
+        "stiffness": 2491.3393714097297,
+        "damping": 0.0,
+        "positionThreshold": 6.625335281103344e-07,
+        "velocityThreshold": 4.420995037989015e-07
+      },
+      "initial": {
+        "position": -0.039847060708937204,
+        "velocity": -0.010764067337531737
+      },
+      "target": 0.0,
+      "time": 0.9787802245764031,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -0.0294059709313687,
+        "velocity": -1.0156126147704794
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 13",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.8008706226834454e-297,
+        "stiffness": 1.0881619506149968e-299,
+        "damping": 2.4868194323791636e-73,
+        "positionThreshold": 5.004221631767827e-06,
+        "velocityThreshold": 2.3956503011587595e-07
+      },
+      "initial": {
+        "position": -8.443400858496286e+289,
+        "velocity": 3.66653415755707e+144
+      },
+      "target": 3.3919616202564915e+29,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 3.3919616202564915e+29,
+      "state": {
+        "position": -8.443400858496286e+289,
+        "velocity": 3.66653415755707e+144
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 14",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.040109145206890254,
+        "stiffness": 9609.43513669016,
+        "damping": 1726.393192162367,
+        "positionThreshold": 3.435114201671403e-07,
+        "velocityThreshold": 6.16998616064999e-05
+      },
+      "initial": {
+        "position": 1.0702800166475136e+286,
+        "velocity": -4.319907462821856e+278
+      },
+      "target": 0.0,
+      "time": 4.460002340097283e+211,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 15",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 75.19390586492273,
+        "stiffness": 0.0007625751662318095,
+        "damping": 0.6103689069594285,
+        "positionThreshold": 7.912776573201067e-07,
+        "velocityThreshold": 0.007178227172771038
+      },
+      "initial": {
+        "position": 5.51014126333111e+159,
+        "velocity": 5.4331067728579846e-67
+      },
+      "target": 0.0,
+      "time": 1.822904767544351e-283,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 5.51014126333111e+159,
+        "velocity": 5.4331067728579846e-67
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 16",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.1128707557527013,
+        "stiffness": 1.150797624390009,
+        "damping": 629.0429846908557,
+        "positionThreshold": 1.6660389375621667e-08,
+        "velocityThreshold": 2.236095144080292e-08
+      },
+      "initial": {
+        "position": 530.9305757034017,
+        "velocity": 515.2847863166936
+      },
+      "target": 0.7222895890906516,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.7222895890906516,
+      "state": {
+        "position": 530.9305757034017,
+        "velocity": 515.2847863166936
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 18",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.021010372154545966,
+        "stiffness": 26950.479885608867,
+        "damping": 0.007911529609807441,
+        "positionThreshold": 6.126427717466232e-07,
+        "velocityThreshold": 8.610704233189617e-06
+      },
+      "initial": {
+        "position": -1.1464468521105804e+275,
+        "velocity": 8.023487934039159e+290
+      },
+      "target": 0.0,
+      "time": 3.751583604742044e+130,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 19",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.04262571246659279,
+        "stiffness": 0.0004181654655155732,
+        "damping": 0.0,
+        "positionThreshold": 1.4248134873484338e-08,
+        "velocityThreshold": 0.002320090153590481
+      },
+      "initial": {
+        "position": 83888114092.39447,
+        "velocity": 14102.461993995192
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 83888114092.39447,
+        "velocity": 14102.461993995192
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 20",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.12074284912901999,
+        "stiffness": 7057.0131503497505,
+        "damping": 0.0,
+        "positionThreshold": 1.0294565142121473e-06,
+        "velocityThreshold": 6.371313984499002e-08
+      },
+      "initial": {
+        "position": 10.427992628363683,
+        "velocity": -3.8862266743609255
+      },
+      "target": 0.006203312091902324,
+      "time": 0.04661312209029696,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.006203312091902324,
+      "state": {
+        "position": 2.8365602417375224,
+        "velocity": 2424.8522721553145
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 23",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 21896.618208736934,
+        "stiffness": 0.005702778412124334,
+        "damping": 2303.6511294720535,
+        "positionThreshold": 0.0015357356431528054,
+        "velocityThreshold": 0.0002979338561504077
+      },
+      "initial": {
+        "position": -6.191466022488524e-116,
+        "velocity": -1.6753480510386884e-277
+      },
+      "target": 0.0,
+      "time": 5.148821769408506e+112,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 24",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.5459533634128644,
+        "stiffness": 2668.8181346213473,
+        "damping": 0.0,
+        "positionThreshold": 0.004714611858545128,
+        "velocityThreshold": 0.00018740823754759194
+      },
+      "initial": {
+        "position": -0.08317652563488537,
+        "velocity": -65.86523143929408
+      },
+      "target": 0.13080833206934037,
+      "time": 0.2578796621955835,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.13080833206934037,
+      "state": {
+        "position": 0.6731428726474746,
+        "velocity": -55.89513577234807
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 25",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 7.704774194457489e-294,
+        "stiffness": 2.5290317393645175e-293,
+        "damping": 2.4808079657065348e-104,
+        "positionThreshold": 4.374118883091625e-08,
+        "velocityThreshold": 5.250255482957455e-05
+      },
+      "initial": {
+        "position": 4.4373318934607946e+215,
+        "velocity": 4.1915158516830235e+104
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 4.4373318934607946e+215,
+        "velocity": 4.1915158516830235e+104
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 27",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 23219.159720168693,
+        "stiffness": 6.303808941245995e-05,
+        "damping": 0.0,
+        "positionThreshold": 0.005961637459411584,
+        "velocityThreshold": 2.157564172640598e-08
+      },
+      "initial": {
+        "position": -1.1814447585943347e+108,
+        "velocity": -1.8118611425459346e+111
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -1.1814447585943347e+108,
+        "velocity": -1.8118611425459346e+111
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 28",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 6.372386357791175,
+        "stiffness": 428.3175013375371,
+        "damping": 0.0,
+        "positionThreshold": 5.041837780092634e-08,
+        "velocityThreshold": 0.00023411084599839592
+      },
+      "initial": {
+        "position": 26.515427713497424,
+        "velocity": -0.07597986215398847
+      },
+      "target": 0.0,
+      "time": 0.008493817432894948,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 26.45051962354996,
+        "velocity": -15.201451990582038
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 29",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.6830195779989983e-294,
+        "stiffness": 1.6604864187833651e-293,
+        "damping": 0.0,
+        "positionThreshold": 5.940364535767922e-08,
+        "velocityThreshold": 1.7933052450895873e-08
+      },
+      "initial": {
+        "position": 8.328294836036439e+153,
+        "velocity": -1.1381789599049193e+90
+      },
+      "target": -7.617446681678535e+125,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -7.617446681678535e+125,
+      "state": {
+        "position": 8.328294836036439e+153,
+        "velocity": -1.1381789599049193e+90
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 32",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.10708065250501014,
+        "stiffness": 42.50175729988134,
+        "damping": 0.0,
+        "positionThreshold": 0.0008117569832500914,
+        "velocityThreshold": 3.0986976411069704e-06
+      },
+      "initial": {
+        "position": 0.20723955758815657,
+        "velocity": 0.004021093411137165
+      },
+      "target": 0.001493273908152493,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.001493273908152493,
+      "state": {
+        "position": 0.20723955758815657,
+        "velocity": 0.004021093411137165
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 33",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.550525981675014e-299,
+        "stiffness": 1.940449884967151e-299,
+        "damping": 2.1167296776655386e+215,
+        "positionThreshold": 3.832709786892204e-08,
+        "velocityThreshold": 0.006680532029356797
+      },
+      "initial": {
+        "position": 4.77790344099239e+86,
+        "velocity": 5.34064147826522e+23
+      },
+      "target": 1.1832357642695217,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 34",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 924.5726635343972,
+        "stiffness": 24.91500128221534,
+        "damping": 0.30422994466169784,
+        "positionThreshold": 4.916387590361609e-05,
+        "velocityThreshold": 3.13357088670329e-05
+      },
+      "initial": {
+        "position": 6.077830183511894e+296,
+        "velocity": -3.2171332326148203e+283
+      },
+      "target": 0.0,
+      "time": 4.206675675720617e+135,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 36",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.2454057443969646,
+        "stiffness": 11.112225024958281,
+        "damping": 0.0,
+        "positionThreshold": 1.0339720196140964e-07,
+        "velocityThreshold": 4.3655160011376234e-05
+      },
+      "initial": {
+        "position": -2.72085611354617,
+        "velocity": 0.0525489351313321
+      },
+      "target": 0.029032266348457195,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.029032266348457195,
+      "state": {
+        "position": -2.72085611354617,
+        "velocity": 0.0525489351313321
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 37",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.5307456620810505e-296,
+        "stiffness": 1.954671757372742e-294,
+        "damping": 8.021234617796089e-259,
+        "positionThreshold": 1.833644204940732e-08,
+        "velocityThreshold": 5.9190838089311305e-08
+      },
+      "initial": {
+        "position": 1.0632345806662624e+124,
+        "velocity": 1.466321581066997e+53
+      },
+      "target": -955.2164047047637,
+      "time": 2.789425799238351e+56,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -955.2164047047637,
+      "state": {
+        "position": -955.2164047047637,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 40",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.898555391948,
+        "stiffness": 5926.946038864576,
+        "damping": 0.0,
+        "positionThreshold": 1.2379517778371785e-06,
+        "velocityThreshold": 1.455390030226723e-05
+      },
+      "initial": {
+        "position": -0.025708875291071846,
+        "velocity": -0.8458144946669469
+      },
+      "target": -46.420791206305616,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -46.420791206305616,
+      "state": {
+        "position": -0.025708875291071846,
+        "velocity": -0.8458144946669469
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 41",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3.806383066160484e-300,
+        "stiffness": 4.011903876974775e-294,
+        "damping": 0.0,
+        "positionThreshold": 0.00034610942072436354,
+        "velocityThreshold": 4.0423264502496876e-07
+      },
+      "initial": {
+        "position": 7.03448601806432e+78,
+        "velocity": 3.3649255070572857e+133
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 7.03448601806432e+78,
+        "velocity": 3.3649255070572857e+133
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 43",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.00013742830078873326,
+        "stiffness": 0.8828719998957171,
+        "damping": 69.47258501260184,
+        "positionThreshold": 2.1373204144712353e-06,
+        "velocityThreshold": 2.2660673769583257e-07
+      },
+      "initial": {
+        "position": -9.203910644981873e+57,
+        "velocity": -1.3711296166655e+66
+      },
+      "target": 25.825364325893528,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 25.825364325893528,
+      "state": {
+        "position": -9.203910644981873e+57,
+        "velocity": -1.3711296166655e+66
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 44",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.8534300635392196,
+        "stiffness": 8467.812256282314,
+        "damping": 0.0,
+        "positionThreshold": 3.246207260176302e-07,
+        "velocityThreshold": 2.553460686226954e-06
+      },
+      "initial": {
+        "position": 0.0038307602860383895,
+        "velocity": -0.24685185946949764
+      },
+      "target": -0.012688931587733689,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.012688931587733689,
+      "state": {
+        "position": 0.0038307602860383895,
+        "velocity": -0.24685185946949764
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 45",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.852925289274864e-292,
+        "stiffness": 1.621149520998076e-292,
+        "damping": 5.148386908472034e-44,
+        "positionThreshold": 0.0022594634639674822,
+        "velocityThreshold": 0.0012078150649340767
+      },
+      "initial": {
+        "position": 2.383179025670993e+27,
+        "velocity": -7.782177718042422e+161
+      },
+      "target": 93.98686574294524,
+      "time": 1.3826432443304966e+252,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 93.98686574294524,
+      "state": {
+        "position": 93.98686574294524,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 47",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.00036264888553296296,
+        "stiffness": 0.37480624216848957,
+        "damping": 0.00011352823892968921,
+        "positionThreshold": 0.0006310412392820686,
+        "velocityThreshold": 0.00021396971786705212
+      },
+      "initial": {
+        "position": 2.124103114609487e-139,
+        "velocity": -3.121156772678373e+33
+      },
+      "target": -4.835546945760037e+106,
+      "time": 8.346090963032225e+196,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -4.835546945760037e+106,
+      "state": {
+        "position": -4.835546945760037e+106,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 48",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.11003627992707816,
+        "stiffness": 69.61946725809875,
+        "damping": 0.0,
+        "positionThreshold": 2.2693394945496383e-05,
+        "velocityThreshold": 0.006706243708684247
+      },
+      "initial": {
+        "position": -16.836326703873983,
+        "velocity": -0.00428405632908174
+      },
+      "target": 0.03574677339172439,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.03574677339172439,
+      "state": {
+        "position": -16.836326703873983,
+        "velocity": -0.00428405632908174
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 49",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.3747710479023914e-293,
+        "stiffness": 5.758578553626061e-299,
+        "damping": 1.9366861486968362e-157,
+        "positionThreshold": 0.008846891002511462,
+        "velocityThreshold": 3.33011190216661e-06
+      },
+      "initial": {
+        "position": -2.5642475959571407e+62,
+        "velocity": -5.13037225367487e+90
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -2.5642475959571407e+62,
+        "velocity": -5.13037225367487e+90
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 52",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.7933027150929695,
+        "stiffness": 18.90608377842205,
+        "damping": 0.0,
+        "positionThreshold": 0.0001382459598171139,
+        "velocityThreshold": 0.0033527343265641876
+      },
+      "initial": {
+        "position": -286.06897215951625,
+        "velocity": 0.003924228501928989
+      },
+      "target": 0.04786383173970409,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.04786383173970409,
+      "state": {
+        "position": -286.06897215951625,
+        "velocity": 0.003924228501928989
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 53",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 7.508686305834067e-300,
+        "stiffness": 2.1659682820149678e-299,
+        "damping": 1.3873254415204147e+105,
+        "positionThreshold": 0.00043076332047824217,
+        "velocityThreshold": 2.9836889122326925e-07
+      },
+      "initial": {
+        "position": 4.738088250044793e+113,
+        "velocity": 2.268849094786039e+19
+      },
+      "target": 0.002189024863886101,
+      "time": 3.737284716520293e+301,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 55",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 4.401139744313956e-05,
+        "stiffness": 7397.442166282332,
+        "damping": 6433.169049471313,
+        "positionThreshold": 0.0008337124751211527,
+        "velocityThreshold": 4.768519304155646e-05
+      },
+      "initial": {
+        "position": -3.2474585723689186e-225,
+        "velocity": -7.354488927538633e+259
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -3.2474585723689186e-225,
+        "velocity": -7.354488927538633e+259
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 56",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.6050025511045454,
+        "stiffness": 66.08342890056863,
+        "damping": 337.7187509933792,
+        "positionThreshold": 0.00022357527117305642,
+        "velocityThreshold": 0.00013512878263917172
+      },
+      "initial": {
+        "position": -11.563765004458409,
+        "velocity": -34.46957205615658
+      },
+      "target": 0.0,
+      "time": 0.022930832293309247,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -11.780257259364292,
+        "velocity": 0.42075688050642107
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 58",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.013604521839259549,
+        "stiffness": 0.12169100788459047,
+        "damping": 0.0,
+        "positionThreshold": 5.054931306458298e-06,
+        "velocityThreshold": 0.00022156428693556084
+      },
+      "initial": {
+        "position": -1.381649093259434e+288,
+        "velocity": -1.98685843963997e+283
+      },
+      "target": -9.24617080193351e+270,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -9.24617080193351e+270,
+      "state": {
+        "position": -1.381649093259434e+288,
+        "velocity": -1.98685843963997e+283
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 59",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 99708.66803566337,
+        "stiffness": 23418.569328773166,
+        "damping": 0.0,
+        "positionThreshold": 1.3948581421683831e-06,
+        "velocityThreshold": 6.279505894607909e-07
+      },
+      "initial": {
+        "position": -1.8995064182985109e-134,
+        "velocity": -5.779289959402402e-22
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 60",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.1856476407165304,
+        "stiffness": 4.953350105738759,
+        "damping": 0.0,
+        "positionThreshold": 0.001189180871291281,
+        "velocityThreshold": 0.0001393734087177135
+      },
+      "initial": {
+        "position": 687.8554727003271,
+        "velocity": -10.198821959829546
+      },
+      "target": 0.0,
+      "time": 0.0028992228010403073,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 687.8138268427147,
+        "velocity": -18.53007443776607
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 61",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3.369622269726457e-299,
+        "stiffness": 1.2330132605891822e-296,
+        "damping": 7.431508024474152e+78,
+        "positionThreshold": 5.366902622501837e-07,
+        "velocityThreshold": 2.3995111984871673e-05
+      },
+      "initial": {
+        "position": 2.341103531227276e+140,
+        "velocity": 4.535168773604994e+51
+      },
+      "target": 0.0,
+      "time": 5.3490409077602977e+303,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 62",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 49.82471143408216,
+        "stiffness": 99.12629514897394,
+        "damping": 25.785013812726998,
+        "positionThreshold": 0.004882431703372675,
+        "velocityThreshold": 0.008563789163894145
+      },
+      "initial": {
+        "position": 8.88798884881611e+203,
+        "velocity": 6.351979390899519e+242
+      },
+      "target": 0.0,
+      "time": 4.0326388588028887e+294,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 63",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.007119725336035117,
+        "stiffness": 3.515335547042911e-05,
+        "damping": 0.0,
+        "positionThreshold": 0.0003840921804559743,
+        "velocityThreshold": 2.4612973008049228e-05
+      },
+      "initial": {
+        "position": 1.9363209082512198e+272,
+        "velocity": -2.685713429613415e+145
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 1.9363209082512198e+272,
+        "velocity": -2.685713429613415e+145
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 64",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.9296621413163517,
+        "stiffness": 16.40515718261192,
+        "damping": 0.0,
+        "positionThreshold": 6.33925848305352e-08,
+        "velocityThreshold": 0.0033380414984541884
+      },
+      "initial": {
+        "position": 0.002928923764212154,
+        "velocity": 249.5081801975308
+      },
+      "target": 0.0,
+      "time": 0.1553721280844804,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 37.45676537980847,
+        "velocity": 224.3357995135303
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 65",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.6810485196825842e-294,
+        "stiffness": 9.929954824707427e-300,
+        "damping": 0.0,
+        "positionThreshold": 0.006380929417107657,
+        "velocityThreshold": 9.82900342621393e-07
+      },
+      "initial": {
+        "position": -3.202735871323341e+22,
+        "velocity": 1.946143555689174e+147
+      },
+      "target": 313.316955458646,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 313.316955458646,
+      "state": {
+        "position": -3.202735871323341e+22,
+        "velocity": 1.946143555689174e+147
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 68",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.34943907470746205,
+        "stiffness": 6.867507120022633,
+        "damping": 61.83947018999358,
+        "positionThreshold": 1.986734825128497e-08,
+        "velocityThreshold": 9.398038610590571e-07
+      },
+      "initial": {
+        "position": 297.84086355001807,
+        "velocity": 613.5770741588863
+      },
+      "target": -0.0016168867503904816,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.0016168867503904816,
+      "state": {
+        "position": 297.84086355001807,
+        "velocity": 613.5770741588863
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 69",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 9.960305488557778e-299,
+        "stiffness": 3.5088101191255624e-291,
+        "damping": 0.0,
+        "positionThreshold": 0.00010102671859900707,
+        "velocityThreshold": 8.212580730816288e-06
+      },
+      "initial": {
+        "position": 9.058740099637497e+113,
+        "velocity": -2.22317360580779e+258
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 9.058740099637497e+113,
+        "velocity": -2.22317360580779e+258
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 70",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.009888935826137228,
+        "stiffness": 228.18721756732745,
+        "damping": 0.35059359898409226,
+        "positionThreshold": 0.00014598144735214385,
+        "velocityThreshold": 3.3771807445871637e-06
+      },
+      "initial": {
+        "position": 5.30554152257414e+243,
+        "velocity": -6.980005149201706e+228
+      },
+      "target": 0.0,
+      "time": 4.47980280369047e+298,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 72",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.17455747199077873,
+        "stiffness": 496.04823806748084,
+        "damping": 0.0,
+        "positionThreshold": 9.18023738411067e-06,
+        "velocityThreshold": 0.00045304825583969595
+      },
+      "initial": {
+        "position": -0.03191572581691055,
+        "velocity": 0.9713287175387487
+      },
+      "target": -512.1191034264389,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -512.1191034264389,
+      "state": {
+        "position": -0.03191572581691055,
+        "velocity": 0.9713287175387487
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 75",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.13776944198059712,
+        "stiffness": 6664.202073758523,
+        "damping": 0.0,
+        "positionThreshold": 5.9810774231065515e-05,
+        "velocityThreshold": 1.173908758076649e-06
+      },
+      "initial": {
+        "position": -2.6681733770423383e-81,
+        "velocity": -9.466371148113566e+288
+      },
+      "target": 0.0,
+      "time": 1.917910059319691e-139,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -1.8155648450220702e+150,
+        "velocity": -9.466371148113566e+288
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 76",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.7924117684580905,
+        "stiffness": 16.726886947562,
+        "damping": 0.0,
+        "positionThreshold": 0.0009823437995933942,
+        "velocityThreshold": 1.171109847763132e-08
+      },
+      "initial": {
+        "position": -105.1883115255666,
+        "velocity": -4.864273860544584
+      },
+      "target": 29.527814966464092,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 29.527814966464092,
+      "state": {
+        "position": -105.1883115255666,
+        "velocity": -4.864273860544584
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 77",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 8.238381291033743e-296,
+        "stiffness": 3.028014921007845e-298,
+        "damping": 3.24822874400247e+83,
+        "positionThreshold": 0.001758815246857266,
+        "velocityThreshold": 5.899738987084736e-08
+      },
+      "initial": {
+        "position": 1.7367322208429505e+65,
+        "velocity": 3.6168523205391586e+60
+      },
+      "target": -4.523932675785033e+199,
+      "time": 8.574500008349786e+39,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 80",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 8.139706132631826,
+        "stiffness": 657.4161422160648,
+        "damping": 3.2208362171364846,
+        "positionThreshold": 0.00039740260297476386,
+        "velocityThreshold": 2.3523988450171067e-08
+      },
+      "initial": {
+        "position": -0.03540527663906872,
+        "velocity": 669.0994591888644
+      },
+      "target": 0.0,
+      "time": 2.8718786956123172,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 26.205069126288038,
+        "velocity": 291.90204054714604
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 81",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.2688444484691437e-297,
+        "stiffness": 5.561875959511132e-300,
+        "damping": 1.4420524321008048e+91,
+        "positionThreshold": 2.367617293488686e-06,
+        "velocityThreshold": 2.3286463700630335e-07
+      },
+      "initial": {
+        "position": -4.745528542493572e+229,
+        "velocity": -1.451661355427294e+298
+      },
+      "target": -247.16606578257102,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 82",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.2513919749299285,
+        "stiffness": 0.042265328282020384,
+        "damping": 0.006268192204537042,
+        "positionThreshold": 0.0003466167071033107,
+        "velocityThreshold": 6.091539807667017e-05
+      },
+      "initial": {
+        "position": 3.0512881431735897e+230,
+        "velocity": 3.286790923643627e+174
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 3.0512881431735897e+230,
+        "velocity": 3.286790923643627e+174
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 84",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.2549377347464947,
+        "stiffness": 8.280106386108237,
+        "damping": 0.0,
+        "positionThreshold": 0.0015336462588002172,
+        "velocityThreshold": 0.0006691727373916386
+      },
+      "initial": {
+        "position": 0.0010255608474434904,
+        "velocity": 0.24226186564371543
+      },
+      "target": -0.06510868700181577,
+      "time": 0.007298113855555457,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.06510868700181577,
+      "state": {
+        "position": 0.002735910964094148,
+        "velocity": 0.22638074010175624
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 87",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.3783745366914157,
+        "stiffness": 0.0013641082792011222,
+        "damping": 57.55544082628185,
+        "positionThreshold": 4.667918446091461e-07,
+        "velocityThreshold": 4.024162356409988e-05
+      },
+      "initial": {
+        "position": -5.783754856277379e-137,
+        "velocity": 9.32827728712784e-40
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 88",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.049989357565128,
+        "stiffness": 7.970429344285402,
+        "damping": 0.0,
+        "positionThreshold": 3.8970752355260036e-05,
+        "velocityThreshold": 0.0005119926158672425
+      },
+      "initial": {
+        "position": -0.8651133885822657,
+        "velocity": 159.69813878637368
+      },
+      "target": -12.188369783247422,
+      "time": 0.009950248816862645,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -12.188369783247422,
+      "state": {
+        "position": 0.7216415393806761,
+        "velocity": 159.22936861701598
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 89",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.0486359938158635e-299,
+        "stiffness": 5.84519599037967e-296,
+        "damping": 0.0,
+        "positionThreshold": 4.519065708066724e-08,
+        "velocityThreshold": 1.0875462238687947e-06
+      },
+      "initial": {
+        "position": -2.20624096181083e+204,
+        "velocity": 4.281471132801131e+29
+      },
+      "target": -551.6073753197066,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -551.6073753197066,
+      "state": {
+        "position": -2.20624096181083e+204,
+        "velocity": 4.281471132801131e+29
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 90",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.008360320187958677,
+        "stiffness": 75549.25207906854,
+        "damping": 0.0,
+        "positionThreshold": 0.006865066381317818,
+        "velocityThreshold": 0.0015657820357420614
+      },
+      "initial": {
+        "position": -7.458333980155672e+207,
+        "velocity": -2.3745970966646067e+113
+      },
+      "target": 27.55846576626161,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 27.55846576626161,
+      "state": {
+        "position": -7.458333980155672e+207,
+        "velocity": -2.3745970966646067e+113
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 91",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 17427.127140199147,
+        "stiffness": 1.7751429508424723e-05,
+        "damping": 0.05916797542583829,
+        "positionThreshold": 0.0036453427098747807,
+        "velocityThreshold": 1.3545607527312214e-06
+      },
+      "initial": {
+        "position": 3.660201393467262e-195,
+        "velocity": -1.417182240028391e-10
+      },
+      "target": -3.1259096834083347e-50,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -3.1259096834083347e-50,
+      "state": {
+        "position": -3.1259096834083347e-50,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 92",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.42284206410211556,
+        "stiffness": 6.450562888196744,
+        "damping": 0.0,
+        "positionThreshold": 7.388400916321803e-08,
+        "velocityThreshold": 0.0008310662426010651
+      },
+      "initial": {
+        "position": 10.69281432855321,
+        "velocity": -4.925800609787302
+      },
+      "target": 55.861273926782474,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 55.861273926782474,
+      "state": {
+        "position": 10.69281432855321,
+        "velocity": -4.925800609787302
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 93",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 6.638186076523703e-291,
+        "stiffness": 1.9155136647984993e-300,
+        "damping": 0.0,
+        "positionThreshold": 5.023361220397293e-08,
+        "velocityThreshold": 0.004070614561190243
+      },
+      "initial": {
+        "position": 1.5086127621069197e+146,
+        "velocity": 1.403459790238309e+78
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 1.5086127621069197e+146,
+        "velocity": 1.403459790238309e+78
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 94",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.027582628468930948,
+        "stiffness": 27.91468593716662,
+        "damping": 11808.033950662511,
+        "positionThreshold": 2.3664060393209236e-08,
+        "velocityThreshold": 5.209437692312423e-05
+      },
+      "initial": {
+        "position": 5.676834778117566e+307,
+        "velocity": -1.671274599114667e+237
+      },
+      "target": 0.0,
+      "time": 1.5804865112225873e+102,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 96",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 8.855046163815516,
+        "stiffness": 4.909438490560494,
+        "damping": 72.14698883193493,
+        "positionThreshold": 2.501499779914777e-05,
+        "velocityThreshold": 0.0012129017817873202
+      },
+      "initial": {
+        "position": 0.015810331723924608,
+        "velocity": 248.19802207453162
+      },
+      "target": 1.253020870466177,
+      "time": 5.110043950066123,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1.253020870466177,
+      "state": {
+        "position": 22.1940946967485,
+        "velocity": -1.437096913264259
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 97",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 4.233859287862751e-299,
+        "stiffness": 1.340714815296396e-296,
+        "damping": 4.424560765459409e-06,
+        "positionThreshold": 0.004928000360746533,
+        "velocityThreshold": 3.358960048727827e-08
+      },
+      "initial": {
+        "position": 6.610210259531868e+233,
+        "velocity": -3.457624175642999e+85
+      },
+      "target": 319.92072516819957,
+      "time": 5.872783278470719e+263,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 319.92072516819957,
+      "state": {
+        "position": 6.610210259531868e+233,
+        "velocity": -2.0030026248850515e-57
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 98",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.85269800286153,
+        "stiffness": 2.0847990173978954,
+        "damping": 0.22256756993523327,
+        "positionThreshold": 5.852144809808191e-08,
+        "velocityThreshold": 3.4109386244165193e-06
+      },
+      "initial": {
+        "position": 1.7793167333882669e+261,
+        "velocity": -4.2729824514317047e+282
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 1.7793167333882669e+261,
+        "velocity": -4.2729824514317047e+282
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 100",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 7.082934768320675,
+        "stiffness": 186.70394549648645,
+        "damping": 2.622655342437863,
+        "positionThreshold": 6.353092358699353e-08,
+        "velocityThreshold": 1.8520123321465464e-08
+      },
+      "initial": {
+        "position": -0.062229029306744225,
+        "velocity": -0.3420778147916311
+      },
+      "target": 0.24259591872796724,
+      "time": 0.0313959350912756,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.24259591872796724,
+      "state": {
+        "position": -0.06892423289711902,
+        "velocity": -0.08400007912041552
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 102",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.04376939640671367,
+        "stiffness": 12813.700508312168,
+        "damping": 0.0,
+        "positionThreshold": 1.592154295918162e-08,
+        "velocityThreshold": 2.0235839215249662e-08
+      },
+      "initial": {
+        "position": -4.365678412544587e+290,
+        "velocity": 2.668994478482235e+133
+      },
+      "target": 0.0010262413550173742,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0010262413550173742,
+      "state": {
+        "position": -4.365678412544587e+290,
+        "velocity": 2.668994478482235e+133
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 103",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.051035401776213664,
+        "stiffness": 0.00020184099650652926,
+        "damping": 0.0,
+        "positionThreshold": 1.1924833723336122e-07,
+        "velocityThreshold": 0.0008937968608513994
+      },
+      "initial": {
+        "position": -5.245440764722643e+274,
+        "velocity": -1.45407773170235e-79
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -5.245440764722643e+274,
+        "velocity": -1.45407773170235e-79
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 104",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.19625303764579416,
+        "stiffness": 875.5473576432357,
+        "damping": 0.2691179959933196,
+        "positionThreshold": 0.00017344110466717847,
+        "velocityThreshold": 6.593939862358314e-06
+      },
+      "initial": {
+        "position": -35.93046635912576,
+        "velocity": 3.3780803107667583
+      },
+      "target": 0.0,
+      "time": 1.4964467708441611,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -10.68186523751965,
+        "velocity": -473.2233911666713
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 108",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.3314892890991696,
+        "stiffness": 8390.438623690965,
+        "damping": 0.0,
+        "positionThreshold": 0.00639500735944864,
+        "velocityThreshold": 3.1330148045979097e-08
+      },
+      "initial": {
+        "position": -657.0971787972293,
+        "velocity": 0.01845483690153171
+      },
+      "target": 0.0,
+      "time": 7.088575601084962,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 655.3901235086826,
+        "velocity": 7530.588751261776
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 110",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.18579598451473914,
+        "stiffness": 23287.782471015245,
+        "damping": 0.06448874297543994,
+        "positionThreshold": 5.7816700593940685e-06,
+        "velocityThreshold": 3.812207665693025e-06
+      },
+      "initial": {
+        "position": -7.0376723569518644e+249,
+        "velocity": 2.707918415645648e+256
+      },
+      "target": 0.08750847631110238,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.08750847631110238,
+      "state": {
+        "position": -7.0376723569518644e+249,
+        "velocity": 2.707918415645648e+256
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 112",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.27150084986021583,
+        "stiffness": 15.481222471743072,
+        "damping": 86.20044197566612,
+        "positionThreshold": 7.058640639403656e-08,
+        "velocityThreshold": 6.988147635573702e-06
+      },
+      "initial": {
+        "position": 0.02130790259163006,
+        "velocity": -0.012477858244099537
+      },
+      "target": -361.1884478397799,
+      "time": 0.03959068320728042,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -361.1884478397799,
+      "state": {
+        "position": -2.336162186998644,
+        "velocity": -64.48457160435949
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 113",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.0147987587601843e-293,
+        "stiffness": 6.930315671272461e-299,
+        "damping": 8.767280573477004e+112,
+        "positionThreshold": 2.6841938242078478e-05,
+        "velocityThreshold": 3.944357743297158e-08
+      },
+      "initial": {
+        "position": -1.9928219612990046e+152,
+        "velocity": -1.5975710477944453e+36
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 114",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.5913791114343068,
+        "stiffness": 0.5193983413063691,
+        "damping": 2632.5953516622744,
+        "positionThreshold": 1.4813194298010266e-07,
+        "velocityThreshold": 0.00012483690725376102
+      },
+      "initial": {
+        "position": -3.8493292081278216e+266,
+        "velocity": 1.253435029257009e+180
+      },
+      "target": -0.0509650562467742,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.0509650562467742,
+      "state": {
+        "position": -3.8493292081278216e+266,
+        "velocity": 1.253435029257009e+180
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 115",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.5750444191527121,
+        "stiffness": 0.08472824740565253,
+        "damping": 50958.62342662416,
+        "positionThreshold": 0.0001370843686927913,
+        "velocityThreshold": 1.5848589941479834e-05
+      },
+      "initial": {
+        "position": 4.3124966462246584e-166,
+        "velocity": 3.655066019661054e-127
+      },
+      "target": 0.0,
+      "time": 3.4628552848833977e+120,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 116",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.12552691841742483,
+        "stiffness": 8.948560854249592,
+        "damping": 0.0,
+        "positionThreshold": 6.883625860748229e-05,
+        "velocityThreshold": 1.8242885809930976e-05
+      },
+      "initial": {
+        "position": -0.2744770556615802,
+        "velocity": 727.9549174924762
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -0.2744770556615802,
+        "velocity": 727.9549174924762
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 117",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.6223971627540405e-297,
+        "stiffness": 7.410564714415802e-293,
+        "damping": 0.0,
+        "positionThreshold": 3.686276503782138e-05,
+        "velocityThreshold": 3.046867925135295e-07
+      },
+      "initial": {
+        "position": 79.69948542580778,
+        "velocity": 2.138453875975509e+57
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 79.69948542580778,
+        "velocity": 2.138453875975509e+57
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 118",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 903.4954537064293,
+        "stiffness": 26906.892015595306,
+        "damping": 32.86515600367295,
+        "positionThreshold": 8.216917752321593e-07,
+        "velocityThreshold": 8.944641104941258e-05
+      },
+      "initial": {
+        "position": 4.296704832150566e+249,
+        "velocity": -5.941521826733243e+269
+      },
+      "target": -2.349322356767736e+223,
+      "time": 1.3219021062652714e+213,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -2.349322356767736e+223,
+      "state": {
+        "position": -2.349322356767736e+223,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 120",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 7.505670139768292,
+        "stiffness": 192.92693256597232,
+        "damping": 0.0,
+        "positionThreshold": 0.00013835604692887484,
+        "velocityThreshold": 0.00014532343144512015
+      },
+      "initial": {
+        "position": -0.0322665719598778,
+        "velocity": -16.31583987056199
+      },
+      "target": 0.0,
+      "time": 0.02234604341622838,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -0.3958747408314994,
+        "velocity": -16.192748945412877
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 121",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3.371487979277103e-291,
+        "stiffness": 1.1653546883437939e-298,
+        "damping": 0.0,
+        "positionThreshold": 7.992799097497451e-08,
+        "velocityThreshold": 1.790880220488829e-07
+      },
+      "initial": {
+        "position": 3.7676461633947375e+275,
+        "velocity": 4.266157409486094e+61
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 3.7676461633947375e+275,
+        "velocity": 4.266157409486094e+61
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 122",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.5111224645643961,
+        "stiffness": 0.0015301427310678347,
+        "damping": 0.03219408296045276,
+        "positionThreshold": 1.9652971069188267e-07,
+        "velocityThreshold": 0.00020814698027692827
+      },
+      "initial": {
+        "position": 2.872759568741483e+300,
+        "velocity": 1.0328629430496447e+289
+      },
+      "target": -5.676061785784769,
+      "time": 2.5495108732749084e+184,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -5.676061785784769,
+      "state": {
+        "position": -5.676061785784769,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 123",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 24094.25292492918,
+        "stiffness": 98450.81199611991,
+        "damping": 0.005416214792520331,
+        "positionThreshold": 0.004327704863687313,
+        "velocityThreshold": 7.985306788301889e-08
+      },
+      "initial": {
+        "position": -1.195802891049216e+103,
+        "velocity": -6.979108515258387
+      },
+      "target": -0.012692238923136676,
+      "time": 1.5862773948443894e+168,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.012692238923136676,
+      "state": {
+        "position": -0.012692238923136676,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 124",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.10994569707207558,
+        "stiffness": 7538.471896872351,
+        "damping": 0.0,
+        "positionThreshold": 1.9824160652516484e-06,
+        "velocityThreshold": 5.6940922793467664e-08
+      },
+      "initial": {
+        "position": 0.08401297263658555,
+        "velocity": 0.043987541793576196
+      },
+      "target": -0.3530533818561635,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.3530533818561635,
+      "state": {
+        "position": 0.08401297263658555,
+        "velocity": 0.043987541793576196
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 125",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.0676919232791025e-297,
+        "stiffness": 4.02006752666797e-295,
+        "damping": 7.583084155148763e-263,
+        "positionThreshold": 9.368817176845343e-05,
+        "velocityThreshold": 1.3044856442968321e-08
+      },
+      "initial": {
+        "position": -4.4336607797747127e+192,
+        "velocity": 1.1715580080430114e+247
+      },
+      "target": 0.0,
+      "time": 6.0652496231817466e+271,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 127",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.619307735589184,
+        "stiffness": 3.68983058919866e-05,
+        "damping": 137.45734022464154,
+        "positionThreshold": 0.0033595340557550715,
+        "velocityThreshold": 9.565347971106947e-05
+      },
+      "initial": {
+        "position": 2.263732666744392e+47,
+        "velocity": 6.625002078036802e-114
+      },
+      "target": -9.590454637939077e-155,
+      "time": 2.2883040884615746e-159,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -9.590454637939077e-155,
+      "state": {
+        "position": 2.263732666744392e+47,
+        "velocity": 6.621600640618374e-114
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 128",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.24872983110995855,
+        "stiffness": 2106.565936834855,
+        "damping": 0.0,
+        "positionThreshold": 2.124956357135365e-07,
+        "velocityThreshold": 0.0032413066625441977
+      },
+      "initial": {
+        "position": 804.1159344236668,
+        "velocity": 9.834407874261808
+      },
+      "target": 81.58191379666462,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 81.58191379666462,
+      "state": {
+        "position": 804.1159344236668,
+        "velocity": 9.834407874261808
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 129",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.3579352656254647e-298,
+        "stiffness": 2.4974832846016466e-293,
+        "damping": 3.907209714059157e+44,
+        "positionThreshold": 4.312523158163246e-05,
+        "velocityThreshold": 1.3364863989337029e-05
+      },
+      "initial": {
+        "position": 2.735307435744511e+291,
+        "velocity": -5.231004221399175e+95
+      },
+      "target": -745.4667157775592,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 130",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.009828969220231935,
+        "stiffness": 1.0172931130169476,
+        "damping": 30794.189457419583,
+        "positionThreshold": 5.0380151819592306e-08,
+        "velocityThreshold": 0.0028858021983946647
+      },
+      "initial": {
+        "position": -6.912716986860728e+214,
+        "velocity": -3.5421394882943167e+213
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -6.912716986860728e+214,
+        "velocity": -3.5421394882943167e+213
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 131",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5662.590086472847,
+        "stiffness": 38.666734478543816,
+        "damping": 0.22284284608230912,
+        "positionThreshold": 9.361846837188229e-05,
+        "velocityThreshold": 1.4115078151618371e-06
+      },
+      "initial": {
+        "position": -1.6852384393701612e-150,
+        "velocity": -3.4939568465919014e+37
+      },
+      "target": 0.0,
+      "time": 7.185544103961464e-254,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -1.6852384393701612e-150,
+        "velocity": -3.4939568465919014e+37
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 132",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.6161472634865838,
+        "stiffness": 16.748895106368163,
+        "damping": 0.0,
+        "positionThreshold": 2.719461240699759e-07,
+        "velocityThreshold": 0.00013262524008889566
+      },
+      "initial": {
+        "position": 0.0013947564349962253,
+        "velocity": -0.019801789379645322
+      },
+      "target": 37.96954710943179,
+      "time": 2.5401143209993777,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 37.96954710943179,
+      "state": {
+        "position": 8.37670407285279,
+        "velocity": 124.0221547076774
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 133",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.037776252904413e-296,
+        "stiffness": 1.2485171605815835e-298,
+        "damping": 8.007559012994177e+123,
+        "positionThreshold": 2.5331066940792074e-05,
+        "velocityThreshold": 1.984662708301793e-06
+      },
+      "initial": {
+        "position": -2.978624340440561e+127,
+        "velocity": 1.4844465156095687e+42
+      },
+      "target": 0.0,
+      "time": 1.5656102366705793e+252,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 134",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.04577381934189912,
+        "stiffness": 649.960277447627,
+        "damping": 2318.21553909839,
+        "positionThreshold": 8.699996222254192e-06,
+        "velocityThreshold": 4.076337358804955e-06
+      },
+      "initial": {
+        "position": 7.031203903325529e+301,
+        "velocity": -2.051413439097192e+291
+      },
+      "target": -1.6212404496901635e+297,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -1.6212404496901635e+297,
+      "state": {
+        "position": 7.031203903325529e+301,
+        "velocity": -2.051413439097192e+291
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 135",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3.287012943222013e-05,
+        "stiffness": 184.4445837305625,
+        "damping": 0.0,
+        "positionThreshold": 0.0003167595860422681,
+        "velocityThreshold": 8.098191557386294e-05
+      },
+      "initial": {
+        "position": 3.530511623869881e-42,
+        "velocity": 1.8769720455346844e+221
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 3.530511623869881e-42,
+        "velocity": 1.8769720455346844e+221
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 136",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.2025387297316306,
+        "stiffness": 1.4889250314213462,
+        "damping": 0.0,
+        "positionThreshold": 0.001377848144722148,
+        "velocityThreshold": 3.0021972462870474e-06
+      },
+      "initial": {
+        "position": 3.4516650272267517,
+        "velocity": -0.016310703846296227
+      },
+      "target": -14.595050818578091,
+      "time": 0.15672386899943092,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -14.595050818578091,
+      "state": {
+        "position": 3.1753986769124642,
+        "velocity": -3.500267178262862
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 137",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3.121897940858394e-293,
+        "stiffness": 7.057641856357102e-297,
+        "damping": 7.350279340957099e+143,
+        "positionThreshold": 2.2079143218516028e-07,
+        "velocityThreshold": 0.00014364587773081628
+      },
+      "initial": {
+        "position": 2.2246628654898787e+103,
+        "velocity": 2.3608838167990887e+249
+      },
+      "target": 1.7686386872164352,
+      "time": 1.8061998515616877e+107,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 140",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.3004338708832428,
+        "stiffness": 495.80607935964156,
+        "damping": 6.782159310308305,
+        "positionThreshold": 5.168994681764129e-05,
+        "velocityThreshold": 1.8298848165190834e-06
+      },
+      "initial": {
+        "position": 0.0020907407388013736,
+        "velocity": -0.04269416031395468
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0020907407388013736,
+        "velocity": -0.04269416031395468
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 141",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.5693055590026063e-296,
+        "stiffness": 9.490778564084604e-292,
+        "damping": 2.657119424882639e-240,
+        "positionThreshold": 0.00013952253570805308,
+        "velocityThreshold": 1.3327565715701929e-05
+      },
+      "initial": {
+        "position": -3.1908655830218277e+151,
+        "velocity": 8.203402793211893e+140
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -3.1908655830218277e+151,
+        "velocity": 8.203402793211893e+140
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 144",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.6894665864995899,
+        "stiffness": 3.452971673959641,
+        "damping": 0.0,
+        "positionThreshold": 0.0002547738891472703,
+        "velocityThreshold": 0.0004071442575259483
+      },
+      "initial": {
+        "position": 0.016529599993444204,
+        "velocity": 0.8576601897448359
+      },
+      "target": 5.103875644370883,
+      "time": 0.004122246863049674,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 5.103875644370883,
+      "state": {
+        "position": 0.020281510995929394,
+        "velocity": 0.9626501985820607
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 145",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 9.050005803256821e-300,
+        "stiffness": 2.8355693746434284e-292,
+        "damping": 0.0,
+        "positionThreshold": 0.0005631917978433809,
+        "velocityThreshold": 2.4081604671663647e-05
+      },
+      "initial": {
+        "position": -3.945164627580477e+71,
+        "velocity": -4.166539622784595e+68
+      },
+      "target": -0.14050838382213623,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.14050838382213623,
+      "state": {
+        "position": -3.945164627580477e+71,
+        "velocity": -4.166539622784595e+68
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 147",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 951.4310739627939,
+        "stiffness": 1427.5043992116102,
+        "damping": 0.0,
+        "positionThreshold": 1.0880387665274597e-06,
+        "velocityThreshold": 2.419343229122852e-07
+      },
+      "initial": {
+        "position": 4.3780139157820135e+286,
+        "velocity": -6.488945555900391e-299
+      },
+      "target": -0.13062487681551524,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.13062487681551524,
+      "state": {
+        "position": 4.3780139157820135e+286,
+        "velocity": -6.488945555900391e-299
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 148",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.941187514916559,
+        "stiffness": 45.32034895041128,
+        "damping": 21.52192979749453,
+        "positionThreshold": 3.467051336914281e-07,
+        "velocityThreshold": 1.2431098353741186e-06
+      },
+      "initial": {
+        "position": -14.283648893981308,
+        "velocity": -275.45146181929397
+      },
+      "target": -0.015531286284914058,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.015531286284914058,
+      "state": {
+        "position": -14.283648893981308,
+        "velocity": -275.45146181929397
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 150",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.302342448284317,
+        "stiffness": 4463.978754812296,
+        "damping": 1971.3623795084877,
+        "positionThreshold": 1.1131965951430638e-07,
+        "velocityThreshold": 3.893743682478628e-07
+      },
+      "initial": {
+        "position": 2.764590457854459e+304,
+        "velocity": -1.6602913807371488e+201
+      },
+      "target": -3.3468451571400995e+205,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -3.3468451571400995e+205,
+      "state": {
+        "position": 2.764590457854459e+304,
+        "velocity": -1.6602913807371488e+201
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 152",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.3881442843861952,
+        "stiffness": 3792.2228847794895,
+        "damping": 0.0,
+        "positionThreshold": 0.00014726369350316496,
+        "velocityThreshold": 9.632678117573811e-08
+      },
+      "initial": {
+        "position": -0.007949747165185891,
+        "velocity": 0.07411777699427133
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -0.007949747165185891,
+        "velocity": 0.07411777699427133
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 155",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 6.296112297954931,
+        "stiffness": 1915.624393681131,
+        "damping": 0.0,
+        "positionThreshold": 4.995992962988584e-05,
+        "velocityThreshold": 1.9249318657952733e-07
+      },
+      "initial": {
+        "position": -661.643645638397,
+        "velocity": -5.5349441031917723e-250
+      },
+      "target": 9.287498417701903e-68,
+      "time": 7.930101326632513e-130,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 9.287498417701903e-68,
+      "state": {
+        "position": -661.643645638397,
+        "velocity": 1.5963965320848332e-124
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 156",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 6.565590277876615,
+        "stiffness": 8.522479270350184,
+        "damping": 71.43591560053503,
+        "positionThreshold": 5.38555494975989e-08,
+        "velocityThreshold": 1.3752229262933919e-05
+      },
+      "initial": {
+        "position": -278.35846413723607,
+        "velocity": 64.67514823945685
+      },
+      "target": -27.09641705467289,
+      "time": 0.001147174464633168,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -27.09641705467289,
+      "state": {
+        "position": -278.2845178704013,
+        "velocity": 64.24468431408928
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 157",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.3169348852400975e-294,
+        "stiffness": 3.120058056047888e-296,
+        "damping": 7.851771585110124e+259,
+        "positionThreshold": 0.00038721613489090656,
+        "velocityThreshold": 2.1435066575662786e-06
+      },
+      "initial": {
+        "position": -8.750166901116241e+148,
+        "velocity": 2.541227452077922e+99
+      },
+      "target": -1.2347050821093296e+25,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "errorContains": "damping ratio"
+  },
+  {
+    "name": "seeded hostile request 158",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.005924912186590583,
+        "stiffness": 0.6163246235257172,
+        "damping": 10.070745812390703,
+        "positionThreshold": 6.573365091240157e-07,
+        "velocityThreshold": 0.0001610319680877938
+      },
+      "initial": {
+        "position": 7.071542097881858e+212,
+        "velocity": -1.2071646551751509e+228
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 7.071542097881858e+212,
+        "velocity": -1.2071646551751509e+228
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 159",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3568.3559275255843,
+        "stiffness": 2.6145177514561677,
+        "damping": 0.0,
+        "positionThreshold": 1.1847334448779704e-06,
+        "velocityThreshold": 7.537384853925366e-05
+      },
+      "initial": {
+        "position": -1.7451327799957413e-289,
+        "velocity": -6.968320890237165e-296
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 160",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.0802554077306548,
+        "stiffness": 7.288506407008195,
+        "damping": 0.26861890348914985,
+        "positionThreshold": 0.00019523070423228337,
+        "velocityThreshold": 0.006899305180248913
+      },
+      "initial": {
+        "position": -0.0011259933482226183,
+        "velocity": 0.22301703491521774
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -0.0011259933482226183,
+        "velocity": 0.22301703491521774
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 161",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.562186488895879e-294,
+        "stiffness": 4.806135972056989e-300,
+        "damping": 2.2095321878562544e-135,
+        "positionThreshold": 0.00015407168212501138,
+        "velocityThreshold": 6.506988383202273e-06
+      },
+      "initial": {
+        "position": 3.983008536414582e+135,
+        "velocity": -7.618026432758913e+78
+      },
+      "target": -70.91884948757658,
+      "time": 2.186753247083401e+153,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -70.91884948757658,
+      "state": {
+        "position": 3.983008536395637e+135,
+        "velocity": -8.663770869232754e-30
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 162",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.05330148026415415,
+        "stiffness": 0.015074696125701576,
+        "damping": 0.10866318723472912,
+        "positionThreshold": 1.2899504178544495e-06,
+        "velocityThreshold": 1.1051434981382867e-08
+      },
+      "initial": {
+        "position": -8.100398378775657e+233,
+        "velocity": 2.8247575838533465e+113
+      },
+      "target": -0.08178361931320514,
+      "time": 5.085841429944308e+119,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.08178361931320514,
+      "state": {
+        "position": -0.08178361931320514,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 163",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.6337552900011283e-05,
+        "stiffness": 5.0371674527039526e-05,
+        "damping": 0.0,
+        "positionThreshold": 3.406473669239254e-07,
+        "velocityThreshold": 5.612720932309484e-07
+      },
+      "initial": {
+        "position": 7.82518642437804e-35,
+        "velocity": -3.9662124767838284e-33
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 164",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.26929200928216696,
+        "stiffness": 1908.8600484132664,
+        "damping": 0.0,
+        "positionThreshold": 0.0001590270410855452,
+        "velocityThreshold": 2.4659798396997988e-05
+      },
+      "initial": {
+        "position": -40.70848547570717,
+        "velocity": 3.320487432742356
+      },
+      "target": 5.825533845277694,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 5.825533845277694,
+      "state": {
+        "position": -40.70848547570717,
+        "velocity": 3.320487432742356
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 165",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 9.177238513435527e-298,
+        "stiffness": 2.0470192078730387e-297,
+        "damping": 0.0,
+        "positionThreshold": 6.751921458818076e-06,
+        "velocityThreshold": 0.0006304948871298196
+      },
+      "initial": {
+        "position": -3.2942877230761997e+183,
+        "velocity": 6.994619647697594e+119
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -3.2942877230761997e+183,
+        "velocity": 6.994619647697594e+119
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 167",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 6.848759223817778e-05,
+        "stiffness": 30.127384188562072,
+        "damping": 4752.291737371498,
+        "positionThreshold": 2.349941251573425e-05,
+        "velocityThreshold": 0.00011165066760109285
+      },
+      "initial": {
+        "position": 6.619073027433342e+265,
+        "velocity": -4.44665295081153e+134
+      },
+      "target": 5.298492622640443e+143,
+      "time": 2.0792412672354755e-72,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 5.298492622640443e+143,
+      "state": {
+        "position": 6.619073027433342e+265,
+        "velocity": -6.054127822430645e+199
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 168",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.10367451957920046,
+        "stiffness": 88.22068811447316,
+        "damping": 0.9722910229178267,
+        "positionThreshold": 3.8000367290977224e-06,
+        "velocityThreshold": 4.062184188183135e-06
+      },
+      "initial": {
+        "position": 34.69546927622866,
+        "velocity": 43.09508851729362
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 34.69546927622866,
+        "velocity": 43.09508851729362
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 171",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 76.34103158625283,
+        "stiffness": 1.5357883375892637e-05,
+        "damping": 0.3007158524942404,
+        "positionThreshold": 1.5733282413472893e-06,
+        "velocityThreshold": 0.008735437248540598
+      },
+      "initial": {
+        "position": 3.5397377255029626e+193,
+        "velocity": 5.025078647097115e+107
+      },
+      "target": -8.784652510795149e+77,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -8.784652510795149e+77,
+      "state": {
+        "position": 3.5397377255029626e+193,
+        "velocity": 5.025078647097115e+107
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 172",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.2375088282100548,
+        "stiffness": 1743.7354850826728,
+        "damping": 0.4805615665763465,
+        "positionThreshold": 0.006138201316669066,
+        "velocityThreshold": 0.003102908799005693
+      },
+      "initial": {
+        "position": 0.2632941952236263,
+        "velocity": 0.002477183885505065
+      },
+      "target": 0.00657186397784307,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.00657186397784307,
+      "state": {
+        "position": 0.2632941952236263,
+        "velocity": 0.002477183885505065
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 173",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.53838782576426e-296,
+        "stiffness": 2.6780402150612863e-292,
+        "damping": 0.0,
+        "positionThreshold": 4.9046618469865833e-05,
+        "velocityThreshold": 0.001057874385665436
+      },
+      "initial": {
+        "position": -1.8168081895492733e+244,
+        "velocity": -4.1724742865901394e+126
+      },
+      "target": -294.8082678865061,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -294.8082678865061,
+      "state": {
+        "position": -1.8168081895492733e+244,
+        "velocity": -4.1724742865901394e+126
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 174",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 482.7110630267249,
+        "stiffness": 22112.263292210017,
+        "damping": 0.0,
+        "positionThreshold": 6.803845023170386e-05,
+        "velocityThreshold": 0.0005216547532181853
+      },
+      "initial": {
+        "position": 7.823673521208409e+298,
+        "velocity": 5.3703684977099615e+239
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 7.823673521208409e+298,
+        "velocity": 5.3703684977099615e+239
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 175",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 11.772315998975941,
+        "stiffness": 0.00037395131352979715,
+        "damping": 0.0,
+        "positionThreshold": 0.0017940435545662522,
+        "velocityThreshold": 7.033602681567334e-06
+      },
+      "initial": {
+        "position": -2.6360620776966576e+267,
+        "velocity": 7.877054948746702e+166
+      },
+      "target": -0.0024995710658926216,
+      "time": 2.2825171193722006e-127,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.0024995710658926216,
+      "state": {
+        "position": -2.6360620776966576e+267,
+        "velocity": 7.877054948746702e+166
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 176",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.5243391096342347,
+        "stiffness": 5258.518422853627,
+        "damping": 454.2090376592455,
+        "positionThreshold": 0.0006207327133774371,
+        "velocityThreshold": 1.1483915619262523e-05
+      },
+      "initial": {
+        "position": -2.903874283688913,
+        "velocity": -0.04556142150533768
+      },
+      "target": -87.01551967161666,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -87.01551967161666,
+      "state": {
+        "position": -2.903874283688913,
+        "velocity": -0.04556142150533768
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 177",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 9.285607817230242e-293,
+        "stiffness": 9.558291041901433e-300,
+        "damping": 0.0,
+        "positionThreshold": 6.239007625369544e-06,
+        "velocityThreshold": 5.903023827815312e-06
+      },
+      "initial": {
+        "position": -1.957399462163717e+64,
+        "velocity": 3.8742670315147694e+246
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -1.957399462163717e+64,
+        "velocity": 3.8742670315147694e+246
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 178",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 14.959433167633222,
+        "stiffness": 0.043940960354108216,
+        "damping": 0.0,
+        "positionThreshold": 1.9311396583740017e-07,
+        "velocityThreshold": 1.0766722231802877e-08
+      },
+      "initial": {
+        "position": 3.9646685033711736e+303,
+        "velocity": -6.440975923267311e+303
+      },
+      "target": 6.448205574982259,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 6.448205574982259,
+      "state": {
+        "position": 3.9646685033711736e+303,
+        "velocity": -6.440975923267311e+303
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 179",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 6159.577074332549,
+        "stiffness": 599.336105260287,
+        "damping": 2.466535745978779e-05,
+        "positionThreshold": 1.941795850938737e-05,
+        "velocityThreshold": 4.889460239379796e-06
+      },
+      "initial": {
+        "position": 9.453106943203856e-07,
+        "velocity": -5.40210639848394e-93
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 180",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.5521692550196851,
+        "stiffness": 3755.4219614705776,
+        "damping": 0.0,
+        "positionThreshold": 0.0026388117791656435,
+        "velocityThreshold": 1.6160364900062705e-05
+      },
+      "initial": {
+        "position": 6.1406294758741105,
+        "velocity": -15.188226483331407
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 6.1406294758741105,
+        "velocity": -15.188226483331407
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 182",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.044681068157357826,
+        "stiffness": 0.31947460411488376,
+        "damping": 37659.46314741559,
+        "positionThreshold": 0.0002476128475800753,
+        "velocityThreshold": 5.476218134260143e-08
+      },
+      "initial": {
+        "position": 2.681588869687521e+267,
+        "velocity": 8.872384883694414e+297
+      },
+      "target": 111.6814735371625,
+      "time": 1.1428615672139039e+293,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 111.6814735371625,
+      "state": {
+        "position": 111.6814735371625,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 183",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.644807599107352e-05,
+        "stiffness": 16796.852356042295,
+        "damping": 0.0,
+        "positionThreshold": 0.0003484658613111976,
+        "velocityThreshold": 0.009939221928000787
+      },
+      "initial": {
+        "position": -4.3654183161614464e-128,
+        "velocity": 4.411157748476231e-158
+      },
+      "target": -4.5517584453184865e-294,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -4.5517584453184865e-294,
+      "state": {
+        "position": -4.5517584453184865e-294,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 184",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.2728011172504714,
+        "stiffness": 1.3980071543144394,
+        "damping": 0.2824452971522239,
+        "positionThreshold": 0.0001241849531413296,
+        "velocityThreshold": 6.008331694556283e-05
+      },
+      "initial": {
+        "position": 0.028598628646019166,
+        "velocity": -0.07593315760960818
+      },
+      "target": 0.0,
+      "time": 3.5659697147734675,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.009387534827387576,
+        "velocity": 0.05098140751674841
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 185",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3.7068822116993944e-292,
+        "stiffness": 8.211809630261636e-296,
+        "damping": 0.0,
+        "positionThreshold": 3.694248821092314e-05,
+        "velocityThreshold": 2.5832543715099626e-06
+      },
+      "initial": {
+        "position": -4.298612255911695e+147,
+        "velocity": 2.3535589383328648e+110
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -4.298612255911695e+147,
+        "velocity": 2.3535589383328648e+110
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 186",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 25.651001680204367,
+        "stiffness": 20.165420476706114,
+        "damping": 11.92337000312677,
+        "positionThreshold": 2.523772663863131e-05,
+        "velocityThreshold": 3.324959427842698e-05
+      },
+      "initial": {
+        "position": -1.7528577840236382e+264,
+        "velocity": 2.2855014063642732e+229
+      },
+      "target": 1.0346573209156722e+215,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1.0346573209156722e+215,
+      "state": {
+        "position": -1.7528577840236382e+264,
+        "velocity": 2.2855014063642732e+229
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 187",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.00012201602682255627,
+        "stiffness": 3.0052683591009317,
+        "damping": 97.66655740706362,
+        "positionThreshold": 0.0007352660180270595,
+        "velocityThreshold": 2.5529849932887256e-05
+      },
+      "initial": {
+        "position": -1.8600944258859285e+174,
+        "velocity": -3.664151732712105e-44
+      },
+      "target": -5.290757633061283e-43,
+      "time": 3.5237057991498676e+200,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -5.290757633061283e-43,
+      "state": {
+        "position": -5.290757633061283e-43,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 188",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.1658780582008139,
+        "stiffness": 2.0454427117796854,
+        "damping": 27.4611130005587,
+        "positionThreshold": 1.9094663389056423e-06,
+        "velocityThreshold": 0.00017198936860275397
+      },
+      "initial": {
+        "position": -0.002432778558641555,
+        "velocity": -5.097097201362935
+      },
+      "target": -939.7565578313483,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -939.7565578313483,
+      "state": {
+        "position": -0.002432778558641555,
+        "velocity": -5.097097201362935
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 190",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 818.3948813110914,
+        "stiffness": 0.4419379117750134,
+        "damping": 0.006448556933966136,
+        "positionThreshold": 2.6876084818946708e-05,
+        "velocityThreshold": 1.195076267643863e-05
+      },
+      "initial": {
+        "position": -2.804244217291143e+287,
+        "velocity": 1.4983985699829084e+229
+      },
+      "target": 0.0,
+      "time": 1.8647648200845103e+293,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 192",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.5926569675077599,
+        "stiffness": 785.1138931190321,
+        "damping": 6.200022859670974,
+        "positionThreshold": 0.0005216735958707664,
+        "velocityThreshold": 0.00010522444076461505
+      },
+      "initial": {
+        "position": 0.5768729326374067,
+        "velocity": -0.0038964278627666967
+      },
+      "target": -171.4430541948652,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -171.4430541948652,
+      "state": {
+        "position": 0.5768729326374067,
+        "velocity": -0.0038964278627666967
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 194",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.0256674320579528,
+        "stiffness": 22.89204860506154,
+        "damping": 0.0,
+        "positionThreshold": 7.979404556052664e-08,
+        "velocityThreshold": 2.7351577560303844e-07
+      },
+      "initial": {
+        "position": -1.1714703267991996e+281,
+        "velocity": -1.0354732515643704e+149
+      },
+      "target": 22.59646175395064,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 22.59646175395064,
+      "state": {
+        "position": -1.1714703267991996e+281,
+        "velocity": -1.0354732515643704e+149
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 195",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.00012526037994648755,
+        "stiffness": 30.388997420396883,
+        "damping": 0.013044421802478301,
+        "positionThreshold": 2.893554314662626e-08,
+        "velocityThreshold": 3.598913648572606e-05
+      },
+      "initial": {
+        "position": 1.1256115334530881e-60,
+        "velocity": -2.3445041451660308e-228
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 196",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 7.26817069689962,
+        "stiffness": 146.37850439459604,
+        "damping": 0.0,
+        "positionThreshold": 0.00020240138906321738,
+        "velocityThreshold": 2.9089931962540386e-06
+      },
+      "initial": {
+        "position": -184.74995991639972,
+        "velocity": 0.14060141746943358
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -184.74995991639972,
+        "velocity": 0.14060141746943358
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 197",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2.5428220232955218e-297,
+        "stiffness": 1.2816208607771249e-294,
+        "damping": 0.0,
+        "positionThreshold": 0.0017989072602819396,
+        "velocityThreshold": 0.001052925874773907
+      },
+      "initial": {
+        "position": 2.2527403704365128e+133,
+        "velocity": 6.091920747765414e+165
+      },
+      "target": -2.414411040678749,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -2.414411040678749,
+      "state": {
+        "position": 2.2527403704365128e+133,
+        "velocity": 6.091920747765414e+165
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 198",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.10235524006891777,
+        "stiffness": 0.003771363864067039,
+        "damping": 12.360008111968483,
+        "positionThreshold": 2.976694329349309e-08,
+        "velocityThreshold": 5.912218491866001e-08
+      },
+      "initial": {
+        "position": 4.752226742878921e+264,
+        "velocity": -7.544139795794943e+240
+      },
+      "target": 0.0,
+      "time": 3.1919684121902513e+246,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 199",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.015354565540087996,
+        "stiffness": 110.10311817863821,
+        "damping": 0.0,
+        "positionThreshold": 0.00014782261155994402,
+        "velocityThreshold": 8.82786961553597e-08
+      },
+      "initial": {
+        "position": 2.278380261082879e+167,
+        "velocity": -9.398101728099214e-229
+      },
+      "target": 1.5149955014446928e+97,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 1.5149955014446928e+97,
+      "state": {
+        "position": 2.278380261082879e+167,
+        "velocity": -9.398101728099214e-229
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 200",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 6.193871176624517,
+        "stiffness": 2.321444763525242,
+        "damping": 20.067361262237213,
+        "positionThreshold": 0.0001738277310778388,
+        "velocityThreshold": 5.602328397974927e-08
+      },
+      "initial": {
+        "position": -0.13034257415099887,
+        "velocity": 0.3053096482842798
+      },
+      "target": -0.06768483311161354,
+      "time": 1.751199908123627,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.06768483311161354,
+      "state": {
+        "position": -0.0384365906655521,
+        "velocity": -0.002251325899838419
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 201",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 9.359738403423732e-300,
+        "stiffness": 8.51509656359688e-298,
+        "damping": 0.0,
+        "positionThreshold": 0.000469903340632195,
+        "velocityThreshold": 4.1138735103438056e-08
+      },
+      "initial": {
+        "position": 1.7752828901237495e+253,
+        "velocity": -2.268554899074321e+50
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 1.7752828901237495e+253,
+        "velocity": -2.268554899074321e+50
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 203",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 3.365071513886127,
+        "stiffness": 34673.80735240882,
+        "damping": 0.0,
+        "positionThreshold": 0.00045109755142638016,
+        "velocityThreshold": 0.0006594368861850302
+      },
+      "initial": {
+        "position": -4.285157396688035e+239,
+        "velocity": 1.4863540471258824e-257
+      },
+      "target": -3.581088314529914e+79,
+      "time": 2.4084865182447112e-265,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -3.581088314529914e+79,
+      "state": {
+        "position": -4.285157396688035e+239,
+        "velocity": 1.0634528312958773e-21
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 204",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 7.410932275746712,
+        "stiffness": 28.716671217249846,
+        "damping": 58.908001971519695,
+        "positionThreshold": 1.0305102486839732e-06,
+        "velocityThreshold": 3.658130722480002e-08
+      },
+      "initial": {
+        "position": -0.019908193072224755,
+        "velocity": -0.034933054935731234
+      },
+      "target": 0.042108167381448555,
+      "time": 0.5279168261641652,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.042108167381448555,
+      "state": {
+        "position": -0.012182801209910752,
+        "velocity": 0.026991177391395567
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 207",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 2438.9026045962773,
+        "stiffness": 3284.755501417967,
+        "damping": 0.009104345425959537,
+        "positionThreshold": 8.609668993472749e-08,
+        "velocityThreshold": 3.3539143902223395e-06
+      },
+      "initial": {
+        "position": 5.7917865905098406e+284,
+        "velocity": 2.931652193624731e-196
+      },
+      "target": 0.0,
+      "time": 3.6528973622334605e+273,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 0.0,
+        "velocity": 0.0
+      },
+      "settled": true
+    }
+  },
+  {
+    "name": "seeded hostile request 208",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.3099243313331848,
+        "stiffness": 2.1811519898737073,
+        "damping": 486.0376933580978,
+        "positionThreshold": 8.928173823766932e-05,
+        "velocityThreshold": 7.822577598118921e-07
+      },
+      "initial": {
+        "position": 27.399648109823932,
+        "velocity": 0.0011517713233459412
+      },
+      "target": -80.86941768550435,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -80.86941768550435,
+      "state": {
+        "position": 27.399648109823932,
+        "velocity": 0.0011517713233459412
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 209",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 1.5310640216131336e-296,
+        "stiffness": 1.7610644223025316e-299,
+        "damping": 0.0,
+        "positionThreshold": 0.0002614133865409406,
+        "velocityThreshold": 1.1944350938958628e-06
+      },
+      "initial": {
+        "position": -1.966594967950503e+74,
+        "velocity": 4.239808161977023e+18
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -1.966594967950503e+74,
+        "velocity": 4.239808161977023e+18
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 210",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 8.726214327322575,
+        "stiffness": 12580.268359482296,
+        "damping": 2.2745709652840196,
+        "positionThreshold": 0.0014826426991198266,
+        "velocityThreshold": 0.0003559522912435624
+      },
+      "initial": {
+        "position": -2.2693078227392598e+244,
+        "velocity": 1.3162190615626711e+306
+      },
+      "target": -0.6829894149669581,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.6829894149669581,
+      "state": {
+        "position": -2.2693078227392598e+244,
+        "velocity": 1.3162190615626711e+306
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 211",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 330.6402057800648,
+        "stiffness": 1.1715439251694042,
+        "damping": 16531.345262069408,
+        "positionThreshold": 5.191858988341251e-07,
+        "velocityThreshold": 4.284066318195772e-08
+      },
+      "initial": {
+        "position": -2.0575012108678087e+175,
+        "velocity": -5891387408.116737
+      },
+      "target": 156.56610997264679,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 156.56610997264679,
+      "state": {
+        "position": -2.0575012108678087e+175,
+        "velocity": -5891387408.116737
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 212",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 5.213090113566336,
+        "stiffness": 2793.1811569476545,
+        "damping": 199.43319977131483,
+        "positionThreshold": 8.604950744572843e-08,
+        "velocityThreshold": 2.585757424997365e-07
+      },
+      "initial": {
+        "position": 0.19509275813133625,
+        "velocity": -0.6305294970125587
+      },
+      "target": -0.019781191415997115,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -0.019781191415997115,
+      "state": {
+        "position": 0.19509275813133625,
+        "velocity": -0.6305294970125587
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 213",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 4.379304202562884e-297,
+        "stiffness": 9.317282206605343e-294,
+        "damping": 0.0,
+        "positionThreshold": 6.954965217526328e-06,
+        "velocityThreshold": 7.25086700198048e-07
+      },
+      "initial": {
+        "position": 7.199560905007238e+70,
+        "velocity": -1375.6339450485727
+      },
+      "target": -103064926406007.19,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": -103064926406007.19,
+      "state": {
+        "position": 7.199560905007238e+70,
+        "velocity": -1375.6339450485727
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 214",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 0.012265607842259755,
+        "stiffness": 27.61260364041288,
+        "damping": 0.43471409350628754,
+        "positionThreshold": 0.005800715365369541,
+        "velocityThreshold": 7.304603512896877e-06
+      },
+      "initial": {
+        "position": -1.2481392199521346e+231,
+        "velocity": 3.617312635892829e+293
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": -1.2481392199521346e+231,
+        "velocity": 3.617312635892829e+293
+      },
+      "settled": false
+    }
+  },
+  {
+    "name": "seeded hostile request 215",
+    "request": {
+      "schemaVersion": "0.1.0",
+      "dynamics": {
+        "schemaVersion": "0.1.0",
+        "mass": 8.310255455172586e-05,
+        "stiffness": 0.08719964179562331,
+        "damping": 22.29630066258091,
+        "positionThreshold": 5.603050852759452e-06,
+        "velocityThreshold": 1.3825064818128753e-07
+      },
+      "initial": {
+        "position": 4.756353350366703e+158,
+        "velocity": 1.3527720603497002e+222
+      },
+      "target": 0.0,
+      "time": 0.0,
+      "reducedMotion": false
+    },
+    "requestSchemaValid": true,
+    "expected": {
+      "schemaVersion": "0.1.0",
+      "representation": "spring",
+      "target": 0.0,
+      "state": {
+        "position": 4.756353350366703e+158,
+        "velocity": 1.3527720603497002e+222
+      },
+      "settled": false
+    }
+  }
+]

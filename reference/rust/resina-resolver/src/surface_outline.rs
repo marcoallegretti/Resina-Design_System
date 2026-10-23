@@ -44,16 +44,26 @@ impl std::error::Error for SurfaceOutlineError {}
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct OutlineRequest {
-    schema_version: String,
-    size: SurfaceSize,
+pub(crate) struct OutlineRequest {
+    pub(crate) schema_version: String,
+    pub(crate) size: SurfaceSize,
     #[serde(deserialize_with = "source_radii")]
-    radii: LogicalCornerRadii,
-    layout_direction: LayoutDirection,
-    curvature: OutlineCurvature,
+    pub(crate) radii: LogicalCornerRadii,
+    pub(crate) layout_direction: LayoutDirection,
+    pub(crate) curvature: OutlineCurvature,
     #[serde(deserialize_with = "source_extent")]
-    minimum_inset: f64,
+    pub(crate) minimum_inset: f64,
 }
+
+pub(crate) const OUTLINE_OBJECTS: [&str; 7] = [
+    "",
+    "/size",
+    "/radii",
+    "/radii/topStart",
+    "/radii/topEnd",
+    "/radii/bottomEnd",
+    "/radii/bottomStart",
+];
 
 fn source_extent<'de, D: Deserializer<'de>>(deserializer: D) -> Result<f64, D::Error> {
     let source = <&RawValue>::deserialize(deserializer)?;
@@ -110,15 +120,7 @@ fn source_radii<'de, D: Deserializer<'de>>(
 
 pub fn resolve_surface_outline_source(source: &str) -> Result<SurfaceOutline, SurfaceOutlineError> {
     let document = parse_token_document(source).map_err(|e| SurfaceOutlineError(e.to_string()))?;
-    for pointer in [
-        "",
-        "/size",
-        "/radii",
-        "/radii/topStart",
-        "/radii/topEnd",
-        "/radii/bottomEnd",
-        "/radii/bottomStart",
-    ] {
+    for pointer in OUTLINE_OBJECTS {
         if !document
             .pointer(pointer)
             .is_some_and(serde_json::Value::is_object)
