@@ -1,19 +1,32 @@
 use resina_environment::EnvironmentSnapshot;
 use resina_model::{
     ColorRole, CommandAnatomy, CommandAppearance, CommandBody, CommandEmphasis,
-    MaterialLightChannels, OpaqueSurfaceAppearance, StateSet, SurfaceSize, ToggleAnatomy,
+    MaterialLightChannels, OpaqueSurfaceAppearance, PhysicalVector, StateSet, SurfaceIntent,
+    SurfaceSize, ToggleAnatomy,
 };
 use resina_resolver::{
     CommandPaintError, CommandPaintInput, CommandPaintIr, CompiledTheme, ControlRelief,
-    OpaqueSurfaceInput, SrgbFallback, SurfacePaintInput, TogglePart, TogglePartPaintInput,
-    TogglePartPaintIr, compile_theme_source_with_sources, opaque_contrast_ratio,
-    resolve_command_paint, resolve_toggle_part_paint,
+    LitControlBodyIr, OpaqueSurfaceInput, SrgbFallback, SurfacePaintInput, TogglePart,
+    TogglePartPaintInput, TogglePartPaintIr, compile_theme_source_with_sources,
+    opaque_contrast_ratio, resolve_command_paint, resolve_toggle_part_paint,
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
 const FAMILIES: [&str; 3] = ["cast", "frost", "elastomer"];
 const PHASES: [&str; 4] = ["rest", "hover", "pressed", "disabled"];
+const COMMAND_SIZE: SurfaceSize = SurfaceSize {
+    width: 96.0,
+    height: 48.0,
+};
+const TRACK_SIZE: SurfaceSize = SurfaceSize {
+    width: 64.5,
+    height: 40.5,
+};
+const THUMB_SIZE: SurfaceSize = SurfaceSize {
+    width: 16.0,
+    height: 16.0,
+};
 
 struct Theme {
     name: &'static str,
@@ -28,6 +41,19 @@ fn environment() -> EnvironmentSnapshot {
         "../../../../conformance/environment/valid-minimal-capabilities.json"
     ))
     .unwrap()
+}
+
+/// The minimal-capability snapshot with every condition that admits interaction light.
+fn admitting_environment() -> EnvironmentSnapshot {
+    let mut source: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/environment/valid-minimal-capabilities.json"
+    ))
+    .unwrap();
+    source["accessibilityPreferences"]["highContrast"] = json!(false);
+    source["accessibilityPreferences"]["reducedMotion"] = json!(false);
+    source["rendererCapabilities"]["dynamicLighting"] = json!(true);
+    source["qualityPolicy"] = json!("balanced");
+    serde_json::from_value(source).unwrap()
 }
 
 /// The authored themes, then every Cast/Frost/Elastomer choice for the three control roles.
@@ -71,6 +97,20 @@ fn themes(environment: &EnvironmentSnapshot) -> Vec<Theme> {
         }
     }
     themes
+}
+
+fn reshaped(intent: SurfaceIntent, shape: Option<&str>) -> SurfaceIntent {
+    let Some(shape) = shape else {
+        return intent;
+    };
+    let mut source = serde_json::to_value(&intent).unwrap();
+    source["form"]["shape"] = json!(shape);
+    let reshaped: SurfaceIntent = serde_json::from_value(source).unwrap();
+    assert_eq!(
+        serde_json::to_value(&reshaped).unwrap()["form"]["shape"],
+        shape
+    );
+    reshaped
 }
 
 fn states(names: &[&str]) -> StateSet {
@@ -118,7 +158,16 @@ fn command(
     names: &[&str],
     light: &MaterialLightChannels,
 ) -> Result<CommandPaintIr, CommandPaintError> {
-    let intent = body.intent(states(names));
+    command_of(theme, environment, body, &body.intent(states(names)), light)
+}
+
+fn command_of(
+    theme: &Theme,
+    environment: &EnvironmentSnapshot,
+    body: &CommandBody,
+    intent: &SurfaceIntent,
+    light: &MaterialLightChannels,
+) -> Result<CommandPaintIr, CommandPaintError> {
     let relief: ControlRelief =
         serde_json::from_str(include_str!("../../../../definitions/control-relief.json")).unwrap();
     resolve_command_paint(
@@ -127,11 +176,8 @@ fn command(
         CommandPaintInput {
             surface: SurfacePaintInput {
                 body: OpaqueSurfaceInput {
-                    surface: &intent,
-                    size: SurfaceSize {
-                        width: 96.0,
-                        height: 48.0,
-                    },
+                    surface: intent,
+                    size: COMMAND_SIZE,
                     appearance: &surface_appearance(),
                     foreground_role: body.content_role(),
                     post_treatment_backdrop: Some(&theme.canvas),
@@ -157,16 +203,28 @@ fn toggle(
     names: &[&str],
     light: &MaterialLightChannels,
 ) -> [TogglePartPaintIr; 2] {
+    toggle_shaped(theme, environment, anatomy, names, light, None)
+}
+
+/// Resolves both parts with their bound shape replaced by `shape`, when given.
+fn toggle_shaped(
+    theme: &Theme,
+    environment: &EnvironmentSnapshot,
+    anatomy: &ToggleAnatomy,
+    names: &[&str],
+    light: &MaterialLightChannels,
+    shape: Option<&str>,
+) -> [TogglePartPaintIr; 2] {
     let surface = surface_appearance();
     let relief: ControlRelief =
         serde_json::from_str(include_str!("../../../../definitions/control-relief.json")).unwrap();
     let responses = appearance(theme.name);
     let part = |part: TogglePart, adjacent: &SrgbFallback| {
         let (anatomy_part, width, height) = match part {
-            TogglePart::Track => (anatomy.track(), 52.0, 32.0),
-            TogglePart::Thumb => (anatomy.thumb(), 20.0, 20.0),
+            TogglePart::Track => (anatomy.track(), TRACK_SIZE.width, TRACK_SIZE.height),
+            TogglePart::Thumb => (anatomy.thumb(), THUMB_SIZE.width, THUMB_SIZE.height),
         };
-        let intent = anatomy_part.intent(states(names));
+        let intent = reshaped(anatomy_part.intent(states(names)), shape);
         resolve_toggle_part_paint(
             &theme.theme,
             environment,
@@ -383,4 +441,297 @@ fn authored_state_responses_differ_perceivably_from_rest() {
         failures.len(),
         failures.join("\n")
     );
+}
+
+fn full_light() -> MaterialLightChannels {
+    light(
+        json!(0.25),
+        json!({"direction": {"x": 1, "y": 0.5}, "strength": 0.5}),
+    )
+}
+
+fn without_light(mut body: Value) -> Value {
+    body["face"].as_object_mut().unwrap().remove("light");
+    body
+}
+
+/// The channels may change `face.light` and the sampled face only: every cue, guard, edge,
+/// foreground and range stays, interaction light is admitted exactly in the hover and pressed
+/// phases of an admitting environment, and the content rectangle keeps the exact body color.
+fn assert_light_changes_only_the_face(
+    label: &str,
+    unlit: &LitControlBodyIr,
+    lit: &LitControlBodyIr,
+    phase: &str,
+    admits: bool,
+) {
+    let lit_body = serde_json::to_value(lit).unwrap();
+    assert_eq!(
+        without_light(serde_json::to_value(unlit).unwrap()),
+        without_light(lit_body.clone()),
+        "{label}: light changed more than face.light"
+    );
+    let light = &lit_body["face"]["light"];
+    assert_eq!(
+        !light["interaction"].is_null(),
+        admits && matches!(phase, "hover" | "pressed"),
+        "{label}: interaction admission"
+    );
+    assert_eq!(
+        light["ambient"].as_f64().unwrap() > 0.0,
+        admits,
+        "{label}: ambient admission"
+    );
+    let bounds = &lit_body["face"]["contentBounds"];
+    let [x, y, width, height] =
+        ["x", "y", "width", "height"].map(|name| bounds[name].as_f64().unwrap());
+    for (px, py) in [
+        (x, y),
+        (x + width, y),
+        (x, y + height),
+        (x + width, y + height),
+        (x + width / 2.0, y + height / 2.0),
+    ] {
+        assert_eq!(
+            lit.sample_paint(PhysicalVector { x: px, y: py }).unwrap(),
+            Some(lit.face().pigment().body().clone()),
+            "{label}: content point ({px}, {py}) is not the exact body"
+        );
+    }
+}
+
+/// Light is never a state cue and never reaches the content plateau. For each authored body in
+/// both themes and every family assignment, the full channels, admitted and suppressed, change
+/// nothing but `face.light`, and the disabled Command label stays at its bound.
+#[test]
+fn light_never_changes_cues_content_or_the_disabled_bound() {
+    let commands = command_anatomy();
+    let toggles = toggle_anatomy();
+    let unlit = light(Value::Null, Value::Null);
+    let lit = full_light();
+    let mut compared = 0;
+    for (admits, environment) in [(false, environment()), (true, admitting_environment())] {
+        let bound = if admits { 3.0 } else { 4.5 };
+        for theme in themes(&environment) {
+            for emphasis in [CommandEmphasis::Standard, CommandEmphasis::Primary] {
+                let body = commands.variant(emphasis).body();
+                for phase in PHASES {
+                    let label = format!(
+                        "{} {:?} command {emphasis:?} {phase} admits={admits}",
+                        theme.name, theme.assignment
+                    );
+                    let first = command(&theme, &environment, body, &[phase], &unlit).unwrap();
+                    let second = command(&theme, &environment, body, &[phase], &lit).unwrap();
+                    let face = second.paint().body().face();
+                    let content = &theme.colors[&body.content_role()];
+                    let ratio =
+                        opaque_contrast_ratio(face.foreground(), face.pigment().body()).unwrap();
+                    assert!(
+                        (ratio - face.content_contrast_ratio()).abs() <= 1e-12,
+                        "{label}: reported content contrast"
+                    );
+                    if phase == "disabled" {
+                        let undimmed =
+                            opaque_contrast_ratio(content, face.pigment().body()).unwrap();
+                        if undimmed > bound + 1e-9 {
+                            assert!(
+                                (bound - 1e-12..=bound + 1e-9).contains(&ratio),
+                                "{label}: disabled label contrast {ratio} is not the {bound}:1 bound"
+                            );
+                        } else {
+                            assert_eq!(face.foreground(), content, "{label}: undimmed label");
+                        }
+                    } else {
+                        assert_eq!(face.foreground(), content, "{label}: label color");
+                        assert!(ratio >= 4.5, "{label}: content contrast {ratio}");
+                    }
+                    assert_light_changes_only_the_face(
+                        &label,
+                        first.paint().body(),
+                        second.paint().body(),
+                        phase,
+                        admits,
+                    );
+                    compared += 1;
+                }
+            }
+            for checked in [false, true] {
+                for phase in PHASES {
+                    let names: Vec<&str> = [phase]
+                        .into_iter()
+                        .chain(checked.then_some("checked"))
+                        .collect();
+                    let first = toggle(&theme, &environment, &toggles, &names, &unlit);
+                    let second = toggle(&theme, &environment, &toggles, &names, &lit);
+                    for (part, (first, second)) in first.iter().zip(&second).enumerate() {
+                        assert_light_changes_only_the_face(
+                            &format!(
+                                "{} {:?} toggle part {part} {names:?} admits={admits}",
+                                theme.name, theme.assignment
+                            ),
+                            first.paint().body(),
+                            second.paint().body(),
+                            phase,
+                            admits,
+                        );
+                        compared += 1;
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(compared, 2 * 2 * 28 * (2 * 4 + 2 * 4 * 2));
+}
+
+/// Every shape of the bundled Tier 0 appearance carries every control relief on every authored
+/// part, so that no assignment a theme may draw on reaches the spec/88 `tau < 1` rejection.
+#[test]
+fn every_bundled_shape_assignment_carries_every_control_relief() {
+    let appearance: Value = serde_json::from_str(include_str!(
+        "../../../../definitions/tier0-surface-appearance.json"
+    ))
+    .unwrap();
+    let shapes: Vec<&str> = appearance["shapeAssignments"]["profiles"]
+        .as_object()
+        .unwrap()
+        .keys()
+        .map(String::as_str)
+        .collect();
+    assert_eq!(
+        shapes,
+        ["capsule", "organic", "rounded", "soft", "structural"]
+    );
+    let commands = command_anatomy();
+    let toggles = toggle_anatomy();
+    let environment = environment();
+    let unlit = light(Value::Null, Value::Null);
+    let mut resolved = 0;
+    for theme in themes(&environment)
+        .into_iter()
+        .filter(|theme| theme.assignment.is_none())
+    {
+        for shape in &shapes {
+            for emphasis in [CommandEmphasis::Standard, CommandEmphasis::Primary] {
+                let body = commands.variant(emphasis).body();
+                let intent = reshaped(body.intent(states(&["rest"])), Some(shape));
+                command_of(&theme, &environment, body, &intent, &unlit)
+                    .unwrap_or_else(|error| panic!("{} {shape} {emphasis:?}: {error}", theme.name));
+                resolved += 1;
+            }
+            toggle_shaped(
+                &theme,
+                &environment,
+                &toggles,
+                &["rest"],
+                &unlit,
+                Some(shape),
+            );
+            resolved += 2;
+        }
+    }
+    assert_eq!(resolved, 2 * 5 * 4);
+}
+
+/// The published peak visibility rows are the resolver's own: each row's rest body is the resolved
+/// body, and the colors painted at the two witness points, measured against that body, are the
+/// row's ΔE_OK. The table is evidence of how visible the static key is, not a pass threshold.
+#[test]
+fn published_visibility_table_is_what_the_resolver_paints() {
+    let table: Value = serde_json::from_str(include_str!(
+        "../../../../conformance/materials/lit-control-visibility.json"
+    ))
+    .unwrap();
+    let commands = command_anatomy();
+    let toggles = toggle_anatomy();
+    let environment = environment();
+    let themes = themes(&environment);
+    let unlit = light(Value::Null, Value::Null);
+    for (part, size) in [
+        ("commandBody", COMMAND_SIZE),
+        ("toggleTrack", TRACK_SIZE),
+        ("toggleThumb", THUMB_SIZE),
+    ] {
+        assert_eq!(table["parts"][part]["size"]["width"], size.width);
+        assert_eq!(table["parts"][part]["size"]["height"], size.height);
+    }
+    let rows = table["rows"].as_array().unwrap();
+    assert_eq!(rows.len(), 2 * 3 * 6);
+    for row in rows {
+        let (theme_name, family) = (
+            row["theme"].as_str().unwrap(),
+            row["materialFamily"].as_str().unwrap(),
+        );
+        let theme = themes
+            .iter()
+            .find(|theme| {
+                theme.name == theme_name
+                    && theme
+                        .assignment
+                        .is_some_and(|assignment| assignment.iter().all(|name| *name == family))
+            })
+            .unwrap();
+        let checked = row["checked"].as_bool().unwrap_or(false);
+        let names: Vec<&str> = ["rest"]
+            .into_iter()
+            .chain(checked.then_some("checked"))
+            .collect();
+        let part = row["part"].as_str().unwrap();
+        let body = match part {
+            "commandBody" => {
+                let emphasis = match row["variant"].as_str().unwrap() {
+                    "standard" => CommandEmphasis::Standard,
+                    _ => CommandEmphasis::Primary,
+                };
+                let body = commands.variant(emphasis).body();
+                command(theme, &environment, body, &names, &unlit)
+                    .unwrap()
+                    .paint()
+                    .body()
+                    .clone()
+            }
+            _ => {
+                let [track, thumb] = toggle(theme, &environment, &toggles, &names, &unlit);
+                if part == "toggleTrack" { track } else { thumb }
+                    .paint()
+                    .body()
+                    .clone()
+            }
+        };
+        let label = format!("{theme_name} {family} {part} {row}");
+        assert_eq!(
+            serde_json::to_value(body.color_role()).unwrap(),
+            row["colorRole"],
+            "{label}"
+        );
+        let resolved = body.face().pigment().body();
+        for (published, actual) in row["body"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(resolved.components())
+        {
+            assert!(
+                (published.as_f64().unwrap() - actual).abs() <= 1e-12,
+                "{label}"
+            );
+        }
+        for (witness, field) in [
+            ("highlight", "highlightDeltaE"),
+            ("shading", "shadingDeltaE"),
+        ] {
+            let point = &table["parts"][part][witness]["point"];
+            let painted = body
+                .sample_paint(PhysicalVector {
+                    x: point["x"].as_f64().unwrap(),
+                    y: point["y"].as_f64().unwrap(),
+                })
+                .unwrap()
+                .unwrap();
+            let difference = oklab_difference(resolved, &painted);
+            assert!(
+                (difference - row[field].as_f64().unwrap()).abs() <= 1e-9,
+                "{label}: {field} {difference}"
+            );
+        }
+    }
 }

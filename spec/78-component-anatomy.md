@@ -93,7 +93,9 @@ Rust tests resolve both authored definitions through Command paint and Toggle
 part paint, in the Light and Dark themes and in each of the 27 Cast, Frost and
 Elastomer assignments of the three control roles. They cover each Command and
 Toggle phase with and without focus, and each Toggle phase with and without
-selection. The environment is the public
+selection. Parts are resolved as [lit control bodies](88-lit-control-body.md) at
+the sizes of the illustrative layouts: a 96 by 48 px Command body, a 64.5 by
+40.5 px Toggle track and a 16 by 16 px Toggle thumb. The environment is the public
 [minimal-capability snapshot](../conformance/environment/valid-minimal-capabilities.json),
 where Frost resolves to its opaque representation, and the canvas is the theme's
 `surface.base`. On other containers, edge validity rests on the
@@ -101,7 +103,42 @@ where Frost resolves to its opaque representation, and the canvas is the theme's
 resolve a translucent Frost body, so Frost assignments carry this evidence only
 where Frost resolves opaque. A complete Toggle snapshot also depends on part
 sizes and layout, which anatomy does not define; its composition is evidenced by
-the snapshot contract. Schema cases reject missing parts, unknown members,
+the snapshot contract.
+
+The same tests establish four properties of the lit bodies for every authored
+body, in both themes and under every family assignment, in that snapshot and in
+the same snapshot with every condition that admits interaction light: high
+contrast and reduced motion off, `dynamicLighting` on and balanced quality.
+Light is never a state cue: state perceivability is measured on the unlit
+body colour and final depth, and the full ambient and interaction channels,
+admitted and suppressed, change nothing but `face.light`, so suppressing light
+removes no cue. Light never reaches the content plateau: the content rectangle
+keeps the exact body colour under every admitted light, and interaction light
+appears in the resolved face only in the hover and pressed phases of an
+environment that admits it. The disabled Command label sits at its dimming bound,
+3:1 or 4.5:1 under high contrast, or is unchanged when its contrast is already
+below that bound. Every shape of the bundled Tier 0 appearance carries each part's
+[relief profile](88-lit-control-body.md#part-keyed-relief) in both authored
+themes, so none reaches the `tau < 1` rejection. Label and thumb containment are
+decided by their own [Command](46-command-label-layout.md) and
+[Toggle](55-toggle-snapshot.md) fixtures.
+
+The [visibility table](../conformance/materials/lit-control-visibility.json),
+[schema](../schemas/lit-control-visibility.schema.json), records how visible the
+static key is on these bodies. For each theme, family and bound colour role it
+gives the body colour and the largest ΔE_OK between that body and the colours
+painted where the signed key response toward the highlight and toward the side
+peaks. Light is not a state cue, so the table is evidence of how much the light
+contributes to identity, not a threshold. In the Light theme the highlight half of
+the `surface.high` Command body stays below 0.001 for every family while its
+shading half reaches 0.030 (Cast), 0.042 (Frost) and 0.074 (Elastomer). The
+[independent arithmetic](../tools/lit_control_visibility.py) locates each peak
+with the lit body normals and reproduces every row; the Rust test paints the same
+witness points with the resolver and compares their ΔE_OK. The table is
+regenerated with `python tools/lit_control_visibility.py --generate -- <theme-resolve-command> -`
+and checked with `python tools/lit_control_visibility.py`.
+
+Schema cases reject missing parts, unknown members,
 non-control material roles and members of the other component. The reference
 model exposes typed anatomy and builds part surface intents; it introduces no
 rendering dependency.

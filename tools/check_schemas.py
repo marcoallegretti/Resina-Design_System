@@ -838,6 +838,50 @@ def check_toggle_lit_containment():
     return checked
 
 
+def check_lit_control_visibility():
+    """Validate the peak visibility table and reject malformed variants of it."""
+    table = load_json(ROOT / "conformance/materials/lit-control-visibility.json")
+    validator = validator_for("schemas/lit-control-visibility.schema.json")
+    check_case(validator, "lit control visibility table", table, True)
+    checked = 1
+    command_row = next(index for index, row in enumerate(table["rows"]) if row["part"] == "commandBody")
+    track_row = next(index for index, row in enumerate(table["rows"]) if row["part"] == "toggleTrack")
+    for path, value in [("/schemaVersion", "0.2.0"),
+                        ("/keyLight", {"x": 0, "y": 0}),
+                        ("/sampleStep", 0),
+                        ("/parts/commandBody/size/width", 0),
+                        ("/parts/toggleTrack/highlight/response", 0),
+                        ("/parts/toggleTrack/highlight/response", 1.5),
+                        ("/parts/toggleThumb/shading/response", 0),
+                        ("/parts/toggleThumb/shading/point", {"x": 1}),
+                        ("/rows", []),
+                        (f"/rows/{command_row}/theme", "contrast"),
+                        (f"/rows/{command_row}/materialFamily", "gel"),
+                        (f"/rows/{command_row}/part", "toggleTrack"),
+                        (f"/rows/{command_row}/variant", "track"),
+                        (f"/rows/{command_row}/colorRole", "accent"),
+                        (f"/rows/{command_row}/body", [0.5, 0.5]),
+                        (f"/rows/{command_row}/body/0", 1.5),
+                        (f"/rows/{command_row}/highlightDeltaE", -0.001),
+                        (f"/rows/{track_row}/variant", "thumb"),
+                        (f"/rows/{track_row}/checked", "yes")]:
+        invalid = copy.deepcopy(table)
+        replace_at_pointer(invalid, path, value)
+        check_case(validator, f"lit control visibility invalid {path}", invalid, False)
+        checked += 1
+    for row, member, value in ((command_row, "checked", True), (command_row, "renderer", "native")):
+        invalid = copy.deepcopy(table)
+        invalid["rows"][row][member] = value
+        check_case(validator, f"lit control visibility with {member}", invalid, False)
+        checked += 1
+    for row, member in ((command_row, "shadingDeltaE"), (track_row, "checked")):
+        invalid = copy.deepcopy(table)
+        del invalid["rows"][row][member]
+        check_case(validator, f"lit control visibility without {member}", invalid, False)
+        checked += 1
+    return checked
+
+
 def check_no_active_reference_to_archived_schemas():
     """An active schema may not $ref a superseded version that only the archive still defines."""
     active, archived = set(), set()
@@ -885,6 +929,7 @@ def main():
         "schemas/toggle-snapshot-cases.schema.json",
         "schemas/toggle-travel-cases.schema.json",
         "schemas/toggle-lit-containment.schema.json",
+        "schemas/lit-control-visibility.schema.json",
         "schemas/toggle-part-paint-ir.schema.json",
         "schemas/toggle-part-paint-request.schema.json",
         "schemas/toggle-part-paint-case.schema.json",
@@ -3859,6 +3904,7 @@ def main():
         checked += 1
     checked += check_toggle_lit_envelopes()
     checked += check_toggle_lit_containment()
+    checked += check_lit_control_visibility()
     checked += check_no_active_reference_to_archived_schemas()
     slider_part_request = load_json(ROOT / "conformance/ir/slider-part-paint-request.json")
     slider_request_validator = validator_for("schemas/slider-part-paint-request.schema.json")

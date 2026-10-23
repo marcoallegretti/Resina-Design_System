@@ -351,7 +351,9 @@ parts to semantic material and color roles in authored
 control-family assignment and the minimal-capability environment, tests resolve
 each Command phase and focus through Command paint with 4.5:1 content and 3:1
 edge contrast, and each Toggle phase, focus and selection through part paint
-with 3:1 edges and a 4.5:1 label color.
+with 3:1 edges and a 4.5:1 label color. They also show that light changes
+nothing but `face.light` and measure the [peak visibility](conformance/materials/lit-control-visibility.json)
+of the static key on every bound body.
 
 [Component layout profiles](spec/89-component-layout-profile.md) bind the
 authored [Command profile](definitions/layout/command.json) to the
