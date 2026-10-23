@@ -28,7 +28,7 @@ class BudgetSession(ToggleSession):
     def requests(self):
         source = request_for("light")
         source["content"]["environment"]["accessibilityPreferences"]["reducedMotion"] = False
-        return {"standard": source, "channels": fixture_channels()}
+        return {**super().requests(), "standard": source, "channels": fixture_channels()}
 
 
 class Publications:

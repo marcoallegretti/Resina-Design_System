@@ -11,12 +11,14 @@ from check_quickshell_command_accessibility import (REPORT, NativeEvents, Tree, 
                                                     isolated_results, ready_focus_requests, state, text)
 from check_quickshell_command_lifecycle import focused
 from check_quickshell_command_updates import verify_version
-from check_quickshell_toggle_lifecycle import ToggleSession
+from check_quickshell_toggle_lifecycle import REPLACEMENT, REPLACEMENT_DESCRIPTION, ToggleSession
 from check_slint_native_availability import ACCESSIBLE, call, references
 import conformance_font
+from sway_output import Sway
 
 NAME = "Automatic updates"
 DESCRIPTION = "Connect using saved settings."
+LIVE_SCALE = 2
 
 
 def named(address, application, name):
@@ -37,15 +39,71 @@ def named(address, application, name):
 
 
 class ToggleTree(Tree):
-    def toggle(self):
-        node = self.settled(lambda: (found := named(self.address, self.application(), NAME)) and len(found) == 1
-                            and found[0], f"one native node named {NAME}")
-        if text(self.address, node, "Description") != DESCRIPTION:
+    def toggle(self, name=NAME, description=DESCRIPTION):
+        node = self.settled(lambda: (found := named(self.address, self.application(), name)) and len(found) == 1
+                            and found[0], f"one native node named {name}")
+        if text(self.address, node, "Description") != description:
             raise ValueError("native Toggle lost its complete description")
         return node
 
     def withdrawn(self, description):
         self.settled(lambda: not named(self.address, self.application(), NAME), description)
+
+
+def stable_updates(session, tree):
+    session.reset()
+    node = tree.toggle()
+
+    def update(description, perform, settled, name=NAME, text=DESCRIPTION, events=()):
+        start, retractions = tree.events.mark(), session.current()["retractions"]
+        perform()
+        # The frame is withdrawn while the replacement is prepared: the native node must survive that.
+        session.until(lambda current: current["ready"] and current["retractions"] > retractions and settled(current),
+                      description, 10)
+        if tree.toggle(name, text) != node:
+            raise ValueError(f"{description} changed the native Toggle path")
+        tree.events.expect(start, [(node[1], "Object.StateChanged", flag, detail) for flag, detail in events],
+                           f"native state-change events on the Toggle for {description}")
+        session.quiet()
+        tree.events.retained(start, node, description, "Toggle")
+        tree.events.unexposed(start, node, description, {flag for flag, _ in events})
+
+    def feedback():
+        # A pointer already resting on the target delivers no motion, hence no hover.
+        session.input.move(*session.outside)
+        session.point(session.current())
+        session.settle(lambda current: current["hovered"], "hovered Toggle")
+        session.input.button(True)
+        session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is True, "pointer hold")
+        session.input.move(*session.outside)
+        session.settle(lambda current: (current["state"]["hold"] or {}).get("inside") is False, "pointer leaving")
+        session.input.button(False)
+    update("hover and press feedback", feedback,
+           lambda current: not current["hovered"] and current["state"]["hold"] is None and not current["checked"])
+    update("checked replacement", lambda: session.call("setChecked", "true"), lambda current: current["checked"],
+           events=(("checked", 1),))
+    update("unchecked replacement", lambda: session.call("setChecked", "false"),
+           lambda current: not current["checked"], events=(("checked", 0),))
+    update("availability withdrawal", lambda: session.call("availability", "false"),
+           lambda current: not current["state"]["enabled"], events=(("enabled", 0), ("sensitive", 0)))
+    tree.expect_state(node, False, False)
+    session.events()
+    update("availability restoration", lambda: session.call("availability", "true"),
+           lambda current: current["state"]["enabled"], events=(("enabled", 1), ("sensitive", 1)))
+    tree.expect_state(node, True, False)
+    update("label replacement", lambda: session.call("configure", "replacement"),
+           lambda current: True, REPLACEMENT, REPLACEMENT_DESCRIPTION)
+    tree.expect_state(node, True, False)
+    sway = Sway(os.environ)
+    initial = sway.output()["scale"]
+    try:
+        update("live output scale change", lambda: sway.set_scale(LIVE_SCALE), lambda current: True,
+               REPLACEMENT, REPLACEMENT_DESCRIPTION)
+    finally:
+        sway.set_scale(initial)
+    return ["feedback, checked replacement, availability withdrawal and restoration, label replacement and a live "
+            "output scale change update the same native Toggle in place: no empty name or description, no tree "
+            "removal, and state-change events on that node"]
 
 
 def verify(session, tree):
@@ -67,7 +125,7 @@ def verify(session, tree):
     if not state(tree.address, node)["focused"]:
         raise ValueError("the native Toggle does not report focus")
     return ["a Toggle focused from its consumer's ready notification emits a native focus event "
-            "on its complete native node"]
+            "on its complete native node"] + stable_updates(session, tree)
 
 
 def run(args):

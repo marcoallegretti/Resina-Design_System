@@ -93,6 +93,16 @@ ShellRoot {
         else if (mode.length) fail("unknown reaction " + mode);
     }
 
+    function checkFocusable() {
+        if (toggle && !toggle.enabled && toggle.Accessible.focusable)
+            fail("an unavailable Toggle was exposed as focusable");
+    }
+
+    Connections {
+        target: root.toggle
+        // Bindings depending on enabled may not have updated yet in this handler.
+        function onEnabledChanged() { Qt.callLater(root.checkFocusable); }
+    }
     Connections {
         target: root.toggle ? root.toggle.controller : null
         function onPublicationChanged() { ++root.publications; }
@@ -131,7 +141,7 @@ ShellRoot {
         onLoaded: {
             try {
                 root.requests = JSON.parse(text());
-                if (!root.requests.standard) throw new Error("incomplete requests");
+                if (!root.requests.standard || !root.requests.replacement) throw new Error("incomplete requests");
                 Qt.callLater(root.start);
             } catch (error) { root.fail(error.message); }
         }
@@ -237,6 +247,10 @@ ShellRoot {
             } catch (error) {
                 return JSON.stringify({exception:String(error)});
             }
+        }
+        function configure(name: string): void {
+            root.log("configure", {configuration:name});
+            root.configuration = JSON.stringify(root.requests[name]);
         }
         function availability(enabled: bool): bool {
             return root.toggle ? root.toggle.controller.dispatch(JSON.stringify({kind:"availability", enabled:enabled})) : false;
