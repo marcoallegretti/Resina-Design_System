@@ -135,9 +135,9 @@ by the 4 px depth of the
 [lit containment cases](../conformance/content/toggle-lit-containment.json),
 lies inside the uniform plateau of a capsule track with the authored
 [track relief](../definitions/control-relief.json), for both key directions
-those cases use. Every track is smaller than the 48 px coarse target of
-[spec/15](15-targets.md), as a Command body is: the owner reserves the target,
-and a profile never enlarges a visual part.
+those cases use. A profile never enlarges a visual part to reach the
+[minimum interactive target](15-targets.md): as for a Command body, whose visual
+size may be smaller than its hit region, the owner reserves the target region.
 
 ## Toggle resolution
 
@@ -149,8 +149,12 @@ ancestor clipping and safe areas. The `checked` selection, the label and the
 parts' appearance are not inputs; the owner supplies them to the later
 operations.
 
-1. Resolve `tokens` as a complete DTCG document, with duplicate members
-   rejected at every depth, and validate the whole profile as described above.
+1. Check that `availableSize` is finite and positive. Then resolve `tokens`
+   as a complete DTCG document, with duplicate members rejected at every
+   depth, and validate the whole profile as described above. Validation checks
+   each mode's Toggle part layout with layout direction `ltr` and `checked`
+   false: the four insets are equal, so the right-to-left allocation is the
+   exact mirror image and `checked` does not change what must fit.
 2. Select the track size, thumb size and inset of the environment's explicit
    `densityPreference`. Text scale, input capabilities and the other members of
    the environment never change them: a part is not scaled to a label or to a

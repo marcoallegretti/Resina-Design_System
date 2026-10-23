@@ -1138,23 +1138,27 @@ fn toggle_profile_output_resolves_through_the_toggle_snapshot_in_every_density()
                 .find(|case| case["name"] == name.as_str())
                 .unwrap();
             let profile = resolve_toggle_profile_source(&case["request"].to_string()).unwrap();
-            let f = Fixture::new("cast", direction, &cases()[0]);
-            let mut track_request = f.request.clone();
-            let body = &mut track_request["surface"]["body"];
-            body["size"] = serde_json::to_value(profile.track_size()).unwrap();
-            body["surface"]["states"]["states"] = json!(["rest"]);
-            body["surface"]["form"]["shape"] = json!("capsule");
-            let (_, result) = snapshot_outcome(
-                f,
-                &track_request,
-                profile.track_size(),
-                profile.thumb_size(),
-                profile.insets(),
-                &name,
-            );
-            assert!(result.is_ok(), "{name}: {result:?}");
-            resolved += 1;
+            for key in [json!({"x": -1, "y": -1}), json!({"x": -0.34, "y": -0.94})] {
+                let f = Fixture::new("cast", direction, &cases()[0]);
+                let mut track_request = f.request.clone();
+                let body = &mut track_request["surface"]["body"];
+                body["size"] = serde_json::to_value(profile.track_size()).unwrap();
+                body["surface"]["states"]["states"] = json!(["rest"]);
+                body["surface"]["form"]["shape"] = json!("capsule");
+                body["appearance"]["keyLight"]["direction"] = key;
+                let (depth, result) = snapshot_outcome(
+                    f,
+                    &track_request,
+                    profile.track_size(),
+                    profile.thumb_size(),
+                    profile.insets(),
+                    &name,
+                );
+                assert_eq!(depth, 4.0, "{name}");
+                assert!(result.is_ok(), "{name}: {result:?}");
+                resolved += 1;
+            }
         }
     }
-    assert_eq!(resolved, 8);
+    assert_eq!(resolved, 16);
 }

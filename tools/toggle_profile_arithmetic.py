@@ -39,6 +39,10 @@ def dimension(document, path, allow_zero):
     if value["unit"] != "px":
         raise ValueError(f"toggle token {path} must use px")
     number = value["value"]
+    try:
+        float(number)
+    except OverflowError:
+        number = -1
     if not (number >= 0 if allow_zero else number > 0):
         raise ValueError(f"toggle token {path} must be finite and {'nonnegative' if allow_zero else 'positive'}")
     return number
