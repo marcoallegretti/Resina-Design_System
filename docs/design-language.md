@@ -114,6 +114,10 @@ size roles, placement, contrast, mapping lookup and rendering remain
 so there is no portable glyph or asset contract yet. Physical light direction
 and an icon's logical mirroring policy are different concerns.
 
+The [content design guide](content-design.md) covers how interface copy communicates:
+which wording rules are already normative, which are advisory, and which wait for
+a component contract. Its wording rules are informative.
+
 ## Motion and interaction
 
 Motion expresses material response and continuity, then settles. The
