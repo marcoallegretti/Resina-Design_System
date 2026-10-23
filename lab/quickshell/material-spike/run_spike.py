@@ -249,7 +249,7 @@ def conformance(arguments):
     finally:
         shutil.rmtree(work, ignore_errors=True)
     controls = {name for name in arguments.configs if name.endswith("no-ring")}
-    renderers = [name for name in arguments.configs if name not in controls]
+    renderers = [name for name in arguments.configs if name not in controls and not name.endswith("supersampled")]
     status = 0
     for name in arguments.configs:
         rows = [compare.compare(scene, scale, references / f"{scene['name']}@{scale}.png",

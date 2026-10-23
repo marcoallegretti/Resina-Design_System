@@ -26,8 +26,8 @@ tables to its job summary.
 
 The shader is driven only by values a resolved control already carries: size, corner radii, edge width, depth,
 relief kind, amplitude and shoulder width, key direction, ambient and interaction light, and the body, highlight,
-side and edge colors. The key direction is the unit vector the resolver publishes for the scene (`-0.7071`,
-`-0.7071`). The contact shadow is outside the CPU oracle, which has none, and is off in every comparison.
+side and edge colors. The key direction is the unit vector the resolver publishes for the scene (`-0.3401`,
+`-0.9404`). The contact shadow is outside the CPU oracle, which has none, and is off in every comparison.
 
 ## Run it
 
@@ -69,7 +69,7 @@ Measured on Linux x86_64 with 14 logical CPUs (Intel Core Ultra 7 255U), Mesa 26
 scale 2 (a real compositor scale of 2 for the frame-time tables). There is no GPU in these runs: OpenGL is Mesa
 llvmpipe and Vulkan is Mesa lavapipe, so the shader executes on the CPU. The frame-time tables show how each path
 scales with the object count on a CPU rasterizer; they say nothing about a GPU, whose upload, command submission and
-compositing costs are not bounded by them.
+compositing costs are not bounded by them. The frame-time tables were taken before master changed the key direction of the lit scenes; the shader cost does not depend on it. The fidelity tables are from the current master.
 
 ### Which Qt Quick paths draw the shader
 
@@ -94,27 +94,27 @@ CPU raster): the edge ring, the silhouette and the side band.
 
 | shader variant, OpenGL llvmpipe | contour ratio (max) | ring pixels RGB (max / p99 of a scene) | edge offset, device px (max / mean) | interior RGB (max) |
 | --- | --- | --- | --- | --- |
-| analytic coverage, scale 1 | 0.264 | 34 / 23 | 0.118 / 0.030 | 1 |
-| analytic coverage, scale 2 | 0.219 | 25 / 20 | 0.122 / 0.033 | 2 |
-| 4 by 4 samples, scale 1 | 0.103 | 11 / 11 | 0.063 / 0.000 | 1 |
-| 4 by 4 samples, scale 2 | 0.188 | 18 / 1 | 0.063 / 0.000 | 1 |
-| negative control, no edge ring, scale 1 | 1.968 | 149 / 149 | 0.118 / 0.030 | 1 |
-| negative control, no edge ring, scale 2 | 6.600 | 149 / 149 | 0.122 / 0.033 | 2 |
+| analytic coverage, scale 1 | 0.284 | 35 / 33 | 0.122 / 0.030 | 2 |
+| analytic coverage, scale 2 | 0.275 | 25 / 25 | 0.129 / 0.033 | 2 |
+| 4 by 4 samples, scale 1 | 0.102 | 9 / 1 | 0.063 / 0.000 | 1 |
+| 4 by 4 samples, scale 2 | 0.179 | 20 / 4 | 0.063 / 0.000 | 1 |
+| negative control, no edge ring, scale 1 | 1.357 | 149 / 149 | 0.122 / 0.030 | 2 |
+| negative control, no edge ring, scale 2 | 7.400 | 149 / 149 | 0.129 / 0.033 | 2 |
 
 The contour ratio is the largest difference above 3 steps divided by the largest step to a neighbouring pixel. The
 ring pixels and the contour ratio are what the comparison has to be judged on. The interior is fully covered pixels at
 least two pixels from a contour and excludes the ring band: the negative control, a shader that omits the edge ring,
 scores the same interior and edge offset as the real one and is caught only by the ring pixels and the contour ratio.
-The analytic shader differs from the raster by up to 34 steps on the ring (about a quarter of the local contrast)
+The analytic shader differs from the raster by up to 35 steps on the ring (about a quarter of the local contrast)
 because its coverage is analytic and the raster's is 16 point samples. The 4 by 4 variant removes most of that, at
-sixteen times the shading work (cost not measured); the remaining 11 to 18 steps in a few scenes are not explained.
+sixteen times the shading work (cost not measured); the remaining 9 to 20 steps in a few scenes are not explained.
 
 The candidate criteria in `tools/compare.py` (interior at most 3 steps, edge offset at most 0.15 px, contour ratio at
 most 0.35) are a proposal for evaluation, not an established tolerance class. The analytic shader and the 4 by 4
 variant pass them and the negative control fails them. An absolute bound on the ring error tighter than about 35 steps
 would need the 4 by 4 variant or an equivalent filter; none has been defined.
 
-OpenGL on llvmpipe and Vulkan on lavapipe differ from each other by at most 2 steps and 0.004 px. Two runs on the same
+OpenGL on llvmpipe and Vulkan on lavapipe differ from each other by at most 1 step and 0.000 px of edge offset. Two runs on the same
 renderer are byte-identical.
 
 ### Frame times, shader path
@@ -180,7 +180,7 @@ below 300:
 - Shown: one shader reproduces the lit Command body, track and thumb with the same code on OpenGL and Vulkan,
   deterministically on one renderer. Its interior and edge position agree closely with the CPU raster; its ring pixels
   differ by up to about 35 steps because of the coverage model, and a variant that samples like the raster agrees to
-  within 18 steps in the worst scene.
+  within 20 steps in the worst scene.
 - Shown: the comparison can fail. A shader without the edge ring passes the interior and edge-offset criteria and fails
   the ring-based one.
 - Shown: on a CPU rasterizer the shader path holds 60 Hz to 30 objects at scale 1, while the production control path

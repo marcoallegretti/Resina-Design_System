@@ -66,6 +66,7 @@ def main():
     parser.add_argument("--command-raster", required=True)
     parser.add_argument("--toggle-raster", required=True)
     parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument("--bench-scene", type=Path, help="also write the benchmark scene (light-command-standard-rest) as a script")
     arguments = parser.parse_args()
     bundle, resolutions = prepare(load_json(MANIFEST), lambda request: backend_document(
         [arguments.theme_backend, "-"], request, "schemas/headless-result.schema.json", "scene theme", 30))
@@ -87,6 +88,10 @@ def main():
             record["views"][str(scale)] = {"image": name, "width": view["width"], "height": view["height"]}
         records.append(record)
     (arguments.output_dir / "scenes.json").write_text(json.dumps({"scenes": records}, indent=1) + "\n")
+    if arguments.bench_scene:
+        scene = {key: value for key, value in next(r for r in records if r["name"] == "light-command-standard-rest").items() if key != "views"}
+        text = ".pragma library\nvar scene = " + json.dumps(scene, indent=1) + ";\n"
+        arguments.bench_scene.write_text(text)
     print(f"{len(records)} scenes")
 
 
