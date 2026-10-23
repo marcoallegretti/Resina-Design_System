@@ -166,7 +166,7 @@ a later run, where the package installation step took about 12 minutes. In run 3
 sway on both renderers; against the CPU raster the contour ratio was at most 0.284, the ring pixels differed by up to
 35 steps (the analytic shader), the edge by at most 0.129 device px and the interior by at most 2 steps. The two
 renderers differed by at most 1 step. Frame intervals in milliseconds, median / p95 / p99, with frame counts when
-below 300:
+below 300. A later run of the workflow (run 40007616712) measured 25 / 30 / 48 ms at 30 objects and 80 / 84 / 158 ms at 100 objects with OpenGL at scale 1, so timings on the runner vary by about 1.5 times between runs:
 
 | N | OpenGL scale 1 | Vulkan scale 1 | OpenGL scale 2 | Vulkan scale 2 |
 | --- | --- | --- | --- | --- |
